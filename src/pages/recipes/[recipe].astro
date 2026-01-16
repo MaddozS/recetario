@@ -1,7 +1,7 @@
 ---
 import { Icon } from "astro-icon/components";
 import Layout from "../../layouts/Layout.astro";
-import type { Ingredient, Recipe } from '../../content.config';
+import type { Ingredient, Recipe, RecipeIngredientWithData, RecipeIngredient } from '../../content.config';
 
 import { getCollection, getEntry } from 'astro:content';
 
@@ -17,14 +17,6 @@ const { recipe } = Astro.props
 const { data } = recipe;
 
 const { ingredients, name, id, desiredMargin, fixedCostsPercentage, presentations } = data;
-type RecipeIngredientType = {
-  ingredientId: number;
-  quantity: number;
-  unit: string;
-}
-type RecipeIngredientWithData = RecipeIngredientType & {
-  ingredient: Ingredient;
-}
 
 const recipeIngredients: RecipeIngredientWithData[] = [];
 for (const ri of ingredients) {
@@ -46,7 +38,7 @@ const getCostoBaseCompra = (insumo: Ingredient) => {
   return insumo.price / insumo.purchaseQuantity;
 };
 
-const calcularSubtotalIngrediente = (ri: RecipeIngredientType, insumo: Ingredient) => {
+const calcularSubtotalIngrediente = (ri: RecipeIngredient, insumo: Ingredient) => {
   if (!insumo) return 0;
   
   let cantidadAjustada = ri.quantity;
@@ -75,7 +67,7 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMargin 
 
 ---
 
-<Layout currentRecipe={id}>
+<Layout currentRecipe={id} showSideBar={true} currentPage="recipes">
   <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden" transition:animate="slide">
     <div class="p-8 border-b border-slate-100">
       <div class="flex flex-col md:flex-row justify-between items-start gap-4">
@@ -164,7 +156,7 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMargin 
       <button 
         class="w-full py-4 bg-slate-50/50 hover:bg-indigo-50 text-indigo-600 text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-2 transition-all border-t border-slate-100"
       >
-        <Icon name="lucide:plus" /> Añadir Ingrediente
+        <Icon name="lucide:plus" />Añadir Ingrediente
       </button>
     </div>
 
