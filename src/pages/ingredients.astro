@@ -1,0 +1,69 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+import { getCollection } from 'astro:content';
+
+import { Icon } from 'astro-icon/components'
+
+
+const ingredients = await getCollection('ingredients');
+---
+
+<Layout currentPage="ingredients" showSideBar={false}>
+<div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden" transition:animate="slide">
+  <div class="p-6 border-b border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4">
+    <!-- <div class="relative w-full md:w-96">
+      <Search class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+      <input 
+        type="text" 
+        placeholder="Buscar ingrediente..."
+        class="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 outline-none"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+      />
+    </div> -->
+    <button class="w-full md:w-auto flex items-center justify-center gap-2 bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-bold hover:bg-indigo-700 transition-colors">
+      <Icon name="lucide:plus" />
+      Agregar Insumo
+    </button>
+  </div>
+  <div class="overflow-x-auto">
+    <table class="w-full text-left">
+      <thead class="bg-slate-50 text-slate-500 text-[10px] uppercase font-bold">
+        <tr>
+          <th class="px-6 py-4">Insumo</th>
+          <th class="px-6 py-4">Precio Compra</th>
+          <th class="px-6 py-4">Cant. Compra</th>
+          <th class="px-6 py-4">Unidad</th>
+          <th class="px-6 py-4">Costo x Unidad</th>
+          <th class="px-6 py-4">Proveedor</th>
+          <th class="px-6 py-4"></th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-100">
+        {
+          ingredients.map(ingredient => (
+            <tr class="hover:bg-slate-50/50 transition-colors">
+              <td class="px-6 py-4 font-semibold text-slate-800">{ingredient.data.name}</td>
+              <td class="px-6 py-4 font-mono text-sm">
+                <span class="text-slate-400">$</span>{ingredient.data.price.toFixed(2)}
+              </td>
+              <td class="px-6 py-4 text-slate-700 font-medium">{ingredient.data.purchaseQuantity}</td>
+              <td class="px-6 py-4 text-slate-500 italic">{ingredient.data.unit}</td>
+              <td class="px-6 py-4 font-bold text-indigo-600">
+                ${ (ingredient.data.price / ingredient.data.purchaseQuantity).toFixed(2) } / {ingredient.data.unit}
+              </td>
+              <td class="px-6 py-4 text-xs text-slate-400">{ingredient.data.supplier || ingredient.data.brand}</td>
+              <td class="px-6 py-4 text-right">
+                <button class="text-slate-300 hover:text-red-500 transition-colors">
+                  <Icon name="lucide:trash-2" size={18} />
+                </button>
+              </td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
+</Layout>

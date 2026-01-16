@@ -1,0 +1,37 @@
+---
+
+import { Icon } from 'astro-icon/components';
+import { getCollection } from 'astro:content';
+const recipes = await getCollection('recipes');
+
+const { currentRecipe } = Astro.props;
+
+---
+
+<aside class="lg:col-span-3 space-y-4">
+  <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="font-bold text-slate-800">Recetas</h2>
+      <!-- <button onClick={() => {
+        const id = Date.now();
+        setRecetas([...recetas, { id, nombre: 'Nueva Receta', margenDeseado: 60, costosFijosPorcentaje: 30, ingredientes: [], presentaciones: [] }]);
+        setSelectedRecipeId(id);
+      }} class="text-indigo-600 hover:bg-indigo-50 p-2 rounded-lg"><Plus size={20} /></button> -->
+    </div>
+    <div class="space-y-2">
+      {
+        recipes.map(recipe => (
+          <a href={`/recipes/${recipe.id}`} class="block">
+            <div class={`w-full flex items-center justify-between p-4 bg-slate-50 rounded-xl border transition-all ${currentRecipe?.toString() === recipe.id.toString() ? 'bg-indigo-50 border-indigo-200 ring-2 ring-indigo-500/10' : 'bg-slate-50 border-slate-100 hover:border-slate-300'}`}>
+              <div class="text-left">
+                <p class={`font-bold ${currentRecipe?.toString() === recipe.id.toString() ? 'text-indigo-700' : "text-slate-700"}`}>{recipe.data.name}</a>
+                <p class={`text-[10px] ${currentRecipe?.toString() === recipe.id.toString() ? 'text-indigo-500' : "text-slate-400"} mt-1 uppercase tracking-tight`}>{recipe.data.ingredients.length} ingredientes</p>
+              </div>
+              <Icon name="lucide:chevron-right" size={16} class={`${currentRecipe?.toString() === recipe.id.toString() ? 'text-indigo-500' : "text-slate-300"}`} />
+            </div>
+        </a>
+        ))
+      }
+    </div>
+  </div>
+</aside>

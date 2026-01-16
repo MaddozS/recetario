@@ -1,0 +1,245 @@
+[
+  {
+    "id": 1,
+    "name": "Harina",
+    "unit": "kg",
+    "price": 20,
+    "purchaseQuantity": 1,
+    "brand": "Abuelo José",
+    "supplier": "Casa Santos Lugo"
+  },
+  {
+    "id": 2,
+    "name": "Azúcar morena",
+    "unit": "kg",
+    "price": 22.22,
+    "purchaseQuantity": 1,
+    "brand": "Zulka",
+    "supplier": "Chedraui"
+  },
+  {
+    "id": 3,
+    "name": "Azúcar mascabado",
+    "unit": "kg",
+    "price": 50,
+    "purchaseQuantity": 1,
+    "brand": "Zulka",
+    "supplier": "Chedraui"
+  },
+  {
+    "id": 4,
+    "name": "Mantequilla",
+    "unit": "kg",
+    "price": 99.2,
+    "purchaseQuantity": 1,
+    "brand": "",
+    "supplier": "Casa Santos Lugo"
+  },
+  {
+    "id": 5,
+    "name": "Leche",
+    "unit": "lt",
+    "price": 32,
+    "purchaseQuantity": 1,
+    "brand": "",
+    "supplier": ""
+  },
+  {
+    "id": 6,
+    "name": "Chispas Genéricas",
+    "unit": "kg",
+    "price": 224,
+    "purchaseQuantity": 1,
+    "brand": "",
+    "supplier": "Casa Santos Lugo"
+  },
+  {
+    "id": 7,
+    "name": "Polvo hornear",
+    "unit": "g",
+    "price": 0.18,
+    "purchaseQuantity": 1,
+    "brand": "Rexal",
+    "supplier": ""
+  },
+  {
+    "id": 8,
+    "name": "Levadura",
+    "unit": "g",
+    "price": 23.5,
+    "purchaseQuantity": 55,
+    "brand": "Tradipan",
+    "supplier": "Walmart"
+  },
+  {
+    "id": 9,
+    "name": "Aceite de oliva",
+    "unit": "lt",
+    "price": 200,
+    "purchaseQuantity": 1,
+    "brand": "Great Value",
+    "supplier": "Walmart"
+  },
+  {
+    "id": 10,
+    "name": "Canela",
+    "unit": "g",
+    "price": 0.714,
+    "purchaseQuantity": 1,
+    "brand": "McCormick",
+    "supplier": "Walmart"
+  },
+  {
+    "id": 11,
+    "name": "Sal",
+    "unit": "kg",
+    "price": 30,
+    "purchaseQuantity": 1,
+    "brand": "La Fina",
+    "supplier": ""
+  },
+  {
+    "id": 12,
+    "name": "Vainilla",
+    "unit": "lt",
+    "price": 12.5,
+    "purchaseQuantity": 1,
+    "brand": "",
+    "supplier": "Casa Santos Lugo"
+  },
+  {
+    "id": 13,
+    "name": "Huevo",
+    "unit": "pza",
+    "price": 3.03,
+    "purchaseQuantity": 1,
+    "brand": "",
+    "supplier": "Casa Santos Lugo"
+  },
+  {
+    "id": 14,
+    "name": "Plátano",
+    "unit": "kg",
+    "price": 20,
+    "purchaseQuantity": 1,
+    "brand": "",
+    "supplier": ""
+  },
+  {
+    "id": 15,
+    "name": "Azúcar refinada",
+    "unit": "kg",
+    "price": 45,
+    "purchaseQuantity": 1,
+    "brand": "",
+    "supplier": ""
+  },
+  {
+    "id": 16,
+    "name": "Bicarbonato de sodio",
+    "unit": "g",
+    "price": 0.15,
+    "purchaseQuantity": 1,
+    "brand": "",
+    "supplier": ""
+  },
+  {
+    "id": 17,
+    "name": "Chispas Hershey's (Leche)",
+    "unit": "g",
+    "price": 111,
+    "purchaseQuantity": 300,
+    "brand": "Hershey's",
+    "supplier": "Chocolate con Leche"
+  },
+  {
+    "id": 18,
+    "name": "Agua",
+    "unit": "lt",
+    "price": 50,
+    "purchaseQuantity": 20,
+    "brand": "",
+    "supplier": ""
+  },
+  {
+    "id": 19,
+    "name": "Ajo",
+    "unit": "g",
+    "price": 50,
+    "purchaseQuantity": 200,
+    "brand": "",
+    "supplier": ""
+  },
+  {
+    "id": 20,
+    "name": "Hierbas finas",
+    "unit": "g",
+    "price": 40,
+    "purchaseQuantity": 50,
+    "brand": "",
+    "supplier": ""
+  },
+  {
+    "id": 21,
+    "name": "Queso manchego",
+    "unit": "kg",
+    "price": 280,
+    "purchaseQuantity": 1,
+    "brand": "",
+    "supplier": ""
+  },
+  {
+    "id": 22,
+    "name": "Champiñones",
+    "unit": "g",
+    "price": 35,
+    "purchaseQuantity": 225,
+    "brand": "",
+    "supplier": ""
+  },
+  {
+    "id": 23,
+    "name": "Aceite de soya",
+    "unit": "ml",
+    "price": 42,
+    "purchaseQuantity": 960,
+    "brand": "",
+    "supplier": ""
+  },
+  {
+    "id": 24,
+    "name": "Nuez moscada",
+    "unit": "g",
+    "price": 62.50,
+    "purchaseQuantity": 70,
+    "brand": "",
+    "supplier": ""
+  },
+  {
+    "id": 25,
+    "name": "Zanahoria",
+    "unit": "kg",
+    "price": 14.50,
+    "purchaseQuantity": 1,
+    "brand": "",
+    "supplier": ""
+  },
+  {
+    "id": 26,
+    "name": "Azúcar glass",
+    "unit": "kg",
+    "price": 54,
+    "purchaseQuantity": 1,
+    "brand": "",
+    "supplier": ""
+  },
+  {
+    "id": 27,
+    "name": "Queso crema",
+    "unit": "g",
+    "price": 50,
+    "purchaseQuantity": 180,
+    "brand": "",
+    "supplier": ""
+  }
+]
