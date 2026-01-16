@@ -22,12 +22,12 @@ const { currentRecipe } = Astro.props;
       {
         recipes.map(recipe => (
           <a href={`/recipes/${recipe.id}`} class="block">
-            <div class={`w-full flex items-center justify-between p-4 bg-slate-50 rounded-xl border transition-all ${currentRecipe.toString() === recipe.id.toString() ? 'bg-indigo-50 border-indigo-200 ring-2 ring-indigo-500/10' : 'bg-slate-50 border-slate-100 hover:border-slate-300'}`}>
+            <div class={`w-full flex items-center justify-between p-4 bg-slate-50 rounded-xl border transition-all ${currentRecipe?.toString() === recipe.id.toString() ? 'bg-indigo-50 border-indigo-200 ring-2 ring-indigo-500/10' : 'bg-slate-50 border-slate-100 hover:border-slate-300'}`}>
               <div class="text-left">
-                <p class={`font-bold ${currentRecipe.toString() === recipe.id.toString() ? 'text-indigo-700' : "text-slate-700"}`}>{recipe.data.name}</a>
-                <p class={`text-[10px] ${currentRecipe.toString() === recipe.id.toString() ? 'text-indigo-500' : "text-slate-400"} mt-1 uppercase tracking-tight`}>{recipe.data.ingredients.length} ingredientes</p>
+                <p class={`font-bold ${currentRecipe?.toString() === recipe.id.toString() ? 'text-indigo-700' : "text-slate-700"}`}>{recipe.data.name}</a>
+                <p class={`text-[10px] ${currentRecipe?.toString() === recipe.id.toString() ? 'text-indigo-500' : "text-slate-400"} mt-1 uppercase tracking-tight`}>{recipe.data.ingredients.length} ingredientes</p>
               </div>
-              <Icon name="lucide:chevron-right" size={16} class={`${currentRecipe.toString() === recipe.id.toString() ? 'text-indigo-500' : "text-slate-300"}`} />
+              <Icon name="lucide:chevron-right" size={16} class={`${currentRecipe?.toString() === recipe.id.toString() ? 'text-indigo-500' : "text-slate-300"}`} />
             </div>
         </a>
         ))
