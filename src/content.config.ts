@@ -46,7 +46,16 @@ const recipes = defineCollection({
 type Recipe = z.infer<typeof recipe>;
 type Ingredient = z.infer<typeof ingredient>;
 
+type RecipeIngredientType = {
+  ingredientId: number;
+  quantity: number;
+  unit: string;
+}
+type RecipeIngredientWithData = RecipeIngredientType & {
+  ingredient: Ingredient;
+}
+
 // 6. Export your collection(s)
 export const collections = { ingredients, recipes };
-export type { Recipe, Ingredient };
+export type { Recipe, Ingredient, RecipeIngredientWithData };
   
