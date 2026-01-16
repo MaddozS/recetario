@@ -3,11 +3,9 @@ import '../styles/global.css'
 import Header from '../components/Header.astro'
 import RecipesSidebar from '../components/RecipesSidebar.astro'
 
-// Check current page
-const currentPath = Astro.url.pathname;
-const isIngredientsPage = currentPath === '/ingredients';
+const { currentPage } = Astro.props;
 
-const { currentRecipe } = Astro.props;
+const { currentRecipe, showSideBar } = Astro.props;
 
 import { ClientRouter } from "astro:transitions";
 ---
@@ -19,17 +17,17 @@ import { ClientRouter } from "astro:transitions";
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
+		<title>{`ChefCost Pro - ${currentPage === 'recipes' ? 'Recetario' : currentPage === 'ingredients' ? 'Inventario' : ''}`}</title>
     <ClientRouter />
 	</head>
 	<body class="bg-slate-100">
     <div class="max-w-full mx-auto md:px-16 lg:px-24 md:py-8 lg:py-12">
-      <Header />
+      <Header currentPage={currentPage}/>
       <div class="grid grid-cols-12 gap-8 items-start">
         {
-          !isIngredientsPage && <RecipesSidebar currentRecipe={currentRecipe}/>
+          showSideBar && <RecipesSidebar currentRecipe={currentRecipe} transition:animate="none" />
         }
-        <main class={isIngredientsPage ? 'lg:col-span-12' : 'lg:col-span-9'}>
+        <main class={!showSideBar ? 'lg:col-span-12' : 'lg:col-span-9'}>
           <slot />
         </main>
       </div>

@@ -9,7 +9,7 @@ import { Icon } from 'astro-icon/components'
 const ingredients = await getCollection('ingredients');
 ---
 
-<Layout>
+<Layout currentPage="ingredients" showSideBar={false}>
 <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden" transition:animate="slide">
   <div class="p-6 border-b border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4">
     <!-- <div class="relative w-full md:w-96">

@@ -1,8 +1,7 @@
 ---
 import { Icon } from "astro-icon/components";
 // Check current page
-const currentPath = Astro.url.pathname;
-const isIngredientsPage = currentPath === '/ingredients';
+const { currentPage } = Astro.props;
 ---
 
 <header class="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-200" transition:animate="none">
@@ -18,13 +17,13 @@ const isIngredientsPage = currentPath === '/ingredients';
   <div class="flex bg-slate-100 rounded-xl p-1 border border-slate-200">
     <a 
       href="/recipes/101"
-      class={`px-6 py-2 rounded-lg text-sm font-semibold transition-all ${!isIngredientsPage ? 'bg-white shadow-sm text-indigo-700' : 'text-slate-500 hover:text-slate-700'}`}
+      class:list={["px-6 py-2 rounded-lg text-sm font-semibold transition-all", currentPage === 'recipes' ? 'bg-white shadow-sm text-indigo-700' : 'text-slate-500 hover:text-slate-700']}
     >
       Recetario
     </a>
     <a 
       href="/ingredients"
-      class={`px-6 py-2 rounded-lg text-sm font-semibold transition-all ${isIngredientsPage ? 'bg-white shadow-sm text-indigo-700' : 'text-slate-500 hover:text-slate-700'}`}
+      class:list={["px-6 py-2 rounded-lg text-sm font-semibold transition-all", currentPage === 'ingredients' ? 'bg-white shadow-sm text-indigo-700' : 'text-slate-500 hover:text-slate-700']}
     >
       Inventario
     </a>
