@@ -3,17 +3,24 @@ import { Icon } from "astro-icon/components";
 import Layout from "../../layouts/Layout.astro";
 import type { Ingredient, Recipe, RecipeIngredientWithData, RecipeIngredient } from '../../content.config';
 
-import { getCollection, getEntry } from 'astro:content';
-
-export async function getStaticPaths() {
-  const recipes = await getCollection('recipes');
-  return recipes.map(recipe => ({
-    params: { recipe: recipe.id.toString() },
-    props: { recipe }
-  }));
+if (!Astro.locals.session || !Astro.locals.user) {
+  return Astro.redirect('/sign-in');
 }
 
-const { recipe } = Astro.props
+import { getEntry } from 'astro:content';
+
+// Obtener el ID de la receta desde los parámetros
+const recipeId = Astro.params.recipe;
+if (!recipeId) {
+  return Astro.redirect('/');
+}
+
+// Obtener la receta desde la colección
+const recipe = await getEntry('recipes', recipeId);
+if (!recipe) {
+  return Astro.redirect('/');
+}
+
 const { data } = recipe;
 
 const { ingredients, name, id, desiredMargin, fixedCostsPercentage, presentations } = data;

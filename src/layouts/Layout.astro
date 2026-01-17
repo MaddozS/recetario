@@ -5,7 +5,7 @@ import RecipesSidebar from '../components/RecipesSidebar.astro'
 
 const { currentPage } = Astro.props;
 
-const { currentRecipe, showSideBar } = Astro.props;
+const { currentRecipe, showSideBar, showHeader = true } = Astro.props;
 
 import { ClientRouter } from "astro:transitions";
 ---
@@ -22,7 +22,7 @@ import { ClientRouter } from "astro:transitions";
 	</head>
 	<body class="bg-slate-100">
     <div class="max-w-full mx-auto md:px-16 lg:px-24 md:py-8 lg:py-12">
-      <Header currentPage={currentPage}/>
+      { showHeader && <Header currentPage={currentPage}/> }
       <div class="grid grid-cols-12 gap-8 items-start">
         {
           showSideBar && (
