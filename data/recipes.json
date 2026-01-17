@@ -60,7 +60,7 @@
       {
         "id": 201,
         "name": "Panqué Grande",
-        "unitsPerBatch": 3
+        "unitsPerBatch": 2
       },
       {
         "id": 202,
@@ -135,7 +135,7 @@
       {
         "id": 207,
         "name": "Panqué Grande con Chispas",
-        "unitsPerBatch": 3
+        "unitsPerBatch": 2
       },
       {
         "id": 208,
@@ -212,7 +212,7 @@
   {
     "id": 103,
     "name": "Cheesy Bread",
-    "desiredMargin": 40,
+    "desiredMargin": 50,
     "fixedCostsPercentage": 30,
     "ingredients": [
       {
@@ -257,7 +257,7 @@
       },
       {
         "ingredientId": 21,
-        "quantity": 150,
+        "quantity": 170,
         "unit": "g"
       },
       {
