@@ -17,7 +17,12 @@
       },
       {
         "ingredientId": 15,
-        "quantity": 300,
+        "quantity": 200,
+        "unit": "g"
+      },
+      {
+        "ingredientId": 3,
+        "quantity": 100,
         "unit": "g"
       },
       {
@@ -37,7 +42,12 @@
       },
       {
         "ingredientId": 7,
-        "quantity": 24,
+        "quantity": 14,
+        "unit": "g"
+      },
+      {
+        "ingredientId": 16,
+        "quantity": 2,
         "unit": "g"
       },
       {
@@ -47,7 +57,7 @@
       },
       {
         "ingredientId": 5,
-        "quantity": 120,
+        "quantity": 100,
         "unit": "ml"
       },
       {
@@ -87,7 +97,12 @@
       },
       {
         "ingredientId": 15,
-        "quantity": 300,
+        "quantity": 200,
+        "unit": "g"
+      },
+      {
+        "ingredientId": 3,
+        "quantity": 100,
         "unit": "g"
       },
       {
@@ -107,7 +122,12 @@
       },
       {
         "ingredientId": 7,
-        "quantity": 24,
+        "quantity": 14,
+        "unit": "g"
+      },
+      {
+        "ingredientId": 16,
+        "quantity": 2,
         "unit": "g"
       },
       {
@@ -117,7 +137,7 @@
       },
       {
         "ingredientId": 5,
-        "quantity": 120,
+        "quantity": 100,
         "unit": "ml"
       },
       {
@@ -127,7 +147,7 @@
       },
       {
         "ingredientId": 6,
-        "quantity": 150,
+        "quantity": 250,
         "unit": "g"
       }
     ],
@@ -281,106 +301,201 @@
   },
   {
     "id": 105,
-    "name": "Cupcakes de Zanahoria",
+    "name": "Carrot Cake",
     "desiredMargin": 50,
     "fixedCostsPercentage": 30,
     "ingredients": [
       {
         "ingredientId": 13,
-        "quantity": 2,
+        "quantity": 4.5,
         "unit": "pza"
       },
       {
         "ingredientId": 2,
-        "quantity": 100,
+        "quantity": 225,
         "unit": "g"
       },
       {
         "ingredientId": 3,
-        "quantity": 60,
+        "quantity": 135,
         "unit": "g"
       },
       {
         "ingredientId": 23,
-        "quantity": 120,
+        "quantity": 270,
         "unit": "ml"
       },
       {
         "ingredientId": 1,
-        "quantity": 150,
+        "quantity": 338,
         "unit": "g"
       },
       {
         "ingredientId": 10,
-        "quantity": 15,
+        "quantity": 18,
         "unit": "g"
       },
       {
         "ingredientId": 24,
-        "quantity": 2.5,
+        "quantity": 2.25,
         "unit": "g"
       },
       {
         "ingredientId": 16,
-        "quantity": 2.5,
+        "quantity": 5.6,
         "unit": "g"
       },
       {
         "ingredientId": 7,
-        "quantity": 2.5,
+        "quantity": 4.5,
         "unit": "g"
       },
       {
         "ingredientId": 11,
-        "quantity": 2.5,
+        "quantity": 6.75,
         "unit": "g"
       },
       {
         "ingredientId": 12,
-        "quantity": 5,
-        "unit": "ml"
+        "quantity": 11,
+        "unit": "g"
       },
       {
         "ingredientId": 25,
-        "quantity": 180,
+        "quantity": 405,
         "unit": "g"
       },
       {
         "ingredientId": 27,
-        "quantity": 120,
-        "unit": "g"
-      },
-      {
-        "ingredientId": 4,
-        "quantity": 40,
+        "quantity": 190,
         "unit": "g"
       },
       {
         "ingredientId": 26,
-        "quantity": 50,
+        "quantity": 100,
         "unit": "g"
       },
       {
-        "ingredientId": 12,
-        "quantity": 2.5,
-        "unit": "ml"
+        "ingredientId": 4,
+        "quantity": 75,
+        "unit": "g"
       },
       {
-        "ingredientId": 11,
-        "quantity": 0.5,
+        "ingredientId": 28,
+        "quantity": 100,
         "unit": "g"
       }
     ],
     "presentations": [
       {
         "id": 209,
-        "name": "Caja de 4 Cupcakes",
+        "name": "Panqué Grande",
         "unitsPerBatch": 2
       },
       {
         "id": 210,
         "name": "Cupcake Individual",
-        "unitsPerBatch": 8
+        "unitsPerBatch": 18
+      }
+    ]
+  },
+  {
+    "id": 106,
+    "name": "Panqué de Plátano con Betún",
+    "desiredMargin": 50,
+    "fixedCostsPercentage": 30,
+    "ingredients": [
+      {
+        "ingredientId": 14,
+        "quantity": 600,
+        "unit": "g"
+      },
+      {
+        "ingredientId": 4,
+        "quantity": 235,
+        "unit": "g"
+      },
+      {
+        "ingredientId": 15,
+        "quantity": 200,
+        "unit": "g"
+      },
+      {
+        "ingredientId": 3,
+        "quantity": 100,
+        "unit": "g"
+      },
+      {
+        "ingredientId": 13,
+        "quantity": 4,
+        "unit": "pza"
+      },
+      {
+        "ingredientId": 12,
+        "quantity": 10,
+        "unit": "ml"
+      },
+      {
+        "ingredientId": 1,
+        "quantity": 400,
+        "unit": "g"
+      },
+      {
+        "ingredientId": 7,
+        "quantity": 14,
+        "unit": "g"
+      },
+      {
+        "ingredientId": 16,
+        "quantity": 2,
+        "unit": "g"
+      },
+      {
+        "ingredientId": 11,
+        "quantity": 4,
+        "unit": "g"
+      },
+      {
+        "ingredientId": 5,
+        "quantity": 100,
+        "unit": "ml"
+      },
+      {
+        "ingredientId": 10,
+        "quantity": 5,
+        "unit": "g"
+      },
+      {
+        "ingredientId": 27,
+        "quantity": 190,
+        "unit": "g"
+      },
+      {
+        "ingredientId": 26,
+        "quantity": 100,
+        "unit": "g"
+      },
+      {
+        "ingredientId": 4,
+        "quantity": 75,
+        "unit": "g"
+      },
+      {
+        "ingredientId": 28,
+        "quantity": 100,
+        "unit": "g"
+      }
+    ],
+    "presentations": [
+      {
+        "id": 211,
+        "name": "Panqué Grande con Betún",
+        "unitsPerBatch": 2
+      },
+      {
+        "id": 212,
+        "name": "Muffins con Betún",
+        "unitsPerBatch": 18
       }
     ]
   }
