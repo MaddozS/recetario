@@ -3,17 +3,24 @@ import { Icon } from "astro-icon/components";
 import Layout from "../../layouts/Layout.astro";
 import type { Ingredient, Recipe, RecipeIngredientWithData, RecipeIngredient } from '../../content.config';
 
-import { getCollection, getEntry } from 'astro:content';
-
-export async function getStaticPaths() {
-  const recipes = await getCollection('recipes');
-  return recipes.map(recipe => ({
-    params: { recipe: recipe.id.toString() },
-    props: { recipe }
-  }));
+if (!Astro.locals.session || !Astro.locals.user) {
+  return Astro.redirect('/sign-in');
 }
 
-const { recipe } = Astro.props
+import { getEntry } from 'astro:content';
+
+// Obtener el ID de la receta desde los parámetros
+const recipeId = Astro.params.recipe;
+if (!recipeId) {
+  return Astro.redirect('/');
+}
+
+// Obtener la receta desde la colección
+const recipe = await getEntry('recipes', recipeId);
+if (!recipe) {
+  return Astro.redirect('/');
+}
+
 const { data } = recipe;
 
 const { ingredients, name, id, desiredMargin, fixedCostsPercentage, presentations } = data;
@@ -126,7 +133,8 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMargin 
                       class="w-20 bg-slate-50 border-none rounded-lg p-1.5 text-center font-bold text-slate-700 focus:ring-2 focus:ring-indigo-500/20"
                       value={ri.quantity}
                     />
-                    <select 
+                    {ri.unit}
+                    {/* <select 
                       class="text-xs text-slate-400 font-medium lowercase bg-transparent border-none focus:ring-0 p-0 w-10"
                       value={ri.unit}
                     >
@@ -135,7 +143,7 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMargin 
                       <option value="pza">pza</option>
                       <option value="kg">kg</option>
                       <option value="lt">lt</option>
-                    </select>
+                    </select> */}
                   </div>
                 </td>
                 <td class="px-8 py-4 text-right font-mono font-bold text-slate-600">

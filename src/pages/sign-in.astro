@@ -1,0 +1,56 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout currentPage="sign-in" showSideBar={false} showHeader={false}>
+  <div class="h-[calc(100vh-64px)] flex items-center justify-center bg-linear-to-br from-slate-50 to-slate-100">
+    <div class="w-full max-w-md">
+      {/* Card Container */}
+      <div class="bg-white rounded-2xl shadow-lg p-8 space-y-8">
+        {/* Header */}
+        <div class="text-center space-y-3">
+          <h1 class="text-3xl font-bold text-slate-900">Bienvenido</h1>
+          <p class="text-slate-600">Inicia sesión para acceder a tus recetas</p>
+        </div>
+
+        {/* Divider */}
+        <div class="relative">
+          <div class="absolute inset-0 flex items-center">
+            <div class="w-full border-t border-slate-200"></div>
+          </div>
+        </div>
+
+        {/* Google Sign In Button */}
+        <button
+          id="google-sign-in"
+          type="button"
+          class="w-full flex items-center justify-center gap-3 bg-white border-2 border-slate-200 rounded-xl py-4 px-6 text-sm font-semibold text-slate-700 hover:border-slate-300 hover:bg-slate-50 hover:shadow-md transition-all duration-200 active:scale-95"
+        >
+          <img
+            src="https://www.svgrepo.com/show/475656/google-color.svg"
+            alt="Google"
+            class="w-5 h-5"
+          />
+          <span>Continuar con Google</span>
+        </button>
+
+        {/* Footer */}
+        <p class="text-center text-xs text-slate-500">
+          Al iniciar sesión, aceptas nuestros términos de servicio
+        </p>
+      </div>
+
+    </div>
+  </div>
+</Layout>
+
+<script>
+  import { signIn } from "../lib/sign-in";
+
+  const button = document.getElementById("google-sign-in");
+  if (button) {
+    button.addEventListener("click", async () => {
+      await signIn();
+    });
+  }
+</script>

@@ -5,6 +5,11 @@ import { getCollection } from 'astro:content';
 
 import { Icon } from 'astro-icon/components'
 
+// check authentication
+if (!Astro.locals.session || !Astro.locals.user) {
+  return Astro.redirect('/sign-in');
+}
+
 
 const ingredients = await getCollection('ingredients');
 ---

@@ -181,9 +181,9 @@
   },
   {
     "id": 21,
-    "name": "Queso manchego",
+    "name": "Queso mozzarella",
     "unit": "kg",
-    "price": 280,
+    "price": 117.80,
     "purchaseQuantity": 1,
     "brand": "",
     "supplier": ""
@@ -236,9 +236,18 @@
   {
     "id": 27,
     "name": "Queso crema",
-    "unit": "g",
-    "price": 50,
-    "purchaseQuantity": 180,
+    "unit": "kg",
+    "price": 135.89,
+    "purchaseQuantity": 1,
+    "brand": "",
+    "supplier": ""
+  },
+  {
+    "id": 28,
+    "name": "Crema para batir",
+    "unit": "kg",
+    "price": 153.90,
+    "purchaseQuantity": 2,
     "brand": "",
     "supplier": ""
   }
