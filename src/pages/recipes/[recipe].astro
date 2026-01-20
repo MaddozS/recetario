@@ -25,6 +25,10 @@ const { data } = recipe;
 
 const { ingredients, name, id, desiredMargin, fixedCostsPercentage, presentations } = data;
 
+// Multiplicador de batch (ej. 2 = doble receta)
+const multiplierParam = Astro.url.searchParams.get('multiplier');
+const multiplier = Math.max(parseFloat(multiplierParam ?? '1') || 1, 0.01);
+
 const recipeIngredients: RecipeIngredientWithData[] = [];
 for (const ri of ingredients) {
   const ingredientEntry = await getEntry('ingredients', ri.ingredientId.toString());
@@ -38,6 +42,25 @@ for (const ri of ingredients) {
 const desiredMarginValue = desiredMargin || 0;
 const fixedCostsPercentageValue = fixedCostsPercentage || 0;
 
+// Redondeo contable para unidades pequeñas (g/ml)
+const roundHalfUp = (value: number) => {
+  return value >= 0 ? Math.floor(value + 0.5) : Math.ceil(value - 0.5);
+};
+
+const aplicarRedondeoUnidadPequena = (cantidad: number, unidad: string) => {
+  const u = unidad.toLowerCase();
+  if (u === 'g' || u === 'ml') {
+    return roundHalfUp(cantidad);
+  }
+  return cantidad;
+};
+
+const formatCantidad = (cantidad: number, unidad: string) => {
+  const ajustada = aplicarRedondeoUnidadPequena(cantidad, unidad);
+  const u = unidad.toLowerCase();
+  return (u === 'g' || u === 'ml') ? ajustada.toString() : ajustada.toFixed(2);
+};
+
 // --- Helpers de Cálculo ---
   
 const getCostoBaseCompra = (insumo: Ingredient) => {
@@ -48,14 +71,14 @@ const getCostoBaseCompra = (insumo: Ingredient) => {
 const calcularSubtotalIngrediente = (ri: RecipeIngredient, insumo: Ingredient) => {
   if (!insumo) return 0;
   
-  let cantidadAjustada = ri.quantity;
+  let cantidadAjustada = aplicarRedondeoUnidadPequena(ri.quantity * multiplier, ri.unit);
   const unidadInsumo = insumo.unit.toLowerCase();
   const unidadReceta = ri.unit.toLowerCase();
 
   // Conversión inteligente: si el insumo es kg/lt y la receta usa g/ml
   if ((unidadInsumo === 'kg' || unidadInsumo === 'lt') && 
       (unidadReceta === 'g' || unidadReceta === 'ml')) {
-    cantidadAjustada = ri.quantity / 1000;
+    cantidadAjustada = cantidadAjustada / 1000;
   }
   
   return getCostoBaseCompra(insumo) * cantidadAjustada;
@@ -91,6 +114,20 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMargin 
           </div>
         </div>
         <div class="flex items-center gap-3">
+          <form method="get" class="flex items-center gap-2 bg-slate-50 px-3 py-2 rounded-xl border border-slate-200 text-sm font-medium text-slate-700">
+            <label for="multiplier" class="text-xs font-bold uppercase tracking-widest text-slate-500">Multiplicar</label>
+            <input
+              id="multiplier"
+              name="multiplier"
+              type="number"
+              min="0.1"
+              step="0.1"
+              value={multiplier}
+              class="w-20 bg-white border border-slate-200 rounded-lg p-1 text-center font-bold text-slate-700 focus:ring-2 focus:ring-indigo-500/20"
+            />
+            <button type="submit" class="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-xs font-bold hover:bg-indigo-700 transition-colors">Aplicar</button>
+            <span class="text-[11px] text-indigo-600 font-semibold">x{multiplier}</span>
+          </form>
           <div class="bg-indigo-50 px-4 py-2 rounded-xl border border-indigo-100">
             <p class="text-[10px] text-indigo-400 font-bold uppercase tracking-wider">Costo Insumos</p>
             <p class="text-xl font-black text-indigo-700">
@@ -130,20 +167,10 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMargin 
                     <input 
                       type="number" 
                       step="0.01"
-                      class="w-20 bg-slate-50 border-none rounded-lg p-1.5 text-center font-bold text-slate-700 focus:ring-2 focus:ring-indigo-500/20"
-                      value={ri.quantity}
+                      class="w-24 bg-slate-50 border-none rounded-lg p-1.5 text-center font-bold text-slate-700 focus:ring-2 focus:ring-indigo-500/20"
+                      value={formatCantidad(ri.quantity * multiplier, ri.unit)}
                     />
                     {ri.unit}
-                    {/* <select 
-                      class="text-xs text-slate-400 font-medium lowercase bg-transparent border-none focus:ring-0 p-0 w-10"
-                      value={ri.unit}
-                    >
-                      <option value="g">g</option>
-                      <option value="ml">ml</option>
-                      <option value="pza">pza</option>
-                      <option value="kg">kg</option>
-                      <option value="lt">lt</option>
-                    </select> */}
                   </div>
                 </td>
                 <td class="px-8 py-4 text-right font-mono font-bold text-slate-600">
@@ -237,16 +264,17 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMargin 
               class="w-16 bg-white border border-slate-200 rounded-lg text-center font-bold text-indigo-600 focus:ring-2 focus:ring-indigo-500/20"
               value={pres.unitsPerBatch}
             />
+            <span class="text-[11px] font-semibold text-slate-500">Totales: {Math.round(pres.unitsPerBatch * multiplier * 100) / 100}</span>
           </div>
 
           <div class="grid grid-cols-2 gap-4 border-t border-slate-50 pt-4">
             <div class="space-y-1">
               <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Costo x Pieza</p>
-              <p class="text-xl font-black text-slate-700">${(costoProduccionRealBatch / pres.unitsPerBatch).toFixed(2)}</p>
+              <p class="text-xl font-black text-slate-700">${(costoProduccionRealBatch / (pres.unitsPerBatch * multiplier)).toFixed(2)}</p>
             </div>
             <div class="space-y-1">
               <p class="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">Venta Sugerida</p>
-              <p class="text-xl font-black text-emerald-600">${(precioVentaSugeridoBatch / pres.unitsPerBatch).toFixed(2)}</p>
+              <p class="text-xl font-black text-emerald-600">${(precioVentaSugeridoBatch / (pres.unitsPerBatch * multiplier)).toFixed(2)}</p>
             </div>
           </div>
         </div>
