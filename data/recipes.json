@@ -42,7 +42,7 @@
       },
       {
         "ingredientId": 7,
-        "quantity": 14,
+        "quantity": 10,
         "unit": "g"
       },
       {
@@ -54,11 +54,6 @@
         "ingredientId": 11,
         "quantity": 4,
         "unit": "g"
-      },
-      {
-        "ingredientId": 5,
-        "quantity": 100,
-        "unit": "ml"
       },
       {
         "ingredientId": 10,
@@ -122,7 +117,7 @@
       },
       {
         "ingredientId": 7,
-        "quantity": 14,
+        "quantity": 10,
         "unit": "g"
       },
       {
@@ -136,18 +131,13 @@
         "unit": "g"
       },
       {
-        "ingredientId": 5,
-        "quantity": 100,
-        "unit": "ml"
-      },
-      {
         "ingredientId": 10,
         "quantity": 5,
         "unit": "g"
       },
       {
-        "ingredientId": 6,
-        "quantity": 250,
+        "ingredientId": 29,
+        "quantity": 220,
         "unit": "g"
       }
     ],
@@ -211,7 +201,7 @@
         "unit": "g"
       },
       {
-        "ingredientId": 17,
+        "ingredientId": 29,
         "quantity": 150,
         "unit": "g"
       }
@@ -219,13 +209,13 @@
     "presentations": [
       {
         "id": 203,
-        "name": "Docena Galletas",
+        "name": "10 Galletas",
         "unitsPerBatch": 1
       },
       {
         "id": 204,
         "name": "Galleta Individual",
-        "unitsPerBatch": 12
+        "unitsPerBatch": 10
       }
     ]
   },
@@ -312,12 +302,12 @@
       },
       {
         "ingredientId": 2,
-        "quantity": 225,
+        "quantity": 230,
         "unit": "g"
       },
       {
         "ingredientId": 3,
-        "quantity": 135,
+        "quantity": 140,
         "unit": "g"
       },
       {
@@ -327,7 +317,7 @@
       },
       {
         "ingredientId": 1,
-        "quantity": 338,
+        "quantity": 350,
         "unit": "g"
       },
       {
@@ -347,12 +337,12 @@
       },
       {
         "ingredientId": 7,
-        "quantity": 4.5,
+        "quantity": 5,
         "unit": "g"
       },
       {
         "ingredientId": 11,
-        "quantity": 6.75,
+        "quantity": 5,
         "unit": "g"
       },
       {
@@ -362,12 +352,12 @@
       },
       {
         "ingredientId": 25,
-        "quantity": 405,
+        "quantity": 400,
         "unit": "g"
       },
       {
         "ingredientId": 27,
-        "quantity": 190,
+        "quantity": 180,
         "unit": "g"
       },
       {
@@ -384,6 +374,11 @@
         "ingredientId": 28,
         "quantity": 100,
         "unit": "g"
+      },
+      {
+        "ingredientId": 30,
+        "quantity": 130,
+        "unit": "g"
       }
     ],
     "presentations": [
@@ -395,7 +390,7 @@
       {
         "id": 210,
         "name": "Cupcake Individual",
-        "unitsPerBatch": 18
+        "unitsPerBatch": 17
       }
     ]
   },
@@ -442,7 +437,7 @@
       },
       {
         "ingredientId": 7,
-        "quantity": 14,
+        "quantity": 10,
         "unit": "g"
       },
       {
@@ -456,18 +451,13 @@
         "unit": "g"
       },
       {
-        "ingredientId": 5,
-        "quantity": 100,
-        "unit": "ml"
-      },
-      {
         "ingredientId": 10,
         "quantity": 5,
         "unit": "g"
       },
       {
         "ingredientId": 27,
-        "quantity": 190,
+        "quantity": 180,
         "unit": "g"
       },
       {
@@ -477,7 +467,7 @@
       },
       {
         "ingredientId": 4,
-        "quantity": 75,
+        "quantity": 80,
         "unit": "g"
       },
       {
