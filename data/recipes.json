@@ -33,6 +33,12 @@
       {
         "ingredientId": 12,
         "quantity": 10,
+        "unit": "ml",
+        "comment": "≈ 1 cucharadita (10 ml)"
+      },
+      {
+        "ingredientId": 31,
+        "quantity": 40,
         "unit": "ml"
       },
       {
@@ -111,6 +117,11 @@
         "unit": "ml"
       },
       {
+        "ingredientId": 31,
+        "quantity": 40,
+        "unit": "ml"
+      },
+      {
         "ingredientId": 1,
         "quantity": 400,
         "unit": "g"
@@ -161,61 +172,71 @@
     "fixedCostsPercentage": 30,
     "ingredients": [
       {
-        "ingredientId": 4,
-        "quantity": 180,
-        "unit": "g"
-      },
-      {
-        "ingredientId": 15,
-        "quantity": 105,
-        "unit": "g"
-      },
-      {
         "ingredientId": 2,
-        "quantity": 130,
+        "quantity": 160,
         "unit": "g"
       },
       {
-        "ingredientId": 13,
-        "quantity": 1.5,
-        "unit": "pza"
+        "ingredientId": 3,
+        "quantity": 120,
+        "unit": "g"
       },
       {
-        "ingredientId": 12,
-        "quantity": 3.75,
-        "unit": "ml"
-      },
-      {
-        "ingredientId": 1,
+        "ingredientId": 4,
         "quantity": 220,
         "unit": "g"
       },
       {
-        "ingredientId": 7,
+        "ingredientId": 31,
+        "quantity": 2.5,
+        "unit": "ml",
+        "comment": "1/2 cucharadita"
+      },
+      {
+        "ingredientId": 13,
         "quantity": 3,
+        "unit": "pza",
+        "comment": "Solo se usa 1 huevo (50g) y 2 yemas (40g)"
+      },
+      {
+        "ingredientId": 1,
+        "quantity": 280,
         "unit": "g"
       },
       {
         "ingredientId": 16,
-        "quantity": 3,
-        "unit": "g"
+        "quantity": 2.5,
+        "unit": "g",
+        "comment": "1/2 cucharadita"
       },
       {
-        "ingredientId": 29,
-        "quantity": 150,
+        "ingredientId": 7,
+        "quantity": 1.25,
+        "unit": "g",
+        "comment": "1/4 cucharadita"
+      },
+      {
+        "ingredientId": 12,
+        "quantity": 15,
+        "unit": "ml",
+        "comment": "1 cucharada"
+      },
+      {
+        "ingredientId": 32,
+        "quantity": 200,
         "unit": "g"
       }
     ],
     "presentations": [
       {
         "id": 203,
-        "name": "10 Galletas",
+        "name": "12 Galletas",
         "unitsPerBatch": 1
       },
       {
         "id": 204,
         "name": "Galleta Individual",
-        "unitsPerBatch": 10
+        "unitsPerBatch": 12
       }
     ]
   },
@@ -428,6 +449,11 @@
       {
         "ingredientId": 12,
         "quantity": 10,
+        "unit": "ml"
+      },
+      {
+        "ingredientId": 31,
+        "quantity": 40,
         "unit": "ml"
       },
       {
