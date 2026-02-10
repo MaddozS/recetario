@@ -268,5 +268,23 @@
     "purchaseQuantity": 250,
     "brand": "Abuelo José",
     "supplier": "Casa Santos Lugo"
+  },
+  {
+    "id": 31,
+    "name": "Leche evaporada",
+    "unit": "ml",
+    "price": 56,
+    "purchaseQuantity": 944.8,
+    "brand": "Nestlé",
+    "supplier": "Walmart"
+  },
+  {
+    "id": 32,
+    "name": "Chispas de chocolate Sicao",
+    "unit": "g",
+    "price": 99,
+    "purchaseQuantity": 500,
+    "brand": "Sicao",
+    "supplier": ""
   }
 ]
