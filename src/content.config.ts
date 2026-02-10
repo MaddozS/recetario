@@ -27,6 +27,7 @@ const recipe = z.object({
         ingredientId: z.number(),
         quantity: z.number(),
         unit: z.string(),
+        comment: z.string().optional(),
       })
     ),
     presentations: z.array(
@@ -50,6 +51,7 @@ type RecipeIngredient = {
   ingredientId: number;
   quantity: number;
   unit: string;
+  comment?: string;
 }
 type RecipeIngredientWithData = RecipeIngredient & {
   ingredient: Ingredient;
