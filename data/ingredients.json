@@ -12,19 +12,19 @@
     "id": 2,
     "name": "Azúcar morena",
     "unit": "kg",
-    "price": 22.22,
+    "price": 25.15,
     "purchaseQuantity": 1,
-    "brand": "Zulka",
-    "supplier": "Chedraui"
+    "brand": "Abuelo José",
+    "supplier": "Casa Santos Lugo"
   },
   {
     "id": 3,
     "name": "Azúcar mascabado",
     "unit": "kg",
-    "price": 50,
+    "price": 71.60,
     "purchaseQuantity": 1,
-    "brand": "Zulka",
-    "supplier": "Chedraui"
+    "brand": "Metco",
+    "supplier": "Casa Santos Lugo"
   },
   {
     "id": 4,
@@ -227,18 +227,18 @@
   {
     "id": 26,
     "name": "Azúcar glass",
-    "unit": "kg",
-    "price": 54,
-    "purchaseQuantity": 1,
+    "unit": "g",
+    "price": 24.15,
+    "purchaseQuantity": 500,
     "brand": "",
     "supplier": ""
   },
   {
     "id": 27,
     "name": "Queso crema",
-    "unit": "g",
-    "price": 46,
-    "purchaseQuantity": 180,
+    "unit": "kg",
+    "price": 186.50,
+    "purchaseQuantity": 1,
     "brand": "",
     "supplier": ""
   },
@@ -262,10 +262,10 @@
   },
   {
     "id": 30,
-    "name": "NUEZ PICADA",
+    "name": "Nuez",
     "unit": "g",
-    "price": 58.80,
-    "purchaseQuantity": 250,
+    "price": 120.20,
+    "purchaseQuantity": 500,
     "brand": "Abuelo José",
     "supplier": "Casa Santos Lugo"
   },
@@ -285,6 +285,24 @@
     "price": 99,
     "purchaseQuantity": 500,
     "brand": "Sicao",
+    "supplier": ""
+  },
+  {
+    "id": 33,
+    "name": "Cacao en polvo (sustituto)",
+    "unit": "kg",
+    "price": 70.52,
+    "purchaseQuantity": 1,
+    "brand": "Abuelo Jose",
+    "supplier": ""
+  },
+  {
+    "id": 34,
+    "name": "Chispas para derretir",
+    "unit": "g",
+    "price": 94,
+    "purchaseQuantity": 500,
+    "brand": "",
     "supplier": ""
   }
 ]

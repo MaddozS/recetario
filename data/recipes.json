@@ -223,20 +223,20 @@
       },
       {
         "ingredientId": 32,
-        "quantity": 200,
+        "quantity": 230,
         "unit": "g"
       }
     ],
     "presentations": [
       {
         "id": 203,
-        "name": "12 Galletas",
+        "name": "14 Galletas",
         "unitsPerBatch": 1
       },
       {
         "id": 204,
         "name": "Galleta Individual",
-        "unitsPerBatch": 12
+        "unitsPerBatch": 14
       }
     ]
   },
@@ -318,7 +318,7 @@
     "ingredients": [
       {
         "ingredientId": 13,
-        "quantity": 4.5,
+        "quantity": 5,
         "unit": "pza"
       },
       {
@@ -328,7 +328,7 @@
       },
       {
         "ingredientId": 3,
-        "quantity": 140,
+        "quantity": 150,
         "unit": "g"
       },
       {
@@ -338,7 +338,7 @@
       },
       {
         "ingredientId": 1,
-        "quantity": 350,
+        "quantity": 360,
         "unit": "g"
       },
       {
@@ -373,32 +373,28 @@
       },
       {
         "ingredientId": 25,
-        "quantity": 400,
+        "quantity": 420,
         "unit": "g"
       },
       {
         "ingredientId": 27,
-        "quantity": 180,
+        "quantity": 200,
         "unit": "g"
       },
       {
         "ingredientId": 26,
-        "quantity": 100,
+        "quantity": 200,
         "unit": "g"
       },
       {
         "ingredientId": 4,
-        "quantity": 75,
-        "unit": "g"
-      },
-      {
-        "ingredientId": 28,
         "quantity": 100,
         "unit": "g"
       },
       {
         "ingredientId": 30,
-        "quantity": 130,
+        "quantity": 120,
+        "comment": "picada",
         "unit": "g"
       }
     ],
@@ -512,6 +508,75 @@
         "id": 212,
         "name": "Muffins con Betún",
         "unitsPerBatch": 18
+      }
+    ]
+  },
+  {
+    "id": 107,
+    "name": "Brownie de Chocolate",
+    "desiredMargin": 50,
+    "fixedCostsPercentage": 30,
+    "ingredients": [
+      {
+        "ingredientId": 1,
+        "quantity": 130,
+        "unit": "g"
+      },
+      {
+        "ingredientId": 33,
+        "quantity": 45,
+        "unit": "g"
+      },
+      {
+        "ingredientId": 4,
+        "quantity": 180,
+        "unit": "g"
+      },
+      {
+        "ingredientId": 32,
+        "quantity": 325,
+        "comment": "Se usan 225 g para la receta y el resto se puede usar para decorar",
+        "unit": "g"
+      },
+      {
+        "ingredientId": 3,
+        "quantity": 115,
+        "unit": "g"
+      },
+      {
+        "ingredientId": 15,
+        "quantity": 240,
+        "unit": "g"
+      },
+      {
+        "ingredientId": 13,
+        "quantity": 4,
+        "unit": "pza",
+        "comment": "≈ 200 g"
+      },
+      {
+        "ingredientId": 12,
+        "quantity": 10,
+        "unit": "ml",
+        "comment": "2 cucharaditas"
+      },
+      {
+        "ingredientId": 11,
+        "quantity": 7.5,
+        "unit": "g",
+        "comment": "1 cucharadita"
+      }
+    ],
+    "presentations": [
+      {
+        "id": 213,
+        "name": "Completo",
+        "unitsPerBatch": 1
+      },
+      {
+        "id": 214,
+        "name": "Pieza",
+        "unitsPerBatch": 12
       }
     ]
   }
