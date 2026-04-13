@@ -12,7 +12,7 @@
       },
       {
         "ingredientId": 4,
-        "quantity": 235,
+        "quantity": 200,
         "unit": "g"
       },
       {
@@ -34,7 +34,7 @@
         "ingredientId": 12,
         "quantity": 10,
         "unit": "ml",
-        "comment": "≈ 1 cucharadita (10 ml)"
+        "comment": "2 cucharaditas"
       },
       {
         "ingredientId": 31,
@@ -43,7 +43,7 @@
       },
       {
         "ingredientId": 1,
-        "quantity": 400,
+        "quantity": 450,
         "unit": "g"
       },
       {
@@ -93,7 +93,7 @@
       },
       {
         "ingredientId": 4,
-        "quantity": 235,
+        "quantity": 200,
         "unit": "g"
       },
       {
@@ -123,7 +123,7 @@
       },
       {
         "ingredientId": 1,
-        "quantity": 400,
+        "quantity": 450,
         "unit": "g"
       },
       {
@@ -147,7 +147,7 @@
         "unit": "g"
       },
       {
-        "ingredientId": 29,
+        "ingredientId": 32,
         "quantity": 220,
         "unit": "g"
       }
@@ -219,7 +219,7 @@
         "ingredientId": 12,
         "quantity": 15,
         "unit": "ml",
-        "comment": "1 cucharada"
+        "comment": "2 cucharaditas"
       },
       {
         "ingredientId": 32,
@@ -368,12 +368,19 @@
       },
       {
         "ingredientId": 12,
-        "quantity": 11,
-        "unit": "g"
+        "quantity": 10,
+        "unit": "ml",
+        "comment": "2 cucharaditas"
       },
       {
         "ingredientId": 25,
         "quantity": 420,
+        "unit": "g"
+      },
+      {
+        "ingredientId": 30,
+        "quantity": 120,
+        "comment": "picada",
         "unit": "g"
       },
       {
@@ -389,12 +396,6 @@
       {
         "ingredientId": 4,
         "quantity": 100,
-        "unit": "g"
-      },
-      {
-        "ingredientId": 30,
-        "quantity": 120,
-        "comment": "picada",
         "unit": "g"
       }
     ],
@@ -424,7 +425,7 @@
       },
       {
         "ingredientId": 4,
-        "quantity": 235,
+        "quantity": 200,
         "unit": "g"
       },
       {
@@ -445,7 +446,8 @@
       {
         "ingredientId": 12,
         "quantity": 10,
-        "unit": "ml"
+        "unit": "ml",
+        "comment": "2 cucharaditas"
       },
       {
         "ingredientId": 31,
@@ -454,7 +456,7 @@
       },
       {
         "ingredientId": 1,
-        "quantity": 400,
+        "quantity": 450,
         "unit": "g"
       },
       {
@@ -534,8 +536,8 @@
       },
       {
         "ingredientId": 32,
-        "quantity": 325,
-        "comment": "Se usan 225 g para la receta y el resto se puede usar para decorar",
+        "quantity": 300,
+        "comment": "Se usan 200 g para la receta y el resto se puede usar para decorar",
         "unit": "g"
       },
       {
