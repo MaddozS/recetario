@@ -1,13 +1,11 @@
 ---
 import { Icon } from "astro-icon/components";
 import Layout from "../../layouts/Layout.astro";
-import type { Ingredient, Recipe, RecipeIngredientWithData, RecipeIngredient } from '../../content.config';
+import { getRecipeById, type Ingredient, type RecipeIngredientWithData, type RecipeIngredient } from '../../lib/recipe-data';
 
 if (!Astro.locals.session || !Astro.locals.user) {
   return Astro.redirect('/sign-in');
 }
-
-import { getEntry } from 'astro:content';
 
 // Obtener el ID de la receta desde los parámetros
 const recipeId = Astro.params.recipe;
@@ -15,28 +13,27 @@ if (!recipeId) {
   return Astro.redirect('/');
 }
 
-// Obtener la receta desde la colección
-const recipe = await getEntry('recipes', recipeId);
+// Obtener la receta desde la base de datos
+const recipe = await getRecipeById(recipeId);
 if (!recipe) {
   return Astro.redirect('/');
 }
 
-const { data } = recipe;
-
-const { ingredients, name, id, desiredMargin, fixedCostsPercentage, presentations } = data;
+const { ingredients: recipeIngredients, name, id, desiredMargin, fixedCostsPercentage, presentations } = recipe;
 
 // Multiplicador de batch (ej. 2 = doble receta)
 const multiplierParam = Astro.url.searchParams.get('multiplier');
 const multiplier = Math.max(parseFloat(multiplierParam ?? '1') || 1, 0.01);
-
-const recipeIngredients: RecipeIngredientWithData[] = [];
-for (const ri of ingredients) {
-  const ingredientEntry = await getEntry('ingredients', ri.ingredientId.toString());
-  recipeIngredients.push({
-    ...ri,
-    ingredient: ingredientEntry?.data as Ingredient
-  });
-}
+const showAdjustedQuantity = Math.abs(multiplier - 1) > 0.0001;
+const multiplierStep = multiplier >= 2 ? 1 : 0.5;
+const normalizeMultiplier = (value: number) => Math.round(value * 10000) / 10000;
+const decrementMultiplier = normalizeMultiplier(Math.max(multiplier - multiplierStep, 0.01));
+const incrementMultiplier = normalizeMultiplier(multiplier + multiplierStep);
+const multiplierLabel = Number.isInteger(multiplier)
+  ? multiplier.toString()
+  : multiplier.toFixed(2).replace(/\.0+$/, '').replace(/(\.\d*[1-9])0+$/, '$1');
+const multiplierDownHref = `${Astro.url.pathname}?multiplier=${decrementMultiplier}`;
+const multiplierUpHref = `${Astro.url.pathname}?multiplier=${incrementMultiplier}`;
 
 // valores default si no están definidos
 const desiredMarginValue = desiredMargin || 0;
@@ -98,13 +95,62 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMargin 
 ---
 
 <Layout currentRecipe={id} showSideBar={true} currentPage="recipes">
-  <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden" transition:animate="slide">
-    <div class="p-8 border-b border-slate-100">
-      <div class="flex flex-col md:flex-row justify-between items-start gap-4">
-        <div class="flex-1 w-full">
+  <div class="relative bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+    <div class="md:hidden p-5 border-b border-slate-100">
+      <h1 class="text-4xl leading-tight font-black text-slate-900">{name}</h1>
+      <span class="mt-2 inline-flex items-center gap-1.5 bg-slate-100 px-3 py-1 rounded-full text-sm font-semibold text-slate-600">
+        <Icon name="lucide:layers" size={14} /> Mezcla completa
+      </span>
+
+      <div class="mt-4 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-3 space-y-3">
+        <div>
+          <p class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Multiplicar</p>
+          <div class="mt-2 grid grid-cols-[44px_1fr_44px] items-center gap-2">
+            <a
+              href={multiplierDownHref}
+              data-astro-reload
+              class="min-h-11 rounded-xl border border-slate-200 bg-white text-xl font-black text-slate-700 flex items-center justify-center active:scale-[0.98]"
+              aria-label="Reducir multiplicador"
+            >
+              -
+            </a>
+            <p class="min-h-11 rounded-xl border border-slate-200 bg-white text-base font-black text-slate-800 flex items-center justify-center tabular-nums">
+              x{multiplierLabel}
+            </p>
+            <a
+              href={multiplierUpHref}
+              data-astro-reload
+              class="min-h-11 rounded-xl border border-slate-200 bg-white text-xl font-black text-slate-700 flex items-center justify-center active:scale-[0.98]"
+              aria-label="Incrementar multiplicador"
+            >
+              +
+            </a>
+          </div>
+          <p class="mt-2 text-xs font-medium text-slate-500">Rinde segun x{multiplierLabel}</p>
+        </div>
+
+        <div class="grid grid-cols-[1fr_auto] items-center gap-2">
+          <div class="rounded-xl border border-indigo-100 bg-indigo-50 px-3 py-2">
+            <p class="text-[10px] font-bold uppercase tracking-wider text-indigo-500">Costo insumos</p>
+            <p class="text-xl font-black text-indigo-700 tabular-nums">${costoDirectoTotal.toFixed(2)}</p>
+          </div>
+          <button
+            id="jump-presentaciones-mobile"
+            type="button"
+            class="min-h-11 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-700"
+          >
+            Ver presentaciones
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="hidden md:block p-6 lg:p-8 border-b border-slate-100">
+      <div class="space-y-4">
+        <div class="w-full">
           <input 
             type="text" 
-            class="text-3xl font-extrabold bg-transparent border-none focus:ring-0 p-0 w-full mb-2"
+            class="text-2xl sm:text-3xl leading-tight font-extrabold bg-transparent border-none focus:ring-0 p-0 w-full mb-2"
             value={name}
           />
           <div class="flex flex-wrap gap-4 text-sm font-medium text-slate-500">
@@ -113,8 +159,8 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMargin 
             </span>
           </div>
         </div>
-        <div class="flex items-center gap-3">
-          <form method="get" class="flex items-center gap-2 bg-slate-50 px-3 py-2 rounded-xl border border-slate-200 text-sm font-medium text-slate-700">
+        <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+          <form method="get" data-astro-reload class="flex items-center gap-2 bg-slate-50 px-3 py-2 rounded-xl border border-slate-200 text-sm font-medium text-slate-700 w-full sm:w-fit">
             <label for="multiplier" class="text-xs font-bold uppercase tracking-widest text-slate-500">Multiplicar</label>
             <input
               id="multiplier"
@@ -123,12 +169,12 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMargin 
               min="0.0001"
               step="0.0001"
               value={multiplier}
-              class="w-20 bg-white border border-slate-200 rounded-lg p-1 text-center font-bold text-slate-700 focus:ring-2 focus:ring-indigo-500/20"
+              class="w-20 min-h-11 bg-white border border-slate-200 rounded-lg p-1 text-center font-bold text-slate-700 focus:ring-2 focus:ring-indigo-500/20"
             />
-            <button type="submit" class="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-xs font-bold hover:bg-indigo-700 transition-colors">Aplicar</button>
+            <button type="submit" class="min-h-11 px-3 py-2 bg-indigo-600 text-white rounded-lg text-xs font-bold hover:bg-indigo-700 transition-colors">Aplicar</button>
             <span class="text-[11px] text-indigo-600 font-semibold">x{multiplier}</span>
           </form>
-          <div class="bg-indigo-50 px-4 py-2 rounded-xl border border-indigo-100">
+          <div class="bg-indigo-50 px-4 py-2 rounded-xl border border-indigo-100 w-full sm:w-auto">
             <p class="text-[10px] text-indigo-400 font-bold uppercase tracking-wider">Costo Insumos</p>
             <p class="text-xl font-black text-indigo-700">
               ${costoDirectoTotal.toFixed(2)}
@@ -139,22 +185,78 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMargin 
     </div>
 
     <div class="p-0">
-      <div class="flex items-center justify-end px-8 py-4 border-b border-slate-50">
+      <div class="md:hidden px-5 py-3 border-b border-slate-100">
+        <button
+          id="toggle-comments-mobile"
+          type="button"
+          aria-expanded="false"
+          class="w-full min-h-11 rounded-xl border border-slate-200 bg-white px-4 py-2 flex items-center justify-between text-left"
+        >
+          <span class="font-semibold text-slate-700">Notas y conversiones</span>
+          <span id="toggle-comments-mobile-state" class="text-xs font-semibold text-slate-500">Mostrar</span>
+        </button>
+      </div>
+
+      <div class="hidden md:flex items-center justify-start sm:justify-end px-5 sm:px-6 lg:px-8 py-4 border-b border-slate-50">
         <label class="flex items-center gap-3 text-sm text-slate-500">
-          <input id="toggle-comments" type="checkbox" class="w-4 h-4 rounded border-slate-200 text-indigo-600 focus:ring-indigo-500" />
+          <input id="toggle-comments" type="checkbox" class="w-5 h-5 rounded border-slate-200 text-indigo-600 focus:ring-indigo-500" />
           <span class="font-semibold text-slate-700">Mostrar comentarios</span>
           <span class="text-xs text-slate-400">(conversiones / notas)</span>
         </label>
       </div>
 
-      <div class="overflow-x-auto">
+      <div class="md:hidden divide-y divide-slate-100">
+        {
+        recipeIngredients.map(ri => {
+          return (
+            <article class="px-5 py-4 space-y-3">
+              <div class="flex items-start justify-between gap-3">
+                <div class="min-w-0">
+                  <p class="font-semibold text-slate-800 leading-tight break-words">{ri.ingredient.name}</p>
+                  <p class="mt-1 text-xs text-slate-500">Cantidad usada en esta mezcla</p>
+                  {ri.comment ? (
+                    <p class="mt-1 text-xs text-slate-400 ingredient-comment hidden break-words">{ri.comment}</p>
+                  ) : null}
+                </div>
+                <div class="text-right whitespace-nowrap">
+                  <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Costo</p>
+                  <p class="font-mono font-bold text-slate-700">
+                    ${calcularSubtotalIngrediente(ri, ri.ingredient!).toFixed(2)}
+                  </p>
+                </div>
+              </div>
+
+              <div class={`grid gap-2 ${showAdjustedQuantity ? 'grid-cols-2' : 'grid-cols-1'}`}>
+                <div class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
+                  <p class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Base</p>
+                  <p class="mt-1 flex items-baseline gap-2 text-slate-700">
+                    <span class="text-lg font-black">{formatCantidad(ri.quantity, ri.unit)}</span>
+                    <span class="text-xs font-semibold uppercase text-slate-500">{ri.unit}</span>
+                  </p>
+                </div>
+                {showAdjustedQuantity ? (
+                  <div class="rounded-xl border border-indigo-200 bg-indigo-50 px-3 py-2">
+                    <p class="text-[10px] font-bold uppercase tracking-wider text-indigo-600">Con x{multiplier}</p>
+                    <p class="mt-1 flex items-baseline gap-2 text-indigo-700">
+                      <span class="text-lg font-black">{formatCantidad(ri.quantity * multiplier, ri.unit)}</span>
+                      <span class="text-xs font-semibold uppercase text-indigo-500">{ri.unit}</span>
+                    </p>
+                  </div>
+                ) : null}
+              </div>
+            </article>
+          );
+        })}
+      </div>
+
+      <div class="hidden md:block overflow-x-auto">
         <table class="w-full table-auto text-left overflow-x-auto">
           <thead class="bg-slate-50 text-slate-400 text-[10px] uppercase font-bold">
             <tr>
-              <th class="px-8 py-3 w-max text-left">Ingrediente</th>
-              <th class="px-8 py-3 text-center">Cantidad</th>
-              <th class="px-8 py-3 text-right">Subtotal</th>
-              <th class="px-8 py-3 w-12"></th>
+              <th class="px-6 lg:px-8 py-3 w-max text-left">Ingrediente</th>
+              <th class="px-6 lg:px-8 py-3 text-center">Cantidad</th>
+              <th class="px-6 lg:px-8 py-3 text-right">Subtotal</th>
+              <th class="px-6 lg:px-8 py-3 w-12"></th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-100">
@@ -162,7 +264,7 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMargin 
             recipeIngredients.map(ri => {
               return (
                 <tr class="group">
-                  <td class="px-8 py-4 border-r border-slate-100 w-max">
+                  <td class="px-6 lg:px-8 py-4 border-r border-slate-100 w-max">
                     {/* <select 
                       class="bg-transparent border-none font-semibold text-slate-700 focus:ring-0 p-0 w-full cursor-pointer"
                       value={ri.ingredienteId}
@@ -174,7 +276,7 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMargin 
                       <div class="mt-1 text-xs text-slate-400 ingredient-comment hidden max-w-[28ch] break-words">{ri.comment}</div>
                     ) : null} 
                   </td>
-                  <td class="px-8 py-4 border-r border-slate-100 w-32">
+                  <td class="px-6 lg:px-8 py-4 border-r border-slate-100 w-32">
                     <div class="flex items-center justify-start gap-2">
                       <div
                         role="textbox"
@@ -187,10 +289,10 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMargin 
                       <span>{ri.unit}</span>
                     </div>
                   </td>
-                  <td class="px-8 py-4 text-right font-mono font-bold text-slate-600">
+                  <td class="px-6 lg:px-8 py-4 text-right font-mono font-bold text-slate-600">
                     ${calcularSubtotalIngrediente(ri, ri.ingredient!).toFixed(2)}
                   </td>
-                  <td class="px-8 py-4 text-right">
+                  <td class="px-6 lg:px-8 py-4 text-right">
                     <button 
                       class="text-slate-200 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
                     >
@@ -244,66 +346,127 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMargin 
     </div>
   </div>
 
-  <div>
-    <div class="flex items-center justify-between py-4">
-      <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
-        <Icon name="lucide:tag" class="text-indigo-600" /> Presentaciones de Venta
-      </h2>
+  <div id="presentaciones" class="pt-4 px-3 pb-4 md:px-0 md:pb-0 scroll-mt-6">
+    <div class="flex items-start justify-between gap-3 py-3 md:py-4">
+      <div>
+        <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2 leading-tight">
+          <Icon name="lucide:tag" class="text-indigo-600" /> Presentaciones de Venta
+        </h2>
+        <p class="mt-1 text-sm text-slate-500">Define cuantas piezas salen por mezcla</p>
+      </div>
       <button 
-        class="flex items-center gap-2 bg-white text-indigo-600 border border-indigo-200 px-4 py-2 rounded-xl text-sm font-bold hover:bg-indigo-50 transition-all"
+        class="min-h-11 flex items-center gap-2 bg-white text-indigo-600 border border-indigo-200 px-3 sm:px-4 py-2 rounded-xl text-sm font-bold hover:bg-indigo-50 transition-all shadow-sm"
       >
-        <Icon name="lucide:plus" size={16} /> Nueva Presentación
+        <Icon name="lucide:plus" size={16} />
+        <span class="sm:hidden">Nueva</span>
+        <span class="hidden sm:inline">Nueva Presentacion</span>
       </button>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      {presentations?.map(pres => (
-        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:border-indigo-200 transition-all group">
-          <div class="flex justify-between items-start mb-4">
-            <input 
-              type="text" 
-              class="font-black text-lg bg-transparent border-none focus:ring-0 p-0 text-slate-800"
-              value={pres.name}
-            />
-            <button 
-              class="text-slate-200 hover:text-red-500 transition-colors"
-            >
-              <Icon name="lucide:trash-2" size={16} />
-            </button>
-          </div>
-          
-          <div class="flex items-center gap-3 mb-6 bg-slate-50 p-3 rounded-xl border border-slate-100">
-            <span class="text-xs font-bold text-slate-400 uppercase">Unidades x Mezcla:</span>
-            <input 
-              type="number" 
-              class="w-16 bg-white border border-slate-200 rounded-lg text-center font-bold text-indigo-600 focus:ring-2 focus:ring-indigo-500/20"
-              value={pres.unitsPerBatch}
-            />
-            <span class="text-[11px] font-semibold text-slate-500">Totales: {Math.round(pres.unitsPerBatch * multiplier * 100) / 100}</span>
-          </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+      {presentations?.map(pres => {
+        const totalUnits = pres.unitsPerBatch * multiplier;
+        const hasUnits = totalUnits > 0;
+        const unitCost = hasUnits ? (costoProduccionRealBatch / totalUnits) : 0;
+        const unitPrice = hasUnits ? (precioVentaSugeridoBatch / totalUnits) : 0;
+        const unitProfit = unitPrice - unitCost;
+        const marginPercent = unitPrice > 0 ? (unitProfit / unitPrice) * 100 : 0;
+        const marginWidth = Math.min(Math.max(marginPercent, 0), 100);
+        const marginLabel = marginPercent < 20
+          ? 'Margen bajo'
+          : marginPercent < 35
+            ? 'Margen medio'
+            : 'Margen saludable';
+        const marginToneClass = marginPercent < 20
+          ? 'bg-rose-500'
+          : marginPercent < 35
+            ? 'bg-amber-500'
+            : 'bg-emerald-500';
 
-          <div class="grid grid-cols-2 gap-4 border-t border-slate-50 pt-4">
-            <div class="space-y-1">
-              <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Costo x Pieza</p>
-              <p class="text-xl font-black text-slate-700">${(costoProduccionRealBatch / (pres.unitsPerBatch * multiplier)).toFixed(2)}</p>
+        return (
+          <article class="bg-white p-4 sm:p-6 rounded-2xl border border-slate-200 shadow-sm hover:border-indigo-200 transition-all group">
+            <div class="flex justify-between items-start gap-3 mb-5">
+              <input 
+                type="text" 
+                class="min-w-0 font-black text-xl bg-transparent border-none focus:ring-0 p-0 text-slate-800"
+                value={pres.name}
+              />
+              <button 
+                class="min-h-11 min-w-11 rounded-xl border border-rose-200 bg-rose-50 text-rose-500 hover:bg-rose-100 transition-colors flex items-center justify-center"
+                aria-label={`Eliminar ${pres.name}`}
+              >
+                <Icon name="lucide:trash-2" size={16} />
+              </button>
             </div>
-            <div class="space-y-1">
-              <p class="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">Venta Sugerida</p>
-              <p class="text-xl font-black text-emerald-600">${(precioVentaSugeridoBatch / (pres.unitsPerBatch * multiplier)).toFixed(2)}</p>
+
+            <div class="mb-5 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
+              <p class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Rinde por mezcla</p>
+              <div class="mt-3 flex items-center gap-2">
+                <input 
+                  type="number" 
+                  class="w-20 min-h-11 bg-white border border-slate-200 rounded-lg text-center font-bold text-indigo-600 focus:ring-2 focus:ring-indigo-500/20"
+                  value={pres.unitsPerBatch}
+                />
+                <span class="text-xs font-semibold text-slate-500">piezas base</span>
+              </div>
+              <p class="mt-2 text-xs font-medium text-slate-500">Rendimiento con x{multiplierLabel}: {Math.round(totalUnits * 100) / 100} piezas</p>
             </div>
-          </div>
-        </div>
-      ))}
+
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-x-3 gap-y-4 border-t border-slate-100 pt-4">
+              <div class="space-y-1">
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Costo unitario</p>
+                <p class="text-lg font-black text-slate-700 tabular-nums">${unitCost.toFixed(2)}</p>
+              </div>
+              <div class="space-y-1">
+                <p class="text-[10px] font-bold text-emerald-500 uppercase tracking-wider">Precio recomendado</p>
+                <p class="text-lg font-black text-emerald-600 tabular-nums">${unitPrice.toFixed(2)}</p>
+              </div>
+              <div class="space-y-1 col-span-2 sm:col-span-1">
+                <p class="text-[10px] font-bold text-indigo-500 uppercase tracking-wider">Ganancia/pieza</p>
+                <p class="text-lg font-black text-indigo-600 tabular-nums">${unitProfit.toFixed(2)}</p>
+              </div>
+            </div>
+
+            <div class="mt-4">
+              <div class="flex items-center justify-between text-[11px] font-semibold text-slate-500">
+                <span>{marginLabel}</span>
+                <span>{marginPercent.toFixed(1)}%</span>
+              </div>
+              <div class="mt-1 h-2 rounded-full bg-slate-100 overflow-hidden">
+                <div class={`h-full rounded-full ${marginToneClass}`} style={`width: ${marginWidth}%`}></div>
+              </div>
+            </div>
+          </article>
+        );
+      })}
     </div>
   </div>
 
 <script type="module">
   const KEY = 'recetario.showComments';
 
+  const updateCommentControls = (show) => {
+    const checkbox = document.getElementById('toggle-comments');
+    if (checkbox) {
+      checkbox.checked = show;
+    }
+
+    const mobileButton = document.getElementById('toggle-comments-mobile');
+    const mobileState = document.getElementById('toggle-comments-mobile-state');
+    if (mobileButton) {
+      mobileButton.setAttribute('aria-expanded', show ? 'true' : 'false');
+    }
+    if (mobileState) {
+      mobileState.textContent = show ? 'Ocultar' : 'Mostrar';
+    }
+  };
+
   const setVisibility = (show) => {
     document.querySelectorAll('.ingredient-comment').forEach((el) => {
       el.classList.toggle('hidden', !show);
     });
+    updateCommentControls(show);
+
     try {
       localStorage.setItem(KEY, show ? '1' : '0');
     } catch (e) {
@@ -313,17 +476,44 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMargin 
 
   const initCommentsToggle = () => {
     const checkbox = document.getElementById('toggle-comments');
-    if (!checkbox || checkbox.dataset.bound === '1') return;
+    const mobileButton = document.getElementById('toggle-comments-mobile');
 
-    checkbox.dataset.bound = '1';
-    checkbox.addEventListener('change', (e) => setVisibility(e.target.checked));
+    if (checkbox && checkbox.dataset.bound !== '1') {
+      checkbox.dataset.bound = '1';
+      checkbox.addEventListener('change', (e) => setVisibility(e.target.checked));
+    }
+
+    if (mobileButton && mobileButton.dataset.bound !== '1') {
+      mobileButton.dataset.bound = '1';
+      mobileButton.addEventListener('click', () => {
+        const isOpen = mobileButton.getAttribute('aria-expanded') === 'true';
+        setVisibility(!isOpen);
+      });
+    }
+
     const stored = (typeof localStorage !== 'undefined' && localStorage.getItem(KEY)) === '1';
-    checkbox.checked = stored;
     setVisibility(stored);
+  };
+
+  const initPresentacionesJump = () => {
+    const jumpButton = document.getElementById('jump-presentaciones-mobile');
+    const target = document.getElementById('presentaciones');
+    if (!jumpButton || !target || jumpButton.dataset.bound === '1') return;
+
+    jumpButton.dataset.bound = '1';
+    jumpButton.addEventListener('click', () => {
+      const reduceMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      target.scrollIntoView({
+        behavior: reduceMotion ? 'auto' : 'smooth',
+        block: 'start',
+      });
+    });
   };
 
   document.addEventListener('astro:page-load', initCommentsToggle);
   document.addEventListener('astro:after-swap', initCommentsToggle);
+  document.addEventListener('astro:page-load', initPresentacionesJump);
+  document.addEventListener('astro:after-swap', initPresentacionesJump);
 </script>
 
 </Layout>

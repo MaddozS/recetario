@@ -1,30 +1,54 @@
 ---
 
 import { Icon } from 'astro-icon/components';
-import { getCollection } from 'astro:content';
-const recipes = await getCollection('recipes');
+import { listRecipeSummaries } from '../lib/recipe-data';
+const recipes = await listRecipeSummaries();
 
 const { currentRecipe } = Astro.props;
 
 ---
 
 <aside class="lg:col-span-3 space-y-4">
-  <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm max-h-44 lg:max-h-none">
+  <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
     <div class="flex justify-between items-center mb-6">
       <h2 class="font-bold text-slate-800">Recetas</h2>
     </div>
-    <div class="space-y-2 overflow-y-auto max-h-21 lg:max-h-none">
+
+    <div class="lg:hidden">
+      <label for="recipe-selector" class="sr-only">Seleccionar receta</label>
+      <div class="relative">
+        <select
+          id="recipe-selector"
+          class="w-full appearance-none rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 pr-10 text-sm font-semibold text-slate-700 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20"
+          onchange="if (this.value) window.location.href = this.value;"
+        >
+          {
+            recipes.map((recipe) => (
+              <option
+                value={`/recipes/${recipe.id}`}
+                selected={currentRecipe?.toString() === recipe.id.toString()}
+              >
+                  {recipe.name}
+              </option>
+            ))
+          }
+        </select>
+        <Icon name="lucide:chevrons-up-down" size={16} class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" />
+      </div>
+    </div>
+
+    <div class="hidden lg:block space-y-2 overflow-y-auto max-h-104">
       {
         recipes.map(recipe => (
           <a href={`/recipes/${recipe.id}`} class="block">
             <div class={`w-full flex items-center justify-between p-4 bg-slate-50 rounded-xl border transition-all ${currentRecipe?.toString() === recipe.id.toString() ? 'bg-indigo-50 border-indigo-200 ring-2 ring-indigo-500/10' : 'bg-slate-50 border-slate-100 hover:border-slate-300'}`}>
               <div class="text-left">
-                <p class={`font-bold ${currentRecipe?.toString() === recipe.id.toString() ? 'text-indigo-700' : "text-slate-700"}`}>{recipe.data.name}</a>
-                <p class={`text-[10px] ${currentRecipe?.toString() === recipe.id.toString() ? 'text-indigo-500' : "text-slate-400"} mt-1 uppercase tracking-tight`}>{recipe.data.ingredients.length} ingredientes</p>
+                  <p class={`font-bold ${currentRecipe?.toString() === recipe.id.toString() ? 'text-indigo-700' : "text-slate-700"}`}>{recipe.name}</p>
+                  <p class={`text-[10px] ${currentRecipe?.toString() === recipe.id.toString() ? 'text-indigo-500' : "text-slate-400"} mt-1 uppercase tracking-tight`}>{recipe.ingredientCount} ingredientes</p>
               </div>
               <Icon name="lucide:chevron-right" size={16} class={`${currentRecipe?.toString() === recipe.id.toString() ? 'text-indigo-500' : "text-slate-300"}`} />
             </div>
-        </a>
+          </a>
         ))
       }
     </div>
