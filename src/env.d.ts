@@ -9,6 +9,10 @@ declare namespace App {
   interface ImportMetaEnv {
     readonly BETTER_AUTH_SECRET: string;
     readonly BETTER_AUTH_URL: string;
+    readonly BETTER_AUTH_USE_DB?: string;
+    readonly BETTER_AUTH_DB_PATH?: string;
+    readonly DATABASE_URL?: string;
+    readonly POSTGRES_URL?: string;
 
     readonly GOOGLE_CLIENT_ID: string;
     readonly GOOGLE_CLIENT_SECRET: string;
