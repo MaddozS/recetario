@@ -58,7 +58,7 @@ const unitProfit = defaultSalePrice - unitCost;
       <div class="flex items-center gap-1 shrink-0">
         <button
           type="button"
-          class="delete-btn h-8 w-8 rounded-full bg-transparent text-rose-500 hover:text-rose-600 hover:bg-rose-50 transition-colors flex items-center justify-center"
+          class="delete-btn hidden h-8 w-8 rounded-full bg-transparent text-rose-500 hover:text-rose-600 hover:bg-rose-50 transition-colors items-center justify-center"
           aria-label="Eliminar presentación"
           title="Eliminar"
         >
@@ -210,6 +210,41 @@ const unitProfit = defaultSalePrice - unitCost;
       </button>
     </div>
   </form>
+
+  <dialog
+    class="delete-dialog fixed inset-0 m-auto w-[calc(100vw-1.5rem)] max-w-md rounded-[28px] p-0 backdrop:bg-slate-900/55"
+  >
+    <div class="rounded-[28px] border border-slate-200 bg-white p-6 shadow-2xl">
+      <div class="flex items-start gap-3">
+        <div
+          class="flex h-11 w-11 items-center justify-center rounded-2xl bg-rose-50 text-rose-600"
+        >
+          <Icon name="lucide:trash-2" size={18} />
+        </div>
+        <div>
+          <h3 class="text-lg font-bold text-slate-900">Confirmar eliminación</h3>
+          <p class="mt-2 text-sm text-slate-600">
+            ¿Eliminar esta presentación? Esta acción no se puede deshacer.
+          </p>
+        </div>
+      </div>
+
+      <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+        <button
+          type="button"
+          class="delete-cancel-btn inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-600 transition-colors hover:bg-slate-50"
+        >
+          Cancelar
+        </button>
+        <button
+          type="button"
+          class="delete-confirm-btn inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-rose-600 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-rose-700"
+        >
+          <Icon name="lucide:trash-2" size={16} /> Eliminar
+        </button>
+      </div>
+    </div>
+  </dialog>
 </presentation-card>
 
 <script>
@@ -231,6 +266,9 @@ const unitProfit = defaultSalePrice - unitCost;
     marginBar = null;
     saveBar = null;
     btnSave = null;
+    deleteDialog = null;
+    btnDeleteCancel = null;
+    btnDeleteConfirm = null;
     form = null;
     multiplier = 1;
     costoBatch = 0;
@@ -261,6 +299,9 @@ const unitProfit = defaultSalePrice - unitCost;
       this.marginBar = this.querySelector(".margin-bar");
       this.saveBar = this.querySelector(".save-bar");
       this.btnSave = this.querySelector(".save-btn");
+      this.deleteDialog = this.querySelector(".delete-dialog");
+      this.btnDeleteCancel = this.querySelector(".delete-cancel-btn");
+      this.btnDeleteConfirm = this.querySelector(".delete-confirm-btn");
       this.form = this.querySelector("form");
 
       this.multiplier = parseFloat(this.dataset.multiplier || "1");
@@ -269,6 +310,12 @@ const unitProfit = defaultSalePrice - unitCost;
 
       this.btnEdit?.addEventListener("click", () => this.toggleEdit());
       this.btnDelete?.addEventListener("click", () =>
+        this.openDeleteDialog(),
+      );
+      this.btnDeleteCancel?.addEventListener("click", () =>
+        this.closeDeleteDialog(),
+      );
+      this.btnDeleteConfirm?.addEventListener("click", () =>
         this.deletePresentation(),
       );
       this.inputUnits?.addEventListener("input", () => this.calculate());
@@ -276,6 +323,15 @@ const unitProfit = defaultSalePrice - unitCost;
         this.salePriceDirty = true;
         this.calculate();
       });
+
+      if (this.deleteDialog && this.deleteDialog.dataset.bound !== "1") {
+        this.deleteDialog.dataset.bound = "1";
+        this.deleteDialog.addEventListener("click", (event) => {
+          if (event.target === this.deleteDialog) {
+            this.closeDeleteDialog();
+          }
+        });
+      }
 
       this.form?.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -344,15 +400,33 @@ const unitProfit = defaultSalePrice - unitCost;
       this.calculate();
     }
 
+    openDeleteDialog() {
+      if (!(this.deleteDialog instanceof HTMLDialogElement)) return;
+
+      if (!this.deleteDialog.open) {
+        this.deleteDialog.showModal();
+      }
+    }
+
+    closeDeleteDialog() {
+      if (!(this.deleteDialog instanceof HTMLDialogElement)) return;
+
+      if (this.deleteDialog.open) {
+        this.deleteDialog.close();
+      }
+    }
+
     async deletePresentation() {
       if (!this.form) return;
-
-      const confirmed = window.confirm("¿Eliminar esta presentación?");
-      if (!confirmed) return;
 
       if (this.btnDelete) {
         this.btnDelete.disabled = true;
         this.btnDelete.classList.add("opacity-75", "cursor-not-allowed");
+      }
+
+      if (this.btnDeleteConfirm) {
+        this.btnDeleteConfirm.disabled = true;
+        this.btnDeleteConfirm.classList.add("opacity-75", "cursor-not-allowed");
       }
 
       try {
@@ -390,6 +464,7 @@ const unitProfit = defaultSalePrice - unitCost;
           throw new Error("La respuesta del servidor no fue valida.");
         }
 
+        this.closeDeleteDialog();
         this.remove();
       } catch (error) {
         console.error(error);
@@ -402,6 +477,14 @@ const unitProfit = defaultSalePrice - unitCost;
         if (this.btnDelete) {
           this.btnDelete.disabled = false;
           this.btnDelete.classList.remove("opacity-75", "cursor-not-allowed");
+        }
+
+        if (this.btnDeleteConfirm) {
+          this.btnDeleteConfirm.disabled = false;
+          this.btnDeleteConfirm.classList.remove(
+            "opacity-75",
+            "cursor-not-allowed",
+          );
         }
       }
     }
@@ -461,6 +544,11 @@ const unitProfit = defaultSalePrice - unitCost;
           cancelIcon?.classList.remove("hidden");
         }
 
+        if (this.btnDelete) {
+          this.btnDelete.classList.remove("hidden");
+          this.btnDelete.classList.add("inline-flex");
+        }
+
         if (this.saveBar) {
           this.saveBar.classList.remove("hidden");
         }
@@ -498,9 +586,16 @@ const unitProfit = defaultSalePrice - unitCost;
           cancelIcon?.classList.add("hidden");
         }
 
+        if (this.btnDelete) {
+          this.btnDelete.classList.add("hidden");
+          this.btnDelete.classList.remove("inline-flex");
+        }
+
         if (this.saveBar) {
           this.saveBar.classList.add("hidden");
         }
+
+        this.closeDeleteDialog();
 
         this.salePriceDirty = false;
 
