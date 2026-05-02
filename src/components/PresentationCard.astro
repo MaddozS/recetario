@@ -58,6 +58,14 @@ const unitProfit = defaultSalePrice - unitCost;
       <div class="flex items-center gap-1 shrink-0">
         <button
           type="button"
+          class="delete-btn h-8 w-8 rounded-full bg-transparent text-rose-500 hover:text-rose-600 hover:bg-rose-50 transition-colors flex items-center justify-center"
+          aria-label="Eliminar presentación"
+          title="Eliminar"
+        >
+          <Icon name="lucide:trash-2" size={16} />
+        </button>
+        <button
+          type="button"
           class="edit-btn h-8 w-8 rounded-full bg-transparent text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors flex items-center justify-center"
           aria-label="Editar presentación"
           aria-pressed="false"
@@ -121,7 +129,7 @@ const unitProfit = defaultSalePrice - unitCost;
       </div>
 
       <div
-        class="bg-indigo-50/50 border border-indigo-100 rounded-xl px-2.5 py-2 sm:px-3 sm:py-2.5 grow flex flex-wrap items-center justify-between gap-x-2 gap-y-1 max-w-65"
+        class="bg-indigo-50/50 border border-indigo-100 rounded-xl px-2.5 py-2 sm:px-3 sm:py-2.5 grow flex flex-wrap items-center justify-between gap-y-1 max-w-65"
       >
         <div class="flex flex-col shrink-0 min-w-0">
           <p
@@ -136,7 +144,7 @@ const unitProfit = defaultSalePrice - unitCost;
           </p>
         </div>
         <div
-          class="flex items-center justify-end focus-within:bg-white focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:border-indigo-300 rounded-md border border-transparent transition-all px-1 -mr-1 shrink-0"
+          class="relative flex items-center justify-end focus-within:bg-white focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:border-indigo-300 rounded-md border border-transparent transition-all px-1 -mr-1 shrink-0"
         >
           <span
             class="text-[20px] font-bold text-indigo-600 mr-0.5 pointer-events-none"
@@ -144,13 +152,19 @@ const unitProfit = defaultSalePrice - unitCost;
           >
           <input
             name="salePrice"
-            type="number"
-            step="0.01"
+            type="text"
+            inputmode="decimal"
             class="presentation-price bg-transparent border-none p-0 text-[20px] font-bold text-indigo-600 text-left tabular-nums focus:ring-0 read-only:pointer-events-none min-w-[3ch] max-w-full"
-            style={`width: ${defaultSalePrice.toFixed(2).length}ch;`}
+            style={`width: ${Math.max(defaultSalePrice.toFixed(2).length + 1, 4)}ch;`}
             value={defaultSalePrice.toFixed(2)}
             readonly
           />
+          <span
+            aria-hidden="true"
+            class="presentation-price-measure pointer-events-none absolute left-0 top-0 invisible whitespace-pre text-[20px] font-bold tabular-nums"
+          >
+            {defaultSalePrice.toFixed(2)}
+          </span>
         </div>
       </div>
     </div>
@@ -202,10 +216,12 @@ const unitProfit = defaultSalePrice - unitCost;
   // @ts-nocheck
   class PresentationCard extends HTMLElement {
     isEditing = false;
+    btnDelete = null;
     btnEdit = null;
     inputName = null;
     inputUnits = null;
     inputPrice = null;
+    priceMeasure = null;
     yieldValue = null;
     unitCostDisplay = null;
     recommendedPriceDisplay = null;
@@ -229,9 +245,11 @@ const unitProfit = defaultSalePrice - unitCost;
       this.dataset.bound = "1";
 
       this.btnEdit = this.querySelector(".edit-btn");
+      this.btnDelete = this.querySelector(".delete-btn");
       this.inputName = this.querySelector(".presentation-name");
       this.inputUnits = this.querySelector(".presentation-units");
       this.inputPrice = this.querySelector(".presentation-price");
+      this.priceMeasure = this.querySelector(".presentation-price-measure");
       this.yieldValue = this.querySelector(".yield-value");
       this.unitCostDisplay = this.querySelector(".unit-cost-display");
       this.recommendedPriceDisplay = this.querySelector(
@@ -250,6 +268,9 @@ const unitProfit = defaultSalePrice - unitCost;
       this.precioRecBatch = parseFloat(this.dataset.recommended || "0");
 
       this.btnEdit?.addEventListener("click", () => this.toggleEdit());
+      this.btnDelete?.addEventListener("click", () =>
+        this.deletePresentation(),
+      );
       this.inputUnits?.addEventListener("input", () => this.calculate());
       this.inputPrice?.addEventListener("input", () => {
         this.salePriceDirty = true;
@@ -323,6 +344,68 @@ const unitProfit = defaultSalePrice - unitCost;
       this.calculate();
     }
 
+    async deletePresentation() {
+      if (!this.form) return;
+
+      const confirmed = window.confirm("¿Eliminar esta presentación?");
+      if (!confirmed) return;
+
+      if (this.btnDelete) {
+        this.btnDelete.disabled = true;
+        this.btnDelete.classList.add("opacity-75", "cursor-not-allowed");
+      }
+
+      try {
+        const formData = new FormData(this.form);
+        formData.set("action", "delete_presentation");
+
+        const response = await fetch(window.location.href, {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+          },
+          body: formData,
+        });
+
+        if (response.redirected) {
+          throw new Error(
+            "Tu sesion expiro. Recarga la pagina e inicia sesion nuevamente.",
+          );
+        }
+
+        if (!response.ok) {
+          const message = (await response.text()).trim();
+          throw new Error(
+            message || "Hubo un error al eliminar la presentación.",
+          );
+        }
+
+        const contentType = response.headers.get("content-type") || "";
+        if (!contentType.includes("application/json")) {
+          throw new Error("La respuesta del servidor no fue valida.");
+        }
+
+        const payload = await response.json().catch(() => null);
+        if (!payload?.deleted) {
+          throw new Error("La respuesta del servidor no fue valida.");
+        }
+
+        this.remove();
+      } catch (error) {
+        console.error(error);
+        const message =
+          error instanceof Error && error.message
+            ? error.message
+            : "Hubo un error al eliminar la presentación.";
+        alert(message);
+      } finally {
+        if (this.btnDelete) {
+          this.btnDelete.disabled = false;
+          this.btnDelete.classList.remove("opacity-75", "cursor-not-allowed");
+        }
+      }
+    }
+
     applyPresentation(presentation) {
       const unitsPerBatch = Number(presentation?.unitsPerBatch ?? 0);
       const totalUnits = unitsPerBatch * this.multiplier;
@@ -339,6 +422,7 @@ const unitProfit = defaultSalePrice - unitCost;
           ? String(unitsPerBatch)
           : "0";
       if (this.inputPrice) this.inputPrice.value = nextPrice.toFixed(2);
+      this.syncPriceWidth(nextPrice.toFixed(2));
 
       this.dataset.units = Number.isFinite(unitsPerBatch)
         ? String(unitsPerBatch)
@@ -423,8 +507,23 @@ const unitProfit = defaultSalePrice - unitCost;
         // Format price on blur
         if (this.inputPrice && this.inputPrice.value) {
           this.inputPrice.value = parseFloat(this.inputPrice.value).toFixed(2);
+          this.syncPriceWidth(this.inputPrice.value);
         }
       }
+    }
+
+    syncPriceWidth(value = this.inputPrice?.value ?? "") {
+      if (!this.inputPrice || !this.priceMeasure) {
+        return;
+      }
+
+      const measuredValue = value.trim().length > 0 ? value.trim() : "0.00";
+      this.priceMeasure.textContent = measuredValue;
+
+      const measuredWidth = this.priceMeasure.getBoundingClientRect().width;
+      const nextWidth = Math.max(Math.ceil(measuredWidth + 4), 28);
+
+      this.inputPrice.style.width = `${nextWidth}px`;
     }
 
     calculate() {
@@ -446,10 +545,7 @@ const unitProfit = defaultSalePrice - unitCost;
             ? parsedSalePrice
             : 0;
 
-      if (this.inputPrice) {
-        const valLength = salePriceValue.length;
-        this.inputPrice.style.width = `${Math.max(valLength, 1)}ch`;
-      }
+      this.syncPriceWidth(salePriceValue);
 
       const unitProfit = salePrice - unitCost;
       const marginPercent = salePrice > 0 ? (unitProfit / salePrice) * 100 : 0;
