@@ -291,7 +291,7 @@ const ingredientUsage = await listIngredientUsage(recipeDataOwner);
       </div>
     </div>
 
-    <form method="post" class="mt-6" data-ingredient-form>
+    <form method="post" class="mt-6" data-ingredient-form data-astro-reload>
       <input type="hidden" name="action" value="create" />
 
       <div
@@ -680,7 +680,7 @@ const ingredientUsage = await listIngredientUsage(recipeDataOwner);
         </button>
       </div>
 
-      <form method="post" class="mt-5 space-y-4" data-ingredient-form>
+      <form method="post" class="mt-5 space-y-4" data-ingredient-form data-astro-reload>
         <input type="hidden" name="action" value="create" />
 
         <div>
@@ -853,7 +853,7 @@ const ingredientUsage = await listIngredientUsage(recipeDataOwner);
         </button>
       </div>
 
-      <form method="post" class="mt-5 space-y-4" data-ingredient-form>
+      <form method="post" class="mt-5 space-y-4" data-ingredient-form data-astro-reload>
         <input type="hidden" name="action" value="update" />
         <input type="hidden" name="ingredientId" value="" />
 
@@ -1028,6 +1028,7 @@ const ingredientUsage = await listIngredientUsage(recipeDataOwner);
       <form
         method="post"
         class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end"
+        data-astro-reload
       >
         <input type="hidden" name="action" value="delete" />
         <input
