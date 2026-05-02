@@ -1,56 +1,117 @@
 ---
-
 import { Icon } from 'astro-icon/components';
 import { listRecipeSummaries } from '../lib/recipe-data';
 const recipes = await listRecipeSummaries();
 
 const { currentRecipe } = Astro.props;
-
 ---
 
-<aside class="lg:col-span-3 space-y-4">
-  <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-    <div class="flex justify-between items-center mb-6">
-      <h2 class="font-bold text-slate-800">Recetas</h2>
+<div class="flex flex-col h-full bg-white relative">
+  <!-- Mobile Sidebar Header -->
+  <div class="lg:hidden p-4 border-b border-slate-100 flex items-center gap-3 flex-none">
+    <button id="close-sidebar-btn" class="text-slate-500 hover:text-slate-700 border border-slate-200 hover:bg-slate-50 p-2 rounded-xl transition-colors" aria-label="Cerrar menú">
+      <Icon name="lucide:x" size={20} />
+    </button>
+    <div class="bg-indigo-600 p-2 rounded-xl text-white shadow-md shadow-indigo-100">
+      <Icon name='lucide:chef-hat' size={20} />
     </div>
-
-    <div class="lg:hidden">
-      <label for="recipe-selector" class="sr-only">Seleccionar receta</label>
-      <div class="relative">
-        <select
-          id="recipe-selector"
-          class="w-full appearance-none rounded-xl border border-slate-300 bg-slate-50 px-4 py-3 pr-10 text-sm font-semibold text-slate-700 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20"
-          onchange="if (this.value) window.location.href = this.value;"
-        >
-          {
-            recipes.map((recipe) => (
-              <option
-                value={`/recipes/${recipe.id}`}
-                selected={currentRecipe?.toString() === recipe.id.toString()}
-              >
-                  {recipe.name}
-              </option>
-            ))
-          }
-        </select>
-        <Icon name="lucide:chevrons-up-down" size={16} class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" />
-      </div>
-    </div>
-
-    <div class="hidden lg:block space-y-2 overflow-y-auto max-h-104">
-      {
-        recipes.map(recipe => (
-          <a href={`/recipes/${recipe.id}`} class="block">
-            <div class={`w-full flex items-center justify-between p-4 bg-slate-50 rounded-xl border transition-all ${currentRecipe?.toString() === recipe.id.toString() ? 'bg-indigo-50 border-indigo-200 ring-2 ring-indigo-500/10' : 'bg-slate-50 border-slate-100 hover:border-slate-300'}`}>
-              <div class="text-left">
-                  <p class={`font-bold ${currentRecipe?.toString() === recipe.id.toString() ? 'text-indigo-700' : "text-slate-700"}`}>{recipe.name}</p>
-                  <p class={`text-[10px] ${currentRecipe?.toString() === recipe.id.toString() ? 'text-indigo-500' : "text-slate-400"} mt-1 uppercase tracking-tight`}>{recipe.ingredientCount} ingredientes</p>
-              </div>
-              <Icon name="lucide:chevron-right" size={16} class={`${currentRecipe?.toString() === recipe.id.toString() ? 'text-indigo-500' : "text-slate-300"}`} />
-            </div>
-          </a>
-        ))
-      }
+    <div>
+      <h1 class="text-base font-bold text-slate-800 leading-tight">ChefCost Pro</h1>
+      <p class="text-slate-500 text-[10px] font-medium">Costeo Inteligente</p>
     </div>
   </div>
-</aside>
+
+  <!-- Sidebar Search -->
+  <div class="p-4 lg:p-6 lg:pb-4 border-b border-slate-100 flex-none sticky top-0 bg-white z-10">
+    <div class="relative">
+      <Icon name="lucide:search" size={18} class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+      <input 
+        type="search" 
+        id="recipeSearch"
+        placeholder="Buscar receta..." 
+        class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors placeholder-slate-400"
+      />
+    </div>
+  </div>
+
+  <!-- Recipe List (Desktop & Mobile) -->
+  <div class="flex-1 overflow-y-auto px-3 py-4 space-y-1 recipe-list">
+    {
+      recipes.map(recipe => {
+        const isActive = currentRecipe?.toString() === recipe.id.toString();
+        // Fallback category text since it's not in the model yet
+        const category = 'Sin categoría'; 
+        return (
+        <a 
+          href={`/recipes/${recipe.id}`} 
+          class={`recipe-item block w-full p-3 rounded-xl transition-colors ${isActive ? 'bg-indigo-50' : 'hover:bg-slate-50'}`}
+          data-name={recipe.name.toLowerCase()}
+        >
+          <div class="flex items-center justify-between">
+            <div>
+              <p class={`font-semibold text-sm ${isActive ? 'text-indigo-700' : 'text-slate-700'}`}>{recipe.name}</p>
+              <div class="flex items-center gap-1.5 mt-1 text-[11px]">
+                <span class={isActive ? 'text-indigo-500 font-medium' : 'text-slate-500'}>{recipe.ingredientCount} ingredientes</span>
+                <span class={isActive ? 'text-indigo-300' : 'text-slate-300'}>&bull;</span>
+                <span class={isActive ? 'text-indigo-400' : 'text-slate-400'}>{category}</span>
+              </div>
+            </div>
+            {isActive && <Icon name="lucide:chevron-right" size={16} class="text-indigo-500 flex-none" />}
+          </div>
+        </a>
+      )})
+    }
+    
+    <div id="noResults" class="hidden py-8 text-center text-slate-500 text-sm">
+      No se encontraron recetas
+    </div>
+  </div>
+
+  <!-- Sticky Bottom Action -->
+  <div class="p-6 border-t border-slate-100 flex-none sticky bottom-0 bg-white/95 backdrop-blur z-10">
+    <button class="w-full py-2.5 px-4 bg-white border border-dashed border-slate-300 rounded-xl text-slate-600 font-semibold text-sm hover:border-indigo-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors flex items-center justify-center gap-2">
+      <Icon name="lucide:plus" size={16} />
+      Nueva Receta
+    </button>
+  </div>
+</div>
+
+<script>
+  // Add search functionality
+  document.addEventListener('astro:page-load', () => {
+    const searchInput = document.getElementById('recipeSearch') as HTMLInputElement;
+    const recipeItems = document.querySelectorAll('.recipe-item');
+    const noResults = document.getElementById('noResults');
+
+    const removeAccents = (str: string) => {
+      return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    };
+
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        const searchTerm = removeAccents((e.target as HTMLInputElement).value.toLowerCase());
+        let visibleCount = 0;
+
+        recipeItems.forEach((item) => {
+          const name = item.getAttribute('data-name') || '';
+          const normalizedName = removeAccents(name);
+          const element = item as HTMLElement;
+          if (normalizedName.includes(searchTerm)) {
+            element.style.display = 'block';
+            visibleCount++;
+          } else {
+            element.style.display = 'none';
+          }
+        });
+
+        if (noResults) {
+          if (visibleCount === 0 && searchTerm.length > 0) {
+            noResults.classList.remove('hidden');
+          } else {
+            noResults.classList.add('hidden');
+          }
+        }
+      });
+    }
+  });
+</script>
