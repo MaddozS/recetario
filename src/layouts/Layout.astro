@@ -26,7 +26,7 @@ import { ClientRouter } from "astro:transitions";
 		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <ClientRouter />
 	</head>
-	<body class="bg-slate-50 flex flex-col min-h-[100dvh] lg:h-[100dvh] lg:overflow-hidden">
+	<body class="bg-slate-50 flex flex-col min-h-dvh lg:h-dvh lg:overflow-hidden">
     { showHeader && <Header currentPage={currentPage} showMenuButton={showSideBar} /> }
     
     <div class="flex flex-1 flex-col lg:flex-row overflow-hidden relative">
@@ -37,7 +37,7 @@ import { ClientRouter } from "astro:transitions";
             <div id="mobile-sidebar-overlay" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 hidden lg:hidden opacity-0 transition-opacity duration-300"></div>
             
             <!-- Sidebar -->
-            <aside id="app-sidebar" class="fixed inset-y-0 left-0 z-50 w-[85%] max-w-[320px] -translate-x-full lg:translate-x-0 lg:static lg:w-[320px] xl:w-[360px] flex-none border-r border-slate-200 bg-white lg:overflow-y-auto flex flex-col transition-transform duration-300 ease-in-out shadow-2xl lg:shadow-none">
+            <aside id="app-sidebar" class="fixed inset-y-0 left-0 z-50 w-[85%] max-w-[320px] -translate-x-full lg:translate-x-0 lg:static lg:w-[320px] xl:w-90 flex-none border-r border-slate-200 bg-white lg:overflow-y-auto flex flex-col transition-transform duration-300 ease-in-out shadow-2xl lg:shadow-none">
               <RecipesSidebar currentRecipe={currentRecipe} transition:animate="none" />
             </aside>
           </>
