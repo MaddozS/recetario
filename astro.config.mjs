@@ -17,10 +17,5 @@ export default defineConfig({
     include: {
       lucide: ['*'], // Loads entire Lucide icon set
     },
-  })],
-
-  redirects: {
-    "/": "/recipes/101",
-    "/recipes": "/recipes/101"
-  }
+  })]
 });
