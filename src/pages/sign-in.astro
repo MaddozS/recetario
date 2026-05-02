@@ -3,7 +3,9 @@ import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout currentPage="sign-in" showSideBar={false} showHeader={false}>
-  <div class="h-[calc(100vh-64px)] flex items-center justify-center bg-linear-to-br from-slate-50 to-slate-100">
+  <div
+    class="h-[calc(100vh-64px)] flex items-center justify-center bg-linear-to-br from-slate-50 to-slate-100"
+  >
     <div class="w-full max-w-md">
       {/* Card Container */}
       <div class="bg-white rounded-2xl shadow-lg p-8 space-y-8">
@@ -39,14 +41,14 @@ import Layout from "../layouts/Layout.astro";
           class="hidden rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700"
           role="status"
           aria-live="polite"
-        ></p>
+        >
+        </p>
 
         {/* Footer */}
         <p class="text-center text-xs text-slate-500">
           Al iniciar sesión, aceptas nuestros términos de servicio
         </p>
       </div>
-
     </div>
   </div>
 </Layout>
@@ -58,7 +60,10 @@ import Layout from "../layouts/Layout.astro";
     const button = document.getElementById("google-sign-in");
     const feedback = document.getElementById("sign-in-feedback");
 
-    if (!(button instanceof HTMLButtonElement) || !(feedback instanceof HTMLParagraphElement)) {
+    if (
+      !(button instanceof HTMLButtonElement) ||
+      !(feedback instanceof HTMLParagraphElement)
+    ) {
       return;
     }
 
@@ -105,9 +110,13 @@ import Layout from "../layouts/Layout.astro";
       } catch (error) {
         if (error instanceof SignInRateLimitError) {
           const retryAfterSeconds = error.retryAfterSeconds ?? 10;
-          showFeedback(`Demasiados intentos. Vuelve a intentarlo en ${retryAfterSeconds} segundos.`);
+          showFeedback(
+            `Demasiados intentos. Vuelve a intentarlo en ${retryAfterSeconds} segundos.`,
+          );
         } else {
-          showFeedback("No se pudo iniciar sesión con Google. Inténtalo de nuevo.");
+          showFeedback(
+            "No se pudo iniciar sesión con Google. Inténtalo de nuevo.",
+          );
           console.error("Google sign-in failed:", error);
         }
 
