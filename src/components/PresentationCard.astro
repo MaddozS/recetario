@@ -131,7 +131,8 @@ const unitProfit = defaultSalePrice - unitCost;
           </p>
           <p class="text-[10px] text-indigo-400/80">
             Sugerido: <span class="recommended-price-display"
-              >${unitPriceRecommended.toFixed(2)}</span>
+              >${unitPriceRecommended.toFixed(2)}</span
+            >
           </p>
         </div>
         <div
@@ -279,15 +280,28 @@ const unitProfit = defaultSalePrice - unitCost;
             body: formData,
           });
 
+          if (response.redirected) {
+            throw new Error(
+              "Tu sesion expiro. Recarga la pagina e inicia sesion nuevamente.",
+            );
+          }
+
           if (!response.ok) {
             const message = (await response.text()).trim();
             throw new Error(message || "Hubo un error al guardar los cambios.");
           }
 
-          const payload = await response.json().catch(() => null);
-          if (payload?.presentation) {
-            this.applyPresentation(payload.presentation);
+          const contentType = response.headers.get("content-type") || "";
+          if (!contentType.includes("application/json")) {
+            throw new Error("La respuesta del servidor no fue valida.");
           }
+
+          const payload = await response.json().catch(() => null);
+          if (!payload?.presentation) {
+            throw new Error("La respuesta del servidor no fue valida.");
+          }
+
+          this.applyPresentation(payload.presentation);
 
           this.toggleEdit(true); // true = save changes
         } catch (error) {
@@ -425,11 +439,12 @@ const unitProfit = defaultSalePrice - unitCost;
         ? this.precioRecBatch / totalUnits
         : 0;
       const parsedSalePrice = parseFloat(salePriceValue || "0");
-      const salePrice = salePriceValue.trim() === ""
-        ? unitPriceRecommended
-        : Number.isFinite(parsedSalePrice)
-          ? parsedSalePrice
-          : 0;
+      const salePrice =
+        salePriceValue.trim() === ""
+          ? unitPriceRecommended
+          : Number.isFinite(parsedSalePrice)
+            ? parsedSalePrice
+            : 0;
 
       if (this.inputPrice) {
         const valLength = salePriceValue.length;
