@@ -1,7 +1,20 @@
+/**
+ * Operaciones CRUD para la entidad Ingredient.
+ *
+ * Todas las funciones requieren un `ownerId` para garantizar
+ * el aislamiento de datos entre usuarios (multi-tenancy).
+ * El owner se resuelve a través de `ensureInitialized` que
+ * establece la conexión y el scope.
+ */
+
 import type { Ingredient, CreateIngredientInput, UpdateIngredientInput, DeleteIngredientResult } from "./types";
 import { normalizeOptionalText, requireOwnerId, toNumber } from "./helpers";
 import { getDriver, ensureInitialized, STATIC_OWNER_SCOPE } from "./connection";
 
+/**
+ * Obtiene un ingrediente por ID (uso interno, no exportado directamente).
+ * Todas las funciones CRUD exportadas garantizan la inicialización previa.
+ */
 async function getIngredientById(
   driver: import("./types").Driver,
   ingredientId: number,
@@ -80,6 +93,9 @@ async function getIngredientById(
   };
 }
 
+/**
+ * Lista todos los ingredientes del owner, ordenados por ID.
+ */
 export async function listIngredients(
   ownerId = STATIC_OWNER_SCOPE,
 ): Promise<Ingredient[]> {
@@ -142,6 +158,10 @@ export async function listIngredients(
   }));
 }
 
+/**
+ * Devuelve un mapa de `ingredientId -> nombres de recetas` que usan
+ * cada ingrediente. Útil para saber si un ingrediente puede eliminarse.
+ */
 export async function listIngredientUsage(
   ownerId = STATIC_OWNER_SCOPE,
 ): Promise<Record<number, string[]>> {
@@ -200,6 +220,10 @@ export async function listIngredientUsage(
   return usageByIngredient;
 }
 
+/**
+ * Crea un nuevo ingrediente. Lanza error si los campos obligatorios
+ * (nombre, unidad, precio, cantidad) son inválidos.
+ */
 export async function createIngredient(
   input: CreateIngredientInput,
   ownerId = STATIC_OWNER_SCOPE,
@@ -293,6 +317,13 @@ export async function createIngredient(
   };
 }
 
+/**
+ * Actualiza parcialmente un ingrediente.
+ *
+ * Solo los campos presentes en `input` se modifican. Si ningún campo
+ * cambia, retorna el ingrediente actual. Retorna `null` si el
+ * ingrediente no existe bajo ese owner.
+ */
 export async function updateIngredient(
   ingredientId: number,
   input: UpdateIngredientInput,
@@ -480,6 +511,13 @@ export async function updateIngredient(
   return getIngredientById(driver, ingredientId, scopeId);
 }
 
+/**
+ * Elimina un ingrediente.
+ *
+ * Si el ingrediente está siendo usado por alguna receta del mismo
+ * owner, retorna `{ status: "blocked", recipes: [...] }` en lugar
+ * de eliminarlo (protegido por foreign key RESTRICT).
+ */
 export async function deleteIngredient(
   ingredientId: number,
   ownerId = STATIC_OWNER_SCOPE,

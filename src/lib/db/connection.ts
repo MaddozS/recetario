@@ -1,3 +1,12 @@
+/**
+ * Inicialización y gestión de la conexión a base de datos.
+ *
+ * Soporta dos backends: Postgres (producción) y SQLite (desarrollo local).
+ * Decide cuál usar según variables de entorno. Proporciona las funciones
+ * de inicialización de esquema (createTables), seeding (seedIfNeeded) y
+ * verificación de pertenencia de registros (recipeBelongsToOwner, etc.).
+ */
+
 import fs from "node:fs/promises";
 import path from "node:path";
 import { Pool } from "pg";
@@ -101,6 +110,13 @@ const staticOwnerEmail = normalizeEmail(
     process.env.RECIPES_STATIC_OWNER_EMAIL,
 );
 
+/**
+ * Determina el ID de owner que debe usarse para el usuario autenticado.
+ *
+ * Si el usuario coincide con las variables de entorno `RECIPES_STATIC_OWNER_ID`
+ * o `RECIPES_STATIC_OWNER_EMAIL`, se asigna al scope estático de datos semilla.
+ * De lo contrario, se usa su ID de autenticación.
+ */
 export function getRecipeDataOwner(user: RecipeDataUser): string {
   const userId = requireOwnerId(user.id);
   const userEmail = normalizeEmail(user.email);
@@ -115,6 +131,10 @@ export function getRecipeDataOwner(user: RecipeDataUser): string {
   return userId;
 }
 
+/**
+ * Obtiene una presentación por su ID dentro de una receta.
+ * Retorna `null` si no existe.
+ */
 export async function getPresentationById(
   driver: Driver,
   recipeId: number,
@@ -161,6 +181,10 @@ export async function getPresentationById(
   return presentation ? toRecipePresentation(presentation) : null;
 }
 
+/**
+ * Sincroniza la secuencia de identidad de Postgres con el máximo ID
+ * existente en la tabla `ingredients`. Evita gaps en IDs después de seeds.
+ */
 export async function syncPostgresIngredientsIdentity(
   queryable: PostgresQueryable,
 ) {
@@ -185,6 +209,13 @@ export async function syncPostgresIngredientsIdentity(
   `);
 }
 
+/**
+ * Obtiene (o crea) el driver de base de datos.
+ *
+ * El driver es un singleton global (`globals.__recipesDriver`)
+ * que se instancia una sola vez según la configuración de entorno.
+ * Soporta Postgres (vía `pg.Pool`) y SQLite (vía `node:sqlite`).
+ */
 export async function getDriver(): Promise<Driver> {
   if (globals.__recipesDriver) return globals.__recipesDriver;
 
@@ -204,6 +235,18 @@ export async function getDriver(): Promise<Driver> {
   return globals.__recipesDriver;
 }
 
+/**
+ * Crea las tablas necesarias si no existen.
+ *
+ * Esquema:
+ * - `ingredients` — insumos con costo de empaque.
+ * - `recipes` — recetas con márgenes y costos fijos.
+ * - `recipe_ingredients` — relación N:M receta-ingrediente.
+ * - `recipe_presentations` — presentaciones de venta por receta.
+ *
+ * También aplica migraciones incrementales (ej. columnas `owner_id`,
+ * `updated_at`, secuencias de identidad en Postgres).
+ */
 export async function createTables(driver: Driver) {
   if (driver.kind === "postgres") {
     await driver.pool.query(`
@@ -389,6 +432,7 @@ export async function createTables(driver: Driver) {
   `);
 }
 
+/** Lee los archivos JSON de datos semilla desde `data/`. */
 export async function readSeedData() {
   const [ingredientsRaw, recipesRaw] = await Promise.all([
     fs.readFile(seedIngredientsPath, "utf-8"),
@@ -401,6 +445,11 @@ export async function readSeedData() {
   };
 }
 
+/**
+ * Inserta datos semilla si la base de datos está vacía para el scope
+ * `STATIC_OWNER_SCOPE`. Los datos se leen de `data/ingredients.json`
+ * y `data/recipes.json`.
+ */
 export async function seedIfNeeded(driver: Driver) {
   if (driver.kind === "postgres") {
     const countRes = await driver.pool.query<{ count: string }>(
@@ -562,6 +611,10 @@ export async function seedIfNeeded(driver: Driver) {
   }
 }
 
+/**
+ * Verifica que una receta pertenezca al owner dado.
+ * Retorna `true` si existe la receta con ese `owner_id`.
+ */
 export async function recipeBelongsToOwner(
   driver: Driver,
   recipeId: number,
@@ -584,6 +637,10 @@ export async function recipeBelongsToOwner(
   return Boolean(recipe);
 }
 
+/**
+ * Verifica que todos los ingredientes en `ingredientIds` pertenezcan
+ * al mismo owner. Retorna `true` solo si todos existen bajo ese owner.
+ */
 export async function ingredientsBelongToOwner(
   driver: Driver,
   ingredientIds: number[],
@@ -621,6 +678,14 @@ export async function ingredientsBelongToOwner(
   return Number(countRow.count ?? 0) === uniqueIngredientIds.length;
 }
 
+/**
+ * Inicializa la base de datos de forma lazy y cacheada.
+ *
+ * Garantiza que `createTables` y `seedIfNeeded` se ejecuten una sola
+ * vez por proceso. Si la versión del esquema cambia, reinicia la
+ * inicialización. Todas las funciones CRUD llaman a `ensureInitialized`
+ * antes de operar.
+ */
 export async function ensureInitialized() {
   if (globals.__recipesSchemaVersion !== RECIPE_DATA_SCHEMA_VERSION) {
     globals.__recipesInit = undefined;

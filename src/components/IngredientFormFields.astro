@@ -1,6 +1,31 @@
 ---
 import { UNIT_OPTIONS, DEFAULT_UNIT } from "../lib/constants";
 
+/**
+ * Campos de formulario reutilizables para ingredientes.
+ *
+ * Renderiza cinco campos: nombre, proveedor, marca, precio empaque
+ * y cantidad+unidad con un `<select>` de unidades. Cada campo recibe
+ * un `id` compuesto de `{idPrefix}-{campo}` (ej. `desktop-name`).
+ *
+ * El componente no incluye el `<form>`, el botón de submit ni el
+ * display de costo unitario. El padre debe envolverlo según el layout
+ * deseado (grid en escritorio, stack en mobile).
+ *
+ * @prop {string} idPrefix - Prefijo para los `id` de cada campo.
+ *                           Usar "desktop", "mobile" o "edit".
+ *
+ * @example
+ * // Escritorio (dentro de un grid de 5 columnas)
+ * <div class="grid grid-cols-5 gap-4">
+ *   <IngredientFormFields idPrefix="desktop" />
+ * </div>
+ *
+ * // Mobile (stack vertical)
+ * <form class="space-y-4">
+ *   <IngredientFormFields idPrefix="mobile" />
+ * </form>
+ */
 interface Props {
   idPrefix: string;
 }
