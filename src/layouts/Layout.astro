@@ -120,16 +120,20 @@ import { ClientRouter } from "astro:transitions";
       }
     }
 
-    if (menuBtn) {
+    if (menuBtn && menuBtn.dataset.sidebarBound !== '1') {
+      menuBtn.dataset.sidebarBound = '1';
       menuBtn.addEventListener('click', openSidebar);
     }
-    if (closeBtn) {
+    if (closeBtn && closeBtn.dataset.sidebarBound !== '1') {
+      closeBtn.dataset.sidebarBound = '1';
       closeBtn.addEventListener('click', closeSidebar);
     }
-    if (overlay) {
+    if (overlay && overlay.dataset.sidebarBound !== '1') {
+      overlay.dataset.sidebarBound = '1';
       overlay.addEventListener('click', closeSidebar);
     }
   }
 
   document.addEventListener('astro:page-load', setupSidebar);
+  document.addEventListener('astro:after-swap', setupSidebar);
 </script>
