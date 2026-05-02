@@ -17,16 +17,6 @@ const parseNumberInput = (value: string) => {
   return Number(normalized);
 };
 
-const redirectWithFeedback = (type: 'success' | 'error', message: string, recipes: string[] = []) => {
-  const params = new URLSearchParams();
-  params.set('type', type);
-  params.set('message', message);
-  if (recipes.length > 0) {
-    params.set('recipes', JSON.stringify(recipes));
-  }
-  return Astro.redirect(`/ingredients?${params.toString()}`);
-};
-
 if (Astro.request.method === 'POST') {
   const formData = await Astro.request.formData();
   const action = String(formData.get('action') || '');
@@ -43,11 +33,11 @@ if (Astro.request.method === 'POST') {
     const purchaseQuantity = purchaseQuantityValue ? parseNumberInput(purchaseQuantityValue) : 1;
 
     if (!name || !unit || !Number.isFinite(price) || price < 0) {
-      return redirectWithFeedback('error', 'Nombre, unidad y precio son obligatorios.');
+      return Astro.redirect(`/ingredients?${new URLSearchParams({ type: 'error', message: 'Nombre, unidad y precio son obligatorios.' }).toString()}`);
     }
 
     if (!Number.isFinite(purchaseQuantity) || purchaseQuantity <= 0) {
-      return redirectWithFeedback('error', 'La cantidad de compra debe ser mayor a 0 (puedes usar decimales).');
+      return Astro.redirect(`/ingredients?${new URLSearchParams({ type: 'error', message: 'La cantidad de compra debe ser mayor a 0 (puedes usar decimales).' }).toString()}`);
     }
 
     await createIngredient({
@@ -59,30 +49,30 @@ if (Astro.request.method === 'POST') {
       supplier: supplier || undefined,
     });
 
-    return redirectWithFeedback('success', 'Ingrediente agregado correctamente.');
+    return Astro.redirect(`/ingredients?${new URLSearchParams({ type: 'success', message: 'Ingrediente agregado correctamente.' }).toString()}`);
   }
 
   if (action === 'delete') {
     const ingredientId = Number(String(formData.get('ingredientId') || ''));
     if (!Number.isFinite(ingredientId)) {
-      return redirectWithFeedback('error', 'No se pudo identificar el ingrediente a eliminar.');
+      return Astro.redirect(`/ingredients?${new URLSearchParams({ type: 'error', message: 'No se pudo identificar el ingrediente a eliminar.' }).toString()}`);
     }
 
     const result = await deleteIngredient(ingredientId);
 
     if (result.status === 'not-found') {
-      return redirectWithFeedback('error', 'El ingrediente ya no existe.');
+      return Astro.redirect(`/ingredients?${new URLSearchParams({ type: 'error', message: 'El ingrediente ya no existe.' }).toString()}`);
     }
 
     if (result.status === 'blocked') {
-      return redirectWithFeedback(
-        'error',
-        'No se puede eliminar porque el ingrediente esta en uso.',
-        result.recipes.map((recipe) => recipe.name),
-      );
+      return Astro.redirect(`/ingredients?${new URLSearchParams([
+        ['type', 'error'],
+        ['message', 'No se puede eliminar porque el ingrediente está en uso.'],
+        ['recipes', JSON.stringify(result.recipes.map((recipe) => recipe.name))],
+      ]).toString()}`);
     }
 
-    return redirectWithFeedback('success', 'Ingrediente eliminado correctamente.');
+    return Astro.redirect(`/ingredients?${new URLSearchParams({ type: 'success', message: 'Ingrediente eliminado correctamente.' }).toString()}`);
   }
 }
 
