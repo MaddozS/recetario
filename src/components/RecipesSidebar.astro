@@ -231,6 +231,8 @@ const createRecipeDialogId = "create-recipe-dialog";
 </div>
 
 <script>
+  import { bindDialogBackdrop } from "../lib/dialog";
+
   function setupRecipesSidebar() {
     const searchInput = document.getElementById("recipeSearch");
     const recipeItems = document.querySelectorAll(".recipe-item");
@@ -333,11 +335,7 @@ const createRecipeDialogId = "create-recipe-dialog";
     }
 
     dialog.dataset.createRecipeDialogBound = "1";
-    dialog.addEventListener("click", (event) => {
-      if (event.target === dialog) {
-        closeDialog();
-      }
-    });
+    bindDialogBackdrop(dialog);
   }
 
   document.addEventListener("astro:page-load", setupRecipesSidebar);
