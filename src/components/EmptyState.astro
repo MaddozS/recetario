@@ -1,0 +1,61 @@
+---
+import { Icon } from "astro-icon/components";
+
+interface Props {
+  icon: string;
+  iconSize?: number;
+  title: string;
+  description: string;
+  titleTag?: "h1" | "h3";
+  titleClasses?: string;
+  descClasses?: string;
+  actionLabel?: string;
+  actionHref?: string;
+}
+
+const {
+  icon,
+  iconSize = 24,
+  title,
+  description,
+  titleTag: TitleTag = "h3",
+  titleClasses = "mt-5 text-lg font-bold text-slate-800",
+  descClasses = "mt-2 text-sm text-slate-500",
+  actionLabel,
+  actionHref,
+} = Astro.props;
+---
+
+<div class="mx-auto flex max-w-md flex-col items-center">
+  <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600">
+    <Icon name={icon} size={iconSize} />
+  </div>
+  <TitleTag class={titleClasses}>
+    {title}
+  </TitleTag>
+  <p class={descClasses}>
+    {description}
+  </p>
+  {actionLabel && (
+    <>
+      {actionHref ? (
+        <a
+          href={actionHref}
+          class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-indigo-700 mt-5"
+        >
+          <Icon name="lucide:plus" size={18} />
+          {actionLabel}
+        </a>
+      ) : (
+        <button
+          type="button"
+          class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-indigo-700 mt-5 lg:hidden"
+          data-open-create-modal
+        >
+          <Icon name="lucide:plus" size={18} />
+          {actionLabel}
+        </button>
+      )}
+    </>
+  )}
+</div>
