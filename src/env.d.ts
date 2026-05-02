@@ -9,6 +9,18 @@ declare namespace App {
   interface ImportMetaEnv {
     readonly BETTER_AUTH_SECRET: string;
     readonly BETTER_AUTH_URL: string;
+    readonly BETTER_AUTH_USE_DB?: string;
+    readonly BETTER_AUTH_DB_PATH?: string;
+    readonly RECIPES_USE_POSTGRES?: string;
+    readonly APP_USE_POSTGRES?: string;
+    readonly RECIPES_USE_DB?: string;
+    readonly APP_USE_DB?: string;
+    readonly RECIPES_DB_PATH?: string;
+    readonly APP_DB_PATH?: string;
+    readonly DATABASE_URL?: string;
+    readonly POSTGRES_URL?: string;
+    readonly POSTGRES_SSL_CA?: string;
+    readonly POSTGRES_SSL_INSECURE?: string;
 
     readonly GOOGLE_CLIENT_ID: string;
     readonly GOOGLE_CLIENT_SECRET: string;
@@ -18,4 +30,3 @@ declare namespace App {
     readonly env: ImportMetaEnv;
   }
 }
-

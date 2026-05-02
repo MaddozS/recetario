@@ -1,7 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
-
-import { getCollection } from 'astro:content';
+import { createIngredient, deleteIngredient, listIngredients, listIngredientUsage } from '../lib/recipe-data';
 
 import { Icon } from 'astro-icon/components'
 
@@ -10,28 +9,163 @@ if (!Astro.locals.session || !Astro.locals.user) {
   return Astro.redirect('/sign-in');
 }
 
+const unitOptions = ['kg', 'g', 'lt', 'ml', 'pza', 'pieza', 'cdita', 'cda', 'taza'];
 
-const ingredients = await getCollection('ingredients');
+const parseNumberInput = (value: string) => {
+  const normalized = value.trim().replace(',', '.');
+  if (!normalized) return NaN;
+  return Number(normalized);
+};
+
+if (Astro.request.method === 'POST') {
+  const formData = await Astro.request.formData();
+  const action = String(formData.get('action') || '');
+
+  if (action === 'create') {
+    const name = String(formData.get('name') || '').trim();
+    const unit = String(formData.get('unit') || '').trim();
+    const priceValue = String(formData.get('price') || '').trim();
+    const purchaseQuantityValue = String(formData.get('purchaseQuantity') || '').trim();
+    const brand = String(formData.get('brand') || '').trim();
+    const supplier = String(formData.get('supplier') || '').trim();
+
+    const price = parseNumberInput(priceValue);
+    const purchaseQuantity = purchaseQuantityValue ? parseNumberInput(purchaseQuantityValue) : 1;
+
+    if (!name || !unit || !Number.isFinite(price) || price < 0) {
+      return Astro.redirect(`/ingredients?${new URLSearchParams({ type: 'error', message: 'Nombre, unidad y precio son obligatorios.' }).toString()}`);
+    }
+
+    if (!Number.isFinite(purchaseQuantity) || purchaseQuantity <= 0) {
+      return Astro.redirect(`/ingredients?${new URLSearchParams({ type: 'error', message: 'La cantidad de compra debe ser mayor a 0 (puedes usar decimales).' }).toString()}`);
+    }
+
+    await createIngredient({
+      name,
+      unit,
+      price,
+      purchaseQuantity,
+      brand: brand || undefined,
+      supplier: supplier || undefined,
+    });
+
+    return Astro.redirect(`/ingredients?${new URLSearchParams({ type: 'success', message: 'Ingrediente agregado correctamente.' }).toString()}`);
+  }
+
+  if (action === 'delete') {
+    const ingredientId = Number(String(formData.get('ingredientId') || ''));
+    if (!Number.isFinite(ingredientId)) {
+      return Astro.redirect(`/ingredients?${new URLSearchParams({ type: 'error', message: 'No se pudo identificar el ingrediente a eliminar.' }).toString()}`);
+    }
+
+    const result = await deleteIngredient(ingredientId);
+
+    if (result.status === 'not-found') {
+      return Astro.redirect(`/ingredients?${new URLSearchParams({ type: 'error', message: 'El ingrediente ya no existe.' }).toString()}`);
+    }
+
+    if (result.status === 'blocked') {
+      return Astro.redirect(`/ingredients?${new URLSearchParams([
+        ['type', 'error'],
+        ['message', 'No se puede eliminar porque el ingrediente está en uso.'],
+        ['recipes', JSON.stringify(result.recipes.map((recipe) => recipe.name))],
+      ]).toString()}`);
+    }
+
+    return Astro.redirect(`/ingredients?${new URLSearchParams({ type: 'success', message: 'Ingrediente eliminado correctamente.' }).toString()}`);
+  }
+}
+
+const feedbackType = Astro.url.searchParams.get('type');
+const feedbackMessage = Astro.url.searchParams.get('message');
+const blockedRecipes = (() => {
+  const raw = Astro.url.searchParams.get('recipes');
+  if (!raw) return [] as string[];
+  try {
+    const parsed = JSON.parse(raw) as unknown;
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter((item): item is string => typeof item === 'string' && item.trim().length > 0);
+  } catch {
+    return [] as string[];
+  }
+})();
+
+const ingredients = await listIngredients();
+const ingredientUsage = await listIngredientUsage();
 ---
 
 <Layout currentPage="ingredients" showSideBar={false}>
-<div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden" transition:animate="slide">
-  <div class="p-6 border-b border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4">
-    <!-- <div class="relative w-full md:w-96">
-      <Search class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
-      <input 
-        type="text" 
-        placeholder="Buscar ingrediente..."
-        class="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 outline-none"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
-    </div> -->
-    <button class="w-full md:w-auto flex items-center justify-center gap-2 bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-bold hover:bg-indigo-700 transition-colors">
+{
+  feedbackType && feedbackMessage && (
+    <div class:list={[
+      'mb-4 rounded-xl border px-4 py-3 text-sm',
+      feedbackType === 'success'
+        ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+        : 'border-rose-200 bg-rose-50 text-rose-700',
+    ]}>
+      <p class="font-semibold">{feedbackMessage}</p>
+      {
+        blockedRecipes.length > 0 && (
+          <p class="mt-2 text-xs">
+            Recetas que lo usan: {blockedRecipes.join(', ')}
+          </p>
+        )
+      }
+    </div>
+  )
+}
+
+<section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6" transition:animate="slide">
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2 mb-4">
+    <h2 class="text-base font-bold text-slate-800">Agregar Insumo</h2>
+    <div class="text-xs text-slate-500 text-left md:text-right">
+      <p><span class="text-rose-500 font-bold">*</span> Campo obligatorio</p>
+      <p>Cant. compra acepta decimales con punto o coma</p>
+    </div>
+  </div>
+
+  <form method="post" class="grid grid-cols-1 md:grid-cols-6 gap-3 items-end">
+    <input type="hidden" name="action" value="create" />
+
+    <div class="md:col-span-2">
+      <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1" for="name">
+        Nombre <span class="text-rose-500">*</span>
+      </label>
+      <input id="name" name="name" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500/20" />
+    </div>
+
+    <div>
+      <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1" for="unit">
+        Unidad <span class="text-rose-500">*</span>
+      </label>
+      <select id="unit" name="unit" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500/20">
+        <option value="" selected disabled>Selecciona unidad</option>
+        {unitOptions.map((option) => <option value={option}>{option}</option>)}
+      </select>
+    </div>
+
+    <div>
+      <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1" for="price">
+        Precio <span class="text-rose-500">*</span>
+      </label>
+      <input id="price" name="price" type="number" min="0" step="0.01" required class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500/20" />
+    </div>
+
+    <div>
+      <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1" for="purchaseQuantity">
+        Cant. Compra <span class="text-[10px] text-slate-400">(opcional)</span>
+      </label>
+      <input id="purchaseQuantity" name="purchaseQuantity" type="text" inputmode="decimal" value="1" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500/20" />
+    </div>
+
+    <button type="submit" class="w-full md:w-auto flex items-center justify-center gap-2 bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-bold hover:bg-indigo-700 transition-colors">
       <Icon name="lucide:plus" />
       Agregar Insumo
     </button>
-  </div>
+  </form>
+</section>
+
+<div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden" transition:animate="slide">
   <div class="overflow-x-auto">
     <table class="w-full text-left">
       <thead class="bg-slate-50 text-slate-500 text-[10px] uppercase font-bold">
@@ -49,20 +183,39 @@ const ingredients = await getCollection('ingredients');
         {
           ingredients.map(ingredient => (
             <tr class="hover:bg-slate-50/50 transition-colors">
-              <td class="px-6 py-4 font-semibold text-slate-800">{ingredient.data.name}</td>
+              <td class="px-6 py-4 font-semibold text-slate-800">{ingredient.name}</td>
               <td class="px-6 py-4 font-mono text-sm">
-                <span class="text-slate-400">$</span>{ingredient.data.price.toFixed(2)}
+                <span class="text-slate-400">$</span>{ingredient.price.toFixed(2)}
               </td>
-              <td class="px-6 py-4 text-slate-700 font-medium">{ingredient.data.purchaseQuantity}</td>
-              <td class="px-6 py-4 text-slate-500 italic">{ingredient.data.unit}</td>
+              <td class="px-6 py-4 text-slate-700 font-medium">{ingredient.purchaseQuantity}</td>
+              <td class="px-6 py-4 text-slate-500 italic">{ingredient.unit}</td>
               <td class="px-6 py-4 font-bold text-indigo-600">
-                ${ (ingredient.data.price / ingredient.data.purchaseQuantity).toFixed(2) } / {ingredient.data.unit}
+                ${ (ingredient.price / ingredient.purchaseQuantity).toFixed(2) } / {ingredient.unit}
               </td>
-              <td class="px-6 py-4 text-xs text-slate-400">{ingredient.data.supplier || ingredient.data.brand}</td>
+              <td class="px-6 py-4 text-xs text-slate-400">{ingredient.supplier || ingredient.brand}</td>
               <td class="px-6 py-4 text-right">
-                <button class="text-slate-300 hover:text-red-500 transition-colors">
+                {
+                  (() => {
+                    const usedRecipes = ingredientUsage[ingredient.id] || [];
+                    const usedRecipesPayload = encodeURIComponent(JSON.stringify(usedRecipes));
+                    return (
+                <button
+                  type="button"
+                  class:list={[
+                    'transition-colors',
+                    usedRecipes.length > 0 ? 'text-amber-500 hover:text-amber-600' : 'text-slate-300 hover:text-red-500',
+                  ]}
+                  title={usedRecipes.length > 0 ? 'Ingrediente en uso' : 'Eliminar ingrediente'}
+                  data-delete-trigger
+                  data-ingredient-id={ingredient.id}
+                  data-ingredient-name={ingredient.name}
+                  data-used-recipes={usedRecipesPayload}
+                >
                   <Icon name="lucide:trash-2" size={18} />
                 </button>
+                    );
+                  })()
+                }
               </td>
             </tr>
           ))
@@ -71,4 +224,106 @@ const ingredients = await getCollection('ingredients');
     </table>
   </div>
 </div>
+
+<dialog id="delete-confirm-modal" class="fixed inset-0 m-auto rounded-2xl p-0 backdrop:bg-slate-900/40 w-[92vw] max-w-md">
+  <div class="p-6 bg-white rounded-2xl border border-slate-200 shadow-xl">
+    <h3 class="text-lg font-bold text-slate-800">Confirmar eliminación</h3>
+    <p class="mt-2 text-sm text-slate-600">
+      Vas a eliminar el ingrediente <span id="delete-ingredient-name" class="font-semibold text-slate-800"></span>.
+    </p>
+    <p id="delete-usage-message" class="mt-2 text-xs text-slate-500"></p>
+    <ul id="delete-usage-list" class="mt-2 list-disc pl-5 text-xs text-amber-700 space-y-1"></ul>
+
+    <form method="post" id="delete-confirm-form" class="mt-5 flex items-center justify-end gap-2">
+      <input type="hidden" name="action" value="delete" />
+      <input type="hidden" name="ingredientId" id="delete-ingredient-id" value="" />
+      <button type="button" id="cancel-delete" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 text-sm font-semibold hover:bg-slate-50">Cancelar</button>
+      <button type="submit" id="confirm-delete" class="px-4 py-2 rounded-xl bg-rose-600 text-white text-sm font-semibold hover:bg-rose-700">Eliminar</button>
+    </form>
+  </div>
+</dialog>
+
+<script>
+  const initDeleteModal = () => {
+    const modal = document.getElementById('delete-confirm-modal');
+    const ingredientName = document.getElementById('delete-ingredient-name');
+    const ingredientIdInput = document.getElementById('delete-ingredient-id');
+    const cancelBtn = document.getElementById('cancel-delete');
+    const confirmDeleteBtn = document.getElementById('confirm-delete');
+    const usageMessage = document.getElementById('delete-usage-message');
+    const usageList = document.getElementById('delete-usage-list');
+    const triggers = document.querySelectorAll('[data-delete-trigger]');
+
+    if (!modal || !ingredientName || !ingredientIdInput || !cancelBtn || !confirmDeleteBtn || !usageMessage || !usageList) return;
+
+    if (!(modal instanceof HTMLDialogElement)) return;
+    if (!(ingredientName instanceof HTMLElement)) return;
+    if (!(ingredientIdInput instanceof HTMLInputElement)) return;
+    if (!(cancelBtn instanceof HTMLButtonElement)) return;
+    if (!(confirmDeleteBtn instanceof HTMLButtonElement)) return;
+    if (!(usageMessage instanceof HTMLElement)) return;
+    if (!(usageList instanceof HTMLElement)) return;
+
+    triggers.forEach((trigger) => {
+      if (!(trigger instanceof HTMLElement)) return;
+      if (trigger.dataset.bound === '1') return;
+      trigger.dataset.bound = '1';
+      trigger.addEventListener('click', () => {
+        let usedRecipes = [];
+        try {
+          const payload = trigger.dataset.usedRecipes;
+          if (payload) {
+            const decoded = decodeURIComponent(payload);
+            const parsed = JSON.parse(decoded);
+            if (Array.isArray(parsed)) {
+              usedRecipes = parsed.filter((item) => typeof item === 'string' && item.trim().length > 0);
+            }
+          }
+        } catch {
+          usedRecipes = [];
+        }
+
+        ingredientName.textContent = trigger.dataset.ingredientName || '';
+        ingredientIdInput.value = trigger.dataset.ingredientId || '';
+
+        usageList.innerHTML = '';
+        if (usedRecipes.length > 0) {
+          usageMessage.textContent = 'Este ingrediente está en uso y no se puede eliminar. Se usa en:';
+          usedRecipes.forEach((recipeName) => {
+            const li = document.createElement('li');
+            li.textContent = recipeName;
+            usageList.appendChild(li);
+          });
+          confirmDeleteBtn.disabled = true;
+          confirmDeleteBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        } else {
+          usageMessage.textContent = 'No hay recetas relacionadas. Puedes continuar con la eliminación.';
+          confirmDeleteBtn.disabled = false;
+          confirmDeleteBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+
+        modal.showModal();
+      });
+    });
+
+    if (!cancelBtn.dataset.bound) {
+      cancelBtn.dataset.bound = '1';
+      cancelBtn.addEventListener('click', () => {
+        modal.close();
+      });
+    }
+
+    if (!modal.dataset.bound) {
+      modal.dataset.bound = '1';
+      modal.addEventListener('click', (event) => {
+        if (event.target === modal) {
+          modal.close();
+        }
+      });
+    }
+  };
+
+  document.addEventListener('astro:page-load', initDeleteModal);
+  document.addEventListener('astro:after-swap', initDeleteModal);
+</script>
 </Layout>

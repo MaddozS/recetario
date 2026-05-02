@@ -101,10 +101,10 @@
   {
     "id": 12,
     "name": "Vainilla",
-    "unit": "lt",
-    "price": 12.5,
-    "purchaseQuantity": 1,
-    "brand": "",
+    "unit": "ml",
+    "price": 28.30,
+    "purchaseQuantity": 250,
+    "brand": "Molina",
     "supplier": "Casa Santos Lugo"
   },
   {
@@ -129,8 +129,8 @@
     "id": 15,
     "name": "Azúcar refinada",
     "unit": "kg",
-    "price": 56.30,
-    "purchaseQuantity": 2,
+    "price": 27.55,
+    "purchaseQuantity": 1,
     "brand": "",
     "supplier": ""
   },
@@ -272,11 +272,11 @@
   {
     "id": 31,
     "name": "Leche evaporada",
-    "unit": "ml",
-    "price": 56,
-    "purchaseQuantity": 944.8,
-    "brand": "Nestlé",
-    "supplier": "Walmart"
+    "unit": "lt",
+    "price": 55.50,
+    "purchaseQuantity": 1,
+    "brand": "Natura Tamariz",
+    "supplier": "Casa Santos Lugo"
   },
   {
     "id": 32,
@@ -289,11 +289,11 @@
   },
   {
     "id": 33,
-    "name": "Cacao en polvo (sustituto)",
+    "name": "Cacao en polvo (comercial)",
     "unit": "kg",
-    "price": 70.52,
+    "price": 60,
     "purchaseQuantity": 1,
-    "brand": "Abuelo Jose",
+    "brand": "Casa Preve",
     "supplier": ""
   },
   {

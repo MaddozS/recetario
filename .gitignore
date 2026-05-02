@@ -17,8 +17,15 @@ pnpm-debug.log*
 .env
 .env.production
 
+# local auth sqlite database
+data/auth.db
+data/auth.db-shm
+data/auth.db-wal
+
 # macOS-specific files
 .DS_Store
 
 # jetbrains setting folder
 .idea/
+
+.vercel/
