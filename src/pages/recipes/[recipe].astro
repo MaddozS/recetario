@@ -2,7 +2,7 @@
 import { Icon } from "astro-icon/components";
 import Layout from "../../layouts/Layout.astro";
 import PresentationCard from "../../components/PresentationCard.astro";
-import { createPresentation, getRecipeById, getRecipeDataOwner, updatePresentation, updateRecipe, listIngredients, type Ingredient, type RecipeIngredientWithData, type RecipeIngredient } from '../../lib/recipe-data';
+import { createPresentation, deletePresentation, deleteRecipe, getRecipeById, getRecipeDataOwner, updatePresentation, updateRecipe, listIngredients, type Ingredient, type RecipeIngredientWithData, type RecipeIngredient } from '../../lib/recipe-data';
 
 const recipeIdParam = Astro.params.recipe;
 const recipeIdNumber = Number(recipeIdParam);
@@ -38,6 +38,25 @@ const buildPresentationSectionUrl = (feedback?: { type: 'success' | 'error'; mes
 
 const redirectToPresentationSection = (feedback?: { type: 'success' | 'error'; message: string }) => (
   Astro.redirect(buildPresentationSectionUrl(feedback))
+);
+
+const buildRecipePageUrl = (feedback?: { type: 'success' | 'error'; message: string }) => {
+  const nextUrl = new URL(Astro.url);
+
+  if (feedback) {
+    nextUrl.searchParams.set('type', feedback.type);
+    nextUrl.searchParams.set('message', feedback.message);
+  } else {
+    nextUrl.searchParams.delete('type');
+    nextUrl.searchParams.delete('message');
+  }
+
+  nextUrl.hash = '';
+  return `${nextUrl.pathname}${nextUrl.search}`;
+};
+
+const redirectToRecipePage = (feedback?: { type: 'success' | 'error'; message: string }) => (
+  Astro.redirect(buildRecipePageUrl(feedback))
 );
 
 const jsonResponse = (body: unknown, status = 200) => new Response(JSON.stringify(body), {
@@ -117,6 +136,40 @@ if (Astro.request.method === 'POST') {
       }
       return redirectToPresentationSection({ type: 'error', message });
     }
+  } else if (action === 'delete_presentation') {
+    const presId = Number(formData.get('presentationId'));
+
+    if (!Number.isFinite(recipeIdNumber) || !Number.isFinite(presId)) {
+      const message = 'No se pudo eliminar la presentación.';
+      if (expectsJsonResponse) {
+        return new Response(message, { status: 400 });
+      }
+      return redirectToPresentationSection({ type: 'error', message });
+    }
+
+    try {
+      const result = await deletePresentation(recipeIdNumber, presId, recipeDataOwner);
+
+      if (result.status === 'not-found') {
+        const message = 'No se encontró la presentación.';
+        if (expectsJsonResponse) {
+          return new Response(message, { status: 404 });
+        }
+        return redirectToPresentationSection({ type: 'error', message });
+      }
+
+      if (expectsJsonResponse) {
+        return jsonResponse({ deleted: true, presentationId: presId });
+      }
+
+      return redirectToPresentationSection({ type: 'success', message: 'Presentación eliminada correctamente.' });
+    } catch {
+      const message = 'No se pudo eliminar la presentación.';
+      if (expectsJsonResponse) {
+        return new Response(message, { status: 400 });
+      }
+      return redirectToPresentationSection({ type: 'error', message });
+    }
   } else if (action === 'create_presentation') {
     const presentationName = String(formData.get('presentationName') || '').trim();
     const unitsPerBatch = parseNumberInput(formData.get('unitsPerBatch'));
@@ -159,6 +212,25 @@ if (Astro.request.method === 'POST') {
       return redirectToPresentationSection({
         type: 'error',
         message: getPresentationFormErrorMessage(error, 'No se pudo crear la presentación.'),
+      });
+    }
+  } else if (action === 'delete_recipe') {
+    if (!Number.isFinite(recipeIdNumber)) {
+      return Astro.redirect('/recipes');
+    }
+
+    try {
+      const result = await deleteRecipe(recipeIdNumber, recipeDataOwner);
+
+      if (result.status === 'not-found') {
+        return Astro.redirect('/recipes');
+      }
+
+      return Astro.redirect('/recipes');
+    } catch {
+      return redirectToRecipePage({
+        type: 'error',
+        message: 'No se pudo eliminar la receta.',
       });
     }
   } else if (action === 'update_recipe') {
@@ -261,7 +333,10 @@ const incrementMultiplier = normalizeMultiplier(multiplier + multiplierStep);
 const multiplierDownHref = `${Astro.url.pathname}?multiplier=${decrementMultiplier}`;
 const multiplierUpHref = `${Astro.url.pathname}?multiplier=${incrementMultiplier}`;
 const recipeEditFormId = 'recipe-edit-form';
+const recipeDeleteFormId = 'recipe-delete-form';
 const createPresentationDialogId = 'create-presentation-dialog';
+const recipeDeleteButtonClasses = 'w-auto min-h-11 px-4 py-2 bg-white text-rose-600 border border-rose-200 rounded-xl text-sm font-bold hover:bg-rose-50 hover:text-rose-700 transition-colors flex items-center justify-center gap-2';
+const ingredientRemoveButtonClasses = 'remove-ingredient-btn inline-flex h-9 w-9 items-center justify-center rounded-full text-rose-500 transition-colors hover:bg-rose-50 hover:text-rose-600';
 
 const clampPercentageValue = (value: number, max = Number.POSITIVE_INFINITY) => {
   if (!Number.isFinite(value)) return 0;
@@ -353,6 +428,10 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
         </form>
       )}
 
+      <form id={recipeDeleteFormId} method="POST" action={Astro.url.pathname} class="hidden">
+        <input type="hidden" name="action" value="delete_recipe" />
+      </form>
+
       <!-- Tag and Last Updated -->
       <div class="flex items-center gap-3 text-sm font-medium text-slate-500 px-1">
         <span class="flex items-center gap-1.5 bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider">
@@ -402,11 +481,19 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
               <a href={Astro.url.pathname} class="flex-1 md:flex-none min-h-11 px-6 py-2 bg-white text-slate-600 border border-slate-200 rounded-xl text-sm font-bold hover:bg-slate-50 transition-colors flex items-center justify-center">
                 Cancelar
               </a>
+              <button type="submit" form={recipeDeleteFormId} class={recipeDeleteButtonClasses} onclick="return confirm('¿Eliminar esta receta?');">
+                <Icon name="lucide:trash-2" size={16} /> Eliminar
+              </button>
             </div>
           ) : (
-            <a href={`${Astro.url.pathname}?edit=true`} class="w-auto min-h-11 px-6 py-2 bg-white text-slate-700 border border-slate-200 rounded-xl text-sm font-bold hover:bg-slate-50 transition-colors flex items-center justify-center gap-2">
-              <Icon name="lucide:pencil" size={16} /> Editar
-            </a>
+            <div class="flex gap-2 w-auto">
+              <a href={`${Astro.url.pathname}?edit=true`} class="w-auto min-h-11 px-6 py-2 bg-white text-slate-700 border border-slate-200 rounded-xl text-sm font-bold hover:bg-slate-50 transition-colors flex items-center justify-center gap-2">
+                <Icon name="lucide:pencil" size={16} /> Editar
+              </a>
+              <button type="submit" form={recipeDeleteFormId} class={recipeDeleteButtonClasses} onclick="return confirm('¿Eliminar esta receta?');">
+                <Icon name="lucide:trash-2" size={16} /> Eliminar
+              </button>
+            </div>
           )}
         </div>
       </div>
@@ -504,8 +591,8 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
 
           <div id="edit-ingredients-tbody" class="space-y-3">
             {recipeIngredients.map(ri => (
-              <div class="edit-ingredient-row grid grid-cols-1 gap-3 rounded-2xl border border-slate-200 bg-slate-50/50 p-3 md:grid-cols-[minmax(0,2.4fr)_11rem_minmax(0,1fr)_3rem] md:items-center md:bg-white md:p-0 md:border-0 md:rounded-none md:border-b md:border-slate-100 md:pb-3">
-                <div class="space-y-1">
+              <div class="edit-ingredient-row grid grid-cols-1 gap-3 rounded-2xl border border-slate-200 bg-slate-50/50 p-3 md:grid-cols-[minmax(0,2.4fr)_minmax(0,13rem)_minmax(0,1fr)_3rem] md:items-center md:bg-white md:p-0 md:border-0 md:rounded-none md:border-b md:border-slate-100 md:pb-3">
+                <div class="space-y-1 min-w-0">
                   <label class="text-[10px] uppercase font-bold text-slate-400 md:hidden">Ingrediente</label>
                   <select name="ingredientId" form={recipeEditFormId} class="ingredient-select w-full bg-white md:bg-slate-50 border border-slate-200 rounded-lg p-2 text-sm font-semibold text-slate-700 focus:ring-2 focus:ring-indigo-500/20">
                     {allIngredients.map(i => (
@@ -514,11 +601,11 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
                   </select>
                 </div>
 
-                <div class="space-y-1">
+                <div class="space-y-1 min-w-0">
                   <label class="text-[10px] uppercase font-bold text-slate-400 md:hidden">Cantidad</label>
-                  <div class="flex items-center gap-2">
-                    <input type="number" step="0.01" name="quantity" form={recipeEditFormId} class="quantity-input w-24 bg-white border border-slate-200 rounded-lg p-2 text-center font-bold text-slate-700 focus:ring-2 focus:ring-indigo-500/20" value={ri.quantity} />
-                    <select name="unit" form={recipeEditFormId} class="unit-select w-24 bg-white border border-slate-200 rounded-lg p-2 text-sm text-slate-600 focus:ring-2 focus:ring-indigo-500/20">
+                  <div class="grid min-w-0 grid-cols-[minmax(0,1fr)_5.5rem] items-center gap-2">
+                    <input type="number" step="0.01" name="quantity" form={recipeEditFormId} class="quantity-input w-full min-w-0 bg-white border border-slate-200 rounded-lg p-2 text-center font-bold text-slate-700 focus:ring-2 focus:ring-indigo-500/20" value={ri.quantity} />
+                    <select name="unit" form={recipeEditFormId} class="unit-select w-full min-w-0 bg-white border border-slate-200 rounded-lg p-2 text-sm text-slate-600 focus:ring-2 focus:ring-indigo-500/20">
                       {getUnitOptionsForValue(ri.unit).map((unitOption) => (
                         <option value={unitOption.value} selected={unitOption.value === ri.unit}>{unitOption.label}</option>
                       ))}
@@ -526,13 +613,13 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
                   </div>
                 </div>
 
-                <div class="space-y-1">
+                <div class="space-y-1 min-w-0">
                   <label class="text-[10px] uppercase font-bold text-slate-400 md:hidden">Notas</label>
                   <input type="text" name="comment" form={recipeEditFormId} class="comment-input w-full bg-white border border-slate-200 rounded-lg p-2 text-sm text-slate-600 focus:ring-2 focus:ring-indigo-500/20" value={ri.comment || ''} placeholder="Opcional" />
                 </div>
 
                 <div class="flex items-center justify-end md:justify-center">
-                  <button type="button" class="remove-ingredient-btn text-slate-400 hover:text-red-500 transition-colors p-2" aria-label="Eliminar ingrediente">
+                  <button type="button" class={ingredientRemoveButtonClasses} aria-label="Eliminar ingrediente">
                     <Icon name="lucide:trash-2" size={18} />
                   </button>
                 </div>
@@ -905,8 +992,8 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
 
 {isEditMode && (
   <template id="ingredient-row-template">
-    <div class="edit-ingredient-row grid grid-cols-1 gap-3 rounded-2xl border border-slate-200 bg-slate-50/50 p-3 md:grid-cols-[minmax(0,2.4fr)_11rem_minmax(0,1fr)_3rem] md:items-center md:bg-white md:p-0 md:border-0 md:rounded-none md:border-b md:border-slate-100 md:pb-3">
-      <div class="space-y-1">
+    <div class="edit-ingredient-row grid grid-cols-1 gap-3 rounded-2xl border border-slate-200 bg-slate-50/50 p-3 md:grid-cols-[minmax(0,2.4fr)_minmax(0,13rem)_minmax(0,1fr)_3rem] md:items-center md:bg-white md:p-0 md:border-0 md:rounded-none md:border-b md:border-slate-100 md:pb-3">
+      <div class="space-y-1 min-w-0">
         <label class="text-[10px] uppercase font-bold text-slate-400 md:hidden">Ingrediente</label>
         <select name="ingredientId" form={recipeEditFormId} class="ingredient-select w-full bg-white md:bg-slate-50 border border-slate-200 rounded-lg p-2 text-sm font-semibold text-slate-700 focus:ring-2 focus:ring-indigo-500/20">
           {allIngredients.map(i => (
@@ -914,23 +1001,23 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
           ))}
         </select>
       </div>
-      <div class="space-y-1">
+      <div class="space-y-1 min-w-0">
         <label class="text-[10px] uppercase font-bold text-slate-400 md:hidden">Cantidad</label>
-        <div class="flex items-center gap-2">
-          <input type="number" step="0.01" name="quantity" form={recipeEditFormId} class="quantity-input w-24 bg-white border border-slate-200 rounded-lg p-2 text-center font-bold text-slate-700 focus:ring-2 focus:ring-indigo-500/20" value="1" />
-          <select name="unit" form={recipeEditFormId} class="unit-select w-24 bg-white border border-slate-200 rounded-lg p-2 text-sm text-slate-600 focus:ring-2 focus:ring-indigo-500/20">
+        <div class="grid min-w-0 grid-cols-[minmax(0,1fr)_5.5rem] items-center gap-2">
+          <input type="number" step="0.01" name="quantity" form={recipeEditFormId} class="quantity-input w-full min-w-0 bg-white border border-slate-200 rounded-lg p-2 text-center font-bold text-slate-700 focus:ring-2 focus:ring-indigo-500/20" value="1" />
+          <select name="unit" form={recipeEditFormId} class="unit-select w-full min-w-0 bg-white border border-slate-200 rounded-lg p-2 text-sm text-slate-600 focus:ring-2 focus:ring-indigo-500/20">
             {getUnitOptionsForValue('').map((unitOption, index) => (
               <option value={unitOption.value} selected={index === 0}>{unitOption.label}</option>
             ))}
           </select>
         </div>
       </div>
-      <div class="space-y-1">
+      <div class="space-y-1 min-w-0">
         <label class="text-[10px] uppercase font-bold text-slate-400 md:hidden">Notas</label>
         <input type="text" name="comment" form={recipeEditFormId} class="comment-input w-full bg-white border border-slate-200 rounded-lg p-2 text-sm text-slate-600 focus:ring-2 focus:ring-indigo-500/20" value="" placeholder="Opcional" />
       </div>
       <div class="flex items-center justify-end md:justify-center">
-        <button type="button" class="remove-ingredient-btn text-slate-400 hover:text-red-500 transition-colors p-2" aria-label="Eliminar ingrediente">
+        <button type="button" class={ingredientRemoveButtonClasses} aria-label="Eliminar ingrediente">
           <Icon name="lucide:trash-2" size={18} />
         </button>
       </div>
