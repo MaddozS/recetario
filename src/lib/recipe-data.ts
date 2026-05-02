@@ -29,6 +29,7 @@ export type RecipePresentation = {
   id: number;
   name: string;
   unitsPerBatch: number;
+  salePrice?: number;
 };
 
 export type RecipeWithIngredients = {
@@ -36,6 +37,7 @@ export type RecipeWithIngredients = {
   name: string;
   desiredMargin: number;
   fixedCostsPercentage: number;
+  updatedAt?: string;
   ingredients: RecipeIngredientWithData[];
   presentations: RecipePresentation[];
 };
@@ -150,9 +152,17 @@ async function createTables(driver: Driver) {
         id INTEGER PRIMARY KEY,
         name TEXT NOT NULL,
         desired_margin NUMERIC NOT NULL DEFAULT 0,
-        fixed_costs_percentage NUMERIC NOT NULL DEFAULT 0
+        fixed_costs_percentage NUMERIC NOT NULL DEFAULT 0,
+        updated_at TIMESTAMP
       );
     `);
+    
+    // Add column if it doesn't exist
+    try {
+      await driver.pool.query("ALTER TABLE recipes ADD COLUMN updated_at TIMESTAMP");
+    } catch (e) {
+      // Column likely exists
+    }
 
     await driver.pool.query(`
       CREATE TABLE IF NOT EXISTS recipe_ingredients (
@@ -170,7 +180,8 @@ async function createTables(driver: Driver) {
         id INTEGER PRIMARY KEY,
         recipe_id INTEGER NOT NULL REFERENCES recipes(id) ON DELETE CASCADE,
         name TEXT NOT NULL,
-        units_per_batch NUMERIC NOT NULL
+        units_per_batch NUMERIC NOT NULL,
+        sale_price NUMERIC
       );
     `);
 
@@ -194,9 +205,19 @@ async function createTables(driver: Driver) {
       id INTEGER PRIMARY KEY,
       name TEXT NOT NULL,
       desired_margin REAL NOT NULL DEFAULT 0,
-      fixed_costs_percentage REAL NOT NULL DEFAULT 0
+      fixed_costs_percentage REAL NOT NULL DEFAULT 0,
+      updated_at TEXT
     );
+  `);
+  
+  // Add column if it doesn't exist
+  try {
+    driver.db.exec("ALTER TABLE recipes ADD COLUMN updated_at TEXT");
+  } catch (e) {
+    // Column likely exists
+  }
 
+  driver.db.exec(`
     CREATE TABLE IF NOT EXISTS recipe_ingredients (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       recipe_id INTEGER NOT NULL,
@@ -213,6 +234,7 @@ async function createTables(driver: Driver) {
       recipe_id INTEGER NOT NULL,
       name TEXT NOT NULL,
       units_per_batch REAL NOT NULL,
+      sale_price REAL,
       FOREIGN KEY(recipe_id) REFERENCES recipes(id) ON DELETE CASCADE
     );
 
@@ -364,6 +386,57 @@ async function seedIfNeeded(driver: Driver) {
     driver.db.exec("ROLLBACK;");
     throw error;
   }
+}
+
+export async function updatePresentation(
+  id: number,
+  input: { unitsPerBatch?: number; salePrice?: number }
+): Promise<void> {
+  await ensureInitialized();
+  const driver = await getDriver();
+
+  if (driver.kind === "postgres") {
+    const updates = [];
+    const values = [];
+    let paramIndex = 1;
+
+    if (input.unitsPerBatch !== undefined) {
+      updates.push(`units_per_batch = $${paramIndex++}`);
+      values.push(input.unitsPerBatch);
+    }
+    if (input.salePrice !== undefined) {
+      updates.push(`sale_price = $${paramIndex++}`);
+      values.push(input.salePrice);
+    }
+
+    if (updates.length === 0) return;
+
+    values.push(id);
+    await driver.pool.query(
+      `UPDATE recipe_presentations SET ${updates.join(', ')} WHERE id = $${paramIndex}`,
+      values
+    );
+    return;
+  }
+
+  const updates = [];
+  const values = [];
+
+  if (input.unitsPerBatch !== undefined) {
+    updates.push(`units_per_batch = ?`);
+    values.push(input.unitsPerBatch);
+  }
+  if (input.salePrice !== undefined) {
+    updates.push(`sale_price = ?`);
+    values.push(input.salePrice);
+  }
+
+  if (updates.length === 0) return;
+
+  values.push(id);
+  driver.db.prepare(
+    `UPDATE recipe_presentations SET ${updates.join(', ')} WHERE id = ?`
+  ).run(...values);
 }
 
 async function ensureInitialized() {
@@ -526,8 +599,9 @@ export async function getRecipeById(recipeId: string | number): Promise<RecipeWi
       name: string;
       desired_margin: string;
       fixed_costs_percentage: string;
+      updated_at: string | null;
     }>(
-      `SELECT id, name, desired_margin::text, fixed_costs_percentage::text FROM recipes WHERE id = $1 LIMIT 1`,
+      `SELECT id, name, desired_margin::text, fixed_costs_percentage::text, updated_at::text FROM recipes WHERE id = $1 LIMIT 1`,
       [id],
     );
     const recipe = recipeRes.rows[0];
@@ -569,8 +643,9 @@ export async function getRecipeById(recipeId: string | number): Promise<RecipeWi
       id: number;
       name: string;
       units_per_batch: string;
+      sale_price: string | null;
     }>(
-      `SELECT id, name, units_per_batch::text FROM recipe_presentations WHERE recipe_id = $1 ORDER BY id ASC`,
+      `SELECT id, name, units_per_batch::text, sale_price::text FROM recipe_presentations WHERE recipe_id = $1 ORDER BY id ASC`,
       [id],
     );
 
@@ -579,6 +654,7 @@ export async function getRecipeById(recipeId: string | number): Promise<RecipeWi
       name: recipe.name,
       desiredMargin: toNumber(recipe.desired_margin),
       fixedCostsPercentage: toNumber(recipe.fixed_costs_percentage),
+      updatedAt: recipe.updated_at ? new Date(recipe.updated_at).toISOString() : undefined,
       ingredients: ingredientsRes.rows.map((row) => ({
         ingredientId: Number(row.ingredient_id),
         quantity: toNumber(row.quantity),
@@ -598,16 +674,17 @@ export async function getRecipeById(recipeId: string | number): Promise<RecipeWi
         id: Number(row.id),
         name: row.name,
         unitsPerBatch: toNumber(row.units_per_batch),
+        salePrice: row.sale_price !== null ? toNumber(row.sale_price) : undefined,
       })),
     };
   }
 
   const recipe = driver.db
     .prepare(
-      `SELECT id, name, desired_margin, fixed_costs_percentage FROM recipes WHERE id = ? LIMIT 1`,
+      `SELECT id, name, desired_margin, fixed_costs_percentage, updated_at FROM recipes WHERE id = ? LIMIT 1`,
     )
     .get(id) as
-    | { id: number; name: string; desired_margin: number; fixed_costs_percentage: number }
+    | { id: number; name: string; desired_margin: number; fixed_costs_percentage: number; updated_at: string | null }
     | undefined;
 
   if (!recipe) return null;
@@ -644,14 +721,15 @@ export async function getRecipeById(recipeId: string | number): Promise<RecipeWi
   }>;
 
   const presentationRows = driver.db
-    .prepare(`SELECT id, name, units_per_batch FROM recipe_presentations WHERE recipe_id = ? ORDER BY id ASC`)
-    .all(id) as Array<{ id: number; name: string; units_per_batch: number }>;
+    .prepare(`SELECT id, name, units_per_batch, sale_price FROM recipe_presentations WHERE recipe_id = ? ORDER BY id ASC`)
+    .all(id) as Array<{ id: number; name: string; units_per_batch: number; sale_price: number | null }>;
 
   return {
     id: recipe.id,
     name: recipe.name,
     desiredMargin: Number(recipe.desired_margin),
     fixedCostsPercentage: Number(recipe.fixed_costs_percentage),
+    updatedAt: recipe.updated_at ? new Date(recipe.updated_at).toISOString() : undefined,
     ingredients: ingredientRows.map((row) => ({
       ingredientId: row.ingredient_id,
       quantity: Number(row.quantity),
@@ -671,6 +749,7 @@ export async function getRecipeById(recipeId: string | number): Promise<RecipeWi
       id: row.id,
       name: row.name,
       unitsPerBatch: Number(row.units_per_batch),
+      salePrice: row.sale_price !== null ? Number(row.sale_price) : undefined,
     })),
   };
 }
@@ -813,4 +892,71 @@ export async function deleteIngredient(ingredientId: number): Promise<DeleteIngr
 
   driver.db.prepare(`DELETE FROM ingredients WHERE id = ?`).run(ingredientId);
   return { status: "deleted" };
+}
+export type UpdateRecipeInput = {
+  name: string;
+  desiredMargin: number;
+  fixedCostsPercentage: number;
+  ingredients: {
+    ingredientId: number;
+    quantity: number;
+    unit: string;
+    comment: string | null;
+  }[];
+};
+
+export async function updateRecipe(recipeId: number, input: UpdateRecipeInput): Promise<void> {
+  await ensureInitialized();
+  const driver = await getDriver();
+
+  const now = new Date().toISOString();
+
+  if (driver.kind === "postgres") {
+    const client = await driver.pool.connect();
+    try {
+      await client.query("BEGIN");
+      
+      await client.query(
+        "UPDATE recipes SET name = $1, desired_margin = $2, fixed_costs_percentage = $3, updated_at = $4 WHERE id = $5",
+        [input.name, input.desiredMargin, input.fixedCostsPercentage, now, recipeId]
+      );
+
+      await client.query("DELETE FROM recipe_ingredients WHERE recipe_id = $1", [recipeId]);
+
+      for (const ing of input.ingredients) {
+        await client.query(
+          `INSERT INTO recipe_ingredients (recipe_id, ingredient_id, quantity, unit, comment)
+           VALUES ($1, $2, $3, $4, $5)`,
+          [recipeId, ing.ingredientId, ing.quantity, ing.unit, ing.comment || null]
+        );
+      }
+
+      await client.query("COMMIT");
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    } finally {
+      client.release();
+    }
+    return;
+  }
+
+  driver.db.exec("BEGIN");
+  try {
+    driver.db.prepare("UPDATE recipes SET name = ?, desired_margin = ?, fixed_costs_percentage = ?, updated_at = ? WHERE id = ?").run(input.name, input.desiredMargin, input.fixedCostsPercentage, now, recipeId);
+    driver.db.prepare("DELETE FROM recipe_ingredients WHERE recipe_id = ?").run(recipeId);
+
+    const insertStmt = driver.db.prepare(
+      `INSERT INTO recipe_ingredients (recipe_id, ingredient_id, quantity, unit, comment)
+       VALUES (?, ?, ?, ?, ?)`
+    );
+
+    for (const ing of input.ingredients) {
+      insertStmt.run(recipeId, ing.ingredientId, ing.quantity, ing.unit, ing.comment || null);
+    }
+    driver.db.exec("COMMIT");
+  } catch (error) {
+    driver.db.exec("ROLLBACK");
+    throw error;
+  }
 }
