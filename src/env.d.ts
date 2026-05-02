@@ -13,6 +13,8 @@ declare namespace App {
     readonly BETTER_AUTH_DB_PATH?: string;
     readonly DATABASE_URL?: string;
     readonly POSTGRES_URL?: string;
+    readonly POSTGRES_SSL_CA?: string;
+    readonly POSTGRES_SSL_INSECURE?: string;
 
     readonly GOOGLE_CLIENT_ID: string;
     readonly GOOGLE_CLIENT_SECRET: string;
