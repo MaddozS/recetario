@@ -94,7 +94,7 @@ const unitProfit = defaultSalePrice - unitCost;
           name="unitsPerBatch"
           type="number"
           step="any"
-          class="presentation-units w-8 bg-transparent border-none p-0 text-center text-xs text-slate-800 font-medium focus:ring-0 read-only:pointer-events-none"
+          class="presentation-units w-8 bg-transparent border-none p-0 text-center text-xs text-slate-800 font-mono font-semibold focus:ring-0 read-only:pointer-events-none"
           value={unitsPerBatch}
           readonly
         />
@@ -105,7 +105,7 @@ const unitProfit = defaultSalePrice - unitCost;
         Math.abs(multiplier - 1) > 0.0001 && (
           <div class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md border border-indigo-200 bg-indigo-50 text-xs text-indigo-700 transition-all">
             <span class="font-semibold">Con x{multiplier}:</span>
-            <span class="font-black yield-value">
+            <span class="font-mono font-semibold yield-value">
               {Math.round(totalUnits * 100) / 100}
             </span>
             <span>piezas</span>
@@ -122,7 +122,7 @@ const unitProfit = defaultSalePrice - unitCost;
           Costo unitario
         </p>
         <p
-          class="unit-cost-display text-[20px] font-bold text-slate-800 tabular-nums"
+          class="unit-cost-display text-[20px] font-mono font-semibold text-slate-800 tabular-nums"
         >
           ${unitCost.toFixed(2)}
         </p>
@@ -138,7 +138,7 @@ const unitProfit = defaultSalePrice - unitCost;
             Precio Venta
           </p>
           <p class="text-[10px] text-indigo-400/80">
-            Sugerido: <span class="recommended-price-display"
+            Sugerido: <span class="recommended-price-display font-mono font-semibold"
               >${unitPriceRecommended.toFixed(2)}</span
             >
           </p>
@@ -147,21 +147,21 @@ const unitProfit = defaultSalePrice - unitCost;
           class="relative flex items-center justify-end focus-within:bg-white focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:border-indigo-300 rounded-md border border-transparent transition-all px-1 -mr-1 shrink-0"
         >
           <span
-            class="text-[20px] font-bold text-indigo-600 mr-0.5 pointer-events-none"
+            class="text-[20px] font-mono font-semibold text-indigo-600 mr-0.5 pointer-events-none"
             >$</span
           >
           <input
             name="salePrice"
             type="text"
             inputmode="decimal"
-            class="presentation-price bg-transparent border-none p-0 text-[20px] font-bold text-indigo-600 text-left tabular-nums focus:ring-0 read-only:pointer-events-none min-w-[3ch] max-w-full"
+            class="presentation-price bg-transparent border-none p-0 text-[20px] font-mono font-semibold text-indigo-600 text-left tabular-nums focus:ring-0 read-only:pointer-events-none min-w-[3ch] max-w-full"
             style={`width: ${Math.max(defaultSalePrice.toFixed(2).length + 1, 4)}ch;`}
             value={defaultSalePrice.toFixed(2)}
             readonly
           />
           <span
             aria-hidden="true"
-            class="presentation-price-measure pointer-events-none absolute left-0 top-0 invisible whitespace-pre text-[20px] font-bold tabular-nums"
+            class="presentation-price-measure pointer-events-none absolute left-0 top-0 invisible whitespace-pre text-[20px] font-mono font-semibold tabular-nums"
           >
             {defaultSalePrice.toFixed(2)}
           </span>
@@ -179,7 +179,7 @@ const unitProfit = defaultSalePrice - unitCost;
           Ganancia / Pz
         </p>
         <p
-          class="text-[20px] font-bold text-emerald-600 tabular-nums profit-display"
+          class="text-[20px] font-mono font-semibold text-emerald-600 tabular-nums profit-display"
         >
           ${unitProfit.toFixed(2)}
         </p>
@@ -187,7 +187,7 @@ const unitProfit = defaultSalePrice - unitCost;
       <div class="pb-1 w-[60%] max-w-60">
         <div class="flex items-center justify-between text-xs mb-2">
           <span class="margin-label text-emerald-600">Saludable</span>
-          <span class="margin-percent-display font-bold text-slate-800"
+          <span class="margin-percent-display font-mono font-semibold text-slate-800"
             >0.0%</span
           >
         </div>
@@ -672,7 +672,7 @@ const unitProfit = defaultSalePrice - unitCost;
           "$" + unitPriceRecommended.toFixed(2);
       if (this.profitDisplay) {
         this.profitDisplay.textContent = "$" + unitProfit.toFixed(2);
-        this.profitDisplay.className = `text-[22px] font-medium tabular-nums profit-display ${marginTextColor}`;
+        this.profitDisplay.className = `text-[22px] font-mono font-semibold tabular-nums profit-display ${marginTextColor}`;
       }
       if (this.marginPercentDisplay)
         this.marginPercentDisplay.textContent = marginPercent.toFixed(1) + "%";

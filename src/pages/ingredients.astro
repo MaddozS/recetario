@@ -418,18 +418,18 @@ const ingredientUsage = await listIngredientUsage(recipeDataOwner);
                         )}
                       </td>
                       <td class="px-6 py-5">
-                        <span class="text-sm font-semibold tabular-nums text-slate-700">
+                        <span class="text-sm font-mono font-semibold tabular-nums text-slate-700">
                           ${ingredient.price.toFixed(2)}
                         </span>
                       </td>
                       <td class="px-6 py-5 text-sm text-slate-600">
-                        <span class="font-semibold text-slate-700">
+                        <span class="font-mono font-semibold text-slate-700">
                           {ingredient.purchaseQuantity}
                         </span>{" "}
                         <span>{ingredient.unit}</span>
                       </td>
                       <td class="px-6 py-5">
-                        <span class="inline-flex items-center rounded-xl border border-indigo-100 bg-indigo-50 px-3 py-2 text-sm font-bold tabular-nums text-indigo-600">
+                        <span class="inline-flex items-center rounded-xl border border-indigo-100 bg-indigo-50 px-3 py-2 text-sm font-mono font-semibold tabular-nums text-indigo-600">
                           ${unitCost.toFixed(2)} / {ingredient.unit}
                         </span>
                       </td>
@@ -654,7 +654,7 @@ const ingredientUsage = await listIngredientUsage(recipeDataOwner);
                 name="price"
                 type="text"
                 inputmode="decimal"
-                class={`${inputClasses} pl-8`}
+                class={`${inputClasses} pl-8 font-mono`}
                 autocomplete="off"
               />
             </div>
@@ -672,7 +672,7 @@ const ingredientUsage = await listIngredientUsage(recipeDataOwner);
                 name="purchaseQuantity"
                 type="text"
                 inputmode="decimal"
-                class="border-0 bg-transparent px-4 py-3 text-sm text-slate-800 outline-none placeholder:text-slate-400"
+                class="border-0 bg-transparent px-4 py-3 text-sm text-slate-800 outline-none placeholder:text-slate-400 font-mono"
                 autocomplete="off"
               />
               <select
