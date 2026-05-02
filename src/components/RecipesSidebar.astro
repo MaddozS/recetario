@@ -97,6 +97,7 @@ const createRecipeDialogId = "create-recipe-dialog";
         return (
           <a
             href={`/recipes/${recipe.id}`}
+            data-astro-reload
             class={`recipe-item block w-full p-3 rounded-xl transition-colors ${isActive ? "bg-indigo-50" : "hover:bg-slate-50"}`}
             data-name={recipe.name.toLowerCase()}
           >
@@ -164,6 +165,7 @@ const createRecipeDialogId = "create-recipe-dialog";
     <form
       method="post"
       action="/recipes"
+      data-astro-reload
       class="max-h-[calc(100dvh-2rem)] overflow-auto rounded-3xl bg-white p-6"
     >
       <input type="hidden" name="action" value="create_recipe" />
