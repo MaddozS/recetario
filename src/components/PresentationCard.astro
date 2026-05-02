@@ -38,6 +38,7 @@ const unitProfit = defaultSalePrice - unitCost;
     
     <div class="flex justify-between items-start gap-3 mb-2">
       <input 
+        name="presentationName"
         type="text" 
         class="presentation-name min-w-0 font-bold text-xl bg-transparent border-none focus:ring-2 focus:ring-indigo-500/20 p-1 -ml-1 rounded-lg text-slate-800 w-full"
         value={name}
@@ -154,6 +155,7 @@ const unitProfit = defaultSalePrice - unitCost;
     multiplier = 1;
     costoBatch = 0;
     precioRecBatch = 0;
+    originalName = '';
     originalUnits = '0';
     originalPrice = '0';
     
@@ -196,15 +198,23 @@ const unitProfit = defaultSalePrice - unitCost;
           if (!this.form) return;
 
           const formData = new FormData(this.form);
-          await fetch(window.location.href, {
+          const response = await fetch(window.location.href, {
             method: 'POST',
             body: formData
           });
+
+          if (!response.ok) {
+            const message = (await response.text()).trim();
+            throw new Error(message || 'Hubo un error al guardar los cambios.');
+          }
           
           this.toggleEdit(true); // true = save changes
         } catch (error) {
           console.error(error);
-          alert('Hubo un error al guardar los cambios.');
+          const message = error instanceof Error && error.message
+            ? error.message
+            : 'Hubo un error al guardar los cambios.';
+          alert(message);
         } finally {
           if (this.btnSave) {
             this.btnSave.disabled = false;
@@ -222,6 +232,7 @@ const unitProfit = defaultSalePrice - unitCost;
       const inputs = [this.inputName, this.inputUnits, this.inputPrice];
       
       if (this.isEditing) {
+        this.originalName = this.inputName?.value || '';
         this.originalUnits = this.inputUnits?.value || '0';
         this.originalPrice = this.inputPrice?.value || '0';
 
@@ -252,11 +263,13 @@ const unitProfit = defaultSalePrice - unitCost;
       } else {
         if (!save) {
           // Revert to original values if cancelled
+          if (this.inputName) this.inputName.value = this.originalName;
           if (this.inputUnits) this.inputUnits.value = this.originalUnits;
           if (this.inputPrice) this.inputPrice.value = this.originalPrice;
           this.calculate();
         } else {
           // Commit changes
+          this.originalName = this.inputName?.value || '';
           this.originalUnits = this.inputUnits?.value || '0';
           this.originalPrice = this.inputPrice?.value || '0';
         }
