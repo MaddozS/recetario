@@ -34,6 +34,13 @@ import Layout from "../layouts/Layout.astro";
           <span>Continuar con Google</span>
         </button>
 
+        <p
+          id="sign-in-feedback"
+          class="hidden rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700"
+          role="status"
+          aria-live="polite"
+        ></p>
+
         {/* Footer */}
         <p class="text-center text-xs text-slate-500">
           Al iniciar sesión, aceptas nuestros términos de servicio
@@ -45,12 +52,71 @@ import Layout from "../layouts/Layout.astro";
 </Layout>
 
 <script>
-  import { signIn } from "../lib/sign-in";
+  import { signIn, SignInRateLimitError } from "../lib/sign-in";
 
-  const button = document.getElementById("google-sign-in");
-  if (button) {
+  function setupGoogleSignIn() {
+    const button = document.getElementById("google-sign-in");
+    const feedback = document.getElementById("sign-in-feedback");
+
+    if (!(button instanceof HTMLButtonElement) || !(feedback instanceof HTMLParagraphElement)) {
+      return;
+    }
+
+    if (button.dataset.signInBound === "1") {
+      return;
+    }
+
+    button.dataset.signInBound = "1";
+
+    const label = button.querySelector("span");
+    const defaultLabel = label?.textContent ?? "Continuar con Google";
+
+    const setPendingState = (isPending: boolean) => {
+      button.disabled = isPending;
+      button.setAttribute("aria-busy", isPending ? "true" : "false");
+      button.classList.toggle("cursor-not-allowed", isPending);
+      button.classList.toggle("opacity-70", isPending);
+
+      if (label) {
+        label.textContent = isPending ? "Redirigiendo..." : defaultLabel;
+      }
+    };
+
+    const showFeedback = (message: string) => {
+      feedback.textContent = message;
+      feedback.classList.remove("hidden");
+    };
+
+    const clearFeedback = () => {
+      feedback.textContent = "";
+      feedback.classList.add("hidden");
+    };
+
     button.addEventListener("click", async () => {
-      await signIn();
+      if (button.disabled) {
+        return;
+      }
+
+      clearFeedback();
+      setPendingState(true);
+
+      try {
+        await signIn();
+      } catch (error) {
+        if (error instanceof SignInRateLimitError) {
+          const retryAfterSeconds = error.retryAfterSeconds ?? 10;
+          showFeedback(`Demasiados intentos. Vuelve a intentarlo en ${retryAfterSeconds} segundos.`);
+        } else {
+          showFeedback("No se pudo iniciar sesión con Google. Inténtalo de nuevo.");
+          console.error("Google sign-in failed:", error);
+        }
+
+        setPendingState(false);
+      }
     });
   }
+
+  document.addEventListener("astro:page-load", setupGoogleSignIn);
+  document.addEventListener("astro:after-swap", setupGoogleSignIn);
+  setupGoogleSignIn();
 </script>
