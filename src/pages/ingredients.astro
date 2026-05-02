@@ -9,25 +9,18 @@ import {
   listIngredientUsage,
   updateIngredient,
 } from "../lib/recipe-data";
+import { parseNumberInput } from "../lib/form-utils";
+import { UNIT_OPTIONS, DEFAULT_UNIT } from "../lib/constants";
+import FeedbackAlert from "../components/FeedbackAlert.astro";
+import UnitCostDisplay from "../components/UnitCostDisplay.astro";
+import IngredientFormFields from "../components/IngredientFormFields.astro";
+import EmptyState from "../components/EmptyState.astro";
 
 if (!Astro.locals.session || !Astro.locals.user) {
   return Astro.redirect("/sign-in");
 }
 
 const recipeDataOwner = getRecipeDataOwner(Astro.locals.user);
-
-const unitOptions = [
-  "kg",
-  "g",
-  "lt",
-  "ml",
-  "pza",
-  "pieza",
-  "cdita",
-  "cda",
-  "taza",
-];
-const defaultUnit = unitOptions[0] ?? "kg";
 
 type IngredientFormInput = {
   name: string;
@@ -52,14 +45,6 @@ const secondaryButtonClasses =
   "inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-200 px-5 py-3 text-sm font-bold text-slate-600 transition-colors hover:bg-slate-50";
 const primaryButtonClasses =
   "inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400";
-
-const parseNumberInput = (value: FormDataEntryValue | null) => {
-  const normalized = String(value ?? "")
-    .trim()
-    .replace(",", ".");
-  if (!normalized) return Number.NaN;
-  return Number(normalized);
-};
 
 const buildIngredientsUrl = (feedback?: Feedback) => {
   const params = new URLSearchParams();
@@ -227,7 +212,11 @@ if (Astro.request.method === "POST") {
   }
 }
 
-const feedbackType = Astro.url.searchParams.get("type");
+const feedbackTypeParam = Astro.url.searchParams.get("type");
+const feedbackType: "error" | "success" | null =
+  feedbackTypeParam === "error" || feedbackTypeParam === "success"
+    ? feedbackTypeParam
+    : null;
 const feedbackMessage = Astro.url.searchParams.get("message");
 const blockedRecipes = (() => {
   const raw = Astro.url.searchParams.get("recipes");
@@ -251,21 +240,11 @@ const ingredientUsage = await listIngredientUsage(recipeDataOwner);
 <Layout currentPage="ingredients" showSideBar={false}>
   {
     feedbackType && feedbackMessage && (
-      <div
-        class:list={[
-          "mb-4 rounded-2xl border px-4 py-3 text-sm",
-          feedbackType === "success"
-            ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-            : "border-rose-200 bg-rose-50 text-rose-700",
-        ]}
-      >
-        <p class="font-semibold">{feedbackMessage}</p>
-        {blockedRecipes.length > 0 && (
-          <p class="mt-2 text-xs">
-            Recetas que lo usan: {blockedRecipes.join(", ")}
-          </p>
-        )}
-      </div>
+      <FeedbackAlert
+        type={feedbackType}
+        message={feedbackMessage}
+        recipes={blockedRecipes}
+      />
     )
   }
 
@@ -297,127 +276,13 @@ const ingredientUsage = await listIngredientUsage(recipeDataOwner);
       <div
         class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-[minmax(0,2.3fr)_minmax(0,1.5fr)_minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,1.5fr)]"
       >
-        <div>
-          <label class={labelClasses} for="desktop-name">
-            Nombre <span class="text-rose-500">*</span>
-          </label>
-          <input
-            id="desktop-name"
-            name="name"
-            type="text"
-            placeholder="Ej. Harina de trigo extra fina"
-            class={inputClasses}
-            autocomplete="off"
-          />
-        </div>
-
-        <div>
-          <label class={labelClasses} for="desktop-supplier">Proveedor</label>
-          <input
-            id="desktop-supplier"
-            name="supplier"
-            type="text"
-            placeholder="Ej. Casa Santos Lugo"
-            class={inputClasses}
-            autocomplete="off"
-          />
-        </div>
-
-        <div>
-          <label class={labelClasses} for="desktop-brand">Marca</label>
-          <input
-            id="desktop-brand"
-            name="brand"
-            type="text"
-            placeholder="Opcional"
-            class={inputClasses}
-            autocomplete="off"
-          />
-        </div>
-
-        <div>
-          <label class={labelClasses} for="desktop-price">
-            Precio empaque <span class="text-rose-500">*</span>
-          </label>
-          <div class="relative">
-            <span
-              class="pointer-events-none absolute inset-y-0 left-4 flex items-center text-sm font-bold text-slate-400"
-            >
-              $
-            </span>
-            <input
-              id="desktop-price"
-              name="price"
-              type="text"
-              inputmode="decimal"
-              placeholder="0.00"
-              class={`${inputClasses} pl-8`}
-              autocomplete="off"
-            />
-          </div>
-        </div>
-
-        <div>
-          <label class={labelClasses} for="desktop-purchase-quantity">
-            Cant. empaque <span class="text-rose-500">*</span>
-          </label>
-          <div
-            class="grid grid-cols-[minmax(0,1fr)_5.5rem] overflow-hidden rounded-xl border border-slate-200 bg-slate-50 transition focus-within:border-indigo-300 focus-within:bg-white focus-within:ring-2 focus-within:ring-indigo-500/20"
-          >
-            <input
-              id="desktop-purchase-quantity"
-              name="purchaseQuantity"
-              type="text"
-              inputmode="decimal"
-              value="1"
-              class="border-0 bg-transparent px-4 py-3 text-sm text-slate-800 outline-none placeholder:text-slate-400"
-              autocomplete="off"
-            />
-            <select
-              name="unit"
-              class="border-0 border-l border-slate-200 bg-white px-3 py-3 text-sm font-semibold text-slate-700 outline-none"
-            >
-              {
-                unitOptions.map((option) => (
-                  <option value={option} selected={option === defaultUnit}>
-                    {option}
-                  </option>
-                ))
-              }
-            </select>
-          </div>
-        </div>
+        <IngredientFormFields idPrefix="desktop" />
       </div>
 
       <div
         class="mt-5 flex flex-col gap-4 rounded-2xl border border-indigo-100 bg-indigo-50/70 p-4 xl:flex-row xl:items-center xl:justify-between"
       >
-        <div class="flex items-start gap-3">
-          <div
-            class="mt-0.5 flex h-10 w-10 items-center justify-center rounded-2xl bg-white text-indigo-600 shadow-sm shadow-indigo-100"
-          >
-            <Icon name="lucide:info" size={18} />
-          </div>
-
-          <div>
-            <p
-              class="text-xs font-bold uppercase tracking-[0.16em] text-slate-500"
-            >
-              Costo unitario calculado:
-            </p>
-            <div class="mt-1 flex items-end gap-2">
-              <span
-                class="text-3xl font-black tabular-nums text-indigo-700"
-                data-unit-cost-value
-              >
-                $0.00
-              </span>
-              <span class="pb-1 text-sm font-semibold text-indigo-400">
-                / <span data-unit-cost-unit>{defaultUnit}</span>
-              </span>
-            </div>
-          </div>
-        </div>
+        <UnitCostDisplay defaultUnit={DEFAULT_UNIT} />
 
         <button
           type="submit"
@@ -630,26 +495,13 @@ const ingredientUsage = await listIngredientUsage(recipeDataOwner);
         </>
       ) : (
         <div class="px-6 py-14 text-center">
-          <div class="mx-auto flex max-w-md flex-col items-center">
-            <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600">
-              <Icon name="lucide:package-plus" size={24} />
-            </div>
-            <h3 class="mt-5 text-lg font-bold text-slate-800">
-              Todavía no tienes ingredientes
-            </h3>
-            <p class="mt-2 text-sm text-slate-500">
-              Agrega tu primer insumo para empezar a costear recetas y
-              presentaciones.
-            </p>
-            <button
-              type="button"
-              class={`${primaryButtonClasses} mt-5 lg:hidden`}
-              data-open-create-modal
-            >
-              <Icon name="lucide:plus" size={18} />
-              Agregar Insumo
-            </button>
-          </div>
+          <EmptyState
+            icon="lucide:package-plus"
+            title="Todavía no tienes ingredientes"
+            description="Agrega tu primer insumo para empezar a costear recetas y
+              presentaciones."
+            actionLabel="Agregar Insumo"
+          />
         </div>
       )
     }
@@ -680,129 +532,18 @@ const ingredientUsage = await listIngredientUsage(recipeDataOwner);
         </button>
       </div>
 
-      <form method="post" class="mt-5 space-y-4" data-ingredient-form data-astro-reload>
+      <form
+        method="post"
+        class="mt-5 space-y-4"
+        data-ingredient-form
+        data-astro-reload
+      >
         <input type="hidden" name="action" value="create" />
 
-        <div>
-          <label class={labelClasses} for="mobile-name">
-            Nombre <span class="text-rose-500">*</span>
-          </label>
-          <input
-            id="mobile-name"
-            name="name"
-            type="text"
-            placeholder="Ej. Harina de trigo extra fina"
-            class={inputClasses}
-            autocomplete="off"
-          />
-        </div>
-
-        <div>
-          <label class={labelClasses} for="mobile-supplier">Proveedor</label>
-          <input
-            id="mobile-supplier"
-            name="supplier"
-            type="text"
-            placeholder="Ej. Casa Santos Lugo"
-            class={inputClasses}
-            autocomplete="off"
-          />
-        </div>
-
-        <div>
-          <label class={labelClasses} for="mobile-brand">Marca</label>
-          <input
-            id="mobile-brand"
-            name="brand"
-            type="text"
-            placeholder="Opcional"
-            class={inputClasses}
-            autocomplete="off"
-          />
-        </div>
-
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div>
-            <label class={labelClasses} for="mobile-price">
-              Precio empaque <span class="text-rose-500">*</span>
-            </label>
-            <div class="relative">
-              <span
-                class="pointer-events-none absolute inset-y-0 left-4 flex items-center text-sm font-bold text-slate-400"
-              >
-                $
-              </span>
-              <input
-                id="mobile-price"
-                name="price"
-                type="text"
-                inputmode="decimal"
-                placeholder="0.00"
-                class={`${inputClasses} pl-8`}
-                autocomplete="off"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label class={labelClasses} for="mobile-purchase-quantity">
-              Cant. empaque <span class="text-rose-500">*</span>
-            </label>
-            <div
-              class="grid grid-cols-[minmax(0,1fr)_5.5rem] overflow-hidden rounded-xl border border-slate-200 bg-slate-50 transition focus-within:border-indigo-300 focus-within:bg-white focus-within:ring-2 focus-within:ring-indigo-500/20"
-            >
-              <input
-                id="mobile-purchase-quantity"
-                name="purchaseQuantity"
-                type="text"
-                inputmode="decimal"
-                value="1"
-                class="border-0 bg-transparent px-4 py-3 text-sm text-slate-800 outline-none placeholder:text-slate-400"
-                autocomplete="off"
-              />
-              <select
-                name="unit"
-                class="border-0 border-l border-slate-200 bg-white px-3 py-3 text-sm font-semibold text-slate-700 outline-none"
-              >
-                {
-                  unitOptions.map((option) => (
-                    <option value={option} selected={option === defaultUnit}>
-                      {option}
-                    </option>
-                  ))
-                }
-              </select>
-            </div>
-          </div>
-        </div>
+        <IngredientFormFields idPrefix="mobile" />
 
         <div class="rounded-2xl border border-indigo-100 bg-indigo-50/70 p-4">
-          <div class="flex items-start gap-3">
-            <div
-              class="mt-0.5 flex h-10 w-10 items-center justify-center rounded-2xl bg-white text-indigo-600 shadow-sm shadow-indigo-100"
-            >
-              <Icon name="lucide:info" size={18} />
-            </div>
-
-            <div>
-              <p
-                class="text-xs font-bold uppercase tracking-[0.16em] text-slate-500"
-              >
-                Costo unitario calculado:
-              </p>
-              <div class="mt-1 flex items-end gap-2">
-                <span
-                  class="text-3xl font-black tabular-nums text-indigo-700"
-                  data-unit-cost-value
-                >
-                  $0.00
-                </span>
-                <span class="pb-1 text-sm font-semibold text-indigo-400">
-                  / <span data-unit-cost-unit>{defaultUnit}</span>
-                </span>
-              </div>
-            </div>
-          </div>
+          <UnitCostDisplay defaultUnit={DEFAULT_UNIT} />
         </div>
 
         <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
@@ -853,7 +594,12 @@ const ingredientUsage = await listIngredientUsage(recipeDataOwner);
         </button>
       </div>
 
-      <form method="post" class="mt-5 space-y-4" data-ingredient-form data-astro-reload>
+      <form
+        method="post"
+        class="mt-5 space-y-4"
+        data-ingredient-form
+        data-astro-reload
+      >
         <input type="hidden" name="action" value="update" />
         <input type="hidden" name="ingredientId" value="" />
 
@@ -934,8 +680,8 @@ const ingredientUsage = await listIngredientUsage(recipeDataOwner);
                 class="border-0 border-l border-slate-200 bg-white px-3 py-3 text-sm font-semibold text-slate-700 outline-none"
               >
                 {
-                  unitOptions.map((option) => (
-                    <option value={option} selected={option === defaultUnit}>
+                  UNIT_OPTIONS.map((option) => (
+                    <option value={option} selected={option === DEFAULT_UNIT}>
                       {option}
                     </option>
                   ))
@@ -946,32 +692,7 @@ const ingredientUsage = await listIngredientUsage(recipeDataOwner);
         </div>
 
         <div class="rounded-2xl border border-indigo-100 bg-indigo-50/70 p-4">
-          <div class="flex items-start gap-3">
-            <div
-              class="mt-0.5 flex h-10 w-10 items-center justify-center rounded-2xl bg-white text-indigo-600 shadow-sm shadow-indigo-100"
-            >
-              <Icon name="lucide:info" size={18} />
-            </div>
-
-            <div>
-              <p
-                class="text-xs font-bold uppercase tracking-[0.16em] text-slate-500"
-              >
-                Costo unitario calculado:
-              </p>
-              <div class="mt-1 flex items-end gap-2">
-                <span
-                  class="text-3xl font-black tabular-nums text-indigo-700"
-                  data-unit-cost-value
-                >
-                  $0.00
-                </span>
-                <span class="pb-1 text-sm font-semibold text-indigo-400">
-                  / <span data-unit-cost-unit>{defaultUnit}</span>
-                </span>
-              </div>
-            </div>
-          </div>
+          <UnitCostDisplay defaultUnit={DEFAULT_UNIT} />
         </div>
 
         <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
@@ -1061,7 +782,8 @@ const ingredientUsage = await listIngredientUsage(recipeDataOwner);
       return Number(normalized);
     };
 
-    const formatIngredientCurrency = (value) => `$${value.toFixed(2)}`;
+    import { formatCurrency } from "../lib/formatters";
+    import { bindDialogBackdrop } from "../lib/dialog";
 
     const syncIngredientFormState = (form) => {
       const nameInput = form.querySelector('[name="name"]');
@@ -1085,7 +807,7 @@ const ingredientUsage = await listIngredientUsage(recipeDataOwner);
       const hasValidQuantity = Number.isFinite(quantity) && quantity > 0;
       const unitCost = hasValidPrice && hasValidQuantity ? price / quantity : 0;
 
-      costValue.textContent = formatIngredientCurrency(unitCost);
+      costValue.textContent = formatCurrency(unitCost);
       costUnit.textContent = unitInput.value.trim() || "unidad";
 
       if (submitButton instanceof HTMLButtonElement) {
@@ -1120,18 +842,6 @@ const ingredientUsage = await listIngredientUsage(recipeDataOwner);
       });
 
       sync();
-    };
-
-    const bindDialogBackdrop = (dialog) => {
-      if (!(dialog instanceof HTMLDialogElement)) return;
-      if (dialog.dataset.backdropBound === "1") return;
-
-      dialog.dataset.backdropBound = "1";
-      dialog.addEventListener("click", (event) => {
-        if (event.target === dialog) {
-          dialog.close();
-        }
-      });
     };
 
     const initIngredientCreateForm = () => {

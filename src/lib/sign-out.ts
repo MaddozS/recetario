@@ -1,6 +1,4 @@
-import { createAuthClient } from "better-auth/client";
-
-const authClient = createAuthClient();
+import { authClient } from "./auth-client";
 
 let pendingSignOut: Promise<void> | null = null;
 

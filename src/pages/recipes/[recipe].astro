@@ -3,6 +3,9 @@ import { Icon } from "astro-icon/components";
 import Layout from "../../layouts/Layout.astro";
 import PresentationCard from "../../components/PresentationCard.astro";
 import { createPresentation, deletePresentation, deleteRecipe, getRecipeById, getRecipeDataOwner, updatePresentation, updateRecipe, listIngredients, type Ingredient, type RecipeIngredientWithData, type RecipeIngredient } from '../../lib/recipe-data';
+import { parseNumberInput } from '../../lib/form-utils';
+import { UNIT_OPTIONS } from '../../lib/constants';
+import FeedbackAlert from '../../components/FeedbackAlert.astro';
 
 const recipeIdParam = Astro.params.recipe;
 const recipeIdNumber = Number(recipeIdParam);
@@ -12,12 +15,6 @@ if (!Astro.locals.session || !Astro.locals.user) {
 }
 
 const recipeDataOwner = getRecipeDataOwner(Astro.locals.user);
-
-const parseNumberInput = (value: FormDataEntryValue | null) => {
-  const normalized = String(value ?? '').trim().replace(',', '.');
-  if (!normalized) return Number.NaN;
-  return Number(normalized);
-};
 
 const expectsJsonResponse = Astro.request.headers.get('accept')?.includes('application/json') ?? false;
 
@@ -284,14 +281,13 @@ const { ingredients: recipeIngredients, name, id, desiredMargin, fixedCostsPerce
 
 const isEditMode = Astro.url.searchParams.get('edit') === 'true';
 const allIngredients = isEditMode ? await listIngredients(recipeDataOwner) : [];
-const standardUnitOptions = ['kg', 'g', 'lt', 'ml', 'pza', 'pieza', 'cdita', 'cda', 'taza'];
 const discoveredUnitOptions = [
   ...allIngredients.map((ingredient) => ingredient.unit),
   ...recipeIngredients.map((ingredient) => ingredient.unit),
 ]
   .map((unit) => unit.trim())
   .filter((unit) => unit.length > 0);
-const unitOptions = Array.from(new Set([...standardUnitOptions, ...discoveredUnitOptions]));
+const unitOptions = Array.from(new Set([...UNIT_OPTIONS, ...discoveredUnitOptions]));
 const getUnitOptionsForValue = (currentUnit: string) => {
   if (unitOptions.includes(currentUnit)) {
     return unitOptions.map((unit) => ({ value: unit, label: unit }));
@@ -346,7 +342,8 @@ const clampPercentageValue = (value: number, max = Number.POSITIVE_INFINITY) => 
 
 const desiredMarginValue = clampPercentageValue(desiredMargin, 99.99);
 const fixedCostsPercentageValue = clampPercentageValue(fixedCostsPercentage);
-const feedbackType = Astro.url.searchParams.get('type');
+const feedbackTypeParam = Astro.url.searchParams.get('type');
+const feedbackType = (feedbackTypeParam === 'error' || feedbackTypeParam === 'success') ? feedbackTypeParam : null;
 const feedbackMessage = Astro.url.searchParams.get('message');
 
 // Redondeo contable para unidades pequeñas (g/ml)
@@ -408,19 +405,7 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
   <div transition:animate="slide" class="w-full">
     <div class="px-1 sm:px-2 lg:px-8 py-4">
       {feedbackType && feedbackMessage && (
-        <div
-          aria-atomic="true"
-          aria-live={feedbackType === 'success' ? 'polite' : 'assertive'}
-          class:list={[
-            'mb-4 rounded-xl border px-4 py-3 text-sm',
-            feedbackType === 'success'
-              ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
-              : 'border-rose-200 bg-rose-50 text-rose-700',
-          ]}
-          role={feedbackType === 'success' ? 'status' : 'alert'}
-        >
-          <p class="font-semibold">{feedbackMessage}</p>
-        </div>
+        <FeedbackAlert type={feedbackType} message={feedbackMessage} />
       )}
 
       {isEditMode && (
@@ -1005,6 +990,8 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
 
 <script>
   // @ts-nocheck
+  import { bindDialogBackdrop } from "../../lib/dialog";
+
   const KEY = 'recetario.showComments';
   const presentationDialogId = 'create-presentation-dialog';
   const recipeDeleteDialogId = 'recipe-delete-dialog';
@@ -1101,11 +1088,7 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
     }
 
     dialog.dataset.createPresentationDialogBound = '1';
-    dialog.addEventListener('click', (event) => {
-      if (event.target === dialog) {
-        closeDialog();
-      }
-    });
+    bindDialogBackdrop(dialog);
   };
 
   const setupRecipeDeleteDialog = () => {
@@ -1154,11 +1137,7 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
     }
 
     dialog.dataset.recipeDeleteDialogBound = '1';
-    dialog.addEventListener('click', (event) => {
-      if (event.target === dialog) {
-        closeDialog();
-      }
-    });
+    bindDialogBackdrop(dialog);
   };
 
   document.addEventListener('astro:page-load', initCommentsToggle);

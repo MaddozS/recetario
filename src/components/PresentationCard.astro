@@ -249,6 +249,8 @@ const unitProfit = defaultSalePrice - unitCost;
 
 <script>
   // @ts-nocheck
+  import { bindDialogBackdrop } from "../lib/dialog";
+
   class PresentationCard extends HTMLElement {
     isEditing = false;
     btnDelete = null;
@@ -324,13 +326,8 @@ const unitProfit = defaultSalePrice - unitCost;
         this.calculate();
       });
 
-      if (this.deleteDialog && this.deleteDialog.dataset.bound !== "1") {
-        this.deleteDialog.dataset.bound = "1";
-        this.deleteDialog.addEventListener("click", (event) => {
-          if (event.target === this.deleteDialog) {
-            this.closeDeleteDialog();
-          }
-        });
+      if (this.deleteDialog) {
+        bindDialogBackdrop(this.deleteDialog);
       }
 
       this.form?.addEventListener("submit", async (e) => {
