@@ -58,6 +58,15 @@ export type CreateIngredientInput = {
   supplier?: string;
 };
 
+export type UpdateIngredientInput = {
+  name?: string;
+  unit?: string;
+  price?: number;
+  purchaseQuantity?: number;
+  brand?: string | null;
+  supplier?: string | null;
+};
+
 export type CreatePresentationInput = {
   name: string;
   unitsPerBatch: number;
@@ -76,6 +85,14 @@ export type DeleteIngredientResult =
       status: "blocked";
       recipes: Array<{ id: number; name: string }>;
     };
+
+export type DeletePresentationResult =
+  | { status: "deleted" }
+  | { status: "not-found" };
+
+export type DeleteRecipeResult =
+  | { status: "deleted" }
+  | { status: "not-found" };
 
 type RecipeSeed = {
   id: number;
@@ -695,6 +712,82 @@ async function ingredientsBelongToOwner(
   return Number(countRow.count ?? 0) === uniqueIngredientIds.length;
 }
 
+async function getIngredientById(
+  driver: Driver,
+  ingredientId: number,
+  ownerId: string,
+): Promise<Ingredient | null> {
+  if (!Number.isFinite(ingredientId)) {
+    return null;
+  }
+
+  const scopeId = requireOwnerId(ownerId);
+
+  if (driver.kind === "postgres") {
+    const res = await driver.pool.query<{
+      id: number;
+      name: string;
+      unit: string;
+      price: string;
+      purchase_quantity: string;
+      brand: string | null;
+      supplier: string | null;
+    }>(
+      `
+      SELECT id, name, unit, price::text, purchase_quantity::text, brand, supplier
+      FROM ingredients
+      WHERE id = $1 AND owner_id = $2
+      LIMIT 1
+      `,
+      [ingredientId, scopeId],
+    );
+
+    const row = res.rows[0];
+    if (!row) return null;
+
+    return {
+      id: Number(row.id),
+      name: row.name,
+      unit: row.unit,
+      price: toNumber(row.price),
+      purchaseQuantity: toNumber(row.purchase_quantity),
+      brand: normalizeOptionalText(row.brand),
+      supplier: normalizeOptionalText(row.supplier),
+    };
+  }
+
+  const row = driver.db
+    .prepare(
+      `
+      SELECT id, name, unit, price, purchase_quantity, brand, supplier
+      FROM ingredients
+      WHERE id = ? AND owner_id = ?
+      LIMIT 1
+      `,
+    )
+    .get(ingredientId, scopeId) as {
+    id: number;
+    name: string;
+    unit: string;
+    price: number;
+    purchase_quantity: number;
+    brand: string | null;
+    supplier: string | null;
+  } | undefined;
+
+  if (!row) return null;
+
+  return {
+    id: row.id,
+    name: row.name,
+    unit: row.unit,
+    price: Number(row.price),
+    purchaseQuantity: Number(row.purchase_quantity),
+    brand: normalizeOptionalText(row.brand),
+    supplier: normalizeOptionalText(row.supplier),
+  };
+}
+
 export async function updatePresentation(
   recipeId: number,
   id: number,
@@ -894,6 +987,77 @@ export async function createPresentation(
       unitsPerBatch,
       salePrice,
     };
+  } catch (error) {
+    driver.db.exec("ROLLBACK");
+    throw error;
+  }
+}
+
+export async function deletePresentation(
+  recipeId: number,
+  presentationId: number,
+  ownerId = STATIC_OWNER_SCOPE,
+): Promise<DeletePresentationResult> {
+  await ensureInitialized();
+  const driver = await getDriver();
+  const scopeId = requireOwnerId(ownerId);
+  const now = new Date().toISOString();
+
+  if (!Number.isFinite(recipeId) || !Number.isFinite(presentationId)) {
+    return { status: "not-found" };
+  }
+
+  if (!(await recipeBelongsToOwner(driver, recipeId, scopeId))) {
+    return { status: "not-found" };
+  }
+
+  if (driver.kind === "postgres") {
+    const client = await driver.pool.connect();
+    try {
+      await client.query("BEGIN");
+
+      const deleteRes = await client.query(
+        "DELETE FROM recipe_presentations WHERE id = $1 AND recipe_id = $2",
+        [presentationId, recipeId],
+      );
+
+      if (Number(deleteRes.rowCount ?? 0) === 0) {
+        await client.query("ROLLBACK");
+        return { status: "not-found" };
+      }
+
+      await client.query(
+        "UPDATE recipes SET updated_at = NOW() WHERE id = $1 AND owner_id = $2",
+        [recipeId, scopeId],
+      );
+
+      await client.query("COMMIT");
+      return { status: "deleted" };
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    } finally {
+      client.release();
+    }
+  }
+
+  driver.db.exec("BEGIN");
+  try {
+    const result = driver.db.prepare(
+      "DELETE FROM recipe_presentations WHERE id = ? AND recipe_id = ?",
+    ).run(presentationId, recipeId) as { changes?: number | bigint };
+
+    if (Number(result.changes ?? 0) === 0) {
+      driver.db.exec("ROLLBACK");
+      return { status: "not-found" };
+    }
+
+    driver.db.prepare(
+      "UPDATE recipes SET updated_at = ? WHERE id = ? AND owner_id = ?",
+    ).run(now, recipeId, scopeId);
+
+    driver.db.exec("COMMIT");
+    return { status: "deleted" };
   } catch (error) {
     driver.db.exec("ROLLBACK");
     throw error;
@@ -1312,6 +1476,38 @@ export async function createRecipe(
   };
 }
 
+export async function deleteRecipe(
+  recipeId: number,
+  ownerId = STATIC_OWNER_SCOPE,
+): Promise<DeleteRecipeResult> {
+  await ensureInitialized();
+  const driver = await getDriver();
+  const scopeId = requireOwnerId(ownerId);
+
+  if (!Number.isFinite(recipeId)) {
+    return { status: "not-found" };
+  }
+
+  if (driver.kind === "postgres") {
+    const deleteRes = await driver.pool.query(
+      "DELETE FROM recipes WHERE id = $1 AND owner_id = $2",
+      [recipeId, scopeId],
+    );
+
+    return Number(deleteRes.rowCount ?? 0) > 0
+      ? { status: "deleted" }
+      : { status: "not-found" };
+  }
+
+  const result = driver.db.prepare(
+    "DELETE FROM recipes WHERE id = ? AND owner_id = ?",
+  ).run(recipeId, scopeId) as { changes?: number | bigint };
+
+  return Number(result.changes ?? 0) > 0
+    ? { status: "deleted" }
+    : { status: "not-found" };
+}
+
 export async function createIngredient(
   input: CreateIngredientInput,
   ownerId = STATIC_OWNER_SCOPE,
@@ -1380,6 +1576,185 @@ export async function createIngredient(
     brand,
     supplier,
   };
+}
+
+export async function updateIngredient(
+  ingredientId: number,
+  input: UpdateIngredientInput,
+  ownerId = STATIC_OWNER_SCOPE,
+): Promise<Ingredient | null> {
+  await ensureInitialized();
+  const driver = await getDriver();
+  const scopeId = requireOwnerId(ownerId);
+
+  if (!Number.isFinite(ingredientId)) {
+    return null;
+  }
+
+  const shouldUpdateName = input.name !== undefined;
+  const shouldUpdateUnit = input.unit !== undefined;
+  const shouldUpdatePrice = input.price !== undefined;
+  const shouldUpdatePurchaseQuantity = input.purchaseQuantity !== undefined;
+  const shouldUpdateBrand = input.brand !== undefined;
+  const shouldUpdateSupplier = input.supplier !== undefined;
+
+  const name = shouldUpdateName ? normalizeOptionalText(input.name) : undefined;
+  const unit = shouldUpdateUnit ? normalizeOptionalText(input.unit) : undefined;
+  const price = shouldUpdatePrice ? Number(input.price) : undefined;
+  const purchaseQuantity = shouldUpdatePurchaseQuantity
+    ? Number(input.purchaseQuantity)
+    : undefined;
+  const brand = shouldUpdateBrand ? normalizeOptionalText(input.brand) : undefined;
+  const supplier = shouldUpdateSupplier
+    ? normalizeOptionalText(input.supplier)
+    : undefined;
+
+  if (shouldUpdateName && !name) {
+    throw new Error("Invalid ingredient name");
+  }
+
+  if (shouldUpdateUnit && !unit) {
+    throw new Error("Invalid ingredient unit");
+  }
+
+  if (shouldUpdatePrice && (!Number.isFinite(price ?? Number.NaN) || (price ?? 0) < 0)) {
+    throw new Error("Invalid ingredient price");
+  }
+
+  if (
+    shouldUpdatePurchaseQuantity
+    && (!Number.isFinite(purchaseQuantity ?? Number.NaN) || (purchaseQuantity ?? 0) <= 0)
+  ) {
+    throw new Error("Invalid ingredient purchase quantity");
+  }
+
+  if (
+    !shouldUpdateName
+    && !shouldUpdateUnit
+    && !shouldUpdatePrice
+    && !shouldUpdatePurchaseQuantity
+    && !shouldUpdateBrand
+    && !shouldUpdateSupplier
+  ) {
+    return getIngredientById(driver, ingredientId, scopeId);
+  }
+
+  if (driver.kind === "postgres") {
+    const updates = [];
+    const values: Array<string | number | null> = [];
+    let paramIndex = 1;
+
+    if (shouldUpdateName) {
+      updates.push(`name = $${paramIndex++}`);
+      values.push(name!);
+    }
+
+    if (shouldUpdateUnit) {
+      updates.push(`unit = $${paramIndex++}`);
+      values.push(unit!);
+    }
+
+    if (shouldUpdatePrice) {
+      updates.push(`price = $${paramIndex++}`);
+      values.push(price!);
+    }
+
+    if (shouldUpdatePurchaseQuantity) {
+      updates.push(`purchase_quantity = $${paramIndex++}`);
+      values.push(purchaseQuantity!);
+    }
+
+    if (shouldUpdateBrand) {
+      updates.push(`brand = $${paramIndex++}`);
+      values.push(brand ?? null);
+    }
+
+    if (shouldUpdateSupplier) {
+      updates.push(`supplier = $${paramIndex++}`);
+      values.push(supplier ?? null);
+    }
+
+    values.push(ingredientId, scopeId);
+
+    const res = await driver.pool.query<{
+      id: number;
+      name: string;
+      unit: string;
+      price: string;
+      purchase_quantity: string;
+      brand: string | null;
+      supplier: string | null;
+    }>(
+      `
+      UPDATE ingredients
+      SET ${updates.join(", ")}
+      WHERE id = $${paramIndex++} AND owner_id = $${paramIndex}
+      RETURNING id, name, unit, price::text, purchase_quantity::text, brand, supplier
+      `,
+      values,
+    );
+
+    const row = res.rows[0];
+    if (!row) return null;
+
+    return {
+      id: Number(row.id),
+      name: row.name,
+      unit: row.unit,
+      price: toNumber(row.price),
+      purchaseQuantity: toNumber(row.purchase_quantity),
+      brand: normalizeOptionalText(row.brand),
+      supplier: normalizeOptionalText(row.supplier),
+    };
+  }
+
+  const updates = [];
+  const values: Array<string | number | null> = [];
+
+  if (shouldUpdateName) {
+    updates.push(`name = ?`);
+    values.push(name!);
+  }
+
+  if (shouldUpdateUnit) {
+    updates.push(`unit = ?`);
+    values.push(unit!);
+  }
+
+  if (shouldUpdatePrice) {
+    updates.push(`price = ?`);
+    values.push(price!);
+  }
+
+  if (shouldUpdatePurchaseQuantity) {
+    updates.push(`purchase_quantity = ?`);
+    values.push(purchaseQuantity!);
+  }
+
+  if (shouldUpdateBrand) {
+    updates.push(`brand = ?`);
+    values.push(brand ?? null);
+  }
+
+  if (shouldUpdateSupplier) {
+    updates.push(`supplier = ?`);
+    values.push(supplier ?? null);
+  }
+
+  values.push(ingredientId, scopeId);
+  const result = driver.db.prepare(
+    `
+    UPDATE ingredients
+    SET ${updates.join(", ")}
+    WHERE id = ? AND owner_id = ?
+    `,
+  ).run(...values) as { changes?: number | bigint };
+
+  if (Number(result.changes ?? 0) === 0) {
+    return null;
+  }
+
+  return getIngredientById(driver, ingredientId, scopeId);
 }
 
 export async function deleteIngredient(
