@@ -1,6 +1,6 @@
 import { betterAuth } from "better-auth"
-import path from "node:path";
 import { Pool } from "pg";
+import { prepareSqliteDatabasePath, usesEphemeralSqliteStorage } from "./sqlite-path";
 
 type SqliteDatabaseSync = import("node:sqlite").DatabaseSync;
 
@@ -26,6 +26,14 @@ const safePostgresUrl = (() => {
   }
 })();
 const isLocalDatabaseUrl = safePostgresUrl ? /localhost|127\.0\.0\.1/.test(safePostgresUrl) : false;
+const postgresSslInsecure = (import.meta.env.POSTGRES_SSL_INSECURE || process.env.POSTGRES_SSL_INSECURE || "false") === "true";
+const postgresSslCa = import.meta.env.POSTGRES_SSL_CA || process.env.POSTGRES_SSL_CA;
+const postgresSslConfig = !safePostgresUrl || isLocalDatabaseUrl
+  ? undefined
+  : {
+      rejectUnauthorized: !postgresSslInsecure,
+      ...(postgresSslCa ? { ca: postgresSslCa.replace(/\\n/g, "\n") } : {}),
+    };
 const vercelUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined;
 const trustedOrigins = ["http://localhost:4321", betterAuthUrl, vercelUrl].filter((value): value is string => Boolean(value));
 
@@ -38,14 +46,14 @@ const authGlobals = globalThis as typeof globalThis & {
 const authPostgresPool = useDatabase && safePostgresUrl
   ? (authGlobals.__betterAuthPgPool ??= new Pool({
       connectionString: safePostgresUrl,
-      ssl: isLocalDatabaseUrl ? undefined : { rejectUnauthorized: false },
+      ssl: postgresSslConfig,
     }))
   : undefined;
 
 let authSqliteDb: SqliteDatabaseSync | undefined;
 if (useDatabase && !authPostgresPool) {
   const { DatabaseSync } = await import("node:sqlite");
-  authSqliteDb = authGlobals.__betterAuthDb ??= new DatabaseSync(path.resolve(process.cwd(), databasePath));
+  authSqliteDb = authGlobals.__betterAuthDb ??= new DatabaseSync(prepareSqliteDatabasePath(databasePath));
 }
 
 const authDatabase = authPostgresPool || authSqliteDb;
@@ -54,8 +62,8 @@ if (!googleClientId || !googleClientSecret) {
   console.error("Missing Google OAuth credentials. Check your .env file.");
 }
 
-if (!safePostgresUrl && process.env.VERCEL === "1") {
-  console.warn("DATABASE_URL/POSTGRES_URL is not set on Vercel. Falling back to local SQLite, which is ephemeral on serverless deployments.");
+if (!safePostgresUrl && usesEphemeralSqliteStorage()) {
+  console.warn("DATABASE_URL/POSTGRES_URL is not set on a serverless runtime. Falling back to SQLite under /tmp, which is writable but ephemeral between deployments and cold starts.");
 }
 
 export const auth = betterAuth({
