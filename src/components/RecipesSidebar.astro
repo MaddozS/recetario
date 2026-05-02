@@ -79,23 +79,29 @@ const { currentRecipe } = Astro.props;
 <script>
   // Add search functionality
   document.addEventListener('astro:page-load', () => {
-    const searchInput = document.getElementById('recipeSearch') as HTMLInputElement;
+    const searchInput = document.getElementById('recipeSearch');
     const recipeItems = document.querySelectorAll('.recipe-item');
     const noResults = document.getElementById('noResults');
 
-    const removeAccents = (str: string) => {
-      return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-    };
-
-    if (searchInput) {
+    if (searchInput instanceof HTMLInputElement) {
       searchInput.addEventListener('input', (e) => {
-        const searchTerm = removeAccents((e.target as HTMLInputElement).value.toLowerCase());
+        const target = e.target;
+        if (!(target instanceof HTMLInputElement)) return;
+
+        const searchTerm = target.value
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '');
         let visibleCount = 0;
 
         recipeItems.forEach((item) => {
           const name = item.getAttribute('data-name') || '';
-          const normalizedName = removeAccents(name);
-          const element = item as HTMLElement;
+          const normalizedName = name
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '');
+          if (!(item instanceof HTMLElement)) return;
+
+          const element = item;
           if (normalizedName.includes(searchTerm)) {
             element.style.display = 'block';
             visibleCount++;
