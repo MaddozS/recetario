@@ -2,7 +2,7 @@
 import { Icon } from "astro-icon/components";
 import Layout from "../../layouts/Layout.astro";
 import PresentationCard from "../../components/PresentationCard.astro";
-import { getRecipeById, updatePresentation, updateRecipe, listIngredients, type Ingredient, type RecipeIngredientWithData, type RecipeIngredient } from '../../lib/recipe-data';
+import { getRecipeById, getRecipeDataOwner, updatePresentation, updateRecipe, listIngredients, type Ingredient, type RecipeIngredientWithData, type RecipeIngredient } from '../../lib/recipe-data';
 
 const recipeIdParam = Astro.params.recipe;
 const recipeIdNumber = Number(recipeIdParam);
@@ -10,6 +10,8 @@ const recipeIdNumber = Number(recipeIdParam);
 if (!Astro.locals.session || !Astro.locals.user) {
   return Astro.redirect('/sign-in');
 }
+
+const recipeDataOwner = getRecipeDataOwner(Astro.locals.user);
 
 if (Astro.request.method === 'POST') {
   const formData = await Astro.request.formData();
@@ -24,7 +26,7 @@ if (Astro.request.method === 'POST') {
       await updatePresentation(recipeIdNumber, presId, {
         unitsPerBatch: Number.isFinite(unitsPerBatch) ? unitsPerBatch : undefined,
         salePrice: Number.isFinite(salePrice) ? salePrice : undefined,
-      });
+      }, recipeDataOwner);
       return Astro.redirect(Astro.url.pathname + Astro.url.search);
     }
   } else if (action === 'update_recipe') {
@@ -57,7 +59,7 @@ if (Astro.request.method === 'POST') {
         desiredMargin,
         fixedCostsPercentage,
         ingredients: ingredientsToSave,
-      });
+      }, recipeDataOwner);
       return Astro.redirect(Astro.url.pathname);
     }
   }
@@ -65,19 +67,19 @@ if (Astro.request.method === 'POST') {
 
 // Obtener el ID de la receta desde los parámetros
 if (!recipeIdParam) {
-  return Astro.redirect('/');
+  return Astro.redirect('/recipes');
 }
 
 // Obtener la receta desde la base de datos
-const recipe = await getRecipeById(recipeIdParam);
+const recipe = await getRecipeById(recipeIdParam, recipeDataOwner);
 if (!recipe) {
-  return Astro.redirect('/');
+  return Astro.redirect('/recipes');
 }
 
 const { ingredients: recipeIngredients, name, id, desiredMargin, fixedCostsPercentage, presentations, updatedAt } = recipe;
 
 const isEditMode = Astro.url.searchParams.get('edit') === 'true';
-const allIngredients = isEditMode ? await listIngredients() : [];
+const allIngredients = isEditMode ? await listIngredients(recipeDataOwner) : [];
 
 let lastUpdatedText = '';
 if (updatedAt) {

@@ -1,18 +1,20 @@
 ---
 import '../styles/global.css'
+import { ClientRouter } from "astro:transitions";
+import { Icon } from 'astro-icon/components'
+import { getRecipeDataOwner, listRecipeSummaries } from '../lib/recipe-data'
 import Header from '../components/Header.astro'
 import RecipesSidebar from '../components/RecipesSidebar.astro'
-import { Icon } from 'astro-icon/components'
 
 const { currentPage } = Astro.props;
 
 const { currentRecipe, showSideBar, showHeader = true } = Astro.props;
 const showMobileNav = currentPage === 'recipes' || currentPage === 'ingredients';
-const recipeHref = currentRecipe ? `/recipes/${currentRecipe}` : '/recipes/101';
 const isAuthenticated = Boolean(Astro.locals.user && Astro.locals.session);
 const authenticatedUserName = Astro.locals.user?.name || Astro.locals.user?.email || null;
-
-import { ClientRouter } from "astro:transitions";
+const recipeDataOwner = Astro.locals.user ? getRecipeDataOwner(Astro.locals.user) : null;
+const recipes = recipeDataOwner ? await listRecipeSummaries(recipeDataOwner) : [];
+const recipeHref = currentRecipe ? `/recipes/${currentRecipe}` : '/recipes';
 ---
 
 <!doctype html>
@@ -34,6 +36,7 @@ import { ClientRouter } from "astro:transitions";
         currentPage={currentPage}
         showMenuButton={showSideBar}
         isAuthenticated={isAuthenticated}
+        recipeHref={recipeHref}
       />
     )}
     
@@ -47,6 +50,7 @@ import { ClientRouter } from "astro:transitions";
             <!-- Sidebar -->
             <aside id="app-sidebar" class="fixed inset-y-0 left-0 z-50 w-[85%] max-w-[320px] -translate-x-full lg:translate-x-0 lg:static lg:w-[320px] xl:w-90 flex-none border-r border-slate-200 bg-white lg:overflow-y-auto flex flex-col transition-transform duration-300 ease-in-out shadow-2xl lg:shadow-none" transition:animate="none">
               <RecipesSidebar
+                recipes={recipes}
                 currentRecipe={currentRecipe}
                 isAuthenticated={isAuthenticated}
                 userName={authenticatedUserName}

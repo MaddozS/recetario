@@ -17,6 +17,8 @@ declare namespace App {
     readonly APP_USE_DB?: string;
     readonly RECIPES_DB_PATH?: string;
     readonly APP_DB_PATH?: string;
+    readonly RECIPES_STATIC_OWNER_ID?: string;
+    readonly RECIPES_STATIC_OWNER_EMAIL?: string;
     readonly DATABASE_URL?: string;
     readonly POSTGRES_URL?: string;
     readonly POSTGRES_SSL_CA?: string;
