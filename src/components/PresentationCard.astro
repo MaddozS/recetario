@@ -47,9 +47,12 @@ const unitProfit = defaultSalePrice - unitCost;
         <button 
           type="button"
           class="edit-btn h-8 w-8 rounded-full bg-transparent text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors flex items-center justify-center"
+          aria-label="Editar presentación"
+          aria-pressed="false"
           title="Editar"
         >
-          <Icon name="lucide:pencil" size={16} class="edit-icon" />
+          <Icon name="lucide:pencil" size={16} class="edit-icon edit-icon-pencil" />
+          <Icon name="lucide:x" size={16} class="edit-icon edit-icon-cancel hidden" />
         </button>
         <button 
           type="button"
@@ -88,7 +91,7 @@ const unitProfit = defaultSalePrice - unitCost;
     <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
       <div class="space-y-0.5 shrink-0">
         <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Costo unitario</p>
-        <p class="text-[20px] font-bold text-slate-800 tabular-nums">${unitCost.toFixed(2)}</p>
+        <p class="unit-cost-display text-[20px] font-bold text-slate-800 tabular-nums">${unitCost.toFixed(2)}</p>
       </div>
       
       <div class="bg-indigo-50/50 border border-indigo-100 rounded-xl px-2.5 py-2 sm:px-3 sm:py-2.5 grow flex flex-wrap items-center justify-between gap-x-2 gap-y-1 max-w-65">
@@ -162,20 +165,23 @@ const unitProfit = defaultSalePrice - unitCost;
     originalPrice = '0';
     
     connectedCallback() {
-      this.btnEdit = this.querySelector('.edit-btn');
-      this.inputName = this.querySelector('.presentation-name');
-      this.inputUnits = this.querySelector('.presentation-units');
-      this.inputPrice = this.querySelector('.presentation-price');
-      this.yieldValue = this.querySelector('.yield-value');
-      this.unitCostDisplay = this.querySelector('.unit-cost-display');
-      this.recommendedPriceDisplay = this.querySelector('.recommended-price-display');
-      this.profitDisplay = this.querySelector('.profit-display');
-      this.marginLabel = this.querySelector('.margin-label');
-      this.marginPercentDisplay = this.querySelector('.margin-percent-display');
-      this.marginBar = this.querySelector('.margin-bar');
-      this.saveBar = this.querySelector('.save-bar');
-      this.btnSave = this.querySelector('.save-btn');
-      this.form = this.querySelector('form');
+      if (this.dataset.bound === '1') return;
+      this.dataset.bound = '1';
+
+      this.btnEdit = this.querySelector<HTMLButtonElement>('.edit-btn');
+      this.inputName = this.querySelector<HTMLInputElement>('.presentation-name');
+      this.inputUnits = this.querySelector<HTMLInputElement>('.presentation-units');
+      this.inputPrice = this.querySelector<HTMLInputElement>('.presentation-price');
+      this.yieldValue = this.querySelector<HTMLElement>('.yield-value');
+      this.unitCostDisplay = this.querySelector<HTMLElement>('.unit-cost-display');
+      this.recommendedPriceDisplay = this.querySelector<HTMLElement>('.recommended-price-display');
+      this.profitDisplay = this.querySelector<HTMLElement>('.profit-display');
+      this.marginLabel = this.querySelector<HTMLElement>('.margin-label');
+      this.marginPercentDisplay = this.querySelector<HTMLElement>('.margin-percent-display');
+      this.marginBar = this.querySelector<HTMLElement>('.margin-bar');
+      this.saveBar = this.querySelector<HTMLElement>('.save-bar');
+      this.btnSave = this.querySelector<HTMLButtonElement>('.save-btn');
+      this.form = this.querySelector<HTMLFormElement>('form');
 
       this.multiplier = parseFloat(this.dataset.multiplier || '1');
       this.costoBatch = parseFloat(this.dataset.cost || '0');
@@ -185,7 +191,7 @@ const unitProfit = defaultSalePrice - unitCost;
       this.inputUnits?.addEventListener('input', () => this.calculate());
       this.inputPrice?.addEventListener('input', () => this.calculate());
 
-      this.form?.addEventListener('submit', async (e) => {
+      this.form?.addEventListener('submit', async (e: SubmitEvent) => {
         e.preventDefault();
         
         if (this.btnSave) {
@@ -194,7 +200,9 @@ const unitProfit = defaultSalePrice - unitCost;
         }
 
         try {
-          const formData = new FormData(this.form!);
+          if (!this.form) return;
+
+          const formData = new FormData(this.form);
           await fetch(window.location.href, {
             method: 'POST',
             body: formData
@@ -232,11 +240,15 @@ const unitProfit = defaultSalePrice - unitCost;
         });
         
         if (this.btnEdit) {
-          this.btnEdit.classList.replace('bg-white', 'bg-slate-100');
-          const icon = this.btnEdit.querySelector('.edit-icon');
-          if (icon) icon.setAttribute('name', 'lucide:x');
-          const text = this.btnEdit.querySelector('.edit-text');
-          if (text) text.textContent = 'Cancelar';
+          this.btnEdit.classList.add('bg-slate-100');
+          this.btnEdit.setAttribute('title', 'Cancelar');
+          this.btnEdit.setAttribute('aria-label', 'Cancelar edición');
+          this.btnEdit.setAttribute('aria-pressed', 'true');
+
+          const pencilIcon = this.btnEdit.querySelector('.edit-icon-pencil');
+          const cancelIcon = this.btnEdit.querySelector('.edit-icon-cancel');
+          pencilIcon?.classList.add('hidden');
+          cancelIcon?.classList.remove('hidden');
         }
 
         if (this.saveBar) {
@@ -263,11 +275,15 @@ const unitProfit = defaultSalePrice - unitCost;
         });
         
         if (this.btnEdit) {
-          this.btnEdit.classList.replace('bg-slate-100', 'bg-white');
-          const icon = this.btnEdit.querySelector('.edit-icon');
-          if (icon) icon.setAttribute('name', 'lucide:pencil');
-          const text = this.btnEdit.querySelector('.edit-text');
-          if (text) text.textContent = 'Editar';
+          this.btnEdit.classList.remove('bg-slate-100');
+          this.btnEdit.setAttribute('title', 'Editar');
+          this.btnEdit.setAttribute('aria-label', 'Editar presentación');
+          this.btnEdit.setAttribute('aria-pressed', 'false');
+
+          const pencilIcon = this.btnEdit.querySelector('.edit-icon-pencil');
+          const cancelIcon = this.btnEdit.querySelector('.edit-icon-cancel');
+          pencilIcon?.classList.remove('hidden');
+          cancelIcon?.classList.add('hidden');
         }
 
         if (this.saveBar) {
@@ -338,5 +354,7 @@ const unitProfit = defaultSalePrice - unitCost;
     }
   }
 
-  customElements.define('presentation-card', PresentationCard);
+  if (!customElements.get('presentation-card')) {
+    customElements.define('presentation-card', PresentationCard);
+  }
 </script>
