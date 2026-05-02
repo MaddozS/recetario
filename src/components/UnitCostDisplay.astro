@@ -1,6 +1,23 @@
 ---
 import { Icon } from "astro-icon/components";
 
+/**
+ * Display de costo unitario calculado en tiempo real.
+ *
+ * Muestra el costo por unidad (ej. $12.50 / kg) que se actualiza
+ * vía JavaScript cuando el usuario modifica los campos del formulario
+ * de ingrediente. Los `data-unit-cost-value` y `data-unit-cost-unit`
+ * son utilizados por el script del formulario para reflejar el cálculo.
+ *
+ * Pensado para usarse dentro de formularios de creación/edición de
+ * ingredientes. Aparece en tres lugares del flujo: escritorio, modal
+ * mobile y modal de edición.
+ *
+ * @prop {string} defaultUnit - Etiqueta de unidad a mostrar (ej. "kg").
+ *
+ * @example
+ * <UnitCostDisplay defaultUnit="kg" />
+ */
 interface Props {
   defaultUnit: string;
 }

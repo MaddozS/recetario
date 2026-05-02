@@ -1,3 +1,11 @@
+/**
+ * Operaciones CRUD para presentaciones de venta de recetas.
+ *
+ * Las presentaciones definen cuántas piezas rinde una mezcla
+ * y a qué precio se vende cada pieza. Cada presentación
+ * pertenece a una receta.
+ */
+
 import type {
   RecipePresentation,
   CreatePresentationInput,
@@ -18,6 +26,13 @@ import {
   STATIC_OWNER_SCOPE,
 } from "./connection";
 
+/**
+ * Crea una nueva presentación para una receta.
+ *
+ * En Postgres, bloquea la tabla para calcular el siguiente ID.
+ * Actualiza `updated_at` de la receta padre.
+ * Lanza error si la receta no pertenece al owner.
+ */
 export async function createPresentation(
   recipeId: number,
   input: CreatePresentationInput,
@@ -111,6 +126,13 @@ export async function createPresentation(
   }
 }
 
+/**
+ * Actualiza parcialmente una presentación.
+ *
+ * Solo los campos presentes en `input` se modifican. Si ningún campo
+ * cambia, retorna la presentación actual. Retorna `null` si la receta
+ * no pertenece al owner o la presentación no existe.
+ */
 export async function updatePresentation(
   recipeId: number,
   id: number,
@@ -245,6 +267,10 @@ export async function updatePresentation(
   return updated ? getPresentationById(driver, recipeId, id) : null;
 }
 
+/**
+ * Elimina una presentación por ID. Retorna `{ status: "not-found" }`
+ * si la presentación o la receta no existen bajo ese owner.
+ */
 export async function deletePresentation(
   recipeId: number,
   presentationId: number,

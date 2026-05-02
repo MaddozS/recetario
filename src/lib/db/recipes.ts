@@ -1,3 +1,11 @@
+/**
+ * Operaciones CRUD para la entidad Recipe.
+ *
+ * Al igual que `ingredients.ts`, todas las operaciones requieren
+ * `ownerId` para multi-tenancy. `updateRecipe` reemplaza todos
+ * los ingredientes de la receta en una transacción.
+ */
+
 import type {
   RecipeSummary,
   RecipeWithIngredients,
@@ -21,6 +29,10 @@ import {
   STATIC_OWNER_SCOPE,
 } from "./connection";
 
+/**
+ * Lista resúmenes ligeros de recetas con conteo de ingredientes.
+ * Usado en el sidebar y en la página índice de recetas.
+ */
 export async function listRecipeSummaries(
   ownerId = STATIC_OWNER_SCOPE,
 ): Promise<RecipeSummary[]> {
@@ -76,6 +88,11 @@ export async function listRecipeSummaries(
   }));
 }
 
+/**
+ * Obtiene una receta completa por ID, incluyendo ingredientes
+ * resueltos (con datos del insumo) y presentaciones. Retorna
+ * `null` si no existe bajo ese owner.
+ */
 export async function getRecipeById(
   recipeId: string | number,
   ownerId = STATIC_OWNER_SCOPE,
@@ -273,6 +290,12 @@ export async function getRecipeById(
   };
 }
 
+/**
+ * Crea una nueva receta con nombre y márgenes.
+ *
+ * Si no se especifica nombre, usa "Nueva Receta". En Postgres
+ * bloquea la tabla para calcular el siguiente ID secuencialmente.
+ */
 export async function createRecipe(
   input: CreateRecipeInput = {},
   ownerId = STATIC_OWNER_SCOPE,
@@ -340,6 +363,11 @@ export async function createRecipe(
   };
 }
 
+/**
+ * Elimina una receta por ID. No tiene restricciones de foreign key
+ * que bloqueen la eliminación (los ingredientes relacionados se
+ * eliminan en cascada).
+ */
 export async function deleteRecipe(
   recipeId: number,
   ownerId = STATIC_OWNER_SCOPE,
@@ -372,6 +400,14 @@ export async function deleteRecipe(
     : { status: "not-found" };
 }
 
+/**
+ * Actualiza una receta completa.
+ *
+ * Reemplaza nombre, márgenes y la lista de ingredientes en una
+ * sola transacción. Primero elimina todos los `recipe_ingredients`
+ * existentes y luego inserta los nuevos. Verifica que todos los
+ * ingredientes pertenezcan al mismo owner.
+ */
 export async function updateRecipe(
   recipeId: number,
   input: UpdateRecipeInput,
