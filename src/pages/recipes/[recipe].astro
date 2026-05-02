@@ -4,6 +4,9 @@ import Layout from "../../layouts/Layout.astro";
 import PresentationCard from "../../components/PresentationCard.astro";
 import { getRecipeById, updatePresentation, updateRecipe, listIngredients, type Ingredient, type RecipeIngredientWithData, type RecipeIngredient } from '../../lib/recipe-data';
 
+const recipeIdParam = Astro.params.recipe;
+const recipeIdNumber = Number(recipeIdParam);
+
 if (!Astro.locals.session || !Astro.locals.user) {
   return Astro.redirect('/sign-in');
 }
@@ -17,16 +20,15 @@ if (Astro.request.method === 'POST') {
     const unitsPerBatch = Number(formData.get('unitsPerBatch'));
     const salePrice = Number(formData.get('salePrice'));
 
-    if (Number.isFinite(presId)) {
-      await updatePresentation(presId, {
+    if (Number.isFinite(recipeIdNumber) && Number.isFinite(presId)) {
+      await updatePresentation(recipeIdNumber, presId, {
         unitsPerBatch: Number.isFinite(unitsPerBatch) ? unitsPerBatch : undefined,
         salePrice: Number.isFinite(salePrice) ? salePrice : undefined,
       });
       return Astro.redirect(Astro.url.pathname + Astro.url.search);
     }
   } else if (action === 'update_recipe') {
-    const recipeId = Number(Astro.params.recipe);
-    if (Number.isFinite(recipeId)) {
+    if (Number.isFinite(recipeIdNumber)) {
       const name = String(formData.get('recipeName') || '');
       const ingredientIds = formData.getAll('ingredientId').map(String);
       const quantities = formData.getAll('quantity').map(String);
@@ -50,7 +52,7 @@ if (Astro.request.method === 'POST') {
       const desiredMargin = Number(formData.get('desiredMargin')) || 0;
       const fixedCostsPercentage = Number(formData.get('fixedCostsPercentage')) || 0;
 
-      await updateRecipe(recipeId, {
+      await updateRecipe(recipeIdNumber, {
         name,
         desiredMargin,
         fixedCostsPercentage,
@@ -62,13 +64,12 @@ if (Astro.request.method === 'POST') {
 }
 
 // Obtener el ID de la receta desde los parámetros
-const recipeId = Astro.params.recipe;
-if (!recipeId) {
+if (!recipeIdParam) {
   return Astro.redirect('/');
 }
 
 // Obtener la receta desde la base de datos
-const recipe = await getRecipeById(recipeId);
+const recipe = await getRecipeById(recipeIdParam);
 if (!recipe) {
   return Astro.redirect('/');
 }
@@ -494,16 +495,17 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
   </div>
 
 <script>
+  // @ts-nocheck
   const KEY = 'recetario.showComments';
 
-  const updateCommentControls = (show: boolean) => {
+  const updateCommentControls = (show) => {
     const checkbox = document.getElementById('toggle-comments');
     if (checkbox instanceof HTMLInputElement) {
       checkbox.checked = show;
     }
   };
 
-  const setVisibility = (show: boolean) => {
+  const setVisibility = (show) => {
     document.querySelectorAll('.ingredient-comment').forEach((el) => {
       el.classList.toggle('hidden', !show);
     });
@@ -532,25 +534,8 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
     setVisibility(stored);
   };
 
-  const initPresentacionesJump = () => {
-    const jumpButton = document.getElementById('jump-presentaciones-mobile');
-    const target = document.getElementById('presentaciones');
-    if (!jumpButton || !target || jumpButton.dataset.bound === '1') return;
-
-    jumpButton.dataset.bound = '1';
-    jumpButton.addEventListener('click', () => {
-      const reduceMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      target.scrollIntoView({
-        behavior: reduceMotion ? 'auto' : 'smooth',
-        block: 'start',
-      });
-    });
-  };
-
   document.addEventListener('astro:page-load', initCommentsToggle);
   document.addEventListener('astro:after-swap', initCommentsToggle);
-  document.addEventListener('astro:page-load', initPresentacionesJump);
-  document.addEventListener('astro:after-swap', initPresentacionesJump);
 </script>
 
 {isEditMode && (

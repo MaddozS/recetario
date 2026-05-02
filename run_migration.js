@@ -8,9 +8,16 @@ loadEnv();
 async function run() {
   const isPostgres = process.env.USE_DATABASE === 'true' && process.env.POSTGRES_URL;
   if (isPostgres) {
-    const pool = new Pool({ connectionString: process.env.POSTGRES_URL, ssl: process.env.POSTGRES_URL.includes('localhost') ? undefined : { rejectUnauthorized: false } });
+    const isLocalUrl = /localhost|127\.0\.0\.1/.test(process.env.POSTGRES_URL);
+    const ssl = isLocalUrl
+      ? undefined
+      : {
+          rejectUnauthorized: process.env.POSTGRES_SSL_INSECURE !== 'true',
+          ...(process.env.POSTGRES_SSL_CA ? { ca: process.env.POSTGRES_SSL_CA.replace(/\\n/g, '\n') } : {}),
+        };
+    const pool = new Pool({ connectionString: process.env.POSTGRES_URL, ssl });
     try {
-      await pool.query("ALTER TABLE recipes ADD COLUMN updated_at TIMESTAMP");
+      await pool.query("ALTER TABLE recipes ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ");
       console.log("Postgres: column added");
     } catch (e) {
       console.log("Postgres: " + e.message);

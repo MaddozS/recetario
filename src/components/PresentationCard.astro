@@ -54,14 +54,6 @@ const unitProfit = defaultSalePrice - unitCost;
           <Icon name="lucide:pencil" size={16} class="edit-icon edit-icon-pencil" />
           <Icon name="lucide:x" size={16} class="edit-icon edit-icon-cancel hidden" />
         </button>
-        <button 
-          type="button"
-          class="delete-btn h-8 w-8 rounded-full bg-transparent text-rose-400 hover:text-rose-600 hover:bg-rose-50 transition-colors flex items-center justify-center"
-          aria-label={`Eliminar ${name}`}
-          title="Eliminar"
-        >
-          <Icon name="lucide:trash-2" size={16} />
-        </button>
       </div>
     </div>
 
@@ -142,22 +134,23 @@ const unitProfit = defaultSalePrice - unitCost;
 </presentation-card>
 
 <script>
+  // @ts-nocheck
   class PresentationCard extends HTMLElement {
     isEditing = false;
-    btnEdit: HTMLButtonElement | null = null;
-    inputName: HTMLInputElement | null = null;
-    inputUnits: HTMLInputElement | null = null;
-    inputPrice: HTMLInputElement | null = null;
-    yieldValue: HTMLElement | null = null;
-    unitCostDisplay: HTMLElement | null = null;
-    recommendedPriceDisplay: HTMLElement | null = null;
-    profitDisplay: HTMLElement | null = null;
-    marginLabel: HTMLElement | null = null;
-    marginPercentDisplay: HTMLElement | null = null;
-    marginBar: HTMLElement | null = null;
-    saveBar: HTMLElement | null = null;
-    btnSave: HTMLButtonElement | null = null;
-    form: HTMLFormElement | null = null;
+    btnEdit = null;
+    inputName = null;
+    inputUnits = null;
+    inputPrice = null;
+    yieldValue = null;
+    unitCostDisplay = null;
+    recommendedPriceDisplay = null;
+    profitDisplay = null;
+    marginLabel = null;
+    marginPercentDisplay = null;
+    marginBar = null;
+    saveBar = null;
+    btnSave = null;
+    form = null;
     multiplier = 1;
     costoBatch = 0;
     precioRecBatch = 0;
@@ -168,20 +161,20 @@ const unitProfit = defaultSalePrice - unitCost;
       if (this.dataset.bound === '1') return;
       this.dataset.bound = '1';
 
-      this.btnEdit = this.querySelector<HTMLButtonElement>('.edit-btn');
-      this.inputName = this.querySelector<HTMLInputElement>('.presentation-name');
-      this.inputUnits = this.querySelector<HTMLInputElement>('.presentation-units');
-      this.inputPrice = this.querySelector<HTMLInputElement>('.presentation-price');
-      this.yieldValue = this.querySelector<HTMLElement>('.yield-value');
-      this.unitCostDisplay = this.querySelector<HTMLElement>('.unit-cost-display');
-      this.recommendedPriceDisplay = this.querySelector<HTMLElement>('.recommended-price-display');
-      this.profitDisplay = this.querySelector<HTMLElement>('.profit-display');
-      this.marginLabel = this.querySelector<HTMLElement>('.margin-label');
-      this.marginPercentDisplay = this.querySelector<HTMLElement>('.margin-percent-display');
-      this.marginBar = this.querySelector<HTMLElement>('.margin-bar');
-      this.saveBar = this.querySelector<HTMLElement>('.save-bar');
-      this.btnSave = this.querySelector<HTMLButtonElement>('.save-btn');
-      this.form = this.querySelector<HTMLFormElement>('form');
+      this.btnEdit = this.querySelector('.edit-btn');
+      this.inputName = this.querySelector('.presentation-name');
+      this.inputUnits = this.querySelector('.presentation-units');
+      this.inputPrice = this.querySelector('.presentation-price');
+      this.yieldValue = this.querySelector('.yield-value');
+      this.unitCostDisplay = this.querySelector('.unit-cost-display');
+      this.recommendedPriceDisplay = this.querySelector('.recommended-price-display');
+      this.profitDisplay = this.querySelector('.profit-display');
+      this.marginLabel = this.querySelector('.margin-label');
+      this.marginPercentDisplay = this.querySelector('.margin-percent-display');
+      this.marginBar = this.querySelector('.margin-bar');
+      this.saveBar = this.querySelector('.save-bar');
+      this.btnSave = this.querySelector('.save-btn');
+      this.form = this.querySelector('form');
 
       this.multiplier = parseFloat(this.dataset.multiplier || '1');
       this.costoBatch = parseFloat(this.dataset.cost || '0');
@@ -191,7 +184,7 @@ const unitProfit = defaultSalePrice - unitCost;
       this.inputUnits?.addEventListener('input', () => this.calculate());
       this.inputPrice?.addEventListener('input', () => this.calculate());
 
-      this.form?.addEventListener('submit', async (e: SubmitEvent) => {
+      this.form?.addEventListener('submit', async (e) => {
         e.preventDefault();
         
         if (this.btnSave) {

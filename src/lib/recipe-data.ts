@@ -81,8 +81,10 @@ type Driver =
 
 type PostgresQueryable = Pick<Pool, "query">;
 
-const useDatabase = (import.meta.env.BETTER_AUTH_USE_DB || process.env.BETTER_AUTH_USE_DB || "true") !== "false";
-const databasePath = import.meta.env.BETTER_AUTH_DB_PATH || process.env.BETTER_AUTH_DB_PATH || "./data/auth.db";
+const preferPostgresForRecipes =
+  (import.meta.env.RECIPES_USE_POSTGRES || process.env.RECIPES_USE_POSTGRES || import.meta.env.APP_USE_POSTGRES || process.env.APP_USE_POSTGRES || import.meta.env.RECIPES_USE_DB || process.env.RECIPES_USE_DB || import.meta.env.APP_USE_DB || process.env.APP_USE_DB || import.meta.env.BETTER_AUTH_USE_DB || process.env.BETTER_AUTH_USE_DB || "true") !== "false";
+const databasePath =
+  import.meta.env.RECIPES_DB_PATH || process.env.RECIPES_DB_PATH || import.meta.env.APP_DB_PATH || process.env.APP_DB_PATH || "./data/recipes.db";
 const postgresUrlRaw = import.meta.env.DATABASE_URL || process.env.DATABASE_URL || import.meta.env.POSTGRES_URL || process.env.POSTGRES_URL;
 const postgresUrl = postgresUrlRaw?.trim();
 
@@ -158,7 +160,7 @@ async function syncPostgresIngredientsIdentity(queryable: PostgresQueryable) {
 async function getDriver(): Promise<Driver> {
   if (globals.__recipesDriver) return globals.__recipesDriver;
 
-  if (useDatabase && safePostgresUrl) {
+  if (preferPostgresForRecipes && safePostgresUrl) {
     const pool = new Pool({
       connectionString: safePostgresUrl,
       ssl: postgresSslConfig,
@@ -471,6 +473,7 @@ async function seedIfNeeded(driver: Driver) {
 }
 
 export async function updatePresentation(
+  recipeId: number,
   id: number,
   input: { unitsPerBatch?: number; salePrice?: number }
 ): Promise<void> {
@@ -493,9 +496,9 @@ export async function updatePresentation(
 
     if (updates.length === 0) return;
 
-    values.push(id);
+    values.push(id, recipeId);
     await driver.pool.query(
-      `UPDATE recipe_presentations SET ${updates.join(', ')} WHERE id = $${paramIndex}`,
+      `UPDATE recipe_presentations SET ${updates.join(", ")} WHERE id = $${paramIndex++} AND recipe_id = $${paramIndex}`,
       values
     );
     return;
@@ -515,9 +518,9 @@ export async function updatePresentation(
 
   if (updates.length === 0) return;
 
-  values.push(id);
+  values.push(id, recipeId);
   driver.db.prepare(
-    `UPDATE recipe_presentations SET ${updates.join(', ')} WHERE id = ?`
+    `UPDATE recipe_presentations SET ${updates.join(", ")} WHERE id = ? AND recipe_id = ?`
   ).run(...values);
 }
 
@@ -881,22 +884,18 @@ export async function createIngredient(input: CreateIngredientInput): Promise<In
     };
   }
 
-  const nextIdRow = driver.db
-    .prepare(`SELECT COALESCE(MAX(id), 0) + 1 AS next_id FROM ingredients`)
-    .get() as { next_id: number };
-  const nextId = Number(nextIdRow.next_id ?? 1);
-
-  driver.db
+  const result = driver.db
     .prepare(
       `
-      INSERT INTO ingredients (id, name, unit, price, purchase_quantity, brand, supplier)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO ingredients (name, unit, price, purchase_quantity, brand, supplier)
+      VALUES (?, ?, ?, ?, ?, ?)
       `,
     )
-    .run(nextId, name, unit, price, purchaseQuantity, brand ?? null, supplier ?? null);
+    .run(name, unit, price, purchaseQuantity, brand ?? null, supplier ?? null) as { lastInsertRowid?: number | bigint };
+  const id = Number(result.lastInsertRowid ?? 0);
 
   return {
-    id: nextId,
+    id,
     name,
     unit,
     price,
