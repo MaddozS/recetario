@@ -333,12 +333,15 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
     <div class="px-4 sm:px-6 lg:px-8 py-4">
       {feedbackType && feedbackMessage && (
         <div
+          aria-atomic="true"
+          aria-live={feedbackType === 'success' ? 'polite' : 'assertive'}
           class:list={[
             'mb-4 rounded-xl border px-4 py-3 text-sm',
             feedbackType === 'success'
               ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
               : 'border-rose-200 bg-rose-50 text-rose-700',
           ]}
+          role={feedbackType === 'success' ? 'status' : 'alert'}
         >
           <p class="font-semibold">{feedbackMessage}</p>
         </div>
@@ -935,63 +938,16 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
   </template>
 
   <script is:inline>
-    function syncIngredientUnit(row) {
-      const ingredientSelect = row.querySelector('.ingredient-select');
-      const unitSelect = row.querySelector('.unit-select');
-
-      if (!(ingredientSelect instanceof HTMLSelectElement)) return;
-      if (!(unitSelect instanceof HTMLSelectElement)) return;
-
-      const selectedOption = ingredientSelect.selectedOptions[0];
-      const nextUnit = selectedOption?.dataset.unit;
-      if (!nextUnit) return;
-
-      const matchingOption = Array.from(unitSelect.options).find(
-        (option) => option.value === nextUnit,
-      );
-
-      if (matchingOption) {
-        unitSelect.value = nextUnit;
-      }
-    }
-
-    function bindIngredientRow(row, initializeUnit = false) {
-      if (!(row instanceof HTMLElement)) return;
-
-      const ingredientSelect = row.querySelector('.ingredient-select');
-      if (!(ingredientSelect instanceof HTMLSelectElement)) return;
-
-      if (ingredientSelect.dataset.bound !== '1') {
-        ingredientSelect.dataset.bound = '1';
-        ingredientSelect.addEventListener('change', () => syncIngredientUnit(row));
-      }
-
-      if (initializeUnit) {
-        syncIngredientUnit(row);
-      }
-    }
-
     function setupRecipeEditor() {
       const addBtn = document.getElementById('add-ingredient-btn');
       const tbody = document.getElementById('edit-ingredients-tbody');
       const template = document.getElementById('ingredient-row-template');
-
-      if (tbody instanceof HTMLElement) {
-        tbody.querySelectorAll('.edit-ingredient-row').forEach((row) => {
-          bindIngredientRow(row, false);
-        });
-      }
 
       if (addBtn && tbody && template && addBtn.dataset.bound !== '1') {
         addBtn.dataset.bound = '1';
         addBtn.addEventListener('click', () => {
           const clone = template.content.cloneNode(true);
           tbody.appendChild(clone);
-          const rows = tbody.querySelectorAll('.edit-ingredient-row');
-          const newRow = rows[rows.length - 1];
-          if (newRow) {
-            bindIngredientRow(newRow, true);
-          }
         });
       }
 
