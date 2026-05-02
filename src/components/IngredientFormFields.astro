@@ -1,0 +1,105 @@
+---
+import { UNIT_OPTIONS, DEFAULT_UNIT } from "../lib/constants";
+
+interface Props {
+  idPrefix: string;
+}
+
+const { idPrefix } = Astro.props;
+
+const labelClasses =
+  "mb-1.5 block text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500";
+const inputClasses =
+  "w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-indigo-300 focus:bg-white focus:ring-2 focus:ring-indigo-500/20";
+---
+
+<div>
+  <label class={labelClasses} for={`${idPrefix}-name`}>
+    Nombre <span class="text-rose-500">*</span>
+  </label>
+  <input
+    id={`${idPrefix}-name`}
+    name="name"
+    type="text"
+    placeholder="Ej. Harina de trigo extra fina"
+    class={inputClasses}
+    autocomplete="off"
+  />
+</div>
+
+<div>
+  <label class={labelClasses} for={`${idPrefix}-supplier`}>Proveedor</label>
+  <input
+    id={`${idPrefix}-supplier`}
+    name="supplier"
+    type="text"
+    placeholder="Ej. Casa Santos Lugo"
+    class={inputClasses}
+    autocomplete="off"
+  />
+</div>
+
+<div>
+  <label class={labelClasses} for={`${idPrefix}-brand`}>Marca</label>
+  <input
+    id={`${idPrefix}-brand`}
+    name="brand"
+    type="text"
+    placeholder="Opcional"
+    class={inputClasses}
+    autocomplete="off"
+  />
+</div>
+
+<div>
+  <label class={labelClasses} for={`${idPrefix}-price`}>
+    Precio empaque <span class="text-rose-500">*</span>
+  </label>
+  <div class="relative">
+    <span
+      class="pointer-events-none absolute inset-y-0 left-4 flex items-center text-sm font-bold text-slate-400"
+    >
+      $
+    </span>
+    <input
+      id={`${idPrefix}-price`}
+      name="price"
+      type="text"
+      inputmode="decimal"
+      placeholder="0.00"
+      class={`${inputClasses} pl-8`}
+      autocomplete="off"
+    />
+  </div>
+</div>
+
+<div>
+  <label class={labelClasses} for={`${idPrefix}-purchase-quantity`}>
+    Cant. empaque <span class="text-rose-500">*</span>
+  </label>
+  <div
+    class="grid grid-cols-[minmax(0,1fr)_5.5rem] overflow-hidden rounded-xl border border-slate-200 bg-slate-50 transition focus-within:border-indigo-300 focus-within:bg-white focus-within:ring-2 focus-within:ring-indigo-500/20"
+  >
+    <input
+      id={`${idPrefix}-purchase-quantity`}
+      name="purchaseQuantity"
+      type="text"
+      inputmode="decimal"
+      value="1"
+      class="border-0 bg-transparent px-4 py-3 text-sm text-slate-800 outline-none placeholder:text-slate-400"
+      autocomplete="off"
+    />
+    <select
+      name="unit"
+      class="border-0 border-l border-slate-200 bg-white px-3 py-3 text-sm font-semibold text-slate-700 outline-none"
+    >
+      {
+        UNIT_OPTIONS.map((option) => (
+          <option value={option} selected={option === DEFAULT_UNIT}>
+            {option}
+          </option>
+        ))
+      }
+    </select>
+  </div>
+</div>
