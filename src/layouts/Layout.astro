@@ -60,7 +60,7 @@ const recipeHref = currentRecipe ? `/recipes/${currentRecipe}` : '/recipes';
         )
       }
       <main class="flex-1 overflow-y-auto p-4 md:p-8 pb-24 lg:pb-8 w-full bg-slate-50">
-        <div class="max-w-7xl mx-auto">
+        <div class="max-w-7xl mx-auto" transition:name="app-content">
           <slot />
         </div>
       </main>
@@ -68,7 +68,11 @@ const recipeHref = currentRecipe ? `/recipes/${currentRecipe}` : '/recipes';
 
     {
       showMobileNav && (
-        <nav class="lg:hidden fixed inset-x-0 bottom-0 z-50 px-3 pb-[calc(env(safe-area-inset-bottom)+0.45rem)]" transition:animate="none">
+        <nav
+          class="lg:hidden fixed inset-x-0 bottom-0 z-50 px-3 pb-[calc(env(safe-area-inset-bottom)+0.45rem)]"
+          transition:name="mobile-nav"
+          transition:animate="none"
+        >
           <div class="rounded-2xl border border-slate-200 bg-white/95 backdrop-blur shadow-[0_-8px_24px_rgba(15,23,42,0.08)] p-1.5 grid grid-cols-2 gap-1.5">
             <a
               href={recipeHref}
@@ -105,6 +109,88 @@ const recipeHref = currentRecipe ? `/recipes/${currentRecipe}` : '/recipes';
 		width: 100%;
 		height: 100%;
 	}
+</style>
+
+<style is:global>
+  @keyframes appContentEnter {
+    from {
+      opacity: 0;
+      transform: translateY(10px) scale(0.994);
+      filter: blur(5px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      filter: blur(0);
+    }
+  }
+
+  @keyframes appContentExit {
+    from {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      filter: blur(0);
+    }
+
+    to {
+      opacity: 0;
+      transform: translateY(-4px) scale(0.998);
+      filter: blur(2px);
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    ::view-transition-group(root) {
+      z-index: 0;
+    }
+
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+      animation: none;
+      mix-blend-mode: normal;
+    }
+
+    ::view-transition-group(app-content) {
+      z-index: 10;
+      animation-duration: 380ms;
+      animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    ::view-transition-old(app-content),
+    ::view-transition-new(app-content) {
+      mix-blend-mode: normal;
+      transform-origin: center top;
+    }
+
+    ::view-transition-old(app-content) {
+      animation: appContentExit 220ms cubic-bezier(0.4, 0, 0.9, 1) both;
+    }
+
+    ::view-transition-new(app-content) {
+      animation: appContentEnter 380ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+    }
+
+    ::view-transition-group(mobile-nav) {
+      z-index: 80;
+      animation: none;
+    }
+
+    ::view-transition-old(mobile-nav),
+    ::view-transition-new(mobile-nav) {
+      animation: none;
+      mix-blend-mode: normal;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    ::view-transition-old(root),
+    ::view-transition-new(root),
+    ::view-transition-old(app-content),
+    ::view-transition-new(app-content) {
+      animation: none !important;
+    }
+  }
 </style>
 
 <script>
