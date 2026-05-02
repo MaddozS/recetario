@@ -1,9 +1,9 @@
-const { Pool } = require('pg');
-const DatabaseSync = require('node:sqlite').DatabaseSync;
-const path = require('path');
-const dotenv = require('dotenv');
+import { config as loadEnv } from 'dotenv';
+import path from 'node:path';
+import { DatabaseSync } from 'node:sqlite';
+import { Pool } from 'pg';
 
-dotenv.config();
+loadEnv();
 
 async function run() {
   const isPostgres = process.env.USE_DATABASE === 'true' && process.env.POSTGRES_URL;
