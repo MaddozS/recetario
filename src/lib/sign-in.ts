@@ -1,5 +1,4 @@
-import { createAuthClient } from "better-auth/client";
-const authClient = createAuthClient();
+import { authClient } from "./auth-client";
 
 let pendingSocialSignIn: Promise<void> | null = null;
 
@@ -73,10 +72,18 @@ function getRetryAfterSeconds(error: unknown) {
 async function startSocialSignIn() {
   let responseStatus: number | undefined;
   let retryAfterSeconds: number | undefined;
+  const isEmbeddedContext =
+    typeof window !== "undefined" && window.self !== window.top;
+  const popupWindow = isEmbeddedContext
+    ? window.open("about:blank", "_blank", "noopener,noreferrer")
+    : null;
 
   try {
-    await authClient.signIn.social({
+    const result = await authClient.signIn.social({
       provider: "google",
+      callbackURL: "/recipes",
+      errorCallbackURL: "/sign-in",
+      disableRedirect: true,
       fetchOptions: {
         onResponse(context) {
           responseStatus = context.response.status;
@@ -90,7 +97,45 @@ async function startSocialSignIn() {
     if (responseStatus === 429) {
       throw new SignInRateLimitError(retryAfterSeconds);
     }
+
+    const redirectUrl =
+      "data" in result && typeof result.data?.url === "string"
+        ? result.data.url
+        : undefined;
+
+    if (!redirectUrl) {
+      throw new Error("Missing social sign-in URL");
+    }
+
+    if (popupWindow && !popupWindow.closed) {
+      popupWindow.location.replace(redirectUrl);
+      return;
+    }
+
+    if (isEmbeddedContext && typeof document !== "undefined") {
+      const anchor = document.createElement("a");
+      anchor.href = redirectUrl;
+      anchor.target = "_top";
+      anchor.rel = "noopener noreferrer";
+      anchor.click();
+      return;
+    }
+
+    if (typeof window !== "undefined" && window.location) {
+      window.location.assign(redirectUrl);
+      return;
+    }
+
+    throw new Error("Browser navigation is unavailable");
   } catch (error) {
+    if (
+      popupWindow &&
+      !popupWindow.closed &&
+      popupWindow.location.href === "about:blank"
+    ) {
+      popupWindow.close();
+    }
+
     if (responseStatus === 429 || getStatusCode(error) === 429) {
       throw new SignInRateLimitError(
         retryAfterSeconds ?? getRetryAfterSeconds(error)
