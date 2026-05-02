@@ -415,7 +415,7 @@ const unitProfit = defaultSalePrice - unitCost;
 
     calculate() {
       const unitsPerBatch = parseFloat(this.inputUnits?.value || "0");
-      const salePrice = parseFloat(this.inputPrice?.value || "0");
+      const salePriceValue = this.inputPrice?.value ?? "";
 
       const totalUnits = unitsPerBatch * this.multiplier;
       const hasUnits = totalUnits > 0;
@@ -424,9 +424,15 @@ const unitProfit = defaultSalePrice - unitCost;
       const unitPriceRecommended = hasUnits
         ? this.precioRecBatch / totalUnits
         : 0;
+      const parsedSalePrice = parseFloat(salePriceValue || "0");
+      const salePrice = salePriceValue.trim() === ""
+        ? unitPriceRecommended
+        : Number.isFinite(parsedSalePrice)
+          ? parsedSalePrice
+          : 0;
 
       if (this.inputPrice) {
-        const valLength = (this.inputPrice.value || "").length;
+        const valLength = salePriceValue.length;
         this.inputPrice.style.width = `${Math.max(valLength, 1)}ch`;
       }
 

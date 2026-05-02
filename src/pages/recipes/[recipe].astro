@@ -62,7 +62,7 @@ const getPresentationFormErrorMessage = (error: unknown, fallback: string) => {
     case 'Recipe not found':
       return 'No se encontró la receta.';
     default:
-      return error.message;
+      return fallback;
   }
 };
 
@@ -220,6 +220,19 @@ const discoveredUnitOptions = [
   .map((unit) => unit.trim())
   .filter((unit) => unit.length > 0);
 const unitOptions = Array.from(new Set([...standardUnitOptions, ...discoveredUnitOptions]));
+const getUnitOptionsForValue = (currentUnit: string) => {
+  if (unitOptions.includes(currentUnit)) {
+    return unitOptions.map((unit) => ({ value: unit, label: unit }));
+  }
+
+  return [
+    {
+      value: currentUnit,
+      label: currentUnit.trim().length > 0 ? currentUnit : 'Sin unidad',
+    },
+    ...unitOptions.map((unit) => ({ value: unit, label: unit })),
+  ];
+};
 
 let lastUpdatedText = '';
 if (updatedAt) {
@@ -503,8 +516,8 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
                   <div class="flex items-center gap-2">
                     <input type="number" step="0.01" name="quantity" form={recipeEditFormId} class="quantity-input w-24 bg-white border border-slate-200 rounded-lg p-2 text-center font-bold text-slate-700 focus:ring-2 focus:ring-indigo-500/20" value={ri.quantity} />
                     <select name="unit" form={recipeEditFormId} class="unit-select w-24 bg-white border border-slate-200 rounded-lg p-2 text-sm text-slate-600 focus:ring-2 focus:ring-indigo-500/20">
-                      {unitOptions.map((unitOption) => (
-                        <option value={unitOption} selected={unitOption === ri.unit}>{unitOption}</option>
+                      {getUnitOptionsForValue(ri.unit).map((unitOption) => (
+                        <option value={unitOption.value} selected={unitOption.value === ri.unit}>{unitOption.label}</option>
                       ))}
                     </select>
                   </div>
@@ -903,8 +916,8 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
         <div class="flex items-center gap-2">
           <input type="number" step="0.01" name="quantity" form={recipeEditFormId} class="quantity-input w-24 bg-white border border-slate-200 rounded-lg p-2 text-center font-bold text-slate-700 focus:ring-2 focus:ring-indigo-500/20" value="1" />
           <select name="unit" form={recipeEditFormId} class="unit-select w-24 bg-white border border-slate-200 rounded-lg p-2 text-sm text-slate-600 focus:ring-2 focus:ring-indigo-500/20">
-            {unitOptions.map((unitOption, index) => (
-              <option value={unitOption} selected={index === 0}>{unitOption}</option>
+            {getUnitOptionsForValue('').map((unitOption, index) => (
+              <option value={unitOption.value} selected={index === 0}>{unitOption.label}</option>
             ))}
           </select>
         </div>
