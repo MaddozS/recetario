@@ -209,6 +209,59 @@ function normalizePresentationSalePrice(value: unknown): number {
   return roundToTwoDecimals(salePrice);
 }
 
+function toRecipePresentation(record: {
+  id: number | string;
+  name: string;
+  units_per_batch: number | string;
+  sale_price: number | string | null;
+}): RecipePresentation {
+  return {
+    id: Number(record.id),
+    name: record.name,
+    unitsPerBatch: toNumber(record.units_per_batch),
+    salePrice: record.sale_price !== null ? toNumber(record.sale_price) : undefined,
+  };
+}
+
+async function getPresentationById(
+  driver: Driver,
+  recipeId: number,
+  id: number,
+): Promise<RecipePresentation | null> {
+  if (driver.kind === "postgres") {
+    const presentationRes = await driver.pool.query<{
+      id: number;
+      name: string;
+      units_per_batch: string;
+      sale_price: string | null;
+    }>(
+      `
+      SELECT id, name, units_per_batch::text, sale_price::text
+      FROM recipe_presentations
+      WHERE id = $1 AND recipe_id = $2
+      LIMIT 1
+      `,
+      [id, recipeId],
+    );
+
+    const presentation = presentationRes.rows[0];
+    return presentation ? toRecipePresentation(presentation) : null;
+  }
+
+  const presentation = driver.db.prepare(
+    `
+    SELECT id, name, units_per_batch, sale_price
+    FROM recipe_presentations
+    WHERE id = ? AND recipe_id = ?
+    LIMIT 1
+    `,
+  ).get(id, recipeId) as
+    | { id: number; name: string; units_per_batch: number; sale_price: number | null }
+    | undefined;
+
+  return presentation ? toRecipePresentation(presentation) : null;
+}
+
 async function syncPostgresIngredientsIdentity(queryable: PostgresQueryable) {
   await queryable.query(`
     DO $$
@@ -645,24 +698,29 @@ async function ingredientsBelongToOwner(
 export async function updatePresentation(
   recipeId: number,
   id: number,
-  input: { name?: string; unitsPerBatch?: number; salePrice?: number },
+  input: { name?: string; unitsPerBatch?: number; salePrice?: number | null },
   ownerId = STATIC_OWNER_SCOPE,
-): Promise<void> {
+): Promise<RecipePresentation | null> {
   await ensureInitialized();
   const driver = await getDriver();
   const scopeId = requireOwnerId(ownerId);
   const name = input.name !== undefined ? normalizePresentationName(input.name) : undefined;
   const unitsPerBatch = input.unitsPerBatch !== undefined ? normalizePresentationUnits(input.unitsPerBatch) : undefined;
-  const salePrice = input.salePrice !== undefined ? normalizePresentationSalePrice(input.salePrice) : undefined;
+  const salePrice = input.salePrice === null
+    ? null
+    : input.salePrice !== undefined
+      ? normalizePresentationSalePrice(input.salePrice)
+      : undefined;
 
   if (!(await recipeBelongsToOwner(driver, recipeId, scopeId))) {
-    return;
+    return null;
   }
 
   if (driver.kind === "postgres") {
     const updates = [];
     const values = [];
     let paramIndex = 1;
+    let updated = false;
 
     if (name !== undefined) {
       updates.push(`name = $${paramIndex++}`);
@@ -678,7 +736,7 @@ export async function updatePresentation(
       values.push(salePrice);
     }
 
-    if (updates.length === 0) return;
+    if (updates.length === 0) return getPresentationById(driver, recipeId, id);
 
     const client = await driver.pool.connect();
     try {
@@ -690,7 +748,9 @@ export async function updatePresentation(
         values,
       );
 
-      if (Number(updateRes.rowCount ?? 0) > 0) {
+      updated = Number(updateRes.rowCount ?? 0) > 0;
+
+      if (updated) {
         await client.query(
           "UPDATE recipes SET updated_at = NOW() WHERE id = $1 AND owner_id = $2",
           [recipeId, scopeId],
@@ -704,12 +764,14 @@ export async function updatePresentation(
     } finally {
       client.release();
     }
-    return;
+
+    return updated ? getPresentationById(driver, recipeId, id) : null;
   }
 
   const updates = [];
   const values = [];
   const now = new Date().toISOString();
+  let updated = false;
 
   if (name !== undefined) {
     updates.push(`name = ?`);
@@ -724,7 +786,7 @@ export async function updatePresentation(
     values.push(salePrice);
   }
 
-  if (updates.length === 0) return;
+  if (updates.length === 0) return getPresentationById(driver, recipeId, id);
 
   driver.db.exec("BEGIN");
   try {
@@ -733,7 +795,9 @@ export async function updatePresentation(
       `UPDATE recipe_presentations SET ${updates.join(", ")} WHERE id = ? AND recipe_id = ?`,
     ).run(...values) as { changes?: number | bigint };
 
-    if (Number(updateResult.changes ?? 0) > 0) {
+    updated = Number(updateResult.changes ?? 0) > 0;
+
+    if (updated) {
       driver.db.prepare(
         "UPDATE recipes SET updated_at = ? WHERE id = ? AND owner_id = ?",
       ).run(now, recipeId, scopeId);
@@ -744,6 +808,8 @@ export async function updatePresentation(
     driver.db.exec("ROLLBACK");
     throw error;
   }
+
+  return updated ? getPresentationById(driver, recipeId, id) : null;
 }
 
 export async function createPresentation(
