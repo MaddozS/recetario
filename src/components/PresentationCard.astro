@@ -1,5 +1,5 @@
 ---
-import { Icon } from 'astro-icon/components';
+import { Icon } from "astro-icon/components";
 
 interface Props {
   id: number;
@@ -11,15 +11,26 @@ interface Props {
   precioVentaSugeridoBatch: number;
 }
 
-const { id, name, unitsPerBatch, salePrice, multiplier, costoProduccionRealBatch, precioVentaSugeridoBatch } = Astro.props;
+const {
+  id,
+  name,
+  unitsPerBatch,
+  salePrice,
+  multiplier,
+  costoProduccionRealBatch,
+  precioVentaSugeridoBatch,
+} = Astro.props;
 
 const totalUnits = unitsPerBatch * multiplier;
 const hasUnits = totalUnits > 0;
-const unitCost = hasUnits ? (costoProduccionRealBatch / totalUnits) : 0;
-const unitPriceRecommended = hasUnits ? (precioVentaSugeridoBatch / totalUnits) : 0;
+const unitCost = hasUnits ? costoProduccionRealBatch / totalUnits : 0;
+const unitPriceRecommended = hasUnits
+  ? precioVentaSugeridoBatch / totalUnits
+  : 0;
 
 // Default sale price to saved salePrice or recommended price
-const defaultSalePrice = typeof salePrice === 'number' ? salePrice : unitPriceRecommended;
+const defaultSalePrice =
+  typeof salePrice === "number" ? salePrice : unitPriceRecommended;
 const unitProfit = defaultSalePrice - unitCost;
 ---
 
@@ -35,34 +46,45 @@ const unitProfit = defaultSalePrice - unitCost;
   <form method="post" class="flex flex-col h-full grow">
     <input type="hidden" name="action" value="update_presentation" />
     <input type="hidden" name="presentationId" value={id} />
-    
+
     <div class="flex justify-between items-start gap-3 mb-2">
-      <input 
-        type="text" 
+      <input
+        name="presentationName"
+        type="text"
         class="presentation-name min-w-0 font-bold text-xl bg-transparent border-none focus:ring-2 focus:ring-indigo-500/20 p-1 -ml-1 rounded-lg text-slate-800 w-full"
         value={name}
         readonly
       />
       <div class="flex items-center gap-1 shrink-0">
-        <button 
+        <button
           type="button"
           class="edit-btn h-8 w-8 rounded-full bg-transparent text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors flex items-center justify-center"
           aria-label="Editar presentación"
           aria-pressed="false"
           title="Editar"
         >
-          <Icon name="lucide:pencil" size={16} class="edit-icon edit-icon-pencil" />
-          <Icon name="lucide:x" size={16} class="edit-icon edit-icon-cancel hidden" />
+          <Icon
+            name="lucide:pencil"
+            size={16}
+            class="edit-icon edit-icon-pencil"
+          />
+          <Icon
+            name="lucide:x"
+            size={16}
+            class="edit-icon edit-icon-cancel hidden"
+          />
         </button>
       </div>
     </div>
 
     <div class="flex flex-wrap items-center gap-2 mb-6">
-      <div class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md border border-slate-200 bg-slate-50 text-xs text-slate-600 focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:border-indigo-300 transition-all">
+      <div
+        class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md border border-slate-200 bg-slate-50 text-xs text-slate-600 focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:border-indigo-300 transition-all"
+      >
         <span>Rinde:</span>
-        <input 
+        <input
           name="unitsPerBatch"
-          type="number" 
+          type="number"
           step="any"
           class="presentation-units w-8 bg-transparent border-none p-0 text-center text-xs text-slate-800 font-medium focus:ring-0 read-only:pointer-events-none"
           value={unitsPerBatch}
@@ -71,31 +93,58 @@ const unitProfit = defaultSalePrice - unitCost;
         <span>piezas</span>
       </div>
 
-      {Math.abs(multiplier - 1) > 0.0001 && (
-        <div class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md border border-indigo-200 bg-indigo-50 text-xs text-indigo-700 transition-all">
-          <span class="font-semibold">Con x{multiplier}:</span>
-          <span class="font-black yield-value">{Math.round(totalUnits * 100) / 100}</span>
-          <span>piezas</span>
-        </div>
-      )}
+      {
+        Math.abs(multiplier - 1) > 0.0001 && (
+          <div class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md border border-indigo-200 bg-indigo-50 text-xs text-indigo-700 transition-all">
+            <span class="font-semibold">Con x{multiplier}:</span>
+            <span class="font-black yield-value">
+              {Math.round(totalUnits * 100) / 100}
+            </span>
+            <span>piezas</span>
+          </div>
+        )
+      }
     </div>
 
     <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
       <div class="space-y-0.5 shrink-0">
-        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Costo unitario</p>
-        <p class="unit-cost-display text-[20px] font-bold text-slate-800 tabular-nums">${unitCost.toFixed(2)}</p>
+        <p
+          class="text-[10px] font-bold text-slate-400 uppercase tracking-widest"
+        >
+          Costo unitario
+        </p>
+        <p
+          class="unit-cost-display text-[20px] font-bold text-slate-800 tabular-nums"
+        >
+          ${unitCost.toFixed(2)}
+        </p>
       </div>
-      
-      <div class="bg-indigo-50/50 border border-indigo-100 rounded-xl px-2.5 py-2 sm:px-3 sm:py-2.5 grow flex flex-wrap items-center justify-between gap-x-2 gap-y-1 max-w-65">
+
+      <div
+        class="bg-indigo-50/50 border border-indigo-100 rounded-xl px-2.5 py-2 sm:px-3 sm:py-2.5 grow flex flex-wrap items-center justify-between gap-x-2 gap-y-1 max-w-65"
+      >
         <div class="flex flex-col shrink-0 min-w-0">
-          <p class="text-[10px] font-bold text-indigo-700 uppercase tracking-widest mb-0.5">Precio Venta</p>
-          <p class="text-[10px] text-indigo-400/80">Sugerido: <span class="recommended-price-display">${unitPriceRecommended.toFixed(2)}</span></p>
+          <p
+            class="text-[10px] font-bold text-indigo-700 uppercase tracking-widest mb-0.5"
+          >
+            Precio Venta
+          </p>
+          <p class="text-[10px] text-indigo-400/80">
+            Sugerido: <span class="recommended-price-display"
+              >${unitPriceRecommended.toFixed(2)}</span
+            >
+          </p>
         </div>
-        <div class="flex items-center justify-end focus-within:bg-white focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:border-indigo-300 rounded-md border border-transparent transition-all px-1 -mr-1 shrink-0">
-          <span class="text-[20px] font-bold text-indigo-600 mr-0.5 pointer-events-none">$</span>
-          <input 
+        <div
+          class="flex items-center justify-end focus-within:bg-white focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:border-indigo-300 rounded-md border border-transparent transition-all px-1 -mr-1 shrink-0"
+        >
+          <span
+            class="text-[20px] font-bold text-indigo-600 mr-0.5 pointer-events-none"
+            >$</span
+          >
+          <input
             name="salePrice"
-            type="number" 
+            type="number"
             step="0.01"
             class="presentation-price bg-transparent border-none p-0 text-[20px] font-bold text-indigo-600 text-left tabular-nums focus:ring-0 read-only:pointer-events-none min-w-[3ch] max-w-full"
             style={`width: ${defaultSalePrice.toFixed(2).length}ch;`}
@@ -110,22 +159,38 @@ const unitProfit = defaultSalePrice - unitCost;
 
     <div class="flex items-end justify-between gap-4 mt-auto">
       <div class="space-y-0.5">
-        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Ganancia / Pz</p>
-        <p class="text-[20px] font-bold text-emerald-600 tabular-nums profit-display">${unitProfit.toFixed(2)}</p>
+        <p
+          class="text-[10px] font-bold text-slate-400 uppercase tracking-widest"
+        >
+          Ganancia / Pz
+        </p>
+        <p
+          class="text-[20px] font-bold text-emerald-600 tabular-nums profit-display"
+        >
+          ${unitProfit.toFixed(2)}
+        </p>
       </div>
       <div class="pb-1 w-[60%] max-w-60">
         <div class="flex items-center justify-between text-xs mb-2">
           <span class="margin-label text-emerald-600">Saludable</span>
-          <span class="margin-percent-display font-bold text-slate-800">0.0%</span>
+          <span class="margin-percent-display font-bold text-slate-800"
+            >0.0%</span
+          >
         </div>
         <div class="h-2.5 rounded-full bg-slate-100 overflow-hidden">
-          <div class="margin-bar h-full rounded-full transition-all duration-500 bg-emerald-500"></div>
+          <div
+            class="margin-bar h-full rounded-full transition-all duration-500 bg-emerald-500"
+          >
+          </div>
         </div>
       </div>
     </div>
 
     <div class="save-bar hidden mt-5 pt-4 border-t border-slate-100">
-      <button type="submit" class="save-btn w-full min-h-11 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-colors shadow-sm shadow-indigo-200">
+      <button
+        type="submit"
+        class="save-btn w-full min-h-11 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-colors shadow-sm shadow-indigo-200"
+      >
         <Icon name="lucide:check" size={18} />
         Guardar Cambios
       </button>
@@ -154,61 +219,102 @@ const unitProfit = defaultSalePrice - unitCost;
     multiplier = 1;
     costoBatch = 0;
     precioRecBatch = 0;
-    originalUnits = '0';
-    originalPrice = '0';
-    
+    originalName = "";
+    originalUnits = "0";
+    originalPrice = "0";
+    salePriceDirty = false;
+
     connectedCallback() {
-      if (this.dataset.bound === '1') return;
-      this.dataset.bound = '1';
+      if (this.dataset.bound === "1") return;
+      this.dataset.bound = "1";
 
-      this.btnEdit = this.querySelector('.edit-btn');
-      this.inputName = this.querySelector('.presentation-name');
-      this.inputUnits = this.querySelector('.presentation-units');
-      this.inputPrice = this.querySelector('.presentation-price');
-      this.yieldValue = this.querySelector('.yield-value');
-      this.unitCostDisplay = this.querySelector('.unit-cost-display');
-      this.recommendedPriceDisplay = this.querySelector('.recommended-price-display');
-      this.profitDisplay = this.querySelector('.profit-display');
-      this.marginLabel = this.querySelector('.margin-label');
-      this.marginPercentDisplay = this.querySelector('.margin-percent-display');
-      this.marginBar = this.querySelector('.margin-bar');
-      this.saveBar = this.querySelector('.save-bar');
-      this.btnSave = this.querySelector('.save-btn');
-      this.form = this.querySelector('form');
+      this.btnEdit = this.querySelector(".edit-btn");
+      this.inputName = this.querySelector(".presentation-name");
+      this.inputUnits = this.querySelector(".presentation-units");
+      this.inputPrice = this.querySelector(".presentation-price");
+      this.yieldValue = this.querySelector(".yield-value");
+      this.unitCostDisplay = this.querySelector(".unit-cost-display");
+      this.recommendedPriceDisplay = this.querySelector(
+        ".recommended-price-display",
+      );
+      this.profitDisplay = this.querySelector(".profit-display");
+      this.marginLabel = this.querySelector(".margin-label");
+      this.marginPercentDisplay = this.querySelector(".margin-percent-display");
+      this.marginBar = this.querySelector(".margin-bar");
+      this.saveBar = this.querySelector(".save-bar");
+      this.btnSave = this.querySelector(".save-btn");
+      this.form = this.querySelector("form");
 
-      this.multiplier = parseFloat(this.dataset.multiplier || '1');
-      this.costoBatch = parseFloat(this.dataset.cost || '0');
-      this.precioRecBatch = parseFloat(this.dataset.recommended || '0');
+      this.multiplier = parseFloat(this.dataset.multiplier || "1");
+      this.costoBatch = parseFloat(this.dataset.cost || "0");
+      this.precioRecBatch = parseFloat(this.dataset.recommended || "0");
 
-      this.btnEdit?.addEventListener('click', () => this.toggleEdit());
-      this.inputUnits?.addEventListener('input', () => this.calculate());
-      this.inputPrice?.addEventListener('input', () => this.calculate());
+      this.btnEdit?.addEventListener("click", () => this.toggleEdit());
+      this.inputUnits?.addEventListener("input", () => this.calculate());
+      this.inputPrice?.addEventListener("input", () => {
+        this.salePriceDirty = true;
+        this.calculate();
+      });
 
-      this.form?.addEventListener('submit', async (e) => {
+      this.form?.addEventListener("submit", async (e) => {
         e.preventDefault();
-        
+
         if (this.btnSave) {
           this.btnSave.disabled = true;
-          this.btnSave.classList.add('opacity-75', 'cursor-not-allowed');
+          this.btnSave.classList.add("opacity-75", "cursor-not-allowed");
         }
 
         try {
           if (!this.form) return;
 
           const formData = new FormData(this.form);
-          await fetch(window.location.href, {
-            method: 'POST',
-            body: formData
+          if (!this.salePriceDirty) {
+            formData.delete("salePrice");
+          }
+
+          const response = await fetch(window.location.href, {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+            },
+            body: formData,
           });
-          
+
+          if (response.redirected) {
+            throw new Error(
+              "Tu sesion expiro. Recarga la pagina e inicia sesion nuevamente.",
+            );
+          }
+
+          if (!response.ok) {
+            const message = (await response.text()).trim();
+            throw new Error(message || "Hubo un error al guardar los cambios.");
+          }
+
+          const contentType = response.headers.get("content-type") || "";
+          if (!contentType.includes("application/json")) {
+            throw new Error("La respuesta del servidor no fue valida.");
+          }
+
+          const payload = await response.json().catch(() => null);
+          if (!payload?.presentation) {
+            throw new Error("La respuesta del servidor no fue valida.");
+          }
+
+          this.applyPresentation(payload.presentation);
+
           this.toggleEdit(true); // true = save changes
         } catch (error) {
           console.error(error);
-          alert('Hubo un error al guardar los cambios.');
+          const message =
+            error instanceof Error && error.message
+              ? error.message
+              : "Hubo un error al guardar los cambios.";
+          alert(message);
         } finally {
           if (this.btnSave) {
             this.btnSave.disabled = false;
-            this.btnSave.classList.remove('opacity-75', 'cursor-not-allowed');
+            this.btnSave.classList.remove("opacity-75", "cursor-not-allowed");
           }
         }
       });
@@ -217,72 +323,103 @@ const unitProfit = defaultSalePrice - unitCost;
       this.calculate();
     }
 
+    applyPresentation(presentation) {
+      const unitsPerBatch = Number(presentation?.unitsPerBatch ?? 0);
+      const totalUnits = unitsPerBatch * this.multiplier;
+      const hasUnits = totalUnits > 0;
+      const recommendedPrice = hasUnits ? this.precioRecBatch / totalUnits : 0;
+      const nextPrice =
+        typeof presentation?.salePrice === "number"
+          ? presentation.salePrice
+          : recommendedPrice;
+
+      if (this.inputName) this.inputName.value = presentation?.name || "";
+      if (this.inputUnits)
+        this.inputUnits.value = Number.isFinite(unitsPerBatch)
+          ? String(unitsPerBatch)
+          : "0";
+      if (this.inputPrice) this.inputPrice.value = nextPrice.toFixed(2);
+
+      this.dataset.units = Number.isFinite(unitsPerBatch)
+        ? String(unitsPerBatch)
+        : "0";
+      this.dataset.price = nextPrice.toFixed(2);
+      this.salePriceDirty = false;
+      this.calculate();
+    }
+
     toggleEdit(save = false) {
       this.isEditing = !this.isEditing;
       const inputs = [this.inputName, this.inputUnits, this.inputPrice];
-      
-      if (this.isEditing) {
-        this.originalUnits = this.inputUnits?.value || '0';
-        this.originalPrice = this.inputPrice?.value || '0';
 
-        inputs.forEach(input => {
-          if(input) {
-            input.removeAttribute('readonly');
-            input.classList.remove('border-transparent', 'bg-transparent');
+      if (this.isEditing) {
+        this.salePriceDirty = false;
+        this.originalName = this.inputName?.value || "";
+        this.originalUnits = this.inputUnits?.value || "0";
+        this.originalPrice = this.inputPrice?.value || "0";
+
+        inputs.forEach((input) => {
+          if (input) {
+            input.removeAttribute("readonly");
+            input.classList.remove("border-transparent", "bg-transparent");
           }
         });
-        
-        if (this.btnEdit) {
-          this.btnEdit.classList.add('bg-slate-100');
-          this.btnEdit.setAttribute('title', 'Cancelar');
-          this.btnEdit.setAttribute('aria-label', 'Cancelar edición');
-          this.btnEdit.setAttribute('aria-pressed', 'true');
 
-          const pencilIcon = this.btnEdit.querySelector('.edit-icon-pencil');
-          const cancelIcon = this.btnEdit.querySelector('.edit-icon-cancel');
-          pencilIcon?.classList.add('hidden');
-          cancelIcon?.classList.remove('hidden');
+        if (this.btnEdit) {
+          this.btnEdit.classList.add("bg-slate-100");
+          this.btnEdit.setAttribute("title", "Cancelar");
+          this.btnEdit.setAttribute("aria-label", "Cancelar edición");
+          this.btnEdit.setAttribute("aria-pressed", "true");
+
+          const pencilIcon = this.btnEdit.querySelector(".edit-icon-pencil");
+          const cancelIcon = this.btnEdit.querySelector(".edit-icon-cancel");
+          pencilIcon?.classList.add("hidden");
+          cancelIcon?.classList.remove("hidden");
         }
 
         if (this.saveBar) {
-          this.saveBar.classList.remove('hidden');
+          this.saveBar.classList.remove("hidden");
         }
-        
+
         this.inputPrice?.focus();
       } else {
         if (!save) {
           // Revert to original values if cancelled
+          if (this.inputName) this.inputName.value = this.originalName;
           if (this.inputUnits) this.inputUnits.value = this.originalUnits;
           if (this.inputPrice) this.inputPrice.value = this.originalPrice;
           this.calculate();
         } else {
           // Commit changes
-          this.originalUnits = this.inputUnits?.value || '0';
-          this.originalPrice = this.inputPrice?.value || '0';
+          this.originalName = this.inputName?.value || "";
+          this.originalUnits = this.inputUnits?.value || "0";
+          this.originalPrice = this.inputPrice?.value || "0";
         }
 
-        inputs.forEach(input => {
-          if(input) {
-            input.setAttribute('readonly', 'true');
+        inputs.forEach((input) => {
+          if (input) {
+            input.setAttribute("readonly", "true");
           }
         });
-        
-        if (this.btnEdit) {
-          this.btnEdit.classList.remove('bg-slate-100');
-          this.btnEdit.setAttribute('title', 'Editar');
-          this.btnEdit.setAttribute('aria-label', 'Editar presentación');
-          this.btnEdit.setAttribute('aria-pressed', 'false');
 
-          const pencilIcon = this.btnEdit.querySelector('.edit-icon-pencil');
-          const cancelIcon = this.btnEdit.querySelector('.edit-icon-cancel');
-          pencilIcon?.classList.remove('hidden');
-          cancelIcon?.classList.add('hidden');
+        if (this.btnEdit) {
+          this.btnEdit.classList.remove("bg-slate-100");
+          this.btnEdit.setAttribute("title", "Editar");
+          this.btnEdit.setAttribute("aria-label", "Editar presentación");
+          this.btnEdit.setAttribute("aria-pressed", "false");
+
+          const pencilIcon = this.btnEdit.querySelector(".edit-icon-pencil");
+          const cancelIcon = this.btnEdit.querySelector(".edit-icon-cancel");
+          pencilIcon?.classList.remove("hidden");
+          cancelIcon?.classList.add("hidden");
         }
 
         if (this.saveBar) {
-          this.saveBar.classList.add('hidden');
+          this.saveBar.classList.add("hidden");
         }
-        
+
+        this.salePriceDirty = false;
+
         // Format price on blur
         if (this.inputPrice && this.inputPrice.value) {
           this.inputPrice.value = parseFloat(this.inputPrice.value).toFixed(2);
@@ -291,63 +428,79 @@ const unitProfit = defaultSalePrice - unitCost;
     }
 
     calculate() {
-      const unitsPerBatch = parseFloat(this.inputUnits?.value || '0');
-      const salePrice = parseFloat(this.inputPrice?.value || '0');
-      
+      const unitsPerBatch = parseFloat(this.inputUnits?.value || "0");
+      const salePriceValue = this.inputPrice?.value ?? "";
+
       const totalUnits = unitsPerBatch * this.multiplier;
       const hasUnits = totalUnits > 0;
-      
-      const unitCost = hasUnits ? (this.costoBatch / totalUnits) : 0;
-      const unitPriceRecommended = hasUnits ? (this.precioRecBatch / totalUnits) : 0;
-      
+
+      const unitCost = hasUnits ? this.costoBatch / totalUnits : 0;
+      const unitPriceRecommended = hasUnits
+        ? this.precioRecBatch / totalUnits
+        : 0;
+      const parsedSalePrice = parseFloat(salePriceValue || "0");
+      const salePrice =
+        salePriceValue.trim() === ""
+          ? unitPriceRecommended
+          : Number.isFinite(parsedSalePrice)
+            ? parsedSalePrice
+            : 0;
+
       if (this.inputPrice) {
-        const valLength = (this.inputPrice.value || '').length;
+        const valLength = salePriceValue.length;
         this.inputPrice.style.width = `${Math.max(valLength, 1)}ch`;
       }
-      
+
       const unitProfit = salePrice - unitCost;
       const marginPercent = salePrice > 0 ? (unitProfit / salePrice) * 100 : 0;
       const marginWidth = Math.min(Math.max(marginPercent, 0), 100);
-      
-      let marginLabel = 'Margen negativo';
-      let marginColor = 'bg-rose-500';
-      let marginTextColor = 'text-rose-500';
-      
+
+      let marginLabel = "Margen negativo";
+      let marginColor = "bg-rose-500";
+      let marginTextColor = "text-rose-500";
+
       if (marginPercent >= 35) {
-        marginLabel = 'Saludable';
-        marginColor = 'bg-emerald-500';
-        marginTextColor = 'text-emerald-600';
+        marginLabel = "Saludable";
+        marginColor = "bg-emerald-500";
+        marginTextColor = "text-emerald-600";
       } else if (marginPercent >= 20) {
-        marginLabel = 'Medio';
-        marginColor = 'bg-amber-500';
-        marginTextColor = 'text-amber-600';
+        marginLabel = "Medio";
+        marginColor = "bg-amber-500";
+        marginTextColor = "text-amber-600";
       } else if (marginPercent >= 0) {
-        marginLabel = 'Bajo';
-        marginColor = 'bg-rose-400';
-        marginTextColor = 'text-rose-500';
+        marginLabel = "Bajo";
+        marginColor = "bg-rose-400";
+        marginTextColor = "text-rose-500";
       }
 
-      if (this.yieldValue) this.yieldValue.textContent = (Math.round(totalUnits * 100) / 100).toString();
-      if (this.unitCostDisplay) this.unitCostDisplay.textContent = '$' + unitCost.toFixed(2);
-      if (this.recommendedPriceDisplay) this.recommendedPriceDisplay.textContent = '$' + unitPriceRecommended.toFixed(2);
+      if (this.yieldValue)
+        this.yieldValue.textContent = (
+          Math.round(totalUnits * 100) / 100
+        ).toString();
+      if (this.unitCostDisplay)
+        this.unitCostDisplay.textContent = "$" + unitCost.toFixed(2);
+      if (this.recommendedPriceDisplay)
+        this.recommendedPriceDisplay.textContent =
+          "$" + unitPriceRecommended.toFixed(2);
       if (this.profitDisplay) {
-        this.profitDisplay.textContent = '$' + unitProfit.toFixed(2);
+        this.profitDisplay.textContent = "$" + unitProfit.toFixed(2);
         this.profitDisplay.className = `text-[22px] font-medium tabular-nums profit-display ${marginTextColor}`;
       }
-      if (this.marginPercentDisplay) this.marginPercentDisplay.textContent = marginPercent.toFixed(1) + '%';
+      if (this.marginPercentDisplay)
+        this.marginPercentDisplay.textContent = marginPercent.toFixed(1) + "%";
       if (this.marginLabel) {
         this.marginLabel.textContent = marginLabel;
         this.marginLabel.className = `margin-label ${marginTextColor}`;
       }
-      
+
       if (this.marginBar) {
-        this.marginBar.style.width = marginWidth + '%';
+        this.marginBar.style.width = marginWidth + "%";
         this.marginBar.className = `margin-bar h-full rounded-full transition-all duration-500 ${marginColor}`;
       }
     }
   }
 
-  if (!customElements.get('presentation-card')) {
-    customElements.define('presentation-card', PresentationCard);
+  if (!customElements.get("presentation-card")) {
+    customElements.define("presentation-card", PresentationCard);
   }
 </script>
