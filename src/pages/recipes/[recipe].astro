@@ -334,8 +334,9 @@ const multiplierDownHref = `${Astro.url.pathname}?multiplier=${decrementMultipli
 const multiplierUpHref = `${Astro.url.pathname}?multiplier=${incrementMultiplier}`;
 const recipeEditFormId = 'recipe-edit-form';
 const recipeDeleteFormId = 'recipe-delete-form';
+const recipeDeleteDialogId = 'recipe-delete-dialog';
 const createPresentationDialogId = 'create-presentation-dialog';
-const recipeDeleteButtonClasses = 'w-auto min-h-11 px-4 py-2 bg-white text-rose-600 border border-rose-200 rounded-xl text-sm font-bold hover:bg-rose-50 hover:text-rose-700 transition-colors flex items-center justify-center gap-2';
+const recipeDeleteButtonClasses = 'col-span-2 inline-flex w-full min-h-11 items-center justify-center gap-2 rounded-xl border border-rose-200 bg-white px-4 py-2 text-sm font-bold text-rose-600 transition-colors hover:bg-rose-50 hover:text-rose-700 sm:col-auto sm:w-auto';
 const ingredientRemoveButtonClasses = 'remove-ingredient-btn inline-flex h-9 w-9 items-center justify-center rounded-full text-rose-500 transition-colors hover:bg-rose-50 hover:text-rose-600';
 
 const clampPercentageValue = (value: number, max = Number.POSITIVE_INFINITY) => {
@@ -405,7 +406,7 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
 
 <Layout currentRecipe={id} showSideBar={true} currentPage="recipes">
   <div transition:animate="slide" class="w-full">
-    <div class="px-4 sm:px-6 lg:px-8 py-4">
+    <div class="px-1 sm:px-2 lg:px-8 py-4">
       {feedbackType && feedbackMessage && (
         <div
           aria-atomic="true"
@@ -423,14 +424,52 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
       )}
 
       {isEditMode && (
-        <form id={recipeEditFormId} method="POST" action={Astro.url.pathname} class="hidden">
+        <form id={recipeEditFormId} method="POST" action={Astro.url.pathname} class="hidden" data-astro-reload>
           <input type="hidden" name="action" value="update_recipe" />
         </form>
       )}
 
-      <form id={recipeDeleteFormId} method="POST" action={Astro.url.pathname} class="hidden">
+      <form id={recipeDeleteFormId} method="POST" action={Astro.url.pathname} class="hidden" data-astro-reload>
         <input type="hidden" name="action" value="delete_recipe" />
       </form>
+
+      {isEditMode && (
+        <dialog
+          id={recipeDeleteDialogId}
+          class="fixed inset-0 m-auto w-[calc(100vw-1.5rem)] max-w-md rounded-[28px] p-0 backdrop:bg-slate-900/55"
+        >
+          <div class="rounded-[28px] border border-slate-200 bg-white p-6 shadow-2xl">
+            <div class="flex items-start gap-3">
+              <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-rose-50 text-rose-600">
+                <Icon name="lucide:trash-2" size={18} />
+              </div>
+              <div>
+                <h2 class="text-lg font-bold text-slate-900">Confirmar eliminación</h2>
+                <p class="mt-2 text-sm text-slate-600">
+                  ¿Eliminar esta receta? Esta acción no se puede deshacer.
+                </p>
+              </div>
+            </div>
+
+            <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                data-close-recipe-delete-dialog={recipeDeleteDialogId}
+                class="inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-600 transition-colors hover:bg-slate-50"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                form={recipeDeleteFormId}
+                class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-rose-600 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-rose-700"
+              >
+                <Icon name="lucide:trash-2" size={16} /> Eliminar
+              </button>
+            </div>
+          </div>
+        </dialog>
+      )}
 
       <!-- Tag and Last Updated -->
       <div class="flex items-center gap-3 text-sm font-medium text-slate-500 px-1">
@@ -461,9 +500,9 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
           )}
         </div>
 
-        <div class="flex flex-wrap items-center gap-3">
+        <div class="flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center">
           {!isEditMode && (
-            <form method="get" data-astro-reload class="flex items-center gap-2 bg-white px-2 py-1.5 rounded-xl border border-slate-200 shadow-sm">
+            <form method="get" data-astro-reload class="flex w-full items-center justify-between gap-2 rounded-xl border border-slate-200 bg-white px-2 py-1.5 shadow-sm sm:w-auto sm:justify-start">
               <span class="text-[10px] font-black uppercase tracking-widest text-slate-400 px-2">Mezclas</span>
               <div class="flex items-center gap-1 bg-slate-50 rounded-full p-1 border border-slate-100">
                 <a href={multiplierDownHref} data-astro-reload class="w-6 h-6 flex items-center justify-center rounded-full hover:bg-slate-200 text-slate-600 font-bold transition-colors active:scale-95">-</a>
@@ -474,32 +513,116 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
           )}
           
           {isEditMode ? (
-            <div class="flex gap-2 w-auto">
-              <button type="submit" form={recipeEditFormId} class="flex-1 md:flex-none min-h-11 px-6 py-2 bg-indigo-600 text-white rounded-xl text-sm font-bold shadow-sm hover:bg-indigo-700 transition-colors flex items-center justify-center gap-2">
+            <div class="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto">
+              <button type="submit" form={recipeEditFormId} class="inline-flex w-full min-h-11 items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-2 text-sm font-bold text-white shadow-sm transition-colors hover:bg-indigo-700 sm:w-auto sm:px-6">
                 <Icon name="lucide:save" size={16} /> Guardar
               </button>
-              <a href={Astro.url.pathname} class="flex-1 md:flex-none min-h-11 px-6 py-2 bg-white text-slate-600 border border-slate-200 rounded-xl text-sm font-bold hover:bg-slate-50 transition-colors flex items-center justify-center">
+              <a href={Astro.url.pathname} data-astro-reload class="inline-flex w-full min-h-11 items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-600 transition-colors hover:bg-slate-50 sm:w-auto sm:px-6">
                 Cancelar
               </a>
-              <button type="submit" form={recipeDeleteFormId} class={recipeDeleteButtonClasses} onclick="return confirm('¿Eliminar esta receta?');">
+              <button
+                type="button"
+                data-open-recipe-delete-dialog={recipeDeleteDialogId}
+                class={recipeDeleteButtonClasses}
+              >
                 <Icon name="lucide:trash-2" size={16} /> Eliminar
               </button>
             </div>
           ) : (
-            <div class="flex gap-2 w-auto">
-              <a href={`${Astro.url.pathname}?edit=true`} class="w-auto min-h-11 px-6 py-2 bg-white text-slate-700 border border-slate-200 rounded-xl text-sm font-bold hover:bg-slate-50 transition-colors flex items-center justify-center gap-2">
+            <div class="flex w-full sm:w-auto">
+              <a href={`${Astro.url.pathname}?edit=true`} data-astro-reload class="inline-flex w-full min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-6 py-2 text-sm font-bold text-slate-700 transition-colors hover:bg-slate-50 sm:w-auto">
                 <Icon name="lucide:pencil" size={16} /> Editar
               </a>
-              <button type="submit" form={recipeDeleteFormId} class={recipeDeleteButtonClasses} onclick="return confirm('¿Eliminar esta receta?');">
-                <Icon name="lucide:trash-2" size={16} /> Eliminar
-              </button>
             </div>
           )}
         </div>
       </div>
 
       <!-- Metrics Grid -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+      <div class="relative sm:hidden -m-4 p-5">
+        <div class="mb-3 flex items-center justify-between px-1 text-[11px] font-semibold text-slate-400">
+          <span>Resumen</span>
+          <span class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-slate-500">
+            <Icon name="lucide:move-horizontal" size={12} /> Desliza
+          </span>
+        </div>
+
+        <div class="pointer-events-none absolute inset-y-0 left-0 z-10 w-3 bg-gradient-to-r from-slate-50/80 to-transparent"></div>
+        <div class="pointer-events-none absolute inset-y-0 right-0 z-10 w-6 bg-gradient-to-l from-slate-50/85 via-slate-50/35 to-transparent"></div>
+
+        <div class="-mx-1 flex snap-x snap-mandatory gap-3 overflow-x-auto px-1 pb-3 [scrollbar-width:auto] [-webkit-overflow-scrolling:touch]">
+          <!-- COSTO INSUMOS -->
+          <div class="w-[min(68vw,19rem)] min-w-[15.5rem] snap-start bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+            <p class="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-slate-400 mb-4">
+              <span class="w-7 h-7 rounded-lg bg-red-50 text-red-500 flex items-center justify-center"><Icon name="lucide:trending-down" size={16}/></span>
+              Costo Insumos
+            </p>
+            <div>
+              <p class="text-2xl 2xl:text-3xl font-black text-slate-900 tabular-nums leading-none truncate" title={`$${costoDirectoTotal.toFixed(2)}`}>${costoDirectoTotal.toFixed(2)}</p>
+              <p class="text-[11px] font-semibold text-slate-400 mt-2 line-clamp-1">Costo base de materiales</p>
+            </div>
+          </div>
+
+          <!-- GASTOS OPERATIVOS -->
+          <div class="w-[min(68vw,19rem)] min-w-[15.5rem] snap-start bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
+            <p class="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-slate-400 mb-4">
+              <span class="w-7 h-7 rounded-lg bg-slate-100 text-slate-500 flex items-center justify-center"><Icon name="lucide:pie-chart" size={16}/></span>
+              Gastos Operativos
+            </p>
+            <div>
+              {isEditMode ? (
+                <div class="flex items-baseline gap-1">
+                  <input type="number" id="edit-fixed-costs-mobile" name="fixedCostsPercentage" form={recipeEditFormId} class="w-16 bg-slate-50 border border-slate-200 rounded-lg p-1 text-xl 2xl:text-2xl font-black text-slate-900 focus:ring-2 focus:ring-indigo-500/20" value={fixedCostsPercentageValue} />
+                  <span class="text-lg font-bold text-slate-400">%</span>
+                </div>
+              ) : (
+                <p class="text-2xl 2xl:text-3xl font-black text-slate-900 tabular-nums leading-none truncate">{fixedCostsPercentageValue}<span class="text-lg 2xl:text-xl font-bold text-slate-400">%</span></p>
+              )}
+              <div class="flex flex-wrap items-center justify-between gap-1 mt-2">
+                <p class="text-[11px] font-semibold text-slate-400">Servicios, labor, etc.</p>
+                <p class="text-[11px] font-bold text-slate-400">+{costoOperativo.toFixed(2)}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- COSTO TOTAL REAL -->
+          <div class="w-[min(68vw,19rem)] min-w-[15.5rem] snap-start bg-white p-5 rounded-2xl border border-indigo-100 shadow-sm flex flex-col justify-between relative overflow-hidden">
+            <div class="absolute -right-6 -top-6 w-24 h-24 bg-indigo-50 rounded-full opacity-50 pointer-events-none"></div>
+            <p class="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-indigo-500 mb-4 relative z-10">
+              <span class="w-7 h-7 rounded-lg bg-indigo-50 text-indigo-500 flex items-center justify-center"><Icon name="lucide:dollar-sign" size={16}/></span>
+              Costo Total Real
+            </p>
+            <div class="relative z-10">
+              <p class="text-2xl 2xl:text-3xl font-black text-indigo-600 tabular-nums leading-none truncate" title={`$${costoProduccionRealBatch.toFixed(2)}`}>${costoProduccionRealBatch.toFixed(2)}</p>
+              <p class="text-[11px] font-semibold text-indigo-400 mt-2 line-clamp-1">Insumos + Operativos</p>
+            </div>
+          </div>
+
+          <!-- MARGEN UTILIDAD -->
+          <div class="w-[min(68vw,19rem)] min-w-[15.5rem] snap-start bg-[#10b981] p-5 rounded-2xl shadow-md flex flex-col justify-between text-white relative overflow-hidden">
+            <div class="absolute right-0 top-0 opacity-20 pointer-events-none">
+              <Icon name="lucide:trending-up" size={120} class="transform translate-x-6 -translate-y-6" />
+            </div>
+            <p class="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-emerald-100 mb-4 relative z-10">
+              <span class="w-7 h-7 rounded-lg bg-emerald-400/50 text-white flex items-center justify-center"><Icon name="lucide:trending-up" size={16}/></span>
+              Margen Utilidad
+            </p>
+            <div class="relative z-10">
+              {isEditMode ? (
+                <div class="flex items-baseline gap-1">
+                  <input type="number" id="edit-desired-margin-mobile" name="desiredMargin" form={recipeEditFormId} class="w-16 bg-emerald-600/50 border border-emerald-400/50 rounded-lg p-1 text-xl 2xl:text-2xl font-black text-white focus:ring-2 focus:ring-emerald-300/50 placeholder-emerald-300" value={desiredMarginValue} />
+                  <span class="text-lg font-bold text-emerald-200">%</span>
+                </div>
+              ) : (
+                <p class="text-2xl 2xl:text-3xl font-black tabular-nums leading-none truncate">{desiredMarginValue}<span class="text-lg 2xl:text-xl font-bold text-emerald-200">%</span></p>
+              )}
+              <p class="text-[11px] font-semibold text-emerald-100 mt-2 line-clamp-1">Objetivo de ganancia</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hidden grid-cols-2 gap-4 sm:grid xl:grid-cols-4">
         <!-- COSTO INSUMOS -->
         <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
           <p class="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-slate-400 mb-4">
@@ -571,7 +694,7 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
       </div>
     </div>
 
-    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mx-4 sm:mx-6 lg:mx-8">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mx-1 sm:mx-2 lg:mx-8">
       <div class="flex items-center justify-between px-5 sm:px-6 lg:px-8 py-5 border-b border-slate-100 bg-white">
         <h2 class="text-sm font-bold text-slate-800">Lista de Ingredientes</h2>
         <label class="flex items-center gap-2 text-xs text-slate-500 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200 cursor-pointer hover:bg-slate-100 transition-colors">
@@ -739,7 +862,7 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
     <!-- El footer de métricas se movió al header -->
   </div>
 
-  <div id="presentaciones" class="px-4 sm:px-6 lg:px-8 pb-10 scroll-mt-6" transition:animate="slide">
+  <div id="presentaciones" class="px-1 sm:px-2 lg:px-8 pb-10 scroll-mt-6" transition:animate="slide">
     <div class="flex items-start justify-between gap-3 py-6 px-1">
       <div>
         <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2 leading-tight">
@@ -884,6 +1007,7 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
   // @ts-nocheck
   const KEY = 'recetario.showComments';
   const presentationDialogId = 'create-presentation-dialog';
+  const recipeDeleteDialogId = 'recipe-delete-dialog';
 
   const updateCommentControls = (show) => {
     const checkbox = document.getElementById('toggle-comments');
@@ -984,10 +1108,65 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
     });
   };
 
+  const setupRecipeDeleteDialog = () => {
+    const dialog = document.getElementById(recipeDeleteDialogId);
+    const openButtons = document.querySelectorAll(
+      `[data-open-recipe-delete-dialog="${recipeDeleteDialogId}"]`,
+    );
+    const closeButtons = document.querySelectorAll(
+      `[data-close-recipe-delete-dialog="${recipeDeleteDialogId}"]`,
+    );
+
+    if (!(dialog instanceof HTMLDialogElement)) {
+      return;
+    }
+
+    const openDialog = () => {
+      if (!dialog.open) {
+        dialog.showModal();
+      }
+    };
+
+    const closeDialog = () => {
+      if (dialog.open) {
+        dialog.close();
+      }
+    };
+
+    openButtons.forEach((button) => {
+      if (!(button instanceof HTMLButtonElement)) return;
+      if (button.dataset.recipeDeleteDialogBound === '1') return;
+
+      button.dataset.recipeDeleteDialogBound = '1';
+      button.addEventListener('click', openDialog);
+    });
+
+    closeButtons.forEach((button) => {
+      if (!(button instanceof HTMLButtonElement)) return;
+      if (button.dataset.recipeDeleteDialogBound === '1') return;
+
+      button.dataset.recipeDeleteDialogBound = '1';
+      button.addEventListener('click', closeDialog);
+    });
+
+    if (dialog.dataset.recipeDeleteDialogBound === '1') {
+      return;
+    }
+
+    dialog.dataset.recipeDeleteDialogBound = '1';
+    dialog.addEventListener('click', (event) => {
+      if (event.target === dialog) {
+        closeDialog();
+      }
+    });
+  };
+
   document.addEventListener('astro:page-load', initCommentsToggle);
   document.addEventListener('astro:after-swap', initCommentsToggle);
   document.addEventListener('astro:page-load', setupCreatePresentationDialog);
   document.addEventListener('astro:after-swap', setupCreatePresentationDialog);
+  document.addEventListener('astro:page-load', setupRecipeDeleteDialog);
+  document.addEventListener('astro:after-swap', setupRecipeDeleteDialog);
 </script>
 
 {isEditMode && (
