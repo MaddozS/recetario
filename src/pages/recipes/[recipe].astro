@@ -4,6 +4,10 @@ import Layout from "../../layouts/Layout.astro";
 import PresentationCard from "../../components/PresentationCard.astro";
 import { getRecipeById, updatePresentation, updateRecipe, listIngredients, type Ingredient, type RecipeIngredientWithData, type RecipeIngredient } from '../../lib/recipe-data';
 
+if (!Astro.locals.session || !Astro.locals.user) {
+  return Astro.redirect('/sign-in');
+}
+
 if (Astro.request.method === 'POST') {
   const formData = await Astro.request.formData();
   const action = String(formData.get('action') || '');
@@ -57,11 +61,6 @@ if (Astro.request.method === 'POST') {
   }
 }
 
-
-if (!Astro.locals.session || !Astro.locals.user) {
-  return Astro.redirect('/sign-in');
-}
-
 // Obtener el ID de la receta desde los parámetros
 const recipeId = Astro.params.recipe;
 if (!recipeId) {
@@ -103,15 +102,16 @@ const multiplierStep = multiplier >= 2 ? 1 : 0.5;
 const normalizeMultiplier = (value: number) => Math.round(value * 10000) / 10000;
 const decrementMultiplier = normalizeMultiplier(Math.max(multiplier - multiplierStep, 0.01));
 const incrementMultiplier = normalizeMultiplier(multiplier + multiplierStep);
-const multiplierLabel = Number.isInteger(multiplier)
-  ? multiplier.toString()
-  : multiplier.toFixed(2).replace(/\.0+$/, '').replace(/(\.\d*[1-9])0+$/, '$1');
 const multiplierDownHref = `${Astro.url.pathname}?multiplier=${decrementMultiplier}`;
 const multiplierUpHref = `${Astro.url.pathname}?multiplier=${incrementMultiplier}`;
 
-// valores default si no están definidos
-const desiredMarginValue = desiredMargin || 0;
-const fixedCostsPercentageValue = fixedCostsPercentage || 0;
+const clampPercentageValue = (value: number, max = Number.POSITIVE_INFINITY) => {
+  if (!Number.isFinite(value)) return 0;
+  return Math.min(max, Math.max(0, value));
+};
+
+const desiredMarginValue = clampPercentageValue(desiredMargin, 99.99);
+const fixedCostsPercentageValue = clampPercentageValue(fixedCostsPercentage);
 
 // Redondeo contable para unidades pequeñas (g/ml)
 const roundHalfUp = (value: number) => {
@@ -162,9 +162,9 @@ const calcularCostoDirecto = (ingredients: RecipeIngredientWithData[]) => {
 };
 
 const costoDirectoTotal = calcularCostoDirecto(recipeIngredients);
-const costoOperativo = costoDirectoTotal * ((fixedCostsPercentage || 0) / 100);
+const costoOperativo = costoDirectoTotal * (fixedCostsPercentageValue / 100);
 const costoProduccionRealBatch = costoDirectoTotal + costoOperativo;
-const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMargin / 100));
+const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginValue / 100));
 
 ---
 
@@ -250,11 +250,11 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMargin 
           <div>
             {isEditMode ? (
               <div class="flex items-baseline gap-1">
-                <input type="number" id="edit-fixed-costs" class="w-16 bg-slate-50 border border-slate-200 rounded-lg p-1 text-xl 2xl:text-2xl font-black text-slate-900 focus:ring-2 focus:ring-indigo-500/20" value={fixedCostsPercentage || 0} />
+                <input type="number" id="edit-fixed-costs" class="w-16 bg-slate-50 border border-slate-200 rounded-lg p-1 text-xl 2xl:text-2xl font-black text-slate-900 focus:ring-2 focus:ring-indigo-500/20" value={fixedCostsPercentageValue} />
                 <span class="text-lg font-bold text-slate-400">%</span>
               </div>
             ) : (
-              <p class="text-2xl 2xl:text-3xl font-black text-slate-900 tabular-nums leading-none truncate">{fixedCostsPercentage || 0}<span class="text-lg 2xl:text-xl font-bold text-slate-400">%</span></p>
+              <p class="text-2xl 2xl:text-3xl font-black text-slate-900 tabular-nums leading-none truncate">{fixedCostsPercentageValue}<span class="text-lg 2xl:text-xl font-bold text-slate-400">%</span></p>
             )}
             <div class="flex flex-wrap items-center justify-between gap-1 mt-2">
               <p class="text-[11px] font-semibold text-slate-400">Servicios, labor, etc.</p>
@@ -288,11 +288,11 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMargin 
           <div class="relative z-10">
             {isEditMode ? (
               <div class="flex items-baseline gap-1">
-                <input type="number" id="edit-desired-margin" class="w-16 bg-emerald-600/50 border border-emerald-400/50 rounded-lg p-1 text-xl 2xl:text-2xl font-black text-white focus:ring-2 focus:ring-emerald-300/50 placeholder-emerald-300" value={desiredMargin || 0} />
+                <input type="number" id="edit-desired-margin" class="w-16 bg-emerald-600/50 border border-emerald-400/50 rounded-lg p-1 text-xl 2xl:text-2xl font-black text-white focus:ring-2 focus:ring-emerald-300/50 placeholder-emerald-300" value={desiredMarginValue} />
                 <span class="text-lg font-bold text-emerald-200">%</span>
               </div>
             ) : (
-              <p class="text-2xl 2xl:text-3xl font-black tabular-nums leading-none truncate">{desiredMargin || 0}<span class="text-lg 2xl:text-xl font-bold text-emerald-200">%</span></p>
+              <p class="text-2xl 2xl:text-3xl font-black tabular-nums leading-none truncate">{desiredMarginValue}<span class="text-lg 2xl:text-xl font-bold text-emerald-200">%</span></p>
             )}
             <p class="text-[11px] font-semibold text-emerald-100 mt-2 line-clamp-1">Objetivo de ganancia</p>
           </div>
@@ -474,7 +474,7 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMargin 
       >
         <Icon name="lucide:plus" size={16} />
         <span class="sm:hidden">Nueva</span>
-        <span class="hidden sm:inline">Nueva Presentacion</span>
+        <span class="hidden sm:inline">Nueva Presentación</span>
       </button>
     </div>
 
@@ -493,17 +493,17 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMargin 
     </div>
   </div>
 
-<script type="module">
+<script>
   const KEY = 'recetario.showComments';
 
-  const updateCommentControls = (show) => {
+  const updateCommentControls = (show: boolean) => {
     const checkbox = document.getElementById('toggle-comments');
-    if (checkbox) {
+    if (checkbox instanceof HTMLInputElement) {
       checkbox.checked = show;
     }
   };
 
-  const setVisibility = (show) => {
+  const setVisibility = (show: boolean) => {
     document.querySelectorAll('.ingredient-comment').forEach((el) => {
       el.classList.toggle('hidden', !show);
     });
@@ -519,9 +519,13 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMargin 
   const initCommentsToggle = () => {
     const checkbox = document.getElementById('toggle-comments');
 
-    if (checkbox && checkbox.dataset.bound !== '1') {
+    if (checkbox instanceof HTMLInputElement && checkbox.dataset.bound !== '1') {
       checkbox.dataset.bound = '1';
-      checkbox.addEventListener('change', (e) => setVisibility(e.target.checked));
+      checkbox.addEventListener('change', (e) => {
+        const target = e.currentTarget;
+        if (!(target instanceof HTMLInputElement)) return;
+        setVisibility(target.checked);
+      });
     }
 
     const stored = (typeof localStorage !== 'undefined' && localStorage.getItem(KEY)) === '1';
