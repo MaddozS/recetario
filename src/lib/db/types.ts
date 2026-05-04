@@ -121,6 +121,13 @@ export type RecipeSeed = {
   presentations: RecipePresentation[];
 };
 
+/** Preferencias de usuario: tema y color de acento. */
+export type UserPreferences = {
+  userId: string;
+  theme: "light" | "dark";
+  accentColor: "indigo" | "violet" | "blue" | "emerald" | "rose" | "amber";
+};
+
 /** Abstracción del motor de base de datos (Postgres o SQLite). */
 export type Driver =
   | { kind: "postgres"; pool: Pool }

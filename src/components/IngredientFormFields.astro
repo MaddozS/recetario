@@ -35,7 +35,7 @@ const { idPrefix } = Astro.props;
 const labelClasses =
   "mb-1.5 block text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500";
 const inputClasses =
-  "w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-indigo-300 focus:bg-white focus:ring-2 focus:ring-indigo-500/20";
+  "w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-accent-300 focus:bg-white focus:ring-2 focus:ring-accent-500/20";
 ---
 
 <div>
@@ -103,7 +103,7 @@ const inputClasses =
     Cant. empaque <span class="text-rose-500">*</span>
   </label>
   <div
-    class="grid grid-cols-[minmax(0,1fr)_5.5rem] overflow-hidden rounded-xl border border-slate-200 bg-slate-50 transition focus-within:border-indigo-300 focus-within:bg-white focus-within:ring-2 focus-within:ring-indigo-500/20"
+    class="grid grid-cols-[minmax(0,1fr)_5.5rem] overflow-hidden rounded-xl border border-slate-200 bg-slate-50 transition focus-within:border-accent-300 focus-within:bg-white focus-within:ring-2 focus-within:ring-accent-500/20"
   >
     <input
       id={`${idPrefix}-purchase-quantity`}
