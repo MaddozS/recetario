@@ -20,6 +20,7 @@ import {
   normalizeDesiredMargin,
   normalizeFixedCostsPercentage,
   normalizeRecipeComment,
+  normalizeCategory,
 } from "./helpers";
 import {
   getDriver,
@@ -44,14 +45,15 @@ export async function listRecipeSummaries(
     const res = await driver.pool.query<{
       id: number;
       name: string;
+      category: string | null;
       ingredient_count: string;
     }>(
       `
-      SELECT r.id, r.name, COUNT(ri.id)::text AS ingredient_count
+      SELECT r.id, r.name, r.category, COUNT(ri.id)::text AS ingredient_count
       FROM recipes r
       LEFT JOIN recipe_ingredients ri ON ri.recipe_id = r.id
       WHERE r.owner_id = $1
-      GROUP BY r.id, r.name
+      GROUP BY r.id, r.name, r.category
       ORDER BY r.id ASC
     `,
       [scopeId],
@@ -60,6 +62,7 @@ export async function listRecipeSummaries(
     return res.rows.map((row) => ({
       id: Number(row.id),
       name: row.name,
+      category: normalizeOptionalText(row.category),
       ingredientCount: Number(row.ingredient_count),
     }));
   }
@@ -67,23 +70,25 @@ export async function listRecipeSummaries(
   const rows = driver.db
     .prepare(
       `
-       SELECT r.id, r.name, COUNT(ri.id) AS ingredient_count
+       SELECT r.id, r.name, r.category, COUNT(ri.id) AS ingredient_count
        FROM recipes r
        LEFT JOIN recipe_ingredients ri ON ri.recipe_id = r.id
        WHERE r.owner_id = ?
-       GROUP BY r.id, r.name
+       GROUP BY r.id, r.name, r.category
        ORDER BY r.id ASC
      `,
     )
     .all(scopeId) as Array<{
     id: number;
     name: string;
+    category: string | null;
     ingredient_count: number;
   }>;
 
   return rows.map((row) => ({
     id: row.id,
     name: row.name,
+    category: normalizeOptionalText(row.category),
     ingredientCount: Number(row.ingredient_count),
   }));
 }
@@ -107,11 +112,12 @@ export async function getRecipeById(
     const recipeRes = await driver.pool.query<{
       id: number;
       name: string;
+      category: string | null;
       desired_margin: string;
       fixed_costs_percentage: string;
       updated_at: string | null;
     }>(
-      `SELECT id, name, desired_margin::text, fixed_costs_percentage::text, updated_at::text FROM recipes WHERE id = $1 AND owner_id = $2 LIMIT 1`,
+      `SELECT id, name, category, desired_margin::text, fixed_costs_percentage::text, updated_at::text FROM recipes WHERE id = $1 AND owner_id = $2 LIMIT 1`,
       [id, scopeId],
     );
     const recipe = recipeRes.rows[0];
@@ -163,6 +169,7 @@ export async function getRecipeById(
     return {
       id: Number(recipe.id),
       name: recipe.name,
+      category: normalizeOptionalText(recipe.category),
       desiredMargin: normalizeDesiredMargin(recipe.desired_margin),
       fixedCostsPercentage: normalizeFixedCostsPercentage(
         recipe.fixed_costs_percentage,
@@ -197,12 +204,13 @@ export async function getRecipeById(
 
   const recipe = driver.db
     .prepare(
-      `SELECT id, name, desired_margin, fixed_costs_percentage, updated_at FROM recipes WHERE id = ? AND owner_id = ? LIMIT 1`,
+      `SELECT id, name, category, desired_margin, fixed_costs_percentage, updated_at FROM recipes WHERE id = ? AND owner_id = ? LIMIT 1`,
     )
     .get(id, scopeId) as
     | {
         id: number;
         name: string;
+        category: string | null;
         desired_margin: number;
         fixed_costs_percentage: number;
         updated_at: string | null;
@@ -259,6 +267,7 @@ export async function getRecipeById(
   return {
     id: recipe.id,
     name: recipe.name,
+    category: normalizeOptionalText(recipe.category),
     desiredMargin: normalizeDesiredMargin(recipe.desired_margin),
     fixedCostsPercentage: normalizeFixedCostsPercentage(
       recipe.fixed_costs_percentage,
@@ -305,6 +314,7 @@ export async function createRecipe(
   const scopeId = requireOwnerId(ownerId);
 
   const name = normalizeOptionalText(input.name) ?? "Nueva Receta";
+  const category = normalizeCategory(input.category);
   const desiredMargin = normalizeDesiredMargin(input.desiredMargin ?? 0);
   const fixedCostsPercentage = normalizeFixedCostsPercentage(
     input.fixedCostsPercentage ?? 0,
@@ -324,11 +334,11 @@ export async function createRecipe(
 
       const insertRes = await client.query<{ id: number; name: string }>(
         `
-        INSERT INTO recipes (id, owner_id, name, desired_margin, fixed_costs_percentage, updated_at)
-        VALUES ($1, $2, $3, $4, $5, $6)
+        INSERT INTO recipes (id, owner_id, name, desired_margin, fixed_costs_percentage, updated_at, category)
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
         RETURNING id, name
         `,
-        [recipeId, scopeId, name, desiredMargin, fixedCostsPercentage, now],
+        [recipeId, scopeId, name, desiredMargin, fixedCostsPercentage, now, category],
       );
 
       await client.query("COMMIT");
@@ -349,11 +359,11 @@ export async function createRecipe(
   const result = driver.db
     .prepare(
       `
-      INSERT INTO recipes (owner_id, name, desired_margin, fixed_costs_percentage, updated_at)
-      VALUES (?, ?, ?, ?, ?)
+      INSERT INTO recipes (owner_id, name, desired_margin, fixed_costs_percentage, updated_at, category)
+      VALUES (?, ?, ?, ?, ?, ?)
       `,
     )
-    .run(scopeId, name, desiredMargin, fixedCostsPercentage, now) as {
+    .run(scopeId, name, desiredMargin, fixedCostsPercentage, now, category) as {
     lastInsertRowid?: number | bigint;
   };
 
@@ -421,6 +431,7 @@ export async function updateRecipe(
   const fixedCostsPercentage = normalizeFixedCostsPercentage(
     input.fixedCostsPercentage,
   );
+  const category = normalizeCategory(input.category);
   const now = new Date().toISOString();
   const ingredientIds = input.ingredients.map(
     (ingredient) => ingredient.ingredientId,
@@ -440,8 +451,8 @@ export async function updateRecipe(
       await client.query("BEGIN");
 
       await client.query(
-        "UPDATE recipes SET name = $1, desired_margin = $2, fixed_costs_percentage = $3, updated_at = NOW() WHERE id = $4 AND owner_id = $5",
-        [input.name, desiredMargin, fixedCostsPercentage, recipeId, scopeId],
+        "UPDATE recipes SET name = $1, desired_margin = $2, fixed_costs_percentage = $3, category = $4, updated_at = NOW() WHERE id = $5 AND owner_id = $6",
+        [input.name, desiredMargin, fixedCostsPercentage, category, recipeId, scopeId],
       );
 
       await client.query(
@@ -477,12 +488,13 @@ export async function updateRecipe(
   try {
     driver.db
       .prepare(
-        "UPDATE recipes SET name = ?, desired_margin = ?, fixed_costs_percentage = ?, updated_at = ? WHERE id = ? AND owner_id = ?",
+        "UPDATE recipes SET name = ?, desired_margin = ?, fixed_costs_percentage = ?, category = ?, updated_at = ? WHERE id = ? AND owner_id = ?",
       )
       .run(
         input.name,
         desiredMargin,
         fixedCostsPercentage,
+        category,
         now,
         recipeId,
         scopeId,

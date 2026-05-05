@@ -19,6 +19,7 @@ import {
   normalizeDesiredMargin,
   normalizeFixedCostsPercentage,
   normalizeRecipeComment,
+  normalizeCategory,
   toNumber,
   toRecipePresentation,
 } from "./helpers";
@@ -84,7 +85,7 @@ const postgresSslConfig =
         ...(postgresSslCa ? { ca: postgresSslCa.replace(/\\n/g, "\n") } : {}),
       };
 
-const RECIPE_DATA_SCHEMA_VERSION = 2;
+const RECIPE_DATA_SCHEMA_VERSION = 3;
 
 const globals = globalThis as typeof globalThis & {
   __recipesDriver?: Driver;
@@ -301,6 +302,9 @@ export async function createTables(driver: Driver) {
       "ALTER TABLE recipes ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ",
     );
     await driver.pool.query(
+      "ALTER TABLE recipes ADD COLUMN IF NOT EXISTS category TEXT",
+    );
+    await driver.pool.query(
       "CREATE INDEX IF NOT EXISTS idx_ingredients_owner_id ON ingredients(owner_id, id);",
     );
     await driver.pool.query(
@@ -414,6 +418,10 @@ export async function createTables(driver: Driver) {
     driver.db.exec("ALTER TABLE recipes ADD COLUMN updated_at TEXT");
   }
 
+  if (!recipeColumns.some((column) => column.name === "category")) {
+    driver.db.exec("ALTER TABLE recipes ADD COLUMN category TEXT");
+  }
+
   driver.db.exec(`
     CREATE TABLE IF NOT EXISTS recipe_ingredients (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -500,14 +508,15 @@ export async function seedIfNeeded(driver: Driver) {
 
       for (const recipe of recipes) {
         await client.query(
-          `INSERT INTO recipes (id, owner_id, name, desired_margin, fixed_costs_percentage)
-           VALUES ($1, $2, $3, $4, $5)`,
+          `INSERT INTO recipes (id, owner_id, name, desired_margin, fixed_costs_percentage, category)
+           VALUES ($1, $2, $3, $4, $5, $6)`,
           [
             recipe.id,
             STATIC_OWNER_SCOPE,
             recipe.name,
             normalizeDesiredMargin(recipe.desiredMargin),
             normalizeFixedCostsPercentage(recipe.fixedCostsPercentage),
+            normalizeCategory(recipe.category),
           ],
         );
 
@@ -566,8 +575,8 @@ export async function seedIfNeeded(driver: Driver) {
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   `);
   const insertRecipe = driver.db.prepare(`
-    INSERT INTO recipes (id, owner_id, name, desired_margin, fixed_costs_percentage)
-    VALUES (?, ?, ?, ?, ?)
+    INSERT INTO recipes (id, owner_id, name, desired_margin, fixed_costs_percentage, category)
+    VALUES (?, ?, ?, ?, ?, ?)
   `);
   const insertRecipeIngredient = driver.db.prepare(`
     INSERT INTO recipe_ingredients (recipe_id, ingredient_id, quantity, unit, comment)
@@ -600,6 +609,7 @@ export async function seedIfNeeded(driver: Driver) {
         recipe.name,
         normalizeDesiredMargin(recipe.desiredMargin),
         normalizeFixedCostsPercentage(recipe.fixedCostsPercentage),
+        normalizeCategory(recipe.category),
       );
 
       for (const ri of recipe.ingredients) {
