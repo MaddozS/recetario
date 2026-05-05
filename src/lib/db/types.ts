@@ -45,6 +45,7 @@ export type RecipePresentation = {
 export type RecipeWithIngredients = {
   id: number;
   name: string;
+  category?: string;
   desiredMargin: number;
   fixedCostsPercentage: number;
   updatedAt?: string;
@@ -56,6 +57,7 @@ export type RecipeWithIngredients = {
 export type RecipeSummary = {
   id: number;
   name: string;
+  category?: string;
   ingredientCount: number;
 };
 
@@ -115,6 +117,7 @@ export type DeleteRecipeResult =
 export type RecipeSeed = {
   id: number;
   name: string;
+  category?: string;
   desiredMargin: number;
   fixedCostsPercentage: number;
   ingredients: RecipeIngredient[];
@@ -139,6 +142,7 @@ export type PostgresQueryable = Pick<Pool, "query">;
 /** Input para crear una receta. */
 export type CreateRecipeInput = {
   name?: string;
+  category?: string | null;
   desiredMargin?: number;
   fixedCostsPercentage?: number;
 };
@@ -146,6 +150,7 @@ export type CreateRecipeInput = {
 /** Input para actualizar una receta completa (reemplaza ingredientes). */
 export type UpdateRecipeInput = {
   name: string;
+  category?: string | null;
   desiredMargin: number;
   fixedCostsPercentage: number;
   ingredients: {
