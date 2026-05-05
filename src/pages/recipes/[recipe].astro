@@ -254,9 +254,11 @@ if (Astro.request.method === 'POST') {
 
       const desiredMargin = Number(formData.get('desiredMargin')) || 0;
       const fixedCostsPercentage = Number(formData.get('fixedCostsPercentage')) || 0;
+      const category = String(formData.get('category') || '').trim() || null;
 
       await updateRecipe(recipeIdNumber, {
         name,
+        category,
         desiredMargin,
         fixedCostsPercentage,
         ingredients: ingredientsToSave,
@@ -277,7 +279,7 @@ if (!recipe) {
   return Astro.redirect('/recipes');
 }
 
-const { ingredients: recipeIngredients, name, id, desiredMargin, fixedCostsPercentage, presentations, updatedAt } = recipe;
+const { ingredients: recipeIngredients, name, category, id, desiredMargin, fixedCostsPercentage, presentations, updatedAt } = recipe;
 
 const isEditMode = Astro.url.searchParams.get('edit') === 'true';
 const allIngredients = isEditMode ? await listIngredients(recipeDataOwner) : [];
@@ -459,7 +461,7 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
       <!-- Tag and Last Updated -->
       <div class="flex items-center gap-3 text-sm font-medium text-slate-500 px-1">
         <span class="flex items-center gap-1.5 bg-accent-50 text-accent-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider">
-          <Icon name="lucide:tag" size={12} /> [Categoría]
+          <Icon name="lucide:tag" size={12} /> {category || "Sin categoría"}
         </span>
         {lastUpdatedText && (
           <span class="text-xs text-slate-400 font-semibold">
@@ -472,14 +474,26 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 px-1">
         <div class="flex-1">
           {isEditMode ? (
-            <input 
-              id="recipe-name-input"
-              name="recipeName"
-              form={recipeEditFormId}
-              type="text" 
-              class="w-full text-3xl sm:text-4xl leading-tight font-black bg-slate-50 border border-slate-200 rounded-lg p-2 text-slate-900 focus:ring-2 focus:ring-accent-500/20"
-              value={name}
-            />
+            <>
+              <input 
+                id="recipe-name-input"
+                name="recipeName"
+                form={recipeEditFormId}
+                type="text" 
+                class="w-full text-3xl sm:text-4xl leading-tight font-black bg-slate-50 border border-slate-200 rounded-lg p-2 text-slate-900 focus:ring-2 focus:ring-accent-500/20"
+                value={name}
+              />
+              <div class="mt-2">
+                <input
+                  type="text"
+                  name="category"
+                  form={recipeEditFormId}
+                  class="w-full max-w-xs bg-slate-50 border border-slate-200 rounded-lg p-2 text-sm text-slate-700 focus:ring-2 focus:ring-accent-500/20"
+                  value={category || ''}
+                  placeholder="Categoría (ej. Panes, Galletas, Pasteles)"
+                />
+              </div>
+            </>
           ) : (
             <h1 class="text-3xl sm:text-4xl leading-tight font-black text-slate-900">{name}</h1>
           )}
