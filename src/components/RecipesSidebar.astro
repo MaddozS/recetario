@@ -85,6 +85,19 @@ const createRecipeDialogId = "create-recipe-dialog";
         class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-accent-500/20 focus:border-accent-500 transition-colors placeholder-slate-400"
       />
     </div>
+    <div class="relative mt-2">
+      <Icon
+        name="lucide:tag"
+        size={18}
+        class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+      />
+      <select id="categoryFilter" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-accent-500/20 focus:border-accent-500 transition-colors appearance-none">
+        <option value="">Todas las categorías</option>
+        {[...new Set(recipes.map(r => r.category).filter(Boolean))].map(cat => (
+          <option value={cat}>{cat}</option>
+        ))}
+      </select>
+    </div>
   </div>
 
   <!-- Recipe List (Desktop & Mobile) -->
@@ -92,14 +105,14 @@ const createRecipeDialogId = "create-recipe-dialog";
     {
       recipes.map((recipe) => {
         const isActive = currentRecipe?.toString() === recipe.id.toString();
-        // Fallback category text since it's not in the model yet
-        const category = "Sin categoría";
+        const category = recipe.category || "Sin categoría";
         return (
           <a
             href={`/recipes/${recipe.id}`}
             data-astro-reload
             class={`recipe-item block w-full p-3 rounded-xl transition-colors ${isActive ? "bg-accent-50" : "hover:bg-slate-50"}`}
             data-name={recipe.name.toLowerCase()}
+            data-category={recipe.category || ''}
           >
             <div class="flex items-center justify-between">
               <div>
@@ -247,45 +260,59 @@ const createRecipeDialogId = "create-recipe-dialog";
       `[data-close-create-recipe-dialog="${dialogId}"]`,
     );
 
+    function filterRecipes() {
+      const categoryFilter = document.getElementById("categoryFilter");
+      const searchTerm = (searchInput instanceof HTMLInputElement ? searchInput.value : "")
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+      const catValue = categoryFilter instanceof HTMLSelectElement ? categoryFilter.value : "";
+      let visibleCount = 0;
+
+      recipeItems.forEach((item) => {
+        if (!(item instanceof HTMLElement)) return;
+
+        const name = item.getAttribute("data-name") || "";
+        const normalizedName = name
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "");
+        const itemCat = item.getAttribute("data-category") || "";
+
+        const matchesSearch = normalizedName.includes(searchTerm);
+        const matchesCat = !catValue || itemCat === catValue;
+
+        if (matchesSearch && matchesCat) {
+          item.style.display = "block";
+          visibleCount++;
+        } else {
+          item.style.display = "none";
+        }
+      });
+
+      if (noResults instanceof HTMLElement) {
+        if (visibleCount === 0 && searchTerm.length > 0) {
+          noResults.classList.remove("hidden");
+        } else {
+          noResults.classList.add("hidden");
+        }
+      }
+    }
+
     if (
       searchInput instanceof HTMLInputElement &&
       searchInput.dataset.recipeSearchBound !== "1"
     ) {
       searchInput.dataset.recipeSearchBound = "1";
-      searchInput.addEventListener("input", (e) => {
-        const target = e.target;
-        if (!(target instanceof HTMLInputElement)) return;
+      searchInput.addEventListener("input", filterRecipes);
+    }
 
-        const searchTerm = target.value
-          .toLowerCase()
-          .normalize("NFD")
-          .replace(/[\u0300-\u036f]/g, "");
-        let visibleCount = 0;
-
-        recipeItems.forEach((item) => {
-          const name = item.getAttribute("data-name") || "";
-          const normalizedName = name
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "");
-          if (!(item instanceof HTMLElement)) return;
-
-          const element = item;
-          if (normalizedName.includes(searchTerm)) {
-            element.style.display = "block";
-            visibleCount++;
-          } else {
-            element.style.display = "none";
-          }
-        });
-
-        if (noResults instanceof HTMLElement) {
-          if (visibleCount === 0 && searchTerm.length > 0) {
-            noResults.classList.remove("hidden");
-          } else {
-            noResults.classList.add("hidden");
-          }
-        }
-      });
+    const categoryFilter = document.getElementById("categoryFilter");
+    if (
+      categoryFilter instanceof HTMLSelectElement &&
+      categoryFilter.dataset.categoryFilterBound !== "1"
+    ) {
+      categoryFilter.dataset.categoryFilterBound = "1";
+      categoryFilter.addEventListener("change", filterRecipes);
     }
 
     if (!(dialog instanceof HTMLDialogElement)) {
