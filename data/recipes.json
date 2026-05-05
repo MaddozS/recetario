@@ -2,6 +2,7 @@
   {
     "id": 101,
     "name": "Panqué de Plátano",
+    "category": "General",
     "desiredMargin": 50,
     "fixedCostsPercentage": 30,
     "ingredients": [
@@ -83,6 +84,7 @@
   {
     "id": 104,
     "name": "Panqué de Plátano con Chispas",
+    "category": "General",
     "desiredMargin": 50,
     "fixedCostsPercentage": 30,
     "ingredients": [
@@ -168,6 +170,7 @@
   {
     "id": 102,
     "name": "Galletas con Chispas",
+    "category": "General",
     "desiredMargin": 50,
     "fixedCostsPercentage": 30,
     "ingredients": [
@@ -243,6 +246,7 @@
   {
     "id": 103,
     "name": "Cheesy Bread",
+    "category": "General",
     "desiredMargin": 50,
     "fixedCostsPercentage": 30,
     "ingredients": [
@@ -313,6 +317,7 @@
   {
     "id": 105,
     "name": "Carrot Cake",
+    "category": "General",
     "desiredMargin": 50,
     "fixedCostsPercentage": 30,
     "ingredients": [
@@ -415,6 +420,7 @@
   {
     "id": 106,
     "name": "Panqué de Plátano con Betún",
+    "category": "General",
     "desiredMargin": 50,
     "fixedCostsPercentage": 30,
     "ingredients": [
@@ -516,6 +522,7 @@
   {
     "id": 107,
     "name": "Brownie de Chocolate",
+    "category": "General",
     "desiredMargin": 50,
     "fixedCostsPercentage": 30,
     "ingredients": [
