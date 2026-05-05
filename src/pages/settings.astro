@@ -107,8 +107,8 @@ if (feedback) {
               class:list={[
                 "flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all",
                 currentTheme === "light"
-                  ? "bg-white shadow-sm border border-slate-200/60 text-accent-700 dark:bg-zinc-800 dark:border-zinc-600 dark:text-accent-600"
-                  : "text-slate-500 hover:text-slate-700 hover:bg-slate-100 dark:text-zinc-400 dark:hover:text-zinc-200 dark:hover:bg-zinc-800/50",
+                  ? "bg-accent-600 text-white shadow-sm"
+                  : "text-slate-500 hover:text-slate-700 hover:bg-slate-100",
               ]}
             >
               <Icon name="lucide:sun" size={16} />
@@ -121,8 +121,8 @@ if (feedback) {
               class:list={[
                 "flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all",
                 currentTheme === "dark"
-                  ? "bg-white shadow-sm border border-slate-200/60 text-accent-700 dark:bg-zinc-800 dark:border-zinc-600 dark:text-accent-600"
-                  : "text-slate-500 hover:text-slate-700 hover:bg-slate-100 dark:text-zinc-400 dark:hover:text-zinc-200 dark:hover:bg-zinc-800/50",
+                  ? "bg-accent-600 text-white shadow-sm"
+                  : "text-slate-500 hover:text-slate-700 hover:bg-slate-100",
               ]}
             >
               <Icon name="lucide:moon" size={16} />
@@ -223,10 +223,8 @@ if (feedback) {
         const isActive = value === selected;
         el.dataset.themeActive = isActive ? "1" : "0";
 
-        const selectedClasses = ["bg-white", "shadow-sm", "border", "border-slate-200/60", "text-accent-700",
-          "dark:bg-zinc-800", "dark:border-zinc-600", "dark:text-accent-600"];
-        const unselectedClasses = ["text-slate-500", "hover:text-slate-700", "hover:bg-slate-100",
-          "dark:text-zinc-400", "dark:hover:text-zinc-200", "dark:hover:bg-zinc-800/50"];
+        const selectedClasses = ["bg-accent-600", "text-white", "shadow-sm"];
+        const unselectedClasses = ["text-slate-500", "hover:text-slate-700", "hover:bg-slate-100"];
 
         if (isActive) {
           el.classList.add(...selectedClasses);

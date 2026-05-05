@@ -80,12 +80,12 @@ const accentCssVars = getAccentCssVars(accent, theme);
           transition:name="mobile-nav"
           transition:animate="none"
         >
-          <div class="rounded-2xl border border-slate-200 bg-white/95 backdrop-blur dark:bg-zinc-900/95 dark:border-zinc-700 shadow-[0_-8px_24px_rgba(15,23,42,0.08)] dark:shadow-[0_-8px_24px_rgba(0,0,0,0.4)] p-1.5 grid grid-cols-3 gap-1.5">
+          <div class="rounded-2xl border border-slate-200 bg-white/95 backdrop-blur shadow-[0_-8px_24px_rgba(15,23,42,0.08)] dark:shadow-[0_-8px_24px_rgba(0,0,0,0.4)] p-1.5 grid grid-cols-3 gap-1.5">
             <a
               href={recipeHref}
               class:list={[
                 'min-h-11 rounded-xl flex items-center justify-center gap-2 text-sm font-bold transition-colors',
-                currentPage === 'recipes' ? 'bg-accent-600 text-white' : 'text-slate-600 hover:bg-slate-100 dark:text-zinc-400 dark:hover:bg-zinc-800/60 dark:hover:text-zinc-200'
+                currentPage === 'recipes' ? 'bg-accent-600 text-white' : 'text-slate-600 hover:bg-slate-100'
               ]}
             >
               <Icon name="lucide:book-open" size={16} />
