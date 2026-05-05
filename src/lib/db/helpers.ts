@@ -72,6 +72,10 @@ export const normalizeFixedCostsPercentage = (value: unknown) =>
 export const normalizeRecipeComment = (value: unknown) =>
   normalizeOptionalText(value) ?? null;
 
+export function normalizeCategory(value: unknown): string | null {
+  return normalizeOptionalText(value) ?? null;
+}
+
 /**
  * Valida y normaliza el nombre de una presentación.
  * Lanza error si el nombre está vacío.
