@@ -2,29 +2,36 @@
 import '../styles/global.css'
 import { ClientRouter } from "astro:transitions";
 import { Icon } from 'astro-icon/components'
-import { getRecipeDataOwner, listRecipeSummaries } from '../lib/recipe-data'
+import { getRecipeDataOwner, listRecipeSummaries, getUserPreferences } from '../lib/recipe-data'
+import { getAccentCssVars, type AccentFamily } from '../lib/accent-colors'
 import Header from '../components/Header.astro'
 import RecipesSidebar from '../components/RecipesSidebar.astro'
 
 const { currentPage } = Astro.props;
 
 const { currentRecipe, showSideBar, showHeader = true } = Astro.props;
-const showMobileNav = currentPage === 'recipes' || currentPage === 'ingredients';
+const showMobileNav = currentPage === 'recipes' || currentPage === 'ingredients' || currentPage === 'settings';
 const isAuthenticated = Boolean(Astro.locals.user && Astro.locals.session);
 const authenticatedUserName = Astro.locals.user?.name || Astro.locals.user?.email || null;
 const recipeDataOwner = Astro.locals.user ? getRecipeDataOwner(Astro.locals.user) : null;
 const recipes = recipeDataOwner ? await listRecipeSummaries(recipeDataOwner) : [];
 const recipeHref = currentRecipe ? `/recipes/${currentRecipe}` : '/recipes';
+
+const userId = Astro.locals.user?.id;
+const userPrefs = userId ? await getUserPreferences(userId) : null;
+const theme = userPrefs?.theme ?? 'light';
+const accent = (userPrefs?.accentColor ?? 'indigo') as AccentFamily;
+const accentCssVars = getAccentCssVars(accent, theme);
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" class:list={[theme === 'dark' ? 'dark' : '']} data-theme={theme} data-accent={accent} style={accentCssVars}>
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/png" href="/favicon.png" />
 		<meta name="generator" content={Astro.generator} />
-		<title>{`KitchCalc - ${currentPage === 'recipes' ? 'Recetario' : currentPage === 'ingredients' ? 'Inventario' : ''}`}</title>
+		<title>{`KitchCalc - ${currentPage === 'recipes' ? 'Recetario' : currentPage === 'ingredients' ? 'Inventario' : currentPage === 'settings' ? 'Configuración' : ''}`}</title>
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -73,12 +80,12 @@ const recipeHref = currentRecipe ? `/recipes/${currentRecipe}` : '/recipes';
           transition:name="mobile-nav"
           transition:animate="none"
         >
-          <div class="rounded-2xl border border-slate-200 bg-white/95 backdrop-blur shadow-[0_-8px_24px_rgba(15,23,42,0.08)] p-1.5 grid grid-cols-2 gap-1.5">
+          <div class="rounded-2xl border border-slate-200 bg-white/95 backdrop-blur shadow-[0_-8px_24px_rgba(15,23,42,0.08)] dark:shadow-[0_-8px_24px_rgba(0,0,0,0.4)] p-1.5 grid grid-cols-3 gap-1.5">
             <a
               href={recipeHref}
               class:list={[
                 'min-h-11 rounded-xl flex items-center justify-center gap-2 text-sm font-bold transition-colors',
-                currentPage === 'recipes' ? 'bg-indigo-600 text-white' : 'text-slate-600 hover:bg-slate-100'
+                currentPage === 'recipes' ? 'bg-accent-600 text-white' : 'text-slate-600 hover:bg-slate-100'
               ]}
             >
               <Icon name="lucide:book-open" size={16} />
@@ -88,11 +95,21 @@ const recipeHref = currentRecipe ? `/recipes/${currentRecipe}` : '/recipes';
               href="/ingredients"
               class:list={[
                 'min-h-11 rounded-xl flex items-center justify-center gap-2 text-sm font-bold transition-colors',
-                currentPage === 'ingredients' ? 'bg-indigo-600 text-white' : 'text-slate-600 hover:bg-slate-100'
+                currentPage === 'ingredients' ? 'bg-accent-600 text-white' : 'text-slate-600 hover:bg-slate-100'
               ]}
             >
               <Icon name="lucide:package-search" size={16} />
               Ingredientes
+            </a>
+            <a
+              href="/settings"
+              class:list={[
+                'min-h-11 rounded-xl flex items-center justify-center gap-2 text-sm font-bold transition-colors',
+                currentPage === 'settings' ? 'bg-accent-600 text-white' : 'text-slate-600 hover:bg-slate-100'
+              ]}
+            >
+              <Icon name="lucide:settings" size={16} />
+              Ajustes
             </a>
           </div>
         </nav>
@@ -194,6 +211,28 @@ const recipeHref = currentRecipe ? `/recipes/${currentRecipe}` : '/recipes';
 </style>
 
 <script>
+  import { getAccentCssVars } from "../lib/accent-colors";
+
+  function applyTheme() {
+    const html = document.documentElement;
+    const theme = html.dataset.theme || 'light';
+    const accent = html.dataset.accent || 'indigo';
+
+    if (theme === 'dark') {
+      html.classList.add('dark');
+    } else {
+      html.classList.remove('dark');
+    }
+
+    if (typeof getAccentCssVars === 'function') {
+      html.style.cssText = getAccentCssVars(accent as string, theme);
+    }
+  }
+
+  applyTheme();
+
+  document.addEventListener('astro:after-swap', applyTheme);
+
   function setupSidebar() {
     const menuBtn = document.getElementById('mobile-menu-btn');
     const closeBtn = document.getElementById('close-sidebar-btn');

@@ -458,7 +458,7 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
 
       <!-- Tag and Last Updated -->
       <div class="flex items-center gap-3 text-sm font-medium text-slate-500 px-1">
-        <span class="flex items-center gap-1.5 bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider">
+        <span class="flex items-center gap-1.5 bg-accent-50 text-accent-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider">
           <Icon name="lucide:tag" size={12} /> [Categoría]
         </span>
         {lastUpdatedText && (
@@ -477,7 +477,7 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
               name="recipeName"
               form={recipeEditFormId}
               type="text" 
-              class="w-full text-3xl sm:text-4xl leading-tight font-black bg-slate-50 border border-slate-200 rounded-lg p-2 text-slate-900 focus:ring-2 focus:ring-indigo-500/20"
+              class="w-full text-3xl sm:text-4xl leading-tight font-black bg-slate-50 border border-slate-200 rounded-lg p-2 text-slate-900 focus:ring-2 focus:ring-accent-500/20"
               value={name}
             />
           ) : (
@@ -499,7 +499,7 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
           
           {isEditMode ? (
             <div class="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto">
-              <button type="submit" form={recipeEditFormId} class="inline-flex w-full min-h-11 items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-2 text-sm font-bold text-white shadow-sm transition-colors hover:bg-indigo-700 sm:w-auto sm:px-6">
+              <button type="submit" form={recipeEditFormId} class="inline-flex w-full min-h-11 items-center justify-center gap-2 rounded-xl bg-accent-600 px-4 py-2 text-sm font-bold text-white shadow-sm transition-colors hover:bg-accent-700 sm:w-auto sm:px-6">
                 <Icon name="lucide:save" size={16} /> Guardar
               </button>
               <a href={Astro.url.pathname} data-astro-reload class="inline-flex w-full min-h-11 items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-600 transition-colors hover:bg-slate-50 sm:w-auto sm:px-6">
@@ -557,7 +557,7 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
             <div>
               {isEditMode ? (
                 <div class="flex items-baseline gap-1">
-                  <input type="number" id="edit-fixed-costs-mobile" name="fixedCostsPercentage" form={recipeEditFormId} class="w-16 bg-slate-50 border border-slate-200 rounded-lg p-1 text-xl 2xl:text-2xl font-mono font-semibold text-slate-900 focus:ring-2 focus:ring-indigo-500/20" value={fixedCostsPercentageValue} />
+                  <input type="number" id="edit-fixed-costs-mobile" name="fixedCostsPercentage" form={recipeEditFormId} class="w-16 bg-slate-50 border border-slate-200 rounded-lg p-1 text-xl 2xl:text-2xl font-mono font-semibold text-slate-900 focus:ring-2 focus:ring-accent-500/20" value={fixedCostsPercentageValue} />
                   <span class="text-lg font-bold text-slate-400">%</span>
                 </div>
               ) : (
@@ -571,15 +571,15 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
           </div>
 
           <!-- COSTO TOTAL REAL -->
-          <div class="w-[min(68vw,19rem)] min-w-[15.5rem] snap-start bg-white p-5 rounded-2xl border border-indigo-100 shadow-sm flex flex-col justify-between relative overflow-hidden">
-            <div class="absolute -right-6 -top-6 w-24 h-24 bg-indigo-50 rounded-full opacity-50 pointer-events-none"></div>
-            <p class="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-indigo-500 mb-4 relative z-10">
-              <span class="w-7 h-7 rounded-lg bg-indigo-50 text-indigo-500 flex items-center justify-center"><Icon name="lucide:dollar-sign" size={16}/></span>
+          <div class="w-[min(68vw,19rem)] min-w-[15.5rem] snap-start bg-white p-5 rounded-2xl border border-accent-100 shadow-sm flex flex-col justify-between relative overflow-hidden">
+            <div class="absolute -right-6 -top-6 w-24 h-24 bg-accent-50 rounded-full opacity-50 pointer-events-none"></div>
+            <p class="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-accent-500 mb-4 relative z-10">
+              <span class="w-7 h-7 rounded-lg bg-accent-50 text-accent-500 flex items-center justify-center"><Icon name="lucide:dollar-sign" size={16}/></span>
               Costo Total Real
             </p>
             <div class="relative z-10">
-              <p class="text-2xl 2xl:text-3xl font-mono font-semibold text-indigo-600 tabular-nums leading-none truncate" title={`$${costoProduccionRealBatch.toFixed(2)}`}>${costoProduccionRealBatch.toFixed(2)}</p>
-              <p class="text-[11px] font-semibold text-indigo-400 mt-2 line-clamp-1">Insumos + Operativos</p>
+              <p class="text-2xl 2xl:text-3xl font-mono font-semibold text-accent-600 tabular-nums leading-none truncate" title={`$${costoProduccionRealBatch.toFixed(2)}`}>${costoProduccionRealBatch.toFixed(2)}</p>
+              <p class="text-[11px] font-semibold text-accent-400 mt-2 line-clamp-1">Insumos + Operativos</p>
             </div>
           </div>
 
@@ -629,7 +629,7 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
           <div>
             {isEditMode ? (
               <div class="flex items-baseline gap-1">
-                <input type="number" id="edit-fixed-costs" name="fixedCostsPercentage" form={recipeEditFormId} class="w-16 bg-slate-50 border border-slate-200 rounded-lg p-1 text-xl 2xl:text-2xl font-mono font-semibold text-slate-900 focus:ring-2 focus:ring-indigo-500/20" value={fixedCostsPercentageValue} />
+                <input type="number" id="edit-fixed-costs" name="fixedCostsPercentage" form={recipeEditFormId} class="w-16 bg-slate-50 border border-slate-200 rounded-lg p-1 text-xl 2xl:text-2xl font-mono font-semibold text-slate-900 focus:ring-2 focus:ring-accent-500/20" value={fixedCostsPercentageValue} />
                 <span class="text-lg font-bold text-slate-400">%</span>
               </div>
             ) : (
@@ -643,15 +643,15 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
         </div>
 
         <!-- COSTO TOTAL REAL -->
-        <div class="bg-white p-5 rounded-2xl border border-indigo-100 shadow-sm flex flex-col justify-between relative overflow-hidden">
-          <div class="absolute -right-6 -top-6 w-24 h-24 bg-indigo-50 rounded-full opacity-50 pointer-events-none"></div>
-          <p class="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-indigo-500 mb-4 relative z-10">
-            <span class="w-7 h-7 rounded-lg bg-indigo-50 text-indigo-500 flex items-center justify-center"><Icon name="lucide:dollar-sign" size={16}/></span>
+        <div class="bg-white p-5 rounded-2xl border border-accent-100 shadow-sm flex flex-col justify-between relative overflow-hidden">
+          <div class="absolute -right-6 -top-6 w-24 h-24 bg-accent-50 rounded-full opacity-50 pointer-events-none"></div>
+          <p class="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-accent-500 mb-4 relative z-10">
+            <span class="w-7 h-7 rounded-lg bg-accent-50 text-accent-500 flex items-center justify-center"><Icon name="lucide:dollar-sign" size={16}/></span>
             Costo Total Real
           </p>
           <div class="relative z-10">
-            <p class="text-2xl 2xl:text-3xl font-mono font-semibold text-indigo-600 tabular-nums leading-none truncate" title={`$${costoProduccionRealBatch.toFixed(2)}`}>${costoProduccionRealBatch.toFixed(2)}</p>
-            <p class="text-[11px] font-semibold text-indigo-400 mt-2 line-clamp-1">Insumos + Operativos</p>
+            <p class="text-2xl 2xl:text-3xl font-mono font-semibold text-accent-600 tabular-nums leading-none truncate" title={`$${costoProduccionRealBatch.toFixed(2)}`}>${costoProduccionRealBatch.toFixed(2)}</p>
+            <p class="text-[11px] font-semibold text-accent-400 mt-2 line-clamp-1">Insumos + Operativos</p>
           </div>
         </div>
 
@@ -683,7 +683,7 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
       <div class="flex items-center justify-between px-5 sm:px-6 lg:px-8 py-5 border-b border-slate-100 bg-white">
         <h2 class="text-sm font-bold text-slate-800">Lista de Ingredientes</h2>
         <label class="flex items-center gap-2 text-xs text-slate-500 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200 cursor-pointer hover:bg-slate-100 transition-colors">
-          <input id="toggle-comments" type="checkbox" class="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" />
+          <input id="toggle-comments" type="checkbox" class="w-4 h-4 rounded border-slate-300 text-accent-600 focus:ring-accent-500" />
           <span class="font-semibold text-slate-700">Ver notas</span>
         </label>
       </div>
@@ -702,7 +702,7 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
               <div class="edit-ingredient-row grid grid-cols-1 gap-3 rounded-2xl border border-slate-200 bg-slate-50/50 p-3 md:grid-cols-[minmax(0,2.4fr)_minmax(0,13rem)_minmax(0,1fr)_3rem] md:items-center md:bg-white md:p-0 md:border-0 md:rounded-none md:border-b md:border-slate-100 md:pb-3">
                 <div class="space-y-1 min-w-0">
                   <label class="text-[10px] uppercase font-bold text-slate-400 md:hidden">Ingrediente</label>
-                  <select name="ingredientId" form={recipeEditFormId} class="ingredient-select w-full bg-white md:bg-slate-50 border border-slate-200 rounded-lg p-2 text-sm font-semibold text-slate-700 focus:ring-2 focus:ring-indigo-500/20">
+                  <select name="ingredientId" form={recipeEditFormId} class="ingredient-select w-full bg-white md:bg-slate-50 border border-slate-200 rounded-lg p-2 text-sm font-semibold text-slate-700 focus:ring-2 focus:ring-accent-500/20">
                     {allIngredients.map(i => (
                       <option value={i.id} data-unit={i.unit} selected={i.id === ri.ingredientId}>{i.name}</option>
                     ))}
@@ -712,8 +712,8 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
                 <div class="space-y-1 min-w-0">
                   <label class="text-[10px] uppercase font-bold text-slate-400 md:hidden">Cantidad</label>
                   <div class="grid min-w-0 grid-cols-[minmax(0,1fr)_5.5rem] items-center gap-2">
-                    <input type="number" step="0.01" name="quantity" form={recipeEditFormId} class="quantity-input w-full min-w-0 bg-white border border-slate-200 rounded-lg p-2 text-center font-mono font-semibold text-slate-700 focus:ring-2 focus:ring-indigo-500/20" value={ri.quantity} />
-                    <select name="unit" form={recipeEditFormId} class="unit-select w-full min-w-0 bg-white border border-slate-200 rounded-lg p-2 text-sm text-slate-600 focus:ring-2 focus:ring-indigo-500/20">
+                    <input type="number" step="0.01" name="quantity" form={recipeEditFormId} class="quantity-input w-full min-w-0 bg-white border border-slate-200 rounded-lg p-2 text-center font-mono font-semibold text-slate-700 focus:ring-2 focus:ring-accent-500/20" value={ri.quantity} />
+                    <select name="unit" form={recipeEditFormId} class="unit-select w-full min-w-0 bg-white border border-slate-200 rounded-lg p-2 text-sm text-slate-600 focus:ring-2 focus:ring-accent-500/20">
                       {getUnitOptionsForValue(ri.unit).map((unitOption) => (
                         <option value={unitOption.value} selected={unitOption.value === ri.unit}>{unitOption.label}</option>
                       ))}
@@ -723,7 +723,7 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
 
                 <div class="space-y-1 min-w-0">
                   <label class="text-[10px] uppercase font-bold text-slate-400 md:hidden">Notas</label>
-                  <input type="text" name="comment" form={recipeEditFormId} class="comment-input w-full bg-white border border-slate-200 rounded-lg p-2 text-sm text-slate-600 focus:ring-2 focus:ring-indigo-500/20" value={ri.comment || ''} placeholder="Opcional" />
+                  <input type="text" name="comment" form={recipeEditFormId} class="comment-input w-full bg-white border border-slate-200 rounded-lg p-2 text-sm text-slate-600 focus:ring-2 focus:ring-accent-500/20" value={ri.comment || ''} placeholder="Opcional" />
                 </div>
 
                 <div class="flex items-center justify-end md:justify-center">
@@ -739,7 +739,7 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
             <button 
               type="button"
               id="add-ingredient-btn"
-              class="flex items-center gap-2 px-6 py-2.5 bg-white border border-indigo-200 text-indigo-600 rounded-xl text-sm font-bold hover:bg-indigo-50 transition-colors shadow-sm"
+              class="flex items-center gap-2 px-6 py-2.5 bg-white border border-accent-200 text-accent-600 rounded-xl text-sm font-bold hover:bg-accent-50 transition-colors shadow-sm"
             >
               <Icon name="lucide:plus" size={16} /> Añadir Ingrediente
             </button>
@@ -777,11 +777,11 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
                       </p>
                     </div>
                     {showAdjustedQuantity ? (
-                      <div class="rounded-xl border border-indigo-200 bg-indigo-50 px-3 py-2">
-                        <p class="text-[10px] font-bold uppercase tracking-wider text-indigo-600">Con x{multiplier}</p>
-                        <p class="mt-1 flex items-baseline gap-2 text-indigo-700">
+                      <div class="rounded-xl border border-accent-200 bg-accent-50 px-3 py-2">
+                        <p class="text-[10px] font-bold uppercase tracking-wider text-accent-600">Con x{multiplier}</p>
+                        <p class="mt-1 flex items-baseline gap-2 text-accent-700">
                           <span class="text-lg font-mono font-semibold">{formatCantidad(ri.quantity * multiplier, ri.unit)}</span>
-                          <span class="text-xs font-semibold uppercase text-indigo-500">{ri.unit}</span>
+                          <span class="text-xs font-semibold uppercase text-accent-500">{ri.unit}</span>
                         </p>
                       </div>
                     ) : null}
@@ -821,11 +821,11 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
                             </p>
                           </div>
                           {showAdjustedQuantity ? (
-                            <div class="flex-1 rounded-xl border border-indigo-200 bg-indigo-50 px-3 py-2">
-                              <p class="text-[10px] font-bold uppercase tracking-wider text-indigo-600">Con x{multiplier}</p>
-                              <p class="mt-1 flex items-baseline gap-2 text-indigo-700">
+                            <div class="flex-1 rounded-xl border border-accent-200 bg-accent-50 px-3 py-2">
+                              <p class="text-[10px] font-bold uppercase tracking-wider text-accent-600">Con x{multiplier}</p>
+                              <p class="mt-1 flex items-baseline gap-2 text-accent-700">
                                 <span class="text-lg font-mono font-semibold">{formatCantidad(ri.quantity * multiplier, ri.unit)}</span>
-                                <span class="text-xs font-semibold uppercase text-indigo-500">{ri.unit}</span>
+                                <span class="text-xs font-semibold uppercase text-accent-500">{ri.unit}</span>
                               </p>
                             </div>
                           ) : null}
@@ -851,14 +851,14 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
     <div class="flex items-start justify-between gap-3 py-6 px-1">
       <div>
         <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2 leading-tight">
-          <Icon name="lucide:tag" class="text-indigo-600" /> Presentaciones de Venta
+          <Icon name="lucide:tag" class="text-accent-600" /> Presentaciones de Venta
         </h2>
         <p class="mt-1 text-sm text-slate-500">Define cuantas piezas salen por mezcla</p>
       </div>
       <button
         type="button"
         data-open-create-presentation-dialog={createPresentationDialogId}
-        class="min-h-11 flex items-center gap-2 bg-white text-indigo-600 border border-indigo-200 px-3 sm:px-4 py-2 rounded-xl text-sm font-bold hover:bg-indigo-50 transition-all shadow-sm"
+        class="min-h-11 flex items-center gap-2 bg-white text-accent-600 border border-accent-200 px-3 sm:px-4 py-2 rounded-xl text-sm font-bold hover:bg-accent-50 transition-all shadow-sm"
       >
         <Icon name="lucide:plus" size={16} />
         <span class="sm:hidden">Nueva</span>
@@ -893,7 +893,7 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
 
         <div class="flex items-start justify-between gap-4">
           <div>
-            <p class="text-xs font-black uppercase tracking-[0.18em] text-indigo-500">
+            <p class="text-xs font-black uppercase tracking-[0.18em] text-accent-500">
               Nueva presentación
             </p>
             <h2 class="mt-2 text-xl font-black text-slate-900">
@@ -926,7 +926,7 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
           required
           maxlength="120"
           placeholder="Ej. Caja de 6"
-          class="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 outline-none transition-colors placeholder:text-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+          class="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 outline-none transition-colors placeholder:text-slate-400 focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20"
         />
 
         <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -945,7 +945,7 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
               step="0.01"
               required
               placeholder="12"
-              class="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 font-mono outline-none transition-colors placeholder:text-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+              class="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 font-mono outline-none transition-colors placeholder:text-slate-400 focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20"
             />
           </div>
 
@@ -963,7 +963,7 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
               min="0"
               step="0.01"
               placeholder="Opcional"
-              class="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 font-mono outline-none transition-colors placeholder:text-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+              class="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 font-mono outline-none transition-colors placeholder:text-slate-400 focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20"
             />
           </div>
         </div>
@@ -978,7 +978,7 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
           </button>
           <button
             type="submit"
-            class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-indigo-700"
+            class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-accent-600 px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-accent-700"
           >
             <Icon name="lucide:plus" size={16} />
             Crear presentación
@@ -1153,7 +1153,7 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
     <div class="edit-ingredient-row grid grid-cols-1 gap-3 rounded-2xl border border-slate-200 bg-slate-50/50 p-3 md:grid-cols-[minmax(0,2.4fr)_minmax(0,13rem)_minmax(0,1fr)_3rem] md:items-center md:bg-white md:p-0 md:border-0 md:rounded-none md:border-b md:border-slate-100 md:pb-3">
       <div class="space-y-1 min-w-0">
         <label class="text-[10px] uppercase font-bold text-slate-400 md:hidden">Ingrediente</label>
-        <select name="ingredientId" form={recipeEditFormId} class="ingredient-select w-full bg-white md:bg-slate-50 border border-slate-200 rounded-lg p-2 text-sm font-semibold text-slate-700 focus:ring-2 focus:ring-indigo-500/20">
+        <select name="ingredientId" form={recipeEditFormId} class="ingredient-select w-full bg-white md:bg-slate-50 border border-slate-200 rounded-lg p-2 text-sm font-semibold text-slate-700 focus:ring-2 focus:ring-accent-500/20">
           {allIngredients.map(i => (
             <option value={i.id} data-unit={i.unit}>{i.name}</option>
           ))}
@@ -1162,8 +1162,8 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
       <div class="space-y-1 min-w-0">
         <label class="text-[10px] uppercase font-bold text-slate-400 md:hidden">Cantidad</label>
         <div class="grid min-w-0 grid-cols-[minmax(0,1fr)_5.5rem] items-center gap-2">
-          <input type="number" step="0.01" name="quantity" form={recipeEditFormId} class="quantity-input w-full min-w-0 bg-white border border-slate-200 rounded-lg p-2 text-center font-bold text-slate-700 focus:ring-2 focus:ring-indigo-500/20" value="1" />
-          <select name="unit" form={recipeEditFormId} class="unit-select w-full min-w-0 bg-white border border-slate-200 rounded-lg p-2 text-sm text-slate-600 focus:ring-2 focus:ring-indigo-500/20">
+          <input type="number" step="0.01" name="quantity" form={recipeEditFormId} class="quantity-input w-full min-w-0 bg-white border border-slate-200 rounded-lg p-2 text-center font-bold text-slate-700 focus:ring-2 focus:ring-accent-500/20" value="1" />
+          <select name="unit" form={recipeEditFormId} class="unit-select w-full min-w-0 bg-white border border-slate-200 rounded-lg p-2 text-sm text-slate-600 focus:ring-2 focus:ring-accent-500/20">
             {getUnitOptionsForValue('').map((unitOption, index) => (
               <option value={unitOption.value} selected={index === 0}>{unitOption.label}</option>
             ))}
@@ -1172,7 +1172,7 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
       </div>
       <div class="space-y-1 min-w-0">
         <label class="text-[10px] uppercase font-bold text-slate-400 md:hidden">Notas</label>
-        <input type="text" name="comment" form={recipeEditFormId} class="comment-input w-full bg-white border border-slate-200 rounded-lg p-2 text-sm text-slate-600 focus:ring-2 focus:ring-indigo-500/20" value="" placeholder="Opcional" />
+        <input type="text" name="comment" form={recipeEditFormId} class="comment-input w-full bg-white border border-slate-200 rounded-lg p-2 text-sm text-slate-600 focus:ring-2 focus:ring-accent-500/20" value="" placeholder="Opcional" />
       </div>
       <div class="flex items-center justify-end md:justify-center">
         <button type="button" class={ingredientRemoveButtonClasses} aria-label="Eliminar ingrediente">
