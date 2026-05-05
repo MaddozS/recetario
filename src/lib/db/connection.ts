@@ -354,6 +354,16 @@ export async function createTables(driver: Driver) {
     await driver.pool.query(
       "CREATE INDEX IF NOT EXISTS idx_recipe_presentations_recipe_id ON recipe_presentations(recipe_id);",
     );
+    await driver.pool.query(`
+      CREATE TABLE IF NOT EXISTS user_preferences (
+        user_id TEXT PRIMARY KEY,
+        theme TEXT NOT NULL DEFAULT 'light',
+        accent_color TEXT NOT NULL DEFAULT 'indigo',
+        created_at TIMESTAMPTZ DEFAULT now(),
+        updated_at TIMESTAMPTZ DEFAULT now()
+      );
+    `);
+
     await syncPostgresIngredientsIdentity(driver.pool);
     return;
   }
@@ -429,6 +439,14 @@ export async function createTables(driver: Driver) {
     CREATE INDEX IF NOT EXISTS idx_recipe_presentations_recipe_id ON recipe_presentations(recipe_id);
     CREATE INDEX IF NOT EXISTS idx_ingredients_owner_id ON ingredients(owner_id, id);
     CREATE INDEX IF NOT EXISTS idx_recipes_owner_id ON recipes(owner_id, id);
+
+    CREATE TABLE IF NOT EXISTS user_preferences (
+      user_id TEXT PRIMARY KEY,
+      theme TEXT NOT NULL DEFAULT 'light',
+      accent_color TEXT NOT NULL DEFAULT 'indigo',
+      created_at TEXT DEFAULT (datetime('now')),
+      updated_at TEXT DEFAULT (datetime('now'))
+    );
   `);
 }
 

@@ -27,7 +27,7 @@ const { defaultUnit } = Astro.props;
 
 <div class="flex items-start gap-3">
   <div
-    class="mt-0.5 flex h-10 w-10 items-center justify-center rounded-2xl bg-white text-indigo-600 shadow-sm shadow-indigo-100"
+    class="mt-0.5 flex h-10 w-10 items-center justify-center rounded-2xl bg-white dark:bg-zinc-800 text-accent-600 shadow-sm shadow-accent-100 dark:shadow-none"
   >
     <Icon name="lucide:info" size={18} />
   </div>
@@ -40,12 +40,12 @@ const { defaultUnit } = Astro.props;
     </p>
     <div class="mt-1 flex items-end gap-2">
       <span
-        class="text-3xl font-black tabular-nums text-indigo-700"
+        class="text-3xl font-mono font-semibold tabular-nums text-accent-700"
         data-unit-cost-value
       >
         $0.00
       </span>
-      <span class="pb-1 text-sm font-semibold text-indigo-400">
+      <span class="pb-1 text-sm font-semibold text-accent-400">
         / <span data-unit-cost-unit>{defaultUnit}</span>
       </span>
     </div>
