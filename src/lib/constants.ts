@@ -5,7 +5,15 @@
  * y edición tanto en la página de ingredientes como en recetas.
  */
 export const UNIT_OPTIONS = [
-  "kg", "g", "lt", "ml", "pza", "pieza", "cdita", "cda", "taza",
+  "kg",
+  "g",
+  "lt",
+  "ml",
+  "pza",
+  "pieza",
+  "cdita",
+  "cda",
+  "taza",
 ] as const;
 
 /** Unidad por defecto para selects de unidad. */
