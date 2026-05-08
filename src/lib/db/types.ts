@@ -46,6 +46,7 @@ export type RecipeWithIngredients = {
   id: number;
   name: string;
   category?: string;
+  instructions?: string;
   desiredMargin: number;
   fixedCostsPercentage: number;
   updatedAt?: string;
@@ -118,6 +119,7 @@ export type RecipeSeed = {
   id: number;
   name: string;
   category?: string;
+  instructions?: string;
   desiredMargin: number;
   fixedCostsPercentage: number;
   ingredients: RecipeIngredient[];
@@ -151,6 +153,7 @@ export type CreateRecipeInput = {
 export type UpdateRecipeInput = {
   name: string;
   category?: string | null;
+  instructions?: string;
   desiredMargin: number;
   fixedCostsPercentage: number;
   ingredients: {
