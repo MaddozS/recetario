@@ -32,15 +32,15 @@ const { type, message, recipes = [] } = Astro.props;
   class:list={[
     "mb-4 rounded-2xl border px-4 py-3 text-sm",
     type === "success"
-      ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-      : "border-rose-200 bg-rose-50 text-rose-700",
+      ? "border-success-border bg-success-bg text-success"
+      : "border-danger-border bg-danger-bg text-danger",
   ]}
   role={type === "success" ? "status" : "alert"}
 >
   <p class="font-semibold">{message}</p>
-  {recipes.length > 0 && (
-    <p class="mt-2 text-xs">
-      Recetas que lo usan: {recipes.join(", ")}
-    </p>
-  )}
+  {
+    recipes.length > 0 && (
+      <p class="mt-2 text-xs">Recetas que lo usan: {recipes.join(", ")}</p>
+    )
+  }
 </div>
