@@ -114,25 +114,28 @@ const accentBaseColors: Record<AccentFamily, Record<string, string>> = {
 
 /**
  * Mapeo de shade en light mode → shade a usar en dark mode.
- * En dark mode se usan tonos más claros para mantener contraste.
+ * En dark mode se usan tonos más profundos y saturados para evitar
+ * el aspecto pastel/deslavado. Los tonos base (50-300) se oscurecen
+ * para fondos, mientras que los tonos de acción (400-700) apuntan
+ * a los shades vibrantes en lugar de los claros.
  *   accent-50  → shade-950 (fondo muy oscuro)
  *   accent-100 → shade-900
  *   accent-200 → shade-800
  *   accent-300 → shade-700
- *   accent-400 → shade-500
- *   accent-500 → shade-400
- *   accent-600 → shade-400 (botones primarios, más claros en dark)
- *   accent-700 → shade-300 (texto primario, más claro en dark)
+ *   accent-400 → shade-600 (decoración, más rico)
+ *   accent-500 → shade-600 (focus, más rico)
+ *   accent-600 → shade-500 (botones, vibrante)
+ *   accent-700 → shade-400 (hover, más claro que el botón)
  */
 const darkShadeMap: Record<string, string> = {
   "50": "950",
   "100": "900",
   "200": "800",
   "300": "700",
-  "400": "500",
-  "500": "400",
-  "600": "400",
-  "700": "300",
+  "400": "600",
+  "500": "600",
+  "600": "500",
+  "700": "400",
 };
 
 /**
@@ -140,7 +143,9 @@ const darkShadeMap: Record<string, string> = {
  * Ejemplo de salida: "--aw-accent-50:#eef2ff;--aw-accent-100:#e0e7ff;..."
  */
 export function getAccentCssVars(accent: string, theme: string): string {
-  const family = ACCENT_FAMILIES.includes(accent as AccentFamily) ? (accent as AccentFamily) : "indigo";
+  const family = ACCENT_FAMILIES.includes(accent as AccentFamily)
+    ? (accent as AccentFamily)
+    : "indigo";
   const isDark = theme === "dark";
   const colors = accentBaseColors[family];
   return ACCENT_SHADES.map((shade) => {
