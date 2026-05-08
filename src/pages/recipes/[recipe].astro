@@ -2,10 +2,12 @@
 import { Icon } from "astro-icon/components";
 import Layout from "../../layouts/Layout.astro";
 import PresentationCard from "../../components/PresentationCard.astro";
-import { createPresentation, deletePresentation, deleteRecipe, getRecipeById, getRecipeDataOwner, updatePresentation, updateRecipe, listIngredients, type Ingredient, type RecipeIngredientWithData, type RecipeIngredient } from '../../lib/recipe-data';
+import { createPresentation, deletePresentation, deleteRecipe, duplicateRecipe, getRecipeById, getRecipeDataOwner, updatePresentation, updateRecipe, listIngredients, type Ingredient, type RecipeIngredientWithData, type RecipeIngredient } from '../../lib/recipe-data';
+import { hasFeature } from '../../lib/subscription';
 import { parseNumberInput } from '../../lib/form-utils';
 import { UNIT_OPTIONS } from '../../lib/constants';
 import FeedbackAlert from '../../components/FeedbackAlert.astro';
+import { marked } from "marked";
 
 const recipeIdParam = Astro.params.recipe;
 const recipeIdNumber = Number(recipeIdParam);
@@ -15,6 +17,7 @@ if (!Astro.locals.session || !Astro.locals.user) {
 }
 
 const recipeDataOwner = getRecipeDataOwner(Astro.locals.user);
+const subscription = Astro.locals.subscription;
 
 const expectsJsonResponse = Astro.request.headers.get('accept')?.includes('application/json') ?? false;
 
@@ -230,6 +233,35 @@ if (Astro.request.method === 'POST') {
         message: 'No se pudo eliminar la receta.',
       });
     }
+  } else if (action === 'duplicate_recipe') {
+    if (!Number.isFinite(recipeIdNumber)) {
+      return Astro.redirect('/recipes');
+    }
+
+    if (!hasFeature(subscription, 'recipe_duplicate')) {
+      if (expectsJsonResponse) {
+        return jsonResponse({ error: 'Funcionalidad no disponible en tu plan.' }, 403);
+      }
+      return redirectToRecipePage({ type: 'error', message: 'Funcionalidad no disponible en tu plan.' });
+    }
+
+    try {
+      const duplicated = await duplicateRecipe(recipeIdNumber, recipeDataOwner);
+      const redirectUrl = new URL(Astro.url);
+      redirectUrl.pathname = `/recipes/${duplicated.id}`;
+      redirectUrl.searchParams.set('edit', 'true');
+      redirectUrl.searchParams.set('type', 'success');
+      redirectUrl.searchParams.set('message', `Receta "${duplicated.name}" creada exitosamente.`);
+      return Astro.redirect(redirectUrl.toString());
+    } catch (error) {
+      const message = error instanceof Error && error.message === 'Recipe not found'
+        ? 'No se encontró la receta original.'
+        : 'Error al duplicar la receta.';
+      if (expectsJsonResponse) {
+        return jsonResponse({ error: message }, 500);
+      }
+      return redirectToRecipePage({ type: 'error', message });
+    }
   } else if (action === 'update_recipe') {
     if (Number.isFinite(recipeIdNumber)) {
       const name = String(formData.get('recipeName') || '');
@@ -255,10 +287,12 @@ if (Astro.request.method === 'POST') {
       const desiredMargin = Number(formData.get('desiredMargin')) || 0;
       const fixedCostsPercentage = Number(formData.get('fixedCostsPercentage')) || 0;
       const category = String(formData.get('category') || '').trim() || null;
+      const instructions = String(formData.get('instructions') || '').trim() || undefined;
 
       await updateRecipe(recipeIdNumber, {
         name,
         category,
+        instructions,
         desiredMargin,
         fixedCostsPercentage,
         ingredients: ingredientsToSave,
@@ -279,7 +313,7 @@ if (!recipe) {
   return Astro.redirect('/recipes');
 }
 
-const { ingredients: recipeIngredients, name, category, id, desiredMargin, fixedCostsPercentage, presentations, updatedAt } = recipe;
+const { ingredients: recipeIngredients, name, category, instructions, id, desiredMargin, fixedCostsPercentage, presentations, updatedAt } = recipe;
 
 const isEditMode = Astro.url.searchParams.get('edit') === 'true';
 const allIngredients = isEditMode ? await listIngredients(recipeDataOwner) : [];
@@ -334,8 +368,9 @@ const recipeEditFormId = 'recipe-edit-form';
 const recipeDeleteFormId = 'recipe-delete-form';
 const recipeDeleteDialogId = 'recipe-delete-dialog';
 const createPresentationDialogId = 'create-presentation-dialog';
-const recipeDeleteButtonClasses = 'col-span-2 inline-flex w-full min-h-11 items-center justify-center gap-2 rounded-xl border border-rose-200 bg-white px-4 py-2 text-sm font-bold text-rose-600 transition-colors hover:bg-rose-50 hover:text-rose-700 sm:col-auto sm:w-auto';
-const ingredientRemoveButtonClasses = 'remove-ingredient-btn inline-flex h-9 w-9 items-center justify-center rounded-full text-rose-500 transition-colors hover:bg-rose-50 hover:text-rose-600';
+const recipeDuplicateDialogId = 'recipe-duplicate-dialog';
+const recipeDeleteButtonClasses = 'col-span-2 inline-flex w-full min-h-11 items-center justify-center gap-2 rounded-xl border border-danger-border bg-card px-5 py-3 text-sm font-bold text-danger transition-colors hover:bg-danger-bg hover:text-danger sm:col-auto sm:w-auto';
+const ingredientRemoveButtonClasses = 'remove-ingredient-btn inline-flex h-9 w-9 items-center justify-center rounded-full text-danger transition-colors hover:bg-danger-bg hover:text-danger';
 
 const clampPercentageValue = (value: number, max = Number.POSITIVE_INFINITY) => {
   if (!Number.isFinite(value)) return 0;
@@ -423,16 +458,16 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
       {isEditMode && (
         <dialog
           id={recipeDeleteDialogId}
-          class="fixed inset-0 m-auto w-[calc(100vw-1.5rem)] max-w-md rounded-[28px] p-0 backdrop:bg-slate-900/55"
+          class="fixed inset-0 m-auto w-[calc(100vw-1.5rem)] max-w-md rounded-3xl p-0 backdrop:bg-slate-900/55"
         >
-          <div class="rounded-[28px] border border-slate-200 bg-white p-6 shadow-2xl">
+          <div class="rounded-3xl border border-border bg-card p-6 shadow-2xl">
             <div class="flex items-start gap-3">
-              <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-rose-50 text-rose-600">
+              <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-danger-bg text-danger">
                 <Icon name="lucide:trash-2" size={18} />
               </div>
               <div>
-                <h2 class="text-lg font-bold text-slate-900">Confirmar eliminación</h2>
-                <p class="mt-2 text-sm text-slate-600">
+                <h2 class="text-lg font-bold text-foreground">Confirmar eliminación</h2>
+                <p class="mt-2 text-sm text-muted-foreground">
                   ¿Eliminar esta receta? Esta acción no se puede deshacer.
                 </p>
               </div>
@@ -442,14 +477,14 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
               <button
                 type="button"
                 data-close-recipe-delete-dialog={recipeDeleteDialogId}
-                class="inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-600 transition-colors hover:bg-slate-50"
+                class="inline-flex min-h-11 items-center justify-center rounded-xl border border-border bg-card px-5 py-3 text-sm font-bold text-muted-foreground transition-colors hover:bg-background"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
                 form={recipeDeleteFormId}
-                class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-rose-600 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-rose-700"
+                class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-danger-solid px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-danger-solid"
               >
                 <Icon name="lucide:trash-2" size={16} /> Eliminar
               </button>
@@ -458,13 +493,51 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
         </dialog>
       )}
 
+      {hasFeature(subscription, 'recipe_duplicate') && (
+        <dialog
+          id={recipeDuplicateDialogId}
+          class="fixed inset-0 m-auto w-[calc(100vw-1.5rem)] max-w-md rounded-3xl p-0 backdrop:bg-slate-900/55"
+        >
+          <div class="rounded-3xl border border-border bg-card p-6 shadow-2xl">
+            <div class="flex items-start gap-3">
+              <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-accent-50 text-accent-600">
+                <Icon name="lucide:copy" size={18} />
+              </div>
+              <div>
+                <h2 class="text-lg font-bold text-foreground">Duplicar receta</h2>
+                <p class="mt-2 text-sm text-muted-foreground">
+                  Se creará una copia de esta receta con todos sus ingredientes y presentaciones.
+                </p>
+              </div>
+            </div>
+
+            <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                data-close-recipe-duplicate-dialog={recipeDuplicateDialogId}
+                class="inline-flex min-h-11 items-center justify-center rounded-xl border border-border bg-card px-5 py-3 text-sm font-bold text-muted-foreground transition-colors hover:bg-background"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                form="recipe-duplicate-form"
+                class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-accent-600 px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-accent-700"
+              >
+                <Icon name="lucide:copy" size={16} /> Duplicar
+              </button>
+            </div>
+          </div>
+        </dialog>
+      )}
+
       <!-- Tag and Last Updated -->
-      <div class="flex items-center gap-3 text-sm font-medium text-slate-500 px-1">
-        <span class="flex items-center gap-1.5 bg-accent-50 text-accent-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider">
+      <div class="flex items-center gap-3 text-sm font-medium text-muted-foreground px-1">
+        <span class="flex items-center gap-1.5 bg-accent-50 text-accent-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border border-accent-200">
           <Icon name="lucide:tag" size={12} /> {category || "Sin categoría"}
         </span>
         {lastUpdatedText && (
-          <span class="text-xs text-slate-400 font-semibold">
+          <span class="text-xs text-subtle-foreground font-semibold">
             Actualizado {lastUpdatedText.toLowerCase().replace('hoy, ', 'hoy ')}
           </span>
         )}
@@ -480,7 +553,7 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
                 name="recipeName"
                 form={recipeEditFormId}
                 type="text" 
-                class="w-full text-3xl sm:text-4xl leading-tight font-black bg-slate-50 border border-slate-200 rounded-lg p-2 text-slate-900 focus:ring-2 focus:ring-accent-500/20"
+                class="w-full text-3xl sm:text-4xl leading-tight font-black bg-background border border-border rounded-xl p-2 text-foreground focus:ring-2 focus:ring-accent-500/20"
                 value={name}
               />
               <div class="mt-2">
@@ -488,35 +561,35 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
                   type="text"
                   name="category"
                   form={recipeEditFormId}
-                  class="w-full max-w-xs bg-slate-50 border border-slate-200 rounded-lg p-2 text-sm text-slate-700 focus:ring-2 focus:ring-accent-500/20"
+                  class="w-full max-w-xs bg-background border border-border rounded-xl p-2 text-sm text-secondary-foreground focus:ring-2 focus:ring-accent-500/20"
                   value={category || ''}
                   placeholder="Categoría (ej. Panes, Galletas, Pasteles)"
                 />
               </div>
             </>
           ) : (
-            <h1 class="text-3xl sm:text-4xl leading-tight font-black text-slate-900">{name}</h1>
+            <h1 class="text-3xl sm:text-4xl leading-tight font-black text-foreground">{name}</h1>
           )}
         </div>
 
         <div class="flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center">
           {!isEditMode && (
-            <form method="get" data-astro-reload class="flex w-full items-center justify-between gap-2 rounded-xl border border-slate-200 bg-white px-2 py-1.5 shadow-sm sm:w-auto sm:justify-start">
-              <span class="text-[10px] font-black uppercase tracking-widest text-slate-400 px-2">Mezclas</span>
-              <div class="flex items-center gap-1 bg-slate-50 rounded-full p-1 border border-slate-100">
-                <a href={multiplierDownHref} data-astro-reload class="w-6 h-6 flex items-center justify-center rounded-full hover:bg-slate-200 text-slate-600 font-bold transition-colors active:scale-95">-</a>
-                <input type="number" name="multiplier" value={multiplier} step="0.0001" min="0.0001" class="w-10 bg-transparent text-center font-mono font-semibold text-slate-800 focus:outline-none focus:ring-0 p-0 border-none text-sm tabular-nums" onchange="this.form.submit()" aria-label="Multiplicador" />
-                <a href={multiplierUpHref} data-astro-reload class="w-6 h-6 flex items-center justify-center rounded-full hover:bg-slate-200 text-slate-600 font-bold transition-colors active:scale-95">+</a>
+            <form method="get" data-astro-reload class="flex w-full items-center justify-between gap-2 rounded-xl border border-border bg-card px-2 py-1.5 shadow-sm sm:w-auto sm:justify-start">
+              <span class="text-[10px] font-black uppercase tracking-widest text-subtle-foreground px-2">Mezclas</span>
+              <div class="flex items-center gap-1 bg-background rounded-full p-1 border border-border-light dark:border-gray-950">
+                <a href={multiplierDownHref} data-astro-reload class="w-6 h-6 flex items-center justify-center rounded-full hover:bg-hover-muted text-muted-foreground font-bold transition-colors active:scale-95">-</a>
+                <input type="number" name="multiplier" value={multiplier} step="0.0001" min="0.0001" class="w-10 bg-transparent text-center font-mono font-semibold text-foreground focus:outline-none focus:ring-0 p-0 border-none text-sm tabular-nums" onchange="this.form.submit()" aria-label="Multiplicador" />
+                <a href={multiplierUpHref} data-astro-reload class="w-6 h-6 flex items-center justify-center rounded-full hover:bg-hover-muted text-muted-foreground font-bold transition-colors active:scale-95">+</a>
               </div>
             </form>
           )}
           
           {isEditMode ? (
             <div class="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto">
-              <button type="submit" form={recipeEditFormId} class="inline-flex w-full min-h-11 items-center justify-center gap-2 rounded-xl bg-accent-600 px-4 py-2 text-sm font-bold text-white shadow-sm transition-colors hover:bg-accent-700 sm:w-auto sm:px-6">
+              <button type="submit" form={recipeEditFormId} class="inline-flex w-full min-h-11 items-center justify-center gap-2 rounded-xl bg-accent-600 px-6 py-3 text-sm font-bold text-white shadow-sm transition-colors hover:bg-accent-700 sm:w-auto">
                 <Icon name="lucide:save" size={16} /> Guardar
               </button>
-              <a href={Astro.url.pathname} data-astro-reload class="inline-flex w-full min-h-11 items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-600 transition-colors hover:bg-slate-50 sm:w-auto sm:px-6">
+              <a href={Astro.url.pathname} data-astro-reload class="inline-flex w-full min-h-11 items-center justify-center rounded-xl border border-border bg-card px-5 py-3 text-sm font-bold text-muted-foreground transition-colors hover:bg-background sm:w-auto">
                 Cancelar
               </a>
               <button
@@ -528,10 +601,20 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
               </button>
             </div>
           ) : (
-            <div class="flex w-full sm:w-auto">
-              <a href={`${Astro.url.pathname}?edit=true`} data-astro-reload class="inline-flex w-full min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-6 py-2 text-sm font-bold text-slate-700 transition-colors hover:bg-slate-50 sm:w-auto">
+            <div class="flex w-full sm:w-auto gap-2">
+              <a href={`${Astro.url.pathname}?edit=true`} data-astro-reload class="inline-flex w-full min-h-11 items-center justify-center gap-2 rounded-xl border border-border bg-card px-5 py-3 text-sm font-bold text-secondary-foreground transition-colors hover:bg-background sm:w-auto">
                 <Icon name="lucide:pencil" size={16} /> Editar
               </a>
+              {hasFeature(subscription, 'recipe_duplicate') && (
+                <>
+                  <form id="recipe-duplicate-form" method="POST" data-astro-reload class="hidden">
+                    <input type="hidden" name="action" value="duplicate_recipe" />
+                  </form>
+                  <button type="button" data-open-recipe-duplicate-dialog={recipeDuplicateDialogId} class="inline-flex w-full min-h-11 items-center justify-center gap-2 rounded-xl border border-border bg-card px-5 py-3 text-sm font-bold text-secondary-foreground transition-colors hover:bg-background sm:w-auto">
+                    <Icon name="lucide:copy" size={16} /> Duplicar
+                  </button>
+                </>
+              )}
             </div>
           )}
         </div>
@@ -539,53 +622,53 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
 
       <!-- Metrics Grid -->
       <div class="relative sm:hidden -m-4 p-5">
-        <div class="mb-3 flex items-center justify-between px-1 text-[11px] font-semibold text-slate-400">
+        <div class="mb-3 flex items-center justify-between px-1 text-[11px] font-semibold text-subtle-foreground">
           <span>Resumen</span>
-          <span class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-slate-500">
+          <span class="inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-muted-foreground">
             <Icon name="lucide:move-horizontal" size={12} /> Desliza
           </span>
         </div>
 
-        <div class="pointer-events-none absolute inset-y-0 left-0 z-10 w-3 bg-gradient-to-r from-slate-50/80 to-transparent"></div>
-        <div class="pointer-events-none absolute inset-y-0 right-0 z-10 w-6 bg-gradient-to-l from-slate-50/85 via-slate-50/35 to-transparent"></div>
+        <div class="pointer-events-none absolute inset-y-0 left-0 z-10 w-3 bg-gradient-to-r from-background/80 to-transparent"></div>
+        <div class="pointer-events-none absolute inset-y-0 right-0 z-10 w-6 bg-gradient-to-l from-background/85 via-background/35 to-transparent"></div>
 
         <div class="-mx-1 flex snap-x snap-mandatory gap-3 overflow-x-auto px-1 pb-3 [scrollbar-width:auto] [-webkit-overflow-scrolling:touch]">
           <!-- COSTO INSUMOS -->
-          <div class="w-[min(68vw,19rem)] min-w-[15.5rem] snap-start bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
-            <p class="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-slate-400 mb-4">
+          <div class="w-[min(68vw,19rem)] min-w-[15.5rem] snap-start bg-card p-5 rounded-2xl border border-border shadow-sm flex flex-col justify-between">
+            <p class="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-subtle-foreground mb-4">
               <span class="w-7 h-7 rounded-lg bg-red-50 text-red-500 flex items-center justify-center"><Icon name="lucide:trending-down" size={16}/></span>
               Costo Insumos
             </p>
             <div>
-              <p class="text-2xl 2xl:text-3xl font-mono font-semibold text-slate-900 tabular-nums leading-none truncate" title={`$${costoDirectoTotal.toFixed(2)}`}>${costoDirectoTotal.toFixed(2)}</p>
-              <p class="text-[11px] font-semibold text-slate-400 mt-2 line-clamp-1">Costo base de materiales</p>
+              <p class="text-2xl 2xl:text-3xl font-mono font-semibold text-foreground tabular-nums leading-none truncate" title={`$${costoDirectoTotal.toFixed(2)}`}>${costoDirectoTotal.toFixed(2)}</p>
+              <p class="text-[11px] font-semibold text-subtle-foreground mt-2 line-clamp-1">Costo base de materiales</p>
             </div>
           </div>
 
           <!-- GASTOS OPERATIVOS -->
-          <div class="w-[min(68vw,19rem)] min-w-[15.5rem] snap-start bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
-            <p class="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-slate-400 mb-4">
-              <span class="w-7 h-7 rounded-lg bg-slate-100 text-slate-500 flex items-center justify-center"><Icon name="lucide:pie-chart" size={16}/></span>
+          <div class="w-[min(68vw,19rem)] min-w-[15.5rem] snap-start bg-card p-5 rounded-2xl border border-border shadow-sm flex flex-col justify-between">
+            <p class="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-subtle-foreground mb-4">
+              <span class="w-7 h-7 rounded-lg bg-muted text-muted-foreground flex items-center justify-center"><Icon name="lucide:pie-chart" size={16}/></span>
               Gastos Operativos
             </p>
             <div>
               {isEditMode ? (
                 <div class="flex items-baseline gap-1">
-                  <input type="number" id="edit-fixed-costs-mobile" name="fixedCostsPercentage" form={recipeEditFormId} class="w-16 bg-slate-50 border border-slate-200 rounded-lg p-1 text-xl 2xl:text-2xl font-mono font-semibold text-slate-900 focus:ring-2 focus:ring-accent-500/20" value={fixedCostsPercentageValue} />
-                  <span class="text-lg font-bold text-slate-400">%</span>
+                  <input type="number" id="edit-fixed-costs-mobile" name="fixedCostsPercentage" form={recipeEditFormId} class="w-16 bg-background border border-border rounded-xl p-1 text-xl 2xl:text-2xl font-mono font-semibold text-foreground focus:ring-2 focus:ring-accent-500/20" value={fixedCostsPercentageValue} />
+                  <span class="text-lg font-bold text-subtle-foreground">%</span>
                 </div>
               ) : (
-                <p class="text-2xl 2xl:text-3xl font-mono font-semibold text-slate-900 tabular-nums leading-none truncate">{fixedCostsPercentageValue}<span class="text-lg 2xl:text-xl font-bold text-slate-400">%</span></p>
+                <p class="text-2xl 2xl:text-3xl font-mono font-semibold text-foreground tabular-nums leading-none truncate">{fixedCostsPercentageValue}<span class="text-lg 2xl:text-xl font-bold text-subtle-foreground">%</span></p>
               )}
               <div class="flex flex-wrap items-center justify-between gap-1 mt-2">
-                <p class="text-[11px] font-semibold text-slate-400">Servicios, labor, etc.</p>
-                <p class="text-[11px] font-mono font-semibold text-slate-400">+{costoOperativo.toFixed(2)}</p>
+                <p class="text-[11px] font-semibold text-subtle-foreground">Servicios, labor, etc.</p>
+                <p class="text-[11px] font-mono font-semibold text-subtle-foreground">+{costoOperativo.toFixed(2)}</p>
               </div>
             </div>
           </div>
 
           <!-- COSTO TOTAL REAL -->
-          <div class="w-[min(68vw,19rem)] min-w-[15.5rem] snap-start bg-white p-5 rounded-2xl border border-accent-100 shadow-sm flex flex-col justify-between relative overflow-hidden">
+          <div class="w-[min(68vw,19rem)] min-w-[15.5rem] snap-start bg-card p-5 rounded-2xl border border-accent-100 shadow-sm flex flex-col justify-between relative overflow-hidden">
             <div class="absolute -right-6 -top-6 w-24 h-24 bg-accent-50 rounded-full opacity-50 pointer-events-none"></div>
             <p class="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-accent-500 mb-4 relative z-10">
               <span class="w-7 h-7 rounded-lg bg-accent-50 text-accent-500 flex items-center justify-center"><Icon name="lucide:dollar-sign" size={16}/></span>
@@ -598,8 +681,8 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
           </div>
 
           <!-- MARGEN UTILIDAD -->
-          <div class="w-[min(68vw,19rem)] min-w-[15.5rem] snap-start bg-[#10b981] p-5 rounded-2xl shadow-md flex flex-col justify-between text-white relative overflow-hidden">
-            <div class="absolute right-0 top-0 opacity-20 pointer-events-none">
+          <div class="w-[min(68vw,19rem)] min-w-[15.5rem] snap-start bg-[#10b981] dark:bg-emerald-700 p-5 rounded-2xl shadow-md flex flex-col justify-between text-white relative overflow-hidden">
+            <div class="absolute right-0 top-0 opacity-15 pointer-events-none">
               <Icon name="lucide:trending-up" size={120} class="transform translate-x-6 -translate-y-6" />
             </div>
             <p class="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-emerald-100 mb-4 relative z-10">
@@ -609,7 +692,7 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
             <div class="relative z-10">
               {isEditMode ? (
                 <div class="flex items-baseline gap-1">
-                  <input type="number" id="edit-desired-margin-mobile" name="desiredMargin" form={recipeEditFormId} class="w-16 bg-emerald-600/50 border border-emerald-400/50 rounded-lg p-1 text-xl 2xl:text-2xl font-mono font-semibold text-white focus:ring-2 focus:ring-emerald-300/50 placeholder-emerald-300" value={desiredMarginValue} />
+                  <input type="number" id="edit-desired-margin-mobile" name="desiredMargin" form={recipeEditFormId} class="w-16 bg-emerald-600/50 border border-emerald-400/50 rounded-xl p-1 text-xl 2xl:text-2xl font-mono font-semibold text-white focus:ring-2 focus:ring-emerald-300/50 placeholder-emerald-300" value={desiredMarginValue} />
                   <span class="text-lg font-bold text-emerald-200">%</span>
                 </div>
               ) : (
@@ -623,41 +706,41 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
 
       <div class="hidden grid-cols-2 gap-4 sm:grid xl:grid-cols-4">
         <!-- COSTO INSUMOS -->
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
-          <p class="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-slate-400 mb-4">
+        <div class="bg-card p-5 rounded-2xl border border-border shadow-sm flex flex-col justify-between">
+          <p class="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-subtle-foreground mb-4">
             <span class="w-7 h-7 rounded-lg bg-red-50 text-red-500 flex items-center justify-center"><Icon name="lucide:trending-down" size={16}/></span>
             Costo Insumos
           </p>
           <div>
-            <p class="text-2xl 2xl:text-3xl font-mono font-semibold text-slate-900 tabular-nums leading-none truncate" title={`$${costoDirectoTotal.toFixed(2)}`}>${costoDirectoTotal.toFixed(2)}</p>
-            <p class="text-[11px] font-semibold text-slate-400 mt-2 line-clamp-1">Costo base de materiales</p>
+            <p class="text-2xl 2xl:text-3xl font-mono font-semibold text-foreground tabular-nums leading-none truncate" title={`$${costoDirectoTotal.toFixed(2)}`}>${costoDirectoTotal.toFixed(2)}</p>
+            <p class="text-[11px] font-semibold text-subtle-foreground mt-2 line-clamp-1">Costo base de materiales</p>
           </div>
         </div>
 
         <!-- GASTOS OPERATIVOS -->
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
-          <p class="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-slate-400 mb-4">
-            <span class="w-7 h-7 rounded-lg bg-slate-100 text-slate-500 flex items-center justify-center"><Icon name="lucide:pie-chart" size={16}/></span>
+        <div class="bg-card p-5 rounded-2xl border border-border shadow-sm flex flex-col justify-between">
+          <p class="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-subtle-foreground mb-4">
+            <span class="w-7 h-7 rounded-lg bg-muted text-muted-foreground flex items-center justify-center"><Icon name="lucide:pie-chart" size={16}/></span>
             Gastos Operativos
           </p>
           <div>
             {isEditMode ? (
               <div class="flex items-baseline gap-1">
-                <input type="number" id="edit-fixed-costs" name="fixedCostsPercentage" form={recipeEditFormId} class="w-16 bg-slate-50 border border-slate-200 rounded-lg p-1 text-xl 2xl:text-2xl font-mono font-semibold text-slate-900 focus:ring-2 focus:ring-accent-500/20" value={fixedCostsPercentageValue} />
-                <span class="text-lg font-bold text-slate-400">%</span>
+                <input type="number" id="edit-fixed-costs" name="fixedCostsPercentage" form={recipeEditFormId} class="w-16 bg-background border border-border rounded-xl p-1 text-xl 2xl:text-2xl font-mono font-semibold text-foreground focus:ring-2 focus:ring-accent-500/20" value={fixedCostsPercentageValue} />
+                <span class="text-lg font-bold text-subtle-foreground">%</span>
               </div>
             ) : (
-              <p class="text-2xl 2xl:text-3xl font-mono font-semibold text-slate-900 tabular-nums leading-none truncate">{fixedCostsPercentageValue}<span class="text-lg 2xl:text-xl font-bold text-slate-400">%</span></p>
+              <p class="text-2xl 2xl:text-3xl font-mono font-semibold text-foreground tabular-nums leading-none truncate">{fixedCostsPercentageValue}<span class="text-lg 2xl:text-xl font-bold text-subtle-foreground">%</span></p>
             )}
             <div class="flex flex-wrap items-center justify-between gap-1 mt-2">
-              <p class="text-[11px] font-semibold text-slate-400">Servicios, labor, etc.</p>
-              <p class="text-[11px] font-mono font-semibold text-slate-400">+{costoOperativo.toFixed(2)}</p>
+              <p class="text-[11px] font-semibold text-subtle-foreground">Servicios, labor, etc.</p>
+              <p class="text-[11px] font-mono font-semibold text-subtle-foreground">+{costoOperativo.toFixed(2)}</p>
             </div>
           </div>
         </div>
 
         <!-- COSTO TOTAL REAL -->
-        <div class="bg-white p-5 rounded-2xl border border-accent-100 shadow-sm flex flex-col justify-between relative overflow-hidden">
+        <div class="bg-card p-5 rounded-2xl border border-accent-100 shadow-sm flex flex-col justify-between relative overflow-hidden">
           <div class="absolute -right-6 -top-6 w-24 h-24 bg-accent-50 rounded-full opacity-50 pointer-events-none"></div>
           <p class="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-accent-500 mb-4 relative z-10">
             <span class="w-7 h-7 rounded-lg bg-accent-50 text-accent-500 flex items-center justify-center"><Icon name="lucide:dollar-sign" size={16}/></span>
@@ -670,9 +753,9 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
         </div>
 
         <!-- MARGEN UTILIDAD -->
-        <div class="bg-[#10b981] p-5 rounded-2xl shadow-md flex flex-col justify-between text-white relative overflow-hidden">
-          <div class="absolute right-0 top-0 opacity-20 pointer-events-none">
-            <Icon name="lucide:trending-up" size={120} class="transform translate-x-6 -translate-y-6" />
+        <div class="bg-[#10b981] dark:bg-emerald-700 p-5 rounded-2xl shadow-md flex flex-col justify-between text-white relative overflow-hidden">
+            <div class="absolute right-0 top-0 opacity-15 pointer-events-none">
+              <Icon name="lucide:trending-up" size={120} class="transform translate-x-6 -translate-y-6" />
           </div>
           <p class="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-emerald-100 mb-4 relative z-10">
             <span class="w-7 h-7 rounded-lg bg-emerald-400/50 text-white flex items-center justify-center"><Icon name="lucide:trending-up" size={16}/></span>
@@ -681,7 +764,7 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
           <div class="relative z-10">
             {isEditMode ? (
               <div class="flex items-baseline gap-1">
-                <input type="number" id="edit-desired-margin" name="desiredMargin" form={recipeEditFormId} class="w-16 bg-emerald-600/50 border border-emerald-400/50 rounded-lg p-1 text-xl 2xl:text-2xl font-mono font-semibold text-white focus:ring-2 focus:ring-emerald-300/50 placeholder-emerald-300" value={desiredMarginValue} />
+                <input type="number" id="edit-desired-margin" name="desiredMargin" form={recipeEditFormId} class="w-16 bg-emerald-600/50 border border-emerald-400/50 rounded-xl p-1 text-xl 2xl:text-2xl font-mono font-semibold text-white focus:ring-2 focus:ring-emerald-300/50 placeholder-emerald-300" value={desiredMarginValue} />
                 <span class="text-lg font-bold text-emerald-200">%</span>
               </div>
             ) : (
@@ -693,18 +776,18 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
       </div>
     </div>
 
-    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mx-1 sm:mx-2 lg:mx-8">
-      <div class="flex items-center justify-between px-5 sm:px-6 lg:px-8 py-5 border-b border-slate-100 bg-white">
-        <h2 class="text-sm font-bold text-slate-800">Lista de Ingredientes</h2>
-        <label class="flex items-center gap-2 text-xs text-slate-500 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200 cursor-pointer hover:bg-slate-100 transition-colors">
-          <input id="toggle-comments" type="checkbox" class="w-4 h-4 rounded border-slate-300 text-accent-600 focus:ring-accent-500" />
-          <span class="font-semibold text-slate-700">Ver notas</span>
+    <div class="bg-card rounded-2xl shadow-sm border border-border overflow-hidden mx-1 sm:mx-2 lg:mx-8">
+      <div class="flex items-center justify-between px-5 sm:px-6 lg:px-8 py-5 border-b border-border-light dark:border-gray-950 bg-card">
+        <h2 class="text-sm font-bold text-foreground">Lista de Ingredientes</h2>
+        <label class="flex items-center gap-2 text-xs text-muted-foreground bg-background px-3 py-1.5 rounded-lg border border-border cursor-pointer hover:bg-muted transition-colors">
+          <input id="toggle-comments" type="checkbox" class="w-4 h-4 rounded border-border text-accent-600 focus:ring-accent-500" />
+          <span class="font-semibold text-secondary-foreground">Ver notas</span>
         </label>
       </div>
 
       {isEditMode ? (
         <div class="px-5 py-5 sm:px-6 lg:px-8">
-          <div class="hidden md:grid md:grid-cols-[minmax(0,2.4fr)_11rem_minmax(0,1fr)_3rem] md:gap-4 md:px-1 md:pb-3 text-[10px] uppercase font-bold text-slate-400">
+          <div class="hidden md:grid md:grid-cols-[minmax(0,2.4fr)_11rem_minmax(0,1fr)_3rem] md:gap-4 md:px-1 md:pb-3 text-[10px] uppercase font-bold text-subtle-foreground">
             <span>Ingrediente</span>
             <span class="text-center">Cantidad</span>
             <span>Notas</span>
@@ -713,10 +796,10 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
 
           <div id="edit-ingredients-tbody" class="space-y-3">
             {recipeIngredients.map(ri => (
-              <div class="edit-ingredient-row grid grid-cols-1 gap-3 rounded-2xl border border-slate-200 bg-slate-50/50 p-3 md:grid-cols-[minmax(0,2.4fr)_minmax(0,13rem)_minmax(0,1fr)_3rem] md:items-center md:bg-white md:p-0 md:border-0 md:rounded-none md:border-b md:border-slate-100 md:pb-3">
+               <div class="edit-ingredient-row grid grid-cols-1 gap-3 rounded-2xl border border-border bg-background/50 p-3 md:grid-cols-[minmax(0,2.4fr)_minmax(0,13rem)_minmax(0,1fr)_3rem] md:items-center md:bg-card md:p-0 md:border-0 md:rounded-none md:border-b md:border-border-light dark:md:border-gray-950 md:pb-3">
                 <div class="space-y-1 min-w-0">
-                  <label class="text-[10px] uppercase font-bold text-slate-400 md:hidden">Ingrediente</label>
-                  <select name="ingredientId" form={recipeEditFormId} class="ingredient-select w-full bg-white md:bg-slate-50 border border-slate-200 rounded-lg p-2 text-sm font-semibold text-slate-700 focus:ring-2 focus:ring-accent-500/20">
+                  <label class="text-[10px] uppercase font-bold text-subtle-foreground md:hidden">Ingrediente</label>
+                   <select name="ingredientId" form={recipeEditFormId} class="ingredient-select w-full bg-card md:bg-background border border-border rounded-xl p-2 text-sm font-semibold text-secondary-foreground focus:ring-2 focus:ring-accent-500/20">
                     {allIngredients.map(i => (
                       <option value={i.id} data-unit={i.unit} selected={i.id === ri.ingredientId}>{i.name}</option>
                     ))}
@@ -724,10 +807,10 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
                 </div>
 
                 <div class="space-y-1 min-w-0">
-                  <label class="text-[10px] uppercase font-bold text-slate-400 md:hidden">Cantidad</label>
+                  <label class="text-[10px] uppercase font-bold text-subtle-foreground md:hidden">Cantidad</label>
                   <div class="grid min-w-0 grid-cols-[minmax(0,1fr)_5.5rem] items-center gap-2">
-                    <input type="number" step="0.01" name="quantity" form={recipeEditFormId} class="quantity-input w-full min-w-0 bg-white border border-slate-200 rounded-lg p-2 text-center font-mono font-semibold text-slate-700 focus:ring-2 focus:ring-accent-500/20" value={ri.quantity} />
-                    <select name="unit" form={recipeEditFormId} class="unit-select w-full min-w-0 bg-white border border-slate-200 rounded-lg p-2 text-sm text-slate-600 focus:ring-2 focus:ring-accent-500/20">
+                    <input type="number" step="0.01" name="quantity" form={recipeEditFormId} class="quantity-input w-full min-w-0 bg-card border border-border rounded-xl p-2 text-center font-mono font-semibold text-secondary-foreground focus:ring-2 focus:ring-accent-500/20" value={ri.quantity} />
+                    <select name="unit" form={recipeEditFormId} class="unit-select w-full min-w-0 bg-card border border-border rounded-xl p-2 text-sm text-muted-foreground focus:ring-2 focus:ring-accent-500/20">
                       {getUnitOptionsForValue(ri.unit).map((unitOption) => (
                         <option value={unitOption.value} selected={unitOption.value === ri.unit}>{unitOption.label}</option>
                       ))}
@@ -736,8 +819,8 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
                 </div>
 
                 <div class="space-y-1 min-w-0">
-                  <label class="text-[10px] uppercase font-bold text-slate-400 md:hidden">Notas</label>
-                  <input type="text" name="comment" form={recipeEditFormId} class="comment-input w-full bg-white border border-slate-200 rounded-lg p-2 text-sm text-slate-600 focus:ring-2 focus:ring-accent-500/20" value={ri.comment || ''} placeholder="Opcional" />
+                  <label class="text-[10px] uppercase font-bold text-subtle-foreground md:hidden">Notas</label>
+                  <input type="text" name="comment" form={recipeEditFormId} class="comment-input w-full bg-card border border-border rounded-xl p-2 text-sm text-muted-foreground focus:ring-2 focus:ring-accent-500/20" value={ri.comment || ''} placeholder="Opcional" />
                 </div>
 
                 <div class="flex items-center justify-end md:justify-center">
@@ -749,45 +832,72 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
             ))}
           </div>
 
-          <div class="pt-4 border-t border-slate-100 bg-slate-50/50 mt-4 flex justify-center">
+          <div class="pt-4 border-t border-border-light dark:border-gray-950 bg-background/50 mt-4 flex justify-center">
             <button 
               type="button"
               id="add-ingredient-btn"
-              class="flex items-center gap-2 px-6 py-2.5 bg-white border border-accent-200 text-accent-600 rounded-xl text-sm font-bold hover:bg-accent-50 transition-colors shadow-sm"
+              class="flex items-center gap-2 px-5 py-3 bg-card border border-accent-200 text-accent-600 rounded-xl text-sm font-bold hover:bg-accent-50 transition-colors shadow-sm"
             >
               <Icon name="lucide:plus" size={16} /> Añadir Ingrediente
             </button>
           </div>
         </div>
+        <div class="mt-6 mx-5 sm:mx-6 lg:mx-8 pb-6">
+          <label class="block text-sm font-bold text-secondary-foreground mb-2 flex items-center gap-2">
+            <Icon name="lucide:list-checks" size={16} class="text-accent-500" />
+            Instrucciones de Preparación
+          </label>
+          <textarea
+            name="instructions"
+            form={recipeEditFormId}
+            rows={10}
+            class="w-full rounded-xl border border-border bg-background p-4 text-sm text-secondary-foreground font-mono leading-relaxed focus:ring-2 focus:ring-accent-500/20 focus:border-accent-500 resize-y transition-colors placeholder:text-subtle-foreground"
+            placeholder={`1. Precalentar el horno a 180°C.\n2. Mezclar ingredientes secos.\n3. ...`}
+          >{instructions || ''}</textarea>
+          <p class="mt-2 text-xs text-subtle-foreground leading-relaxed">
+            Escribe un paso por línea. Puedes usar Markdown básico (negritas, listas, etc.).
+          </p>
+        </div>
+
+        <div class="sticky bottom-0 z-10 mx-5 sm:mx-6 lg:mx-8 pb-4 pt-4 border-t border-border bg-card">
+          <div class="flex gap-3">
+            <button type="submit" form={recipeEditFormId} class="inline-flex flex-1 min-h-12 items-center justify-center gap-2 rounded-xl bg-accent-600 px-6 py-3 text-sm font-bold text-white shadow-sm transition-colors hover:bg-accent-700 sm:flex-none sm:px-8">
+              <Icon name="lucide:save" size={16} /> Guardar Cambios
+            </button>
+            <a href={Astro.url.pathname} data-astro-reload class="inline-flex flex-1 min-h-12 items-center justify-center rounded-xl border border-border bg-card px-5 py-3 text-sm font-bold text-muted-foreground transition-colors hover:bg-background sm:flex-none sm:px-6">
+              Cancelar
+            </a>
+          </div>
+        </div>
       ) : (
         <>
-          <div class="md:hidden divide-y divide-slate-100">
+          <div class="md:hidden divide-y divide-border-light dark:divide-gray-950">
             {
             recipeIngredients.map(ri => {
               return (
                 <article class="px-5 py-4 space-y-3">
                   <div class="flex items-start justify-between gap-3">
                     <div class="min-w-0">
-                      <p class="font-semibold text-slate-800 leading-tight break-words">{ri.ingredient.name}</p>
-                      <p class="mt-1 text-xs text-slate-500">Cantidad usada en esta mezcla</p>
+                      <p class="font-semibold text-foreground leading-tight break-words">{ri.ingredient.name}</p>
+                      <p class="mt-1 text-xs text-muted-foreground">Cantidad usada en esta mezcla</p>
                       {ri.comment ? (
-                        <p class="mt-1 text-xs text-slate-400 ingredient-comment hidden break-words">{ri.comment}</p>
+                        <p class="mt-1 text-xs text-subtle-foreground ingredient-comment hidden break-words">{ri.comment}</p>
                       ) : null}
                     </div>
                     <div class="text-right whitespace-nowrap">
-                      <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Costo</p>
-                      <p class="font-mono font-semibold text-slate-700">
+                      <p class="text-[10px] font-bold uppercase tracking-wider text-subtle-foreground">Costo</p>
+                      <p class="font-mono font-semibold text-secondary-foreground">
                         ${calcularSubtotalIngrediente(ri, ri.ingredient!).toFixed(2)}
                       </p>
                     </div>
                   </div>
 
                   <div class={`grid gap-2 ${showAdjustedQuantity ? 'grid-cols-2' : 'grid-cols-1'}`}>
-                    <div class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
-                      <p class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Base</p>
-                      <p class="mt-1 flex items-baseline gap-2 text-slate-700">
+                    <div class="rounded-xl border border-border bg-background px-3 py-2">
+                      <p class="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Base</p>
+                      <p class="mt-1 flex items-baseline gap-2 text-secondary-foreground">
                         <span class="text-lg font-mono font-semibold">{formatCantidad(ri.quantity, ri.unit)}</span>
-                        <span class="text-xs font-semibold uppercase text-slate-500">{ri.unit}</span>
+                        <span class="text-xs font-semibold uppercase text-muted-foreground">{ri.unit}</span>
                       </p>
                     </div>
                     {showAdjustedQuantity ? (
@@ -807,31 +917,31 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
 
           <div class="hidden md:block overflow-x-auto">
             <table class="w-full table-auto text-left overflow-x-auto">
-              <thead class="bg-slate-50 text-slate-400 text-[10px] uppercase font-bold">
+              <thead class="bg-background text-subtle-foreground text-[10px] uppercase font-bold">
                 <tr>
                   <th class="px-6 lg:px-8 py-3 w-max text-left">Ingrediente</th>
                   <th class="px-6 lg:px-8 py-3 text-left">Cantidad</th>
                   <th class="px-6 lg:px-8 py-3 text-right">Subtotal</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-slate-100">
+              <tbody class="divide-y divide-border-light dark:divide-gray-950">
                 {
                 recipeIngredients.map(ri => {
                   return (
-                    <tr class="group hover:bg-slate-50/50 transition-colors">
-                      <td class="px-6 lg:px-8 py-4 border-r border-slate-100 w-max">
-                        <div class="font-semibold text-slate-700 whitespace-nowrap inline-block">{ri.ingredient.name}</div>
+                    <tr class="group hover:bg-hover-muted dark:hover:bg-gray-950/70 transition-colors">
+                      <td class="px-6 lg:px-8 py-4 border-r border-border-light dark:border-gray-950 w-max">
+                        <div class="font-semibold text-secondary-foreground whitespace-nowrap inline-block">{ri.ingredient.name}</div>
                         {ri.comment ? (
-                          <div class="mt-1 text-xs text-slate-400 ingredient-comment hidden max-w-[28ch] break-words">{ri.comment}</div>
+                          <div class="mt-1 text-xs text-subtle-foreground ingredient-comment hidden max-w-[28ch] break-words">{ri.comment}</div>
                         ) : null} 
                       </td>
-                      <td class="px-6 lg:px-8 py-4 border-r border-slate-100 w-auto">
+                      <td class="px-6 lg:px-8 py-4 border-r border-border-light dark:border-gray-950 w-auto">
                         <div class={`flex gap-2 ${showAdjustedQuantity ? 'min-w-[240px]' : 'min-w-[120px]'}`}>
-                          <div class="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
-                            <p class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Base</p>
-                            <p class="mt-1 flex items-baseline gap-2 text-slate-700">
+                          <div class="flex-1 rounded-xl border border-border bg-background px-3 py-2">
+                            <p class="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Base</p>
+                            <p class="mt-1 flex items-baseline gap-2 text-secondary-foreground">
                               <span class="text-lg font-mono font-semibold">{formatCantidad(ri.quantity, ri.unit)}</span>
-                              <span class="text-xs font-semibold uppercase text-slate-500">{ri.unit}</span>
+                              <span class="text-xs font-semibold uppercase text-muted-foreground">{ri.unit}</span>
                             </p>
                           </div>
                           {showAdjustedQuantity ? (
@@ -845,7 +955,7 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
                           ) : null}
                         </div>
                       </td>
-                      <td class="px-6 lg:px-8 py-4 text-right font-mono font-semibold text-slate-600">
+                      <td class="px-6 lg:px-8 py-4 text-right font-mono font-semibold text-muted-foreground">
                         ${calcularSubtotalIngrediente(ri, ri.ingredient!).toFixed(2)}
                       </td>
                     </tr>
@@ -861,18 +971,35 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
     <!-- El footer de métricas se movió al header -->
   </div>
 
+  {
+    instructions && (
+      <div class="bg-card rounded-2xl shadow-sm border border-border overflow-hidden mx-1 sm:mx-2 lg:mx-8 mt-6">
+        <div class="px-5 sm:px-6 lg:px-8 py-5 border-b border-border-light dark:border-gray-950">
+          <h2 class="text-sm font-bold text-foreground flex items-center gap-2">
+            <Icon name="lucide:list-checks" size={16} class="text-accent-500" />
+            Preparación
+          </h2>
+        </div>
+        <div
+          class="px-5 sm:px-6 lg:px-8 py-6 recipe-instructions text-sm leading-relaxed text-secondary-foreground"
+          set:html={marked.parse(instructions, { breaks: true })}
+        />
+      </div>
+    )
+  }
+
   <div id="presentaciones" class="px-1 sm:px-2 lg:px-8 pb-10 scroll-mt-6" transition:animate="slide">
     <div class="flex items-start justify-between gap-3 py-6 px-1">
       <div>
-        <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2 leading-tight">
+        <h2 class="text-xl font-bold text-foreground flex items-center gap-2 leading-tight">
           <Icon name="lucide:tag" class="text-accent-600" /> Presentaciones de Venta
         </h2>
-        <p class="mt-1 text-sm text-slate-500">Define cuantas piezas salen por mezcla</p>
+        <p class="mt-1 text-sm text-muted-foreground">Define cuantas piezas salen por mezcla</p>
       </div>
       <button
         type="button"
         data-open-create-presentation-dialog={createPresentationDialogId}
-        class="min-h-11 flex items-center gap-2 bg-white text-accent-600 border border-accent-200 px-3 sm:px-4 py-2 rounded-xl text-sm font-bold hover:bg-accent-50 transition-all shadow-sm"
+        class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-accent-600 px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-accent-700"
       >
         <Icon name="lucide:plus" size={16} />
         <span class="sm:hidden">Nueva</span>
@@ -896,12 +1023,12 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
 
     <dialog
       id={createPresentationDialogId}
-      class="fixed inset-0 m-auto w-[92vw] max-w-md max-h-[calc(100dvh-2rem)] rounded-3xl border border-slate-200 p-0 shadow-2xl backdrop:bg-slate-900/40"
+      class="fixed inset-0 m-auto w-[92vw] max-w-md max-h-[calc(100dvh-2rem)] rounded-3xl border border-border p-0 shadow-2xl backdrop:bg-slate-900/40"
     >
       <form
         method="post"
         action={Astro.url.pathname + Astro.url.search}
-        class="max-h-[calc(100dvh-2rem)] overflow-auto rounded-3xl bg-white p-6"
+        class="max-h-[calc(100dvh-2rem)] overflow-auto rounded-3xl bg-card p-6"
       >
         <input type="hidden" name="action" value="create_presentation" />
 
@@ -910,17 +1037,17 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
             <p class="text-xs font-black uppercase tracking-[0.18em] text-accent-500">
               Nueva presentación
             </p>
-            <h2 class="mt-2 text-xl font-black text-slate-900">
+            <h2 class="mt-2 text-xl font-black text-foreground">
               Define una nueva venta por pieza
             </h2>
-            <p class="mt-2 text-sm text-slate-500">
+            <p class="mt-2 text-sm text-muted-foreground">
               Puedes ajustar nombre, rendimiento y precio desde la tarjeta después.
             </p>
           </div>
           <button
             type="button"
             data-close-create-presentation-dialog={createPresentationDialogId}
-            class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-700"
+            class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border text-muted-foreground transition-colors hover:bg-background hover:text-secondary-foreground"
             aria-label="Cerrar modal"
           >
             <Icon name="lucide:x" size={18} />
@@ -928,7 +1055,7 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
         </div>
 
         <label
-          class="mt-6 block text-sm font-semibold text-slate-700"
+          class="mt-6 block text-sm font-semibold text-secondary-foreground"
           for="create-presentation-name"
         >
           Nombre de la presentación
@@ -940,13 +1067,13 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
           required
           maxlength="120"
           placeholder="Ej. Caja de 6"
-          class="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 outline-none transition-colors placeholder:text-slate-400 focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20"
+          class="mt-2 w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground outline-none transition-colors placeholder:text-subtle-foreground focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20"
         />
 
         <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
             <label
-              class="block text-sm font-semibold text-slate-700"
+              class="block text-sm font-semibold text-secondary-foreground"
               for="create-presentation-units"
             >
               Piezas por mezcla
@@ -959,13 +1086,13 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
               step="0.01"
               required
               placeholder="12"
-              class="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 font-mono outline-none transition-colors placeholder:text-slate-400 focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20"
+              class="mt-2 w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground font-mono outline-none transition-colors placeholder:text-subtle-foreground focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20"
             />
           </div>
 
           <div>
             <label
-              class="block text-sm font-semibold text-slate-700"
+              class="block text-sm font-semibold text-secondary-foreground"
               for="create-presentation-price"
             >
               Precio de venta
@@ -977,7 +1104,7 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
               min="0"
               step="0.01"
               placeholder="Opcional"
-              class="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 font-mono outline-none transition-colors placeholder:text-slate-400 focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20"
+              class="mt-2 w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground font-mono outline-none transition-colors placeholder:text-subtle-foreground focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20"
             />
           </div>
         </div>
@@ -986,13 +1113,13 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
           <button
             type="button"
             data-close-create-presentation-dialog={createPresentationDialogId}
-            class="inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-200 px-4 py-2 text-sm font-bold text-slate-600 transition-colors hover:bg-slate-50"
+            class="inline-flex min-h-11 items-center justify-center rounded-xl border border-border bg-card px-5 py-3 text-sm font-bold text-muted-foreground transition-colors hover:bg-background"
           >
             Cancelar
           </button>
           <button
             type="submit"
-            class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-accent-600 px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-accent-700"
+            class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-accent-600 px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-accent-700"
           >
             <Icon name="lucide:plus" size={16} />
             Crear presentación
@@ -1160,24 +1287,77 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
   document.addEventListener('astro:after-swap', setupCreatePresentationDialog);
   document.addEventListener('astro:page-load', setupRecipeDeleteDialog);
   document.addEventListener('astro:after-swap', setupRecipeDeleteDialog);
+
+  const setupRecipeDuplicateDialog = () => {
+    const dialogId = 'recipe-duplicate-dialog';
+    const dialog = document.getElementById(dialogId);
+    const openButtons = document.querySelectorAll(
+      `[data-open-recipe-duplicate-dialog="${dialogId}"]`,
+    );
+    const closeButtons = document.querySelectorAll(
+      `[data-close-recipe-duplicate-dialog="${dialogId}"]`,
+    );
+
+    if (!(dialog instanceof HTMLDialogElement)) {
+      return;
+    }
+
+    const openDialog = () => {
+      if (!dialog.open) {
+        dialog.showModal();
+      }
+    };
+
+    const closeDialog = () => {
+      if (dialog.open) {
+        dialog.close();
+      }
+    };
+
+    openButtons.forEach((button) => {
+      if (!(button instanceof HTMLButtonElement)) return;
+      if (button.dataset.recipeDuplicateDialogBound === '1') return;
+
+      button.dataset.recipeDuplicateDialogBound = '1';
+      button.addEventListener('click', openDialog);
+    });
+
+    closeButtons.forEach((button) => {
+      if (!(button instanceof HTMLButtonElement)) return;
+      if (button.dataset.recipeDuplicateDialogBound === '1') return;
+
+      button.dataset.recipeDuplicateDialogBound = '1';
+      button.addEventListener('click', closeDialog);
+    });
+
+    if (dialog.dataset.recipeDuplicateDialogBound === '1') {
+      return;
+    }
+
+    dialog.dataset.recipeDuplicateDialogBound = '1';
+    bindDialogBackdrop(dialog);
+  };
+
+  document.addEventListener('astro:page-load', setupRecipeDuplicateDialog);
+  document.addEventListener('astro:after-swap', setupRecipeDuplicateDialog);
 </script>
 
 {isEditMode && (
   <template id="ingredient-row-template">
-    <div class="edit-ingredient-row grid grid-cols-1 gap-3 rounded-2xl border border-slate-200 bg-slate-50/50 p-3 md:grid-cols-[minmax(0,2.4fr)_minmax(0,13rem)_minmax(0,1fr)_3rem] md:items-center md:bg-white md:p-0 md:border-0 md:rounded-none md:border-b md:border-slate-100 md:pb-3">
+    <div class="edit-ingredient-row grid grid-cols-1 gap-3 rounded-2xl border border-border bg-background/50 p-3 md:grid-cols-[minmax(0,2.4fr)_minmax(0,13rem)_minmax(0,1fr)_3rem] md:items-center md:bg-card md:p-0 md:border-0 md:rounded-none md:border-b md:border-border-light dark:md:border-gray-950 md:pb-3">
       <div class="space-y-1 min-w-0">
-        <label class="text-[10px] uppercase font-bold text-slate-400 md:hidden">Ingrediente</label>
-        <select name="ingredientId" form={recipeEditFormId} class="ingredient-select w-full bg-white md:bg-slate-50 border border-slate-200 rounded-lg p-2 text-sm font-semibold text-slate-700 focus:ring-2 focus:ring-accent-500/20">
+        <label class="text-[10px] uppercase font-bold text-subtle-foreground md:hidden">Ingrediente</label>
+          <select name="ingredientId" form={recipeEditFormId} class="ingredient-select w-full bg-card md:bg-background border border-border rounded-xl p-2 text-sm font-semibold text-secondary-foreground focus:ring-2 focus:ring-accent-500/20">
           {allIngredients.map(i => (
             <option value={i.id} data-unit={i.unit}>{i.name}</option>
           ))}
         </select>
       </div>
       <div class="space-y-1 min-w-0">
-        <label class="text-[10px] uppercase font-bold text-slate-400 md:hidden">Cantidad</label>
+        <label class="text-[10px] uppercase font-bold text-subtle-foreground md:hidden">Cantidad</label>
         <div class="grid min-w-0 grid-cols-[minmax(0,1fr)_5.5rem] items-center gap-2">
-          <input type="number" step="0.01" name="quantity" form={recipeEditFormId} class="quantity-input w-full min-w-0 bg-white border border-slate-200 rounded-lg p-2 text-center font-bold text-slate-700 focus:ring-2 focus:ring-accent-500/20" value="1" />
-          <select name="unit" form={recipeEditFormId} class="unit-select w-full min-w-0 bg-white border border-slate-200 rounded-lg p-2 text-sm text-slate-600 focus:ring-2 focus:ring-accent-500/20">
+          <input type="number" step="0.01" name="quantity" form={recipeEditFormId} class="quantity-input w-full min-w-0 bg-card border border-border rounded-xl p-2 text-center font-bold text-secondary-foreground focus:ring-2 focus:ring-accent-500/20" value="1" />
+          <select name="unit" form={recipeEditFormId} class="unit-select w-full min-w-0 bg-card border border-border rounded-xl p-2 text-sm text-muted-foreground focus:ring-2 focus:ring-accent-500/20">
             {getUnitOptionsForValue('').map((unitOption, index) => (
               <option value={unitOption.value} selected={index === 0}>{unitOption.label}</option>
             ))}
@@ -1185,8 +1365,8 @@ const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginV
         </div>
       </div>
       <div class="space-y-1 min-w-0">
-        <label class="text-[10px] uppercase font-bold text-slate-400 md:hidden">Notas</label>
-        <input type="text" name="comment" form={recipeEditFormId} class="comment-input w-full bg-white border border-slate-200 rounded-lg p-2 text-sm text-slate-600 focus:ring-2 focus:ring-accent-500/20" value="" placeholder="Opcional" />
+        <label class="text-[10px] uppercase font-bold text-subtle-foreground md:hidden">Notas</label>
+        <input type="text" name="comment" form={recipeEditFormId} class="comment-input w-full bg-card border border-border rounded-xl p-2 text-sm text-muted-foreground focus:ring-2 focus:ring-accent-500/20" value="" placeholder="Opcional" />
       </div>
       <div class="flex items-center justify-end md:justify-center">
         <button type="button" class={ingredientRemoveButtonClasses} aria-label="Eliminar ingrediente">
