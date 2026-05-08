@@ -13,6 +13,7 @@ import type {
   DeleteRecipeResult,
   UpdateRecipeInput,
 } from "./types";
+import { createPresentation } from "./presentations";
 import {
   normalizeOptionalText,
   requireOwnerId,
@@ -113,11 +114,12 @@ export async function getRecipeById(
       id: number;
       name: string;
       category: string | null;
+      instructions: string | null;
       desired_margin: string;
       fixed_costs_percentage: string;
       updated_at: string | null;
     }>(
-      `SELECT id, name, category, desired_margin::text, fixed_costs_percentage::text, updated_at::text FROM recipes WHERE id = $1 AND owner_id = $2 LIMIT 1`,
+      `SELECT id, name, category, instructions, desired_margin::text, fixed_costs_percentage::text, updated_at::text FROM recipes WHERE id = $1 AND owner_id = $2 LIMIT 1`,
       [id, scopeId],
     );
     const recipe = recipeRes.rows[0];
@@ -170,6 +172,7 @@ export async function getRecipeById(
       id: Number(recipe.id),
       name: recipe.name,
       category: normalizeOptionalText(recipe.category),
+      instructions: normalizeOptionalText(recipe.instructions),
       desiredMargin: normalizeDesiredMargin(recipe.desired_margin),
       fixedCostsPercentage: normalizeFixedCostsPercentage(
         recipe.fixed_costs_percentage,
@@ -204,13 +207,14 @@ export async function getRecipeById(
 
   const recipe = driver.db
     .prepare(
-      `SELECT id, name, category, desired_margin, fixed_costs_percentage, updated_at FROM recipes WHERE id = ? AND owner_id = ? LIMIT 1`,
+      `SELECT id, name, category, instructions, desired_margin, fixed_costs_percentage, updated_at FROM recipes WHERE id = ? AND owner_id = ? LIMIT 1`,
     )
     .get(id, scopeId) as
     | {
         id: number;
         name: string;
         category: string | null;
+        instructions: string | null;
         desired_margin: number;
         fixed_costs_percentage: number;
         updated_at: string | null;
@@ -268,6 +272,7 @@ export async function getRecipeById(
     id: recipe.id,
     name: recipe.name,
     category: normalizeOptionalText(recipe.category),
+    instructions: normalizeOptionalText(recipe.instructions),
     desiredMargin: normalizeDesiredMargin(recipe.desired_margin),
     fixedCostsPercentage: normalizeFixedCostsPercentage(
       recipe.fixed_costs_percentage,
@@ -338,7 +343,15 @@ export async function createRecipe(
         VALUES ($1, $2, $3, $4, $5, $6, $7)
         RETURNING id, name
         `,
-        [recipeId, scopeId, name, desiredMargin, fixedCostsPercentage, now, category],
+        [
+          recipeId,
+          scopeId,
+          name,
+          desiredMargin,
+          fixedCostsPercentage,
+          now,
+          category,
+        ],
       );
 
       await client.query("COMMIT");
@@ -432,6 +445,7 @@ export async function updateRecipe(
     input.fixedCostsPercentage,
   );
   const category = normalizeCategory(input.category);
+  const instructions = normalizeOptionalText(input.instructions) ?? null;
   const now = new Date().toISOString();
   const ingredientIds = input.ingredients.map(
     (ingredient) => ingredient.ingredientId,
@@ -451,8 +465,16 @@ export async function updateRecipe(
       await client.query("BEGIN");
 
       await client.query(
-        "UPDATE recipes SET name = $1, desired_margin = $2, fixed_costs_percentage = $3, category = $4, updated_at = NOW() WHERE id = $5 AND owner_id = $6",
-        [input.name, desiredMargin, fixedCostsPercentage, category, recipeId, scopeId],
+        "UPDATE recipes SET name = $1, desired_margin = $2, fixed_costs_percentage = $3, category = $4, instructions = $5, updated_at = NOW() WHERE id = $6 AND owner_id = $7",
+        [
+          input.name,
+          desiredMargin,
+          fixedCostsPercentage,
+          category,
+          instructions,
+          recipeId,
+          scopeId,
+        ],
       );
 
       await client.query(
@@ -488,13 +510,14 @@ export async function updateRecipe(
   try {
     driver.db
       .prepare(
-        "UPDATE recipes SET name = ?, desired_margin = ?, fixed_costs_percentage = ?, category = ?, updated_at = ? WHERE id = ? AND owner_id = ?",
+        "UPDATE recipes SET name = ?, desired_margin = ?, fixed_costs_percentage = ?, category = ?, instructions = ?, updated_at = ? WHERE id = ? AND owner_id = ?",
       )
       .run(
         input.name,
         desiredMargin,
         fixedCostsPercentage,
         category,
+        instructions,
         now,
         recipeId,
         scopeId,
@@ -522,4 +545,72 @@ export async function updateRecipe(
     driver.db.exec("ROLLBACK");
     throw error;
   }
+}
+
+/**
+ * Duplica una receta existente con todos sus ingredientes y
+ * presentaciones. El nombre se prefija con "Copia de ".
+ *
+ * Retorna el ID y nombre de la nueva receta, o lanza
+ * `Error("Recipe not found")` si la fuente no existe.
+ */
+export async function duplicateRecipe(
+  sourceRecipeId: number,
+  ownerId = STATIC_OWNER_SCOPE,
+): Promise<{ id: number; name: string }> {
+  const source = await getRecipeById(sourceRecipeId, ownerId);
+  if (!source) {
+    throw new Error("Recipe not found");
+  }
+
+  const maxNameLength = 120;
+  const prefix = "Copia de ";
+  let newName = prefix + source.name;
+  if (newName.length > maxNameLength) {
+    newName = newName.slice(0, maxNameLength - 1) + "…";
+  }
+
+  const newRecipe = await createRecipe(
+    {
+      name: newName,
+      category: source.category,
+      desiredMargin: source.desiredMargin,
+      fixedCostsPercentage: source.fixedCostsPercentage,
+    },
+    ownerId,
+  );
+
+  if (source.ingredients.length > 0) {
+    await updateRecipe(
+      newRecipe.id,
+      {
+        name: newName,
+        category: source.category ?? null,
+        instructions: source.instructions,
+        desiredMargin: source.desiredMargin,
+        fixedCostsPercentage: source.fixedCostsPercentage,
+        ingredients: source.ingredients.map((i) => ({
+          ingredientId: i.ingredientId,
+          quantity: i.quantity,
+          unit: i.unit,
+          comment: i.comment ?? null,
+        })),
+      },
+      ownerId,
+    );
+  }
+
+  for (const p of source.presentations) {
+    await createPresentation(
+      newRecipe.id,
+      {
+        name: p.name,
+        unitsPerBatch: p.unitsPerBatch,
+        salePrice: p.salePrice,
+      },
+      ownerId,
+    );
+  }
+
+  return { id: newRecipe.id, name: newName };
 }
