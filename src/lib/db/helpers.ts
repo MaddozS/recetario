@@ -52,7 +52,8 @@ export const toFiniteNumber = (value: unknown, fallback = 0) => {
 };
 
 /** Redondea a dos decimales usando aritmética entera para evitar floating-point errors. */
-export const roundToTwoDecimals = (value: number) => Math.round(value * 100) / 100;
+export const roundToTwoDecimals = (value: number) =>
+  Math.round(value * 100) / 100;
 
 /**
  * Normaliza el margen deseado (0% – 99.99%).
