@@ -1,10 +1,9 @@
-
 /// <reference path="../.astro/types.d.ts" />
 declare namespace App {
-  // Note: 'import {} from ""' syntax does not work in .d.ts files.
   interface Locals {
-      user: import("better-auth").User | null;
-      session: import("better-auth").Session | null;
+    user: import("better-auth").User | null;
+    session: import("better-auth").Session | null;
+    subscription: import("./lib/subscription").UserSubscriptionInfo;
   }
   interface ImportMetaEnv {
     readonly BETTER_AUTH_SECRET: string;
@@ -26,6 +25,13 @@ declare namespace App {
 
     readonly GOOGLE_CLIENT_ID: string;
     readonly GOOGLE_CLIENT_SECRET: string;
+
+    readonly STRIPE_SECRET_KEY?: string;
+    readonly STRIPE_WEBHOOK_SECRET?: string;
+    readonly STRIPE_PRICE_ID_BASIC_MONTHLY?: string;
+    readonly STRIPE_PRICE_ID_BASIC_YEARLY?: string;
+    readonly STRIPE_PRICE_ID_PRO_MONTHLY?: string;
+    readonly STRIPE_PRICE_ID_PRO_YEARLY?: string;
   }
 
   interface ImportMeta {
