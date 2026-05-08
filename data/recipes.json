@@ -3,6 +3,7 @@
     "id": 101,
     "name": "Panqué de Plátano",
     "category": "General",
+    "instructions": "1. Precalentar el horno a 180°C (350°F).\n2. En un tazón grande, machacar los plátanos maduros con un tenedor.\n3. Agregar los huevos, el aceite/esencia de vainilla, y la leche. Batir bien.\n4. En otro tazón, mezclar la harina, el polvo para hornear, el bicarbonato, la canela y la sal.\n5. Incorporar los ingredientes secos a los húmedos, mezclando solo hasta integrar.\n6. Agregar las chispas de chocolate (opcional) y envolver suavemente.\n7. Verter en molde engrasado y hornear por 45-50 minutos, o hasta que al insertar un palillo salga limpio.\n8. Dejar enfriar 10 minutos, desmoldar y enfriar completamente sobre una rejilla.",
     "desiredMargin": 50,
     "fixedCostsPercentage": 30,
     "ingredients": [
