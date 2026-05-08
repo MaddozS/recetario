@@ -28,7 +28,9 @@ async function getUserPreferencesInternal(
     return {
       userId: row.user_id,
       theme: row.theme === "dark" ? "dark" : "light",
-      accentColor: isValidAccentColor(row.accent_color) ? row.accent_color : "indigo",
+      accentColor: isValidAccentColor(row.accent_color)
+        ? row.accent_color
+        : "indigo",
     };
   }
 
@@ -45,11 +47,20 @@ async function getUserPreferencesInternal(
   return {
     userId: row.user_id,
     theme: row.theme === "dark" ? "dark" : "light",
-    accentColor: isValidAccentColor(row.accent_color) ? row.accent_color : "indigo",
+    accentColor: isValidAccentColor(row.accent_color)
+      ? row.accent_color
+      : "indigo",
   };
 }
 
-const validAccentColors = ["indigo", "violet", "blue", "emerald", "rose", "amber"] as const;
+const validAccentColors = [
+  "indigo",
+  "violet",
+  "blue",
+  "emerald",
+  "rose",
+  "amber",
+] as const;
 
 function isValidAccentColor(
   value: string,
@@ -78,7 +89,7 @@ export async function upsertUserPreferences(
   const theme = prefs.theme ?? existing?.theme ?? "light";
   const accentColor = isValidAccentColor(prefs.accentColor ?? "")
     ? (prefs.accentColor as UserPreferences["accentColor"])
-    : existing?.accentColor ?? "indigo";
+    : (existing?.accentColor ?? "indigo");
 
   if (driver.kind === "postgres") {
     await driver.pool.query(
