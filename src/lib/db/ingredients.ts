@@ -7,7 +7,12 @@
  * establece la conexión y el scope.
  */
 
-import type { Ingredient, CreateIngredientInput, UpdateIngredientInput, DeleteIngredientResult } from "./types";
+import type {
+  Ingredient,
+  CreateIngredientInput,
+  UpdateIngredientInput,
+  DeleteIngredientResult,
+} from "./types";
 import { normalizeOptionalText, requireOwnerId, toNumber } from "./helpers";
 import { getDriver, ensureInitialized, STATIC_OWNER_SCOPE } from "./connection";
 
