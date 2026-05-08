@@ -1,0 +1,49 @@
+---
+import { Icon } from "astro-icon/components";
+
+interface Props {
+  feature: string;
+  description?: string;
+  tier: "basic" | "pro";
+}
+
+const { feature, description, tier } = Astro.props;
+
+const tierLabel = tier === "pro" ? "Pro" : "Basic";
+const price = tier === "pro" ? "$10/mes" : "$5/mes";
+---
+
+<div class="rounded-2xl border border-border bg-background p-8 text-center">
+  <div
+    class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-muted text-subtle-foreground"
+  >
+    <Icon name="lucide:lock" size={20} />
+  </div>
+
+  <h3 class="mt-4 text-lg font-bold text-foreground">Funcion no disponible</h3>
+
+  <p class="mt-2 text-sm text-muted-foreground">
+    {description || `"${feature}" requiere el plan ${tierLabel} o superior.`}
+  </p>
+
+  <p class="mt-1 text-sm text-muted-foreground">
+    Desde {price} puedes acceder a esta y muchas otras funciones.
+  </p>
+
+  <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-center">
+    <button
+      type="button"
+      class="inline-flex min-h-11 items-center justify-center rounded-xl border border-border bg-card px-5 py-3 text-sm font-bold text-muted-foreground transition-colors hover:bg-background"
+      onclick="this.closest('dialog')?.close()"
+    >
+      No gracias
+    </button>
+    <a
+      href={`/pricing?plan=${tier}`}
+      class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-accent-600 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-accent-700"
+    >
+      <Icon name="lucide:arrow-up-circle" size={16} />
+      Suscribirse a {tierLabel}
+    </a>
+  </div>
+</div>
