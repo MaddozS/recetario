@@ -1,0 +1,214 @@
+---
+import "../styles/global.css";
+import { ClientRouter } from "astro:transitions";
+import { getAccentCssVars } from "../lib/accent-colors";
+
+const landingTheme = Astro.cookies.get("landing_theme")?.value ?? "light";
+const accentCssVars = getAccentCssVars("coral", landingTheme);
+---
+
+<!doctype html>
+<html
+  lang="es"
+  class:list={[landingTheme === "dark" ? "dark" : ""]}
+  data-theme={landingTheme}
+  data-accent="coral"
+  style={accentCssVars}
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <meta name="generator" content={Astro.generator} />
+    <meta
+      name="description"
+      content="KitchCalc — Calcula el costo real de tus recetas. Gestión de costos, márgenes y precios para tu negocio de alimentos."
+    />
+    <meta
+      property="og:title"
+      content="KitchCalc — Calcula el costo real de tus recetas"
+    />
+    <meta
+      property="og:description"
+      content="Gestiona costos, márgenes y precios de tus recetas de forma simple y rápida."
+    />
+    <meta property="og:image" content="/kitchcalc_logo.svg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <title>KitchCalc — Calcula el costo real de tus recetas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <ClientRouter />
+    <script is:inline>
+      (function () {
+        const t = localStorage.getItem("kitchcalc_landing_theme");
+        if (t === "dark") document.documentElement.classList.add("dark");
+      })();
+    </script>
+  </head>
+  <body class="bg-background text-foreground">
+    <slot />
+    <style is:global>
+      html {
+        scroll-behavior: smooth;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+      }
+
+      [data-reveal] {
+        opacity: 0;
+        transform: translateY(24px);
+        transition:
+          opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+          transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      [data-reveal].reveal-visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .reveal-item {
+        opacity: 0;
+        transform: translateY(20px);
+        transition:
+          opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+          transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        transition-delay: calc(var(--reveal-delay, 0ms));
+      }
+      .reveal-visible .reveal-item {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        [data-reveal],
+        .reveal-item {
+          opacity: 1;
+          transform: none;
+          transition: none;
+        }
+      }
+
+      .card-hover {
+        transition:
+          transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+          box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+          border-color 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .card-hover:hover {
+        transform: translateY(-6px);
+        border-color: var(--aw-accent-200, #c7d2fe);
+        box-shadow:
+          0 12px 40px -8px rgb(0 0 0 / 0.12),
+          0 0 0 1px var(--aw-accent-200, #c7d2fe);
+      }
+      .dark .card-hover:hover {
+        box-shadow:
+          0 12px 40px -8px rgb(0 0 0 / 0.4),
+          0 0 0 1px var(--aw-accent-300, #a5b4fc);
+      }
+
+      .hero-bg {
+        isolation: isolate;
+        background:
+          linear-gradient(
+            142deg,
+            color-mix(in oklab, var(--tw-card) 50%, var(--aw-accent-50)) 0%,
+            color-mix(in oklab, var(--tw-bg) 60%, var(--aw-accent-200)) 45%,
+            color-mix(in oklab, var(--tw-card) 45%, var(--aw-accent-400)) 100%
+          );
+        background-color: var(--tw-bg);
+      }
+      .plan-pro {
+        animation: pro-pulse 2.5s ease-in-out infinite;
+      }
+      .plan-pro:hover {
+        animation: none;
+      }
+      @keyframes pro-pulse {
+        0%,
+        100% {
+          box-shadow:
+            0 0 0 1px var(--aw-accent-200, #c7d2fe),
+            0 8px 30px -6px rgb(0 0 0 / 0.08);
+        }
+        50% {
+          box-shadow:
+            0 0 0 2px var(--aw-accent-300, #a5b4fc),
+            0 8px 40px -4px var(--aw-accent-400, #818cf8);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .plan-pro {
+          animation: none;
+        }
+      }
+    </style>
+    <script>
+      import { getAccentCssVars } from "../lib/accent-colors";
+
+      declare global {
+        interface Window {
+          toggleLandingTheme: () => void;
+        }
+      }
+
+      function applyTheme() {
+        const theme =
+          localStorage.getItem("kitchcalc_landing_theme") || "light";
+        const html = document.documentElement;
+        html.dataset.theme = theme;
+        html.dataset.accent = "coral";
+        if (theme === "dark") {
+          html.classList.add("dark");
+        } else {
+          html.classList.remove("dark");
+        }
+        html.style.cssText = getAccentCssVars("coral", theme);
+      }
+
+      window.toggleLandingTheme = function () {
+        const isDark = document.documentElement.classList.contains("dark");
+        const newTheme = isDark ? "light" : "dark";
+        localStorage.setItem("kitchcalc_landing_theme", newTheme);
+        document.cookie = `landing_theme=${newTheme};path=/;max-age=31536000;SameSite=Lax`;
+        applyTheme();
+      };
+
+      function setupScrollReveal() {
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches)
+          return;
+
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add("reveal-visible");
+                observer.unobserve(entry.target);
+              }
+            });
+          },
+          { threshold: 0.1, rootMargin: "0px 0px -40px 0px" },
+        );
+
+        document.querySelectorAll("[data-reveal]").forEach((el) => {
+          if (!el.classList.contains("reveal-visible")) {
+            observer.observe(el);
+          }
+        });
+      }
+
+      setupScrollReveal();
+      document.addEventListener("astro:after-swap", setupScrollReveal);
+
+      applyTheme();
+      document.addEventListener("astro:after-swap", applyTheme);
+    </script>
+  </body>
+</html>

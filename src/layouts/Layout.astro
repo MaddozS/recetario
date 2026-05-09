@@ -3,6 +3,7 @@ import '../styles/global.css'
 import { ClientRouter } from "astro:transitions";
 import { Icon } from 'astro-icon/components'
 import { getRecipeDataOwner, listRecipeSummaries, getUserPreferences } from '../lib/recipe-data'
+import { hasFeature } from '../lib/subscription'
 import { getAccentCssVars } from '../lib/accent-colors'
 import type { AccentFamily } from '../lib/accent-colors'
 import Header from '../components/Header.astro'
@@ -10,11 +11,12 @@ import RecipesSidebar from '../components/RecipesSidebar.astro'
 
 const { currentPage } = Astro.props;
 const { currentRecipe, showSideBar, showHeader = true, removeContentWrapper = false } = Astro.props;
-const showMobileNav = currentPage === 'recipes' || currentPage === 'ingredients' || currentPage === 'settings';
+const showMobileNav = currentPage === 'recipes' || currentPage === 'ingredients' || currentPage === 'settings' || currentPage === 'production';
 const isAuthenticated = Boolean(Astro.locals.user && Astro.locals.session);
 const authenticatedUserName = Astro.locals.user?.name || Astro.locals.user?.email || null;
 const recipeDataOwner = Astro.locals.user ? getRecipeDataOwner(Astro.locals.user) : null;
 const subscription = Astro.locals.subscription;
+const showProduction = subscription ? hasFeature(subscription, 'production_planner') : false;
 const recipes = recipeDataOwner ? await listRecipeSummaries(recipeDataOwner) : [];
 const recipeHref = currentRecipe ? `/recipes/${currentRecipe}` : '/recipes';
 
@@ -86,7 +88,9 @@ const accentCssVars = getAccentCssVars(accent, theme);
           transition:name="mobile-nav"
           transition:animate="none"
         >
-          <div class="rounded-2xl border border-border bg-card/95 backdrop-blur shadow-[0_-8px_24px_rgba(15,23,42,0.08)] dark:shadow-[0_-8px_24px_rgba(0,0,0,0.4)] p-1.5 grid grid-cols-3 gap-1.5">
+          <div class="rounded-2xl border border-border bg-card/95 backdrop-blur shadow-[0_-8px_24px_rgba(15,23,42,0.08)] dark:shadow-[0_-8px_24px_rgba(0,0,0,0.4)] p-1.5 gap-1.5"
+            class:list={[showProduction ? 'grid grid-cols-4' : 'grid grid-cols-3']}
+          >
             <a
               href={recipeHref}
               class:list={[
@@ -107,6 +111,18 @@ const accentCssVars = getAccentCssVars(accent, theme);
               <Icon name="lucide:package-search" size={16} />
               Ingredientes
             </a>
+            {showProduction && (
+              <a
+                href="/produccion"
+                class:list={[
+                  'min-h-11 rounded-xl flex items-center justify-center gap-2 text-sm font-bold transition-colors',
+                  currentPage === 'production' ? 'bg-accent-600 text-white' : 'text-muted-foreground hover:bg-muted'
+                ]}
+              >
+                <Icon name="lucide:factory" size={16} />
+                Producción
+              </a>
+            )}
             <a
               href="/settings"
               class:list={[
