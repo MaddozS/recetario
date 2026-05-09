@@ -1,0 +1,52 @@
+---
+const steps = [
+  {
+    number: "1",
+    title: "Crea tus recetas",
+    description: "Agrega tus recetas con categorías, instrucciones y todos los ingredientes que necesitas.",
+  },
+  {
+    number: "2",
+    title: "Registra tus ingredientes",
+    description: "Carga tus ingredientes con precios de compra, unidades y proveedores. El sistema calcula los costos automáticamente.",
+  },
+  {
+    number: "3",
+    title: "Optimiza tus precios",
+    description: "Visualiza costos, márgenes de ganancia y precios sugeridos. Ajusta y exporta tus recetas al instante.",
+  },
+]
+---
+
+<section id="how-it-works" data-reveal class="py-24 md:py-32 bg-muted">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center max-w-2xl mx-auto">
+      <h2 class="text-3xl md:text-4xl font-black text-foreground">
+        Cómo funciona
+      </h2>
+      <p class="mt-4 text-lg text-muted-foreground">
+        En tres simples pasos tienes el costo real de tus recetas.
+      </p>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-8 md:gap-12 mt-16">
+      {steps.map((step, i) => (
+        <div
+          class="reveal-item text-center"
+          style={`--reveal-delay: ${i * 120}ms`}
+        >
+          {i < steps.length - 1 && (
+            <div class="hidden md:block absolute top-12 left-[60%] w-[80%] h-px border-t-2 border-dashed border-border" />
+          )}
+          <div class="w-24 h-24 rounded-2xl bg-accent-600 flex items-center justify-center mx-auto shadow-lg shadow-accent-600/20">
+            <span class="text-3xl font-black text-white">{step.number}</span>
+          </div>
+          <h3 class="mt-6 text-xl font-bold text-foreground">{step.title}</h3>
+          <p class="mt-3 text-sm text-muted-foreground leading-relaxed max-w-xs mx-auto">
+            {step.description}
+          </p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

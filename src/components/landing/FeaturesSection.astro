@@ -1,0 +1,66 @@
+---
+import { Icon } from 'astro-icon/components'
+
+const features = [
+  {
+    icon: "lucide:calculator",
+    title: "Costeo con márgenes",
+    description: "Calcula el costo real de cada receta con ingredientes, márgenes y precios de venta sugeridos automáticamente.",
+  },
+  {
+    icon: "lucide:package-search",
+    title: "Gestión de ingredientes",
+    description: "Administra tu inventario de ingredientes con precios actualizados, unidades y stock disponible.",
+  },
+  {
+    icon: "lucide:bar-chart-3",
+    title: "Planificador de producción",
+    description: "Planifica tu producción con multiplicadores de batch, costos por unidad y proyecciones de rentabilidad.",
+  },
+  {
+    icon: "lucide:copy",
+    title: "Duplicar recetas",
+    description: "Crea variaciones de tus recetas al instante duplicándolas y ajustando ingredientes o cantidades.",
+  },
+  {
+    icon: "lucide:warehouse",
+    title: "Control de stock",
+    description: "Lleva el control de tu inventario con alertas de stock bajo y seguimiento de ingredientes.",
+  },
+  {
+    icon: "lucide:file-text",
+    title: "Exportar a PDF",
+    description: "Exporta tus recetas y costos a PDF para compartir con tu equipo o imprimir fácilmente.",
+  },
+]
+---
+
+<section id="features" data-reveal class="py-24 md:py-32 bg-background">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center max-w-2xl mx-auto">
+      <h2 class="text-3xl md:text-4xl font-black text-foreground">
+        Todo lo que necesitas para costear
+      </h2>
+      <p class="mt-4 text-lg text-muted-foreground">
+        Desde el costo de cada ingrediente hasta el precio final al público, KitchCalc cubre cada etapa.
+      </p>
+    </div>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mt-16">
+      {features.map((f, i) => (
+        <div
+          class="reveal-item card-hover rounded-2xl border border-border bg-card p-6 md:p-8"
+          style={`--reveal-delay: ${i * 80}ms`}
+        >
+          <div class="w-12 h-12 rounded-xl bg-accent-50 dark:bg-accent-950 flex items-center justify-center">
+            <Icon name={f.icon} size={24} class="text-accent-600" />
+          </div>
+          <h3 class="mt-5 text-lg font-bold text-foreground">{f.title}</h3>
+          <p class="mt-2 text-sm text-muted-foreground leading-relaxed">
+            {f.description}
+          </p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
