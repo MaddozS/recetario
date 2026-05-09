@@ -60,6 +60,7 @@ const validAccentColors = [
   "emerald",
   "rose",
   "amber",
+  "coral",
 ] as const;
 
 function isValidAccentColor(

@@ -130,7 +130,7 @@ export type RecipeSeed = {
 export type UserPreferences = {
   userId: string;
   theme: "light" | "dark";
-  accentColor: "indigo" | "violet" | "blue" | "emerald" | "rose" | "amber";
+  accentColor: "indigo" | "violet" | "blue" | "emerald" | "rose" | "amber" | "coral";
 };
 
 /** Abstracción del motor de base de datos (Postgres o SQLite). */
