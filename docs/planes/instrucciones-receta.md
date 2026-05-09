@@ -149,7 +149,7 @@ Dentro del bloque `{isEditMode && ( ... )}` que envuelve el formulario de edici√
 
 ```astro
 <div class="mt-6 mx-5 sm:mx-6 lg:mx-8 pb-6">
-  <label class="block text-sm font-bold text-slate-700 mb-2 flex items-center gap-2">
+  <label class="text-sm font-bold text-slate-700 mb-2 flex items-center gap-2">
     <Icon name="lucide:list-checks" size={16} class="text-accent-500" />
     Instrucciones de Preparaci√≥n
   </label>

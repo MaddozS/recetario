@@ -35,7 +35,7 @@ const unitProfit = defaultSalePrice - unitCost;
 ---
 
 <presentation-card
-  class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:border-slate-300 transition-all group flex flex-col h-full"
+  class="bg-card p-5 rounded-2xl border border-border shadow-sm hover:border-border dark:hover:border-slate-600 transition-all group flex flex-col h-full"
   data-id={id}
   data-multiplier={multiplier}
   data-cost={costoProduccionRealBatch}
@@ -51,14 +51,14 @@ const unitProfit = defaultSalePrice - unitCost;
       <input
         name="presentationName"
         type="text"
-        class="presentation-name min-w-0 font-bold text-xl bg-transparent border-none focus:ring-2 focus:ring-accent-500/20 p-1 -ml-1 rounded-lg text-slate-800 w-full"
+        class="presentation-name min-w-0 font-bold text-xl bg-transparent border-none focus:ring-2 focus:ring-accent-500/20 p-1 -ml-1 rounded-lg text-foreground w-full"
         value={name}
         readonly
       />
       <div class="flex items-center gap-1 shrink-0">
         <button
           type="button"
-          class="delete-btn hidden h-8 w-8 rounded-full bg-transparent text-rose-500 hover:text-rose-600 hover:bg-rose-50 transition-colors items-center justify-center"
+          class="delete-btn hidden h-8 w-8 rounded-full bg-transparent text-danger hover:text-danger hover:bg-danger-bg transition-colors items-center justify-center"
           aria-label="Eliminar presentación"
           title="Eliminar"
         >
@@ -66,7 +66,7 @@ const unitProfit = defaultSalePrice - unitCost;
         </button>
         <button
           type="button"
-          class="edit-btn h-8 w-8 rounded-full bg-transparent text-slate-400 hover:text-accent-600 hover:bg-accent-50 transition-colors flex items-center justify-center"
+          class="edit-btn h-8 w-8 rounded-full bg-transparent text-subtle-foreground hover:text-accent-600 hover:bg-accent-50 transition-colors flex items-center justify-center"
           aria-label="Editar presentación"
           aria-pressed="false"
           title="Editar"
@@ -87,14 +87,14 @@ const unitProfit = defaultSalePrice - unitCost;
 
     <div class="flex flex-wrap items-center gap-2 mb-6">
       <div
-        class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md border border-slate-200 bg-slate-50 text-xs text-slate-600 focus-within:ring-2 focus-within:ring-accent-500/20 focus-within:border-accent-300 transition-all"
+        class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md border border-border bg-background text-xs text-muted-foreground focus-within:ring-2 focus-within:ring-accent-500/20 focus-within:border-accent-300 transition-all"
       >
         <span>Rinde:</span>
         <input
           name="unitsPerBatch"
           type="number"
           step="any"
-          class="presentation-units w-8 bg-transparent border-none p-0 text-center text-xs text-slate-800 font-mono font-semibold focus:ring-0 read-only:pointer-events-none"
+          class="presentation-units w-8 bg-transparent border-none p-0 text-center text-xs text-foreground font-mono font-semibold focus:ring-0 read-only:pointer-events-none"
           value={unitsPerBatch}
           readonly
         />
@@ -117,12 +117,12 @@ const unitProfit = defaultSalePrice - unitCost;
     <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
       <div class="space-y-0.5 shrink-0">
         <p
-          class="text-[10px] font-bold text-slate-400 uppercase tracking-widest"
+          class="text-[10px] font-bold text-subtle-foreground uppercase tracking-widest"
         >
           Costo unitario
         </p>
         <p
-          class="unit-cost-display text-[20px] font-mono font-semibold text-slate-800 tabular-nums"
+          class="unit-cost-display text-[20px] font-mono font-semibold text-foreground tabular-nums"
         >
           ${unitCost.toFixed(2)}
         </p>
@@ -138,13 +138,14 @@ const unitProfit = defaultSalePrice - unitCost;
             Precio Venta
           </p>
           <p class="text-[10px] text-accent-400/80">
-            Sugerido: <span class="recommended-price-display font-mono font-semibold"
+            Sugerido: <span
+              class="recommended-price-display font-mono font-semibold"
               >${unitPriceRecommended.toFixed(2)}</span
             >
           </p>
         </div>
         <div
-          class="relative flex items-center justify-end focus-within:bg-white focus-within:ring-2 focus-within:ring-accent-500/20 focus-within:border-accent-300 rounded-md border border-transparent transition-all px-1 -mr-1 shrink-0"
+          class="relative flex items-center justify-end focus-within:bg-card focus-within:ring-2 focus-within:ring-accent-500/20 focus-within:border-accent-300 rounded-md border border-transparent transition-all px-1 -mr-1 shrink-0"
         >
           <span
             class="text-[20px] font-mono font-semibold text-accent-600 mr-0.5 pointer-events-none"
@@ -169,41 +170,42 @@ const unitProfit = defaultSalePrice - unitCost;
       </div>
     </div>
 
-    <hr class="border-slate-100 my-1 mb-5" />
+    <hr class="border-border-light my-1 mb-5" />
 
     <div class="flex items-end justify-between gap-4 mt-auto">
       <div class="space-y-0.5">
         <p
-          class="text-[10px] font-bold text-slate-400 uppercase tracking-widest"
+          class="text-[10px] font-bold text-subtle-foreground uppercase tracking-widest"
         >
           Ganancia / Pz
         </p>
         <p
-          class="text-[20px] font-mono font-semibold text-emerald-600 tabular-nums profit-display"
+          class="text-[20px] font-mono font-semibold text-success tabular-nums profit-display"
         >
           ${unitProfit.toFixed(2)}
         </p>
       </div>
       <div class="pb-1 w-[60%] max-w-60">
         <div class="flex items-center justify-between text-xs mb-2">
-          <span class="margin-label text-emerald-600">Saludable</span>
-          <span class="margin-percent-display font-mono font-semibold text-slate-800"
+          <span class="margin-label text-success">Saludable</span>
+          <span
+            class="margin-percent-display font-mono font-semibold text-foreground"
             >0.0%</span
           >
         </div>
-        <div class="h-2.5 rounded-full bg-slate-100 overflow-hidden">
+        <div class="h-2.5 rounded-full bg-muted overflow-hidden">
           <div
-            class="margin-bar h-full rounded-full transition-all duration-500 bg-emerald-500"
+            class="margin-bar h-full rounded-full transition-all duration-500"
           >
           </div>
         </div>
       </div>
     </div>
 
-    <div class="save-bar hidden mt-5 pt-4 border-t border-slate-100">
+    <div class="save-bar hidden mt-5 pt-4 border-t border-border-light">
       <button
         type="submit"
-        class="save-btn w-full min-h-11 bg-accent-600 hover:bg-accent-700 text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-colors shadow-sm shadow-accent-200"
+        class="save-btn w-full inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-accent-600 px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-accent-700 shadow-sm shadow-accent-200"
       >
         <Icon name="lucide:check" size={18} />
         Guardar Cambios
@@ -212,18 +214,20 @@ const unitProfit = defaultSalePrice - unitCost;
   </form>
 
   <dialog
-    class="delete-dialog fixed inset-0 m-auto w-[calc(100vw-1.5rem)] max-w-md rounded-[28px] p-0 backdrop:bg-slate-900/55"
+    class="delete-dialog fixed inset-0 m-auto w-[calc(100vw-1.5rem)] max-w-md rounded-3xl p-0 backdrop:bg-slate-900/55"
   >
-    <div class="rounded-[28px] border border-slate-200 bg-white p-6 shadow-2xl">
+    <div class="rounded-3xl border border-border bg-card p-6 shadow-2xl">
       <div class="flex items-start gap-3">
         <div
-          class="flex h-11 w-11 items-center justify-center rounded-2xl bg-rose-50 text-rose-600"
+          class="flex h-11 w-11 items-center justify-center rounded-2xl bg-danger-bg text-danger"
         >
           <Icon name="lucide:trash-2" size={18} />
         </div>
         <div>
-          <h3 class="text-lg font-bold text-slate-900">Confirmar eliminación</h3>
-          <p class="mt-2 text-sm text-slate-600">
+          <h3 class="text-lg font-bold text-foreground">
+            Confirmar eliminación
+          </h3>
+          <p class="mt-2 text-sm text-muted-foreground">
             ¿Eliminar esta presentación? Esta acción no se puede deshacer.
           </p>
         </div>
@@ -232,13 +236,13 @@ const unitProfit = defaultSalePrice - unitCost;
       <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
         <button
           type="button"
-          class="delete-cancel-btn inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-600 transition-colors hover:bg-slate-50"
+          class="delete-cancel-btn inline-flex min-h-11 items-center justify-center rounded-xl border border-border bg-card px-5 py-3 text-sm font-bold text-muted-foreground transition-colors hover:bg-background"
         >
           Cancelar
         </button>
         <button
           type="button"
-          class="delete-confirm-btn inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-rose-600 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-rose-700"
+          class="delete-confirm-btn inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-danger-solid px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-danger-solid"
         >
           <Icon name="lucide:trash-2" size={16} /> Eliminar
         </button>
@@ -311,9 +315,7 @@ const unitProfit = defaultSalePrice - unitCost;
       this.precioRecBatch = parseFloat(this.dataset.recommended || "0");
 
       this.btnEdit?.addEventListener("click", () => this.toggleEdit());
-      this.btnDelete?.addEventListener("click", () =>
-        this.openDeleteDialog(),
-      );
+      this.btnDelete?.addEventListener("click", () => this.openDeleteDialog());
       this.btnDeleteCancel?.addEventListener("click", () =>
         this.closeDeleteDialog(),
       );
@@ -530,7 +532,7 @@ const unitProfit = defaultSalePrice - unitCost;
         });
 
         if (this.btnEdit) {
-          this.btnEdit.classList.add("bg-slate-100");
+          this.btnEdit.classList.add("bg-muted");
           this.btnEdit.setAttribute("title", "Cancelar");
           this.btnEdit.setAttribute("aria-label", "Cancelar edición");
           this.btnEdit.setAttribute("aria-pressed", "true");
@@ -572,7 +574,7 @@ const unitProfit = defaultSalePrice - unitCost;
         });
 
         if (this.btnEdit) {
-          this.btnEdit.classList.remove("bg-slate-100");
+          this.btnEdit.classList.remove("bg-muted");
           this.btnEdit.setAttribute("title", "Editar");
           this.btnEdit.setAttribute("aria-label", "Editar presentación");
           this.btnEdit.setAttribute("aria-pressed", "false");
@@ -644,21 +646,21 @@ const unitProfit = defaultSalePrice - unitCost;
       const marginWidth = Math.min(Math.max(marginPercent, 0), 100);
 
       let marginLabel = "Margen negativo";
-      let marginColor = "bg-rose-500";
-      let marginTextColor = "text-rose-500";
+      let marginColor = "bg-danger-solid";
+      let marginTextColor = "text-danger";
 
       if (marginPercent >= 35) {
         marginLabel = "Saludable";
-        marginColor = "bg-emerald-500";
-        marginTextColor = "text-emerald-600";
+        marginColor = "bg-success-solid";
+        marginTextColor = "text-success";
       } else if (marginPercent >= 20) {
         marginLabel = "Medio";
-        marginColor = "bg-amber-500";
-        marginTextColor = "text-amber-600";
+        marginColor = "bg-warning-solid";
+        marginTextColor = "text-warning";
       } else if (marginPercent >= 0) {
         marginLabel = "Bajo";
-        marginColor = "bg-rose-400";
-        marginTextColor = "text-rose-500";
+        marginColor = "bg-danger-solid";
+        marginTextColor = "text-danger";
       }
 
       if (this.yieldValue)

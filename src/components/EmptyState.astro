@@ -45,15 +45,17 @@ const {
   title,
   description,
   titleTag: TitleTag = "h3",
-  titleClasses = "mt-5 text-lg font-bold text-slate-800",
-  descClasses = "mt-2 text-sm text-slate-500",
+  titleClasses = "mt-5 text-lg font-bold text-foreground",
+  descClasses = "mt-2 text-sm text-muted-foreground",
   actionLabel,
   actionHref,
 } = Astro.props;
 ---
 
 <div class="mx-auto flex max-w-md flex-col items-center">
-  <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-accent-50 text-accent-600">
+  <div
+    class="flex h-14 w-14 items-center justify-center rounded-2xl bg-accent-50 text-accent-600"
+  >
     <Icon name={icon} size={iconSize} />
   </div>
   <TitleTag class={titleClasses}>
@@ -62,26 +64,28 @@ const {
   <p class={descClasses}>
     {description}
   </p>
-  {actionLabel && (
-    <>
-      {actionHref ? (
-        <a
-          href={actionHref}
-          class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-accent-600 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-accent-700 mt-5"
-        >
-          <Icon name="lucide:plus" size={18} />
-          {actionLabel}
-        </a>
-      ) : (
-        <button
-          type="button"
-          class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-accent-600 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-accent-700 mt-5 lg:hidden"
-          data-open-create-modal
-        >
-          <Icon name="lucide:plus" size={18} />
-          {actionLabel}
-        </button>
-      )}
-    </>
-  )}
+  {
+    actionLabel && (
+      <>
+        {actionHref ? (
+          <a
+            href={actionHref}
+            class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-accent-600 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-accent-700 mt-5"
+          >
+            <Icon name="lucide:plus" size={18} />
+            {actionLabel}
+          </a>
+        ) : (
+          <button
+            type="button"
+            class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-accent-600 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-accent-700 mt-5 lg:hidden"
+            data-open-create-modal
+          >
+            <Icon name="lucide:plus" size={18} />
+            {actionLabel}
+          </button>
+        )}
+      </>
+    )
+  }
 </div>

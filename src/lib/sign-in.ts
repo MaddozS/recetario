@@ -29,7 +29,7 @@ function getRetryAfterSecondsFromHeaders(headers?: Headers) {
   }
 
   return parseRetryAfterSeconds(
-    headers.get("x-retry-after") ?? headers.get("retry-after")
+    headers.get("x-retry-after") ?? headers.get("retry-after"),
   );
 }
 
@@ -69,7 +69,7 @@ function getRetryAfterSeconds(error: unknown) {
   return undefined;
 }
 
-async function startSocialSignIn() {
+async function startSocialSignIn(callbackURL = "/recipes") {
   let responseStatus: number | undefined;
   let retryAfterSeconds: number | undefined;
   const isEmbeddedContext =
@@ -81,14 +81,14 @@ async function startSocialSignIn() {
   try {
     const result = await authClient.signIn.social({
       provider: "google",
-      callbackURL: "/recipes",
+      callbackURL,
       errorCallbackURL: "/sign-in",
       disableRedirect: true,
       fetchOptions: {
         onResponse(context) {
           responseStatus = context.response.status;
           retryAfterSeconds = getRetryAfterSecondsFromHeaders(
-            context.response.headers
+            context.response.headers,
           );
         },
       },
@@ -138,7 +138,7 @@ async function startSocialSignIn() {
 
     if (responseStatus === 429 || getStatusCode(error) === 429) {
       throw new SignInRateLimitError(
-        retryAfterSeconds ?? getRetryAfterSeconds(error)
+        retryAfterSeconds ?? getRetryAfterSeconds(error),
       );
     }
 
@@ -146,12 +146,12 @@ async function startSocialSignIn() {
   }
 }
 
-const signIn = async () => {
+const signIn = async (callbackURL = "/recipes") => {
   if (pendingSocialSignIn) {
     return pendingSocialSignIn;
   }
 
-  pendingSocialSignIn = startSocialSignIn().finally(() => {
+  pendingSocialSignIn = startSocialSignIn(callbackURL).finally(() => {
     pendingSocialSignIn = null;
   });
 

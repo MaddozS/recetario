@@ -1,0 +1,38 @@
+---
+import { Icon } from 'astro-icon/components'
+
+const { isAuthenticated = false } = Astro.props;
+---
+
+<nav class="fixed top-0 inset-x-0 z-50 border-b border-border bg-background/80 backdrop-blur-xl">
+  <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-2.5 shrink-0">
+      <img src="/kitchcalc_logo.svg" alt="KitchCalc" class="w-9 h-9 rounded-xl" />
+      <span class="text-lg font-black text-foreground">KitchCalc</span>
+    </a>
+
+    <div class="hidden md:flex items-center gap-6">
+      <a href="#features" class="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Funciones</a>
+      <a href="#how-it-works" class="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Cómo funciona</a>
+      <a href="#pricing" class="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Precios</a>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <button
+        onclick="toggleLandingTheme()"
+        class="min-h-11 min-w-11 rounded-xl inline-flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-hover-muted transition-colors"
+        aria-label="Cambiar tema"
+      >
+        <Icon name="lucide:sun" size={18} class="block dark:hidden" />
+        <Icon name="lucide:moon" size={18} class="hidden dark:block" />
+      </button>
+
+      <a
+        href={isAuthenticated ? "/recipes" : "/sign-in"}
+        class="inline-flex items-center justify-center gap-2 rounded-xl bg-accent-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-accent-700 transition-colors"
+      >
+        {isAuthenticated ? "Ir a la app" : "Comenzar gratis"}
+      </a>
+    </div>
+  </div>
+</nav>
