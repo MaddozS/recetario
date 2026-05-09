@@ -13,6 +13,7 @@ export const ACCENT_FAMILIES = [
   "emerald",
   "rose",
   "amber",
+  "coral",
 ] as const;
 
 export type AccentFamily = (typeof ACCENT_FAMILIES)[number];
@@ -110,6 +111,19 @@ const accentBaseColors: Record<AccentFamily, Record<string, string>> = {
     "900": "#78350f",
     "950": "#451a03",
   },
+  coral: {
+    "50": "#fef2ef",
+    "100": "#fde0d8",
+    "200": "#fcc5b8",
+    "300": "#faa898",
+    "400": "#ff7b6e",
+    "500": "#ff5f6d",
+    "600": "#e84d5a",
+    "700": "#c9434e",
+    "800": "#b33a46",
+    "900": "#962e39",
+    "950": "#6b1f27",
+  },
 };
 
 /**
@@ -172,4 +186,5 @@ export const ACCENT_LABELS: Record<AccentFamily, string> = {
   emerald: "Esmeralda",
   rose: "Rosa",
   amber: "Ámbar",
+  coral: "Coral",
 };
