@@ -1,6 +1,7 @@
 ---
 import { Icon } from "astro-icon/components";
-// Check current page
+import { hasFeature } from "../lib/subscription";
+
 const {
   currentPage,
   showMenuButton,
@@ -8,6 +9,9 @@ const {
   recipeHref = "/recipes",
   subscription = null,
 } = Astro.props;
+
+const showProduction =
+  subscription && hasFeature(subscription, "production_planner");
 ---
 
 <header
@@ -77,6 +81,26 @@ const {
       />
       Ingredientes
     </a>
+    {showProduction && (
+      <a
+        href="/produccion"
+        class:list={[
+          "flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold transition-all",
+          currentPage === "production"
+            ? "bg-accent-600 text-white shadow-sm"
+            : "text-muted-foreground hover:text-secondary-foreground hover:bg-muted",
+        ]}
+      >
+        <Icon
+          name="lucide:factory"
+          size={18}
+          class={currentPage === "production"
+            ? "text-white"
+            : "text-subtle-foreground"}
+        />
+        Producción
+      </a>
+    )}
     <a
       href="/settings"
       class:list={[
