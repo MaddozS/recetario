@@ -1,0 +1,74 @@
+---
+import type { ProductionSummary } from "../lib/production-types";
+import { formatCurrency } from "../lib/formatters";
+
+interface Props {
+  summary: ProductionSummary;
+}
+
+const { summary } = Astro.props;
+
+const marginColor =
+  summary.effectiveMargin > 20
+    ? "text-success"
+    : summary.effectiveMargin > 10
+      ? "text-warning"
+      : "text-danger";
+
+const noRevenue = summary.projectedRevenue <= 0;
+---
+
+<div class="production-sheet financial-summary">
+  <div class="grid grid-cols-2 gap-4">
+    <div class="rounded-2xl border border-border bg-card p-5 shadow-sm">
+      <p class="text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">
+        Costo de insumos
+      </p>
+      <p class="mt-1.5 text-2xl font-black tabular-nums text-foreground">
+        {formatCurrency(summary.totalIngredientsCost)}
+      </p>
+    </div>
+    <div class="rounded-2xl border border-border bg-card p-5 shadow-sm">
+      <p class="text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">
+        Costo operativo
+      </p>
+      <p class="mt-1.5 text-2xl font-black tabular-nums text-foreground">
+        {formatCurrency(summary.totalOperationalCost)}
+      </p>
+    </div>
+    <div class="rounded-2xl border border-border bg-card p-5 shadow-sm">
+      <p class="text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">
+        Ingresos proyectados
+      </p>
+      <p class="mt-1.5 text-2xl font-black tabular-nums text-foreground">
+        {noRevenue ? (
+          <span class="text-muted-foreground text-lg">N/A</span>
+        ) : (
+          formatCurrency(summary.projectedRevenue)
+        )}
+      </p>
+      {noRevenue && (
+        <p class="mt-1 text-xs text-warning">
+          Sin precios de venta configurados
+        </p>
+      )}
+    </div>
+    <div class="rounded-2xl border border-border bg-card p-5 shadow-sm">
+      <p class="text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">
+        Ganancia estimada
+      </p>
+      <p class="mt-1.5 text-2xl font-black tabular-nums" class:list={[noRevenue ? "text-muted-foreground" : marginColor]}>
+        {noRevenue ? (
+          <span class="text-muted-foreground text-lg">N/A</span>
+        ) : (
+          <>
+            {formatCurrency(summary.estimatedProfit)}
+            <span class="text-base font-bold ml-1">
+              ({summary.effectiveMargin.toFixed(1)}%)
+            </span>
+          </>
+        )}
+      </p>
+    </div>
+  </div>
+</div>
