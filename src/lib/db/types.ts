@@ -45,6 +45,8 @@ export type RecipePresentation = {
 export type RecipeWithIngredients = {
   id: number;
   name: string;
+  category?: string;
+  instructions?: string;
   desiredMargin: number;
   fixedCostsPercentage: number;
   updatedAt?: string;
@@ -56,6 +58,7 @@ export type RecipeWithIngredients = {
 export type RecipeSummary = {
   id: number;
   name: string;
+  category?: string;
   ingredientCount: number;
 };
 
@@ -115,6 +118,8 @@ export type DeleteRecipeResult =
 export type RecipeSeed = {
   id: number;
   name: string;
+  category?: string;
+  instructions?: string;
   desiredMargin: number;
   fixedCostsPercentage: number;
   ingredients: RecipeIngredient[];
@@ -125,7 +130,7 @@ export type RecipeSeed = {
 export type UserPreferences = {
   userId: string;
   theme: "light" | "dark";
-  accentColor: "indigo" | "violet" | "blue" | "emerald" | "rose" | "amber";
+  accentColor: "indigo" | "violet" | "blue" | "emerald" | "rose" | "amber" | "coral";
 };
 
 /** Abstracción del motor de base de datos (Postgres o SQLite). */
@@ -139,6 +144,7 @@ export type PostgresQueryable = Pick<Pool, "query">;
 /** Input para crear una receta. */
 export type CreateRecipeInput = {
   name?: string;
+  category?: string | null;
   desiredMargin?: number;
   fixedCostsPercentage?: number;
 };
@@ -146,6 +152,8 @@ export type CreateRecipeInput = {
 /** Input para actualizar una receta completa (reemplaza ingredientes). */
 export type UpdateRecipeInput = {
   name: string;
+  category?: string | null;
+  instructions?: string;
   desiredMargin: number;
   fixedCostsPercentage: number;
   ingredients: {

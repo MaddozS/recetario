@@ -6,7 +6,9 @@ import {
   getRecipeById,
   getRecipeDataOwner,
   listRecipeSummaries,
+  countUserRecipes,
 } from "../../lib/recipe-data";
+import { canCreateRecipe } from "../../lib/subscription";
 import EmptyState from "../../components/EmptyState.astro";
 
 if (!Astro.locals.session || !Astro.locals.user) {
@@ -14,6 +16,7 @@ if (!Astro.locals.session || !Astro.locals.user) {
 }
 
 const recipeDataOwner = getRecipeDataOwner(Astro.locals.user);
+const subscription = Astro.locals.subscription;
 
 if (Astro.request.method === "POST") {
   const formData = await Astro.request.formData();
@@ -21,6 +24,15 @@ if (Astro.request.method === "POST") {
   let createdRecipeId: number | null = null;
 
   if (action === "create_recipe") {
+    const recipeCount = await countUserRecipes(recipeDataOwner);
+    if (!canCreateRecipe(subscription, recipeCount)) {
+      const errorUrl = new URL(Astro.url);
+      errorUrl.searchParams.set("type", "error");
+      errorUrl.searchParams.set("message", `Has alcanzado el limite de ${subscription.recipesLimit} recetas de tu plan Free. Actualiza tu plan para crear mas.`);
+      errorUrl.searchParams.set("upgrade", "1");
+      return Astro.redirect(errorUrl.toString());
+    }
+
     createdRecipeId = (
       await createRecipe(
         { name: String(formData.get("recipeName") || "") },
@@ -36,18 +48,30 @@ if (Astro.request.method === "POST") {
 
 const recipes = await listRecipeSummaries(recipeDataOwner);
 
-for (const recipeSummary of recipes) {
-  const recipe = await getRecipeById(recipeSummary.id, recipeDataOwner);
-
+if (recipes.length === 1) {
+  const recipe = await getRecipeById(recipes[0].id, recipeDataOwner);
   if (recipe) {
-    return Astro.redirect(`/recipes/${recipeSummary.id}`);
+    return Astro.redirect(`/recipes/${recipes[0].id}`);
   }
 }
+
+const feedbackType = Astro.url.searchParams.get("type");
+const feedbackMessage = Astro.url.searchParams.get("message");
+const showUpgradeModal = Astro.url.searchParams.get("upgrade") === "1";
 ---
 
 <Layout currentPage="recipes" showSideBar={true}>
+  {
+    feedbackType === "error" && feedbackMessage && (
+      <div class="mx-auto mb-6 max-w-3xl rounded-2xl border border-danger-border bg-danger-bg px-4 py-3 text-sm font-semibold text-danger">
+        {feedbackMessage}
+        <a href="/pricing" class="ml-2 font-bold underline">Actualizar plan</a>
+      </div>
+    )
+  }
+
   <section
-    class="mx-auto max-w-3xl rounded-3xl border border-slate-200 bg-white p-8 shadow-sm"
+    class="mx-auto max-w-3xl rounded-2xl border border-border bg-card p-8 shadow-md"
   >
     <EmptyState
       icon="lucide:book-plus"
@@ -56,8 +80,8 @@ for (const recipeSummary of recipes) {
       description="Entra por primera vez al recetario desde aqui y crea tu primera receta. El
       boton del sidebar ya funciona tambien para este estado vacio."
       titleTag="h1"
-      titleClasses="mt-6 text-3xl font-black text-slate-900"
-      descClasses="mt-3 text-base text-slate-600"
+      titleClasses="mt-6 text-3xl font-black text-foreground"
+      descClasses="mt-3 text-base text-muted-foreground"
     />
 
     <div class="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -71,11 +95,61 @@ for (const recipeSummary of recipes) {
       </button>
       <a
         href="/ingredients"
-        class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-200 px-5 py-3 text-sm font-bold text-slate-600 transition-colors hover:bg-slate-50"
+        class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-border px-5 py-3 text-sm font-bold text-muted-foreground transition-colors hover:bg-background"
       >
         <Icon name="lucide:package-search" size={16} />
         Ver ingredientes
       </a>
     </div>
   </section>
+
+  <dialog id="upgrade-modal" class="fixed inset-0 m-auto w-[92vw] max-w-md rounded-3xl border border-border p-0 shadow-2xl backdrop:bg-slate-900/40">
+    <div class="rounded-3xl bg-card p-6">
+      <div class="flex items-start gap-3">
+        <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-accent-50 text-accent-600">
+          <Icon name="lucide:zap" size={18} />
+        </div>
+        <div>
+          <h2 class="text-lg font-bold text-foreground">Limite alcanzado</h2>
+          <p class="mt-2 text-sm text-muted-foreground">
+            Has alcanzado el limite de {subscription.recipesLimit} recetas en tu plan {subscription.tier === 'free' ? 'Free' : subscription.tier}.
+          </p>
+          <p class="mt-1 text-sm text-muted-foreground">
+            Actualiza a Basic o Pro para crear recetas ilimitadas.
+          </p>
+        </div>
+      </div>
+      <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+        <button type="button" data-close-upgrade-modal class="inline-flex min-h-11 items-center justify-center rounded-xl border border-border bg-card px-5 py-3 text-sm font-bold text-muted-foreground transition-colors hover:bg-background">
+          Entendido
+        </button>
+        <a href="/pricing" class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-accent-600 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-accent-700">
+          <Icon name="lucide:arrow-up-circle" size={16} />
+          Ver planes
+        </a>
+      </div>
+    </div>
+  </dialog>
 </Layout>
+
+{
+  showUpgradeModal && (
+    <script>
+      requestAnimationFrame(() => {
+        const modal = document.getElementById('upgrade-modal');
+        if (modal instanceof HTMLDialogElement) {
+          modal.showModal();
+        }
+
+        document.querySelectorAll('[data-close-upgrade-modal]').forEach(btn => {
+          if (btn instanceof HTMLButtonElement && btn.dataset.bound !== '1') {
+            btn.dataset.bound = '1';
+            btn.addEventListener('click', () => {
+              (document.getElementById('upgrade-modal') as HTMLDialogElement | null)?.close();
+            });
+          }
+        });
+      });
+    </script>
+  )
+}

@@ -2,7 +2,12 @@
 import { Icon } from "astro-icon/components";
 import Layout from "../layouts/Layout.astro";
 import { getUserPreferences, upsertUserPreferences } from "../lib/recipe-data";
-import { ACCENT_FAMILIES, ACCENT_LABELS, getAccentPreviewColor, type AccentFamily } from "../lib/accent-colors";
+import {
+  ACCENT_FAMILIES,
+  ACCENT_LABELS,
+  getAccentPreviewColor,
+  type AccentFamily,
+} from "../lib/accent-colors";
 
 if (!Astro.locals.session || !Astro.locals.user) {
   return Astro.redirect("/sign-in");
@@ -29,9 +34,14 @@ if (Astro.request.method === "POST") {
   try {
     await upsertUserPreferences(user.id, {
       theme: theme === "dark" ? "dark" : "light",
-      accentColor: ACCENT_FAMILIES.includes(accentColor as AccentFamily) ? accentColor : undefined,
+      accentColor: ACCENT_FAMILIES.includes(accentColor as AccentFamily)
+        ? accentColor
+        : undefined,
     });
-    feedback = { type: "success", message: "Preferencias guardadas correctamente." };
+    feedback = {
+      type: "success",
+      message: "Preferencias guardadas correctamente.",
+    };
   } catch {
     feedback = { type: "error", message: "Error al guardar las preferencias." };
   }
@@ -53,8 +63,8 @@ if (feedback) {
           class:list={[
             "rounded-2xl border px-4 py-3 text-sm font-semibold",
             Astro.url.searchParams.get("type") === "success"
-              ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-              : "border-rose-200 bg-rose-50 text-rose-700",
+              ? "border-success-border bg-success-bg text-success"
+              : "border-danger-border bg-danger-bg text-danger",
           ]}
         >
           {Astro.url.searchParams.get("message")}
@@ -63,43 +73,59 @@ if (feedback) {
     }
 
     {/* Profile Card */}
-    <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+    <div class="rounded-2xl border border-border bg-card p-6 shadow-sm">
       <div class="flex items-center gap-4">
-        <div class="flex h-16 w-16 flex-none items-center justify-center rounded-2xl bg-accent-600 text-xl font-bold text-white shadow-md shadow-accent-100">
-          {userImage ? (
-            <img
-              src={userImage}
-              alt={userName}
-              referrerpolicy="no-referrer"
-              class="h-full w-full rounded-2xl object-cover"
-            />
-          ) : (
-            userInitial
-          )}
+        <div
+          class="flex h-16 w-16 flex-none items-center justify-center rounded-2xl bg-accent-600 text-xl font-bold text-white shadow-md shadow-accent-100"
+        >
+          {
+            userImage ? (
+              <img
+                src={userImage}
+                alt={userName}
+                referrerpolicy="no-referrer"
+                class="h-full w-full rounded-2xl object-cover"
+              />
+            ) : (
+              userInitial
+            )
+          }
         </div>
         <div class="min-w-0">
-          <p class="text-xs font-bold uppercase tracking-[0.15em] text-slate-500">
+          <p
+            class="text-xs font-bold uppercase tracking-[0.15em] text-muted-foreground"
+          >
             Sesion de Google
           </p>
-          <h2 class="mt-1 truncate text-xl font-bold text-slate-900">
+          <h2 class="mt-1 truncate text-xl font-bold text-foreground">
             {userName}
           </h2>
-          {userEmail && (
-            <p class="mt-0.5 truncate text-sm text-slate-500">{userEmail}</p>
-          )}
+          {
+            userEmail && (
+              <p class="mt-0.5 truncate text-sm text-muted-foreground">
+                {userEmail}
+              </p>
+            )
+          }
         </div>
       </div>
     </div>
 
     {/* Preferences Form */}
     <form method="post" action="/settings">
-      <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-8">
+      <div
+        class="rounded-2xl border border-border bg-card p-6 shadow-sm space-y-8"
+      >
         {/* Theme Toggle */}
         <div>
-          <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500 mb-3">
+          <p
+            class="text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground mb-3"
+          >
             Tema
           </p>
-          <div class="flex gap-2 rounded-xl bg-slate-100/50 p-1.5 border border-slate-200 max-w-xs">
+          <div
+            class="flex gap-2 rounded-xl bg-muted/50 p-1.5 border border-border max-w-xs"
+          >
             <button
               type="button"
               data-theme-option="light"
@@ -108,7 +134,7 @@ if (feedback) {
                 "flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all",
                 currentTheme === "light"
                   ? "bg-accent-600 text-white shadow-sm"
-                  : "text-slate-500 hover:text-slate-700 hover:bg-slate-100",
+                  : "text-muted-foreground hover:text-secondary-foreground hover:bg-muted",
               ]}
             >
               <Icon name="lucide:sun" size={16} />
@@ -122,19 +148,26 @@ if (feedback) {
                 "flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all",
                 currentTheme === "dark"
                   ? "bg-accent-600 text-white shadow-sm"
-                  : "text-slate-500 hover:text-slate-700 hover:bg-slate-100",
+                  : "text-muted-foreground hover:text-secondary-foreground hover:bg-muted",
               ]}
             >
               <Icon name="lucide:moon" size={16} />
               Oscuro
             </button>
           </div>
-          <input type="hidden" name="theme" id="theme-input" value={currentTheme} />
+          <input
+            type="hidden"
+            name="theme"
+            id="theme-input"
+            value={currentTheme}
+          />
         </div>
 
         {/* Accent Color Picker */}
         <div>
-          <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500 mb-3">
+          <p
+            class="text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground mb-3"
+          >
             Color de acento
           </p>
           <div class="grid grid-cols-3 sm:grid-cols-6 gap-3 max-w-xl">
@@ -151,20 +184,22 @@ if (feedback) {
                       "flex flex-col items-center gap-2 rounded-xl p-3 transition-all",
                       isSelected
                         ? "ring-2 ring-accent-500 ring-offset-1 bg-accent-50"
-                        : "hover:bg-slate-50 border border-slate-200",
+                        : "hover:bg-background border border-border",
                     ]}
                   >
                     <span
                       class:list={[
                         "h-8 w-8 rounded-lg border",
-                        isSelected ? "border-accent-400" : "border-slate-200",
+                        isSelected ? "border-accent-400" : "border-border",
                       ]}
                       style={`background-color:${previewColor}`}
-                    ></span>
+                    />
                     <span
                       class:list={[
                         "text-[11px] font-semibold",
-                        isSelected ? "text-accent-700" : "text-slate-600",
+                        isSelected
+                          ? "text-accent-700"
+                          : "text-muted-foreground",
                       ]}
                     >
                       {ACCENT_LABELS[family]}
@@ -174,7 +209,12 @@ if (feedback) {
               })
             }
           </div>
-          <input type="hidden" name="accentColor" id="accent-input" value={currentAccent} />
+          <input
+            type="hidden"
+            name="accentColor"
+            id="accent-input"
+            value={currentAccent}
+          />
         </div>
       </div>
 
@@ -189,6 +229,31 @@ if (feedback) {
         </button>
       </div>
     </form>
+
+    <div class="mt-6 rounded-2xl border border-border bg-card p-6 shadow-sm">
+      <div class="flex items-center justify-between">
+        <div>
+          <p
+            class="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground"
+          >
+            Suscripcion
+          </p>
+          <h3 class="mt-1 text-lg font-bold text-foreground">
+            Facturacion y plan
+          </h3>
+          <p class="mt-1 text-sm text-muted-foreground">
+            Gestiona tu suscripcion y metodos de pago.
+          </p>
+        </div>
+        <a
+          href="/settings/billing"
+          class="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2 text-sm font-bold text-muted-foreground hover:bg-background transition-colors"
+        >
+          <Icon name="lucide:credit-card" size={16} />
+          Gestionar
+        </a>
+      </div>
+    </div>
   </section>
 </Layout>
 
@@ -218,95 +283,126 @@ if (feedback) {
     }
 
     function updateThemeOptions(selected: string) {
-      document.querySelectorAll<HTMLElement>("[data-theme-option]").forEach((el) => {
-        const value = el.dataset.themeOption;
-        const isActive = value === selected;
-        el.dataset.themeActive = isActive ? "1" : "0";
+      document
+        .querySelectorAll<HTMLElement>("[data-theme-option]")
+        .forEach((el) => {
+          const value = el.dataset.themeOption;
+          const isActive = value === selected;
+          el.dataset.themeActive = isActive ? "1" : "0";
 
-        const selectedClasses = ["bg-accent-600", "text-white", "shadow-sm"];
-        const unselectedClasses = ["text-slate-500", "hover:text-slate-700", "hover:bg-slate-100"];
+          const selectedClasses = ["bg-accent-600", "text-white", "shadow-sm"];
+          const unselectedClasses = [
+            "text-muted-foreground",
+            "hover:text-secondary-foreground",
+            "hover:bg-muted",
+          ];
 
-        if (isActive) {
-          el.classList.add(...selectedClasses);
-          el.classList.remove(...unselectedClasses);
-        } else {
-          el.classList.remove(...selectedClasses);
-          el.classList.add(...unselectedClasses);
-        }
-      });
+          if (isActive) {
+            el.classList.add(...selectedClasses);
+            el.classList.remove(...unselectedClasses);
+          } else {
+            el.classList.remove(...selectedClasses);
+            el.classList.add(...unselectedClasses);
+          }
+        });
     }
 
     function updateAccentOptions(selected: string) {
-      document.querySelectorAll<HTMLElement>("[data-accent-option]").forEach((el) => {
-        const value = el.dataset.accentOption;
-        const isActive = value === selected;
-        el.dataset.accentActive = isActive ? "1" : "0";
+      document
+        .querySelectorAll<HTMLElement>("[data-accent-option]")
+        .forEach((el) => {
+          const value = el.dataset.accentOption;
+          const isActive = value === selected;
+          el.dataset.accentActive = isActive ? "1" : "0";
 
-        const swatch = el.querySelector<HTMLElement>("span:first-child");
-        const label = el.querySelector<HTMLElement>("span:last-child");
+          const swatch = el.querySelector<HTMLElement>("span:first-child");
+          const label = el.querySelector<HTMLElement>("span:last-child");
 
-        if (isActive) {
-          el.classList.add("ring-2", "ring-accent-500", "ring-offset-1", "bg-accent-50");
-          el.classList.remove("hover:bg-slate-50", "border", "border-slate-200");
-          if (swatch) {
-            swatch.classList.add("border-accent-400");
-            swatch.classList.remove("border-slate-200");
+          if (isActive) {
+            el.classList.add(
+              "ring-2",
+              "ring-accent-500",
+              "ring-offset-1",
+              "bg-accent-50",
+            );
+            el.classList.remove(
+              "hover:bg-background",
+              "border",
+              "border-border",
+            );
+            if (swatch) {
+              swatch.classList.add("border-accent-400");
+              swatch.classList.remove("border-border");
+            }
+            if (label) {
+              label.classList.add("text-accent-700");
+              label.classList.remove("text-muted-foreground");
+            }
+          } else {
+            el.classList.remove(
+              "ring-2",
+              "ring-accent-500",
+              "ring-offset-1",
+              "bg-accent-50",
+            );
+            el.classList.add("hover:bg-background", "border", "border-border");
+            if (swatch) {
+              swatch.classList.remove("border-accent-400");
+              swatch.classList.add("border-border");
+            }
+            if (label) {
+              label.classList.remove("text-accent-700");
+              label.classList.add("text-muted-foreground");
+            }
           }
-          if (label) {
-            label.classList.add("text-accent-700");
-            label.classList.remove("text-slate-600");
-          }
-        } else {
-          el.classList.remove("ring-2", "ring-accent-500", "ring-offset-1", "bg-accent-50");
-          el.classList.add("hover:bg-slate-50", "border", "border-slate-200");
-          if (swatch) {
-            swatch.classList.remove("border-accent-400");
-            swatch.classList.add("border-slate-200");
-          }
-          if (label) {
-            label.classList.remove("text-accent-700");
-            label.classList.add("text-slate-600");
-          }
-        }
-      });
+        });
     }
 
     // Theme toggle buttons
-    document.querySelectorAll<HTMLButtonElement>("[data-theme-option]").forEach((btn) => {
-      if (btn.dataset.themeToggleBound === "1") return;
-      btn.dataset.themeToggleBound = "1";
+    document
+      .querySelectorAll<HTMLButtonElement>("[data-theme-option]")
+      .forEach((btn) => {
+        if (btn.dataset.themeToggleBound === "1") return;
+        btn.dataset.themeToggleBound = "1";
 
-      btn.addEventListener("click", () => {
-        const value = btn.dataset.themeOption;
-        if (!value) return;
+        btn.addEventListener("click", () => {
+          const value = btn.dataset.themeOption;
+          if (!value) return;
 
-        updateLivePreview(value, accentInput instanceof HTMLInputElement ? accentInput.value : "indigo");
-        updateThemeOptions(value);
+          updateLivePreview(
+            value,
+            accentInput instanceof HTMLInputElement
+              ? accentInput.value
+              : "indigo",
+          );
+          updateThemeOptions(value);
 
-        if (themeInput instanceof HTMLInputElement) {
-          themeInput.value = value;
-        }
+          if (themeInput instanceof HTMLInputElement) {
+            themeInput.value = value;
+          }
+        });
       });
-    });
 
     // Accent color buttons
-    document.querySelectorAll<HTMLButtonElement>("[data-accent-option]").forEach((btn) => {
-      if (btn.dataset.accentToggleBound === "1") return;
-      btn.dataset.accentToggleBound = "1";
+    document
+      .querySelectorAll<HTMLButtonElement>("[data-accent-option]")
+      .forEach((btn) => {
+        if (btn.dataset.accentToggleBound === "1") return;
+        btn.dataset.accentToggleBound = "1";
 
-      btn.addEventListener("click", () => {
-        const value = btn.dataset.accentOption;
-        if (!value) return;
+        btn.addEventListener("click", () => {
+          const value = btn.dataset.accentOption;
+          if (!value) return;
 
-        const currentTheme = html.dataset.theme || "light";
-        updateLivePreview(currentTheme, value);
-        updateAccentOptions(value);
+          const currentTheme = html.dataset.theme || "light";
+          updateLivePreview(currentTheme, value);
+          updateAccentOptions(value);
 
-        if (accentInput instanceof HTMLInputElement) {
-          accentInput.value = value;
-        }
+          if (accentInput instanceof HTMLInputElement) {
+            accentInput.value = value;
+          }
+        });
       });
-    });
   }
 
   document.addEventListener("astro:page-load", setupSettings);

@@ -21,7 +21,7 @@
     "id": 3,
     "name": "Azúcar mascabado",
     "unit": "kg",
-    "price": 71.60,
+    "price": 71.6,
     "purchaseQuantity": 1,
     "brand": "Metco",
     "supplier": "Casa Santos Lugo"
@@ -102,7 +102,7 @@
     "id": 12,
     "name": "Vainilla",
     "unit": "ml",
-    "price": 28.30,
+    "price": 28.3,
     "purchaseQuantity": 250,
     "brand": "Molina",
     "supplier": "Casa Santos Lugo"
@@ -111,7 +111,7 @@
     "id": 13,
     "name": "Huevo",
     "unit": "pza",
-    "price": 90.90,
+    "price": 90.9,
     "purchaseQuantity": 30,
     "brand": "",
     "supplier": "Casa Santos Lugo"
@@ -183,7 +183,7 @@
     "id": 21,
     "name": "Queso mozzarella",
     "unit": "kg",
-    "price": 117.80,
+    "price": 117.8,
     "purchaseQuantity": 1,
     "brand": "",
     "supplier": ""
@@ -210,7 +210,7 @@
     "id": 24,
     "name": "Nuez moscada",
     "unit": "g",
-    "price": 62.50,
+    "price": 62.5,
     "purchaseQuantity": 70,
     "brand": "",
     "supplier": ""
@@ -219,7 +219,7 @@
     "id": 25,
     "name": "Zanahoria",
     "unit": "kg",
-    "price": 14.50,
+    "price": 14.5,
     "purchaseQuantity": 1,
     "brand": "",
     "supplier": ""
@@ -237,7 +237,7 @@
     "id": 27,
     "name": "Queso crema",
     "unit": "kg",
-    "price": 186.50,
+    "price": 186.5,
     "purchaseQuantity": 1,
     "brand": "",
     "supplier": ""
@@ -246,7 +246,7 @@
     "id": 28,
     "name": "Crema para batir",
     "unit": "kg",
-    "price": 118.90,
+    "price": 118.9,
     "purchaseQuantity": 2,
     "brand": "",
     "supplier": "Casa Santos Lugo"
@@ -264,7 +264,7 @@
     "id": 30,
     "name": "Nuez",
     "unit": "g",
-    "price": 120.20,
+    "price": 120.2,
     "purchaseQuantity": 500,
     "brand": "Abuelo José",
     "supplier": "Casa Santos Lugo"
@@ -273,7 +273,7 @@
     "id": 31,
     "name": "Leche evaporada",
     "unit": "lt",
-    "price": 55.50,
+    "price": 55.5,
     "purchaseQuantity": 1,
     "brand": "Natura Tamariz",
     "supplier": "Casa Santos Lugo"

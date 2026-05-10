@@ -11,7 +11,15 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { Pool } from "pg";
 import { prepareSqliteDatabasePath } from "../sqlite-path";
-import type { Driver, PostgresQueryable, RecipeSeed, RecipeDataUser, Ingredient, RecipePresentation, RecipeIngredient } from "./types";
+import type {
+  Driver,
+  PostgresQueryable,
+  RecipeSeed,
+  RecipeDataUser,
+  Ingredient,
+  RecipePresentation,
+  RecipeIngredient,
+} from "./types";
 import {
   normalizeOptionalText,
   normalizeEmail,
@@ -19,6 +27,7 @@ import {
   normalizeDesiredMargin,
   normalizeFixedCostsPercentage,
   normalizeRecipeComment,
+  normalizeCategory,
   toNumber,
   toRecipePresentation,
 } from "./helpers";
@@ -84,7 +93,7 @@ const postgresSslConfig =
         ...(postgresSslCa ? { ca: postgresSslCa.replace(/\\n/g, "\n") } : {}),
       };
 
-const RECIPE_DATA_SCHEMA_VERSION = 2;
+const RECIPE_DATA_SCHEMA_VERSION = 5;
 
 const globals = globalThis as typeof globalThis & {
   __recipesDriver?: Driver;
@@ -301,6 +310,12 @@ export async function createTables(driver: Driver) {
       "ALTER TABLE recipes ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ",
     );
     await driver.pool.query(
+      "ALTER TABLE recipes ADD COLUMN IF NOT EXISTS category TEXT",
+    );
+    await driver.pool.query(
+      "ALTER TABLE recipes ADD COLUMN IF NOT EXISTS instructions TEXT",
+    );
+    await driver.pool.query(
       "CREATE INDEX IF NOT EXISTS idx_ingredients_owner_id ON ingredients(owner_id, id);",
     );
     await driver.pool.query(
@@ -364,6 +379,44 @@ export async function createTables(driver: Driver) {
       );
     `);
 
+    await driver.pool.query(`
+      CREATE TABLE IF NOT EXISTS subscription_plans (
+        id TEXT PRIMARY KEY,
+        stripe_price_id TEXT UNIQUE NOT NULL,
+        name TEXT NOT NULL,
+        tier TEXT NOT NULL CHECK (tier IN ('basic', 'pro')),
+        billing_interval TEXT NOT NULL CHECK (billing_interval IN ('monthly', 'yearly')),
+        price_cents INTEGER NOT NULL,
+        recipes_limit INTEGER,
+        ingredients_limit INTEGER,
+        features_json JSONB NOT NULL DEFAULT '{}',
+        created_at TIMESTAMPTZ DEFAULT now()
+      );
+    `);
+
+    await driver.pool.query(`
+      CREATE TABLE IF NOT EXISTS subscriptions (
+        id TEXT PRIMARY KEY,
+        user_id TEXT NOT NULL,
+        stripe_customer_id TEXT,
+        stripe_subscription_id TEXT UNIQUE,
+        plan_id TEXT REFERENCES subscription_plans(id),
+        status TEXT NOT NULL CHECK (status IN ('active', 'canceled', 'past_due', 'trialing', 'unpaid', 'incomplete')),
+        current_period_start TIMESTAMPTZ,
+        current_period_end TIMESTAMPTZ,
+        cancel_at_period_end BOOLEAN DEFAULT false,
+        trial_end TIMESTAMPTZ,
+        created_at TIMESTAMPTZ DEFAULT now()
+      );
+    `);
+
+    await driver.pool.query(
+      "CREATE INDEX IF NOT EXISTS idx_subscriptions_user_id ON subscriptions(user_id);",
+    );
+    await driver.pool.query(
+      "CREATE INDEX IF NOT EXISTS idx_subscriptions_stripe_sub_id ON subscriptions(stripe_subscription_id);",
+    );
+
     await syncPostgresIngredientsIdentity(driver.pool);
     return;
   }
@@ -414,6 +467,14 @@ export async function createTables(driver: Driver) {
     driver.db.exec("ALTER TABLE recipes ADD COLUMN updated_at TEXT");
   }
 
+  if (!recipeColumns.some((column) => column.name === "category")) {
+    driver.db.exec("ALTER TABLE recipes ADD COLUMN category TEXT");
+  }
+
+  if (!recipeColumns.some((column) => column.name === "instructions")) {
+    driver.db.exec("ALTER TABLE recipes ADD COLUMN instructions TEXT");
+  }
+
   driver.db.exec(`
     CREATE TABLE IF NOT EXISTS recipe_ingredients (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -447,6 +508,36 @@ export async function createTables(driver: Driver) {
       created_at TEXT DEFAULT (datetime('now')),
       updated_at TEXT DEFAULT (datetime('now'))
     );
+
+    CREATE TABLE IF NOT EXISTS subscription_plans (
+      id TEXT PRIMARY KEY,
+      stripe_price_id TEXT UNIQUE NOT NULL,
+      name TEXT NOT NULL,
+      tier TEXT NOT NULL CHECK (tier IN ('basic', 'pro')),
+      billing_interval TEXT NOT NULL CHECK (billing_interval IN ('monthly', 'yearly')),
+      price_cents INTEGER NOT NULL,
+      recipes_limit INTEGER,
+      ingredients_limit INTEGER,
+      features_json TEXT NOT NULL DEFAULT '{}',
+      created_at TEXT DEFAULT (datetime('now'))
+    );
+
+    CREATE TABLE IF NOT EXISTS subscriptions (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      stripe_customer_id TEXT,
+      stripe_subscription_id TEXT UNIQUE,
+      plan_id TEXT REFERENCES subscription_plans(id),
+      status TEXT NOT NULL CHECK (status IN ('active', 'canceled', 'past_due', 'trialing', 'unpaid', 'incomplete')),
+      current_period_start TEXT,
+      current_period_end TEXT,
+      cancel_at_period_end INTEGER DEFAULT 0,
+      trial_end TEXT,
+      created_at TEXT DEFAULT (datetime('now'))
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_subscriptions_user_id ON subscriptions(user_id);
+    CREATE INDEX IF NOT EXISTS idx_subscriptions_stripe_sub_id ON subscriptions(stripe_subscription_id);
   `);
 }
 
@@ -500,14 +591,16 @@ export async function seedIfNeeded(driver: Driver) {
 
       for (const recipe of recipes) {
         await client.query(
-          `INSERT INTO recipes (id, owner_id, name, desired_margin, fixed_costs_percentage)
-           VALUES ($1, $2, $3, $4, $5)`,
+          `INSERT INTO recipes (id, owner_id, name, desired_margin, fixed_costs_percentage, category, instructions)
+           VALUES ($1, $2, $3, $4, $5, $6, $7)`,
           [
             recipe.id,
             STATIC_OWNER_SCOPE,
             recipe.name,
             normalizeDesiredMargin(recipe.desiredMargin),
             normalizeFixedCostsPercentage(recipe.fixedCostsPercentage),
+            normalizeCategory(recipe.category),
+            normalizeOptionalText(recipe.instructions) ?? null,
           ],
         );
 
@@ -566,8 +659,8 @@ export async function seedIfNeeded(driver: Driver) {
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   `);
   const insertRecipe = driver.db.prepare(`
-    INSERT INTO recipes (id, owner_id, name, desired_margin, fixed_costs_percentage)
-    VALUES (?, ?, ?, ?, ?)
+    INSERT INTO recipes (id, owner_id, name, desired_margin, fixed_costs_percentage, category, instructions)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
   `);
   const insertRecipeIngredient = driver.db.prepare(`
     INSERT INTO recipe_ingredients (recipe_id, ingredient_id, quantity, unit, comment)
@@ -600,6 +693,8 @@ export async function seedIfNeeded(driver: Driver) {
         recipe.name,
         normalizeDesiredMargin(recipe.desiredMargin),
         normalizeFixedCostsPercentage(recipe.fixedCostsPercentage),
+        normalizeCategory(recipe.category),
+        normalizeOptionalText(recipe.instructions) ?? null,
       );
 
       for (const ri of recipe.ingredients) {

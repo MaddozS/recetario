@@ -29,3 +29,4 @@ data/auth.db-wal
 .idea/
 
 .vercel/
+.vercel

@@ -33,14 +33,14 @@ interface Props {
 const { idPrefix } = Astro.props;
 
 const labelClasses =
-  "mb-1.5 block text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500";
+  "mb-1.5 block text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground";
 const inputClasses =
-  "w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-accent-300 focus:bg-white focus:ring-2 focus:ring-accent-500/20";
+  "w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground outline-none transition placeholder:text-subtle-foreground focus:border-accent-300 focus:bg-card focus:ring-2 focus:ring-accent-500/20";
 ---
 
 <div>
   <label class={labelClasses} for={`${idPrefix}-name`}>
-    Nombre <span class="text-rose-500">*</span>
+    Nombre <span class="text-danger">*</span>
   </label>
   <input
     id={`${idPrefix}-name`}
@@ -78,11 +78,11 @@ const inputClasses =
 
 <div>
   <label class={labelClasses} for={`${idPrefix}-price`}>
-    Precio empaque <span class="text-rose-500">*</span>
+    Precio empaque <span class="text-danger">*</span>
   </label>
   <div class="relative">
     <span
-      class="pointer-events-none absolute inset-y-0 left-4 flex items-center text-sm font-bold text-slate-400"
+      class="pointer-events-none absolute inset-y-0 left-4 flex items-center text-sm font-bold text-subtle-foreground"
     >
       $
     </span>
@@ -100,10 +100,10 @@ const inputClasses =
 
 <div>
   <label class={labelClasses} for={`${idPrefix}-purchase-quantity`}>
-    Cant. empaque <span class="text-rose-500">*</span>
+    Cant. empaque <span class="text-danger">*</span>
   </label>
   <div
-    class="grid grid-cols-[minmax(0,1fr)_5.5rem] overflow-hidden rounded-xl border border-slate-200 bg-slate-50 transition focus-within:border-accent-300 focus-within:bg-white focus-within:ring-2 focus-within:ring-accent-500/20"
+    class="grid grid-cols-[minmax(0,1fr)_5.5rem] overflow-hidden rounded-xl border border-border bg-background transition focus-within:border-accent-300 focus-within:bg-card focus-within:ring-2 focus-within:ring-accent-500/20"
   >
     <input
       id={`${idPrefix}-purchase-quantity`}
@@ -111,12 +111,12 @@ const inputClasses =
       type="text"
       inputmode="decimal"
       value="1"
-      class="border-0 bg-transparent px-4 py-3 text-sm text-slate-800 outline-none placeholder:text-slate-400 font-mono"
+      class="border-0 bg-transparent px-4 py-3 text-sm text-foreground outline-none placeholder:text-subtle-foreground font-mono"
       autocomplete="off"
     />
     <select
       name="unit"
-      class="border-0 border-l border-slate-200 bg-white px-3 py-3 text-sm font-semibold text-slate-700 outline-none"
+      class="border-0 border-l border-border bg-card px-3 py-3 text-sm font-semibold text-secondary-foreground outline-none"
     >
       {
         UNIT_OPTIONS.map((option) => (

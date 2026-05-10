@@ -1,32 +1,33 @@
 ---
-import Layout from "../layouts/Layout.astro";
+import LandingLayout from "../layouts/LandingLayout.astro";
+
+const returnUrl = Astro.url.searchParams.get("return_url") || "/recipes";
+const isAuthenticated = Boolean(Astro.locals.user && Astro.locals.session);
+if (isAuthenticated) {
+  return Astro.redirect(returnUrl);
+}
 ---
 
-<Layout currentPage="sign-in" showSideBar={false} showHeader={false}>
-  <div
-    class="h-[calc(100vh-64px)] flex items-center justify-center bg-linear-to-br from-slate-50 to-slate-100"
-  >
-    <div class="w-full max-w-md">
-      {/* Card Container */}
-      <div class="bg-white rounded-2xl shadow-lg p-8 space-y-8">
-        {/* Header */}
+<LandingLayout>
+  <div class="h-screen flex items-center justify-center bg-linear-to-br from-background to-muted">
+    <div class="w-full max-w-md px-6">
+      <div class="bg-card rounded-2xl shadow-lg p-8 space-y-8">
         <div class="text-center space-y-3">
-          <h1 class="text-3xl font-bold text-slate-900">Bienvenido</h1>
-          <p class="text-slate-600">Inicia sesión para acceder a tus recetas</p>
+          <img
+            src="/kitchcalc_logo.svg"
+            alt="KitchCalc"
+            class="w-20 h-20 mx-auto rounded-2xl shadow-lg"
+          />
+          <h1 class="text-3xl font-bold text-foreground">Bienvenido</h1>
+          <p class="text-muted-foreground">
+            Inicia sesión para acceder a tus recetas
+          </p>
         </div>
 
-        {/* Divider */}
-        <div class="relative">
-          <div class="absolute inset-0 flex items-center">
-            <div class="w-full border-t border-slate-200"></div>
-          </div>
-        </div>
-
-        {/* Google Sign In Button */}
         <button
           id="google-sign-in"
           type="button"
-          class="w-full flex items-center justify-center gap-3 bg-white border-2 border-slate-200 rounded-xl py-4 px-6 text-sm font-semibold text-slate-700 hover:border-slate-300 hover:bg-slate-50 hover:shadow-md transition-all duration-200 active:scale-95"
+          class="w-full flex items-center justify-center gap-3 bg-card border border-border rounded-xl py-4 px-6 text-sm font-semibold text-secondary-foreground hover:border-border hover:bg-background hover:shadow-md transition-all duration-200 active:scale-95"
         >
           <img
             src="https://www.svgrepo.com/show/475656/google-color.svg"
@@ -38,20 +39,29 @@ import Layout from "../layouts/Layout.astro";
 
         <p
           id="sign-in-feedback"
-          class="hidden rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700"
+          class="hidden rounded-xl border border-warning-border bg-warning-bg px-4 py-3 text-sm text-warning"
           role="status"
           aria-live="polite"
         >
         </p>
 
-        {/* Footer */}
-        <p class="text-center text-xs text-slate-500">
+        <p class="text-center text-xs text-muted-foreground">
           Al iniciar sesión, aceptas nuestros términos de servicio
         </p>
+
+        <div class="text-center">
+          <a
+            href="/"
+            class="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+            Volver al inicio
+          </a>
+        </div>
       </div>
     </div>
   </div>
-</Layout>
+</LandingLayout>
 
 <script>
   import { signIn, SignInRateLimitError } from "../lib/sign-in";
@@ -75,6 +85,9 @@ import Layout from "../layouts/Layout.astro";
 
     const label = button.querySelector("span");
     const defaultLabel = label?.textContent ?? "Continuar con Google";
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const returnUrl = urlParams.get("return_url") || "/recipes";
 
     const setPendingState = (isPending: boolean) => {
       button.disabled = isPending;
@@ -106,7 +119,7 @@ import Layout from "../layouts/Layout.astro";
       setPendingState(true);
 
       try {
-        await signIn();
+        await signIn(returnUrl);
       } catch (error) {
         if (error instanceof SignInRateLimitError) {
           const retryAfterSeconds = error.retryAfterSeconds ?? 10;

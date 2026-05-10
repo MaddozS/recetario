@@ -1,4 +1,4 @@
-import pg from 'pg';
+import pg from "pg";
 const { Pool } = pg;
 
 async function run() {
@@ -8,12 +8,16 @@ async function run() {
     const ssl = isLocalUrl
       ? undefined
       : {
-          rejectUnauthorized: process.env.POSTGRES_SSL_INSECURE !== 'true',
-          ...(process.env.POSTGRES_SSL_CA ? { ca: process.env.POSTGRES_SSL_CA.replace(/\\n/g, '\n') } : {}),
+          rejectUnauthorized: process.env.POSTGRES_SSL_INSECURE !== "true",
+          ...(process.env.POSTGRES_SSL_CA
+            ? { ca: process.env.POSTGRES_SSL_CA.replace(/\\n/g, "\n") }
+            : {}),
         };
     const pool = new Pool({ connectionString: url, ssl });
     try {
-      await pool.query("ALTER TABLE recipes ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ");
+      await pool.query(
+        "ALTER TABLE recipes ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ",
+      );
       console.log("Postgres: column added");
     } catch (e) {
       console.log("Postgres: " + e.message);

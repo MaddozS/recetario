@@ -8,7 +8,9 @@ import {
   listIngredients,
   listIngredientUsage,
   updateIngredient,
+  countUserIngredients,
 } from "../lib/recipe-data";
+import { canCreateIngredient } from "../lib/subscription";
 import { parseNumberInput } from "../lib/form-utils";
 import { UNIT_OPTIONS, DEFAULT_UNIT } from "../lib/constants";
 import FeedbackAlert from "../components/FeedbackAlert.astro";
@@ -38,13 +40,13 @@ type Feedback = {
 };
 
 const labelClasses =
-  "mb-1.5 block text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500";
+  "mb-1.5 block text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground";
 const inputClasses =
-  "w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-accent-300 focus:bg-white focus:ring-2 focus:ring-accent-500/20";
+  "w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground outline-none transition placeholder:text-subtle-foreground focus:border-accent-300 focus:bg-card focus:ring-2 focus:ring-accent-500/20";
 const secondaryButtonClasses =
-  "inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-200 px-5 py-3 text-sm font-bold text-slate-600 transition-colors hover:bg-slate-50";
+  "inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-border bg-card px-5 py-3 text-sm font-bold text-muted-foreground transition-colors hover:bg-background";
 const primaryButtonClasses =
-  "inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-accent-600 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-accent-700 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400";
+  "inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-accent-600 px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-accent-700 disabled:cursor-not-allowed disabled:bg-muted disabled:text-subtle-foreground";
 
 const buildIngredientsUrl = (feedback?: Feedback) => {
   const params = new URLSearchParams();
@@ -115,6 +117,14 @@ if (Astro.request.method === "POST") {
     }
 
     if (action === "create") {
+      const ingredientCount = await countUserIngredients(recipeDataOwner);
+      if (!canCreateIngredient(Astro.locals.subscription, ingredientCount)) {
+        return redirectWithFeedback({
+          type: "error",
+          message: `Has alcanzado el limite de ${Astro.locals.subscription.ingredientsLimit} ingredientes de tu plan Free. Actualiza tu plan para crear mas.`,
+        });
+      }
+
       await createIngredient(
         {
           name: ingredientInput.name,
@@ -249,22 +259,22 @@ const ingredientUsage = await listIngredientUsage(recipeDataOwner);
   }
 
   <section
-    class="mb-6 hidden rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm lg:block"
+    class="mb-6 hidden rounded-2xl border border-border bg-card p-6 shadow-sm lg:block"
     transition:animate="slide"
   >
     <div
       class="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between"
     >
       <div>
-        <h2 class="text-2xl font-black text-slate-900">Agregar Insumo</h2>
-        <p class="mt-1 text-sm text-slate-500">
+        <h2 class="text-2xl font-black text-foreground">Agregar Insumo</h2>
+        <p class="mt-1 text-sm text-muted-foreground">
           Captura la información de tus ingredientes y empaques.
         </p>
       </div>
 
-      <div class="text-left text-xs text-slate-500 xl:text-right">
+      <div class="text-left text-xs text-muted-foreground xl:text-right">
         <p>
-          <span class="font-bold text-rose-500">*</span> Campos obligatorios
+          <span class="font-bold text-danger">*</span> Campos obligatorios
         </p>
         <p>Usa punto (.) o coma (,) para decimales</p>
       </div>
@@ -298,21 +308,21 @@ const ingredientUsage = await listIngredientUsage(recipeDataOwner);
   </section>
 
   <section
-    class="overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-sm"
+    class="overflow-hidden rounded-2xl border border-border bg-card shadow-sm"
     transition:animate="slide"
   >
-    <div class="border-b border-slate-200 px-4 py-4 sm:px-6">
+    <div class="border-b border-border px-4 py-4 sm:px-6">
       <div
         class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between"
       >
         <div>
           <div class="flex items-baseline gap-2">
-            <h2 class="text-xl font-black text-slate-900">Tus Ingredientes</h2>
-            <span class="text-sm font-semibold text-slate-400">
+            <h2 class="text-xl font-black text-foreground">Tus Ingredientes</h2>
+            <span class="text-sm font-semibold text-subtle-foreground">
               ({ingredients.length})
             </span>
           </div>
-          <p class="mt-1 text-sm text-slate-500">
+          <p class="mt-1 text-sm text-muted-foreground">
             Busca por ingrediente, proveedor o marca.
           </p>
         </div>
@@ -331,7 +341,7 @@ const ingredientUsage = await listIngredientUsage(recipeDataOwner);
 
           <label class="relative block w-full sm:w-80">
             <span
-              class="pointer-events-none absolute inset-y-0 left-4 flex items-center text-slate-400"
+              class="pointer-events-none absolute inset-y-0 left-4 flex items-center text-subtle-foreground"
             >
               <Icon name="lucide:search" size={16} />
             </span>
@@ -351,7 +361,7 @@ const ingredientUsage = await listIngredientUsage(recipeDataOwner);
         <>
           <div class="overflow-x-auto">
             <table class="min-w-full text-left">
-              <thead class="bg-slate-50 text-[11px] font-bold uppercase tracking-[0.16em] text-slate-500">
+              <thead class="bg-background text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
                 <tr>
                   <th class="px-6 py-4">Insumo</th>
                   <th class="px-6 py-4">Proveedor</th>
@@ -361,7 +371,7 @@ const ingredientUsage = await listIngredientUsage(recipeDataOwner);
                   <th class="px-6 py-4 text-right">Acciones</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-slate-100">
+              <tbody class="divide-y divide-border-light dark:divide-gray-950">
                 {ingredients.map((ingredient) => {
                   const usedRecipes = ingredientUsage[ingredient.id] || [];
                   const usedRecipesPayload = encodeURIComponent(
@@ -390,17 +400,17 @@ const ingredientUsage = await listIngredientUsage(recipeDataOwner);
 
                   return (
                     <tr
-                      class="transition-colors hover:bg-slate-50/70"
+                      class="transition-colors hover:bg-hover-muted dark:hover:bg-gray-950/70"
                       data-ingredient-row
                       data-search={searchText}
                     >
                       <td class="px-6 py-5">
                         <div class="min-w-56">
-                          <p class="font-semibold text-slate-800">
+                          <p class="font-semibold text-foreground">
                             {ingredient.name}
                           </p>
                           {ingredient.brand && (
-                            <p class="mt-1 text-xs text-slate-400">
+                            <p class="mt-1 text-xs text-subtle-foreground">
                               Marca: {ingredient.brand}
                             </p>
                           )}
@@ -408,22 +418,22 @@ const ingredientUsage = await listIngredientUsage(recipeDataOwner);
                       </td>
                       <td class="px-6 py-5">
                         {ingredient.supplier ? (
-                          <span class="text-sm font-medium text-slate-700">
+                          <span class="text-sm font-medium text-secondary-foreground">
                             {ingredient.supplier}
                           </span>
                         ) : (
-                          <span class="text-sm italic text-slate-400">
+                          <span class="text-sm italic text-subtle-foreground">
                             Sin proveedor
                           </span>
                         )}
                       </td>
                       <td class="px-6 py-5">
-                        <span class="text-sm font-mono font-semibold tabular-nums text-slate-700">
+                        <span class="text-sm font-mono font-semibold tabular-nums text-secondary-foreground">
                           ${ingredient.price.toFixed(2)}
                         </span>
                       </td>
-                      <td class="px-6 py-5 text-sm text-slate-600">
-                        <span class="font-mono font-semibold text-slate-700">
+                      <td class="px-6 py-5 text-sm text-muted-foreground">
+                        <span class="font-mono font-semibold text-secondary-foreground">
                           {ingredient.purchaseQuantity}
                         </span>{" "}
                         <span>{ingredient.unit}</span>
@@ -437,7 +447,7 @@ const ingredientUsage = await listIngredientUsage(recipeDataOwner);
                         <div class="flex items-center justify-end gap-2">
                           <button
                             type="button"
-                            class="inline-flex h-9 w-9 items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-accent-50 hover:text-accent-600"
+                            class="inline-flex h-9 w-9 items-center justify-center rounded-full text-subtle-foreground transition-colors hover:bg-accent-50 hover:text-accent-600"
                             title="Editar ingrediente"
                             aria-label="Editar ingrediente"
                             data-edit-trigger
@@ -448,7 +458,7 @@ const ingredientUsage = await listIngredientUsage(recipeDataOwner);
 
                           <button
                             type="button"
-                            class="inline-flex h-9 w-9 items-center justify-center rounded-full text-rose-500 transition-colors hover:bg-rose-50 hover:text-rose-600"
+                            class="inline-flex h-9 w-9 items-center justify-center rounded-full text-danger transition-colors hover:bg-danger-bg hover:text-danger"
                             title={
                               usedRecipes.length > 0
                                 ? "Ingrediente en uso"
@@ -477,17 +487,17 @@ const ingredientUsage = await listIngredientUsage(recipeDataOwner);
 
           <div
             hidden
-            class="border-t border-slate-100 px-6 py-10 text-center"
+            class="border-t border-border-light dark:border-gray-950 px-6 py-10 text-center"
             data-ingredient-search-empty
           >
             <div class="mx-auto flex max-w-sm flex-col items-center">
-              <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
+              <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-muted text-subtle-foreground">
                 <Icon name="lucide:search-x" size={20} />
               </div>
-              <p class="mt-4 text-sm font-semibold text-slate-700">
+              <p class="mt-4 text-sm font-semibold text-secondary-foreground">
                 No encontramos resultados
               </p>
-              <p class="mt-1 text-sm text-slate-500">
+              <p class="mt-1 text-sm text-muted-foreground">
                 Intenta con otro nombre, proveedor o marca.
               </p>
             </div>
@@ -509,22 +519,22 @@ const ingredientUsage = await listIngredientUsage(recipeDataOwner);
 
   <dialog
     id="create-ingredient-modal"
-    class="fixed inset-0 m-auto w-[calc(100vw-1.5rem)] max-w-lg rounded-[28px] p-0 backdrop:bg-slate-900/55 lg:hidden"
+    class="fixed inset-0 m-auto w-[calc(100vw-1.5rem)] max-w-lg rounded-3xl p-0 backdrop:bg-slate-900/55 lg:hidden"
   >
     <div
-      class="max-h-[min(82vh,44rem)] overflow-y-auto rounded-[28px] border border-slate-200 bg-white p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom)+4.75rem)] shadow-2xl"
+      class="max-h-[min(82vh,44rem)] overflow-y-auto rounded-3xl border border-border bg-card p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom)+4.75rem)] shadow-2xl"
     >
       <div class="flex items-start justify-between gap-4">
         <div>
-          <h3 class="text-xl font-black text-slate-900">Agregar Insumo</h3>
-          <p class="mt-1 text-sm text-slate-500">
+          <h3 class="text-xl font-black text-foreground">Agregar Insumo</h3>
+          <p class="mt-1 text-sm text-muted-foreground">
             Captura la información de tu empaque sin salir del listado.
           </p>
         </div>
 
         <button
           type="button"
-          class="inline-flex h-10 w-10 items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
+          class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border text-muted-foreground transition-colors hover:bg-background hover:text-secondary-foreground"
           aria-label="Cerrar modal"
           data-close-create-modal
         >
@@ -570,15 +580,15 @@ const ingredientUsage = await listIngredientUsage(recipeDataOwner);
 
   <dialog
     id="edit-ingredient-modal"
-    class="fixed inset-0 m-auto w-[calc(100vw-1.5rem)] max-w-xl rounded-[28px] p-0 backdrop:bg-slate-900/55"
+    class="fixed inset-0 m-auto w-[calc(100vw-1.5rem)] max-w-xl rounded-3xl p-0 backdrop:bg-slate-900/55"
   >
     <div
-      class="max-h-[min(82vh,44rem)] overflow-y-auto rounded-[28px] border border-slate-200 bg-white p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom)+1.5rem)] shadow-2xl"
+      class="max-h-[min(82vh,44rem)] overflow-y-auto rounded-3xl border border-border bg-card p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom)+1.5rem)] shadow-2xl"
     >
       <div class="flex items-start justify-between gap-4">
         <div>
-          <h3 class="text-xl font-black text-slate-900">Editar ingrediente</h3>
-          <p class="mt-1 text-sm text-slate-500">
+          <h3 class="text-xl font-black text-foreground">Editar ingrediente</h3>
+          <p class="mt-1 text-sm text-muted-foreground">
             Ajusta todos los datos del ingrediente sin perder consistencia en el
             costeo.
           </p>
@@ -586,7 +596,7 @@ const ingredientUsage = await listIngredientUsage(recipeDataOwner);
 
         <button
           type="button"
-          class="inline-flex h-10 w-10 items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
+          class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border text-muted-foreground transition-colors hover:bg-background hover:text-secondary-foreground"
           aria-label="Cerrar modal"
           data-close-edit-modal
         >
@@ -606,7 +616,7 @@ const ingredientUsage = await listIngredientUsage(recipeDataOwner);
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div class="md:col-span-2">
             <label class={labelClasses} for="edit-name">
-              Nombre <span class="text-rose-500">*</span>
+              Nombre <span class="text-danger">*</span>
             </label>
             <input
               id="edit-name"
@@ -641,11 +651,11 @@ const ingredientUsage = await listIngredientUsage(recipeDataOwner);
 
           <div>
             <label class={labelClasses} for="edit-price">
-              Precio empaque <span class="text-rose-500">*</span>
+              Precio empaque <span class="text-danger">*</span>
             </label>
             <div class="relative">
               <span
-                class="pointer-events-none absolute inset-y-0 left-4 flex items-center text-sm font-bold text-slate-400"
+                class="pointer-events-none absolute inset-y-0 left-4 flex items-center text-sm font-bold text-subtle-foreground"
               >
                 $
               </span>
@@ -662,22 +672,22 @@ const ingredientUsage = await listIngredientUsage(recipeDataOwner);
 
           <div>
             <label class={labelClasses} for="edit-purchase-quantity">
-              Cant. empaque <span class="text-rose-500">*</span>
+              Cant. empaque <span class="text-danger">*</span>
             </label>
             <div
-              class="grid grid-cols-[minmax(0,1fr)_5.5rem] overflow-hidden rounded-xl border border-slate-200 bg-slate-50 transition focus-within:border-accent-300 focus-within:bg-white focus-within:ring-2 focus-within:ring-accent-500/20"
+              class="grid grid-cols-[minmax(0,1fr)_5.5rem] overflow-hidden rounded-xl border border-border bg-background transition focus-within:border-accent-300 focus-within:bg-card focus-within:ring-2 focus-within:ring-accent-500/20"
             >
               <input
                 id="edit-purchase-quantity"
                 name="purchaseQuantity"
                 type="text"
                 inputmode="decimal"
-                class="border-0 bg-transparent px-4 py-3 text-sm text-slate-800 outline-none placeholder:text-slate-400 font-mono"
+                class="border-0 bg-transparent px-4 py-3 text-sm text-foreground outline-none placeholder:text-subtle-foreground font-mono"
                 autocomplete="off"
               />
               <select
                 name="unit"
-                class="border-0 border-l border-slate-200 bg-white px-3 py-3 text-sm font-semibold text-slate-700 outline-none"
+                class="border-0 border-l border-border bg-card px-3 py-3 text-sm font-semibold text-secondary-foreground outline-none"
               >
                 {
                   UNIT_OPTIONS.map((option) => (
@@ -719,28 +729,32 @@ const ingredientUsage = await listIngredientUsage(recipeDataOwner);
 
   <dialog
     id="delete-confirm-modal"
-    class="fixed inset-0 m-auto w-[calc(100vw-1.5rem)] max-w-md rounded-[28px] p-0 backdrop:bg-slate-900/55"
+    class="fixed inset-0 m-auto w-[calc(100vw-1.5rem)] max-w-md rounded-3xl p-0 backdrop:bg-slate-900/55"
   >
-    <div class="rounded-[28px] border border-slate-200 bg-white p-6 shadow-2xl">
+    <div class="rounded-3xl border border-border bg-card p-6 shadow-2xl">
       <div class="flex items-start gap-3">
         <div
-          class="flex h-11 w-11 items-center justify-center rounded-2xl bg-rose-50 text-rose-600"
+          class="flex h-11 w-11 items-center justify-center rounded-2xl bg-danger-bg text-danger"
         >
           <Icon name="lucide:trash-2" size={18} />
         </div>
         <div>
-          <h3 class="text-lg font-bold text-slate-900">
+          <h3 class="text-lg font-bold text-foreground">
             Confirmar eliminación
           </h3>
-          <p class="mt-2 text-sm text-slate-600">
+          <p class="mt-2 text-sm text-muted-foreground">
             Vas a eliminar el ingrediente <span
               id="delete-ingredient-name"
-              class="font-semibold text-slate-800"></span>.
+              class="font-semibold text-foreground"></span>.
           </p>
-          <p id="delete-usage-message" class="mt-2 text-xs text-slate-500"></p>
+          <p
+            id="delete-usage-message"
+            class="mt-2 text-xs text-muted-foreground"
+          >
+          </p>
           <ul
             id="delete-usage-list"
-            class="mt-2 list-disc space-y-1 pl-5 text-xs text-amber-700"
+            class="mt-2 list-disc space-y-1 pl-5 text-xs text-warning"
           >
           </ul>
         </div>
@@ -763,7 +777,7 @@ const ingredientUsage = await listIngredientUsage(recipeDataOwner);
         </button>
         <button
           type="submit"
-          class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-rose-600 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-60"
+          class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-danger-solid px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-danger-solid disabled:cursor-not-allowed disabled:opacity-60"
           id="confirm-delete"
         >
           Eliminar

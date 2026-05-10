@@ -185,8 +185,7 @@ export async function updatePresentation(
       values.push(salePrice);
     }
 
-    if (updates.length === 0)
-      return getPresentationById(driver, recipeId, id);
+    if (updates.length === 0) return getPresentationById(driver, recipeId, id);
 
     const client = await driver.pool.connect();
     try {
@@ -236,8 +235,7 @@ export async function updatePresentation(
     values.push(salePrice);
   }
 
-  if (updates.length === 0)
-    return getPresentationById(driver, recipeId, id);
+  if (updates.length === 0) return getPresentationById(driver, recipeId, id);
 
   driver.db.exec("BEGIN");
   try {

@@ -1,0 +1,415 @@
+---
+import { Icon } from "astro-icon/components";
+import Layout from "../layouts/Layout.astro";
+
+if (!Astro.locals.session || !Astro.locals.user) {
+  return Astro.redirect("/sign-in");
+}
+
+const subscription = Astro.locals.subscription;
+const isCurrentFree = subscription.tier === "free";
+const isCurrentBasic = subscription.tier === "basic";
+const isCurrentPro = subscription.tier === "pro";
+
+const priceIds = {
+  basicMonthly:
+    import.meta.env.STRIPE_PRICE_ID_BASIC_MONTHLY ||
+    process.env.STRIPE_PRICE_ID_BASIC_MONTHLY ||
+    "",
+  basicYearly:
+    import.meta.env.STRIPE_PRICE_ID_BASIC_YEARLY ||
+    process.env.STRIPE_PRICE_ID_BASIC_YEARLY ||
+    "",
+  proMonthly:
+    import.meta.env.STRIPE_PRICE_ID_PRO_MONTHLY ||
+    process.env.STRIPE_PRICE_ID_PRO_MONTHLY ||
+    "",
+  proYearly:
+    import.meta.env.STRIPE_PRICE_ID_PRO_YEARLY ||
+    process.env.STRIPE_PRICE_ID_PRO_YEARLY ||
+    "",
+};
+
+const plans = [
+  {
+    id: "free",
+    name: "Free",
+    priceMonthly: 0,
+    priceYearly: 0,
+    priceYearlyPerMonth: 0,
+    description: "Para empezar a costear",
+    cta: "Plan actual",
+    features: [
+      { text: "Hasta 10 recetas", included: true },
+      { text: "Hasta 30 ingredientes", included: true },
+      { text: "Costeo basico con margenes", included: true },
+      { text: "Categorias e instrucciones", included: true },
+      { text: "Duplicar recetas", included: false },
+      { text: "Fotos de recetas", included: false },
+      { text: "Stock de ingredientes", included: false },
+      { text: "Planificador de produccion", included: false },
+      { text: "Exportar a PDF", included: false },
+    ],
+    priceIds: { monthly: "", yearly: "" },
+  },
+  {
+    id: "basic",
+    name: "Basic",
+    priceMonthly: 5,
+    priceYearly: 48,
+    priceYearlyPerMonth: 4,
+    description: "Para negocios en crecimiento",
+    cta: "Suscribirse",
+    features: [
+      { text: "Hasta 75 recetas", included: true },
+      { text: "Ingredientes ilimitados", included: true },
+      { text: "Costeo basico con margenes", included: true },
+      { text: "Categorias e instrucciones", included: true },
+      { text: "Duplicar recetas", included: true },
+      { text: "Fotos de recetas", included: true },
+      { text: "Stock de ingredientes", included: true },
+      { text: "Planificador de produccion", included: false },
+      { text: "Exportar a PDF", included: false },
+    ],
+    priceIds: { monthly: priceIds.basicMonthly, yearly: priceIds.basicYearly },
+  },
+  {
+    id: "pro",
+    name: "Pro",
+    priceMonthly: 10,
+    priceYearly: 84,
+    priceYearlyPerMonth: 7,
+    description: "Para profesionales",
+    cta: "Suscribirse",
+    features: [
+      { text: "Recetas ilimitadas", included: true },
+      { text: "Ingredientes ilimitados", included: true },
+      { text: "Costeo basico con margenes", included: true },
+      { text: "Categorias e instrucciones", included: true },
+      { text: "Duplicar recetas", included: true },
+      { text: "Fotos de recetas", included: true },
+      { text: "Stock de ingredientes", included: true },
+      { text: "Planificador de produccion", included: true },
+      { text: "Exportar a PDF", included: true },
+    ],
+    priceIds: { monthly: priceIds.proMonthly, yearly: priceIds.proYearly },
+  },
+];
+
+const isPlanCurrent = (planId: string) => {
+  if (planId === "free") return isCurrentFree;
+  if (planId === "basic") return isCurrentBasic;
+  if (planId === "pro") return isCurrentPro;
+  return false;
+};
+
+const getButtonLabel = (planId: string) => {
+  if (isPlanCurrent(planId)) return "Plan actual";
+  if (planId === "pro" && isCurrentBasic) return "Actualizar a Pro";
+  if (planId !== "free") return "Suscribirse";
+  return "Plan actual";
+};
+
+const isSuccess = Astro.url.searchParams.get("success") === "1";
+const isCanceled = Astro.url.searchParams.get("canceled") === "1";
+---
+
+<Layout currentPage="pricing" showSideBar={false}>
+  <section class="mx-auto max-w-6xl">
+    {
+      isSuccess && (
+        <div class="rounded-2xl border border-success-border bg-success-bg p-4 mb-6">
+          <div class="flex items-center gap-3">
+            <Icon name="lucide:check-circle" size={20} class="text-success" />
+            <div>
+              <p class="text-success font-semibold">Suscripcion activada</p>
+              <p class="text-success text-sm">
+                Tu plan ya esta activo. Disfruta de todas las funciones.
+              </p>
+            </div>
+          </div>
+        </div>
+      )
+    }
+
+    {
+      isCanceled && (
+        <div class="rounded-2xl border border-warning-border bg-warning-bg p-4 mb-6">
+          <div class="flex items-center gap-3">
+            <Icon name="lucide:alert-triangle" size={20} class="text-warning" />
+            <div>
+              <p class="text-warning font-semibold">Suscripcion cancelada</p>
+              <p class="text-warning text-sm">
+                No se realizo ningun cargo. Puedes intentarlo de nuevo cuando
+                quieras.
+              </p>
+            </div>
+          </div>
+        </div>
+      )
+    }
+
+    <div class="text-center mb-8">
+      <h1 class="text-3xl font-black text-foreground">Planes y precios</h1>
+      <p class="mt-2 text-muted-foreground">
+        Elige el plan que mejor se adapte a tu negocio.
+      </p>
+    </div>
+
+    <div class="flex justify-center mb-8">
+      <div class="inline-flex bg-muted rounded-xl p-1" id="billing-toggle">
+        <button
+          type="button"
+          data-billing-period="monthly"
+          class="px-4 py-2 rounded-lg text-sm font-semibold bg-card shadow-sm transition-all text-foreground"
+          >Mensual</button
+        >
+        <button
+          type="button"
+          data-billing-period="yearly"
+          class="px-4 py-2 rounded-lg text-sm font-semibold text-muted-foreground transition-all"
+          >Anual <span class="text-success text-xs font-bold">-20%</span
+          ></button
+        >
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {
+        plans.map((plan) => {
+          const current = isPlanCurrent(plan.id);
+          const buttonLabel = getButtonLabel(plan.id);
+
+          return (
+            <div
+              class:list={[
+                "rounded-2xl border bg-card p-6 shadow-sm flex flex-col",
+                plan.id === "pro"
+                  ? "border-accent-300 ring-1 ring-accent-200"
+                  : "border-border",
+              ]}
+            >
+              {plan.id === "pro" && (
+                <span class="inline-flex self-start items-center rounded-full bg-accent-600 px-2.5 py-1 text-xs font-bold text-white mb-4">
+                  Mas popular
+                </span>
+              )}
+              {plan.id === "basic" && (
+                <span class="inline-flex self-start items-center rounded-full bg-success-bg px-2.5 py-1 text-xs font-bold text-success mb-4">
+                  Recomendado
+                </span>
+              )}
+
+              <h2 class="text-xl font-black text-foreground">{plan.name}</h2>
+              <p class="mt-1 text-sm text-muted-foreground">
+                {plan.description}
+              </p>
+
+              <div class="mt-4">
+                <div data-plan-price-block data-plan={plan.id}>
+                  <div data-plan-price-view="monthly">
+                    <p class="text-3xl font-black text-foreground">
+                      {plan.priceMonthly === 0
+                        ? "Gratis"
+                        : `$${plan.priceMonthly}`}
+                      {plan.id !== "free" && (
+                        <span class="text-sm font-semibold text-subtle-foreground">
+                          /mes
+                        </span>
+                      )}
+                    </p>
+                    {plan.id !== "free" && (
+                      <p class="mt-0.5 text-xs text-subtle-foreground">
+                        Facturado mensualmente
+                      </p>
+                    )}
+                  </div>
+                  <div data-plan-price-view="yearly" class="hidden">
+                    {plan.id !== "free" ? (
+                      <>
+                        <p class="text-3xl font-black text-foreground">
+                          ${plan.priceYearlyPerMonth}
+                          <span class="text-sm font-semibold text-subtle-foreground">
+                            /mes
+                          </span>
+                        </p>
+                        <p class="mt-0.5 text-xs text-subtle-foreground">
+                          USD ${plan.priceYearly} facturados anualmente
+                        </p>
+                      </>
+                    ) : (
+                      <p class="text-3xl font-black text-foreground">Gratis</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                data-subscribe-btn
+                data-plan={plan.id}
+                data-price-id-monthly={plan.priceIds.monthly}
+                data-price-id-yearly={plan.priceIds.yearly}
+                disabled={current}
+                class:list={[
+                  "mt-6 w-full inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-bold transition-colors",
+                  current
+                    ? "border border-border bg-background text-subtle-foreground cursor-not-allowed"
+                    : plan.id === "pro"
+                      ? "bg-accent-600 text-white hover:bg-accent-700"
+                      : plan.id === "free"
+                        ? "border border-border bg-background text-subtle-foreground cursor-not-allowed"
+                        : "border border-border bg-card text-muted-foreground hover:bg-background",
+                ]}
+              >
+                {buttonLabel}
+              </button>
+
+              <div class="mt-6 space-y-3 flex-1">
+                {plan.features.map((feature) => (
+                  <div class="flex items-center gap-2 text-sm">
+                    <Icon
+                      name={feature.included ? "lucide:check" : "lucide:x"}
+                      size={16}
+                      class:list={[
+                        feature.included
+                          ? "text-success"
+                          : "text-subtle-foreground",
+                      ]}
+                    />
+                    <span
+                      class:list={[
+                        feature.included
+                          ? "text-secondary-foreground"
+                          : "text-subtle-foreground",
+                      ]}
+                    >
+                      {feature.text}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })
+      }
+    </div>
+  </section>
+</Layout>
+
+<script>
+  function setupPricing() {
+    const toggle = document.getElementById("billing-toggle");
+    if (!toggle || toggle.dataset.bound === "1") return;
+    toggle.dataset.bound = "1";
+
+    let activePeriod: "monthly" | "yearly" = "monthly";
+
+    const monthlyBtn = toggle.querySelector('[data-billing-period="monthly"]');
+    const yearlyBtn = toggle.querySelector('[data-billing-period="yearly"]');
+
+    function updateToggleUI() {
+      if (
+        !(monthlyBtn instanceof HTMLButtonElement) ||
+        !(yearlyBtn instanceof HTMLButtonElement)
+      )
+        return;
+
+      if (activePeriod === "monthly") {
+        monthlyBtn.className =
+          "px-4 py-2 rounded-lg text-sm font-semibold bg-card text-foreground shadow-sm transition-all";
+        yearlyBtn.className =
+          "px-4 py-2 rounded-lg text-sm font-semibold text-muted-foreground transition-all";
+      } else {
+        yearlyBtn.className =
+          "px-4 py-2 rounded-lg text-sm font-semibold bg-card text-foreground shadow-sm transition-all";
+        monthlyBtn.className =
+          "px-4 py-2 rounded-lg text-sm font-semibold text-muted-foreground transition-all";
+      }
+    }
+
+    function syncPrices() {
+      document.querySelectorAll("[data-plan-price-view]").forEach((el) => {
+        if (!(el instanceof HTMLElement)) return;
+        if (el.dataset.planPriceView === activePeriod) {
+          el.classList.remove("hidden");
+        } else {
+          el.classList.add("hidden");
+        }
+      });
+    }
+
+    monthlyBtn?.addEventListener("click", () => {
+      activePeriod = "monthly";
+      updateToggleUI();
+      syncPrices();
+    });
+
+    yearlyBtn?.addEventListener("click", () => {
+      activePeriod = "yearly";
+      updateToggleUI();
+      syncPrices();
+    });
+
+    updateToggleUI();
+    syncPrices();
+
+    document.querySelectorAll("[data-subscribe-btn]").forEach((btn) => {
+      if (!(btn instanceof HTMLButtonElement)) return;
+      if (btn.dataset.subscribeBound === "1") return;
+      btn.dataset.subscribeBound = "1";
+
+      btn.addEventListener("click", async () => {
+        if (btn.disabled) return;
+
+        const plan = btn.dataset.plan;
+        if (plan === "free") return;
+
+        const priceId =
+          activePeriod === "monthly"
+            ? btn.dataset.priceIdMonthly
+            : btn.dataset.priceIdYearly;
+
+        if (!priceId) {
+          alert("Precio no configurado para este plan.");
+          return;
+        }
+
+        const successUrl = `${window.location.origin}/settings/billing?success=1`;
+        const cancelUrl = `${window.location.origin}/pricing?canceled=1`;
+
+        btn.disabled = true;
+        const originalText = btn.textContent;
+        btn.textContent = "Redirigiendo...";
+
+        try {
+          const res = await fetch("/api/stripe/checkout", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ priceId, successUrl, cancelUrl }),
+          });
+
+          const data = await res.json();
+          if (data.url) {
+            window.location.href = data.url;
+          } else {
+            throw new Error(data.error || "Error desconocido");
+          }
+        } catch (err) {
+          btn.disabled = false;
+          btn.textContent = originalText;
+          alert(
+            "Error: " +
+              (err instanceof Error
+                ? err.message
+                : "No se pudo iniciar el pago"),
+          );
+        }
+      });
+    });
+  }
+
+  document.addEventListener("astro:page-load", setupPricing);
+  document.addEventListener("astro:after-swap", setupPricing);
+  setupPricing();
+</script>
