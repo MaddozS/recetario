@@ -124,9 +124,19 @@ export const auth = betterAuth({
 if (authDatabase && !authGlobals.__betterAuthMigrations) {
   authGlobals.__betterAuthMigrations = (async () => {
     const context = await auth.$context;
-    await context.runMigrations();
-  })().catch((error: unknown) => {
-    console.error("Failed to run Better Auth migrations:", error);
-    throw error;
-  });
+    try {
+      await context.runMigrations();
+    } catch (error: unknown) {
+      const msg =
+        error && typeof error === "object" && "code" in error
+          ? (error as { code: string }).code
+          : "";
+      if (msg === "42P07") {
+        console.info("Better Auth tables already exist, skipping migrations.");
+      } else {
+        console.error("Failed to run Better Auth migrations:", error);
+        throw error;
+      }
+    }
+  })();
 }
