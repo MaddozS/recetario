@@ -56,7 +56,7 @@ if (feedback) {
 ---
 
 <Layout currentPage="settings" showSideBar={false}>
-  <section class="mx-auto max-w-2xl space-y-8">
+  <section class="mx-auto max-w-2xl space-y-8" transition:animate="slide">
     {
       Astro.url.searchParams.has("type") && (
         <div
