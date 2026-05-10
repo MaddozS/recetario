@@ -24,13 +24,15 @@ ALTER TABLE recipes ADD COLUMN IF NOT EXISTS instructions TEXT;
 ### 1.2 Migración en `createTables()` (`src/lib/db/connection.ts`)
 
 **Postgres** — agregar bloque:
+
 ```ts
 await driver.pool.query(
-  "ALTER TABLE recipes ADD COLUMN IF NOT EXISTS instructions TEXT"
+  "ALTER TABLE recipes ADD COLUMN IF NOT EXISTS instructions TEXT",
 );
 ```
 
 **SQLite** — agregar después del bloque `category`:
+
 ```ts
 if (!recipeColumns.some((c) => c.name === "instructions")) {
   driver.db.exec("ALTER TABLE recipes ADD COLUMN instructions TEXT");
@@ -49,11 +51,11 @@ Agregar `instructions` al INSERT de recipes en ambas ramas. Leer `recipe.instruc
 
 Agregar `instructions?: string;` a:
 
-| Tipo | Uso |
-|------|-----|
+| Tipo                    | Uso                       |
+| ----------------------- | ------------------------- |
 | `RecipeWithIngredients` | Detalle de receta (vista) |
-| `UpdateRecipeInput` | Edición de receta |
-| `RecipeSeed` | Seed data |
+| `UpdateRecipeInput`     | Edición de receta         |
+| `RecipeSeed`            | Seed data                 |
 
 No se necesita en `RecipeSummary` ni `CreateRecipeInput` (las instrucciones no se muestran en sidebar ni se piden al crear).
 
@@ -62,6 +64,7 @@ No se necesita en `RecipeSummary` ni `CreateRecipeInput` (las instrucciones no s
 ## 3. Helpers (`src/lib/db/helpers.ts`)
 
 No se necesita helper nuevo. Usar `normalizeOptionalText()` existente:
+
 - `undefined` = no hay instrucciones
 - `string` = se renderiza
 
@@ -76,6 +79,7 @@ Agregar `instructions` al SELECT de recipes en ambas ramas. Incluir en el objeto
 ### 4.2 `updateRecipe()`
 
 Agregar `instructions = ?` al UPDATE SQL. Normalizar con `normalizeOptionalText()`:
+
 ```ts
 const instructions = normalizeOptionalText(input.instructions) ?? null;
 ```
@@ -83,6 +87,7 @@ const instructions = normalizeOptionalText(input.instructions) ?? null;
 ### 4.3 `connection.ts` — `seedIfNeeded()`
 
 Agregar `instructions` a los INSERT de recipes en ambas ramas:
+
 - Postgres: agregar `$N` al VALUES + parámetro
 - SQLite: agregar `?` al VALUES + parámetro
 
@@ -93,6 +98,7 @@ Agregar `instructions` a los INSERT de recipes en ambas ramas:
 Agregar `instructions` de ejemplo a recetas representativas, o `null`. Formato sugerido — pasos numerados con Markdown:
 
 Para Panqué de Plátano:
+
 ```json
 "instructions": "1. Precalentar el horno a 180°C (350°F).\n2. En un tazón grande, machacar los plátanos maduros con un tenedor.\n3. Agregar los huevos, el aceite/esencia de vainilla, y la leche. Batir bien.\n4. En otro tazón, mezclar la harina, el polvo para hornear, el bicarbonato, la canela y la sal.\n5. Incorporar los ingredientes secos a los húmedos, mezclando solo hasta integrar.\n6. Agregar las chispas de chocolate (opcional) y envolver suavemente.\n7. Verter en molde engrasado y hornear por 45-50 minutos, o hasta que al insertar un palillo salga limpio.\n8. Dejar enfriar 10 minutos, desmoldar y enfriar completamente sobre una rejilla."
 ```
@@ -139,6 +145,7 @@ No mostrar la sección para mantener la UI limpia (mismo patrón que `comment` e
 ```
 
 Importar `marked` en el frontmatter:
+
 ```ts
 import { marked } from "marked";
 ```
@@ -159,9 +166,11 @@ Dentro del bloque `{isEditMode && ( ... )}` que envuelve el formulario de edici�
     rows={10}
     class="w-full rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700 font-mono leading-relaxed focus:ring-2 focus:ring-accent-500/20 focus:border-accent-500 resize-y transition-colors placeholder:text-slate-400"
     placeholder={`1. Precalentar el horno a 180°C.\n2. Mezclar ingredientes secos.\n3. ...`}
-  >{recipe.instructions || ''}</textarea>
+    >{recipe.instructions || ""}</textarea
+  >
   <p class="mt-2 text-xs text-slate-400 leading-relaxed">
-    Escribe un paso por línea. Puedes usar Markdown básico (negritas, listas, etc.).
+    Escribe un paso por línea. Puedes usar Markdown básico (negritas, listas,
+    etc.).
   </p>
 </div>
 ```
@@ -169,19 +178,26 @@ Dentro del bloque `{isEditMode && ( ... )}` que envuelve el formulario de edici�
 ### 7.5 POST handler (`action === 'update_recipe'`)
 
 Después de leer `category` (si existe) o de fixedCostsPercentage:
+
 ```ts
-const instructions = String(formData.get('instructions') || '').trim() || undefined;
+const instructions =
+  String(formData.get("instructions") || "").trim() || undefined;
 ```
 
 Agregar al objeto de input:
+
 ```ts
-await updateRecipe(recipeIdNumber, {
-  name,
-  desiredMargin,
-  fixedCostsPercentage,
-  instructions,
-  ingredients: ingredientsToSave,
-}, recipeDataOwner);
+await updateRecipe(
+  recipeIdNumber,
+  {
+    name,
+    desiredMargin,
+    fixedCostsPercentage,
+    instructions,
+    ingredients: ingredientsToSave,
+  },
+  recipeDataOwner,
+);
 ```
 
 Nota: `updateRecipe` debe manejar `instructions` opcional (`undefined` = no cambiar).
@@ -242,12 +258,12 @@ Agregar estilos base para el contenido renderizado de Markdown. Tailwind typogra
 
 ## 10. Archivos modificados (resumen)
 
-| Archivo | Cambio |
-|---------|--------|
-| `src/lib/db/connection.ts` | Migration SQL + bump schema version + seed insert |
-| `src/lib/db/types.ts` | `instructions?: string` en 3 tipos |
-| `src/lib/db/recipes.ts` | `getRecipeById` SELECT + `updateRecipe` SET |
-| `data/recipes.json` | `"instructions"` en recetas seed |
-| `package.json` | Dependencia `marked` |
+| Archivo                            | Cambio                                                   |
+| ---------------------------------- | -------------------------------------------------------- |
+| `src/lib/db/connection.ts`         | Migration SQL + bump schema version + seed insert        |
+| `src/lib/db/types.ts`              | `instructions?: string` en 3 tipos                       |
+| `src/lib/db/recipes.ts`            | `getRecipeById` SELECT + `updateRecipe` SET              |
+| `data/recipes.json`                | `"instructions"` en recetas seed                         |
+| `package.json`                     | Dependencia `marked`                                     |
 | `src/pages/recipes/[recipe].astro` | Nueva sección Preparación + textarea edit + POST handler |
-| `src/styles/global.css` | Estilos `.recipe-instructions` (ol, li, p, strong) |
+| `src/styles/global.css`            | Estilos `.recipe-instructions` (ol, li, p, strong)       |
