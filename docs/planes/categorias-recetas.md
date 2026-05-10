@@ -24,13 +24,15 @@ ALTER TABLE recipes ADD COLUMN IF NOT EXISTS category TEXT;
 ### 1.2 Migración en `createTables()` (`src/lib/db/connection.ts`)
 
 **Postgres** — agregar bloque después de la migración de `updated_at`:
+
 ```ts
 await driver.pool.query(
-  "ALTER TABLE recipes ADD COLUMN IF NOT EXISTS category TEXT"
+  "ALTER TABLE recipes ADD COLUMN IF NOT EXISTS category TEXT",
 );
 ```
 
 **SQLite** — agregar condicional vía `PRAGMA table_info` en la sección de recipeColumns, después del bloque `updated_at`:
+
 ```ts
 if (!recipeColumns.some((c) => c.name === "category")) {
   driver.db.exec("ALTER TABLE recipes ADD COLUMN category TEXT");
@@ -49,19 +51,20 @@ Agregar `category` al INSERT de recipes en ambas ramas (Postgres: `$N` adicional
 
 Agregar `category?: string;` a:
 
-| Tipo | Uso |
-|------|-----|
-| `RecipeSummary` | Sidebar listado |
-| `RecipeWithIngredients` | Detalle de receta |
-| `CreateRecipeInput` | Creación de receta |
-| `UpdateRecipeInput` | Edición de receta |
-| `RecipeSeed` | Seed data |
+| Tipo                    | Uso                |
+| ----------------------- | ------------------ |
+| `RecipeSummary`         | Sidebar listado    |
+| `RecipeWithIngredients` | Detalle de receta  |
+| `CreateRecipeInput`     | Creación de receta |
+| `UpdateRecipeInput`     | Edición de receta  |
+| `RecipeSeed`            | Seed data          |
 
 ---
 
 ## 3. Helpers (`src/lib/db/helpers.ts`)
 
 Agregar:
+
 ```ts
 export function normalizeCategory(value: unknown): string | null {
   return normalizeOptionalText(value) ?? null;
@@ -105,6 +108,7 @@ Agregar `category` a los INSERT de recipes en ambas ramas. Leer `recipe.category
 Agregar `"category": "General"` a cada uno de los 7 registros de receta (ids: 101-107).
 
 Ejemplo:
+
 ```json
 {
   "id": 101,
@@ -124,10 +128,13 @@ Ejemplo:
 ### 6.1 Mostrar categoría real (línea 96)
 
 Cambiar:
+
 ```astro
 const category = "Sin categoría";
 ```
+
 Por:
+
 ```astro
 const category = recipe.category || "Sin categoría";
 ```
@@ -139,8 +146,7 @@ const category = recipe.category || "Sin categoría";
   href={`/recipes/${recipe.id}`}
   class="recipe-item ..."
   data-name={recipe.name.toLowerCase()}
-  data-category={recipe.category || ''}
->
+  data-category={recipe.category || ""}></a>
 ```
 
 ### 6.3 Filtro por categoría (alcance crítico recomendado)
@@ -150,20 +156,23 @@ Agregar `<select>` debajo del search input con opciones dinámicas extraídas de
 ```astro
 <select id="categoryFilter" class="w-full mt-2 ...">
   <option value="">Todas las categorías</option>
-  {[...new Set(recipes.map(r => r.category).filter(Boolean))].map(cat => (
-    <option value={cat}>{cat}</option>
-  ))}
+  {
+    [...new Set(recipes.map((r) => r.category).filter(Boolean))].map((cat) => (
+      <option value={cat}>{cat}</option>
+    ))
+  }
 </select>
 ```
 
 JS de filtrado (extender el event listener existente):
+
 ```js
-const categoryFilter = document.getElementById('categoryFilter');
+const categoryFilter = document.getElementById("categoryFilter");
 if (categoryFilter) {
-  categoryFilter.addEventListener('change', () => {
+  categoryFilter.addEventListener("change", () => {
     const cat = categoryFilter.value;
-    recipeItems.forEach(item => {
-      const itemCat = item.getAttribute('data-category') || '';
+    recipeItems.forEach((item) => {
+      const itemCat = item.getAttribute("data-category") || "";
       const matchesCat = !cat || itemCat === cat;
       // Combinar con filtro de búsqueda existente
     });
@@ -178,53 +187,69 @@ if (categoryFilter) {
 ### 7.1 Badge de categoría (líneas 460-463)
 
 Cambiar:
+
 ```astro
-<span class="flex items-center gap-1.5 bg-accent-50 text-accent-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider">
+<span
+  class="flex items-center gap-1.5 bg-accent-50 text-accent-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider"
+>
   <Icon name="lucide:tag" size={12} /> [Categoría]
 </span>
 ```
 
 Por:
+
 ```astro
-<span class="flex items-center gap-1.5 bg-accent-50 text-accent-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider">
-  <Icon name="lucide:tag" size={12} /> {recipe.category || "Sin categoría"}
+<span
+  class="flex items-center gap-1.5 bg-accent-50 text-accent-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider"
+>
+  <Icon name="lucide:tag" size={12} />
+  {recipe.category || "Sin categoría"}
 </span>
 ```
 
 ### 7.2 Modo edición — Input de categoría
 
 Agregar campo editable en el header (junto a `recipeName`):
+
 ```astro
-{isEditMode && (
-  <div class="mt-2">
-    <input
-      type="text"
-      name="category"
-      form={recipeEditFormId}
-      class="w-full max-w-xs bg-slate-50 border border-slate-200 rounded-lg p-2 text-sm text-slate-700 focus:ring-2 focus:ring-accent-500/20"
-      value={recipe.category || ''}
-      placeholder="Categoría (ej. Panes, Galletas, Pasteles)"
-    />
-  </div>
-)}
+{
+  isEditMode && (
+    <div class="mt-2">
+      <input
+        type="text"
+        name="category"
+        form={recipeEditFormId}
+        class="w-full max-w-xs bg-slate-50 border border-slate-200 rounded-lg p-2 text-sm text-slate-700 focus:ring-2 focus:ring-accent-500/20"
+        value={recipe.category || ""}
+        placeholder="Categoría (ej. Panes, Galletas, Pasteles)"
+      />
+    </div>
+  )
+}
 ```
 
 ### 7.3 POST handler (`action === 'update_recipe'`)
 
 Después de leer `fixedCostsPercentage`:
+
 ```ts
-const category = String(formData.get('category') || '').trim() || null;
+const category = String(formData.get("category") || "").trim() || null;
 ```
 
 Agregar al objeto de input:
+
 ```ts
-await updateRecipe(recipeIdNumber, {
-  name,
-  category,
-  desiredMargin,
-  fixedCostsPercentage,
-  ingredients: ingredientsToSave,
-}, recipeDataOwner);
+await updateRecipe(
+  recipeIdNumber,
+  {
+    name,
+    category,
+    desiredMargin,
+    fixedCostsPercentage,
+    ingredients: ingredientsToSave,
+  },
+  recipeDataOwner,
+);
 ```
 
 ---
@@ -243,12 +268,12 @@ await updateRecipe(recipeIdNumber, {
 
 ## 9. Archivos modificados (resumen)
 
-| Archivo | Cambio |
-|---------|--------|
-| `src/lib/db/connection.ts` | Migration SQL + bump schema version + seed insert |
-| `src/lib/db/types.ts` | `category?: string` en 5 tipos |
-| `src/lib/db/helpers.ts` | `normalizeCategory()` |
-| `src/lib/db/recipes.ts` | 4 funciones: SELECT/INSERT/UPDATE con category |
-| `data/recipes.json` | `"category": "General"` en 7 recetas |
-| `src/components/RecipesSidebar.astro` | category dinámica + filtro |
-| `src/pages/recipes/[recipe].astro` | Badge + input edit + POST handler |
+| Archivo                               | Cambio                                            |
+| ------------------------------------- | ------------------------------------------------- |
+| `src/lib/db/connection.ts`            | Migration SQL + bump schema version + seed insert |
+| `src/lib/db/types.ts`                 | `category?: string` en 5 tipos                    |
+| `src/lib/db/helpers.ts`               | `normalizeCategory()`                             |
+| `src/lib/db/recipes.ts`               | 4 funciones: SELECT/INSERT/UPDATE con category    |
+| `data/recipes.json`                   | `"category": "General"` en 7 recetas              |
+| `src/components/RecipesSidebar.astro` | category dinámica + filtro                        |
+| `src/pages/recipes/[recipe].astro`    | Badge + input edit + POST handler                 |

@@ -71,6 +71,7 @@ const showUpgradeModal = Astro.url.searchParams.get("upgrade") === "1";
   }
 
   <section
+    transition:animate="slide"
     class="mx-auto max-w-3xl rounded-2xl border border-border bg-card p-8 shadow-md"
   >
     <EmptyState
