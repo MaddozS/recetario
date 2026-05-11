@@ -10,7 +10,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "prisma:generate": "npx prisma generate && DATABASE_URL=postgres://dummy npx prisma generate"
   },
   "dependencies": {
     "@astrojs/vercel": "^10.0.6",
