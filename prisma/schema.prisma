@@ -1,0 +1,165 @@
+datasource db {
+  provider = "sqlite"
+}
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+model Ingredient {
+  id               Int                 @id @default(autoincrement())
+  ownerId          String              @map("owner_id")
+  name             String
+  unit             String
+  price            Float
+  purchaseQuantity Float               @map("purchase_quantity")
+  brand            String?
+  supplier         String?
+  recipeIngredients RecipeIngredient[]
+
+  @@index([ownerId])
+  @@map("ingredients")
+}
+
+model Recipe {
+  id                  Int                  @id @default(autoincrement())
+  ownerId             String               @map("owner_id")
+  name                String
+  category            String?
+  instructions        String?
+  desiredMargin       Float                @map("desired_margin")
+  fixedCostsPercentage Float               @map("fixed_costs_percentage")
+  updatedAt           DateTime?            @map("updated_at")
+  recipeIngredients   RecipeIngredient[]
+  presentations       RecipePresentation[]
+
+  @@index([ownerId])
+  @@map("recipes")
+}
+
+model RecipeIngredient {
+  recipeId     Int         @map("recipe_id")
+  ingredientId Int         @map("ingredient_id")
+  quantity     Float
+  unit         String
+  comment      String?
+  recipe       Recipe      @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  ingredient   Ingredient  @relation(fields: [ingredientId], references: [id], onDelete: Restrict)
+
+  @@id([recipeId, ingredientId])
+  @@map("recipe_ingredients")
+}
+
+model RecipePresentation {
+  id            Int      @id @default(autoincrement())
+  recipeId      Int      @map("recipe_id")
+  name          String
+  unitsPerBatch Float    @map("units_per_batch")
+  salePrice     Float?   @map("sale_price")
+  recipe        Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+
+  @@map("recipe_presentations")
+}
+
+model UserPreferences {
+  userId      String    @id @map("user_id")
+  theme       String
+  accentColor String    @map("accent_color")
+  updatedAt   DateTime? @map("updated_at")
+
+  @@map("user_preferences")
+}
+
+model SubscriptionPlan {
+  id               String          @id
+  stripePriceId    String          @map("stripe_price_id")
+  name             String
+  tier             String
+  billingInterval  String          @map("billing_interval")
+  priceCents       Int             @map("price_cents")
+  recipesLimit     Int?            @map("recipes_limit")
+  ingredientsLimit Int?            @map("ingredients_limit")
+  featuresJson     String          @map("features_json")
+  subscriptions    Subscription[]
+
+  @@map("subscription_plans")
+}
+
+model User {
+  id            String    @id
+  name          String
+  email         String    @unique
+  emailVerified Boolean   @map("email_verified")
+  image         String?
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  accounts      Account[]
+  sessions      Session[]
+
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime @map("expires_at")
+  token     String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  ipAddress String?  @map("ip_address")
+  userAgent String?  @map("user_agent")
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String    @map("account_id")
+  providerId            String    @map("provider_id")
+  userId                String    @map("user_id")
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?   @map("access_token")
+  refreshToken          String?   @map("refresh_token")
+  idToken               String?   @map("id_token")
+  accessTokenExpiresAt  DateTime? @map("access_token_expires_at")
+  refreshTokenExpiresAt DateTime? @map("refresh_token_expires_at")
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime @map("expires_at")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@map("verification")
+}
+
+model Subscription {
+  id                   String           @id
+  userId               String           @map("user_id")
+  stripeCustomerId     String?          @map("stripe_customer_id")
+  stripeSubscriptionId String?          @unique @map("stripe_subscription_id")
+  planId               String           @map("plan_id")
+  status               String
+  currentPeriodStart   DateTime?        @map("current_period_start")
+  currentPeriodEnd     DateTime?        @map("current_period_end")
+  cancelAtPeriodEnd    Boolean          @default(false) @map("cancel_at_period_end")
+  trialEnd             DateTime?        @map("trial_end")
+  createdAt            DateTime         @default(now()) @map("created_at")
+  plan                 SubscriptionPlan @relation(fields: [planId], references: [id])
+
+  @@index([userId, status])
+  @@map("subscriptions")
+}
