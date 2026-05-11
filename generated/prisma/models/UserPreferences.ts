@@ -960,6 +960,7 @@ export type UserPreferencesCreateManyArgs<ExtArgs extends runtime.Types.Extensio
    * The data used to create many UserPreferences.
    */
   data: Prisma.UserPreferencesCreateManyInput | Prisma.UserPreferencesCreateManyInput[]
+  skipDuplicates?: boolean
 }
 
 /**
@@ -978,6 +979,7 @@ export type UserPreferencesCreateManyAndReturnArgs<ExtArgs extends runtime.Types
    * The data used to create many UserPreferences.
    */
   data: Prisma.UserPreferencesCreateManyInput | Prisma.UserPreferencesCreateManyInput[]
+  skipDuplicates?: boolean
 }
 
 /**

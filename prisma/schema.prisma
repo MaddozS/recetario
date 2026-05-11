@@ -1,5 +1,5 @@
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
 }
 
 generator client {
@@ -30,7 +30,7 @@ model Recipe {
   instructions        String?
   desiredMargin       Float                @map("desired_margin")
   fixedCostsPercentage Float               @map("fixed_costs_percentage")
-  updatedAt           DateTime?            @map("updated_at")
+  updatedAt           DateTime?            @map("updated_at") @db.Timestamptz()
   recipeIngredients   RecipeIngredient[]
   presentations       RecipePresentation[]
 
@@ -66,7 +66,7 @@ model UserPreferences {
   userId      String    @id @map("user_id")
   theme       String
   accentColor String    @map("accent_color")
-  updatedAt   DateTime? @map("updated_at")
+  updatedAt   DateTime? @map("updated_at") @db.Timestamptz()
 
   @@map("user_preferences")
 }
@@ -153,11 +153,11 @@ model Subscription {
   stripeSubscriptionId String?          @unique @map("stripe_subscription_id")
   planId               String           @map("plan_id")
   status               String
-  currentPeriodStart   DateTime?        @map("current_period_start")
-  currentPeriodEnd     DateTime?        @map("current_period_end")
+  currentPeriodStart   DateTime?        @map("current_period_start") @db.Timestamptz()
+  currentPeriodEnd     DateTime?        @map("current_period_end") @db.Timestamptz()
   cancelAtPeriodEnd    Boolean          @default(false) @map("cancel_at_period_end")
-  trialEnd             DateTime?        @map("trial_end")
-  createdAt            DateTime         @default(now()) @map("created_at")
+  trialEnd             DateTime?        @map("trial_end") @db.Timestamptz()
+  createdAt            DateTime         @default(now()) @map("created_at") @db.Timestamptz()
   plan                 SubscriptionPlan @relation(fields: [planId], references: [id])
 
   @@index([userId, status])

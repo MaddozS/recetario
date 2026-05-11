@@ -1,17 +1,26 @@
 import "dotenv/config";
-import { PrismaClient } from "../generated/prisma/client.js";
-import { PrismaPg } from "@prisma/adapter-pg";
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 
-const url = process.env.DATABASE_URL;
-if (!url) {
-  throw new Error("DATABASE_URL environment variable is not set");
-}
-
+const url = process.env.DATABASE_URL ?? "";
 const isSQLite = url.startsWith("file:");
-const adapter = isSQLite
-  ? new PrismaBetterSqlite3({ url })
-  : new PrismaPg(url);
+
+let PrismaClient: any;
+let adapter: any;
+
+if (isSQLite) {
+  const [{ PrismaClient: Pc }, { PrismaBetterSqlite3 }] = await Promise.all([
+    import("../generated/prisma-sqlite/client.js"),
+    import("@prisma/adapter-better-sqlite3"),
+  ]);
+  PrismaClient = Pc;
+  adapter = new PrismaBetterSqlite3({ url });
+} else {
+  const [{ PrismaClient: Pc }, { PrismaPg }] = await Promise.all([
+    import("../generated/prisma/client.js"),
+    import("@prisma/adapter-pg"),
+  ]);
+  PrismaClient = Pc;
+  adapter = new PrismaPg(url);
+}
 
 const prisma = new PrismaClient({ adapter });
 
