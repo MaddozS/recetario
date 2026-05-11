@@ -1,4 +1,4 @@
-import "../.astro/types.d.ts";
+/// <reference types="astro/client" />
 
 type AppUser = {
   id: string;
