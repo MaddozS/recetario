@@ -21,9 +21,6 @@ pnpm-debug.log*
 data/dev.db
 data/dev.db-shm
 data/dev.db-wal
-data/auth.db
-data/auth.db-shm
-data/auth.db-wal
 
 # macOS-specific files
 .DS_Store
