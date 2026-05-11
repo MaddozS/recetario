@@ -15,10 +15,15 @@
   "dependencies": {
     "@astrojs/vercel": "^10.0.6",
     "@iconify-json/lucide": "^1.2.85",
+    "@prisma/adapter-better-sqlite3": "^7.8.0",
+    "@prisma/adapter-pg": "^7.8.0",
+    "@prisma/client": "^7.8.0",
     "@tailwindcss/vite": "^4.1.18",
     "astro": "^6.2.1",
     "astro-icon": "^1.1.5",
-    "better-auth": "^1.4.13",
+    "better-auth": "^1.6.10",
+    "better-sqlite3": "^12.9.0",
+    "dotenv": "^17.4.2",
     "marked": "^18.0.3",
     "pg": "^8.20.0",
     "stripe": "^22.1.1",
@@ -27,12 +32,22 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.9",
     "@eslint/js": "^10.0.1",
+    "@types/node": "^25.6.2",
     "@types/pg": "^8.20.0",
     "eslint": "^10.3.0",
     "eslint-plugin-astro": "^1.7.0",
     "prettier": "^3.8.3",
     "prettier-plugin-astro": "^0.14.1",
+    "prisma": "^7.8.0",
+    "tsx": "^4.21.0",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.59.1"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@prisma/engines",
+      "better-sqlite3",
+      "prisma"
+    ]
   }
 }
