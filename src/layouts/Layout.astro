@@ -2,7 +2,7 @@
 import '../styles/global.css'
 import { ClientRouter } from "astro:transitions";
 import { Icon } from 'astro-icon/components'
-import { getRecipeDataOwner, listRecipeSummaries, getUserPreferences } from '../lib/recipe-data'
+import { listRecipeSummaries, getUserPreferences } from '../lib/recipe-data'
 import { hasFeature } from '../lib/subscription'
 import { getAccentCssVars } from '../lib/accent-colors'
 import type { AccentFamily } from '../lib/accent-colors'
@@ -14,14 +14,15 @@ const { currentRecipe, showSideBar, showHeader = true, removeContentWrapper = fa
 const showMobileNav = currentPage === 'recipes' || currentPage === 'ingredients' || currentPage === 'settings' || currentPage === 'production';
 const isAuthenticated = Boolean(Astro.locals.user && Astro.locals.session);
 const authenticatedUserName = Astro.locals.user?.name || Astro.locals.user?.email || null;
-const recipeDataOwner = Astro.locals.user ? getRecipeDataOwner(Astro.locals.user) : null;
 const subscription = Astro.locals.subscription;
 const showProduction = subscription ? hasFeature(subscription, 'production_planner') : false;
-const recipes = recipeDataOwner ? await listRecipeSummaries(recipeDataOwner) : [];
-const recipeHref = currentRecipe ? `/recipes/${currentRecipe}` : '/recipes';
-
 const userId = Astro.locals.user?.id;
-const userPrefs = userId ? await getUserPreferences(userId) : null;
+
+const [recipes, userPrefs] = await Promise.all([
+  (showSideBar && userId) ? listRecipeSummaries(userId) : Promise.resolve([]),
+  userId ? getUserPreferences(userId) : Promise.resolve(null),
+]);
+const recipeHref = currentRecipe ? `/recipes/${currentRecipe}` : '/recipes';
 const theme = userPrefs?.theme ?? 'light';
 const accent = (userPrefs?.accentColor ?? 'indigo') as AccentFamily;
 const accentCssVars = getAccentCssVars(accent, theme);

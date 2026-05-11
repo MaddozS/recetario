@@ -1,7 +1,7 @@
 ---
 import { Icon } from "astro-icon/components";
 import Layout from "../layouts/Layout.astro";
-import { getRecipeDataOwner, getRecipeById, listRecipeSummaries } from "../lib/recipe-data";
+import { getRecipeById, listRecipeSummaries } from "../lib/recipe-data";
 import { hasFeature } from "../lib/subscription";
 import { calculateProduction } from "../lib/production-calculator";
 import type { ProductionRecipeSelection, ConsolidatedIngredient, ProductionSummary } from "../lib/production-types";
@@ -15,7 +15,7 @@ if (!Astro.locals.session || !Astro.locals.user) {
   return Astro.redirect("/sign-in");
 }
 
-const recipeDataOwner = getRecipeDataOwner(Astro.locals.user);
+const ownerId = Astro.locals.user!.id;
 const subscription = Astro.locals.subscription;
 const canAccess = hasFeature(subscription, "production_planner");
 
@@ -37,7 +37,7 @@ if (canAccess && Astro.request.method === "POST") {
   }));
 
   const recipes = await Promise.all(
-    selections.map((s) => getRecipeById(s.recipeId, recipeDataOwner)),
+    selections.map((s) => getRecipeById(s.recipeId, ownerId)),
   );
 
   const validRecipes = recipes.filter((r): r is NonNullable<typeof r> => r !== null);
@@ -75,7 +75,7 @@ if (canAccess && Astro.request.method === "POST") {
 
     if (selections.length > 0) {
       const recipes = await Promise.all(
-        selections.map((s) => getRecipeById(s.recipeId, recipeDataOwner)),
+        selections.map((s) => getRecipeById(s.recipeId, ownerId)),
       );
       const validRecipes = recipes.filter((r): r is NonNullable<typeof r> => r !== null);
       const validSelections = selections.filter((_, i) => validRecipes[i]);
@@ -91,7 +91,7 @@ if (canAccess && Astro.request.method === "POST") {
   }
 }
 
-const allRecipes = canAccess ? await listRecipeSummaries(recipeDataOwner) : [];
+const allRecipes = canAccess ? await listRecipeSummaries(ownerId) : [];
 const currentPage = "production";
 ---
 
