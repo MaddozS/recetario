@@ -4,7 +4,6 @@ import Layout from "../../layouts/Layout.astro";
 import {
   createRecipe,
   getRecipeById,
-  getRecipeDataOwner,
   listRecipeSummaries,
   countUserRecipes,
 } from "../../lib/recipe-data";
@@ -15,7 +14,7 @@ if (!Astro.locals.session || !Astro.locals.user) {
   return Astro.redirect("/sign-in");
 }
 
-const recipeDataOwner = getRecipeDataOwner(Astro.locals.user);
+const ownerId = Astro.locals.user!.id;
 const subscription = Astro.locals.subscription;
 
 if (Astro.request.method === "POST") {
@@ -24,7 +23,7 @@ if (Astro.request.method === "POST") {
   let createdRecipeId: number | null = null;
 
   if (action === "create_recipe") {
-    const recipeCount = await countUserRecipes(recipeDataOwner);
+    const recipeCount = await countUserRecipes(ownerId);
     if (!canCreateRecipe(subscription, recipeCount)) {
       const errorUrl = new URL(Astro.url);
       errorUrl.searchParams.set("type", "error");
@@ -35,8 +34,8 @@ if (Astro.request.method === "POST") {
 
     createdRecipeId = (
       await createRecipe(
+        ownerId,
         { name: String(formData.get("recipeName") || "") },
-        recipeDataOwner,
       )
     ).id;
   }
@@ -46,10 +45,10 @@ if (Astro.request.method === "POST") {
   }
 }
 
-const recipes = await listRecipeSummaries(recipeDataOwner);
+const recipes = await listRecipeSummaries(ownerId);
 
 if (recipes.length === 1) {
-  const recipe = await getRecipeById(recipes[0].id, recipeDataOwner);
+  const recipe = await getRecipeById(recipes[0].id, ownerId);
   if (recipe) {
     return Astro.redirect(`/recipes/${recipes[0].id}`);
   }

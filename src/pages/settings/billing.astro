@@ -9,19 +9,17 @@ import {
 import {
   countUserRecipes,
   countUserIngredients,
-  getRecipeDataOwner,
 } from "../../lib/recipe-data";
 
 if (!Astro.locals.session || !Astro.locals.user) {
   return Astro.redirect("/sign-in");
 }
 
-const user = Astro.locals.user;
+const ownerId = Astro.locals.user!.id;
 const subscription = Astro.locals.subscription;
-const recipeDataOwner = getRecipeDataOwner(user);
 
-const recipeCount = await countUserRecipes(recipeDataOwner);
-const ingredientCount = await countUserIngredients(recipeDataOwner);
+const recipeCount = await countUserRecipes(ownerId);
+const ingredientCount = await countUserIngredients(ownerId);
 
 const remainingRecipes = getRemainingRecipes(subscription, recipeCount);
 const remainingIngredients = getRemainingIngredients(

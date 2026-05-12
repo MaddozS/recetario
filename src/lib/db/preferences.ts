@@ -1,57 +1,6 @@
-/**
- * Operaciones CRUD para las preferencias de usuario (tema y color de acento).
- */
-
+import { prisma } from "../prisma";
 import type { UserPreferences } from "./types";
-import { getDriver, ensureInitialized } from "./connection";
-import { requireOwnerId, type Driver } from "./index";
-
-async function getUserPreferencesInternal(
-  driver: Driver,
-  userId: string,
-): Promise<UserPreferences | null> {
-  const scopeId = requireOwnerId(userId);
-
-  if (driver.kind === "postgres") {
-    const res = await driver.pool.query<{
-      user_id: string;
-      theme: string;
-      accent_color: string;
-    }>(
-      "SELECT user_id, theme, accent_color FROM user_preferences WHERE user_id = $1",
-      [scopeId],
-    );
-
-    const row = res.rows[0];
-    if (!row) return null;
-
-    return {
-      userId: row.user_id,
-      theme: row.theme === "dark" ? "dark" : "light",
-      accentColor: isValidAccentColor(row.accent_color)
-        ? row.accent_color
-        : "indigo",
-    };
-  }
-
-  const row = driver.db
-    .prepare(
-      "SELECT user_id, theme, accent_color FROM user_preferences WHERE user_id = ?",
-    )
-    .get(scopeId) as
-    | { user_id: string; theme: string; accent_color: string }
-    | undefined;
-
-  if (!row) return null;
-
-  return {
-    userId: row.user_id,
-    theme: row.theme === "dark" ? "dark" : "light",
-    accentColor: isValidAccentColor(row.accent_color)
-      ? row.accent_color
-      : "indigo",
-  };
-}
+import { cacheGet, cacheSet } from "../cache";
 
 const validAccentColors = [
   "indigo",
@@ -72,44 +21,55 @@ function isValidAccentColor(
 export async function getUserPreferences(
   userId: string,
 ): Promise<UserPreferences | null> {
-  await ensureInitialized();
-  const driver = await getDriver();
-  return getUserPreferencesInternal(driver, userId);
+  const cacheKey = `prefs:${userId}`;
+  const cached = cacheGet<UserPreferences | null>(cacheKey);
+  if (cached !== undefined) return cached;
+
+  const data = await prisma.userPreferences.findUnique({
+    where: { userId },
+  });
+
+  const result: UserPreferences | null = data
+    ? {
+        userId: data.userId,
+        theme: (data.theme === "dark" ? "dark" : "light") as "light" | "dark",
+        accentColor: isValidAccentColor(data.accentColor)
+          ? data.accentColor
+          : "indigo",
+      }
+    : null;
+
+  cacheSet(cacheKey, result, 60);
+  return result;
 }
 
 export async function upsertUserPreferences(
   userId: string,
   prefs: { theme?: "light" | "dark"; accentColor?: string },
 ): Promise<UserPreferences> {
-  await ensureInitialized();
-  const driver = await getDriver();
-  const scopeId = requireOwnerId(userId);
-
-  const existing = await getUserPreferencesInternal(driver, scopeId);
+  const existing = await getUserPreferences(userId);
 
   const theme = prefs.theme ?? existing?.theme ?? "light";
   const accentColor = isValidAccentColor(prefs.accentColor ?? "")
     ? (prefs.accentColor as UserPreferences["accentColor"])
     : (existing?.accentColor ?? "indigo");
 
-  if (driver.kind === "postgres") {
-    await driver.pool.query(
-      `INSERT INTO user_preferences (user_id, theme, accent_color, updated_at)
-       VALUES ($1, $2, $3, now())
-       ON CONFLICT (user_id)
-       DO UPDATE SET theme = EXCLUDED.theme, accent_color = EXCLUDED.accent_color, updated_at = now()`,
-      [scopeId, theme, accentColor],
-    );
-  } else {
-    driver.db
-      .prepare(
-        `INSERT INTO user_preferences (user_id, theme, accent_color, updated_at)
-         VALUES (?, ?, ?, datetime('now'))
-         ON CONFLICT (user_id)
-         DO UPDATE SET theme = excluded.theme, accent_color = excluded.accent_color, updated_at = datetime('now')`,
-      )
-      .run(scopeId, theme, accentColor);
-  }
+  const data = await prisma.userPreferences.upsert({
+    where: { userId },
+    update: {
+      theme,
+      accentColor,
+      updatedAt: new Date(),
+    },
+    create: {
+      userId,
+      theme,
+      accentColor,
+      updatedAt: new Date(),
+    },
+  });
 
-  return { userId: scopeId, theme, accentColor };
+  const result = { userId: data.userId, theme, accentColor };
+  cacheSet(`prefs:${userId}`, result, 60);
+  return result;
 }

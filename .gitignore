@@ -17,10 +17,10 @@ pnpm-debug.log*
 .env
 .env.production
 
-# local auth sqlite database
-data/auth.db
-data/auth.db-shm
-data/auth.db-wal
+# local databases
+data/dev.db
+data/dev.db-shm
+data/dev.db-wal
 
 # macOS-specific files
 .DS_Store

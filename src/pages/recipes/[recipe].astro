@@ -2,7 +2,7 @@
 import { Icon } from "astro-icon/components";
 import Layout from "../../layouts/Layout.astro";
 import PresentationCard from "../../components/PresentationCard.astro";
-import { createPresentation, deletePresentation, deleteRecipe, duplicateRecipe, getRecipeById, getRecipeDataOwner, updatePresentation, updateRecipe, listIngredients, type Ingredient, type RecipeIngredientWithData, type RecipeIngredient } from '../../lib/recipe-data';
+import { createPresentation, deletePresentation, deleteRecipe, duplicateRecipe, getRecipeById, updatePresentation, updateRecipe, listIngredients, type Ingredient, type RecipeIngredientWithData, type RecipeIngredient } from '../../lib/recipe-data';
 import { hasFeature } from '../../lib/subscription';
 import { parseNumberInput } from '../../lib/form-utils';
 import { UNIT_OPTIONS } from '../../lib/constants';
@@ -16,7 +16,7 @@ if (!Astro.locals.session || !Astro.locals.user) {
   return Astro.redirect('/sign-in');
 }
 
-const recipeDataOwner = getRecipeDataOwner(Astro.locals.user);
+const ownerId = Astro.locals.user!.id;
 const subscription = Astro.locals.subscription;
 
 const expectsJsonResponse = Astro.request.headers.get('accept')?.includes('application/json') ?? false;
@@ -66,6 +66,20 @@ const jsonResponse = (body: unknown, status = 200) => new Response(JSON.stringif
   },
 });
 
+const respondPresentationError = (message: string, status = 400) => {
+  if (expectsJsonResponse) {
+    return new Response(message, { status });
+  }
+  return redirectToPresentationSection({ type: 'error', message });
+};
+
+const respondRecipeError = (message: string, status = 500) => {
+  if (expectsJsonResponse) {
+    return jsonResponse({ error: message }, status);
+  }
+  return redirectToRecipePage({ type: 'error', message });
+};
+
 const getPresentationFormErrorMessage = (error: unknown, fallback: string) => {
   if (!(error instanceof Error) || !error.message) {
     return fallback;
@@ -102,11 +116,7 @@ if (Astro.request.method === 'POST') {
       : undefined;
 
     if (!Number.isFinite(recipeIdNumber) || !Number.isFinite(presId)) {
-      const message = 'No se pudo actualizar la presentación.';
-      if (expectsJsonResponse) {
-        return new Response(message, { status: 400 });
-      }
-      return redirectToPresentationSection({ type: 'error', message });
+      return respondPresentationError('No se pudo actualizar la presentación.');
     }
 
     try {
@@ -114,14 +124,10 @@ if (Astro.request.method === 'POST') {
         name: presentationName,
         unitsPerBatch,
         salePrice: nextSalePrice,
-      }, recipeDataOwner);
+      }, ownerId);
 
       if (!presentation) {
-        const message = 'No se encontró la presentación.';
-        if (expectsJsonResponse) {
-          return new Response(message, { status: 404 });
-        }
-        return redirectToPresentationSection({ type: 'error', message });
+        return respondPresentationError('No se encontró la presentación.', 404);
       }
 
       if (expectsJsonResponse) {
@@ -130,32 +136,22 @@ if (Astro.request.method === 'POST') {
 
       return redirectToPresentationSection();
     } catch (error) {
-      const message = getPresentationFormErrorMessage(error, 'No se pudo actualizar la presentación.');
-      if (expectsJsonResponse) {
-        return new Response(message, { status: 400 });
-      }
-      return redirectToPresentationSection({ type: 'error', message });
+      return respondPresentationError(
+        getPresentationFormErrorMessage(error, 'No se pudo actualizar la presentación.'),
+      );
     }
   } else if (action === 'delete_presentation') {
     const presId = Number(formData.get('presentationId'));
 
     if (!Number.isFinite(recipeIdNumber) || !Number.isFinite(presId)) {
-      const message = 'No se pudo eliminar la presentación.';
-      if (expectsJsonResponse) {
-        return new Response(message, { status: 400 });
-      }
-      return redirectToPresentationSection({ type: 'error', message });
+      return respondPresentationError('No se pudo eliminar la presentación.');
     }
 
     try {
-      const result = await deletePresentation(recipeIdNumber, presId, recipeDataOwner);
+      const result = await deletePresentation(recipeIdNumber, presId, ownerId);
 
       if (result.status === 'not-found') {
-        const message = 'No se encontró la presentación.';
-        if (expectsJsonResponse) {
-          return new Response(message, { status: 404 });
-        }
-        return redirectToPresentationSection({ type: 'error', message });
+        return respondPresentationError('No se encontró la presentación.', 404);
       }
 
       if (expectsJsonResponse) {
@@ -164,11 +160,7 @@ if (Astro.request.method === 'POST') {
 
       return redirectToPresentationSection({ type: 'success', message: 'Presentación eliminada correctamente.' });
     } catch {
-      const message = 'No se pudo eliminar la presentación.';
-      if (expectsJsonResponse) {
-        return new Response(message, { status: 400 });
-      }
-      return redirectToPresentationSection({ type: 'error', message });
+      return respondPresentationError('No se pudo eliminar la presentación.');
     }
   } else if (action === 'create_presentation') {
     const presentationName = String(formData.get('presentationName') || '').trim();
@@ -206,7 +198,7 @@ if (Astro.request.method === 'POST') {
         name: presentationName,
         unitsPerBatch,
         salePrice: salePriceValue ? salePrice : undefined,
-      }, recipeDataOwner);
+      }, ownerId);
       return redirectToPresentationSection();
     } catch (error) {
       return redirectToPresentationSection({
@@ -220,7 +212,7 @@ if (Astro.request.method === 'POST') {
     }
 
     try {
-      const result = await deleteRecipe(recipeIdNumber, recipeDataOwner);
+      const result = await deleteRecipe(recipeIdNumber, ownerId);
 
       if (result.status === 'not-found') {
         return Astro.redirect('/recipes');
@@ -246,7 +238,7 @@ if (Astro.request.method === 'POST') {
     }
 
     try {
-      const duplicated = await duplicateRecipe(recipeIdNumber, recipeDataOwner);
+      const duplicated = await duplicateRecipe(recipeIdNumber, ownerId);
       const redirectUrl = new URL(Astro.url);
       redirectUrl.pathname = `/recipes/${duplicated.id}`;
       redirectUrl.searchParams.set('edit', 'true');
@@ -254,13 +246,12 @@ if (Astro.request.method === 'POST') {
       redirectUrl.searchParams.set('message', `Receta "${duplicated.name}" creada exitosamente.`);
       return Astro.redirect(redirectUrl.toString());
     } catch (error) {
-      const message = error instanceof Error && error.message === 'Recipe not found'
-        ? 'No se encontró la receta original.'
-        : 'Error al duplicar la receta.';
-      if (expectsJsonResponse) {
-        return jsonResponse({ error: message }, 500);
-      }
-      return redirectToRecipePage({ type: 'error', message });
+      return respondRecipeError(
+        error instanceof Error && error.message === 'Recipe not found'
+          ? 'No se encontró la receta original.'
+          : 'Error al duplicar la receta.',
+        500,
+      );
     }
   } else if (action === 'update_recipe') {
     if (Number.isFinite(recipeIdNumber)) {
@@ -296,7 +287,7 @@ if (Astro.request.method === 'POST') {
         desiredMargin,
         fixedCostsPercentage,
         ingredients: ingredientsToSave,
-      }, recipeDataOwner);
+      }, ownerId);
       return Astro.redirect(Astro.url.pathname);
     }
   }
@@ -308,7 +299,7 @@ if (!recipeIdParam) {
 }
 
 // Obtener la receta desde la base de datos
-const recipe = await getRecipeById(recipeIdParam, recipeDataOwner);
+const recipe = await getRecipeById(recipeIdParam, ownerId);
 if (!recipe) {
   return Astro.redirect('/recipes');
 }
@@ -316,7 +307,7 @@ if (!recipe) {
 const { ingredients: recipeIngredients, name, category, instructions, id, desiredMargin, fixedCostsPercentage, presentations, updatedAt } = recipe;
 
 const isEditMode = Astro.url.searchParams.get('edit') === 'true';
-const allIngredients = isEditMode ? await listIngredients(recipeDataOwner) : [];
+const allIngredients = isEditMode ? await listIngredients(ownerId) : [];
 const discoveredUnitOptions = [
   ...allIngredients.map((ingredient) => ingredient.unit),
   ...recipeIngredients.map((ingredient) => ingredient.unit),
@@ -435,6 +426,13 @@ const costoDirectoTotal = calcularCostoDirecto(recipeIngredients);
 const costoOperativo = costoDirectoTotal * (fixedCostsPercentageValue / 100);
 const costoProduccionRealBatch = costoDirectoTotal + costoOperativo;
 const precioVentaSugeridoBatch = costoProduccionRealBatch / (1 - (desiredMarginValue / 100));
+
+void redirectToPresentationSection;
+void redirectToRecipePage;
+void jsonResponse;
+void respondPresentationError;
+void respondRecipeError;
+void getPresentationFormErrorMessage;
 
 ---
 

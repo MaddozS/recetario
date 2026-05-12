@@ -38,7 +38,8 @@ export const POST: APIRoute = async ({ request }) => {
   let event: Stripe.Event;
   try {
     event = stripe.webhooks.constructEvent(payload, signature, webhookSecret);
-  } catch {
+  } catch (err) {
+    console.error("Webhook signature verification failed:", (err as Error).message);
     return new Response("Invalid signature", { status: 400 });
   }
 
