@@ -10,7 +10,10 @@ function roundHalfUp(value: number): number {
   return value >= 0 ? Math.floor(value + 0.5) : Math.ceil(value - 0.5);
 }
 
-function aplicarRedondeoUnidadPequena(cantidad: number, unidad: string): number {
+function aplicarRedondeoUnidadPequena(
+  cantidad: number,
+  unidad: string,
+): number {
   const u = unidad.toLowerCase();
   if (u === "g" || u === "ml") {
     return roundHalfUp(cantidad);
@@ -138,7 +141,14 @@ export function calculateProduction(
             ? suggestedBatchPrice / (p.unitsPerBatch * batches)
             : undefined);
         const revenue = salePrice ? salePrice * totalUnits : 0;
-        return { id: p.id, name: p.name, totalUnits, unitCost, salePrice, revenue };
+        return {
+          id: p.id,
+          name: p.name,
+          totalUnits,
+          unitCost,
+          salePrice,
+          revenue,
+        };
       });
 
       const chosenPresentationId = selection.presentationId;

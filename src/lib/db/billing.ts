@@ -269,9 +269,7 @@ export async function markSubscriptionPastDue(
   if (sub) invalidateSubCache(sub.userId);
 }
 
-export async function getPlanByStripePriceId(
-  stripePriceId: string,
-): Promise<{
+export async function getPlanByStripePriceId(stripePriceId: string): Promise<{
   id: string;
   tier: string;
   name: string;
@@ -300,15 +298,11 @@ export async function getStripeCustomerId(
   return data?.stripeCustomerId ?? null;
 }
 
-export async function countUserRecipes(
-  ownerId: string,
-): Promise<number> {
+export async function countUserRecipes(ownerId: string): Promise<number> {
   return prisma.recipe.count({ where: { ownerId } });
 }
 
-export async function countUserIngredients(
-  ownerId: string,
-): Promise<number> {
+export async function countUserIngredients(ownerId: string): Promise<number> {
   return prisma.ingredient.count({ where: { ownerId } });
 }
 

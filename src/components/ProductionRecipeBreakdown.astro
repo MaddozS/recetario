@@ -16,120 +16,142 @@ const { recipes } = Astro.props;
     Desglose por receta
   </h2>
 
-  {recipes.map((recipe) => (
-    <details class="rounded-2xl border border-border bg-card shadow-sm overflow-hidden" open>
-      <summary class="flex items-center justify-between gap-4 px-6 py-4 cursor-pointer hover:bg-muted transition-colors">
-        <div class="min-w-0">
-          <div class="flex items-center gap-2">
-            <h3 class="text-base font-bold text-foreground truncate">
-              {recipe.recipeName}
-            </h3>
-            {recipe.category && (
-              <span class="shrink-0 rounded-full bg-muted px-2.5 py-0.5 text-[11px] font-semibold text-muted-foreground">
-                {recipe.category}
-              </span>
-            )}
-          </div>
-          <p class="text-sm text-muted-foreground mt-0.5">
-            {recipe.batches} batch{recipe.batches !== 1 ? "es" : ""} · Costo total: {formatCurrency(recipe.totalCost)}
-          </p>
-        </div>
-        <Icon name="lucide:chevron-down" size={18} class="text-subtle-foreground shrink-0" />
-      </summary>
-
-      <div class="px-6 pb-6 space-y-6">
-        <div>
-          <h4 class="text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground mb-3">
-            Costos
-          </h4>
-          <div class="grid grid-cols-3 gap-3">
-            <div class="rounded-xl bg-muted p-3">
-              <p class="text-[11px] font-semibold text-muted-foreground">Insumos</p>
-              <p class="mt-1 text-lg font-bold tabular-nums text-foreground">
-                {formatCurrency(recipe.ingredientsCost)}
-              </p>
+  {
+    recipes.map((recipe) => (
+      <details
+        class="rounded-2xl border border-border bg-card shadow-sm overflow-hidden"
+        open
+      >
+        <summary class="flex items-center justify-between gap-4 px-6 py-4 cursor-pointer hover:bg-muted transition-colors">
+          <div class="min-w-0">
+            <div class="flex items-center gap-2">
+              <h3 class="text-base font-bold text-foreground truncate">
+                {recipe.recipeName}
+              </h3>
+              {recipe.category && (
+                <span class="shrink-0 rounded-full bg-muted px-2.5 py-0.5 text-[11px] font-semibold text-muted-foreground">
+                  {recipe.category}
+                </span>
+              )}
             </div>
-            <div class="rounded-xl bg-muted p-3">
-              <p class="text-[11px] font-semibold text-muted-foreground">Operativo</p>
-              <p class="mt-1 text-lg font-bold tabular-nums text-foreground">
-                {formatCurrency(recipe.operationalCost)}
-              </p>
-            </div>
-            <div class="rounded-xl bg-muted p-3">
-              <p class="text-[11px] font-semibold text-muted-foreground">Total</p>
-              <p class="mt-1 text-lg font-bold tabular-nums text-foreground">
-                {formatCurrency(recipe.totalCost)}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {recipe.presentations.length > 0 ? (
-          <div>
-            <h4 class="text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground mb-3">
-              Presentaciones
-            </h4>
-            <div class="overflow-x-auto rounded-xl border border-border">
-              <table class="min-w-full text-left text-sm">
-                <thead class="bg-background text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
-                  <tr>
-                    <th class="px-4 py-3">Presentación</th>
-                    <th class="px-4 py-3">Unidades totales</th>
-                    <th class="px-4 py-3">Costo unitario</th>
-                    <th class="px-4 py-3">Precio venta</th>
-                    <th class="px-4 py-3">Ingreso</th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-border-light dark:divide-gray-950">
-                  {recipe.presentations.map((p) => (
-                    <tr class:list={[
-                      "hover:bg-hover-muted dark:hover:bg-gray-950/70",
-                      p.id === recipe.selectedPresentationId ? "bg-accent-50/50" : "",
-                    ]}>
-                      <td class="px-4 py-3 font-medium text-foreground">
-                        <span class="flex items-center gap-1.5">
-                          {p.name}
-                          {p.id === recipe.selectedPresentationId && (
-                            <span class="inline-flex items-center rounded-full bg-accent-100 px-2 py-0.5 text-[10px] font-bold text-accent-700">
-                              Seleccionada
-                            </span>
-                          )}
-                        </span>
-                      </td>
-                      <td class="px-4 py-3 font-mono tabular-nums text-secondary-foreground">
-                        {p.totalUnits}
-                      </td>
-                      <td class="px-4 py-3 font-mono tabular-nums text-secondary-foreground">
-                        {formatCurrency(p.unitCost)}
-                      </td>
-                      <td class="px-4 py-3 font-mono tabular-nums">
-                        {p.salePrice ? (
-                          <span class="text-secondary-foreground">
-                            {formatCurrency(p.salePrice)}
-                          </span>
-                        ) : (
-                          <span class="text-warning">Sin precio</span>
-                        )}
-                      </td>
-                      <td class="px-4 py-3 font-mono font-semibold tabular-nums text-foreground">
-                        {p.revenue > 0 ? formatCurrency(p.revenue) : (
-                          <span class="text-warning">Sin precio</span>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        ) : (
-          <div class="rounded-xl bg-muted p-4 text-center">
-            <p class="text-sm text-muted-foreground">
-              Sin presentaciones configuradas
+            <p class="text-sm text-muted-foreground mt-0.5">
+              {recipe.batches} batch{recipe.batches !== 1 ? "es" : ""} · Costo
+              total: {formatCurrency(recipe.totalCost)}
             </p>
           </div>
-        )}
-      </div>
-    </details>
-  ))}
+          <Icon
+            name="lucide:chevron-down"
+            size={18}
+            class="text-subtle-foreground shrink-0"
+          />
+        </summary>
+
+        <div class="px-6 pb-6 space-y-6">
+          <div>
+            <h4 class="text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground mb-3">
+              Costos
+            </h4>
+            <div class="grid grid-cols-3 gap-3">
+              <div class="rounded-xl bg-muted p-3">
+                <p class="text-[11px] font-semibold text-muted-foreground">
+                  Insumos
+                </p>
+                <p class="mt-1 text-lg font-bold tabular-nums text-foreground">
+                  {formatCurrency(recipe.ingredientsCost)}
+                </p>
+              </div>
+              <div class="rounded-xl bg-muted p-3">
+                <p class="text-[11px] font-semibold text-muted-foreground">
+                  Operativo
+                </p>
+                <p class="mt-1 text-lg font-bold tabular-nums text-foreground">
+                  {formatCurrency(recipe.operationalCost)}
+                </p>
+              </div>
+              <div class="rounded-xl bg-muted p-3">
+                <p class="text-[11px] font-semibold text-muted-foreground">
+                  Total
+                </p>
+                <p class="mt-1 text-lg font-bold tabular-nums text-foreground">
+                  {formatCurrency(recipe.totalCost)}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {recipe.presentations.length > 0 ? (
+            <div>
+              <h4 class="text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground mb-3">
+                Presentaciones
+              </h4>
+              <div class="overflow-x-auto rounded-xl border border-border">
+                <table class="min-w-full text-left text-sm">
+                  <thead class="bg-background text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+                    <tr>
+                      <th class="px-4 py-3">Presentación</th>
+                      <th class="px-4 py-3">Unidades totales</th>
+                      <th class="px-4 py-3">Costo unitario</th>
+                      <th class="px-4 py-3">Precio venta</th>
+                      <th class="px-4 py-3">Ingreso</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-border-light dark:divide-gray-950">
+                    {recipe.presentations.map((p) => (
+                      <tr
+                        class:list={[
+                          "hover:bg-hover-muted dark:hover:bg-gray-950/70",
+                          p.id === recipe.selectedPresentationId
+                            ? "bg-accent-50/50"
+                            : "",
+                        ]}
+                      >
+                        <td class="px-4 py-3 font-medium text-foreground">
+                          <span class="flex items-center gap-1.5">
+                            {p.name}
+                            {p.id === recipe.selectedPresentationId && (
+                              <span class="inline-flex items-center rounded-full bg-accent-100 px-2 py-0.5 text-[10px] font-bold text-accent-700">
+                                Seleccionada
+                              </span>
+                            )}
+                          </span>
+                        </td>
+                        <td class="px-4 py-3 font-mono tabular-nums text-secondary-foreground">
+                          {p.totalUnits}
+                        </td>
+                        <td class="px-4 py-3 font-mono tabular-nums text-secondary-foreground">
+                          {formatCurrency(p.unitCost)}
+                        </td>
+                        <td class="px-4 py-3 font-mono tabular-nums">
+                          {p.salePrice ? (
+                            <span class="text-secondary-foreground">
+                              {formatCurrency(p.salePrice)}
+                            </span>
+                          ) : (
+                            <span class="text-warning">Sin precio</span>
+                          )}
+                        </td>
+                        <td class="px-4 py-3 font-mono font-semibold tabular-nums text-foreground">
+                          {p.revenue > 0 ? (
+                            formatCurrency(p.revenue)
+                          ) : (
+                            <span class="text-warning">Sin precio</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ) : (
+            <div class="rounded-xl bg-muted p-4 text-center">
+              <p class="text-sm text-muted-foreground">
+                Sin presentaciones configuradas
+              </p>
+            </div>
+          )}
+        </div>
+      </details>
+    ))
+  }
 </div>

@@ -124,14 +124,17 @@ if (Astro.request.method === "POST") {
         });
       }
 
-      await createIngredient({
-        name: ingredientInput.name,
-        unit: ingredientInput.unit,
-        price: ingredientInput.price,
-        purchaseQuantity: ingredientInput.purchaseQuantity,
-        brand: ingredientInput.brand || undefined,
-        supplier: ingredientInput.supplier || undefined,
-      }, ownerId);
+      await createIngredient(
+        {
+          name: ingredientInput.name,
+          unit: ingredientInput.unit,
+          price: ingredientInput.price,
+          purchaseQuantity: ingredientInput.purchaseQuantity,
+          brand: ingredientInput.brand || undefined,
+          supplier: ingredientInput.supplier || undefined,
+        },
+        ownerId,
+      );
 
       return redirectWithFeedback({
         type: "success",
@@ -244,7 +247,6 @@ const ingredients = await listIngredients(ownerId);
 const ingredientUsage = await listIngredientUsage(ownerId);
 
 void redirectWithFeedback;
-
 ---
 
 <Layout currentPage="ingredients" showSideBar={false}>

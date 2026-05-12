@@ -1,7 +1,10 @@
 ---
 import { Icon } from "astro-icon/components";
 import Layout from "@/layouts/Layout.astro";
-import { getUserPreferences, upsertUserPreferences } from "@/lib/db/preferences";
+import {
+  getUserPreferences,
+  upsertUserPreferences,
+} from "@/lib/db/preferences";
 import {
   ACCENT_FAMILIES,
   ACCENT_LABELS,
@@ -216,17 +219,20 @@ if (feedback) {
             value={currentAccent}
           />
         </div>
-      </div>
 
-      {/* Save Button */}
-      <div class="mt-6 flex justify-end">
-        <button
-          type="submit"
-          class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-accent-600 px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-accent-700"
-        >
-          <Icon name="lucide:check" size={16} />
-          Guardar preferencias
-        </button>
+        {/* divider */}
+        <div class="border-t border-border"></div>
+
+        {/* Save Button */}
+        <div id="save-btn-wrapper" class="mt-6 flex justify-end hidden">
+          <button
+            type="submit"
+            class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-accent-600 px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-accent-700"
+          >
+            <Icon name="lucide:check" size={16} />
+            Guardar preferencias
+          </button>
+        </div>
       </div>
     </form>
 
@@ -380,6 +386,8 @@ if (feedback) {
           if (themeInput instanceof HTMLInputElement) {
             themeInput.value = value;
           }
+
+          checkIfChanged();
         });
       });
 
@@ -401,8 +409,29 @@ if (feedback) {
           if (accentInput instanceof HTMLInputElement) {
             accentInput.value = value;
           }
+
+          checkIfChanged();
         });
       });
+
+    // Show save button only when preferences have changed
+    const originalTheme =
+      themeInput instanceof HTMLInputElement ? themeInput.value : "light";
+    const originalAccent =
+      accentInput instanceof HTMLInputElement ? accentInput.value : "indigo";
+    const saveBtnWrapper = document.getElementById("save-btn-wrapper");
+
+    function checkIfChanged() {
+      const currentTheme =
+        themeInput instanceof HTMLInputElement ? themeInput.value : "light";
+      const currentAccent =
+        accentInput instanceof HTMLInputElement ? accentInput.value : "indigo";
+      const changed =
+        currentTheme !== originalTheme || currentAccent !== originalAccent;
+      if (saveBtnWrapper) {
+        saveBtnWrapper.classList.toggle("hidden", !changed);
+      }
+    }
   }
 
   document.addEventListener("astro:page-load", setupSettings);

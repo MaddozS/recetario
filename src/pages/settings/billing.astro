@@ -6,10 +6,7 @@ import {
   getRemainingRecipes,
   getRemainingIngredients,
 } from "@/lib/subscription";
-import {
-  countUserRecipes,
-  countUserIngredients,
-} from "@/lib/db/billing";
+import { countUserRecipes, countUserIngredients } from "@/lib/db/billing";
 
 if (!Astro.locals.session || !Astro.locals.user) {
   return Astro.redirect("/sign-in");

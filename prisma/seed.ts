@@ -15,8 +15,7 @@ if (!connectionString) {
 const adapter = new PrismaPg(connectionString);
 const prisma = new PrismaClient({ adapter });
 
-const ownerId =
-  process.env.RECIPES_STATIC_OWNER_ID || "static_seed_user";
+const ownerId = process.env.RECIPES_STATIC_OWNER_ID || "static_seed_user";
 
 interface IngredientInput {
   id: number;
@@ -35,7 +34,12 @@ interface RecipeInput {
   instructions?: string;
   desiredMargin: number;
   fixedCostsPercentage: number;
-  ingredients: { ingredientId: number; quantity: number; unit: string; comment?: string }[];
+  ingredients: {
+    ingredientId: number;
+    quantity: number;
+    unit: string;
+    comment?: string;
+  }[];
   presentations: { id: number; name: string; unitsPerBatch: number }[];
 }
 
@@ -101,13 +105,22 @@ async function seed() {
     });
 
     await prisma.recipeIngredient.deleteMany({ where: { recipeId: rec.id } });
-    const mergedIngredients = new Map<number, { ingredientId: number; quantity: number; unit: string; comment: string | null }>();
+    const mergedIngredients = new Map<
+      number,
+      {
+        ingredientId: number;
+        quantity: number;
+        unit: string;
+        comment: string | null;
+      }
+    >();
     for (const ri of rec.ingredients) {
       const existing = mergedIngredients.get(ri.ingredientId);
       if (existing) {
         existing.quantity += ri.quantity;
         if (ri.comment && !existing.comment) existing.comment = ri.comment;
-        else if (ri.comment && existing.comment) existing.comment += "; " + ri.comment;
+        else if (ri.comment && existing.comment)
+          existing.comment += "; " + ri.comment;
       } else {
         mergedIngredients.set(ri.ingredientId, {
           ingredientId: ri.ingredientId,

@@ -1,9 +1,6 @@
 import type { APIRoute } from "astro";
 import Stripe from "stripe";
-import {
-  getPlanByStripePriceId,
-  getStripeCustomerId,
-} from "@/lib/db/billing";
+import { getPlanByStripePriceId, getStripeCustomerId } from "@/lib/db/billing";
 
 const stripe = new Stripe(
   import.meta.env.STRIPE_SECRET_KEY || process.env.STRIPE_SECRET_KEY || "",

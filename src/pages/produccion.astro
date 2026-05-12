@@ -4,7 +4,11 @@ import Layout from "@/layouts/Layout.astro";
 import { getRecipeById, listRecipeSummaries } from "@/lib/db/recipes";
 import { hasFeature } from "@/lib/subscription";
 import { calculateProduction } from "@/lib/production-calculator";
-import type { ProductionRecipeSelection, ConsolidatedIngredient, ProductionSummary } from "@/lib/production-types";
+import type {
+  ProductionRecipeSelection,
+  ConsolidatedIngredient,
+  ProductionSummary,
+} from "@/lib/production-types";
 import UpgradePrompt from "@/components/UpgradePrompt.astro";
 import ProductionRecipeSelector from "@/components/ProductionRecipeSelector.astro";
 import ProductionIngredientsTable from "@/components/ProductionIngredientsTable.astro";
@@ -20,7 +24,10 @@ const subscription = Astro.locals.subscription;
 const canAccess = hasFeature(subscription, "production_planner");
 
 let selections: ProductionRecipeSelection[] = [];
-let results: { consolidatedIngredients: ConsolidatedIngredient[]; summary: ProductionSummary } | null = null;
+let results: {
+  consolidatedIngredients: ConsolidatedIngredient[];
+  summary: ProductionSummary;
+} | null = null;
 
 let recipePresentations = new Map<number, { id: number; name: string }[]>();
 
@@ -33,26 +40,35 @@ if (canAccess && Astro.request.method === "POST") {
   selections = recipeIds.map((id, i) => ({
     recipeId: id,
     batches: batches[i] || 1,
-    presentationId: Number.isFinite(presentationIds[i]) ? presentationIds[i] : undefined,
+    presentationId: Number.isFinite(presentationIds[i])
+      ? presentationIds[i]
+      : undefined,
   }));
 
   const recipes = await Promise.all(
     selections.map((s) => getRecipeById(s.recipeId, ownerId)),
   );
 
-  const validRecipes = recipes.filter((r): r is NonNullable<typeof r> => r !== null);
+  const validRecipes = recipes.filter(
+    (r): r is NonNullable<typeof r> => r !== null,
+  );
   const validSelections = selections.filter((_, i) => validRecipes[i]);
 
   for (const r of validRecipes) {
     if (r.presentations.length > 0) {
-      recipePresentations.set(r.id, r.presentations.map((p) => ({ id: p.id, name: p.name })));
+      recipePresentations.set(
+        r.id,
+        r.presentations.map((p) => ({ id: p.id, name: p.name })),
+      );
     }
   }
 
   const params = new URLSearchParams();
   params.set("recipes", validSelections.map((s) => s.recipeId).join(","));
   params.set("batches", validSelections.map((s) => s.batches).join(","));
-  const presIds = validSelections.map((s) => s.presentationId).filter((id): id is number => id !== undefined);
+  const presIds = validSelections
+    .map((s) => s.presentationId)
+    .filter((id): id is number => id !== undefined);
   if (presIds.length > 0) {
     params.set("presentations", presIds.join(","));
   }
@@ -77,12 +93,17 @@ if (canAccess && Astro.request.method === "POST") {
       const recipes = await Promise.all(
         selections.map((s) => getRecipeById(s.recipeId, ownerId)),
       );
-      const validRecipes = recipes.filter((r): r is NonNullable<typeof r> => r !== null);
+      const validRecipes = recipes.filter(
+        (r): r is NonNullable<typeof r> => r !== null,
+      );
       const validSelections = selections.filter((_, i) => validRecipes[i]);
 
       for (const r of validRecipes) {
         if (r.presentations.length > 0) {
-          recipePresentations.set(r.id, r.presentations.map((p) => ({ id: p.id, name: p.name })));
+          recipePresentations.set(
+            r.id,
+            r.presentations.map((p) => ({ id: p.id, name: p.name })),
+          );
         }
       }
 
@@ -95,40 +116,55 @@ const allRecipes = canAccess ? await listRecipeSummaries(ownerId) : [];
 const currentPage = "production";
 ---
 
-<Layout title="Planificador de Producción" currentPage={currentPage} showSideBar={false}>
-  {!canAccess ? (
-    <div class="max-w-lg mx-auto mt-16 px-4">
-      <UpgradePrompt
-        tier="pro"
-        feature="Planificador de producción"
-        description="Consolida ingredientes y costos de múltiples recetas en una sola vista. Exclusivo de KitchCalc Pro."
-      />
-    </div>
-  ) : (
-    <div class="max-w-5xl mx-auto px-4 py-6 space-y-6" transition:animate="slide">
-      <h1 class="text-xl font-bold text-foreground flex items-center gap-2">
-        <Icon name="lucide:factory" size={24} class="text-accent-600" />
-        Planificador de Producción
-      </h1>
+<Layout
+  title="Planificador de Producción"
+  currentPage={currentPage}
+  showSideBar={false}
+>
+  {
+    !canAccess ? (
+      <div class="max-w-lg mx-auto mt-16 px-4">
+        <UpgradePrompt
+          tier="pro"
+          feature="Planificador de producción"
+          description="Consolida ingredientes y costos de múltiples recetas en una sola vista. Exclusivo de KitchCalc Pro."
+        />
+      </div>
+    ) : (
+      <div
+        class="max-w-5xl mx-auto px-4 py-6 space-y-6"
+        transition:animate="slide"
+      >
+        <h1 class="text-xl font-bold text-foreground flex items-center gap-2">
+          <Icon name="lucide:factory" size={24} class="text-accent-600" />
+          Planificador de Producción
+        </h1>
 
-      <ProductionRecipeSelector recipes={allRecipes} selections={selections} recipePresentations={recipePresentations} />
+        <ProductionRecipeSelector
+          recipes={allRecipes}
+          selections={selections}
+          recipePresentations={recipePresentations}
+        />
 
-      {results && (
-        <div class="space-y-6">
-          <ProductionIngredientsTable ingredients={results.consolidatedIngredients} />
-          <ProductionFinancialSummary summary={results.summary} />
-          <ProductionRecipeBreakdown recipes={results.summary.perRecipe} />
-          <div class="flex justify-center">
-            <button
-              onclick="window.print()"
-              class="no-print inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-border bg-card px-6 py-3 text-sm font-bold text-muted-foreground transition-colors hover:bg-background"
-            >
-              <Icon name="lucide:printer" size={16} />
-              Imprimir hoja de producción
-            </button>
+        {results && (
+          <div class="space-y-6">
+            <ProductionIngredientsTable
+              ingredients={results.consolidatedIngredients}
+            />
+            <ProductionFinancialSummary summary={results.summary} />
+            <ProductionRecipeBreakdown recipes={results.summary.perRecipe} />
+            <div class="flex justify-center">
+              <button
+                onclick="window.print()"
+                class="no-print inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-border bg-card px-6 py-3 text-sm font-bold text-muted-foreground transition-colors hover:bg-background"
+              >
+                <Icon name="lucide:printer" size={16} />
+                Imprimir hoja de producción
+              </button>
+            </div>
           </div>
-        </div>
-      )}
-    </div>
-  )}
+        )}
+      </div>
+    )
+  }
 </Layout>

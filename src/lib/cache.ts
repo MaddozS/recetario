@@ -14,7 +14,11 @@ export function cacheGet<T>(key: string): T | undefined {
   return undefined;
 }
 
-export function cacheSet(key: string, value: unknown, ttlSeconds: number): void {
+export function cacheSet(
+  key: string,
+  value: unknown,
+  ttlSeconds: number,
+): void {
   store.set(key, { value, expiresAt: Date.now() + ttlSeconds * 1000 });
   stats.sets++;
 }

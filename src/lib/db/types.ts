@@ -43,6 +43,7 @@ export type RecipeSummary = {
   name: string;
   category?: string;
   ingredientCount: number;
+  updatedAt?: string;
 };
 
 export type CreateIngredientInput = {
@@ -88,7 +89,14 @@ export type DeleteRecipeResult =
 export type UserPreferences = {
   userId: string;
   theme: "light" | "dark";
-  accentColor: "indigo" | "violet" | "blue" | "emerald" | "rose" | "amber" | "coral";
+  accentColor:
+    | "indigo"
+    | "violet"
+    | "blue"
+    | "emerald"
+    | "rose"
+    | "amber"
+    | "coral";
 };
 
 export type CreateRecipeInput = {
