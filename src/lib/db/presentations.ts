@@ -9,6 +9,12 @@ import {
   normalizePresentationUnits,
   normalizePresentationSalePrice,
 } from "./helpers";
+import { cacheDelete } from "../cache";
+
+function invalidateParentRecipeCache(ownerId: string, recipeId: number) {
+  cacheDelete(`recipes:${ownerId}`);
+  cacheDelete(`recipe:${recipeId}`);
+}
 
 async function touchRecipeUpdatedAt(recipeId: number): Promise<void> {
   await prisma.recipe.update({
@@ -47,6 +53,7 @@ export async function createPresentation(
   });
 
   await touchRecipeUpdatedAt(recipeId);
+  invalidateParentRecipeCache(ownerId, recipeId);
 
   return {
     id: data.id,
@@ -103,6 +110,7 @@ export async function updatePresentation(
     });
 
     await touchRecipeUpdatedAt(recipeId);
+    invalidateParentRecipeCache(ownerId, recipeId);
 
     return {
       id: data.id,
@@ -157,6 +165,7 @@ export async function deletePresentation(
   }
 
   await touchRecipeUpdatedAt(recipeId);
+  invalidateParentRecipeCache(ownerId, recipeId);
 
   return { status: "deleted" };
 }

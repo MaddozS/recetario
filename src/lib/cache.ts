@@ -19,6 +19,10 @@ export function cacheSet(key: string, value: unknown, ttlSeconds: number): void 
   stats.sets++;
 }
 
+export function cacheDelete(key: string): void {
+  store.delete(key);
+}
+
 export function cacheClear(): void {
   store.clear();
 }

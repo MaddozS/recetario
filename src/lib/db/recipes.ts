@@ -15,11 +15,11 @@ import {
   normalizeRecipeComment,
   normalizeCategory,
 } from "./helpers";
-import { cacheGet, cacheSet } from "../cache";
+import { cacheGet, cacheSet, cacheDelete } from "../cache";
 
 function invalidateRecipeCache(ownerId: string, recipeId?: number) {
-  cacheSet(`recipes:${ownerId}`, undefined, 0);
-  if (recipeId) cacheSet(`recipe:${recipeId}`, undefined, 0);
+  cacheDelete(`recipes:${ownerId}`);
+  if (recipeId) cacheDelete(`recipe:${recipeId}`);
 }
 
 export async function listRecipeSummaries(
