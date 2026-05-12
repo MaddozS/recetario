@@ -23,11 +23,11 @@ Permitir al usuario seleccionar múltiples recetas, definir cuántas mezclas/bat
 
 El planificador es puramente computacional. Usa las funciones existentes de `src/lib/recipe-data`:
 
-| Función                              | Uso                                                      |
-| ------------------------------------ | -------------------------------------------------------- |
-| `listRecipeSummaries(ownerId)`       | Selector de recetas (nombre, id, categoría)              |
-| `getRecipeById(id, ownerId)`         | Obtener ingredientes + presentaciones + márgenes         |
-| `hasFeature(sub, 'production_planner')` | Gate de acceso (Pro)                                  |
+| Función                                 | Uso                                              |
+| --------------------------------------- | ------------------------------------------------ |
+| `listRecipeSummaries(ownerId)`          | Selector de recetas (nombre, id, categoría)      |
+| `getRecipeById(id, ownerId)`            | Obtener ingredientes + presentaciones + márgenes |
+| `hasFeature(sub, 'production_planner')` | Gate de acceso (Pro)                             |
 
 No se crean tablas nuevas. Si en el futuro se agrega persistencia de "planes de producción guardados", se agregará una tabla `production_plans`.
 
@@ -49,7 +49,9 @@ Agregar enlace en `Layout.astro`:
 
 ```astro
 {
-  currentPage === 'production' ? 'bg-accent-600 text-white' : 'text-muted-foreground hover:bg-muted'
+  currentPage === "production"
+    ? "bg-accent-600 text-white"
+    : "text-muted-foreground hover:bg-muted"
 }
 ```
 
@@ -61,8 +63,10 @@ Solo renderizar cuando `hasFeature(subscription, 'production_planner')` es true.
 <a
   href="/produccion"
   class:list={[
-    'min-h-11 rounded-xl flex items-center justify-center gap-2 text-sm font-bold transition-colors',
-    currentPage === 'production' ? 'bg-accent-600 text-white' : 'text-muted-foreground hover:bg-muted'
+    "min-h-11 rounded-xl flex items-center justify-center gap-2 text-sm font-bold transition-colors",
+    currentPage === "production"
+      ? "bg-accent-600 text-white"
+      : "text-muted-foreground hover:bg-muted",
   ]}
 >
   <Icon name="lucide:factory" size={16} />
@@ -133,7 +137,7 @@ export function calculateProduction(
 ): {
   consolidatedIngredients: ConsolidatedIngredient[];
   summary: ProductionSummary;
-}
+};
 ```
 
 ### 4.1 Algoritmo
@@ -169,7 +173,11 @@ Usar `aplicarRedondeoUnidadPequena()` (del recipe page) para cantidades en g/ml,
 ```astro
 ---
 import Layout from "../layouts/Layout.astro";
-import { getRecipeDataOwner, getRecipeById, listRecipeSummaries } from "../lib/recipe-data";
+import {
+  getRecipeDataOwner,
+  getRecipeById,
+  listRecipeSummaries,
+} from "../lib/recipe-data";
 import { hasFeature } from "../lib/subscription";
 import { calculateProduction } from "../lib/production-calculator";
 import type { ProductionRecipeSelection } from "../lib/production-types";
@@ -189,7 +197,10 @@ const canAccess = hasFeature(subscription, "production_planner");
 
 // Leer selección del form (POST) o query params (GET)
 let selections: ProductionRecipeSelection[] = [];
-let results: { consolidatedIngredients: ConsolidatedIngredient[]; summary: ProductionSummary } | null = null;
+let results: {
+  consolidatedIngredients: ConsolidatedIngredient[];
+  summary: ProductionSummary;
+} | null = null;
 
 if (canAccess && Astro.request.method === "POST") {
   const formData = await Astro.request.formData();
@@ -221,32 +232,39 @@ const currentPage = "production";
 
 ```astro
 <Layout title="Planificador de Producción" currentPage={currentPage}>
-  {!canAccess ? (
-    <div class="max-w-lg mx-auto mt-16 px-4">
-      <UpgradePrompt
-        tier="pro"
-        feature="Planificador de producción"
-        description="Consolida ingredientes y costos de múltiples recetas en una sola vista. Exclusivo de KitchCalc Pro."
-      />
-    </div>
-  ) : (
-    <div class="max-w-5xl mx-auto px-4 py-6 space-y-6">
-      <h1 class="text-xl font-bold text-foreground flex items-center gap-2">
-        <Icon name="lucide:factory" size={24} class="text-accent-600" />
-        Planificador de Producción
-      </h1>
+  {
+    !canAccess ? (
+      <div class="max-w-lg mx-auto mt-16 px-4">
+        <UpgradePrompt
+          tier="pro"
+          feature="Planificador de producción"
+          description="Consolida ingredientes y costos de múltiples recetas en una sola vista. Exclusivo de KitchCalc Pro."
+        />
+      </div>
+    ) : (
+      <div class="max-w-5xl mx-auto px-4 py-6 space-y-6">
+        <h1 class="text-xl font-bold text-foreground flex items-center gap-2">
+          <Icon name="lucide:factory" size={24} class="text-accent-600" />
+          Planificador de Producción
+        </h1>
 
-      <ProductionRecipeSelector recipes={allRecipes} selections={selections} />
+        <ProductionRecipeSelector
+          recipes={allRecipes}
+          selections={selections}
+        />
 
-      {results && (
-        <>
-          <ProductionIngredientsTable ingredients={results.consolidatedIngredients} />
-          <ProductionFinancialSummary summary={results.summary} />
-          <ProductionRecipeBreakdown recipes={results.summary.perRecipe} />
-        </>
-      )}
-    </div>
-  )}
+        {results && (
+          <>
+            <ProductionIngredientsTable
+              ingredients={results.consolidatedIngredients}
+            />
+            <ProductionFinancialSummary summary={results.summary} />
+            <ProductionRecipeBreakdown recipes={results.summary.perRecipe} />
+          </>
+        )}
+      </div>
+    )
+  }
 </Layout>
 ```
 
@@ -257,6 +275,7 @@ const currentPage = "production";
 ### 6.1 `ProductionRecipeSelector.astro`
 
 Lista de todas las recetas con:
+
 - Checkbox para seleccionar (name: `recipe_id[]`)
 - Input numérico para batches (name: `batches[]`, min: 0.5, step: 0.5)
 - Agrupación visual por categoría
@@ -264,6 +283,7 @@ Lista de todas las recetas con:
 - Clase CSS: `.production-selector` (se oculta en `@media print`)
 
 Estados:
+
 - **Vacío:** todas las recetas deseleccionadas, muestra "Selecciona las recetas para planificar tu producción"
 - **Seleccionado:** checkbox marcado, input de batches visible
 - **Sin recetas en la cuenta:** mensaje "No hay recetas. Crea una receta primero."
@@ -273,7 +293,7 @@ Estados:
 Tabla de ingredientes consolidados:
 
 | Ingrediente | Cantidad total | Unidad | Costo unitario | Costo total | Recetas |
-|---|---|---|---|---|---|
+| ----------- | -------------- | ------ | -------------- | ----------- | ------- |
 
 - Agrupación por `ingredientId`
 - Columna "Recetas" muestra badges con nombres de receta y cantidad
@@ -281,6 +301,7 @@ Tabla de ingredientes consolidados:
 - Clase CSS: `.ingredients-table` (visible en print)
 
 Estados:
+
 - **Sin resultados:** no se renderiza (condicional desde el padre)
 - **Un solo ingrediente:** tabla normal de 1 fila
 
@@ -303,6 +324,7 @@ Grid de 2×2 (o 4 columnas en desktop) con cards de resumen:
 - Clase CSS: `.financial-summary` (visible en print)
 
 Estados:
+
 - **Sin resultados:** no se renderiza
 - **Ingresos sin precio de venta:** muestra "N/A" y no calcula ganancia (advierte al usuario)
 
@@ -316,6 +338,7 @@ Sección expandible por receta:
 - Clase CSS: `.recipe-breakdown` (visible en print)
 
 Estados:
+
 - **Sin resultados:** no se renderiza
 - **Receta sin presentaciones:** muestra "Sin presentaciones configuradas"
 - **Receta sin ingredientes:** muestra "Esta receta no tiene ingredientes"
@@ -328,7 +351,7 @@ Botón "Imprimir" en la sección de resultados:
 
 ```html
 <button onclick="window.print()" class="...">
-  <Icon name="lucide:printer" size={16} />
+  <Icon name="lucide:printer" size="{16}" />
   Imprimir hoja de producción
 </button>
 ```
@@ -337,9 +360,13 @@ Botón "Imprimir" en la sección de resultados:
 
 ```css
 @media print {
-  header, nav, .sidebar, .mobile-nav,
+  header,
+  nav,
+  .sidebar,
+  .mobile-nav,
   .production-selector,
-  button, .no-print {
+  button,
+  .no-print {
     display: none !important;
   }
 
@@ -401,13 +428,13 @@ Preservar selección en URL para compartir/refrescar:
 
 ### 8.2 Manejo de errores
 
-| Situación | Comportamiento |
-|---|---|
-| Receta seleccionada no existe o no pertenece al usuario | Se omite con warning |
-| Receta sin ingredientes | Se incluye en desglose con "Sin ingredientes" |
-| Receta sin presentaciones | Ingreso proyectado muestra "Sin precio" |
-| Ingrediente con cantidad 0 | Se omite de la tabla consolidada |
-| Usuario Pro en periodo de trial | Acceso completo (igual que Pro activo) |
+| Situación                                               | Comportamiento                                |
+| ------------------------------------------------------- | --------------------------------------------- |
+| Receta seleccionada no existe o no pertenece al usuario | Se omite con warning                          |
+| Receta sin ingredientes                                 | Se incluye en desglose con "Sin ingredientes" |
+| Receta sin presentaciones                               | Ingreso proyectado muestra "Sin precio"       |
+| Ingrediente con cantidad 0                              | Se omite de la tabla consolidada              |
+| Usuario Pro en periodo de trial                         | Acceso completo (igual que Pro activo)        |
 
 ### 8.3 Loading state
 
@@ -417,17 +444,17 @@ Dado que es SRP (Server Render Pattern), no hay estado de carga client-side. El 
 
 ## 9. Archivos involucrados
 
-| Archivo | Cambio |
-|---|---|
-| `src/pages/produccion.astro` | **Nuevo** — página principal del planificador |
-| `src/lib/production-calculator.ts` | **Nuevo** — lógica de cálculo consolidado |
-| `src/lib/production-types.ts` | **Nuevo** — tipos del planificador |
-| `src/components/ProductionRecipeSelector.astro` | **Nuevo** — selector de recetas + batches |
-| `src/components/ProductionIngredientsTable.astro` | **Nuevo** — tabla de ingredientes consolidados |
-| `src/components/ProductionFinancialSummary.astro` | **Nuevo** — resumen financiero |
-| `src/components/ProductionRecipeBreakdown.astro` | **Nuevo** — desglose por receta |
-| `src/layouts/Layout.astro` | Agregar link de navegación condicional (desktop + mobile) |
-| `src/styles/global.css` | Estilos `@media print` para hoja de producción |
+| Archivo                                           | Cambio                                                    |
+| ------------------------------------------------- | --------------------------------------------------------- |
+| `src/pages/produccion.astro`                      | **Nuevo** — página principal del planificador             |
+| `src/lib/production-calculator.ts`                | **Nuevo** — lógica de cálculo consolidado                 |
+| `src/lib/production-types.ts`                     | **Nuevo** — tipos del planificador                        |
+| `src/components/ProductionRecipeSelector.astro`   | **Nuevo** — selector de recetas + batches                 |
+| `src/components/ProductionIngredientsTable.astro` | **Nuevo** — tabla de ingredientes consolidados            |
+| `src/components/ProductionFinancialSummary.astro` | **Nuevo** — resumen financiero                            |
+| `src/components/ProductionRecipeBreakdown.astro`  | **Nuevo** — desglose por receta                           |
+| `src/layouts/Layout.astro`                        | Agregar link de navegación condicional (desktop + mobile) |
+| `src/styles/global.css`                           | Estilos `@media print` para hoja de producción            |
 
 ---
 
