@@ -1,12 +1,12 @@
-import { prisma } from "../prisma";
+import { prisma } from "@/lib/prisma";
 import type {
   Ingredient,
   CreateIngredientInput,
   UpdateIngredientInput,
   DeleteIngredientResult,
-} from "./types";
-import { normalizeOptionalText, toNumber } from "./helpers";
-import { cacheGet, cacheSet } from "../cache";
+} from "@/lib/db/types";
+import { normalizeOptionalText, toNumber } from "@/lib/db/helpers";
+import { cacheGet, cacheSet } from "@/lib/cache";
 
 function invalidateIngredientCache(ownerId: string) {
   cacheSet(`ingredients:${ownerId}`, undefined, 0);

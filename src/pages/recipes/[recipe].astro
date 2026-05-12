@@ -1,11 +1,23 @@
 ---
+import type { Ingredient, RecipeIngredientWithData, RecipeIngredient } from '@/lib/db/types';
 import { Icon } from "astro-icon/components";
 import Layout from "../../layouts/Layout.astro";
 import PresentationCard from "../../components/PresentationCard.astro";
-import { createPresentation, deletePresentation, deleteRecipe, duplicateRecipe, getRecipeById, updatePresentation, updateRecipe, listIngredients, type Ingredient, type RecipeIngredientWithData, type RecipeIngredient } from '../../lib/recipe-data';
-import { hasFeature } from '../../lib/subscription';
-import { parseNumberInput } from '../../lib/form-utils';
-import { UNIT_OPTIONS } from '../../lib/constants';
+import {
+  getRecipeById,
+  deleteRecipe,
+  duplicateRecipe,
+  updateRecipe,
+} from '@/lib/db/recipes';
+import { listIngredients } from '@/lib/db/ingredients';
+import {
+  createPresentation,
+  updatePresentation,
+  deletePresentation,
+} from '@/lib/db/presentations';
+import { hasFeature } from '@/lib/subscription';
+import { parseNumberInput } from '@/lib/form-utils';
+import { UNIT_OPTIONS } from '@/lib/constants';
 import FeedbackAlert from '../../components/FeedbackAlert.astro';
 import { marked } from "marked";
 
@@ -830,7 +842,7 @@ void getPresentationFormErrorMessage;
             ))}
           </div>
 
-          <div class="pt-4 border-t border-border-light dark:border-gray-950 bg-background/50 mt-4 flex justify-center">
+          <div class="flex justify-center pt-4">
             <button 
               type="button"
               id="add-ingredient-btn"
@@ -840,7 +852,7 @@ void getPresentationFormErrorMessage;
             </button>
           </div>
         </div>
-        <div class="mt-6 mx-5 sm:mx-6 lg:mx-8 pb-6">
+        <div class="mx-5 sm:mx-6 lg:mx-8 py-6 border-y border-border">
           <label class="block text-sm font-bold text-secondary-foreground mb-2 flex items-center gap-2">
             <Icon name="lucide:list-checks" size={16} class="text-accent-500" />
             Instrucciones de Preparación
@@ -857,7 +869,7 @@ void getPresentationFormErrorMessage;
           </p>
         </div>
 
-        <div class="sticky bottom-0 z-10 mx-5 sm:mx-6 lg:mx-8 pb-4 pt-4 border-t border-border bg-card">
+        <div class="sticky bottom-0 z-10 mx-5 sm:mx-6 lg:mx-8 pb-4 pt-4 bg-card">
           <div class="flex gap-3">
             <button type="submit" form={recipeEditFormId} class="inline-flex flex-1 min-h-12 items-center justify-center gap-2 rounded-xl bg-accent-600 px-6 py-3 text-sm font-bold text-white shadow-sm transition-colors hover:bg-accent-700 sm:flex-none sm:px-8">
               <Icon name="lucide:save" size={16} /> Guardar Cambios
@@ -1128,21 +1140,20 @@ void getPresentationFormErrorMessage;
   </div>
 
 <script>
-  // @ts-nocheck
-  import { bindDialogBackdrop } from "../../lib/dialog";
+  import { bindDialogBackdrop } from "@/lib/dialog";
 
   const KEY = 'recetario.showComments';
   const presentationDialogId = 'create-presentation-dialog';
   const recipeDeleteDialogId = 'recipe-delete-dialog';
 
-  const updateCommentControls = (show) => {
+  const updateCommentControls = (show: boolean) => {
     const checkbox = document.getElementById('toggle-comments');
     if (checkbox instanceof HTMLInputElement) {
       checkbox.checked = show;
     }
   };
 
-  const setVisibility = (show) => {
+  const setVisibility = (show: boolean) => {
     document.querySelectorAll('.ingredient-comment').forEach((el) => {
       el.classList.toggle('hidden', !show);
     });
@@ -1150,7 +1161,7 @@ void getPresentationFormErrorMessage;
 
     try {
       localStorage.setItem(KEY, show ? '1' : '0');
-    } catch (e) {
+    } catch {
       /* noop */
     }
   };

@@ -1,15 +1,15 @@
-import { prisma } from "../prisma";
+import { prisma } from "@/lib/prisma";
 import type {
   RecipePresentation,
   CreatePresentationInput,
   DeletePresentationResult,
-} from "./types";
+} from "@/lib/db/types";
 import {
   normalizePresentationName,
   normalizePresentationUnits,
   normalizePresentationSalePrice,
-} from "./helpers";
-import { cacheDelete } from "../cache";
+} from "@/lib/db/helpers";
+import { cacheDelete } from "@/lib/cache";
 
 function invalidateParentRecipeCache(ownerId: string, recipeId: number) {
   cacheDelete(`recipes:${ownerId}`);

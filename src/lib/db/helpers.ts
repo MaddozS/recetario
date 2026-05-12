@@ -1,4 +1,4 @@
-import type { RecipePresentation } from "./types";
+import type { RecipePresentation } from "@/lib/db/types";
 
 export function normalizeOptionalText(value: unknown): string | undefined {
   if (typeof value !== "string") return undefined;

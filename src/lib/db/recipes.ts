@@ -1,12 +1,12 @@
-import { prisma } from "../prisma";
+import { prisma } from "@/lib/prisma";
 import type {
   RecipeSummary,
   RecipeWithIngredients,
   CreateRecipeInput,
   DeleteRecipeResult,
   UpdateRecipeInput,
-} from "./types";
-import { createPresentation } from "./presentations";
+} from "@/lib/db/types";
+import { createPresentation } from "@/lib/db/presentations";
 import {
   normalizeOptionalText,
   toNumber,
@@ -14,8 +14,8 @@ import {
   normalizeFixedCostsPercentage,
   normalizeRecipeComment,
   normalizeCategory,
-} from "./helpers";
-import { cacheGet, cacheSet, cacheDelete } from "../cache";
+} from "@/lib/db/helpers";
+import { cacheGet, cacheSet, cacheDelete } from "@/lib/cache";
 
 function invalidateRecipeCache(ownerId: string, recipeId?: number) {
   cacheDelete(`recipes:${ownerId}`);

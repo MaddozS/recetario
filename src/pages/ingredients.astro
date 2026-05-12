@@ -1,21 +1,21 @@
 ---
 import { Icon } from "astro-icon/components";
-import Layout from "../layouts/Layout.astro";
+import Layout from "@/layouts/Layout.astro";
 import {
   createIngredient,
   deleteIngredient,
   listIngredients,
   listIngredientUsage,
   updateIngredient,
-  countUserIngredients,
-} from "../lib/recipe-data";
-import { canCreateIngredient } from "../lib/subscription";
-import { parseNumberInput } from "../lib/form-utils";
-import { UNIT_OPTIONS, DEFAULT_UNIT } from "../lib/constants";
-import FeedbackAlert from "../components/FeedbackAlert.astro";
-import UnitCostDisplay from "../components/UnitCostDisplay.astro";
-import IngredientFormFields from "../components/IngredientFormFields.astro";
-import EmptyState from "../components/EmptyState.astro";
+} from "@/lib/db/ingredients";
+import { countUserIngredients } from "@/lib/db/billing";
+import { canCreateIngredient } from "@/lib/subscription";
+import { parseNumberInput } from "@/lib/form-utils";
+import { UNIT_OPTIONS, DEFAULT_UNIT } from "@/lib/constants";
+import FeedbackAlert from "@/components/FeedbackAlert.astro";
+import UnitCostDisplay from "@/components/UnitCostDisplay.astro";
+import IngredientFormFields from "@/components/IngredientFormFields.astro";
+import EmptyState from "@/components/EmptyState.astro";
 
 if (!Astro.locals.session || !Astro.locals.user) {
   return Astro.redirect("/sign-in");
@@ -796,8 +796,8 @@ void redirectWithFeedback;
       return Number(normalized);
     };
 
-    import { formatCurrency } from "../lib/formatters";
-    import { bindDialogBackdrop } from "../lib/dialog";
+    import { formatCurrency } from "@/lib/formatters";
+    import { bindDialogBackdrop } from "@/lib/dialog";
 
     const syncIngredientFormState = (form) => {
       const nameInput = form.querySelector('[name="name"]');

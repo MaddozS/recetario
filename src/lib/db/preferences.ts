@@ -1,6 +1,6 @@
-import { prisma } from "../prisma";
-import type { UserPreferences } from "./types";
-import { cacheGet, cacheSet } from "../cache";
+import { prisma } from "@/lib/prisma";
+import type { UserPreferences } from "@/lib/db/types";
+import { cacheGet, cacheSet } from "@/lib/cache";
 
 const validAccentColors = [
   "indigo",

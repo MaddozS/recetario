@@ -3,8 +3,8 @@ import type {
   ConsolidatedIngredient,
   ProductionSummary,
   ProductionRecipeResult,
-} from "./production-types";
-import type { RecipeWithIngredients } from "./recipe-data";
+} from "@/lib/production-types";
+import type { RecipeWithIngredients } from "@/lib/db/types";
 
 function roundHalfUp(value: number): number {
   return value >= 0 ? Math.floor(value + 0.5) : Math.ceil(value - 0.5);

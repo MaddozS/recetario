@@ -1,13 +1,14 @@
 ---
-import '../styles/global.css'
+import '@/styles/global.css'
 import { ClientRouter } from "astro:transitions";
 import { Icon } from 'astro-icon/components'
-import { listRecipeSummaries, getUserPreferences } from '../lib/recipe-data'
-import { hasFeature } from '../lib/subscription'
-import { getAccentCssVars } from '../lib/accent-colors'
-import type { AccentFamily } from '../lib/accent-colors'
-import Header from '../components/Header.astro'
-import RecipesSidebar from '../components/RecipesSidebar.astro'
+import { listRecipeSummaries } from '@/lib/db/recipes'
+import { getUserPreferences } from '@/lib/db/preferences'
+import { hasFeature } from '@/lib/subscription'
+import { getAccentCssVars } from '@/lib/accent-colors'
+import type { AccentFamily } from '@/lib/accent-colors'
+import Header from '@/components/Header.astro'
+import RecipesSidebar from '@/components/RecipesSidebar.astro'
 
 const { currentPage } = Astro.props;
 const { currentRecipe, showSideBar, showHeader = true, removeContentWrapper = false } = Astro.props;
@@ -234,7 +235,7 @@ const accentCssVars = getAccentCssVars(accent, theme);
 </style>
 
 <script>
-  import { getAccentCssVars } from "../lib/accent-colors";
+  import { getAccentCssVars } from "@/lib/accent-colors";
 
   function applyTheme() {
     const html = document.documentElement;
