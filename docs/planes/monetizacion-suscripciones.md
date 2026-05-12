@@ -57,24 +57,24 @@ Con solo Free/Pro saltamos de $0 a $10. Muchos usuarios caseros se sienten cómo
 
 ## 3. Mapeo de Features vs Planes
 
-| Feature                     | Estado Actual  | Plan Mínimo       |
-| --------------------------- | -------------- | ----------------- |
-| CRUD Ingredientes + Recetas | ✅ Completo    | Free              |
-| Cálculo de costos básico    | ✅ Completo    | Free              |
-| Presentaciones + Escalado   | ✅ Completo    | Free              |
-| Categorías                  | ✅ Completo    | Free              |
-| Instrucciones               | ✅ Completo    | Free              |
-| Duplicar receta             | ✅ Completo    | Basic             |
-| Costos fijos avanzados      | 🔜 Pendiente   | **Pro**           |
-| Planificador de producción  | 🔜 Pendiente   | **Pro**           |
-| Fotos de recetas            | 🔜 Pendiente   | Basic             |
-| Stock de ingredientes       | 🔜 Pendiente   | Basic             |
-| Exportar PDF                | 🔜 Pendiente   | **Pro**           |
-| Historial de cambios        | 🔜 Pendiente   | **Pro**           |
-| Importar/Exportar datos     | 🔜 Pendiente   | **Pro**           |
-| Información nutricional     | 🔜 Pendiente   | **Pro**           |
-| Colaboración / Equipos      | 🔮 Futuro      | Futuro (Business) |
-| API Pública                 | 🔮 Futuro      | Futuro (Business) |
+| Feature                     | Estado Actual | Plan Mínimo       |
+| --------------------------- | ------------- | ----------------- |
+| CRUD Ingredientes + Recetas | ✅ Completo   | Free              |
+| Cálculo de costos básico    | ✅ Completo   | Free              |
+| Presentaciones + Escalado   | ✅ Completo   | Free              |
+| Categorías                  | ✅ Completo   | Free              |
+| Instrucciones               | ✅ Completo   | Free              |
+| Duplicar receta             | ✅ Completo   | Basic             |
+| Costos fijos avanzados      | 🔜 Pendiente  | **Pro**           |
+| Planificador de producción  | 🔜 Pendiente  | **Pro**           |
+| Fotos de recetas            | 🔜 Pendiente  | Basic             |
+| Stock de ingredientes       | 🔜 Pendiente  | Basic             |
+| Exportar PDF                | 🔜 Pendiente  | **Pro**           |
+| Historial de cambios        | 🔜 Pendiente  | **Pro**           |
+| Importar/Exportar datos     | 🔜 Pendiente  | **Pro**           |
+| Información nutricional     | 🔜 Pendiente  | **Pro**           |
+| Colaboración / Equipos      | 🔮 Futuro     | Futuro (Business) |
+| API Pública                 | 🔮 Futuro     | Futuro (Business) |
 
 > **Nota:** El Planificador de producción y Exportar PDF son los diferenciadores clave. Deben estar exclusivamente en Pro para justificar el precio.
 > **Nota 2:** El `fixedCostsPercentage` (porcentaje de overhead por receta) actualmente es parte del costeo básico (Free). "Costos fijos avanzados" implica un sistema más completo (múltiples categorías, asignación entre recetas) que aún no está implementado.
@@ -85,14 +85,14 @@ Con solo Free/Pro saltamos de $0 a $10. Muchos usuarios caseros se sienten cómo
 
 ### Componentes
 
-| Componente            | Tecnología                        | Estado        |
-| --------------------- | --------------------------------- | ------------- |
+| Componente            | Tecnología                        | Estado           |
+| --------------------- | --------------------------------- | ---------------- |
 | Pasarela de pagos     | Stripe Checkout + Customer Portal | ✅ En producción |
-| SDK                   | `stripe` (Node.js) v22            | ✅ Instalado    |
-| Checkout              | API route `/api/stripe/checkout`  | ✅ Implementado |
-| Webhooks              | API route `/api/stripe/webhook`   | ✅ Implementado |
-| Portal de cliente     | API route `/api/stripe/portal`    | ✅ Implementado |
-| Estado de suscripción | Tablas propias en Postgres/SQLite | ✅ Implementado |
+| SDK                   | `stripe` (Node.js) v22            | ✅ Instalado     |
+| Checkout              | API route `/api/stripe/checkout`  | ✅ Implementado  |
+| Webhooks              | API route `/api/stripe/webhook`   | ✅ Implementado  |
+| Portal de cliente     | API route `/api/stripe/portal`    | ✅ Implementado  |
+| Estado de suscripción | Tablas propias en Postgres/SQLite | ✅ Implementado  |
 
 ### Variables de Entorno
 

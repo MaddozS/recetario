@@ -1,5 +1,5 @@
 ---
-import { Icon } from 'astro-icon/components'
+import { Icon } from "astro-icon/components";
 
 const { isAuthenticated = false } = Astro.props;
 
@@ -70,7 +70,7 @@ const plans = [
       { text: "Exportar a PDF", included: true },
     ],
   },
-]
+];
 ---
 
 <section id="pricing" data-reveal class="py-24 md:py-32 bg-background">
@@ -85,107 +85,132 @@ const plans = [
     </div>
 
     <div class="flex justify-center mt-8">
-      <div class="inline-flex bg-muted rounded-xl p-1" id="pricing-toggle-landing">
+      <div
+        class="inline-flex bg-muted rounded-xl p-1"
+        id="pricing-toggle-landing"
+      >
         <button
           type="button"
           data-period="monthly"
           class="px-5 py-2.5 rounded-lg text-sm font-semibold bg-card text-foreground shadow-sm transition-all"
-        >Mensual</button>
+          >Mensual</button
+        >
         <button
           type="button"
           data-period="yearly"
           class="px-5 py-2.5 rounded-lg text-sm font-semibold text-muted-foreground transition-all"
-        >Anual <span class="text-success text-xs font-bold">-20%</span></button>
+          >Anual <span class="text-success text-xs font-bold">-20%</span
+          ></button
+        >
       </div>
     </div>
 
     <div class="grid md:grid-cols-3 gap-6 lg:gap-8 mt-12 max-w-5xl mx-auto">
-      {plans.map((plan, i) => (
-        <div
-          class:list={[
-            "rounded-2xl border bg-card p-6 md:p-8 flex flex-col relative reveal-item card-hover",
-            plan.id === "pro"
-              ? "border-accent-300 plan-pro"
-              : "border-border",
-          ]}
-          style={`--reveal-delay: ${i * 100}ms`}
-        >
-          {plan.badge && (
-            <span class:list={["inline-flex self-start items-center rounded-full px-3 py-1 text-xs font-bold mb-4", plan.badge.class]}>
-              {plan.badge.text}
-            </span>
-          )}
+      {
+        plans.map((plan, i) => (
+          <div
+            class:list={[
+              "rounded-2xl border bg-card p-6 md:p-8 flex flex-col relative reveal-item card-hover",
+              plan.id === "pro"
+                ? "border-accent-300 plan-pro"
+                : "border-border",
+            ]}
+            style={`--reveal-delay: ${i * 100}ms`}
+          >
+            {plan.badge && (
+              <span
+                class:list={[
+                  "inline-flex self-start items-center rounded-full px-3 py-1 text-xs font-bold mb-4",
+                  plan.badge.class,
+                ]}
+              >
+                {plan.badge.text}
+              </span>
+            )}
 
-          <h3 class="text-xl font-black text-foreground">{plan.name}</h3>
-          <p class="mt-1 text-sm text-muted-foreground">{plan.description}</p>
+            <h3 class="text-xl font-black text-foreground">{plan.name}</h3>
+            <p class="mt-1 text-sm text-muted-foreground">{plan.description}</p>
 
-          <div class="mt-4">
-            <div data-plan-price data-plan={plan.id}>
-              <div data-price-view="monthly">
-                <p class="text-3xl md:text-4xl font-black text-foreground">
-                  {plan.priceMonthly === 0
-                    ? "Gratis"
-                    : `$${plan.priceMonthly}`}
+            <div class="mt-4">
+              <div data-plan-price data-plan={plan.id}>
+                <div data-price-view="monthly">
+                  <p class="text-3xl md:text-4xl font-black text-foreground">
+                    {plan.priceMonthly === 0
+                      ? "Gratis"
+                      : `$${plan.priceMonthly}`}
+                    {plan.id !== "free" && (
+                      <span class="text-base font-semibold text-subtle-foreground">
+                        /mes
+                      </span>
+                    )}
+                  </p>
                   {plan.id !== "free" && (
-                    <span class="text-base font-semibold text-subtle-foreground">/mes</span>
-                  )}
-                </p>
-                {plan.id !== "free" && (
-                  <p class="mt-0.5 text-xs text-subtle-foreground">Facturado mensualmente</p>
-                )}
-              </div>
-              <div data-price-view="yearly" class="hidden">
-                {plan.id !== "free" ? (
-                  <>
-                    <p class="text-3xl md:text-4xl font-black text-foreground">
-                      ${plan.priceYearlyPerMonth}
-                      <span class="text-base font-semibold text-subtle-foreground">/mes</span>
-                    </p>
                     <p class="mt-0.5 text-xs text-subtle-foreground">
-                      USD ${plan.priceYearly} facturados anualmente
+                      Facturado mensualmente
                     </p>
-                  </>
-                ) : (
-                  <p class="text-3xl md:text-4xl font-black text-foreground">Gratis</p>
-                )}
+                  )}
+                </div>
+                <div data-price-view="yearly" class="hidden">
+                  {plan.id !== "free" ? (
+                    <>
+                      <p class="text-3xl md:text-4xl font-black text-foreground">
+                        ${plan.priceYearlyPerMonth}
+                        <span class="text-base font-semibold text-subtle-foreground">
+                          /mes
+                        </span>
+                      </p>
+                      <p class="mt-0.5 text-xs text-subtle-foreground">
+                        USD ${plan.priceYearly} facturados anualmente
+                      </p>
+                    </>
+                  ) : (
+                    <p class="text-3xl md:text-4xl font-black text-foreground">
+                      Gratis
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
 
-          <a
-            href={plan.href}
-            class:list={[
-              "mt-6 w-full inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-bold transition-all text-center",
-              plan.id === "pro"
-                ? "bg-accent-600 text-white hover:bg-accent-700"
-                : plan.id === "free"
-                  ? "border border-border bg-card text-secondary-foreground hover:bg-background"
-                  : "border border-border bg-card text-secondary-foreground hover:bg-background",
-            ]}
-          >
-            {plan.cta}
-          </a>
+            <a
+              href={plan.href}
+              class:list={[
+                "mt-6 w-full inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-bold transition-all text-center",
+                plan.id === "pro"
+                  ? "bg-accent-600 text-white hover:bg-accent-700"
+                  : plan.id === "free"
+                    ? "border border-border bg-card text-secondary-foreground hover:bg-background"
+                    : "border border-border bg-card text-secondary-foreground hover:bg-background",
+              ]}
+            >
+              {plan.cta}
+            </a>
 
-          <div class="mt-6 space-y-3 flex-1">
-            {plan.features.map((f) => (
-              <div class="flex items-center gap-2.5 text-sm">
-                <Icon
-                  name={f.included ? "lucide:check" : "lucide:x"}
-                  size={16}
-                  class:list={[
-                    f.included ? "text-success" : "text-subtle-foreground",
-                  ]}
-                />
-                <span class:list={[
-                  f.included ? "text-secondary-foreground" : "text-subtle-foreground",
-                ]}>
-                  {f.text}
-                </span>
-              </div>
-            ))}
+            <div class="mt-6 space-y-3 flex-1">
+              {plan.features.map((f) => (
+                <div class="flex items-center gap-2.5 text-sm">
+                  <Icon
+                    name={f.included ? "lucide:check" : "lucide:x"}
+                    size={16}
+                    class:list={[
+                      f.included ? "text-success" : "text-subtle-foreground",
+                    ]}
+                  />
+                  <span
+                    class:list={[
+                      f.included
+                        ? "text-secondary-foreground"
+                        : "text-subtle-foreground",
+                    ]}
+                  >
+                    {f.text}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      ))}
+        ))
+      }
     </div>
   </div>
 </section>

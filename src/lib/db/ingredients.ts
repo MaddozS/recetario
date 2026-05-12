@@ -13,9 +13,7 @@ function invalidateIngredientCache(ownerId: string) {
   cacheSet(`ingredient_usage:${ownerId}`, undefined, 0);
 }
 
-export async function listIngredients(
-  ownerId: string,
-): Promise<Ingredient[]> {
+export async function listIngredients(ownerId: string): Promise<Ingredient[]> {
   const cacheKey = `ingredients:${ownerId}`;
   const cached = cacheGet<Ingredient[]>(cacheKey);
   if (cached) return cached;
@@ -145,8 +143,10 @@ export async function updateIngredient(
       throw new Error("Invalid ingredient purchase quantity");
     updates.purchaseQuantity = qty;
   }
-  if (input.brand !== undefined) updates.brand = normalizeOptionalText(input.brand) ?? null;
-  if (input.supplier !== undefined) updates.supplier = normalizeOptionalText(input.supplier) ?? null;
+  if (input.brand !== undefined)
+    updates.brand = normalizeOptionalText(input.brand) ?? null;
+  if (input.supplier !== undefined)
+    updates.supplier = normalizeOptionalText(input.supplier) ?? null;
 
   if (Object.keys(updates).length === 0) {
     return getIngredientById(ingredientId);
@@ -174,7 +174,9 @@ export async function updateIngredient(
   }
 }
 
-async function getIngredientById(ingredientId: number): Promise<Ingredient | null> {
+async function getIngredientById(
+  ingredientId: number,
+): Promise<Ingredient | null> {
   if (!Number.isFinite(ingredientId)) return null;
 
   const data = await prisma.ingredient.findUnique({

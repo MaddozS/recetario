@@ -23,7 +23,7 @@ const [recipes, userPrefs] = await Promise.all([
   (showSideBar && userId) ? listRecipeSummaries(userId) : Promise.resolve([]),
   userId ? getUserPreferences(userId) : Promise.resolve(null),
 ]);
-const recipeHref = currentRecipe ? `/recipes/${currentRecipe}` : '/recipes';
+const recipeHref = '/recipes';
 const theme = userPrefs?.theme ?? 'light';
 const accent = (userPrefs?.accentColor ?? 'indigo') as AccentFamily;
 const accentCssVars = getAccentCssVars(accent, theme);
@@ -48,7 +48,6 @@ const accentCssVars = getAccentCssVars(accent, theme);
         currentPage={currentPage}
         showMenuButton={showSideBar}
         isAuthenticated={isAuthenticated}
-        recipeHref={recipeHref}
         subscription={subscription}
       />
     )}

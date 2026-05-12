@@ -1,0 +1,31 @@
+---
+interface Props {
+  id: number;
+  name: string;
+  category?: string;
+  timeAgo: string;
+}
+
+const { id, name, category, timeAgo } = Astro.props;
+---
+
+<a
+  href={`/recipes/${id}`}
+  class="group block rounded-xl border border-border bg-card p-3 shadow-sm transition-all hover:border-accent-300 hover:shadow-md"
+>
+  <p class="truncate text-sm font-bold text-secondary-foreground transition-colors group-hover:text-accent-700">
+    {name}
+  </p>
+  <div class="mt-1.5 flex items-center gap-2">
+    {
+      category && (
+        <span class="inline-flex items-center rounded-full bg-accent-50 px-2 py-0.5 text-[10px] font-semibold text-accent-600">
+          {category}
+        </span>
+      )
+    }
+    <span class="text-[10px] text-subtle-foreground">
+      {timeAgo}
+    </span>
+  </div>
+</a>

@@ -235,22 +235,22 @@ Exponer endpoints para integración con e-commerce, POS, o apps de delivery.
 
 ## Estado actual del proyecto
 
-| Característica                    | Estado               |
-| --------------------------------- | -------------------- |
-| CRUD Ingredientes                 | ✅ Completo          |
-| CRUD Recetas                      | ✅ Completo          |
-| Cálculo de costos                 | ✅ Completo          |
-| Presentaciones de venta           | ✅ Completo          |
-| Escalado por batch                | ✅ Completo          |
-| Autenticación (Google OAuth)      | ✅ Completo          |
-| Multi-tenancy (datos por usuario) | ✅ Completo          |
-| Tema claro/oscuro                 | ✅ Completo          |
-| Colores de acento                 | ✅ Completo          |
-| Vista responsive/mobile           | ✅ Completo          |
-| Datos semilla                     | ✅ Completo          |
+| Característica                    | Estado                   |
+| --------------------------------- | ------------------------ |
+| CRUD Ingredientes                 | ✅ Completo              |
+| CRUD Recetas                      | ✅ Completo              |
+| Cálculo de costos                 | ✅ Completo              |
+| Presentaciones de venta           | ✅ Completo              |
+| Escalado por batch                | ✅ Completo              |
+| Autenticación (Google OAuth)      | ✅ Completo              |
+| Multi-tenancy (datos por usuario) | ✅ Completo              |
+| Tema claro/oscuro                 | ✅ Completo              |
+| Colores de acento                 | ✅ Completo              |
+| Vista responsive/mobile           | ✅ Completo              |
+| Datos semilla                     | ✅ Completo              |
 | Búsqueda de recetas               | 🚧 Parcial (client-side) |
-| Categorías de recetas             | ✅ Completo          |
-| Instrucciones de preparación      | ✅ Completo          |
-| Duplicar receta                   | ✅ Completo          |
-| Planificador de producción        | ❌ No implementado   |
-| Exportación PDF                   | ❌ No implementado   |
+| Categorías de recetas             | ✅ Completo              |
+| Instrucciones de preparación      | ✅ Completo              |
+| Duplicar receta                   | ✅ Completo              |
+| Planificador de producción        | ❌ No implementado       |
+| Exportación PDF                   | ❌ No implementado       |

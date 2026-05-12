@@ -16,7 +16,11 @@ interface Props {
 
 const { recipes, selections, recipePresentations } = Astro.props;
 const selectedIds = new Set(selections.map((s) => s.recipeId));
-const categories = [...new Set(recipes.map((r) => r.category).filter((c): c is string => Boolean(c)))];
+const categories = [
+  ...new Set(
+    recipes.map((r) => r.category).filter((c): c is string => Boolean(c)),
+  ),
+];
 const grouped: Record<string, RecipeSummary[]> = {};
 for (const r of recipes) {
   const cat = r.category || "Sin categoría";
@@ -25,189 +29,202 @@ for (const r of recipes) {
 }
 ---
 
-<div class="production-selector rounded-2xl border border-border bg-card p-6 shadow-sm">
-  <h2 class="text-lg font-bold text-foreground mb-4">
-    Seleccionar recetas
-  </h2>
+<div
+  class="production-selector rounded-2xl border border-border bg-card p-6 shadow-sm"
+>
+  <h2 class="text-lg font-bold text-foreground mb-4">Seleccionar recetas</h2>
 
-  {recipes.length === 0 ? (
-    <div class="flex flex-col items-center gap-3 py-8 text-center">
-      <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-muted text-subtle-foreground">
-        <Icon name="lucide:book-x" size={20} />
-      </div>
-      <p class="text-sm text-muted-foreground">
-        No hay recetas. Crea una receta primero.
-      </p>
-      <a
-        href="/recipes"
-        class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-accent-600 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-accent-700"
-      >
-        <Icon name="lucide:plus" size={16} />
-        Ir a recetas
-      </a>
-    </div>
-  ) : (
-    <form method="post" data-astro-reload class="space-y-4">
-      {categories.length > 0
-        ? categories.map((cat) => (
-            <fieldset>
-              <legend class="text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground mb-2 px-1">
-                {cat}
-              </legend>
-              <div class="space-y-1">
-                {(grouped[cat] || []).map((recipe: RecipeSummary) => {
-                  const isSelected = selectedIds.has(recipe.id);
-                  return (
-                    <label
-                      class:list={[
-                        "flex items-center gap-3 rounded-xl p-3 transition-colors cursor-pointer",
-                        isSelected
-                          ? "bg-accent-50 ring-1 ring-accent-200"
-                          : "hover:bg-muted",
-                      ]}
-                    >
-                      <input
-                        type="checkbox"
-                        name="recipe_id"
-                        value={recipe.id}
-                        checked={isSelected}
-                        class="h-4 w-4 rounded border-border text-accent-600 focus:ring-accent-500"
-                      />
-                      <span class="flex-1 min-w-0">
-                        <span class="block text-sm font-semibold text-foreground truncate">
-                          {recipe.name}
-                        </span>
-                        <span class="block text-xs text-muted-foreground">
-                          {recipe.ingredientCount} ingredientes
-                        </span>
-                      </span>
-                      {isSelected && (
-                        <span class="flex items-center gap-2 shrink-0">
-                          {(() => {
-                            const sel = selections.find((s) => s.recipeId === recipe.id);
-                            const presentations = recipePresentations?.get(recipe.id);
-                            return (
-                              <>
-                                {presentations && presentations.length > 1 && (
-                                  <select
-                                    name="presentation_id"
-                                    class="rounded-lg border border-border bg-background px-2 py-2 text-xs font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-accent-500/20 focus:border-accent-500"
-                                  >
-                                    {presentations.map((p) => (
-                                      <option
-                                        value={p.id}
-                                        selected={p.id === sel?.presentationId}
-                                      >
-                                        {p.name}
-                                      </option>
-                                    ))}
-                                  </select>
-                                )}
-                                <span class="text-[11px] font-semibold text-muted-foreground">
-                                  Batches:
-                                </span>
-                                <input
-                                  type="number"
-                                  name="batches"
-                                  value={sel?.batches || 1}
-                                  min="0.5"
-                                  step="0.5"
-                                  class="w-20 rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground font-mono text-center focus:outline-none focus:ring-2 focus:ring-accent-500/20 focus:border-accent-500"
-                                />
-                              </>
-                            );
-                          })()}
-                        </span>
-                      )}
-                    </label>
-                  );
-                })}
-              </div>
-            </fieldset>
-          ))
-        : recipes.map((recipe) => {
-            const isSelected = selectedIds.has(recipe.id);
-            return (
-              <label
-                class:list={[
-                  "flex items-center gap-3 rounded-xl p-3 transition-colors cursor-pointer",
-                  isSelected
-                    ? "bg-accent-50 ring-1 ring-accent-200"
-                    : "hover:bg-muted",
-                ]}
-              >
-                <input
-                  type="checkbox"
-                  name="recipe_id"
-                  value={recipe.id}
-                  checked={isSelected}
-                  class="h-4 w-4 rounded border-border text-accent-600 focus:ring-accent-500"
-                />
-                <span class="flex-1 min-w-0">
-                  <span class="block text-sm font-semibold text-foreground truncate">
-                    {recipe.name}
-                  </span>
-                  <span class="block text-xs text-muted-foreground">
-                    {recipe.ingredientCount} ingredientes
-                  </span>
-                </span>
-                {isSelected && (
-                  <span class="flex items-center gap-2 shrink-0">
-                    {(() => {
-                      const sel = selections.find((s) => s.recipeId === recipe.id);
-                      const presentations = recipePresentations?.get(recipe.id);
-                      return (
-                        <>
-                          {presentations && presentations.length > 1 && (
-                            <select
-                              name="presentation_id"
-                              class="rounded-lg border border-border bg-background px-2 py-2 text-xs font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-accent-500/20 focus:border-accent-500"
-                            >
-                              {presentations.map((p) => (
-                                <option
-                                  value={p.id}
-                                  selected={p.id === sel?.presentationId}
-                                >
-                                  {p.name}
-                                </option>
-                              ))}
-                            </select>
-                          )}
-                          <span class="text-[11px] font-semibold text-muted-foreground">
-                            Batches:
-                          </span>
-                          <input
-                            type="number"
-                            name="batches"
-                            value={sel?.batches || 1}
-                            min="0.5"
-                            step="0.5"
-                            class="w-20 rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground font-mono text-center focus:outline-none focus:ring-2 focus:ring-accent-500/20 focus:border-accent-500"
-                          />
-                        </>
-                      );
-                    })()}
-                  </span>
-                )}
-              </label>
-            );
-          })}
-
-      {selections.length === 0 && (
-        <p class="text-center text-sm text-muted-foreground pt-2">
-          Selecciona las recetas para planificar tu producción
+  {
+    recipes.length === 0 ? (
+      <div class="flex flex-col items-center gap-3 py-8 text-center">
+        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-muted text-subtle-foreground">
+          <Icon name="lucide:book-x" size={20} />
+        </div>
+        <p class="text-sm text-muted-foreground">
+          No hay recetas. Crea una receta primero.
         </p>
-      )}
-
-      <div class="flex justify-end pt-2">
-        <button
-          type="submit"
-          class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-accent-600 px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-accent-700"
+        <a
+          href="/recipes"
+          class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-accent-600 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-accent-700"
         >
-          <Icon name="lucide:calculator" size={16} />
-          Calcular producción
-        </button>
+          <Icon name="lucide:plus" size={16} />
+          Ir a recetas
+        </a>
       </div>
-    </form>
-  )}
+    ) : (
+      <form method="post" data-astro-reload class="space-y-4">
+        {categories.length > 0
+          ? categories.map((cat) => (
+              <fieldset>
+                <legend class="text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground mb-2 px-1">
+                  {cat}
+                </legend>
+                <div class="space-y-1">
+                  {(grouped[cat] || []).map((recipe: RecipeSummary) => {
+                    const isSelected = selectedIds.has(recipe.id);
+                    return (
+                      <label
+                        class:list={[
+                          "flex items-center gap-3 rounded-xl p-3 transition-colors cursor-pointer",
+                          isSelected
+                            ? "bg-accent-50 ring-1 ring-accent-200"
+                            : "hover:bg-muted",
+                        ]}
+                      >
+                        <input
+                          type="checkbox"
+                          name="recipe_id"
+                          value={recipe.id}
+                          checked={isSelected}
+                          class="h-4 w-4 rounded border-border text-accent-600 focus:ring-accent-500"
+                        />
+                        <span class="flex-1 min-w-0">
+                          <span class="block text-sm font-semibold text-foreground truncate">
+                            {recipe.name}
+                          </span>
+                          <span class="block text-xs text-muted-foreground">
+                            {recipe.ingredientCount} ingredientes
+                          </span>
+                        </span>
+                        {isSelected && (
+                          <span class="flex items-center gap-2 shrink-0">
+                            {(() => {
+                              const sel = selections.find(
+                                (s) => s.recipeId === recipe.id,
+                              );
+                              const presentations = recipePresentations?.get(
+                                recipe.id,
+                              );
+                              return (
+                                <>
+                                  {presentations &&
+                                    presentations.length > 1 && (
+                                      <select
+                                        name="presentation_id"
+                                        class="rounded-lg border border-border bg-background px-2 py-2 text-xs font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-accent-500/20 focus:border-accent-500"
+                                      >
+                                        {presentations.map((p) => (
+                                          <option
+                                            value={p.id}
+                                            selected={
+                                              p.id === sel?.presentationId
+                                            }
+                                          >
+                                            {p.name}
+                                          </option>
+                                        ))}
+                                      </select>
+                                    )}
+                                  <span class="text-[11px] font-semibold text-muted-foreground">
+                                    Batches:
+                                  </span>
+                                  <input
+                                    type="number"
+                                    name="batches"
+                                    value={sel?.batches || 1}
+                                    min="0.5"
+                                    step="0.5"
+                                    class="w-20 rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground font-mono text-center focus:outline-none focus:ring-2 focus:ring-accent-500/20 focus:border-accent-500"
+                                  />
+                                </>
+                              );
+                            })()}
+                          </span>
+                        )}
+                      </label>
+                    );
+                  })}
+                </div>
+              </fieldset>
+            ))
+          : recipes.map((recipe) => {
+              const isSelected = selectedIds.has(recipe.id);
+              return (
+                <label
+                  class:list={[
+                    "flex items-center gap-3 rounded-xl p-3 transition-colors cursor-pointer",
+                    isSelected
+                      ? "bg-accent-50 ring-1 ring-accent-200"
+                      : "hover:bg-muted",
+                  ]}
+                >
+                  <input
+                    type="checkbox"
+                    name="recipe_id"
+                    value={recipe.id}
+                    checked={isSelected}
+                    class="h-4 w-4 rounded border-border text-accent-600 focus:ring-accent-500"
+                  />
+                  <span class="flex-1 min-w-0">
+                    <span class="block text-sm font-semibold text-foreground truncate">
+                      {recipe.name}
+                    </span>
+                    <span class="block text-xs text-muted-foreground">
+                      {recipe.ingredientCount} ingredientes
+                    </span>
+                  </span>
+                  {isSelected && (
+                    <span class="flex items-center gap-2 shrink-0">
+                      {(() => {
+                        const sel = selections.find(
+                          (s) => s.recipeId === recipe.id,
+                        );
+                        const presentations = recipePresentations?.get(
+                          recipe.id,
+                        );
+                        return (
+                          <>
+                            {presentations && presentations.length > 1 && (
+                              <select
+                                name="presentation_id"
+                                class="rounded-lg border border-border bg-background px-2 py-2 text-xs font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-accent-500/20 focus:border-accent-500"
+                              >
+                                {presentations.map((p) => (
+                                  <option
+                                    value={p.id}
+                                    selected={p.id === sel?.presentationId}
+                                  >
+                                    {p.name}
+                                  </option>
+                                ))}
+                              </select>
+                            )}
+                            <span class="text-[11px] font-semibold text-muted-foreground">
+                              Batches:
+                            </span>
+                            <input
+                              type="number"
+                              name="batches"
+                              value={sel?.batches || 1}
+                              min="0.5"
+                              step="0.5"
+                              class="w-20 rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground font-mono text-center focus:outline-none focus:ring-2 focus:ring-accent-500/20 focus:border-accent-500"
+                            />
+                          </>
+                        );
+                      })()}
+                    </span>
+                  )}
+                </label>
+              );
+            })}
+
+        {selections.length === 0 && (
+          <p class="text-center text-sm text-muted-foreground pt-2">
+            Selecciona las recetas para planificar tu producción
+          </p>
+        )}
+
+        <div class="flex justify-end pt-2">
+          <button
+            type="submit"
+            class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-accent-600 px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-accent-700"
+          >
+            <Icon name="lucide:calculator" size={16} />
+            Calcular producción
+          </button>
+        </div>
+      </form>
+    )
+  }
 </div>

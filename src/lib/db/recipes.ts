@@ -35,6 +35,7 @@ export async function listRecipeSummaries(
       id: true,
       name: true,
       category: true,
+      updatedAt: true,
       _count: { select: { recipeIngredients: true } },
     },
     orderBy: { id: "asc" },
@@ -45,6 +46,7 @@ export async function listRecipeSummaries(
     name: row.name,
     category: normalizeOptionalText(row.category),
     ingredientCount: row._count.recipeIngredients,
+    updatedAt: row.updatedAt?.toISOString(),
   }));
 
   cacheSet(cacheKey, result, 60);
@@ -85,10 +87,10 @@ export async function getRecipeById(
     category: normalizeOptionalText(recipe.category),
     instructions: normalizeOptionalText(recipe.instructions),
     desiredMargin: normalizeDesiredMargin(recipe.desiredMargin),
-    fixedCostsPercentage: normalizeFixedCostsPercentage(recipe.fixedCostsPercentage),
-    updatedAt: recipe.updatedAt
-      ? recipe.updatedAt.toISOString()
-      : undefined,
+    fixedCostsPercentage: normalizeFixedCostsPercentage(
+      recipe.fixedCostsPercentage,
+    ),
+    updatedAt: recipe.updatedAt ? recipe.updatedAt.toISOString() : undefined,
     ingredients: recipe.recipeIngredients.map((row) => ({
       ingredientId: row.ingredientId,
       quantity: toNumber(row.quantity),
@@ -167,7 +169,9 @@ export async function updateRecipe(
   ownerId: string,
 ): Promise<void> {
   const desiredMargin = normalizeDesiredMargin(input.desiredMargin);
-  const fixedCostsPercentage = normalizeFixedCostsPercentage(input.fixedCostsPercentage);
+  const fixedCostsPercentage = normalizeFixedCostsPercentage(
+    input.fixedCostsPercentage,
+  );
   const category = normalizeCategory(input.category);
   const instructions = normalizeOptionalText(input.instructions) ?? null;
 
@@ -227,27 +231,35 @@ export async function duplicateRecipe(
   });
 
   if (source.ingredients.length > 0) {
-    await updateRecipe(newRecipe.id, {
-      name: newName,
-      category: source.category ?? null,
-      instructions: source.instructions,
-      desiredMargin: source.desiredMargin,
-      fixedCostsPercentage: source.fixedCostsPercentage,
-      ingredients: source.ingredients.map((i) => ({
-        ingredientId: i.ingredientId,
-        quantity: i.quantity,
-        unit: i.unit,
-        comment: i.comment ?? null,
-      })),
-    }, ownerId);
+    await updateRecipe(
+      newRecipe.id,
+      {
+        name: newName,
+        category: source.category ?? null,
+        instructions: source.instructions,
+        desiredMargin: source.desiredMargin,
+        fixedCostsPercentage: source.fixedCostsPercentage,
+        ingredients: source.ingredients.map((i) => ({
+          ingredientId: i.ingredientId,
+          quantity: i.quantity,
+          unit: i.unit,
+          comment: i.comment ?? null,
+        })),
+      },
+      ownerId,
+    );
   }
 
   for (const p of source.presentations) {
-    await createPresentation(newRecipe.id, {
-      name: p.name,
-      unitsPerBatch: p.unitsPerBatch,
-      salePrice: p.salePrice,
-    }, ownerId);
+    await createPresentation(
+      newRecipe.id,
+      {
+        name: p.name,
+        unitsPerBatch: p.unitsPerBatch,
+        salePrice: p.salePrice,
+      },
+      ownerId,
+    );
   }
 
   return { id: newRecipe.id, name: newName };

@@ -1,0 +1,38 @@
+---
+import { Icon } from "astro-icon/components";
+
+interface Props {
+  recipeCount: number;
+  categoryCount: number;
+  ingredientCount: number;
+}
+
+const { recipeCount, categoryCount, ingredientCount } = Astro.props;
+---
+
+<div class="flex flex-wrap items-center gap-3">
+  <div
+    class="inline-flex items-center gap-1.5 rounded-xl bg-accent-50 px-3 py-1.5 text-sm font-semibold text-accent-600"
+  >
+    <Icon name="lucide:book-open" size={14} />
+    {recipeCount}
+    {recipeCount === 1 ? "Receta" : "Recetas"}
+  </div>
+  {
+    categoryCount > 0 && (
+      <div class="inline-flex items-center gap-1.5 rounded-xl bg-accent-50 px-3 py-1.5 text-sm font-semibold text-accent-600">
+        <Icon name="lucide:folders" size={14} />
+        {categoryCount} {categoryCount === 1 ? "Categoría" : "Categorías"}
+      </div>
+    )
+  }
+  {
+    ingredientCount > 0 && (
+      <div class="inline-flex items-center gap-1.5 rounded-xl bg-accent-50 px-3 py-1.5 text-sm font-semibold text-accent-600">
+        <Icon name="lucide:package" size={14} />
+        {ingredientCount}{" "}
+        {ingredientCount === 1 ? "Ingrediente" : "Ingredientes"}
+      </div>
+    )
+  }
+</div>
