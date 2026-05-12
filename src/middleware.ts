@@ -1,8 +1,8 @@
 import { defineMiddleware } from "astro:middleware";
-import { auth } from "./lib/auth";
-import { getUserSubscription, seedSubscriptionPlans } from "./lib/recipe-data";
-import { resolveSubscription } from "./lib/subscription";
-import { cacheGet, cacheSet } from "./lib/cache";
+import { auth } from "@/lib/auth";
+import { getUserSubscription, seedSubscriptionPlans } from "@/lib/db/billing";
+import { resolveSubscription } from "@/lib/subscription";
+import { cacheGet, cacheSet } from "@/lib/cache";
 
 const globals = globalThis as typeof globalThis & {
   __plansSeeded?: boolean;

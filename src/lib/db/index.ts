@@ -1,8 +1,8 @@
-export { prisma } from "../prisma";
-export * from "./types";
-export * from "./helpers";
-export * from "./ingredients";
-export * from "./recipes";
-export * from "./presentations";
-export * from "./preferences";
-export * from "./billing";
+export { prisma } from "@/lib/prisma";
+export * from "@/lib/db/types";
+export * from "@/lib/db/helpers";
+export * from "@/lib/db/ingredients";
+export * from "@/lib/db/recipes";
+export * from "@/lib/db/presentations";
+export * from "@/lib/db/preferences";
+export * from "@/lib/db/billing";

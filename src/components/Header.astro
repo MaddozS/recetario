@@ -1,6 +1,6 @@
 ---
 import { Icon } from "astro-icon/components";
-import { hasFeature } from "../lib/subscription";
+import { hasFeature } from "@/lib/subscription";
 
 const {
   currentPage,
@@ -149,7 +149,7 @@ const showProduction =
 </header>
 
 <script>
-  import { signOut } from "../lib/sign-out";
+  import { signOut } from "@/lib/sign-out";
 
   function setupSignOut() {
     const button = document.getElementById("sign-out-button");

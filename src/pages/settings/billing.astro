@@ -1,15 +1,15 @@
 ---
 import { Icon } from "astro-icon/components";
-import Layout from "../../layouts/Layout.astro";
+import Layout from "@/layouts/Layout.astro";
 import {
   isPaid,
   getRemainingRecipes,
   getRemainingIngredients,
-} from "../../lib/subscription";
+} from "@/lib/subscription";
 import {
   countUserRecipes,
   countUserIngredients,
-} from "../../lib/recipe-data";
+} from "@/lib/db/billing";
 
 if (!Astro.locals.session || !Astro.locals.user) {
   return Astro.redirect("/sign-in");

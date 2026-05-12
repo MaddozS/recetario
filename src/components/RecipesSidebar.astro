@@ -1,7 +1,7 @@
 ---
 import { Icon } from "astro-icon/components";
-import type { RecipeSummary } from "../lib/recipe-data";
-import type { UserSubscriptionInfo } from "../lib/subscription";
+import type { RecipeSummary } from "@/lib/db/types";
+import type { UserSubscriptionInfo } from "@/lib/subscription";
 
 const {
   recipes = [],
@@ -272,7 +272,7 @@ const createRecipeDialogId = "create-recipe-dialog";
 </div>
 
 <script>
-  import { bindDialogBackdrop } from "../lib/dialog";
+  import { bindDialogBackdrop } from "@/lib/dialog";
 
   function setupRecipesSidebar() {
     const searchInput = document.getElementById("recipeSearch");

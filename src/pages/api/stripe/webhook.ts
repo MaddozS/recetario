@@ -5,7 +5,7 @@ import {
   cancelSubscription,
   markSubscriptionPastDue,
   seedSubscriptionPlans,
-} from "../../../lib/recipe-data";
+} from "@/lib/db/billing";
 
 const stripe = new Stripe(
   import.meta.env.STRIPE_SECRET_KEY || process.env.STRIPE_SECRET_KEY || "",

@@ -1,13 +1,13 @@
 ---
 import { Icon } from "astro-icon/components";
-import Layout from "../layouts/Layout.astro";
-import { getUserPreferences, upsertUserPreferences } from "../lib/recipe-data";
+import Layout from "@/layouts/Layout.astro";
+import { getUserPreferences, upsertUserPreferences } from "@/lib/db/preferences";
 import {
   ACCENT_FAMILIES,
   ACCENT_LABELS,
   getAccentPreviewColor,
   type AccentFamily,
-} from "../lib/accent-colors";
+} from "@/lib/accent-colors";
 
 if (!Astro.locals.session || !Astro.locals.user) {
   return Astro.redirect("/sign-in");
@@ -258,7 +258,7 @@ if (feedback) {
 </Layout>
 
 <script>
-  import { getAccentCssVars } from "../lib/accent-colors";
+  import { getAccentCssVars } from "@/lib/accent-colors";
 
   function setupSettings() {
     const themeInput = document.getElementById("theme-input");

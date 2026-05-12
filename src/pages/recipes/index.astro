@@ -1,14 +1,14 @@
 ---
 import { Icon } from "astro-icon/components";
-import Layout from "../../layouts/Layout.astro";
+import Layout from "@/layouts/Layout.astro";
 import {
   createRecipe,
   getRecipeById,
   listRecipeSummaries,
-  countUserRecipes,
-} from "../../lib/recipe-data";
-import { canCreateRecipe } from "../../lib/subscription";
-import EmptyState from "../../components/EmptyState.astro";
+} from "@/lib/db/recipes";
+import { countUserRecipes } from "@/lib/db/billing";
+import { canCreateRecipe } from "@/lib/subscription";
+import EmptyState from "@/components/EmptyState.astro";
 
 if (!Astro.locals.session || !Astro.locals.user) {
   return Astro.redirect("/sign-in");

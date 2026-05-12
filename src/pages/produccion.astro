@@ -1,15 +1,15 @@
 ---
 import { Icon } from "astro-icon/components";
-import Layout from "../layouts/Layout.astro";
-import { getRecipeById, listRecipeSummaries } from "../lib/recipe-data";
-import { hasFeature } from "../lib/subscription";
-import { calculateProduction } from "../lib/production-calculator";
-import type { ProductionRecipeSelection, ConsolidatedIngredient, ProductionSummary } from "../lib/production-types";
-import UpgradePrompt from "../components/UpgradePrompt.astro";
-import ProductionRecipeSelector from "../components/ProductionRecipeSelector.astro";
-import ProductionIngredientsTable from "../components/ProductionIngredientsTable.astro";
-import ProductionFinancialSummary from "../components/ProductionFinancialSummary.astro";
-import ProductionRecipeBreakdown from "../components/ProductionRecipeBreakdown.astro";
+import Layout from "@/layouts/Layout.astro";
+import { getRecipeById, listRecipeSummaries } from "@/lib/db/recipes";
+import { hasFeature } from "@/lib/subscription";
+import { calculateProduction } from "@/lib/production-calculator";
+import type { ProductionRecipeSelection, ConsolidatedIngredient, ProductionSummary } from "@/lib/production-types";
+import UpgradePrompt from "@/components/UpgradePrompt.astro";
+import ProductionRecipeSelector from "@/components/ProductionRecipeSelector.astro";
+import ProductionIngredientsTable from "@/components/ProductionIngredientsTable.astro";
+import ProductionFinancialSummary from "@/components/ProductionFinancialSummary.astro";
+import ProductionRecipeBreakdown from "@/components/ProductionRecipeBreakdown.astro";
 
 if (!Astro.locals.session || !Astro.locals.user) {
   return Astro.redirect("/sign-in");

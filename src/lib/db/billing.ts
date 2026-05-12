@@ -1,5 +1,5 @@
-import { prisma } from "../prisma";
-import { cacheSet } from "../cache";
+import { prisma } from "@/lib/prisma";
+import { cacheSet } from "@/lib/cache";
 
 function invalidateSubCache(userId: string) {
   cacheSet(`sub:${userId}`, undefined, 0);

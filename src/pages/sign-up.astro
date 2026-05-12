@@ -1,6 +1,6 @@
 ---
 import { Icon } from "astro-icon/components";
-import LandingLayout from "../layouts/LandingLayout.astro";
+import LandingLayout from "@/layouts/LandingLayout.astro";
 ---
 
 <LandingLayout>
@@ -132,7 +132,7 @@ import LandingLayout from "../layouts/LandingLayout.astro";
 </LandingLayout>
 
 <script>
-  import { signUpWithEmail, signInWithGoogle } from "../lib/sign-in";
+  import { signUpWithEmail, signInWithGoogle } from "@/lib/sign-in";
 
   function setupSignUp() {
     const form = document.getElementById("sign-up-form");
