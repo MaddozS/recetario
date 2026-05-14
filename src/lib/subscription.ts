@@ -38,6 +38,7 @@ const FREE_FEATURES: Record<string, boolean> = {
   change_history: false,
   data_import_export: false,
   nutrition_info: false,
+  cooking_mode: false,
 };
 
 export function getDefaultSubscription(): UserSubscriptionInfo {

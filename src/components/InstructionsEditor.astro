@@ -1,0 +1,674 @@
+---
+import { Icon } from "astro-icon/components";
+
+interface IngredientRef {
+  id: number;
+  name: string;
+}
+
+interface Props {
+  recipeEditFormId: string;
+  instructions: string | undefined | null;
+  ingredients: IngredientRef[];
+}
+
+const { recipeEditFormId, instructions, ingredients } = Astro.props;
+const ingredientJson = JSON.stringify(ingredients);
+---
+
+<div class="mx-5 sm:mx-6 lg:mx-8 py-6 border-y border-border">
+  <label
+    class="text-sm font-bold text-secondary-foreground mb-3 flex items-center gap-2"
+  >
+    <Icon name="lucide:list-checks" size={16} class="text-accent-500" />
+    Instrucciones de Preparación
+  </label>
+
+  <div
+    class="instructions-editor"
+    data-ingredients={ingredientJson}
+    data-initial={JSON.stringify(instructions || "")}
+    data-form-id={recipeEditFormId}
+  >
+    <div
+      class="instructions-toolbar flex items-center gap-1 px-3 py-2 border border-border rounded-t-xl bg-muted"
+    >
+      <button
+        type="button"
+        class="toolbar-btn inline-flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-accent-50 hover:text-accent-600 transition-colors cursor-pointer"
+        data-toolbar-btn="bold"
+        title="Negritas"
+      >
+        <Icon name="lucide:bold" size={15} />
+      </button>
+      <button
+        type="button"
+        class="toolbar-btn inline-flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-accent-50 hover:text-accent-600 transition-colors cursor-pointer"
+        data-toolbar-btn="italic"
+        title="Cursiva"
+      >
+        <Icon name="lucide:italic" size={15} />
+      </button>
+      <div class="w-px h-5 bg-border mx-1"></div>
+      <button
+        type="button"
+        class="toolbar-btn inline-flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-accent-50 hover:text-accent-600 transition-colors cursor-pointer"
+        data-toolbar-btn="numbered-list"
+        title="Lista numerada"
+      >
+        <Icon name="lucide:list-ordered" size={15} />
+      </button>
+      <button
+        type="button"
+        class="toolbar-btn inline-flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-accent-50 hover:text-accent-600 transition-colors cursor-pointer"
+        data-toolbar-btn="bullet-list"
+        title="Lista con viñetas"
+      >
+        <Icon name="lucide:list" size={15} />
+      </button>
+      <div class="w-px h-5 bg-border mx-1"></div>
+      <button
+        type="button"
+        class="toolbar-btn inline-flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-accent-50 hover:text-accent-600 transition-colors cursor-pointer"
+        data-toolbar-btn="heading"
+        title="Sección"
+      >
+        <Icon name="lucide:heading" size={15} />
+      </button>
+      <button
+        type="button"
+        class="toolbar-btn inline-flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-accent-50 hover:text-accent-600 transition-colors cursor-pointer"
+        data-toolbar-btn="timer"
+        title="Temporizador"
+      >
+        <Icon name="lucide:timer" size={15} />
+      </button>
+
+      <div class="ml-auto">
+        <span class="text-[10px] text-subtle-foreground hidden sm:inline"
+          >Markdown</span
+        >
+      </div>
+    </div>
+
+    <div class="border-x border-b border-border rounded-b-xl overflow-hidden">
+      <div class="flex border-b border-border bg-background">
+        <button
+          type="button"
+          class="preview-tab flex-1 px-4 py-2 text-xs font-bold text-center transition-colors"
+          data-editor-tab="write"
+        >
+          Escribir
+        </button>
+        <button
+          type="button"
+          class="preview-tab flex-1 px-4 py-2 text-xs font-bold text-center transition-colors"
+          data-editor-tab="preview"
+        >
+          Vista previa
+        </button>
+      </div>
+      <div class="editor-pane" data-editor-pane="write">
+        <div
+          class="contenteditable-editor w-full bg-background p-4 text-sm text-secondary-foreground leading-relaxed min-h-[18rem] lg:min-h-[22rem] border-0 outline-none focus:ring-0 whitespace-pre-wrap"
+          contenteditable="true"
+          data-contenteditable
+        >
+        </div>
+      </div>
+      <div class="editor-pane hidden" data-editor-pane="preview">
+        <div
+          class="instructions-preview min-h-[18rem] lg:min-h-[22rem] p-4 text-sm text-secondary-foreground leading-relaxed bg-background recipe-instructions"
+          data-preview
+        >
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="mention-dropdown fixed bg-card border border-border rounded-xl shadow-lg z-30 overflow-hidden"
+      data-mention-dropdown
+    >
+    </div>
+
+    <p class="mt-2 text-xs text-subtle-foreground leading-relaxed">
+      Usa <strong class="text-secondary-foreground">**negritas**</strong>,
+      <em class="text-secondary-foreground">*cursiva*</em>,
+      <code class="text-secondary-foreground">## Sección</code>,
+      <code class="text-secondary-foreground">@ingrediente</code> para vincular
+    </p>
+    <p class="mt-1 text-xs text-subtle-foreground leading-relaxed">
+      Utiliza la opción
+      <span class="inline-flex items-baseline gap-1">
+        <Icon name="lucide:timer" size={12} />
+        <span class="text-secondary-foreground font-mono">Temporizador</span>
+      </span>
+      para insertar fácilmente indicaciones de tiempo.
+    </p>
+  </div>
+</div>
+
+<script>
+  import {
+    parseInstructions,
+    highlightReferences,
+    escapeText,
+  } from "../lib/instructions-parser";
+
+  function setupInstructionsEditor() {
+    const editor = document.querySelector<HTMLElement>(
+      ".instructions-editor",
+    );
+    if (!editor || editor.dataset.editorBound) return;
+    editor.dataset.editorBound = "1";
+
+    const rawIngredients = editor.dataset.ingredients
+      ? (JSON.parse(editor.dataset.ingredients) as {
+          id: number;
+          name: string;
+        }[])
+      : [];
+    const ingredientById = new Map<number, string>();
+    for (const ing of rawIngredients) ingredientById.set(ing.id, ing.name);
+
+    const initialMarkdown: string = editor.dataset.initial
+      ? JSON.parse(editor.dataset.initial)
+      : "";
+    const formId = editor.dataset.formId || "";
+
+    const contentEditors = editor.querySelectorAll<HTMLElement>(
+      "[data-contenteditable]",
+    );
+    const contentEditable = contentEditors[0];
+    if (!contentEditable) return;
+
+    const previews = editor.querySelectorAll<HTMLElement>("[data-preview]");
+    const hiddenTA =
+      document.querySelector<HTMLInputElement>("[data-hidden-ta]");
+    const tabWrite = editor.querySelector<HTMLElement>(
+      '[data-editor-tab="write"]',
+    );
+    const tabPreview = editor.querySelector<HTMLElement>(
+      '[data-editor-tab="preview"]',
+    );
+    const paneWrite = editor.querySelector<HTMLElement>(
+      '[data-editor-pane="write"]',
+    );
+    const panePreview = editor.querySelector<HTMLElement>(
+      '[data-editor-pane="preview"]',
+    );
+    const mentionDropdown = editor.querySelector<HTMLElement>(
+      "[data-mention-dropdown]",
+    );
+
+    function idToName(id: number): string | undefined {
+      return ingredientById.get(id);
+    }
+
+    // --- Tag helpers ---
+
+    function createTagSpan(name: string, id: number): HTMLSpanElement {
+      const span = document.createElement("span");
+      span.className = "tag-badge";
+      span.contentEditable = "false";
+      span.dataset.ref = String(id);
+      span.textContent = name;
+      span.appendChild(document.createTextNode("\u200B"));
+      return span;
+    }
+
+    // --- Serialization ---
+
+    function serializeEditor(): string {
+      let out = "";
+      const walk = (node: Node) => {
+        if (
+          node.nodeType === Node.ELEMENT_NODE &&
+          (node as HTMLElement).classList?.contains("tag-badge")
+        ) {
+          out +=
+            "[ingredient_id:" +
+            ((node as HTMLElement).dataset.ref || "0") +
+            "]";
+        } else if (node.nodeType === Node.TEXT_NODE) {
+          out += (node.textContent || "").replace(/\u200B/g, "");
+        } else if (
+          node.nodeType === Node.ELEMENT_NODE &&
+          (node as HTMLElement).tagName === "BR"
+        ) {
+          out += "\n";
+        } else if (node.nodeType === Node.ELEMENT_NODE) {
+          if (
+            (node as HTMLElement).tagName === "P" ||
+            (node as HTMLElement).tagName === "DIV"
+          ) {
+            if (out && !out.endsWith("\n")) out += "\n";
+          }
+          for (const child of node.childNodes) walk(child);
+        }
+      };
+      for (const child of contentEditable.childNodes) walk(child);
+      return out.replace(/^[\n\r]+|[\n\r]+$/g, "");
+    }
+
+    function updateHiddenTA() {
+      if (hiddenTA) hiddenTA.value = serializeEditor();
+    }
+
+    // --- Editor content rendering ---
+
+    function renderEditorContent(markdown: string) {
+      contentEditable.innerHTML = "";
+      const parts = markdown.split(/(\[ingredient_id:\d+\])/g);
+      for (const part of parts) {
+        const idMatch = part.match(/\[ingredient_id:(\d+)\]/);
+        if (idMatch) {
+          const id = Number(idMatch[1]);
+          const name = idToName(id);
+          if (name) {
+            const span = createTagSpan(name, id);
+            contentEditable.appendChild(span);
+            contentEditable.appendChild(document.createTextNode(" "));
+          }
+        } else if (part) {
+          contentEditable.appendChild(document.createTextNode(part));
+        }
+      }
+    }
+
+    // --- Preview rendering ---
+
+    function renderPreview(markdown: string) {
+      const parsed = parseInstructions(markdown, rawIngredients);
+      let html = "";
+
+      for (const step of parsed.steps) {
+        if (step.isGroupHeader && step.groupName) {
+          html +=
+            '<div class="step-group-header"><span>' +
+            escapeText(step.groupName) +
+            "</span></div>";
+        } else {
+          html += '<div class="step-card">';
+          html +=
+            '<div class="step-number">' + String(step.number) + "</div>";
+          html += '<div class="step-content">';
+          html +=
+            '<span class="step-text">' +
+            highlightReferences(step.text, rawIngredients) +
+            "</span>";
+          if (step.duration || step.temperature) {
+            html += '<div class="step-meta">';
+            if (step.duration) {
+              html +=
+                '<span class="step-badge step-badge-time">⏱ ' +
+                escapeText(step.duration.replace(/^⏱\s*/i, "")) +
+                "</span>";
+            }
+            if (step.temperature) {
+              html +=
+                '<span class="step-badge step-badge-temp">' +
+                escapeText(step.temperature) +
+                "</span>";
+            }
+            html += "</div>";
+          }
+          html += "</div>";
+          html += "</div>";
+        }
+      }
+
+      if (parsed.notes && parsed.notes.length > 0) {
+        html += '<div class="step-notes">';
+        html += '<h3 class="step-notes-title">📝 Notas</h3>';
+        for (const note of parsed.notes) {
+          html += '<p class="step-note-text">' + escapeText(note) + "</p>";
+        }
+        html += "</div>";
+      }
+
+      return html;
+    }
+
+    function updatePreviews() {
+      const md = hiddenTA?.value || serializeEditor();
+      const html = renderPreview(md);
+      previews.forEach((el) => (el.innerHTML = html));
+    }
+
+    // --- @mention ---
+
+    const filterMentions = (query: string) =>
+      rawIngredients.filter((ing) =>
+        ing.name.toLowerCase().includes(query.toLowerCase()),
+      );
+
+    let mentionResults: typeof rawIngredients = [];
+    let mentionActiveIndex = -1;
+    let mentionStartContainer: Node | null = null;
+    let mentionStartOffset = 0;
+    let mentionEndContainer: Node | null = null;
+    let mentionEndOffset = 0;
+
+    function closeMentionDropdown() {
+      if (mentionDropdown) {
+        mentionDropdown.classList.remove("mention-dropdown-open");
+        mentionDropdown.innerHTML = "";
+      }
+      mentionResults = [];
+      mentionActiveIndex = -1;
+      mentionStartContainer = null;
+      mentionStartOffset = 0;
+      mentionEndContainer = null;
+      mentionEndOffset = 0;
+    }
+
+    function updateMentionActive() {
+      if (!mentionDropdown) return;
+      mentionDropdown
+        .querySelectorAll<HTMLElement>(".mention-item")
+        .forEach((item, i) => {
+          item.classList.toggle(
+            "mention-item-active",
+            i === mentionActiveIndex,
+          );
+        });
+    }
+
+    function renderMentionDropdown() {
+      if (!mentionDropdown || mentionResults.length === 0) {
+        closeMentionDropdown();
+        return;
+      }
+      mentionDropdown.innerHTML = mentionResults
+        .map(
+          (ing, i) =>
+            `<button type="button" class="mention-item block w-full text-left px-3 py-2 text-sm text-secondary-foreground hover:bg-accent-50 hover:text-accent-600 transition-colors" data-mention-item="${i}">${
+              escapeText(ing.name)
+            }</button>`,
+        )
+        .join("");
+      mentionDropdown.classList.add("mention-dropdown-open");
+      mentionActiveIndex = 0;
+      updateMentionActive();
+    }
+
+    function positionMentionDropdown() {
+      if (!mentionDropdown) return;
+      const sel = window.getSelection();
+      if (!sel || !sel.rangeCount) return;
+      const rect = sel.getRangeAt(0).getBoundingClientRect();
+      mentionDropdown.style.top = rect.bottom + 4 + "px";
+      mentionDropdown.style.left =
+        Math.min(rect.left, window.innerWidth - 196) + "px";
+      mentionDropdown.style.minWidth = "180px";
+      mentionDropdown.style.maxHeight = "12rem";
+      mentionDropdown.style.overflowY = "auto";
+    }
+
+    function selectMention(index: number) {
+      if (
+        index < 0 ||
+        index >= mentionResults.length ||
+        !mentionStartContainer ||
+        !mentionEndContainer
+      ) {
+        closeMentionDropdown();
+        return;
+      }
+
+      const sel = window.getSelection();
+      if (!sel) return;
+      try {
+        const range = document.createRange();
+        range.setStart(mentionStartContainer, mentionStartOffset);
+        range.setEnd(mentionEndContainer, mentionEndOffset);
+        sel.removeAllRanges();
+        sel.addRange(range);
+        range.deleteContents();
+
+        const ing = mentionResults[index];
+        const span = createTagSpan(ing.name, ing.id);
+        range.insertNode(span);
+        const spacer = document.createTextNode(" ");
+        span.after(spacer);
+        range.setStartAfter(spacer);
+        range.collapse(true);
+        sel.removeAllRanges();
+        sel.addRange(range);
+      } catch (_) {
+        // selection moved, dismiss
+      }
+      closeMentionDropdown();
+    }
+
+    // --- Toolbar ---
+
+    function insertTextAtCursor(text: string) {
+      contentEditable.focus();
+      try {
+        document.execCommand("insertText", false, text);
+      } catch (_) {
+        const sel = window.getSelection();
+        if (!sel || !sel.rangeCount) return;
+        const range = sel.getRangeAt(0);
+        range.deleteContents();
+        range.insertNode(document.createTextNode(text));
+        range.collapse(false);
+        sel.removeAllRanges();
+        sel.addRange(range);
+      }
+    }
+
+    const toolbarBtns =
+      editor.querySelectorAll<HTMLElement>("[data-toolbar-btn]");
+    toolbarBtns.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const action = btn.dataset.toolbarBtn;
+
+        const sel = window.getSelection();
+        const selected = sel && !sel.isCollapsed ? sel.toString() : "";
+
+        switch (action) {
+          case "bold":
+            insertTextAtCursor(
+              selected ? "**" + selected + "**" : "**texto en negritas**",
+            );
+            break;
+          case "italic":
+            insertTextAtCursor(
+              selected ? "*" + selected + "*" : "*texto en cursiva*",
+            );
+            break;
+          case "numbered-list":
+            insertTextAtCursor("\n1. ");
+            break;
+          case "bullet-list":
+            insertTextAtCursor("\n- ");
+            break;
+          case "heading":
+            insertTextAtCursor("\n## Nombre de sección\n");
+            break;
+          case "timer":
+            insertTextAtCursor("⏱ 15 min");
+            break;
+        }
+      });
+    });
+
+    // --- Event listeners ---
+
+    const syncObserver = new MutationObserver(() => {
+      updateHiddenTA();
+      updatePreviews();
+    });
+    syncObserver.observe(contentEditable, {
+      childList: true,
+      characterData: true,
+      subtree: true,
+    });
+
+    contentEditable.addEventListener("input", () => {
+      if (!mentionDropdown) return;
+      const sel = window.getSelection();
+      if (!sel || !sel.rangeCount) {
+        closeMentionDropdown();
+        return;
+      }
+      const range = sel.getRangeAt(0);
+      const node = range.startContainer;
+      if (node.nodeType !== Node.TEXT_NODE) {
+        closeMentionDropdown();
+        return;
+      }
+      const text = node.textContent || "";
+      const before = text.substring(0, range.startOffset);
+      const match = before.match(/@([a-zA-Záéíóúñü_-]*)$/);
+      if (match) {
+        const query = match[1];
+        mentionStartContainer = node;
+        mentionStartOffset = range.startOffset - match[0].length;
+        mentionEndContainer = node;
+        mentionEndOffset = range.startOffset;
+        mentionResults = filterMentions(query);
+        if (mentionResults.length > 0) {
+          positionMentionDropdown();
+          renderMentionDropdown();
+          return;
+        }
+      }
+      closeMentionDropdown();
+    });
+
+    contentEditable.addEventListener("keydown", (e) => {
+      if (mentionDropdown?.classList.contains("mention-dropdown-open")) {
+        if (e.key === "ArrowDown") {
+          e.preventDefault();
+          mentionActiveIndex =
+            (mentionActiveIndex + 1) % mentionResults.length;
+          updateMentionActive();
+        } else if (e.key === "ArrowUp") {
+          e.preventDefault();
+          mentionActiveIndex =
+            (mentionActiveIndex - 1 + mentionResults.length) %
+            mentionResults.length;
+          updateMentionActive();
+        } else if (e.key === "Enter" || e.key === "Tab") {
+          e.preventDefault();
+          selectMention(mentionActiveIndex);
+        } else if (e.key === "Escape") {
+          e.preventDefault();
+          closeMentionDropdown();
+        }
+        return;
+      }
+
+      if (e.key === "Backspace") {
+        const sel = window.getSelection();
+        if (!sel || !sel.rangeCount) return;
+        const range = sel.getRangeAt(0);
+        if (
+          range.collapsed &&
+          range.startContainer.nodeType === Node.TEXT_NODE &&
+          range.startOffset === 0
+        ) {
+          const prev = range.startContainer.previousSibling;
+          if (
+            prev &&
+            prev.nodeType === Node.ELEMENT_NODE &&
+            (prev as HTMLElement).classList?.contains("tag-badge")
+          ) {
+            e.preventDefault();
+            const tagRange = document.createRange();
+            tagRange.selectNode(prev);
+            sel.removeAllRanges();
+            sel.addRange(tagRange);
+            document.execCommand("delete", false);
+            return;
+          }
+        }
+      }
+    });
+
+    contentEditable.addEventListener("blur", () => {
+      setTimeout(() => {
+        if (
+          mentionDropdown?.classList.contains("mention-dropdown-open") &&
+          document.activeElement !== mentionDropdown &&
+          !mentionDropdown.contains(document.activeElement)
+        ) {
+          closeMentionDropdown();
+        }
+      }, 150);
+    });
+
+    contentEditable.addEventListener("paste", (e) => {
+      e.preventDefault();
+      const text = e.clipboardData?.getData("text/plain") || "";
+      try {
+        document.execCommand("insertText", false, text);
+      } catch (_) {
+        const sel = window.getSelection();
+        if (!sel || !sel.rangeCount) return;
+        const range = sel.getRangeAt(0);
+        range.deleteContents();
+        range.insertNode(document.createTextNode(text));
+        range.collapse(false);
+        sel.removeAllRanges();
+        sel.addRange(range);
+      }
+    });
+
+    if (mentionDropdown) {
+      mentionDropdown.addEventListener("click", (e) => {
+        const item = (e.target as HTMLElement).closest<HTMLElement>(
+          ".mention-item",
+        );
+        if (item && item.dataset.mentionItem) {
+          selectMention(Number(item.dataset.mentionItem));
+        }
+      });
+    }
+
+    // --- Form submit sync ---
+    if (formId) {
+      const form = document.getElementById(formId);
+      if (form) {
+        form.addEventListener("submit", () => {
+          const serialized = serializeEditor();
+          if (serialized || !hiddenTA?.value) {
+            if (hiddenTA) hiddenTA.value = serialized;
+          }
+        });
+      }
+    }
+
+    // --- Tab switching ---
+    if (tabWrite && tabPreview && paneWrite && panePreview) {
+      function activateTab(tab: "write" | "preview") {
+        const isWrite = tab === "write";
+        tabWrite!.classList.toggle("text-accent-600", isWrite);
+        tabWrite!.classList.toggle("bg-accent-50", isWrite);
+        tabWrite!.classList.toggle("text-muted-foreground", !isWrite);
+        tabPreview!.classList.toggle("text-accent-600", !isWrite);
+        tabPreview!.classList.toggle("bg-accent-50", !isWrite);
+        tabPreview!.classList.toggle("text-muted-foreground", isWrite);
+        paneWrite!.classList.toggle("hidden", !isWrite);
+        panePreview!.classList.toggle("hidden", isWrite);
+        if (isWrite) {
+          contentEditable.focus();
+        }
+      }
+      tabWrite.addEventListener("click", () => activateTab("write"));
+      tabPreview.addEventListener("click", () => activateTab("preview"));
+      activateTab("write");
+    }
+
+    // --- Initialize ---
+    renderEditorContent(initialMarkdown);
+    updatePreviews();
+  }
+
+  document.addEventListener("astro:page-load", setupInstructionsEditor);
+  document.addEventListener("astro:after-swap", setupInstructionsEditor);
+</script>

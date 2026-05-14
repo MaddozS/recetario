@@ -1,0 +1,272 @@
+---
+import { Icon } from "astro-icon/components";
+import {
+  parseInstructions,
+  highlightReferences,
+} from "../lib/instructions-parser";
+import type { IngredientRef } from "../lib/instructions-parser";
+
+interface Props {
+  instructions: string;
+  ingredients: IngredientRef[];
+  isPro?: boolean;
+}
+
+const { instructions, ingredients, isPro = false } = Astro.props;
+const parsed = parseInstructions(instructions, ingredients);
+const { steps, totalDuration, notes } = parsed;
+---
+
+<div
+  class="bg-card rounded-2xl shadow-sm border border-border overflow-hidden mx-1 sm:mx-2 lg:mx-8 mt-6"
+>
+  <div
+    class="px-5 sm:px-6 lg:px-8 py-5 border-b border-border-light dark:border-gray-950 flex items-center justify-between gap-3"
+  >
+    <h2 class="text-sm font-bold text-foreground flex items-center gap-2">
+      <Icon name="lucide:list-checks" size={16} class="text-accent-500" />
+      Preparación
+    </h2>
+    <div class="flex items-center gap-2">
+      {
+        totalDuration && (
+          <span class="inline-flex items-center gap-1 rounded-full bg-accent-50 dark:bg-accent-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-accent-600 dark:text-accent-400 whitespace-nowrap border border-accent-200">
+            <Icon name="lucide:timer" size={12} />
+            {totalDuration}
+          </span>
+        )
+      }
+      {
+        isPro && (
+          <button
+            type="button"
+            data-open-cooking-mode
+            class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-accent-50 hover:text-accent-600 transition-colors"
+            title="Modo cocina"
+          >
+            <Icon name="lucide:cooking-pot" size={16} />
+          </button>
+        )
+      }
+    </div>
+  </div>
+
+  <div class="px-5 sm:px-6 lg:px-8 py-6 recipe-instructions">
+    {
+      steps.map((step) =>
+        step.isGroupHeader && step.groupName ? (
+          <div class="step-group-header">
+            <span>{step.groupName}</span>
+          </div>
+        ) : (
+          <div class="step-card">
+            <div class="step-number">{step.number}</div>
+            <div class="step-content">
+              <span
+                class="step-text"
+                set:html={highlightReferences(
+                  step.text,
+                  ingredients,
+                )}
+              />
+              {step.duration || step.temperature ? (
+                <div class="step-meta">
+                  {step.duration && (
+                    <span class="step-badge step-badge-time">
+                      <Icon name="lucide:timer" size={11} />
+                      {step.duration.replace(/^⏱\s*/i, "")}
+                    </span>
+                  )}
+                  {step.temperature && (
+                    <span class="step-badge step-badge-temp">
+                      {step.temperature}
+                    </span>
+                  )}
+                </div>
+              ) : null}
+            </div>
+          </div>
+        ),
+      )
+    }
+
+    {
+      notes && notes.length > 0 && (
+        <div class="step-notes">
+          <h3 class="step-notes-title">
+            <Icon name="lucide:file-text" size={14} />
+            Notas
+          </h3>
+          {notes.map((note) => (
+            <p class="step-note-text">{note}</p>
+          ))}
+        </div>
+      )
+    }
+  </div>
+</div>
+
+{
+  isPro && (
+    <dialog
+      id="cooking-mode-dialog"
+      class="cooking-mode-overlay fixed inset-0 m-auto w-full h-full max-w-full max-h-full rounded-none p-0 backdrop:bg-black/70 border-0 bg-background"
+    >
+      <div class="flex flex-col h-full">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-border">
+          <span class="text-sm font-bold text-muted-foreground cooking-mode-counter">
+            Paso 1 de {steps.filter((s) => !s.isGroupHeader).length}
+          </span>
+          <button
+            type="button"
+            data-close-cooking-mode
+            class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border text-muted-foreground transition-colors hover:bg-background hover:text-secondary-foreground"
+          >
+            <Icon name="lucide:x" size={18} />
+          </button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto px-6 py-8 flex flex-col items-center justify-center">
+          {steps
+            .filter((s) => !s.isGroupHeader)
+            .map((step, idx) => (
+              <div
+                class="cooking-mode-step"
+                data-step-index={idx}
+                style={{ display: idx === 0 ? "flex" : "none" }}
+              >
+                <div class="cooking-mode-step-number">{step.number}</div>
+                  <p
+                    class="cooking-mode-step-text"
+                    set:html={highlightReferences(
+                      step.text,
+                      ingredients,
+                    )}
+                  />
+                <div class="flex items-center gap-3 mt-6">
+                  {step.duration && (
+                    <span class="step-badge step-badge-time text-base px-4 py-1.5">
+                      <Icon name="lucide:timer" size={16} />
+                      {step.duration.replace(/^⏱\s*/i, "")}
+                    </span>
+                  )}
+                  {step.temperature && (
+                    <span class="step-badge step-badge-temp text-base px-4 py-1.5">
+                      {step.temperature}
+                    </span>
+                  )}
+                </div>
+              </div>
+            ))}
+        </div>
+
+        <div class="flex items-center justify-between px-6 py-4 border-t border-border">
+          <button
+            type="button"
+            data-cooking-prev
+            class="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-5 py-3 text-sm font-bold text-muted-foreground transition-colors hover:bg-background disabled:opacity-30 disabled:cursor-not-allowed"
+          >
+            <Icon name="lucide:chevron-left" size={16} />
+            Anterior
+          </button>
+          <button
+            type="button"
+            data-cooking-next
+            class="inline-flex items-center gap-2 rounded-xl bg-accent-600 px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-accent-700 disabled:opacity-30 disabled:cursor-not-allowed"
+          >
+            Siguiente
+            <Icon name="lucide:chevron-right" size={16} />
+          </button>
+        </div>
+      </div>
+    </dialog>
+  )
+}
+
+<script>
+  function setupCookingMode() {
+    const openBtns = document.querySelectorAll<HTMLElement>(
+      "[data-open-cooking-mode]",
+    );
+
+    const dialog = document.querySelector<HTMLDialogElement>(
+      "#cooking-mode-dialog",
+    );
+    if (!dialog || dialog.dataset.cookingBound) return;
+    dialog.dataset.cookingBound = "1";
+
+    const closeBtn = dialog.querySelector<HTMLElement>(
+      "[data-close-cooking-mode]",
+    );
+    const prevBtn = dialog.querySelector<HTMLElement>("[data-cooking-prev]");
+    const nextBtn = dialog.querySelector<HTMLElement>("[data-cooking-next]");
+    const counter = dialog.querySelector<HTMLElement>(".cooking-mode-counter");
+    const steps = dialog.querySelectorAll<HTMLElement>(".cooking-mode-step");
+    let current = 0;
+
+    function updateStep(index: number) {
+      steps.forEach((s, i) => {
+        s.style.display = i === index ? "flex" : "none";
+      });
+      if (counter) {
+        counter.textContent = `Paso ${index + 1} de ${steps.length}`;
+      }
+      if (prevBtn) prevBtn.toggleAttribute("disabled", index === 0);
+      if (nextBtn)
+        nextBtn.toggleAttribute("disabled", index === steps.length - 1);
+    }
+
+    openBtns.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        current = 0;
+        updateStep(0);
+        dialog!.showModal();
+      });
+    });
+
+    if (closeBtn) {
+      closeBtn.addEventListener("click", () => dialog.close());
+    }
+
+    if (prevBtn) {
+      prevBtn.addEventListener("click", () => {
+        if (current > 0) {
+          current--;
+          updateStep(current);
+        }
+      });
+    }
+
+    if (nextBtn) {
+      nextBtn.addEventListener("click", () => {
+        if (current < steps.length - 1) {
+          current++;
+          updateStep(current);
+        }
+      });
+    }
+
+    dialog.addEventListener("click", (e) => {
+      const rect = dialog.getBoundingClientRect();
+      if (
+        e.clientX < rect.left ||
+        e.clientX > rect.right ||
+        e.clientY < rect.top ||
+        e.clientY > rect.bottom
+      ) {
+        dialog.close();
+      }
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (dialog.open && e.key === "ArrowRight") {
+        nextBtn?.click();
+      } else if (dialog.open && e.key === "ArrowLeft") {
+        prevBtn?.click();
+      }
+    });
+  }
+
+  document.addEventListener("astro:page-load", setupCookingMode);
+  document.addEventListener("astro:after-swap", setupCookingMode);
+</script>

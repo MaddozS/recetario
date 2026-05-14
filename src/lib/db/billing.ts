@@ -15,6 +15,7 @@ const BASIC_FEATURES: Record<string, boolean> = {
   change_history: false,
   data_import_export: false,
   nutrition_info: false,
+  cooking_mode: false,
 };
 
 const PRO_FEATURES: Record<string, boolean> = {
@@ -27,6 +28,7 @@ const PRO_FEATURES: Record<string, boolean> = {
   change_history: true,
   data_import_export: true,
   nutrition_info: true,
+  cooking_mode: true,
 };
 
 const SEED_PLANS = [
