@@ -153,14 +153,14 @@ const isCanceled = Astro.url.searchParams.get("canceled") === "1";
           }
           {
             subscription.cancelAtPeriodEnd && (
-              <span class="mt-1 inline-flex items-center rounded-full bg-warning-bg px-2.5 py-1 text-xs font-bold text-warning">
+              <span class="mt-1 inline-flex items-center rounded-full bg-warning-bg px-2.5 py-1 text-xs font-bold text-warning border border-warning-border">
                 Cancelado
               </span>
             )
           }
           {
             subscription.status === "trialing" && (
-              <span class="mt-1 inline-flex items-center rounded-full bg-accent-100 px-2.5 py-1 text-xs font-bold text-accent-700">
+              <span class="mt-1 inline-flex items-center rounded-full bg-accent-100 px-2.5 py-1 text-xs font-bold text-accent-700 border border-accent-200">
                 Trial
               </span>
             )

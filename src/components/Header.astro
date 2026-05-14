@@ -128,7 +128,7 @@ const showProduction =
     isAuthenticated && (
       <div class="ml-auto flex shrink-0 items-center justify-end gap-2 sm:gap-3">
         {subscription && (
-          <span class="hidden sm:inline-flex items-center rounded-full bg-accent-100 px-2.5 py-1 text-xs font-bold text-accent-700">
+          <span class="hidden sm:inline-flex items-center rounded-full bg-accent-100 px-2.5 py-1 text-xs font-bold text-accent-700 border border-accent-200">
             {subscription.tier === "free"
               ? "Free"
               : subscription.tier === "basic"

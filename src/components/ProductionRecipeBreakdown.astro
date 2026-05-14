@@ -29,7 +29,7 @@ const { recipes } = Astro.props;
                 {recipe.recipeName}
               </h3>
               {recipe.category && (
-                <span class="shrink-0 rounded-full bg-muted px-2.5 py-0.5 text-[11px] font-semibold text-muted-foreground">
+                <span class="shrink-0 rounded-full bg-muted px-2.5 py-0.5 text-[11px] font-semibold text-muted-foreground border border-border">
                   {recipe.category}
                 </span>
               )}
@@ -109,7 +109,7 @@ const { recipes } = Astro.props;
                           <span class="flex items-center gap-1.5">
                             {p.name}
                             {p.id === recipe.selectedPresentationId && (
-                              <span class="inline-flex items-center rounded-full bg-accent-100 px-2 py-0.5 text-[10px] font-bold text-accent-700">
+                              <span class="inline-flex items-center rounded-full bg-accent-100 px-2 py-0.5 text-[10px] font-bold text-accent-700 border border-accent-200">
                                 Seleccionada
                               </span>
                             )}

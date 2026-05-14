@@ -19,7 +19,8 @@ import { hasFeature } from '@/lib/subscription';
 import { parseNumberInput } from '@/lib/form-utils';
 import { UNIT_OPTIONS } from '@/lib/constants';
 import FeedbackAlert from '../../components/FeedbackAlert.astro';
-import { marked } from "marked";
+import InstructionsEditor from '../../components/InstructionsEditor.astro';
+import RecipeInstructions from '../../components/RecipeInstructions.astro';
 
 const recipeIdParam = Astro.params.recipe;
 const recipeIdNumber = Number(recipeIdParam);
@@ -317,6 +318,8 @@ if (!recipe) {
 }
 
 const { ingredients: recipeIngredients, name, category, instructions, id, desiredMargin, fixedCostsPercentage, presentations, updatedAt } = recipe;
+const ingredients = recipeIngredients.map((ri) => ({ id: ri.ingredient.id, name: ri.ingredient.name }));
+const hasCookingMode = hasFeature(Astro.locals.subscription, "cooking_mode");
 
 const isEditMode = Astro.url.searchParams.get('edit') === 'true';
 const allIngredients = isEditMode ? await listIngredients(ownerId) : [];
@@ -458,6 +461,7 @@ void getPresentationFormErrorMessage;
       {isEditMode && (
         <form id={recipeEditFormId} method="POST" action={Astro.url.pathname} class="hidden" data-astro-reload>
           <input type="hidden" name="action" value="update_recipe" />
+          <input type="hidden" name="instructions" value={instructions || ""} data-hidden-ta />
         </form>
       )}
 
@@ -852,22 +856,11 @@ void getPresentationFormErrorMessage;
             </button>
           </div>
         </div>
-        <div class="mx-5 sm:mx-6 lg:mx-8 py-6 border-y border-border">
-          <label class="block text-sm font-bold text-secondary-foreground mb-2 flex items-center gap-2">
-            <Icon name="lucide:list-checks" size={16} class="text-accent-500" />
-            Instrucciones de Preparación
-          </label>
-          <textarea
-            name="instructions"
-            form={recipeEditFormId}
-            rows={10}
-            class="w-full rounded-xl border border-border bg-background p-4 text-sm text-secondary-foreground font-mono leading-relaxed focus:ring-2 focus:ring-accent-500/20 focus:border-accent-500 resize-y transition-colors placeholder:text-subtle-foreground"
-            placeholder={`1. Precalentar el horno a 180°C.\n2. Mezclar ingredientes secos.\n3. ...`}
-          >{instructions || ''}</textarea>
-          <p class="mt-2 text-xs text-subtle-foreground leading-relaxed">
-            Escribe un paso por línea. Puedes usar Markdown básico (negritas, listas, etc.).
-          </p>
-        </div>
+        <InstructionsEditor
+          recipeEditFormId={recipeEditFormId}
+          instructions={instructions}
+          ingredients={ingredients}
+        />
 
         <div class="sticky bottom-0 z-10 mx-5 sm:mx-6 lg:mx-8 pb-4 pt-4 bg-card">
           <div class="flex gap-3">
@@ -982,19 +975,12 @@ void getPresentationFormErrorMessage;
   </div>
 
   {
-    instructions && (
-      <div class="bg-card rounded-2xl shadow-sm border border-border overflow-hidden mx-1 sm:mx-2 lg:mx-8 mt-6">
-        <div class="px-5 sm:px-6 lg:px-8 py-5 border-b border-border-light dark:border-gray-950">
-          <h2 class="text-sm font-bold text-foreground flex items-center gap-2">
-            <Icon name="lucide:list-checks" size={16} class="text-accent-500" />
-            Preparación
-          </h2>
-        </div>
-        <div
-          class="px-5 sm:px-6 lg:px-8 py-6 recipe-instructions text-sm leading-relaxed text-secondary-foreground"
-          set:html={marked.parse(instructions, { breaks: true })}
-        />
-      </div>
+    !isEditMode && instructions && (
+      <RecipeInstructions
+        instructions={instructions}
+        ingredients={ingredients}
+        isPro={hasCookingMode}
+      />
     )
   }
 

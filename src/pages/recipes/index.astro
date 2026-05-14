@@ -16,10 +16,15 @@ import RecipeGridCard from "@/components/RecipeGridCard.astro";
 import RecipeStats from "@/components/RecipeStats.astro";
 
 if (!Astro.locals.session || !Astro.locals.user) {
-  return Astro.redirect("/sign-in");
+  Astro.redirect("/sign-in");
 }
 
-const ownerId = Astro.locals.user!.id;
+const ownerId = Astro.locals.user?.id;
+
+if (!ownerId) {
+  Astro.redirect("/sign-in");
+}
+
 const subscription = Astro.locals.subscription;
 
 if (Astro.request.method === "POST") {
@@ -28,7 +33,7 @@ if (Astro.request.method === "POST") {
   let createdRecipeId: number | null = null;
 
   if (action === "create_recipe") {
-    const recipeCount = await countUserRecipes(ownerId);
+    const recipeCount = await countUserRecipes(ownerId as string);
     if (!canCreateRecipe(subscription, recipeCount)) {
       const errorUrl = new URL(Astro.url);
       errorUrl.searchParams.set("type", "error");
@@ -228,10 +233,10 @@ const showUpgradeModal = Astro.url.searchParams.get("upgrade") === "1";
                     <button
                       type="button"
                       data-category={cat}
-                      class={`filter-btn inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-semibold transition-colors ${active ? "bg-accent-600 text-white" : "bg-accent-50 text-accent-600 hover:bg-accent-100"}`}
+                      class={`filter-btn inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-semibold transition-colors ${active ? "bg-accent-600 text-white" : "bg-accent-50 text-accent-600 hover:bg-accent-100 border border-accent-200"}`}
                     >
                       {cat}
-                      <span class={`inline-flex min-w-[1.25rem] items-center justify-center rounded-full px-1 text-[11px] font-bold ${active ? "bg-accent-500 text-white" : "bg-accent-200/50 text-accent-700"}`}>
+                      <span class={`inline-flex min-w-5 items-center justify-center rounded-full px-1 text-[11px] font-bold ${active ? "bg-accent-500 text-white" : "bg-accent-200/50 text-accent-700"}`}>
                         {count}
                       </span>
                     </button>
@@ -244,10 +249,10 @@ const showUpgradeModal = Astro.url.searchParams.get("upgrade") === "1";
                 <button
                   type="button"
                   data-category=""
-                  class={`filter-btn inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-semibold transition-colors ${selectedCategory === "" ? "bg-accent-600 text-white" : "bg-muted text-muted-foreground hover:bg-border"}`}
+                  class={`filter-btn inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-semibold transition-colors ${selectedCategory === "" ? "bg-accent-600 text-white" : "bg-muted text-muted-foreground hover:bg-border border border-border"}`}
                 >
                   Sin categoría
-                  <span class={`inline-flex min-w-[1.25rem] items-center justify-center rounded-full px-1 text-[11px] font-bold ${selectedCategory === "" ? "bg-accent-500 text-white" : "bg-border text-subtle-foreground"}`}>
+                  <span class={`inline-flex min-w-5 items-center justify-center rounded-full px-1 text-[11px] font-bold ${selectedCategory === "" ? "bg-accent-500 text-white" : "bg-border text-subtle-foreground"}`}>
                     {noCategoryRecipes}
                   </span>
                 </button>
@@ -321,7 +326,7 @@ const showUpgradeModal = Astro.url.searchParams.get("upgrade") === "1";
   </dialog>
 
   <script>
-// @ts-nocheck
+
     function setupCategoryFilter() {
       const dataEl = document.getElementById("recipes-data");
       const container = document.getElementById("categories-container");
@@ -371,7 +376,7 @@ const showUpgradeModal = Astro.url.searchParams.get("upgrade") === "1";
             <div class="min-w-0">
               <h3 class="truncate font-bold text-secondary-foreground transition-colors group-hover:text-accent-700">${escapeHtml(r.name)}</h3>
               <div class="mt-2 flex flex-wrap items-center gap-2">
-                ${r.category ? `<span class="inline-flex items-center rounded-full bg-accent-50 px-2.5 py-0.5 text-[11px] font-semibold text-accent-600">${escapeHtml(r.category)}</span>` : ""}
+                ${r.category ? `<span class="inline-flex items-center rounded-full bg-accent-50 px-2.5 py-0.5 text-[11px] font-semibold text-accent-600 border border-accent-200">${escapeHtml(r.category)}</span>` : ""}
                 <span class="text-xs text-muted-foreground">${r.ingredientCount} ${r.ingredientCount === 1 ? "ingrediente" : "ingredientes"}</span>
               </div>
             </div>
