@@ -24,9 +24,7 @@ const TEMPERATURE_RE = /🔥\s*([\d.,]+)\s*°[CF]/gi;
 const ID_REF_RE = /\[ingredient_id:(\d+)\]/g;
 const AT_REF_RE = /@([a-zA-Záéíóúñü][a-zA-Záéíóúñü0-9_-]*)/g;
 
-function buildIngredientMap(
-  ingredients: IngredientRef[],
-): Map<number, string> {
+function buildIngredientMap(ingredients: IngredientRef[]): Map<number, string> {
   const m = new Map<number, string>();
   for (const ing of ingredients) {
     m.set(ing.id, ing.name);
@@ -34,9 +32,7 @@ function buildIngredientMap(
   return m;
 }
 
-function buildNameLookup(
-  ingredients: IngredientRef[],
-): Map<string, number> {
+function buildNameLookup(ingredients: IngredientRef[]): Map<string, number> {
   const m = new Map<string, number>();
   for (const ing of ingredients) {
     const lower = ing.name.toLowerCase();
@@ -219,10 +215,7 @@ export function renderMarkdownPreview(text: string): string {
   let html = escaped
     .replace(/^###\s+(.+)$/gm, '<h4 class="preview-h4">$1</h4>')
     .replace(/^##\s+(.+)$/gm, '<h3 class="preview-h3">$1</h3>')
-    .replace(
-      /^(\d+)[.)]\s+(.+)$/gm,
-      '<div class="preview-step">$1. $2</div>',
-    )
+    .replace(/^(\d+)[.)]\s+(.+)$/gm, '<div class="preview-step">$1. $2</div>')
     .replace(/^- (.+)$/gm, '<div class="preview-bullet">• $1</div>')
     .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
     .replace(/\*(.+?)\*/g, "<em>$1</em>")

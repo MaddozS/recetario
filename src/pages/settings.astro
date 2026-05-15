@@ -76,10 +76,10 @@ if (feedback) {
     }
 
     {/* Profile Card */}
-    <div class="rounded-2xl border border-border bg-card p-6 shadow-sm">
+    <div class="border-border bg-card rounded-2xl border p-6 shadow-sm">
       <div class="flex items-center gap-4">
         <div
-          class="flex h-16 w-16 flex-none items-center justify-center rounded-2xl bg-accent-600 text-xl font-bold text-white shadow-md shadow-accent-100"
+          class="bg-accent-600 shadow-accent-100 flex h-16 w-16 flex-none items-center justify-center rounded-2xl text-xl font-bold text-white shadow-md"
         >
           {
             userImage ? (
@@ -96,16 +96,16 @@ if (feedback) {
         </div>
         <div class="min-w-0">
           <p
-            class="text-xs font-bold uppercase tracking-[0.15em] text-muted-foreground"
+            class="text-muted-foreground text-xs font-bold tracking-[0.15em] uppercase"
           >
             Sesion de Google
           </p>
-          <h2 class="mt-1 truncate text-xl font-bold text-foreground">
+          <h2 class="text-foreground mt-1 truncate text-xl font-bold">
             {userName}
           </h2>
           {
             userEmail && (
-              <p class="mt-0.5 truncate text-sm text-muted-foreground">
+              <p class="text-muted-foreground mt-0.5 truncate text-sm">
                 {userEmail}
               </p>
             )
@@ -117,24 +117,24 @@ if (feedback) {
     {/* Preferences Form */}
     <form method="post" action="/settings">
       <div
-        class="rounded-2xl border border-border bg-card p-6 shadow-sm space-y-8"
+        class="border-border bg-card space-y-8 rounded-2xl border p-6 shadow-sm"
       >
         {/* Theme Toggle */}
         <div>
           <p
-            class="text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground mb-3"
+            class="text-muted-foreground mb-3 text-[11px] font-bold tracking-[0.18em] uppercase"
           >
             Tema
           </p>
           <div
-            class="flex gap-2 rounded-xl bg-muted/50 p-1.5 border border-border max-w-xs"
+            class="bg-muted/50 border-border flex max-w-xs gap-2 rounded-xl border p-1.5"
           >
             <button
               type="button"
               data-theme-option="light"
               data-theme-active={currentTheme === "light" ? "1" : "0"}
               class:list={[
-                "flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all",
+                "flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-all",
                 currentTheme === "light"
                   ? "bg-accent-600 text-white shadow-sm"
                   : "text-muted-foreground hover:text-secondary-foreground hover:bg-muted",
@@ -148,7 +148,7 @@ if (feedback) {
               data-theme-option="dark"
               data-theme-active={currentTheme === "dark" ? "1" : "0"}
               class:list={[
-                "flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all",
+                "flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-all",
                 currentTheme === "dark"
                   ? "bg-accent-600 text-white shadow-sm"
                   : "text-muted-foreground hover:text-secondary-foreground hover:bg-muted",
@@ -169,11 +169,11 @@ if (feedback) {
         {/* Accent Color Picker */}
         <div>
           <p
-            class="text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground mb-3"
+            class="text-muted-foreground mb-3 text-[11px] font-bold tracking-[0.18em] uppercase"
           >
             Color de acento
           </p>
-          <div class="grid grid-cols-3 sm:grid-cols-6 gap-3 max-w-xl">
+          <div class="grid max-w-xl grid-cols-3 gap-3 sm:grid-cols-6">
             {
               ACCENT_FAMILIES.map((family) => {
                 const isSelected = currentAccent === family;
@@ -186,8 +186,8 @@ if (feedback) {
                     class:list={[
                       "flex flex-col items-center gap-2 rounded-xl p-3 transition-all",
                       isSelected
-                        ? "ring-2 ring-accent-500 ring-offset-1 bg-accent-50"
-                        : "hover:bg-background border border-border",
+                        ? "ring-accent-500 bg-accent-50 ring-2 ring-offset-1"
+                        : "hover:bg-background border-border border",
                     ]}
                   >
                     <span
@@ -221,13 +221,13 @@ if (feedback) {
         </div>
 
         {/* divider */}
-        <div class="border-t border-border"></div>
+        <div class="border-border border-t"></div>
 
         {/* Save Button */}
-        <div id="save-btn-wrapper" class="mt-6 flex justify-end hidden">
+        <div id="save-btn-wrapper" class="mt-6 flex hidden justify-end">
           <button
             type="submit"
-            class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-accent-600 px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-accent-700"
+            class="bg-accent-600 hover:bg-accent-700 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-6 py-3 text-sm font-bold text-white transition-colors"
           >
             <Icon name="lucide:check" size={16} />
             Guardar preferencias
@@ -236,24 +236,24 @@ if (feedback) {
       </div>
     </form>
 
-    <div class="mt-6 rounded-2xl border border-border bg-card p-6 shadow-sm">
+    <div class="border-border bg-card mt-6 rounded-2xl border p-6 shadow-sm">
       <div class="flex items-center justify-between">
         <div>
           <p
-            class="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground"
+            class="text-muted-foreground text-xs font-bold tracking-[0.18em] uppercase"
           >
             Suscripcion
           </p>
-          <h3 class="mt-1 text-lg font-bold text-foreground">
+          <h3 class="text-foreground mt-1 text-lg font-bold">
             Facturacion y plan
           </h3>
-          <p class="mt-1 text-sm text-muted-foreground">
+          <p class="text-muted-foreground mt-1 text-sm">
             Gestiona tu suscripcion y metodos de pago.
           </p>
         </div>
         <a
           href="/settings/billing"
-          class="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2 text-sm font-bold text-muted-foreground hover:bg-background transition-colors"
+          class="border-border bg-card text-muted-foreground hover:bg-background inline-flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-bold transition-colors"
         >
           <Icon name="lucide:credit-card" size={16} />
           Gestionar

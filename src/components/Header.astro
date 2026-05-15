@@ -15,7 +15,7 @@ const showProduction =
 ---
 
 <header
-  class="flex-none flex items-center gap-3 md:gap-4 bg-card px-4 md:px-6 py-3 md:py-4 border-b border-border z-10 relative"
+  class="bg-card border-border relative z-10 flex flex-none items-center gap-3 border-b px-4 py-3 md:gap-4 md:px-6 md:py-4"
   transition:animate="none"
 >
   <div class="flex min-w-0 flex-1 items-center gap-3 md:gap-4">
@@ -23,7 +23,7 @@ const showProduction =
       showMenuButton && (
         <button
           id="mobile-menu-btn"
-          class="lg:hidden text-muted-foreground hover:text-secondary-foreground border border-border hover:bg-background p-2 rounded-xl transition-colors"
+          class="text-muted-foreground hover:text-secondary-foreground border-border hover:bg-background rounded-xl border p-2 transition-colors lg:hidden"
           aria-label="Abrir menú"
         >
           <Icon name="lucide:menu" size={20} />
@@ -33,22 +33,22 @@ const showProduction =
     <img
       src="/kitchcalc_logo.svg"
       alt="KitchCalc"
-      class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl shadow-md shadow-accent-100"
+      class="shadow-accent-100 h-9 w-9 rounded-xl shadow-md sm:h-10 sm:w-10"
     />
     <div>
-      <h1 class="text-lg sm:text-xl font-bold text-foreground leading-tight">
+      <h1 class="text-foreground text-lg leading-tight font-bold sm:text-xl">
         KitchCalc
       </h1>
-      <p class="text-muted-foreground text-[10px] sm:text-xs font-medium">
+      <p class="text-muted-foreground text-[10px] font-medium sm:text-xs">
         Costeo Inteligente
       </p>
     </div>
   </div>
-  <div class="hidden lg:flex bg-muted/50 rounded-xl p-1.5 border border-border">
+  <div class="bg-muted/50 border-border hidden rounded-xl border p-1.5 lg:flex">
     <a
       href={recipeHref}
       class:list={[
-        "flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold transition-all",
+        "flex items-center gap-2 rounded-lg px-5 py-2 text-sm font-semibold transition-all",
         currentPage === "recipes"
           ? "bg-accent-600 text-white shadow-sm"
           : "text-muted-foreground hover:text-secondary-foreground hover:bg-muted",
@@ -66,7 +66,7 @@ const showProduction =
     <a
       href="/ingredients"
       class:list={[
-        "flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold transition-all",
+        "flex items-center gap-2 rounded-lg px-5 py-2 text-sm font-semibold transition-all",
         currentPage === "ingredients"
           ? "bg-accent-600 text-white shadow-sm"
           : "text-muted-foreground hover:text-secondary-foreground hover:bg-muted",
@@ -86,7 +86,7 @@ const showProduction =
         <a
           href="/produccion"
           class:list={[
-            "flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold transition-all",
+            "flex items-center gap-2 rounded-lg px-5 py-2 text-sm font-semibold transition-all",
             currentPage === "production"
               ? "bg-accent-600 text-white shadow-sm"
               : "text-muted-foreground hover:text-secondary-foreground hover:bg-muted",
@@ -108,7 +108,7 @@ const showProduction =
     <a
       href="/settings"
       class:list={[
-        "flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold transition-all",
+        "flex items-center gap-2 rounded-lg px-5 py-2 text-sm font-semibold transition-all",
         currentPage === "settings"
           ? "bg-accent-600 text-white shadow-sm"
           : "text-muted-foreground hover:text-secondary-foreground hover:bg-muted",
@@ -128,7 +128,7 @@ const showProduction =
     isAuthenticated && (
       <div class="ml-auto flex shrink-0 items-center justify-end gap-2 sm:gap-3">
         {subscription && (
-          <span class="hidden sm:inline-flex items-center rounded-full bg-accent-100 px-2.5 py-1 text-xs font-bold text-accent-700 border border-accent-200">
+          <span class="bg-accent-100 text-accent-700 border-accent-200 hidden items-center rounded-full border px-2.5 py-1 text-xs font-bold sm:inline-flex">
             {subscription.tier === "free"
               ? "Free"
               : subscription.tier === "basic"
@@ -139,7 +139,7 @@ const showProduction =
         <button
           id="sign-out-button"
           type="button"
-          class="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2 text-sm font-semibold text-muted-foreground transition-colors hover:border-border hover:bg-background hover:text-foreground disabled:cursor-not-allowed disabled:opacity-70"
+          class="border-border bg-card text-muted-foreground hover:border-border hover:bg-background hover:text-foreground inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-70"
           aria-label="Cerrar sesión"
         >
           <Icon name="lucide:log-out" size={16} />

@@ -304,7 +304,11 @@
 }
 
 .dark .recipe-instructions .linked-ingredient {
-  background: color-mix(in srgb, var(--aw-accent-500, #6366f1) 15%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--aw-accent-500, #6366f1) 15%,
+    transparent
+  );
   border-color: var(--aw-accent-400);
 }
 
@@ -483,7 +487,8 @@
   align-items: center;
   justify-content: center;
   margin-bottom: 1.5rem;
-  box-shadow: 0 4px 14px color-mix(in srgb, var(--aw-accent-600) 30%, transparent);
+  box-shadow: 0 4px 14px
+    color-mix(in srgb, var(--aw-accent-600) 30%, transparent);
 }
 
 .cooking-mode-step-text {
@@ -609,15 +614,39 @@
 .recipe-grid-card {
   animation: cardFadeIn 0.25s ease-out both;
 }
-.recipe-grid-card:nth-child(1) { animation-delay: 0ms; }
-.recipe-grid-card:nth-child(2) { animation-delay: 35ms; }
-.recipe-grid-card:nth-child(3) { animation-delay: 70ms; }
-.recipe-grid-card:nth-child(4) { animation-delay: 105ms; }
-.recipe-grid-card:nth-child(5) { animation-delay: 140ms; }
-.recipe-grid-card:nth-child(6) { animation-delay: 175ms; }
-.recipe-grid-card:nth-child(7) { animation-delay: 210ms; }
-.recipe-grid-card:nth-child(8) { animation-delay: 245ms; }
-.recipe-grid-card:nth-child(9) { animation-delay: 280ms; }
-.recipe-grid-card:nth-child(10) { animation-delay: 315ms; }
-.recipe-grid-card:nth-child(11) { animation-delay: 350ms; }
-.recipe-grid-card:nth-child(12) { animation-delay: 385ms; }
+.recipe-grid-card:nth-child(1) {
+  animation-delay: 0ms;
+}
+.recipe-grid-card:nth-child(2) {
+  animation-delay: 35ms;
+}
+.recipe-grid-card:nth-child(3) {
+  animation-delay: 70ms;
+}
+.recipe-grid-card:nth-child(4) {
+  animation-delay: 105ms;
+}
+.recipe-grid-card:nth-child(5) {
+  animation-delay: 140ms;
+}
+.recipe-grid-card:nth-child(6) {
+  animation-delay: 175ms;
+}
+.recipe-grid-card:nth-child(7) {
+  animation-delay: 210ms;
+}
+.recipe-grid-card:nth-child(8) {
+  animation-delay: 245ms;
+}
+.recipe-grid-card:nth-child(9) {
+  animation-delay: 280ms;
+}
+.recipe-grid-card:nth-child(10) {
+  animation-delay: 315ms;
+}
+.recipe-grid-card:nth-child(11) {
+  animation-delay: 350ms;
+}
+.recipe-grid-card:nth-child(12) {
+  animation-delay: 385ms;
+}

@@ -82,7 +82,7 @@ const inputClasses =
   </label>
   <div class="relative">
     <span
-      class="pointer-events-none absolute inset-y-0 left-4 flex items-center text-sm font-bold text-subtle-foreground"
+      class="text-subtle-foreground pointer-events-none absolute inset-y-0 left-4 flex items-center text-sm font-bold"
     >
       $
     </span>
@@ -103,7 +103,7 @@ const inputClasses =
     Cant. empaque <span class="text-danger">*</span>
   </label>
   <div
-    class="grid grid-cols-[minmax(0,1fr)_5.5rem] overflow-hidden rounded-xl border border-border bg-background transition focus-within:border-accent-300 focus-within:bg-card focus-within:ring-2 focus-within:ring-accent-500/20"
+    class="border-border bg-background focus-within:border-accent-300 focus-within:bg-card focus-within:ring-accent-500/20 grid grid-cols-[minmax(0,1fr)_5.5rem] overflow-hidden rounded-xl border transition focus-within:ring-2"
   >
     <input
       id={`${idPrefix}-purchase-quantity`}
@@ -111,12 +111,12 @@ const inputClasses =
       type="text"
       inputmode="decimal"
       value="1"
-      class="border-0 bg-transparent px-4 py-3 text-sm text-foreground outline-none placeholder:text-subtle-foreground font-mono"
+      class="text-foreground placeholder:text-subtle-foreground border-0 bg-transparent px-4 py-3 font-mono text-sm outline-none"
       autocomplete="off"
     />
     <select
       name="unit"
-      class="border-0 border-l border-border bg-card px-3 py-3 text-sm font-semibold text-secondary-foreground outline-none"
+      class="border-border bg-card text-secondary-foreground border-0 border-l px-3 py-3 text-sm font-semibold outline-none"
     >
       {
         UNIT_OPTIONS.map((option) => (

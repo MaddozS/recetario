@@ -27,18 +27,18 @@ const formatQuantityWithConversion = (value: number, unit: string): string => {
 ---
 
 <div
-  class="production-sheet ingredients-table rounded-2xl border border-border bg-card shadow-sm overflow-hidden"
+  class="production-sheet ingredients-table border-border bg-card overflow-hidden rounded-2xl border shadow-sm"
 >
-  <div class="border-b border-border px-6 py-4">
-    <h2 class="text-lg font-bold text-foreground">Ingredientes consolidados</h2>
-    <p class="text-sm text-muted-foreground mt-0.5">
+  <div class="border-border border-b px-6 py-4">
+    <h2 class="text-foreground text-lg font-bold">Ingredientes consolidados</h2>
+    <p class="text-muted-foreground mt-0.5 text-sm">
       {ingredients.length} ingrediente{ingredients.length !== 1 ? "s" : ""} en total
     </p>
   </div>
   <div class="overflow-x-auto">
     <table class="min-w-full text-left">
       <thead
-        class="bg-background text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground"
+        class="bg-background text-muted-foreground text-[11px] font-bold tracking-[0.16em] uppercase"
       >
         <tr>
           <th class="px-6 py-4">Ingrediente</th>
@@ -48,15 +48,15 @@ const formatQuantityWithConversion = (value: number, unit: string): string => {
           <th class="px-6 py-4">Recetas</th>
         </tr>
       </thead>
-      <tbody class="divide-y divide-border-light dark:divide-gray-950">
+      <tbody class="divide-border-light divide-y dark:divide-gray-950">
         {
           ingredients.map((ing) => (
-            <tr class="transition-colors hover:bg-hover-muted dark:hover:bg-gray-950/70">
+            <tr class="hover:bg-hover-muted transition-colors dark:hover:bg-gray-950/70">
               <td class="px-6 py-4">
                 <div>
-                  <p class="font-semibold text-foreground">{ing.name}</p>
+                  <p class="text-foreground font-semibold">{ing.name}</p>
                   {ing.brand && (
-                    <p class="text-xs text-subtle-foreground mt-0.5">
+                    <p class="text-subtle-foreground mt-0.5 text-xs">
                       {ing.brand}
                       {ing.supplier ? ` · ${ing.supplier}` : ""}
                     </p>
@@ -64,21 +64,21 @@ const formatQuantityWithConversion = (value: number, unit: string): string => {
                 </div>
               </td>
               <td
-                class="px-6 py-4 font-mono font-semibold tabular-nums text-secondary-foreground whitespace-nowrap"
+                class="text-secondary-foreground px-6 py-4 font-mono font-semibold whitespace-nowrap tabular-nums"
                 colspan="2"
               >
                 {formatQuantityWithConversion(ing.totalQuantity, ing.unit)}
               </td>
-              <td class="px-6 py-4 font-mono text-sm tabular-nums text-secondary-foreground">
+              <td class="text-secondary-foreground px-6 py-4 font-mono text-sm tabular-nums">
                 {formatCurrency(ing.unitCost)}/{ing.unit}
               </td>
-              <td class="px-6 py-4 font-mono font-semibold tabular-nums text-foreground">
+              <td class="text-foreground px-6 py-4 font-mono font-semibold tabular-nums">
                 {formatCurrency(ing.totalCost)}
               </td>
               <td class="px-6 py-4">
                 <div class="flex flex-wrap gap-1.5">
                   {ing.sourceRecipes.map((src) => (
-                    <span class="inline-flex items-center gap-1 rounded-lg bg-muted px-2 py-1 text-xs font-medium text-secondary-foreground">
+                    <span class="bg-muted text-secondary-foreground inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium">
                       {src.recipeName}
                       <span class="text-subtle-foreground">
                         (

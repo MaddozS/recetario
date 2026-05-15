@@ -12,7 +12,7 @@ const { recipeCount, categoryCount, ingredientCount } = Astro.props;
 
 <div class="flex flex-wrap items-center gap-3">
   <div
-    class="inline-flex items-center gap-1.5 rounded-xl bg-accent-50 px-3 py-1.5 text-sm font-semibold text-accent-600 border border-accent-200"
+    class="bg-accent-50 text-accent-600 border-accent-200 inline-flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-sm font-semibold"
   >
     <Icon name="lucide:book-open" size={14} />
     {recipeCount}
@@ -20,7 +20,7 @@ const { recipeCount, categoryCount, ingredientCount } = Astro.props;
   </div>
   {
     categoryCount > 0 && (
-      <div class="inline-flex items-center gap-1.5 rounded-xl bg-accent-50 px-3 py-1.5 text-sm font-semibold text-accent-600 border border-accent-200">
+      <div class="bg-accent-50 text-accent-600 border-accent-200 inline-flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-sm font-semibold">
         <Icon name="lucide:folders" size={14} />
         {categoryCount} {categoryCount === 1 ? "Categoría" : "Categorías"}
       </div>
@@ -28,7 +28,7 @@ const { recipeCount, categoryCount, ingredientCount } = Astro.props;
   }
   {
     ingredientCount > 0 && (
-      <div class="inline-flex items-center gap-1.5 rounded-xl bg-accent-50 px-3 py-1.5 text-sm font-semibold text-accent-600 border border-accent-200">
+      <div class="bg-accent-50 text-accent-600 border-accent-200 inline-flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-sm font-semibold">
         <Icon name="lucide:package" size={14} />
         {ingredientCount}{" "}
         {ingredientCount === 1 ? "Ingrediente" : "Ingredientes"}

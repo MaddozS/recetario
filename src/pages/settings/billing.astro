@@ -48,7 +48,7 @@ const isCanceled = Astro.url.searchParams.get("canceled") === "1";
 
     {
       isSuccess && (
-        <div class="rounded-2xl border border-success-border bg-success-bg p-4">
+        <div class="border-success-border bg-success-bg rounded-2xl border p-4">
           <div class="flex items-center gap-3">
             <Icon name="lucide:check-circle" size={20} class="text-success" />
             <div>
@@ -64,7 +64,7 @@ const isCanceled = Astro.url.searchParams.get("canceled") === "1";
 
     {
       isCanceled && (
-        <div class="rounded-2xl border border-warning-border bg-warning-bg p-4">
+        <div class="border-warning-border bg-warning-bg rounded-2xl border p-4">
           <div class="flex items-center gap-3">
             <Icon name="lucide:alert-triangle" size={20} class="text-warning" />
             <div>
@@ -78,7 +78,7 @@ const isCanceled = Astro.url.searchParams.get("canceled") === "1";
 
     {
       subscription.isTrial && subscription.currentPeriodEnd && (
-        <div class="rounded-2xl border border-accent-200 bg-accent-50 p-4">
+        <div class="border-accent-200 bg-accent-50 rounded-2xl border p-4">
           <div class="flex items-center gap-3">
             <Icon name="lucide:clock" size={20} class="text-accent-600" />
             <div>
@@ -97,7 +97,7 @@ const isCanceled = Astro.url.searchParams.get("canceled") === "1";
 
     {
       subscription.cancelAtPeriodEnd && subscription.currentPeriodEnd && (
-        <div class="rounded-2xl border border-warning-border bg-warning-bg p-4">
+        <div class="border-warning-border bg-warning-bg rounded-2xl border p-4">
           <div class="flex items-center gap-3">
             <Icon name="lucide:alert-triangle" size={20} class="text-warning" />
             <div>
@@ -112,15 +112,15 @@ const isCanceled = Astro.url.searchParams.get("canceled") === "1";
       )
     }
 
-    <div class="rounded-2xl border border-border bg-card p-6 shadow-sm">
+    <div class="border-border bg-card rounded-2xl border p-6 shadow-sm">
       <div class="flex items-start justify-between">
         <div>
           <p
-            class="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground"
+            class="text-muted-foreground text-xs font-bold tracking-[0.18em] uppercase"
           >
             Plan actual
           </p>
-          <h2 class="mt-1 text-2xl font-black text-foreground">
+          <h2 class="text-foreground mt-1 text-2xl font-black">
             KitchCalc {
               subscription.tier === "free"
                 ? "Free"
@@ -129,7 +129,7 @@ const isCanceled = Astro.url.searchParams.get("canceled") === "1";
                   : "Pro"
             }
           </h2>
-          <p class="mt-1 text-sm text-muted-foreground">
+          <p class="text-muted-foreground mt-1 text-sm">
             {
               subscription.tier === "free"
                 ? "Gratis para siempre"
@@ -143,9 +143,9 @@ const isCanceled = Astro.url.searchParams.get("canceled") === "1";
         <div class="text-right">
           {
             subscription.tier !== "free" && (
-              <p class="text-2xl font-black text-foreground">
+              <p class="text-foreground text-2xl font-black">
                 ${subscription.tier === "basic" ? "5" : "10"}
-                <span class="text-sm font-semibold text-subtle-foreground">
+                <span class="text-subtle-foreground text-sm font-semibold">
                   /mes
                 </span>
               </p>
@@ -153,14 +153,14 @@ const isCanceled = Astro.url.searchParams.get("canceled") === "1";
           }
           {
             subscription.cancelAtPeriodEnd && (
-              <span class="mt-1 inline-flex items-center rounded-full bg-warning-bg px-2.5 py-1 text-xs font-bold text-warning border border-warning-border">
+              <span class="bg-warning-bg text-warning border-warning-border mt-1 inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-bold">
                 Cancelado
               </span>
             )
           }
           {
             subscription.status === "trialing" && (
-              <span class="mt-1 inline-flex items-center rounded-full bg-accent-100 px-2.5 py-1 text-xs font-bold text-accent-700 border border-accent-200">
+              <span class="bg-accent-100 text-accent-700 border-accent-200 mt-1 inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-bold">
                 Trial
               </span>
             )
@@ -173,7 +173,7 @@ const isCanceled = Astro.url.searchParams.get("canceled") === "1";
           subscription.tier !== "pro" && (
             <a
               href="/pricing"
-              class="inline-flex items-center gap-2 rounded-xl bg-accent-600 px-5 py-3 text-sm font-bold text-white hover:bg-accent-700 transition-colors"
+              class="bg-accent-600 hover:bg-accent-700 inline-flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-bold text-white transition-colors"
             >
               <Icon name="lucide:arrow-up-circle" size={16} />
               {subscription.tier === "free"
@@ -188,7 +188,7 @@ const isCanceled = Astro.url.searchParams.get("canceled") === "1";
             <button
               type="button"
               id="manage-subscription-btn"
-              class="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-5 py-3 text-sm font-bold text-muted-foreground hover:bg-background transition-colors"
+              class="border-border bg-card text-muted-foreground hover:bg-background inline-flex items-center gap-2 rounded-xl border px-5 py-3 text-sm font-bold transition-colors"
             >
               <Icon name="lucide:credit-card" size={16} />
               Gestionar suscripcion
@@ -198,26 +198,26 @@ const isCanceled = Astro.url.searchParams.get("canceled") === "1";
       </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div class="rounded-2xl border border-border bg-card p-6 shadow-sm">
-        <div class="flex items-center justify-between mb-4">
-          <p class="text-sm font-bold text-secondary-foreground">Recetas</p>
-          <span class="text-xs font-bold text-subtle-foreground"
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+      <div class="border-border bg-card rounded-2xl border p-6 shadow-sm">
+        <div class="mb-4 flex items-center justify-between">
+          <p class="text-secondary-foreground text-sm font-bold">Recetas</p>
+          <span class="text-subtle-foreground text-xs font-bold"
             >{recipeCount} / {
               remainingRecipes === null ? "∞" : subscription.recipesLimit
             }</span
           >
         </div>
-        <div class="h-2 bg-muted rounded-full overflow-hidden">
+        <div class="bg-muted h-2 overflow-hidden rounded-full">
           <div
-            class="h-full bg-accent-500 rounded-full transition-all"
+            class="bg-accent-500 h-full rounded-full transition-all"
             style={`width: ${remainingRecipes === null ? 0 : Math.min(100, (recipeCount / (subscription.recipesLimit ?? 1)) * 100)}%`}
           >
           </div>
         </div>
         {
           remainingRecipes !== null && !(remainingRecipes > 3) && (
-            <p class="mt-2 text-xs text-warning font-semibold">
+            <p class="text-warning mt-2 text-xs font-semibold">
               Te quedan {remainingRecipes} recetas.{" "}
               <a href="/pricing" class="underline">
                 Actualizar plan
@@ -227,12 +227,12 @@ const isCanceled = Astro.url.searchParams.get("canceled") === "1";
         }
       </div>
 
-      <div class="rounded-2xl border border-border bg-card p-6 shadow-sm">
-        <div class="flex items-center justify-between mb-4">
-          <p class="text-sm font-bold text-secondary-foreground">
+      <div class="border-border bg-card rounded-2xl border p-6 shadow-sm">
+        <div class="mb-4 flex items-center justify-between">
+          <p class="text-secondary-foreground text-sm font-bold">
             Ingredientes
           </p>
-          <span class="text-xs font-bold text-subtle-foreground"
+          <span class="text-subtle-foreground text-xs font-bold"
             >{ingredientCount} / {
               remainingIngredients === null
                 ? "∞"
@@ -240,16 +240,16 @@ const isCanceled = Astro.url.searchParams.get("canceled") === "1";
             }</span
           >
         </div>
-        <div class="h-2 bg-muted rounded-full overflow-hidden">
+        <div class="bg-muted h-2 overflow-hidden rounded-full">
           <div
-            class="h-full bg-accent-500 rounded-full transition-all"
+            class="bg-accent-500 h-full rounded-full transition-all"
             style={`width: ${remainingIngredients === null ? 0 : Math.min(100, (ingredientCount / (subscription.ingredientsLimit ?? 1)) * 100)}%`}
           >
           </div>
         </div>
         {
           remainingIngredients !== null && !(remainingIngredients > 5) && (
-            <p class="mt-2 text-xs text-warning font-semibold">
+            <p class="text-warning mt-2 text-xs font-semibold">
               Te quedan {remainingIngredients} ingredientes.{" "}
               <a href="/pricing" class="underline">
                 Actualizar plan
@@ -260,11 +260,11 @@ const isCanceled = Astro.url.searchParams.get("canceled") === "1";
       </div>
     </div>
 
-    <div class="rounded-2xl border border-border bg-card p-6 shadow-sm">
-      <h3 class="text-sm font-bold text-secondary-foreground mb-4">
+    <div class="border-border bg-card rounded-2xl border p-6 shadow-sm">
+      <h3 class="text-secondary-foreground mb-4 text-sm font-bold">
         Funciones incluidas
       </h3>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
         {
           (
             [

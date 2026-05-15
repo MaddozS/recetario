@@ -20,33 +20,33 @@ const noRevenue = summary.projectedRevenue <= 0;
 
 <div class="production-sheet financial-summary">
   <div class="grid grid-cols-2 gap-4">
-    <div class="rounded-2xl border border-border bg-card p-5 shadow-sm">
+    <div class="border-border bg-card rounded-2xl border p-5 shadow-sm">
       <p
-        class="text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground"
+        class="text-muted-foreground text-xs font-bold tracking-[0.16em] uppercase"
       >
         Costo de insumos
       </p>
-      <p class="mt-1.5 text-2xl font-black tabular-nums text-foreground">
+      <p class="text-foreground mt-1.5 text-2xl font-black tabular-nums">
         {formatCurrency(summary.totalIngredientsCost)}
       </p>
     </div>
-    <div class="rounded-2xl border border-border bg-card p-5 shadow-sm">
+    <div class="border-border bg-card rounded-2xl border p-5 shadow-sm">
       <p
-        class="text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground"
+        class="text-muted-foreground text-xs font-bold tracking-[0.16em] uppercase"
       >
         Costo operativo
       </p>
-      <p class="mt-1.5 text-2xl font-black tabular-nums text-foreground">
+      <p class="text-foreground mt-1.5 text-2xl font-black tabular-nums">
         {formatCurrency(summary.totalOperationalCost)}
       </p>
     </div>
-    <div class="rounded-2xl border border-border bg-card p-5 shadow-sm">
+    <div class="border-border bg-card rounded-2xl border p-5 shadow-sm">
       <p
-        class="text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground"
+        class="text-muted-foreground text-xs font-bold tracking-[0.16em] uppercase"
       >
         Ingresos proyectados
       </p>
-      <p class="mt-1.5 text-2xl font-black tabular-nums text-foreground">
+      <p class="text-foreground mt-1.5 text-2xl font-black tabular-nums">
         {
           noRevenue ? (
             <span class="text-muted-foreground text-lg">N/A</span>
@@ -57,15 +57,15 @@ const noRevenue = summary.projectedRevenue <= 0;
       </p>
       {
         noRevenue && (
-          <p class="mt-1 text-xs text-warning">
+          <p class="text-warning mt-1 text-xs">
             Sin precios de venta configurados
           </p>
         )
       }
     </div>
-    <div class="rounded-2xl border border-border bg-card p-5 shadow-sm">
+    <div class="border-border bg-card rounded-2xl border p-5 shadow-sm">
       <p
-        class="text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground"
+        class="text-muted-foreground text-xs font-bold tracking-[0.16em] uppercase"
       >
         Ganancia estimada
       </p>
@@ -79,7 +79,7 @@ const noRevenue = summary.projectedRevenue <= 0;
           ) : (
             <>
               {formatCurrency(summary.estimatedProfit)}
-              <span class="text-base font-bold ml-1">
+              <span class="ml-1 text-base font-bold">
                 ({summary.effectiveMargin.toFixed(1)}%)
               </span>
             </>

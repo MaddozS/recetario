@@ -11,20 +11,22 @@ const { id, name, category, timeAgo } = Astro.props;
 
 <a
   href={`/recipes/${id}`}
-  class="group block rounded-xl border border-border bg-card p-3 shadow-sm transition-all hover:border-accent-300 hover:shadow-md"
+  class="group border-border bg-card hover:border-accent-300 block rounded-xl border p-3 shadow-sm transition-all hover:shadow-md"
 >
-  <p class="truncate text-sm font-bold text-secondary-foreground transition-colors group-hover:text-accent-700">
+  <p
+    class="text-secondary-foreground group-hover:text-accent-700 truncate text-sm font-bold transition-colors"
+  >
     {name}
   </p>
   <div class="mt-1.5 flex items-center gap-2">
     {
       category && (
-        <span class="inline-flex items-center rounded-full bg-accent-50 px-2 py-0.5 text-[10px] font-semibold text-accent-600 border border-accent-200">
+        <span class="bg-accent-50 text-accent-600 border-accent-200 inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold">
           {category}
         </span>
       )
     }
-    <span class="text-[10px] text-subtle-foreground">
+    <span class="text-subtle-foreground text-[10px]">
       {timeAgo}
     </span>
   </div>

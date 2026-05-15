@@ -11,7 +11,7 @@ const { recipes } = Astro.props;
 ---
 
 <div class="production-sheet recipe-breakdown space-y-4">
-  <h2 class="text-lg font-bold text-foreground flex items-center gap-2">
+  <h2 class="text-foreground flex items-center gap-2 text-lg font-bold">
     <Icon name="lucide:list-tree" size={20} class="text-accent-600" />
     Desglose por receta
   </h2>
@@ -19,22 +19,22 @@ const { recipes } = Astro.props;
   {
     recipes.map((recipe) => (
       <details
-        class="rounded-2xl border border-border bg-card shadow-sm overflow-hidden"
+        class="border-border bg-card overflow-hidden rounded-2xl border shadow-sm"
         open
       >
-        <summary class="flex items-center justify-between gap-4 px-6 py-4 cursor-pointer hover:bg-muted transition-colors">
+        <summary class="hover:bg-muted flex cursor-pointer items-center justify-between gap-4 px-6 py-4 transition-colors">
           <div class="min-w-0">
             <div class="flex items-center gap-2">
-              <h3 class="text-base font-bold text-foreground truncate">
+              <h3 class="text-foreground truncate text-base font-bold">
                 {recipe.recipeName}
               </h3>
               {recipe.category && (
-                <span class="shrink-0 rounded-full bg-muted px-2.5 py-0.5 text-[11px] font-semibold text-muted-foreground border border-border">
+                <span class="bg-muted text-muted-foreground border-border shrink-0 rounded-full border px-2.5 py-0.5 text-[11px] font-semibold">
                   {recipe.category}
                 </span>
               )}
             </div>
-            <p class="text-sm text-muted-foreground mt-0.5">
+            <p class="text-muted-foreground mt-0.5 text-sm">
               {recipe.batches} batch{recipe.batches !== 1 ? "es" : ""} · Costo
               total: {formatCurrency(recipe.totalCost)}
             </p>
@@ -46,33 +46,33 @@ const { recipes } = Astro.props;
           />
         </summary>
 
-        <div class="px-6 pb-6 space-y-6">
+        <div class="space-y-6 px-6 pb-6">
           <div>
-            <h4 class="text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground mb-3">
+            <h4 class="text-muted-foreground mb-3 text-xs font-bold tracking-[0.16em] uppercase">
               Costos
             </h4>
             <div class="grid grid-cols-3 gap-3">
-              <div class="rounded-xl bg-muted p-3">
-                <p class="text-[11px] font-semibold text-muted-foreground">
+              <div class="bg-muted rounded-xl p-3">
+                <p class="text-muted-foreground text-[11px] font-semibold">
                   Insumos
                 </p>
-                <p class="mt-1 text-lg font-bold tabular-nums text-foreground">
+                <p class="text-foreground mt-1 text-lg font-bold tabular-nums">
                   {formatCurrency(recipe.ingredientsCost)}
                 </p>
               </div>
-              <div class="rounded-xl bg-muted p-3">
-                <p class="text-[11px] font-semibold text-muted-foreground">
+              <div class="bg-muted rounded-xl p-3">
+                <p class="text-muted-foreground text-[11px] font-semibold">
                   Operativo
                 </p>
-                <p class="mt-1 text-lg font-bold tabular-nums text-foreground">
+                <p class="text-foreground mt-1 text-lg font-bold tabular-nums">
                   {formatCurrency(recipe.operationalCost)}
                 </p>
               </div>
-              <div class="rounded-xl bg-muted p-3">
-                <p class="text-[11px] font-semibold text-muted-foreground">
+              <div class="bg-muted rounded-xl p-3">
+                <p class="text-muted-foreground text-[11px] font-semibold">
                   Total
                 </p>
-                <p class="mt-1 text-lg font-bold tabular-nums text-foreground">
+                <p class="text-foreground mt-1 text-lg font-bold tabular-nums">
                   {formatCurrency(recipe.totalCost)}
                 </p>
               </div>
@@ -81,12 +81,12 @@ const { recipes } = Astro.props;
 
           {recipe.presentations.length > 0 ? (
             <div>
-              <h4 class="text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground mb-3">
+              <h4 class="text-muted-foreground mb-3 text-xs font-bold tracking-[0.16em] uppercase">
                 Presentaciones
               </h4>
-              <div class="overflow-x-auto rounded-xl border border-border">
+              <div class="border-border overflow-x-auto rounded-xl border">
                 <table class="min-w-full text-left text-sm">
-                  <thead class="bg-background text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+                  <thead class="bg-background text-muted-foreground text-[11px] font-bold tracking-[0.16em] uppercase">
                     <tr>
                       <th class="px-4 py-3">Presentación</th>
                       <th class="px-4 py-3">Unidades totales</th>
@@ -95,7 +95,7 @@ const { recipes } = Astro.props;
                       <th class="px-4 py-3">Ingreso</th>
                     </tr>
                   </thead>
-                  <tbody class="divide-y divide-border-light dark:divide-gray-950">
+                  <tbody class="divide-border-light divide-y dark:divide-gray-950">
                     {recipe.presentations.map((p) => (
                       <tr
                         class:list={[
@@ -105,20 +105,20 @@ const { recipes } = Astro.props;
                             : "",
                         ]}
                       >
-                        <td class="px-4 py-3 font-medium text-foreground">
+                        <td class="text-foreground px-4 py-3 font-medium">
                           <span class="flex items-center gap-1.5">
                             {p.name}
                             {p.id === recipe.selectedPresentationId && (
-                              <span class="inline-flex items-center rounded-full bg-accent-100 px-2 py-0.5 text-[10px] font-bold text-accent-700 border border-accent-200">
+                              <span class="bg-accent-100 text-accent-700 border-accent-200 inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-bold">
                                 Seleccionada
                               </span>
                             )}
                           </span>
                         </td>
-                        <td class="px-4 py-3 font-mono tabular-nums text-secondary-foreground">
+                        <td class="text-secondary-foreground px-4 py-3 font-mono tabular-nums">
                           {p.totalUnits}
                         </td>
-                        <td class="px-4 py-3 font-mono tabular-nums text-secondary-foreground">
+                        <td class="text-secondary-foreground px-4 py-3 font-mono tabular-nums">
                           {formatCurrency(p.unitCost)}
                         </td>
                         <td class="px-4 py-3 font-mono tabular-nums">
@@ -130,7 +130,7 @@ const { recipes } = Astro.props;
                             <span class="text-warning">Sin precio</span>
                           )}
                         </td>
-                        <td class="px-4 py-3 font-mono font-semibold tabular-nums text-foreground">
+                        <td class="text-foreground px-4 py-3 font-mono font-semibold tabular-nums">
                           {p.revenue > 0 ? (
                             formatCurrency(p.revenue)
                           ) : (
@@ -144,8 +144,8 @@ const { recipes } = Astro.props;
               </div>
             </div>
           ) : (
-            <div class="rounded-xl bg-muted p-4 text-center">
-              <p class="text-sm text-muted-foreground">
+            <div class="bg-muted rounded-xl p-4 text-center">
+              <p class="text-muted-foreground text-sm">
                 Sin presentaciones configuradas
               </p>
             </div>
