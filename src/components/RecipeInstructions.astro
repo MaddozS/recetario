@@ -3,7 +3,10 @@ import { Icon } from "astro-icon/components";
 import {
   parseInstructions,
   highlightReferences,
+  parseHtmlSteps,
+  extractTimersFromHtml,
 } from "../lib/instructions-parser";
+import { sanitizeHtml, looksLikeHtml } from "../lib/html-sanitizer";
 import type { IngredientRef } from "../lib/instructions-parser";
 
 interface Props {
@@ -13,8 +16,51 @@ interface Props {
 }
 
 const { instructions, ingredients, isPro = false } = Astro.props;
-const parsed = parseInstructions(instructions, ingredients);
-const { steps, totalDuration, notes } = parsed;
+
+const isHtml = looksLikeHtml(instructions);
+let steps: Array<{
+  number: number;
+  text?: string;
+  html?: string;
+  isGroupHeader?: boolean;
+  groupName?: string;
+  duration?: string;
+  temperature?: string;
+}>;
+let totalDuration: string | undefined;
+let notes: string[] | undefined;
+let cookingSteps: Array<{
+  index: number;
+  html: string;
+  timers: Array<{ value: number; unit: string }>;
+}>;
+
+if (isHtml) {
+  const sanitized = sanitizeHtml(instructions);
+  const stepHtmls = parseHtmlSteps(sanitized);
+  steps = stepHtmls.map((html, i) => ({
+    number: i + 1,
+    html,
+  }));
+  cookingSteps = stepHtmls.map((html, i) => ({
+    index: i,
+    html,
+    timers: extractTimersFromHtml(html),
+  }));
+} else {
+  const parsed = parseInstructions(instructions, ingredients);
+  steps = parsed.steps;
+  totalDuration = parsed.totalDuration;
+  notes = parsed.notes;
+  cookingSteps = parsed.steps
+    .filter((s) => !s.isGroupHeader)
+    .map((step, i) => ({
+      index: i,
+      html: `<div class="cooking-mode-step-number">${step.number}</div><p class="cooking-mode-step-text">${highlightReferences(step.text, ingredients)}</p>`,
+      timers: [] as Array<{ value: number; unit: string }>,
+    }));
+}
+const visibleSteps = cookingSteps;
 ---
 
 <div
@@ -37,7 +83,7 @@ const { steps, totalDuration, notes } = parsed;
         )
       }
       {
-        isPro && (
+        isPro && visibleSteps.length > 0 && (
           <button
             type="button"
             data-open-cooking-mode
@@ -53,42 +99,51 @@ const { steps, totalDuration, notes } = parsed;
 
   <div class="recipe-instructions px-5 py-6 sm:px-6 lg:px-8">
     {
-      steps.map((step) =>
-        step.isGroupHeader && step.groupName ? (
-          <div class="step-group-header">
-            <span>{step.groupName}</span>
-          </div>
-        ) : (
-          <div class="step-card">
-            <div class="step-number">{step.number}</div>
-            <div class="step-content">
-              <span
-                class="step-text"
-                set:html={highlightReferences(step.text, ingredients)}
-              />
-              {step.duration || step.temperature ? (
-                <div class="step-meta">
-                  {step.duration && (
-                    <span class="step-badge step-badge-time">
-                      <Icon name="lucide:timer" size={11} />
-                      {step.duration.replace(/^⏱\s*/i, "")}
-                    </span>
-                  )}
-                  {step.temperature && (
-                    <span class="step-badge step-badge-temp">
-                      {step.temperature}
-                    </span>
-                  )}
-                </div>
-              ) : null}
+      isHtml
+        ? steps.map((step) => (
+            <div class="step-card">
+              <div class="step-number">{step.number}</div>
+              <div class="step-content">
+                <span class="step-text" set:html={step.html} />
+              </div>
             </div>
-          </div>
-        ),
-      )
+          ))
+        : steps.map((step) =>
+            step.isGroupHeader && step.groupName ? (
+              <div class="step-group-header">
+                <span>{step.groupName}</span>
+              </div>
+            ) : (
+              <div class="step-card">
+                <div class="step-number">{step.number}</div>
+                <div class="step-content">
+                  <span
+                    class="step-text"
+                    set:html={highlightReferences(step.text!, ingredients)}
+                  />
+                  {step.duration || step.temperature ? (
+                    <div class="step-meta">
+                      {step.duration && (
+                        <span class="step-badge step-badge-time">
+                          <Icon name="lucide:timer" size={11} />
+                          {step.duration.replace(/^⏱\s*/i, "")}
+                        </span>
+                      )}
+                      {step.temperature && (
+                        <span class="step-badge step-badge-temp">
+                          {step.temperature}
+                        </span>
+                      )}
+                    </div>
+                  ) : null}
+                </div>
+              </div>
+            ),
+          )
     }
 
     {
-      notes && notes.length > 0 && (
+      !isHtml && notes && notes.length > 0 && (
         <div class="step-notes">
           <h3 class="step-notes-title">
             <Icon name="lucide:file-text" size={14} />
@@ -104,7 +159,7 @@ const { steps, totalDuration, notes } = parsed;
 </div>
 
 {
-  isPro && (
+  isPro && visibleSteps.length > 0 && (
     <dialog
       id="cooking-mode-dialog"
       class="cooking-mode-overlay bg-background fixed inset-0 m-auto h-full max-h-full w-full max-w-full rounded-none border-0 p-0 backdrop:bg-black/70"
@@ -112,7 +167,7 @@ const { steps, totalDuration, notes } = parsed;
       <div class="flex h-full flex-col">
         <div class="border-border flex items-center justify-between border-b px-6 py-4">
           <span class="text-muted-foreground cooking-mode-counter text-sm font-bold">
-            Paso 1 de {steps.filter((s) => !s.isGroupHeader).length}
+            Paso 1 de {visibleSteps.length}
           </span>
           <button
             type="button"
@@ -124,34 +179,56 @@ const { steps, totalDuration, notes } = parsed;
         </div>
 
         <div class="flex flex-1 flex-col items-center justify-center overflow-y-auto px-6 py-8">
-          {steps
-            .filter((s) => !s.isGroupHeader)
-            .map((step, idx) => (
-              <div
-                class="cooking-mode-step"
-                data-step-index={idx}
-                style={{ display: idx === 0 ? "flex" : "none" }}
-              >
-                <div class="cooking-mode-step-number">{step.number}</div>
-                <p
-                  class="cooking-mode-step-text"
-                  set:html={highlightReferences(step.text, ingredients)}
-                />
-                <div class="mt-6 flex items-center gap-3">
-                  {step.duration && (
-                    <span class="step-badge step-badge-time px-4 py-1.5 text-base">
-                      <Icon name="lucide:timer" size={16} />
-                      {step.duration.replace(/^⏱\s*/i, "")}
-                    </span>
-                  )}
-                  {step.temperature && (
-                    <span class="step-badge step-badge-temp px-4 py-1.5 text-base">
-                      {step.temperature}
-                    </span>
-                  )}
+          {visibleSteps.map((step, idx) => (
+            <div
+              class={isHtml ? "cooking-mode-step cooking-mode-html-step" : "cooking-mode-step"}
+              data-step-index={idx}
+              data-step-timers={JSON.stringify(step.timers)}
+              style={{ display: idx === 0 ? "flex" : "none" }}
+            >
+              {isHtml ? (
+                <div class="w-full max-w-2xl" set:html={step.html} />
+              ) : (
+                <div set:html={step.html} />
+              )}
+              {isHtml && step.timers.length > 0 && (
+                <div
+                  class="mt-10 flex flex-wrap justify-center gap-4"
+                  data-kitchen-timers
+                >
+                  {step.timers.map((timer, tIdx) => (
+                    <div
+                      class="kitchen-timer-card"
+                      data-kitchen-timer={`${idx}-${tIdx}`}
+                      data-timer-value={timer.value}
+                      data-timer-unit={timer.unit}
+                    >
+                      <div>
+                        <div class="kitchen-timer-label">Temporizador</div>
+                        <div class="kitchen-timer-display" data-timer-display>00:00</div>
+                      </div>
+                      <div class="kitchen-timer-actions">
+                        <button
+                          type="button"
+                          class="kitchen-timer-btn kitchen-timer-btn--play"
+                          data-timer-play
+                        >
+                          <svg class="w-6 h-6 pl-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                        </button>
+                        <button
+                          type="button"
+                          class="kitchen-timer-btn kitchen-timer-btn--reset"
+                          data-timer-reset
+                        >
+                          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                        </button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              </div>
-            ))}
+              )}
+            </div>
+          ))}
         </div>
 
         <div class="border-border flex items-center justify-between border-t px-6 py-4">
@@ -197,8 +274,10 @@ const { steps, totalDuration, notes } = parsed;
     const counter = dialog.querySelector<HTMLElement>(".cooking-mode-counter");
     const steps = dialog.querySelectorAll<HTMLElement>(".cooking-mode-step");
     let current = 0;
+    let timerInstances: KitchenTimer[] = [];
 
     function updateStep(index: number) {
+      stopAllTimers();
       steps.forEach((s, i) => {
         s.style.display = i === index ? "flex" : "none";
       });
@@ -208,10 +287,31 @@ const { steps, totalDuration, notes } = parsed;
       if (prevBtn) prevBtn.toggleAttribute("disabled", index === 0);
       if (nextBtn)
         nextBtn.toggleAttribute("disabled", index === steps.length - 1);
+      startTimersForStep(index);
+    }
+
+    function stopAllTimers() {
+      for (const t of timerInstances) t.stop();
+      timerInstances = [];
+    }
+
+    function startTimersForStep(stepIndex: number) {
+      const step = steps[stepIndex];
+      if (!step) return;
+      const timerContainers = step.querySelectorAll<HTMLElement>(
+        "[data-kitchen-timer]",
+      );
+      timerContainers.forEach((container) => {
+        const value = Number(container.dataset.timerValue);
+        const unit = container.dataset.timerUnit || "min";
+        const timer = new KitchenTimer(container, value, unit);
+        timerInstances.push(timer);
+      });
     }
 
     openBtns.forEach((btn) => {
       btn.addEventListener("click", () => {
+        stopAllTimers();
         current = 0;
         updateStep(0);
         dialog!.showModal();
@@ -219,7 +319,10 @@ const { steps, totalDuration, notes } = parsed;
     });
 
     if (closeBtn) {
-      closeBtn.addEventListener("click", () => dialog.close());
+      closeBtn.addEventListener("click", () => {
+        stopAllTimers();
+        dialog.close();
+      });
     }
 
     if (prevBtn) {
@@ -248,6 +351,7 @@ const { steps, totalDuration, notes } = parsed;
         e.clientY < rect.top ||
         e.clientY > rect.bottom
       ) {
+        stopAllTimers();
         dialog.close();
       }
     });
@@ -259,6 +363,159 @@ const { steps, totalDuration, notes } = parsed;
         prevBtn?.click();
       }
     });
+
+    dialog.addEventListener("close", () => {
+      stopAllTimers();
+    });
+  }
+
+  class KitchenTimer {
+    private container: HTMLElement;
+    private displayEl: HTMLElement;
+    private playBtn: HTMLElement | null;
+    private resetBtn: HTMLElement | null;
+    private initialSeconds: number;
+    private secondsLeft: number;
+    private interval: ReturnType<typeof setInterval> | null = null;
+    private running = false;
+
+    constructor(container: HTMLElement, value: number, unit: string) {
+      this.container = container;
+      this.displayEl = container.querySelector<HTMLElement>("[data-timer-display]")!;
+      this.playBtn = container.querySelector<HTMLElement>("[data-timer-play]");
+      this.resetBtn = container.querySelector<HTMLElement>("[data-timer-reset]");
+      this.initialSeconds =
+        unit === "hr" ? value * 3600 : unit === "min" ? value * 60 : value;
+      this.secondsLeft = this.initialSeconds;
+      this.updateDisplay();
+
+      this.playBtn?.addEventListener("click", () => this.toggle());
+      this.resetBtn?.addEventListener("click", () => this.reset());
+    }
+
+    private updateDisplay() {
+      if (!this.displayEl) return;
+      const mins = Math.floor(this.secondsLeft / 60);
+      const secs = this.secondsLeft % 60;
+      this.displayEl.textContent = `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+    }
+
+    private updateClasses() {
+      this.container.classList.remove(
+        "kitchen-timer-card--running",
+        "kitchen-timer-card--paused",
+        "kitchen-timer-card--expired",
+      );
+      if (this.secondsLeft <= 0) {
+        this.container.classList.add("kitchen-timer-card--expired");
+      } else if (this.running) {
+        this.container.classList.add("kitchen-timer-card--running");
+      } else {
+        this.container.classList.add("kitchen-timer-card--paused");
+      }
+
+      if (this.playBtn) {
+        this.playBtn.innerHTML =
+          this.secondsLeft <= 0
+            ? '<span class="text-xs font-bold">\u00a1Tiempo!</span>'
+            : this.running
+              ? '<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/></svg>'
+              : '<svg class="w-6 h-6 pl-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+        this.playBtn.className =
+          this.secondsLeft <= 0
+            ? "kitchen-timer-btn kitchen-timer-btn--play"
+            : this.running
+              ? "kitchen-timer-btn kitchen-timer-btn--pause"
+              : "kitchen-timer-btn kitchen-timer-btn--play";
+      }
+    }
+
+    toggle() {
+      if (this.secondsLeft <= 0) {
+        this.reset();
+        this.start();
+        return;
+      }
+      if (this.running) {
+        this.pause();
+      } else {
+        this.start();
+      }
+    }
+
+    start() {
+      if (this.interval || this.secondsLeft <= 0) return;
+      this.running = true;
+      this.interval = setInterval(() => {
+        this.secondsLeft--;
+        this.updateDisplay();
+        this.updateClasses();
+        if (this.secondsLeft <= 0) {
+          this.stop();
+          this.onExpired();
+        }
+      }, 1000);
+      this.updateClasses();
+    }
+
+    pause() {
+      this.running = false;
+      if (this.interval) {
+        clearInterval(this.interval);
+        this.interval = null;
+      }
+      this.updateClasses();
+    }
+
+    stop() {
+      this.running = false;
+      if (this.interval) {
+        clearInterval(this.interval);
+        this.interval = null;
+      }
+      this.updateClasses();
+    }
+
+    reset() {
+      this.stop();
+      this.secondsLeft = this.initialSeconds;
+      this.updateDisplay();
+      this.updateClasses();
+      this.container.classList.remove("kitchen-timer-card--expired");
+    }
+
+    private onExpired() {
+      // Visual pulse is handled by CSS
+      try {
+        if (navigator.vibrate) {
+          navigator.vibrate([200, 100, 200, 100, 400]);
+        }
+      } catch {
+        // vibration not supported
+      }
+      this.playBeep();
+    }
+
+    private playBeep() {
+      try {
+        const AC = window.AudioContext || (window as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+        if (!AC) return;
+        const audioCtx = new AC();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.frequency.value = 880;
+        osc.type = "sine";
+        gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+        osc.start(audioCtx.currentTime);
+        osc.stop(audioCtx.currentTime + 0.4);
+        audioCtx.close();
+      } catch {
+        // audio not supported
+      }
+    }
   }
 
   document.addEventListener("astro:page-load", setupCookingMode);

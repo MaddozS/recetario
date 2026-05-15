@@ -10,10 +10,13 @@ interface Props {
   recipeEditFormId: string;
   instructions: string | undefined | null;
   ingredients: IngredientRef[];
+  recipeIngredientIds: number[];
 }
 
-const { recipeEditFormId, instructions, ingredients } = Astro.props;
+const { recipeEditFormId, instructions, ingredients, recipeIngredientIds } =
+  Astro.props;
 const ingredientJson = JSON.stringify(ingredients);
+const recipeIngredientIdsJson = JSON.stringify(recipeIngredientIds);
 ---
 
 <div class="border-border mx-5 border-y py-6 sm:mx-6 lg:mx-8">
@@ -27,190 +30,187 @@ const ingredientJson = JSON.stringify(ingredients);
   <div
     class="instructions-editor"
     data-ingredients={ingredientJson}
+    data-recipe-ingredient-ids={recipeIngredientIdsJson}
     data-initial={JSON.stringify(instructions || "")}
     data-form-id={recipeEditFormId}
   >
     <div
-      class="instructions-toolbar border-border bg-muted flex items-center gap-1 rounded-t-xl border px-3 py-2"
+      class="instructions-toolbar border-border bg-muted flex items-center gap-1 rounded-t-xl border px-3 py-2 overflow-x-auto"
     >
       <button
         type="button"
-        class="toolbar-btn text-muted-foreground hover:bg-accent-50 hover:text-accent-600 inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg transition-colors"
+        class="toolbar-btn text-muted-foreground hover:bg-accent-50 hover:text-accent-600 inline-flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-lg transition-colors"
         data-toolbar-btn="bold"
         title="Negritas"
-      >
-        <Icon name="lucide:bold" size={15} />
-      </button>
+      ><Icon name="lucide:bold" size={16} /></button>
       <button
         type="button"
-        class="toolbar-btn text-muted-foreground hover:bg-accent-50 hover:text-accent-600 inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg transition-colors"
+        class="toolbar-btn text-muted-foreground hover:bg-accent-50 hover:text-accent-600 inline-flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-lg transition-colors"
         data-toolbar-btn="italic"
         title="Cursiva"
-      >
-        <Icon name="lucide:italic" size={15} />
-      </button>
-      <div class="bg-border mx-1 h-5 w-px"></div>
+      ><Icon name="lucide:italic" size={16} /></button>
+      <div class="wysiwyg-separator shrink-0 mx-1"></div>
       <button
         type="button"
-        class="toolbar-btn text-muted-foreground hover:bg-accent-50 hover:text-accent-600 inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg transition-colors"
+        class="toolbar-btn text-muted-foreground hover:bg-accent-50 hover:text-accent-600 inline-flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-lg transition-colors"
         data-toolbar-btn="numbered-list"
         title="Lista numerada"
-      >
-        <Icon name="lucide:list-ordered" size={15} />
-      </button>
+      ><Icon name="lucide:list-ordered" size={16} /></button>
       <button
         type="button"
-        class="toolbar-btn text-muted-foreground hover:bg-accent-50 hover:text-accent-600 inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg transition-colors"
+        class="toolbar-btn text-muted-foreground hover:bg-accent-50 hover:text-accent-600 inline-flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-lg transition-colors"
         data-toolbar-btn="bullet-list"
         title="Lista con viñetas"
-      >
-        <Icon name="lucide:list" size={15} />
-      </button>
-      <div class="bg-border mx-1 h-5 w-px"></div>
+      ><Icon name="lucide:list" size={16} /></button>
+      <div class="wysiwyg-separator shrink-0 mx-1"></div>
       <button
         type="button"
-        class="toolbar-btn text-muted-foreground hover:bg-accent-50 hover:text-accent-600 inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg transition-colors"
+        class="toolbar-btn text-muted-foreground hover:bg-accent-50 hover:text-accent-600 inline-flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-lg transition-colors"
         data-toolbar-btn="heading"
         title="Sección"
-      >
-        <Icon name="lucide:heading" size={15} />
-      </button>
-      <button
-        type="button"
-        class="toolbar-btn text-muted-foreground hover:bg-accent-50 hover:text-accent-600 inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg transition-colors"
-        data-toolbar-btn="timer"
-        title="Temporizador"
-      >
-        <Icon name="lucide:timer" size={15} />
-      </button>
+      ><Icon name="lucide:heading" size={16} /></button>
+      <div class="wysiwyg-separator shrink-0 mx-1"></div>
 
-      <div class="ml-auto">
-        <span class="text-subtle-foreground hidden text-[10px] sm:inline"
-          >Markdown</span
+      <div class="relative shrink-0">
+        <button
+          type="button"
+          class="inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-lg px-3 text-sm font-medium text-accent-700 bg-accent-50 hover:bg-accent-100 transition-colors whitespace-nowrap"
+          data-ingredient-btn
+          title="Insertar ingrediente"
         >
+          <Icon name="lucide:chef-hat" size={16} />
+          <span class="hidden sm:inline">@ Ingrediente</span>
+          <Icon name="lucide:chevron-down" size={14} />
+        </button>
+        <div
+          class="ingredient-dropdown bg-card border-border fixed z-30 hidden overflow-hidden rounded-xl border shadow-xl"
+          data-ingredient-dropdown
+        ></div>
+      </div>
+
+      <div class="relative shrink-0">
+        <button
+          type="button"
+          class="inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-lg px-3 text-sm font-medium text-secondary-foreground bg-muted hover:bg-hover-muted transition-colors whitespace-nowrap"
+          data-timer-btn
+          title="Insertar temporizador"
+        >
+          <Icon name="lucide:timer" size={16} />
+          <span class="hidden sm:inline">Temporizador</span>
+          <Icon name="lucide:chevron-down" size={14} />
+        </button>
+        <div
+          class="timer-popover fixed z-30 hidden"
+          data-timer-popover
+        ></div>
       </div>
     </div>
 
     <div class="border-border overflow-hidden rounded-b-xl border-x border-b">
-      <div class="border-border bg-background flex border-b">
-        <button
-          type="button"
-          class="preview-tab flex-1 px-4 py-2 text-center text-xs font-bold transition-colors"
-          data-editor-tab="write"
-        >
-          Escribir
-        </button>
-        <button
-          type="button"
-          class="preview-tab flex-1 px-4 py-2 text-center text-xs font-bold transition-colors"
-          data-editor-tab="preview"
-        >
-          Vista previa
-        </button>
-      </div>
-      <div class="editor-pane" data-editor-pane="write">
-        <div
-          class="contenteditable-editor bg-background text-secondary-foreground min-h-72 w-full border-0 p-4 text-sm leading-relaxed whitespace-pre-wrap outline-none focus:ring-0 lg:min-h-88"
-          contenteditable="true"
-          data-contenteditable
-        >
-        </div>
-      </div>
-      <div class="editor-pane hidden" data-editor-pane="preview">
-        <div
-          class="instructions-preview text-secondary-foreground bg-background recipe-instructions min-h-72 p-4 text-sm leading-relaxed lg:min-h-88"
-          data-preview
-        >
-        </div>
-      </div>
+      <div
+        class="contenteditable-editor bg-background text-secondary-foreground min-h-72 w-full border-0 p-4 text-sm leading-relaxed outline-none focus:ring-0 lg:min-h-88"
+        contenteditable="true"
+        data-contenteditable
+      ></div>
     </div>
 
     <div
-      class="mention-dropdown bg-card border-border fixed z-30 overflow-hidden rounded-xl border shadow-lg"
+      class="mention-dropdown bg-card border-border fixed z-30 hidden overflow-hidden rounded-xl border shadow-xl"
       data-mention-dropdown
-    >
-    </div>
-
-    <p class="text-subtle-foreground mt-2 text-xs leading-relaxed">
-      Usa <strong class="text-secondary-foreground">**negritas**</strong>,
-      <em class="text-secondary-foreground">*cursiva*</em>,
-      <code class="text-secondary-foreground">## Sección</code>,
-      <code class="text-secondary-foreground">@ingrediente</code> para vincular
-    </p>
-    <p class="text-subtle-foreground mt-1 text-xs leading-relaxed">
-      Utiliza la opción
-      <span class="inline-flex items-baseline gap-1">
-        <Icon name="lucide:timer" size={12} />
-        <span class="text-secondary-foreground font-mono">Temporizador</span>
-      </span>
-      para insertar fácilmente indicaciones de tiempo.
-    </p>
+    ></div>
   </div>
 </div>
 
 <script>
-  import {
-    parseInstructions,
-    highlightReferences,
-    escapeText,
-  } from "../lib/instructions-parser";
+  import { sanitizeHtml, looksLikeHtml } from "../lib/html-sanitizer";
+  import { markdownToEditorHtml } from "../lib/instructions-parser";
 
   function setupInstructionsEditor() {
     const editor = document.querySelector<HTMLElement>(".instructions-editor");
     if (!editor || editor.dataset.editorBound) return;
     editor.dataset.editorBound = "1";
 
-    const rawIngredients = editor.dataset.ingredients
-      ? (JSON.parse(editor.dataset.ingredients) as {
-          id: number;
-          name: string;
-        }[])
+    const rawIngredients: { id: number; name: string }[] = editor.dataset.ingredients
+      ? JSON.parse(editor.dataset.ingredients)
       : [];
+    const recipeIds: number[] = editor.dataset.recipeIngredientIds
+      ? JSON.parse(editor.dataset.recipeIngredientIds)
+      : [];
+    const recipeIdSet = new Set(recipeIds);
     const ingredientById = new Map<number, string>();
     for (const ing of rawIngredients) ingredientById.set(ing.id, ing.name);
 
-    const initialMarkdown: string = editor.dataset.initial
+    const initialContent: string = editor.dataset.initial
       ? JSON.parse(editor.dataset.initial)
       : "";
     const formId = editor.dataset.formId || "";
 
-    const contentEditors = editor.querySelectorAll<HTMLElement>(
+    const contentEditableCandidate = editor.querySelector<HTMLElement>(
       "[data-contenteditable]",
     );
-    const contentEditable = contentEditors[0];
-    if (!contentEditable) return;
+    if (!contentEditableCandidate) return;
+    const contentEditable: HTMLElement = contentEditableCandidate;
 
-    const previews = editor.querySelectorAll<HTMLElement>("[data-preview]");
     const hiddenTA =
       document.querySelector<HTMLInputElement>("[data-hidden-ta]");
-    const tabWrite = editor.querySelector<HTMLElement>(
-      '[data-editor-tab="write"]',
-    );
-    const tabPreview = editor.querySelector<HTMLElement>(
-      '[data-editor-tab="preview"]',
-    );
-    const paneWrite = editor.querySelector<HTMLElement>(
-      '[data-editor-pane="write"]',
-    );
-    const panePreview = editor.querySelector<HTMLElement>(
-      '[data-editor-pane="preview"]',
-    );
     const mentionDropdown = editor.querySelector<HTMLElement>(
       "[data-mention-dropdown]",
     );
+    const ingredientDropdown = editor.querySelector<HTMLElement>(
+      "[data-ingredient-dropdown]",
+    );
+    const ingredientBtn = editor.querySelector<HTMLElement>(
+      "[data-ingredient-btn]",
+    );
+    const timerBtn = editor.querySelector<HTMLElement>("[data-timer-btn]");
+    const timerPopover = editor.querySelector<HTMLElement>(
+      "[data-timer-popover]",
+    );
+
+    // --- Helpers ---
 
     function idToName(id: number): string | undefined {
       return ingredientById.get(id);
     }
 
-    // --- Tag helpers ---
+    function isInRecipe(id: number): boolean {
+      return recipeIdSet.has(id);
+    }
 
-    function createTagSpan(name: string, id: number): HTMLSpanElement {
+    function closeAllDropdowns() {
+      closeMentionDropdown();
+      closeIngredientDropdown();
+      closeTimerPopover();
+    }
+
+    // --- Tag badge creation ---
+
+    function createTagSpan(
+      name: string,
+      id: number,
+      inRecipe: boolean,
+    ): HTMLSpanElement {
       const span = document.createElement("span");
-      span.className = "tag-badge";
       span.contentEditable = "false";
-      span.dataset.ref = String(id);
+      span.dataset.type = "ingredient";
+      span.dataset.id = String(id);
+      span.className = inRecipe ? "tag-badge" : "tag-badge tag-badge--outlined";
       span.textContent = name;
+      span.appendChild(document.createTextNode("\u200B"));
+      return span;
+    }
+
+    function createTimerSpan(
+      value: string,
+      unit: string,
+    ): HTMLSpanElement {
+      const span = document.createElement("span");
+      span.contentEditable = "false";
+      span.dataset.type = "timer";
+      span.dataset.value = value;
+      span.dataset.unit = unit;
+      span.className = "timer-badge";
+      span.textContent = "\u23F1 " + value + " " + unit;
       span.appendChild(document.createTextNode("\u200B"));
       return span;
     }
@@ -218,122 +218,265 @@ const ingredientJson = JSON.stringify(ingredients);
     // --- Serialization ---
 
     function serializeEditor(): string {
-      let out = "";
-      const walk = (node: Node) => {
-        if (
-          node.nodeType === Node.ELEMENT_NODE &&
-          (node as HTMLElement).classList?.contains("tag-badge")
-        ) {
-          out +=
-            "[ingredient_id:" +
-            ((node as HTMLElement).dataset.ref || "0") +
-            "]";
-        } else if (node.nodeType === Node.TEXT_NODE) {
-          out += (node.textContent || "").replace(/\u200B/g, "");
-        } else if (
-          node.nodeType === Node.ELEMENT_NODE &&
-          (node as HTMLElement).tagName === "BR"
-        ) {
-          out += "\n";
-        } else if (node.nodeType === Node.ELEMENT_NODE) {
-          if (
-            (node as HTMLElement).tagName === "P" ||
-            (node as HTMLElement).tagName === "DIV"
-          ) {
-            if (out && !out.endsWith("\n")) out += "\n";
-          }
-          for (const child of node.childNodes) walk(child);
-        }
-      };
-      for (const child of contentEditable.childNodes) walk(child);
-      return out.replace(/^[\n\r]+|[\n\r]+$/g, "");
+      return sanitizeHtml(contentEditable.innerHTML);
     }
 
     function updateHiddenTA() {
       if (hiddenTA) hiddenTA.value = serializeEditor();
     }
 
-    // --- Editor content rendering ---
+    // --- Content loading ---
 
-    function renderEditorContent(markdown: string) {
-      contentEditable.innerHTML = "";
-      const parts = markdown.split(/(\[ingredient_id:\d+\])/g);
-      for (const part of parts) {
-        const idMatch = part.match(/\[ingredient_id:(\d+)\]/);
-        if (idMatch) {
-          const id = Number(idMatch[1]);
-          const name = idToName(id);
-          if (name) {
-            const span = createTagSpan(name, id);
-            contentEditable.appendChild(span);
-            contentEditable.appendChild(document.createTextNode(" "));
-          }
-        } else if (part) {
-          contentEditable.appendChild(document.createTextNode(part));
-        }
+    function loadContent(raw: string) {
+      if (!raw) {
+        contentEditable.innerHTML = "";
+        return;
+      }
+      if (looksLikeHtml(raw)) {
+        contentEditable.innerHTML = sanitizeHtml(raw);
+      } else {
+        contentEditable.innerHTML = markdownToEditorHtml(
+          raw,
+          rawIngredients,
+        );
       }
     }
 
-    // --- Preview rendering ---
+    // --- Toolbar ---
 
-    function renderPreview(markdown: string) {
-      const parsed = parseInstructions(markdown, rawIngredients);
+    const toolbarBtns =
+      editor.querySelectorAll<HTMLElement>("[data-toolbar-btn]");
+    toolbarBtns.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        contentEditable.focus();
+        const action = btn.dataset.toolbarBtn;
+        switch (action) {
+          case "bold":
+            document.execCommand("bold");
+            break;
+          case "italic":
+            document.execCommand("italic");
+            break;
+          case "numbered-list":
+            document.execCommand("insertOrderedList");
+            break;
+          case "bullet-list":
+            document.execCommand("insertUnorderedList");
+            break;
+          case "heading":
+            document.execCommand("formatBlock", false, "<h2>");
+            break;
+        }
+      });
+    });
+
+    // --- Ingredient dropdown (toolbar button) ---
+
+    function renderIngredientDropdown() {
+      if (!ingredientDropdown) return;
+      const recipeIngs = rawIngredients.filter((ing) =>
+        recipeIdSet.has(ing.id),
+      );
+      const otherIngs = rawIngredients.filter(
+        (ing) => !recipeIdSet.has(ing.id),
+      );
+
       let html = "";
+      if (recipeIngs.length > 0) {
+        html +=
+          '<div class="mention-section-header px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">En esta receta</div>';
+        html += recipeIngs
+          .map(
+            (ing) =>
+              `<button type="button" class="mention-item mention-item--recipe flex w-full items-center gap-2 px-3 py-2 text-sm text-left text-secondary-foreground hover:bg-accent-50 hover:text-accent-600 transition-colors" data-ingredient-id="${ing.id}"><svg class="mention-item-icon w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>${escapeHtml(ing.name)}</button>`,
+          )
+          .join("");
+      }
+      if (otherIngs.length > 0) {
+        if (recipeIngs.length > 0) {
+          html += '<div class="mention-divider"></div>';
+        }
+        html +=
+          '<div class="mention-section-header px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Todos los ingredientes</div>';
+        html += otherIngs
+          .map(
+            (ing) =>
+              `<button type="button" class="mention-item flex w-full items-center gap-2 px-3 py-2 text-sm text-left text-secondary-foreground hover:bg-accent-50 hover:text-accent-600 transition-colors" data-ingredient-id="${ing.id}"><span class="w-3.5 shrink-0"></span>${escapeHtml(ing.name)}</button>`,
+          )
+          .join("");
+      }
+      if (rawIngredients.length === 0) {
+        html +=
+          '<div class="px-3 py-4 text-sm text-muted-foreground text-center">Primero agrega ingredientes a la receta</div>';
+      }
+      ingredientDropdown.innerHTML = html;
 
-      for (const step of parsed.steps) {
-        if (step.isGroupHeader && step.groupName) {
-          html +=
-            '<div class="step-group-header"><span>' +
-            escapeText(step.groupName) +
-            "</span></div>";
-        } else {
-          html += '<div class="step-card">';
-          html += '<div class="step-number">' + String(step.number) + "</div>";
-          html += '<div class="step-content">';
-          html +=
-            '<span class="step-text">' +
-            highlightReferences(step.text, rawIngredients) +
-            "</span>";
-          if (step.duration || step.temperature) {
-            html += '<div class="step-meta">';
-            if (step.duration) {
-              html +=
-                '<span class="step-badge step-badge-time">⏱ ' +
-                escapeText(step.duration.replace(/^⏱\s*/i, "")) +
-                "</span>";
-            }
-            if (step.temperature) {
-              html +=
-                '<span class="step-badge step-badge-temp">' +
-                escapeText(step.temperature) +
-                "</span>";
-            }
-            html += "</div>";
+      ingredientDropdown.querySelectorAll<HTMLElement>("[data-ingredient-id]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const id = Number(btn.dataset.ingredientId);
+          const name = idToName(id);
+          if (!name) return;
+          contentEditable.focus();
+          const sel = window.getSelection();
+          if (sel && sel.rangeCount) {
+            const range = sel.getRangeAt(0);
+            range.deleteContents();
+            const span = createTagSpan(name, id, isInRecipe(id));
+            range.insertNode(span);
+            const spacer = document.createTextNode(" ");
+            span.after(spacer);
+            range.setStartAfter(spacer);
+            range.collapse(true);
+            sel.removeAllRanges();
+            sel.addRange(range);
           }
-          html += "</div>";
-          html += "</div>";
-        }
-      }
-
-      if (parsed.notes && parsed.notes.length > 0) {
-        html += '<div class="step-notes">';
-        html += '<h3 class="step-notes-title">📝 Notas</h3>';
-        for (const note of parsed.notes) {
-          html += '<p class="step-note-text">' + escapeText(note) + "</p>";
-        }
-        html += "</div>";
-      }
-
-      return html;
+          closeIngredientDropdown();
+          updateHiddenTA();
+        });
+      });
     }
 
-    function updatePreviews() {
-      const md = hiddenTA?.value || serializeEditor();
-      const html = renderPreview(md);
-      previews.forEach((el) => (el.innerHTML = html));
+    function openIngredientDropdown() {
+      closeAllDropdowns();
+      if (!ingredientDropdown) return;
+      renderIngredientDropdown();
+      ingredientDropdown.classList.remove("hidden");
+      positionDropdown(ingredientBtn!, ingredientDropdown!);
     }
 
-    // --- @mention ---
+    function closeIngredientDropdown() {
+      if (ingredientDropdown) ingredientDropdown.classList.add("hidden");
+    }
+
+    if (ingredientBtn) {
+      ingredientBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (
+          ingredientDropdown &&
+          !ingredientDropdown.classList.contains("hidden")
+        ) {
+          closeIngredientDropdown();
+        } else {
+          openIngredientDropdown();
+        }
+      });
+    }
+
+    // --- Timer popover ---
+
+    let timerValue = "15";
+    let timerUnit = "min";
+
+    function renderTimerPopover() {
+      if (!timerPopover) return;
+      timerPopover.innerHTML =
+        '<label>A\u00f1adir tiempo</label>' +
+        '<div class="flex gap-2 mb-3">' +
+        '<input type="number" id="timer-value-input" value="' +
+        timerValue +
+        '" min="1" class="w-20 border border-border bg-background rounded-lg px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent-500">' +
+        '<select id="timer-unit-select" class="flex-1 border border-border bg-background rounded-lg px-2 py-1.5 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-accent-500">' +
+        '<option value="seg"' +
+        (timerUnit === "seg" ? " selected" : "") +
+        ">Segundos</option>" +
+        '<option value="min"' +
+        (timerUnit === "min" ? " selected" : "") +
+        ">Minutos</option>" +
+        '<option value="hr"' +
+        (timerUnit === "hr" ? " selected" : "") +
+        ">Horas</option>" +
+        "</select>" +
+        "</div>" +
+        '<button type="button" id="timer-insert-btn" class="w-full bg-accent-600 hover:bg-accent-700 text-white text-sm font-bold py-2 rounded-lg transition-colors">Insertar</button>';
+
+      const valueInput = timerPopover.querySelector<HTMLInputElement>(
+        "#timer-value-input",
+      );
+      const unitSelect = timerPopover.querySelector<HTMLSelectElement>(
+        "#timer-unit-select",
+      );
+
+      valueInput?.addEventListener("input", () => {
+        timerValue = valueInput.value || "1";
+      });
+      unitSelect?.addEventListener("change", () => {
+        timerUnit = unitSelect.value;
+      });
+
+      const insertBtn = timerPopover.querySelector<HTMLElement>(
+        "#timer-insert-btn",
+      );
+      if (insertBtn) {
+        insertBtn.addEventListener("click", () => {
+          const val = valueInput?.value || "15";
+          const unit = unitSelect?.value || "min";
+          contentEditable.focus();
+          const sel = window.getSelection();
+          if (sel && sel.rangeCount) {
+            const range = sel.getRangeAt(0);
+            range.deleteContents();
+            const span = createTimerSpan(val, unit);
+            range.insertNode(span);
+            const spacer = document.createTextNode(" ");
+            span.after(spacer);
+            range.setStartAfter(spacer);
+            range.collapse(true);
+            sel.removeAllRanges();
+            sel.addRange(range);
+          }
+          closeTimerPopover();
+          updateHiddenTA();
+        });
+      }
+    }
+
+    function openTimerPopover() {
+      closeAllDropdowns();
+      if (!timerPopover) return;
+      renderTimerPopover();
+      timerPopover.classList.remove("hidden");
+      positionDropdown(timerBtn!, timerPopover!);
+    }
+
+    function closeTimerPopover() {
+      if (timerPopover) timerPopover.classList.add("hidden");
+    }
+
+    if (timerBtn) {
+      timerBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (timerPopover && !timerPopover.classList.contains("hidden")) {
+          closeTimerPopover();
+        } else {
+          openTimerPopover();
+        }
+      });
+    }
+
+    // --- Position dropdown ---
+
+    function positionDropdown(
+      anchor: HTMLElement,
+      dropdown: HTMLElement,
+    ) {
+      const rect = anchor.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const dropdownHeight = 320;
+      if (spaceBelow < dropdownHeight && rect.top > dropdownHeight) {
+        dropdown.style.top = rect.top - Math.min(dropdownHeight, rect.top - 8) + "px";
+      } else {
+        dropdown.style.top = rect.bottom + 4 + "px";
+      }
+      dropdown.style.left = Math.min(
+        rect.left,
+        window.innerWidth - 220,
+      ) + "px";
+      dropdown.style.minWidth = "200px";
+      dropdown.style.maxHeight = "16rem";
+      dropdown.style.overflowY = "auto";
+    }
+
+    // --- @mention autocomplete ---
 
     const filterMentions = (query: string) =>
       rawIngredients.filter((ing) =>
@@ -377,14 +520,41 @@ const ingredientJson = JSON.stringify(ingredients);
         closeMentionDropdown();
         return;
       }
-      mentionDropdown.innerHTML = mentionResults
-        .map(
-          (ing, i) =>
-            `<button type="button" class="mention-item block w-full text-left px-3 py-2 text-sm text-secondary-foreground hover:bg-accent-50 hover:text-accent-600 transition-colors" data-mention-item="${i}">${escapeText(
-              ing.name,
-            )}</button>`,
-        )
-        .join("");
+
+      const recipeMentions = mentionResults.filter((ing) =>
+        recipeIdSet.has(ing.id),
+      );
+      const otherMentions = mentionResults.filter(
+        (ing) => !recipeIdSet.has(ing.id),
+      );
+
+      let html = "";
+      if (recipeMentions.length > 0) {
+        html +=
+          '<div class="mention-section-header px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">En esta receta</div>';
+        html += recipeMentions
+          .map(
+            (ing, i) =>
+              `<button type="button" class="mention-item mention-item--recipe block w-full text-left px-3 py-2 text-sm text-secondary-foreground hover:bg-accent-50 hover:text-accent-600 transition-colors" data-mention-item="${i}"><svg class="mention-item-icon w-3.5 h-3.5 inline mr-1.5 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>${escapeHtml(ing.name)}</button>`,
+          )
+          .join("");
+      }
+      if (otherMentions.length > 0) {
+        if (recipeMentions.length > 0) {
+          html += '<div class="mention-divider"></div>';
+        }
+        html += otherMentions
+          .map(
+            (ing, i) =>
+              `<button type="button" class="mention-item block w-full text-left px-3 py-2 text-sm text-secondary-foreground hover:bg-accent-50 hover:text-accent-600 transition-colors" data-mention-item="${recipeMentions.length + i}"><span class="w-4 inline-block"></span>${escapeHtml(ing.name)}</button>`,
+          )
+          .join("");
+      }
+
+      const allMentionResults = [...recipeMentions, ...otherMentions];
+      mentionResults = allMentionResults;
+
+      mentionDropdown.innerHTML = html;
       mentionDropdown.classList.add("mention-dropdown-open");
       mentionActiveIndex = 0;
       updateMentionActive();
@@ -397,9 +567,9 @@ const ingredientJson = JSON.stringify(ingredients);
       const rect = sel.getRangeAt(0).getBoundingClientRect();
       mentionDropdown.style.top = rect.bottom + 4 + "px";
       mentionDropdown.style.left =
-        Math.min(rect.left, window.innerWidth - 196) + "px";
-      mentionDropdown.style.minWidth = "180px";
-      mentionDropdown.style.maxHeight = "12rem";
+        Math.min(rect.left, window.innerWidth - 220) + "px";
+      mentionDropdown.style.minWidth = "200px";
+      mentionDropdown.style.maxHeight = "14rem";
       mentionDropdown.style.overflowY = "auto";
     }
 
@@ -425,7 +595,7 @@ const ingredientJson = JSON.stringify(ingredients);
         range.deleteContents();
 
         const ing = mentionResults[index];
-        const span = createTagSpan(ing.name, ing.id);
+        const span = createTagSpan(ing.name, ing.id, isInRecipe(ing.id));
         range.insertNode(span);
         const spacer = document.createTextNode(" ");
         span.after(spacer);
@@ -433,71 +603,17 @@ const ingredientJson = JSON.stringify(ingredients);
         range.collapse(true);
         sel.removeAllRanges();
         sel.addRange(range);
-      } catch (_) {
+      } catch {
         // selection moved, dismiss
       }
       closeMentionDropdown();
+      updateHiddenTA();
     }
-
-    // --- Toolbar ---
-
-    function insertTextAtCursor(text: string) {
-      contentEditable.focus();
-      try {
-        document.execCommand("insertText", false, text);
-      } catch {
-        const sel = window.getSelection();
-        if (!sel || !sel.rangeCount) return;
-        const range = sel.getRangeAt(0);
-        range.deleteContents();
-        range.insertNode(document.createTextNode(text));
-        range.collapse(false);
-        sel.removeAllRanges();
-        sel.addRange(range);
-      }
-    }
-
-    const toolbarBtns =
-      editor.querySelectorAll<HTMLElement>("[data-toolbar-btn]");
-    toolbarBtns.forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const action = btn.dataset.toolbarBtn;
-
-        const sel = window.getSelection();
-        const selected = sel && !sel.isCollapsed ? sel.toString() : "";
-
-        switch (action) {
-          case "bold":
-            insertTextAtCursor(
-              selected ? "**" + selected + "**" : "**texto en negritas**",
-            );
-            break;
-          case "italic":
-            insertTextAtCursor(
-              selected ? "*" + selected + "*" : "*texto en cursiva*",
-            );
-            break;
-          case "numbered-list":
-            insertTextAtCursor("\n1. ");
-            break;
-          case "bullet-list":
-            insertTextAtCursor("\n- ");
-            break;
-          case "heading":
-            insertTextAtCursor("\n## Nombre de sección\n");
-            break;
-          case "timer":
-            insertTextAtCursor("⏱ 15 min");
-            break;
-        }
-      });
-    });
 
     // --- Event listeners ---
 
     const syncObserver = new MutationObserver(() => {
       updateHiddenTA();
-      updatePreviews();
     });
     syncObserver.observe(contentEditable, {
       childList: true,
@@ -538,10 +654,14 @@ const ingredientJson = JSON.stringify(ingredients);
     });
 
     contentEditable.addEventListener("keydown", (e) => {
-      if (mentionDropdown?.classList.contains("mention-dropdown-open")) {
+      if (
+        mentionDropdown &&
+        mentionDropdown.classList.contains("mention-dropdown-open")
+      ) {
         if (e.key === "ArrowDown") {
           e.preventDefault();
-          mentionActiveIndex = (mentionActiveIndex + 1) % mentionResults.length;
+          mentionActiveIndex =
+            (mentionActiveIndex + 1) % mentionResults.length;
           updateMentionActive();
         } else if (e.key === "ArrowUp") {
           e.preventDefault();
@@ -572,7 +692,9 @@ const ingredientJson = JSON.stringify(ingredients);
           if (
             prev &&
             prev.nodeType === Node.ELEMENT_NODE &&
-            (prev as HTMLElement).classList?.contains("tag-badge")
+            ((prev as HTMLElement).classList?.contains("tag-badge") ||
+            (prev as HTMLElement).classList?.contains("timer-badge") ||
+            (prev as HTMLElement).classList?.contains("tag-badge--outlined"))
           ) {
             e.preventDefault();
             const tagRange = document.createRange();
@@ -589,11 +711,28 @@ const ingredientJson = JSON.stringify(ingredients);
     contentEditable.addEventListener("blur", () => {
       setTimeout(() => {
         if (
-          mentionDropdown?.classList.contains("mention-dropdown-open") &&
+          mentionDropdown &&
+          mentionDropdown.classList.contains("mention-dropdown-open") &&
           document.activeElement !== mentionDropdown &&
           !mentionDropdown.contains(document.activeElement)
         ) {
           closeMentionDropdown();
+        }
+        if (
+          ingredientDropdown &&
+          !ingredientDropdown.classList.contains("hidden") &&
+          document.activeElement !== ingredientBtn &&
+          !ingredientDropdown.contains(document.activeElement)
+        ) {
+          closeIngredientDropdown();
+        }
+        if (
+          timerPopover &&
+          !timerPopover.classList.contains("hidden") &&
+          document.activeElement !== timerBtn &&
+          !timerPopover.contains(document.activeElement)
+        ) {
+          closeTimerPopover();
         }
       }, 150);
     });
@@ -603,7 +742,7 @@ const ingredientJson = JSON.stringify(ingredients);
       const text = e.clipboardData?.getData("text/plain") || "";
       try {
         document.execCommand("insertText", false, text);
-      } catch (_) {
+      } catch {
         const sel = window.getSelection();
         if (!sel || !sel.rangeCount) return;
         const range = sel.getRangeAt(0);
@@ -626,6 +765,36 @@ const ingredientJson = JSON.stringify(ingredients);
       });
     }
 
+    // --- Close dropdowns on outside click ---
+
+    document.addEventListener("click", (e) => {
+      const target = e.target as HTMLElement;
+      if (
+        ingredientDropdown &&
+        !ingredientDropdown.classList.contains("hidden") &&
+        !ingredientBtn?.contains(target) &&
+        !ingredientDropdown.contains(target)
+      ) {
+        closeIngredientDropdown();
+      }
+      if (
+        timerPopover &&
+        !timerPopover.classList.contains("hidden") &&
+        !timerBtn?.contains(target) &&
+        !timerPopover.contains(target)
+      ) {
+        closeTimerPopover();
+      }
+      if (
+        mentionDropdown &&
+        mentionDropdown.classList.contains("mention-dropdown-open") &&
+        !mentionDropdown.contains(target) &&
+        !contentEditable.contains(target)
+      ) {
+        closeMentionDropdown();
+      }
+    });
+
     // --- Form submit sync ---
     if (formId) {
       const form = document.getElementById(formId);
@@ -639,30 +808,22 @@ const ingredientJson = JSON.stringify(ingredients);
       }
     }
 
-    // --- Tab switching ---
-    if (tabWrite && tabPreview && paneWrite && panePreview) {
-      function activateTab(tab: "write" | "preview") {
-        const isWrite = tab === "write";
-        tabWrite!.classList.toggle("text-accent-600", isWrite);
-        tabWrite!.classList.toggle("bg-accent-50", isWrite);
-        tabWrite!.classList.toggle("text-muted-foreground", !isWrite);
-        tabPreview!.classList.toggle("text-accent-600", !isWrite);
-        tabPreview!.classList.toggle("bg-accent-50", !isWrite);
-        tabPreview!.classList.toggle("text-muted-foreground", isWrite);
-        paneWrite!.classList.toggle("hidden", !isWrite);
-        panePreview!.classList.toggle("hidden", isWrite);
-        if (isWrite) {
-          contentEditable.focus();
-        }
-      }
-      tabWrite.addEventListener("click", () => activateTab("write"));
-      tabPreview.addEventListener("click", () => activateTab("preview"));
-      activateTab("write");
+    // --- Cleanup on unload ---
+    function cleanup() {
+      syncObserver.disconnect();
     }
+    window.addEventListener("beforeunload", cleanup);
 
     // --- Initialize ---
-    renderEditorContent(initialMarkdown);
-    updatePreviews();
+    loadContent(initialContent);
+    updateHiddenTA();
+  }
+
+  function escapeHtml(text: string): string {
+    return text
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
   }
 
   document.addEventListener("astro:page-load", setupInstructionsEditor);

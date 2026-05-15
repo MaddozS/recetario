@@ -17,6 +17,7 @@ import {
 } from '@/lib/db/presentations';
 import { hasFeature } from '@/lib/subscription';
 import { parseNumberInput } from '@/lib/form-utils';
+import { sanitizeHtml } from '@/lib/html-sanitizer';
 import { UNIT_OPTIONS } from '@/lib/constants';
 import FeedbackAlert from '../../components/FeedbackAlert.astro';
 import InstructionsEditor from '../../components/InstructionsEditor.astro';
@@ -291,7 +292,8 @@ if (Astro.request.method === 'POST') {
       const desiredMargin = Number(formData.get('desiredMargin')) || 0;
       const fixedCostsPercentage = Number(formData.get('fixedCostsPercentage')) || 0;
       const category = String(formData.get('category') || '').trim() || null;
-      const instructions = String(formData.get('instructions') || '').trim() || undefined;
+      const rawInstructions = String(formData.get('instructions') || '').trim();
+      const instructions = rawInstructions ? sanitizeHtml(rawInstructions) : undefined;
 
       await updateRecipe(recipeIdNumber, {
         name,
@@ -319,6 +321,7 @@ if (!recipe) {
 
 const { ingredients: recipeIngredients, name, category, instructions, id, desiredMargin, fixedCostsPercentage, presentations, updatedAt } = recipe;
 const ingredients = recipeIngredients.map((ri) => ({ id: ri.ingredient.id, name: ri.ingredient.name }));
+const recipeIngredientIds = recipeIngredients.map((ri) => ri.ingredient.id);
 const hasCookingMode = hasFeature(Astro.locals.subscription, "cooking_mode");
 
 const isEditMode = Astro.url.searchParams.get('edit') === 'true';
@@ -860,6 +863,7 @@ void getPresentationFormErrorMessage;
           recipeEditFormId={recipeEditFormId}
           instructions={instructions}
           ingredients={ingredients}
+          recipeIngredientIds={recipeIngredientIds}
         />
 
         <div class="sticky bottom-0 z-10 mx-5 sm:mx-6 lg:mx-8 pb-4 pt-4 bg-card">

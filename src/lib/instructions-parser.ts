@@ -206,6 +206,102 @@ export function highlightReferences(
   return result;
 }
 
+export type TimerInfo = { value: number; unit: string };
+
+export function extractTimersFromHtml(html: string): TimerInfo[] {
+  const timers: TimerInfo[] = [];
+  const timerRe =
+    /<span[^>]*data-type="timer"[^>]*data-value="(\d+)"[^>]*data-unit="([^"]+)"[^>]*>/gi;
+  let m: RegExpExecArray | null;
+  while ((m = timerRe.exec(html)) !== null) {
+    timers.push({ value: Number(m[1]), unit: m[2] });
+  }
+  return timers;
+}
+
+export function parseHtmlSteps(html: string): string[] {
+  const steps: string[] = [];
+  const blockRe = /<(div|h2|h3|p|ol|ul|li)[^>]*>[\s\S]*?<\/\1>/gi;
+  let m: RegExpExecArray | null;
+  while ((m = blockRe.exec(html)) !== null) {
+    const block = m[0].trim();
+    if (block) steps.push(block);
+  }
+  if (steps.length === 0 && html.trim()) steps.push(html);
+  return steps;
+}
+
+export function markdownToEditorHtml(
+  markdown: string,
+  ingredients: IngredientRef[],
+): string {
+  const idMap = buildIngredientMap(ingredients);
+  const lines = markdown.split("\n");
+  const blocks: string[] = [];
+
+  for (const rawLine of lines) {
+    const line = rawLine.trim();
+    if (!line) {
+      blocks.push("<br>");
+      continue;
+    }
+
+    let processed = line;
+
+    const groupMatch = line.match(/^#{2,3}\s+(.+)/);
+    if (groupMatch) {
+      const title = escapeText(groupMatch[1].trim());
+      blocks.push(`<h2>${title}</h2>`);
+      continue;
+    }
+
+    const stepMatch = line.match(/^(\d+)[.)]\s+(.+)/);
+    if (stepMatch) {
+      processed = stepMatch[2].trim();
+    }
+
+    processed = processed
+      .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+      .replace(/\*(.+?)\*/g, "<em>$1</em>");
+
+    processed = processed.replace(/\[ingredient_id:(\d+)\]/g, (_m, idStr) => {
+      const id = Number(idStr);
+      const name = idMap.get(id);
+      if (name) {
+        return `<span data-type="ingredient" data-id="${id}" contenteditable="false" class="tag-badge">${escapeText(name)}</span>`;
+      }
+      return _m;
+    });
+
+    processed = processed.replace(/@([a-zA-Záéíóúñü][a-zA-Záéíóúñü0-9_-]*)/g, (_m, ref) => {
+      const key = ref.toLowerCase();
+      for (const ing of ingredients) {
+        if (
+          ing.name.toLowerCase() === key ||
+          ing.name.toLowerCase().replace(/\s+/g, "-") === key ||
+          ing.name.toLowerCase().replace(/\s+/g, "_") === key
+        ) {
+          return `<span data-type="ingredient" data-id="${ing.id}" contenteditable="false" class="tag-badge">${escapeText(ing.name)}</span>`;
+        }
+      }
+      return _m;
+    });
+
+    processed = processed.replace(
+      /⏱\s*(\d+)\s*(seg|min|hr|h(?:ora)?s?)/gi,
+      (_m, val: string, unit: string) => {
+        const u = unit.toLowerCase().startsWith("h") ? "hr" : unit.toLowerCase().startsWith("s") ? "seg" : "min";
+        return `<span data-type="timer" data-value="${val}" data-unit="${u}" contenteditable="false" class="timer-badge">⏱ ${val} ${u}</span>`;
+      },
+    );
+
+    const tag = stepMatch ? "div" : "p";
+    blocks.push(`<${tag}>${processed}</${tag}>`);
+  }
+
+  return blocks.join("\n");
+}
+
 export function renderMarkdownPreview(text: string): string {
   const escaped = text
     .replace(/&/g, "&amp;")
