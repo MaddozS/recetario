@@ -110,7 +110,7 @@ const ingredientJson = JSON.stringify(ingredients);
       </div>
       <div class="editor-pane" data-editor-pane="write">
         <div
-          class="contenteditable-editor w-full bg-background p-4 text-sm text-secondary-foreground leading-relaxed min-h-[18rem] lg:min-h-[22rem] border-0 outline-none focus:ring-0 whitespace-pre-wrap"
+          class="contenteditable-editor w-full bg-background p-4 text-sm text-secondary-foreground leading-relaxed min-h-72 lg:min-h-88 border-0 outline-none focus:ring-0 whitespace-pre-wrap"
           contenteditable="true"
           data-contenteditable
         >
@@ -118,7 +118,7 @@ const ingredientJson = JSON.stringify(ingredients);
       </div>
       <div class="editor-pane hidden" data-editor-pane="preview">
         <div
-          class="instructions-preview min-h-[18rem] lg:min-h-[22rem] p-4 text-sm text-secondary-foreground leading-relaxed bg-background recipe-instructions"
+          class="instructions-preview min-h-72 lg:min-h-88 p-4 text-sm text-secondary-foreground leading-relaxed bg-background recipe-instructions"
           data-preview
         >
         </div>
@@ -156,9 +156,7 @@ const ingredientJson = JSON.stringify(ingredients);
   } from "../lib/instructions-parser";
 
   function setupInstructionsEditor() {
-    const editor = document.querySelector<HTMLElement>(
-      ".instructions-editor",
-    );
+    const editor = document.querySelector<HTMLElement>(".instructions-editor");
     if (!editor || editor.dataset.editorBound) return;
     editor.dataset.editorBound = "1";
 
@@ -290,8 +288,7 @@ const ingredientJson = JSON.stringify(ingredients);
             "</span></div>";
         } else {
           html += '<div class="step-card">';
-          html +=
-            '<div class="step-number">' + String(step.number) + "</div>";
+          html += '<div class="step-number">' + String(step.number) + "</div>";
           html += '<div class="step-content">';
           html +=
             '<span class="step-text">' +
@@ -383,9 +380,9 @@ const ingredientJson = JSON.stringify(ingredients);
       mentionDropdown.innerHTML = mentionResults
         .map(
           (ing, i) =>
-            `<button type="button" class="mention-item block w-full text-left px-3 py-2 text-sm text-secondary-foreground hover:bg-accent-50 hover:text-accent-600 transition-colors" data-mention-item="${i}">${
-              escapeText(ing.name)
-            }</button>`,
+            `<button type="button" class="mention-item block w-full text-left px-3 py-2 text-sm text-secondary-foreground hover:bg-accent-50 hover:text-accent-600 transition-colors" data-mention-item="${i}">${escapeText(
+              ing.name,
+            )}</button>`,
         )
         .join("");
       mentionDropdown.classList.add("mention-dropdown-open");
@@ -448,7 +445,7 @@ const ingredientJson = JSON.stringify(ingredients);
       contentEditable.focus();
       try {
         document.execCommand("insertText", false, text);
-      } catch (_) {
+      } catch {
         const sel = window.getSelection();
         if (!sel || !sel.rangeCount) return;
         const range = sel.getRangeAt(0);
@@ -544,8 +541,7 @@ const ingredientJson = JSON.stringify(ingredients);
       if (mentionDropdown?.classList.contains("mention-dropdown-open")) {
         if (e.key === "ArrowDown") {
           e.preventDefault();
-          mentionActiveIndex =
-            (mentionActiveIndex + 1) % mentionResults.length;
+          mentionActiveIndex = (mentionActiveIndex + 1) % mentionResults.length;
           updateMentionActive();
         } else if (e.key === "ArrowUp") {
           e.preventDefault();
