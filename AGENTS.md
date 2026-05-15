@@ -597,6 +597,32 @@ const ingredients = await listIngredients(ownerId);
 - On Vercel, temp storage is ephemeral — always set `DATABASE_URL` for persistence
 - `run_migration.mjs` is a legacy one-off Postgres migration script — not part of the normal flow
 
+## Troubleshooting
+
+### `exports is not defined` at startup (cookie package)
+
+**Symptom**: `pnpm dev` fails with `exports is not defined` at `cookie/dist/index.js:4`, during `ModuleRunner.directRequest`.
+
+**Root cause**: The `cookie@1.1.1` package is CJS-only, and Vite 7's SSR module runner cannot inline CJS code (the `exports` global doesn't exist in the runner's `AsyncFunction` scope). Vite should externalize the package instead, but a pnpm version mismatch breaks the module resolution needed for that.
+
+**Recovery steps**:
+
+1. Check pnpm version: `pnpm --version`
+2. The project requires the exact version declared in `package.json` → `packageManager`. Currently `pnpm@11.1.2`.
+3. Enable corepack and install the correct version:
+   ```bash
+   corepack enable
+   corepack prepare pnpm@11.1.2 --activate
+   ```
+4. Reinstall dependencies clean:
+   ```bash
+   rm -rf node_modules pnpm-lock.yaml
+   pnpm install
+   ```
+5. Run `pnpm dev` — the server should start without the `exports` error.
+
+No changes to `astro.config.mjs` or `vite.config` are needed. The `ssr.noExternal: ['cookie']` config that was present in earlier builds is not required and does not affect the fix.
+
 ## Reference docs
 
 `docs/planes/` contains planning documents for implemented and upcoming features:
