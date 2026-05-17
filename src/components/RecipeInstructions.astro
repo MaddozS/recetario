@@ -203,25 +203,35 @@ const visibleSteps = cookingSteps;
                       data-timer-value={timer.value}
                       data-timer-unit={timer.unit}
                     >
-                      <div>
-                        <div class="kitchen-timer-label">Temporizador</div>
-                        <div class="kitchen-timer-display" data-timer-display>00:00</div>
+                      <div class="kitchen-timer-main">
+                        <div class="kitchen-timer-time-area">
+                          <span class="kitchen-timer-label">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            Temporizador
+                          </span>
+                          <span class="kitchen-timer-display" data-timer-display>00:00</span>
+                        </div>
+                        <div class="kitchen-timer-actions">
+                          <button
+                            type="button"
+                            class="kitchen-timer-btn kitchen-timer-btn--play"
+                            data-timer-play
+                            title="Iniciar"
+                          >
+                            <svg class="w-4 h-4 ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                          </button>
+                          <button
+                            type="button"
+                            class="kitchen-timer-btn kitchen-timer-btn--reset"
+                            data-timer-reset
+                            title="Reiniciar"
+                          >
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                          </button>
+                        </div>
                       </div>
-                      <div class="kitchen-timer-actions">
-                        <button
-                          type="button"
-                          class="kitchen-timer-btn kitchen-timer-btn--play"
-                          data-timer-play
-                        >
-                          <svg class="w-6 h-6 pl-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                        </button>
-                        <button
-                          type="button"
-                          class="kitchen-timer-btn kitchen-timer-btn--reset"
-                          data-timer-reset
-                        >
-                          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                        </button>
+                      <div class="kitchen-timer-progress">
+                        <div class="kitchen-timer-progress-fill" data-timer-progress style="width: 0%"></div>
                       </div>
                     </div>
                   ))}
@@ -374,20 +384,25 @@ const visibleSteps = cookingSteps;
     private displayEl: HTMLElement;
     private playBtn: HTMLElement | null;
     private resetBtn: HTMLElement | null;
+    private progressFill: HTMLElement | null;
     private initialSeconds: number;
     private secondsLeft: number;
     private interval: ReturnType<typeof setInterval> | null = null;
+    private expiredBeepInterval: ReturnType<typeof setInterval> | null = null;
     private running = false;
+    private expiredTriggered = false;
 
     constructor(container: HTMLElement, value: number, unit: string) {
       this.container = container;
       this.displayEl = container.querySelector<HTMLElement>("[data-timer-display]")!;
       this.playBtn = container.querySelector<HTMLElement>("[data-timer-play]");
       this.resetBtn = container.querySelector<HTMLElement>("[data-timer-reset]");
+      this.progressFill = container.querySelector<HTMLElement>("[data-timer-progress]");
       this.initialSeconds =
         unit === "hr" ? value * 3600 : unit === "min" ? value * 60 : value;
       this.secondsLeft = this.initialSeconds;
       this.updateDisplay();
+      this.updateClasses();
 
       this.playBtn?.addEventListener("click", () => this.toggle());
       this.resetBtn?.addEventListener("click", () => this.reset());
@@ -395,45 +410,63 @@ const visibleSteps = cookingSteps;
 
     private updateDisplay() {
       if (!this.displayEl) return;
-      const mins = Math.floor(this.secondsLeft / 60);
-      const secs = this.secondsLeft % 60;
-      this.displayEl.textContent = `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+      const abs = Math.abs(this.secondsLeft);
+      const hrs = Math.floor(abs / 3600);
+      const mins = Math.floor((abs % 3600) / 60);
+      const secs = abs % 60;
+      const prefix = this.secondsLeft < 0 ? "-" : "";
+
+      if (hrs > 0) {
+        this.displayEl.textContent = `${prefix}${String(hrs).padStart(2, "0")}:${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+      } else {
+        this.displayEl.textContent = `${prefix}${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+      }
     }
 
     private updateClasses() {
       this.container.classList.remove(
         "kitchen-timer-card--running",
-        "kitchen-timer-card--paused",
         "kitchen-timer-card--expired",
       );
-      if (this.secondsLeft <= 0) {
+
+      if (this.secondsLeft <= 0 && this.expiredTriggered) {
         this.container.classList.add("kitchen-timer-card--expired");
       } else if (this.running) {
         this.container.classList.add("kitchen-timer-card--running");
-      } else {
-        this.container.classList.add("kitchen-timer-card--paused");
       }
 
       if (this.playBtn) {
-        this.playBtn.innerHTML =
-          this.secondsLeft <= 0
-            ? '<span class="text-xs font-bold">\u00a1Tiempo!</span>'
-            : this.running
-              ? '<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/></svg>'
-              : '<svg class="w-6 h-6 pl-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
-        this.playBtn.className =
-          this.secondsLeft <= 0
-            ? "kitchen-timer-btn kitchen-timer-btn--play"
-            : this.running
-              ? "kitchen-timer-btn kitchen-timer-btn--pause"
-              : "kitchen-timer-btn kitchen-timer-btn--play";
+        if (this.secondsLeft <= 0) {
+          this.playBtn.innerHTML =
+            '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+          this.playBtn.className = "kitchen-timer-btn kitchen-timer-btn--expired";
+        } else if (this.running) {
+          this.playBtn.innerHTML =
+            '<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/></svg>';
+          this.playBtn.className = "kitchen-timer-btn kitchen-timer-btn--pause";
+        } else {
+          this.playBtn.innerHTML =
+            '<svg class="w-4 h-4 ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+          this.playBtn.className = "kitchen-timer-btn kitchen-timer-btn--play";
+        }
+      }
+
+      if (this.progressFill) {
+        if (this.secondsLeft <= 0) {
+          this.progressFill.style.width = "100%";
+        } else {
+          const pct =
+            this.initialSeconds > 0
+              ? ((this.initialSeconds - this.secondsLeft) / this.initialSeconds) * 100
+              : 0;
+          this.progressFill.style.width = Math.min(pct, 100) + "%";
+        }
       }
     }
 
     toggle() {
       if (this.secondsLeft <= 0) {
         this.reset();
-        this.start();
         return;
       }
       if (this.running) {
@@ -444,14 +477,14 @@ const visibleSteps = cookingSteps;
     }
 
     start() {
-      if (this.interval || this.secondsLeft <= 0) return;
+      if (this.interval) return;
       this.running = true;
       this.interval = setInterval(() => {
         this.secondsLeft--;
         this.updateDisplay();
         this.updateClasses();
-        if (this.secondsLeft <= 0) {
-          this.stop();
+        if (this.secondsLeft <= 0 && !this.expiredTriggered) {
+          this.expiredTriggered = true;
           this.onExpired();
         }
       }, 1000);
@@ -473,19 +506,28 @@ const visibleSteps = cookingSteps;
         clearInterval(this.interval);
         this.interval = null;
       }
+      if (this.expiredBeepInterval) {
+        clearInterval(this.expiredBeepInterval);
+        this.expiredBeepInterval = null;
+      }
       this.updateClasses();
     }
 
     reset() {
+      if (this.expiredBeepInterval) {
+        clearInterval(this.expiredBeepInterval);
+        this.expiredBeepInterval = null;
+      }
       this.stop();
       this.secondsLeft = this.initialSeconds;
+      this.expiredTriggered = false;
       this.updateDisplay();
+      if (this.progressFill) this.progressFill.style.width = "0%";
       this.updateClasses();
       this.container.classList.remove("kitchen-timer-card--expired");
     }
 
     private onExpired() {
-      // Visual pulse is handled by CSS
       try {
         if (navigator.vibrate) {
           navigator.vibrate([200, 100, 200, 100, 400]);
@@ -494,6 +536,9 @@ const visibleSteps = cookingSteps;
         // vibration not supported
       }
       this.playBeep();
+      this.expiredBeepInterval = setInterval(() => {
+        this.playBeep();
+      }, 1500);
     }
 
     private playBeep() {
@@ -507,11 +552,13 @@ const visibleSteps = cookingSteps;
         gain.connect(audioCtx.destination);
         osc.frequency.value = 880;
         osc.type = "sine";
-        gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+        gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.6);
         osc.start(audioCtx.currentTime);
-        osc.stop(audioCtx.currentTime + 0.4);
-        audioCtx.close();
+        osc.stop(audioCtx.currentTime + 0.6);
+        setTimeout(() => {
+          audioCtx.close();
+        }, 800);
       } catch {
         // audio not supported
       }
