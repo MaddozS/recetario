@@ -2,10 +2,11 @@
 
 > **Prioridad:** 🟢 Baja
 > **Dependencias:**
+>
 > - **Externa:** Feature `nutrition_info` (roadmap #10, tier Pro) — requiere campos nutricionales en `ingredients`
 > - **Interna:** F1 (acceso al planificador)
-> **Tier:** Pro
-> **Feature gate:** `production_advanced` + `nutrition_info`
+>   **Tier:** Pro
+>   **Feature gate:** `production_advanced` + `nutrition_info`
 
 ---
 
@@ -59,12 +60,12 @@ export function calculateRecipeNutrition(
 
 ```ts
 export interface ProductionNutrition {
-  calories: number;    // kcal
-  protein: number;     // g
-  carbs: number;       // g
-  fat: number;         // g
-  fiber: number;       // g
-  sodium: number;      // mg
+  calories: number; // kcal
+  protein: number; // g
+  carbs: number; // g
+  fat: number; // g
+  fiber: number; // g
+  sodium: number; // mg
   perRecipe: {
     recipeId: number;
     recipeName: string;
@@ -76,12 +77,23 @@ export function calculateProductionNutrition(
   selections: ProductionRecipeSelection[],
   recipes: RecipeWithIngredients[],
 ): ProductionNutrition | null {
-  if (!recipes.some(r => r.ingredients.some(i => i.ingredient.calories !== null))) {
+  if (
+    !recipes.some((r) =>
+      r.ingredients.some((i) => i.ingredient.calories !== null),
+    )
+  ) {
     return null; // Sin datos nutricionales
   }
 
-  const totals: NutritionData = { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0, sodium: 0 };
-  const perRecipe: ProductionNutrition['perRecipe'] = [];
+  const totals: NutritionData = {
+    calories: 0,
+    protein: 0,
+    carbs: 0,
+    fat: 0,
+    fiber: 0,
+    sodium: 0,
+  };
+  const perRecipe: ProductionNutrition["perRecipe"] = [];
 
   for (let i = 0; i < selections.length; i++) {
     const recipe = recipes[i];
@@ -123,7 +135,9 @@ import { Icon } from "astro-icon/components";
 const nutrition = Astro.props.nutrition; // ProductionNutrition
 ---
 
-<div class="production-sheet border-border bg-card rounded-2xl border shadow-sm max-w-md">
+<div
+  class="production-sheet border-border bg-card max-w-md rounded-2xl border shadow-sm"
+>
   <div class="border-b px-6 py-4">
     <h2 class="text-foreground flex items-center gap-2 text-lg font-bold">
       <Icon name="lucide:apple" size={20} class="text-accent-600" />
@@ -137,7 +151,7 @@ const nutrition = Astro.props.nutrition; // ProductionNutrition
   <div class="divide-y px-6 py-4 text-sm">
     <!-- Header estilo etiqueta -->
     <div class="flex justify-between py-1.5">
-      <span class="text-foreground font-black text-base">Nutrition Facts</span>
+      <span class="text-foreground text-base font-black">Nutrition Facts</span>
     </div>
 
     <!-- Calorías (destacado) -->
@@ -148,39 +162,51 @@ const nutrition = Astro.props.nutrition; // ProductionNutrition
       </span>
     </div>
 
-    <div class="py-1"></div> <!-- Separador grueso -->
+    <div class="py-1"></div>
+    <!-- Separador grueso -->
 
     <!-- Macronutrientes -->
     <div class="flex justify-between py-1.5">
       <span class="text-secondary-foreground">Grasas totales</span>
-      <span class="text-foreground font-bold tabular-nums">{nutrition.fat.toFixed(1)} g</span>
+      <span class="text-foreground font-bold tabular-nums"
+        >{nutrition.fat.toFixed(1)} g</span
+      >
     </div>
     <div class="flex justify-between py-1.5">
       <span class="text-secondary-foreground">Carbohidratos</span>
-      <span class="text-foreground font-bold tabular-nums">{nutrition.carbs.toFixed(1)} g</span>
+      <span class="text-foreground font-bold tabular-nums"
+        >{nutrition.carbs.toFixed(1)} g</span
+      >
     </div>
     <div class="flex justify-between py-1.5 indent-4">
       <span class="text-muted-foreground">Fibra</span>
-      <span class="text-foreground tabular-nums">{nutrition.fiber.toFixed(1)} g</span>
+      <span class="text-foreground tabular-nums"
+        >{nutrition.fiber.toFixed(1)} g</span
+      >
     </div>
     <div class="flex justify-between py-1.5">
       <span class="text-secondary-foreground">Proteínas</span>
-      <span class="text-foreground font-bold tabular-nums">{nutrition.protein.toFixed(1)} g</span>
+      <span class="text-foreground font-bold tabular-nums"
+        >{nutrition.protein.toFixed(1)} g</span
+      >
     </div>
 
-    <div class="py-1"></div> <!-- Separador grueso -->
+    <div class="py-1"></div>
+    <!-- Separador grueso -->
 
     <div class="flex justify-between py-1.5">
       <span class="text-secondary-foreground">Sodio</span>
-      <span class="text-foreground font-bold tabular-nums">{nutrition.sodium.toFixed(0)} mg</span>
+      <span class="text-foreground font-bold tabular-nums"
+        >{nutrition.sodium.toFixed(0)} mg</span
+      >
     </div>
   </div>
 
   <!-- Disclaimer -->
   <div class="bg-muted rounded-b-2xl px-6 py-3">
     <p class="text-muted-foreground text-[11px]">
-      * Valores calculados a partir de los datos nutricionales de los ingredientes.
-      Las cantidades reales pueden variar.
+      * Valores calculados a partir de los datos nutricionales de los
+      ingredientes. Las cantidades reales pueden variar.
     </p>
   </div>
 </div>
@@ -193,35 +219,48 @@ const nutrition = Astro.props.nutrition; // ProductionNutrition
 En el breakdown, agregar una sub-sección nutricional colapsable dentro de cada receta:
 
 ```astro
-{recipe.nutrition && (
-  <details class="mt-4">
-    <summary class="text-muted-foreground cursor-pointer text-xs font-bold tracking-[0.16em] uppercase">
-      Info nutricional · {Math.round(recipe.nutrition.calories).toLocaleString()} kcal
-    </summary>
-    <div class="bg-muted mt-2 grid grid-cols-3 gap-2 rounded-xl p-3 text-xs">
-      <div>
-        <span class="text-muted-foreground">Grasas</span>
-        <p class="text-foreground font-bold">{recipe.nutrition.fat.toFixed(1)} g</p>
+{
+  recipe.nutrition && (
+    <details class="mt-4">
+      <summary class="text-muted-foreground cursor-pointer text-xs font-bold tracking-[0.16em] uppercase">
+        Info nutricional ·{" "}
+        {Math.round(recipe.nutrition.calories).toLocaleString()} kcal
+      </summary>
+      <div class="bg-muted mt-2 grid grid-cols-3 gap-2 rounded-xl p-3 text-xs">
+        <div>
+          <span class="text-muted-foreground">Grasas</span>
+          <p class="text-foreground font-bold">
+            {recipe.nutrition.fat.toFixed(1)} g
+          </p>
+        </div>
+        <div>
+          <span class="text-muted-foreground">Carbohidratos</span>
+          <p class="text-foreground font-bold">
+            {recipe.nutrition.carbs.toFixed(1)} g
+          </p>
+        </div>
+        <div>
+          <span class="text-muted-foreground">Proteínas</span>
+          <p class="text-foreground font-bold">
+            {recipe.nutrition.protein.toFixed(1)} g
+          </p>
+        </div>
+        <div>
+          <span class="text-muted-foreground">Fibra</span>
+          <p class="text-foreground font-bold">
+            {recipe.nutrition.fiber.toFixed(1)} g
+          </p>
+        </div>
+        <div>
+          <span class="text-muted-foreground">Sodio</span>
+          <p class="text-foreground font-bold">
+            {recipe.nutrition.sodium.toFixed(0)} mg
+          </p>
+        </div>
       </div>
-      <div>
-        <span class="text-muted-foreground">Carbohidratos</span>
-        <p class="text-foreground font-bold">{recipe.nutrition.carbs.toFixed(1)} g</p>
-      </div>
-      <div>
-        <span class="text-muted-foreground">Proteínas</span>
-        <p class="text-foreground font-bold">{recipe.nutrition.protein.toFixed(1)} g</p>
-      </div>
-      <div>
-        <span class="text-muted-foreground">Fibra</span>
-        <p class="text-foreground font-bold">{recipe.nutrition.fiber.toFixed(1)} g</p>
-      </div>
-      <div>
-        <span class="text-muted-foreground">Sodio</span>
-        <p class="text-foreground font-bold">{recipe.nutrition.sodium.toFixed(0)} mg</p>
-      </div>
-    </div>
-  </details>
-)}
+    </details>
+  )
+}
 ```
 
 ---
@@ -257,28 +296,27 @@ const showNutrition = hasNutrition && hasProductionAdvanced;
 let nutrition: ProductionNutrition | null = null;
 
 if (showNutrition && results) {
-  nutrition = calculateProductionNutrition(
-    validSelections,
-    validRecipes,
-  );
+  nutrition = calculateProductionNutrition(validSelections, validRecipes);
 }
 ---
 
-{showNutrition && nutrition && (
-  <ProductionNutritionTable nutrition={nutrition} />
-)}
+{
+  showNutrition && nutrition && (
+    <ProductionNutritionTable nutrition={nutrition} />
+  )
+}
 ```
 
 ---
 
 ## 7. Archivos involucrados
 
-| Archivo | Cambio |
-|---|---|
-| `src/lib/production-calculator.ts` | Nueva función `calculateProductionNutrition()`, tipo `ProductionNutrition` |
-| `src/components/ProductionNutritionTable.astro` | **Nuevo** — tabla nutricional consolidada |
-| `src/components/ProductionRecipeBreakdown.astro` | Sub-sección nutricional por receta |
-| `src/pages/produccion.astro` | Integrar cálculo y componente de nutrición |
+| Archivo                                          | Cambio                                                                     |
+| ------------------------------------------------ | -------------------------------------------------------------------------- |
+| `src/lib/production-calculator.ts`               | Nueva función `calculateProductionNutrition()`, tipo `ProductionNutrition` |
+| `src/components/ProductionNutritionTable.astro`  | **Nuevo** — tabla nutricional consolidada                                  |
+| `src/components/ProductionRecipeBreakdown.astro` | Sub-sección nutricional por receta                                         |
+| `src/pages/produccion.astro`                     | Integrar cálculo y componente de nutrición                                 |
 
 ---
 

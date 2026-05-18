@@ -153,16 +153,18 @@ interface Props {
 />
 
 <!-- Mostrar banner de upgrade al llegar al límite -->
-{!isProUser && selectedIds.size >= maxRecipes && (
-  <div class="border-warning-border bg-warning-bg rounded-xl border p-4">
-    <p class="text-warning text-sm font-semibold">
-      Límite de {maxRecipes} recetas alcanzado en plan Basic.
-    </p>
-    <a href="/pricing" class="text-accent-600 text-sm font-bold">
-      Actualizar a Pro para planificar recetas ilimitadas →
-    </a>
-  </div>
-)}
+{
+  !isProUser && selectedIds.size >= maxRecipes && (
+    <div class="border-warning-border bg-warning-bg rounded-xl border p-4">
+      <p class="text-warning text-sm font-semibold">
+        Límite de {maxRecipes} recetas alcanzado en plan Basic.
+      </p>
+      <a href="/pricing" class="text-accent-600 text-sm font-bold">
+        Actualizar a Pro para planificar recetas ilimitadas →
+      </a>
+    </div>
+  )
+}
 ```
 
 ### 2.4 Upgrade prompt en resultados
@@ -178,7 +180,7 @@ Si el usuario Basic fuerza más de 3 recetas vía query params manipulados, most
       description="El plan Basic permite hasta 3 recetas por plan de producción. Actualiza a Pro para planificar recetas ilimitadas, guardar planes, lista de compras y más."
     />
   ) : (
-    results && (<>...</>)
+    results && <>...</>
   )
 }
 ```
@@ -206,14 +208,14 @@ description="Planifica hasta 3 recetas simultáneas y obtén costos consolidados
 
 ## 4. Archivos involucrados
 
-| Archivo | Cambio |
-|---|---|
-| `src/lib/db/billing.ts` | `production_planner: true` en Basic, 2 nuevos flags |
-| `src/lib/subscription.ts` | 2 nuevos flags en `FREE_FEATURES` |
-| `src/lib/constants.ts` | Nueva constante `PRODUCTION_BASIC_RECIPE_LIMIT` |
-| `src/pages/produccion.astro` | Límite de 3 recetas, upgrade prompts, cambio de tier para Free |
+| Archivo                                         | Cambio                                                                |
+| ----------------------------------------------- | --------------------------------------------------------------------- |
+| `src/lib/db/billing.ts`                         | `production_planner: true` en Basic, 2 nuevos flags                   |
+| `src/lib/subscription.ts`                       | 2 nuevos flags en `FREE_FEATURES`                                     |
+| `src/lib/constants.ts`                          | Nueva constante `PRODUCTION_BASIC_RECIPE_LIMIT`                       |
+| `src/pages/produccion.astro`                    | Límite de 3 recetas, upgrade prompts, cambio de tier para Free        |
 | `src/components/ProductionRecipeSelector.astro` | Nueva prop `maxRecipes`, checkboxes deshabilitados, banner de upgrade |
-| `prisma/schema.prisma` | Migración (o re-seed automático) |
+| `prisma/schema.prisma`                          | Migración (o re-seed automático)                                      |
 
 ---
 

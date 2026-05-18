@@ -76,20 +76,20 @@ Permite crear variaciones de una receta base con un solo clic. Feature gated tra
 
 > **Fase 1 completada — 2026-05-17.** Migración a Basic + mejoras de visualización implementadas.
 
-| Fase | Funcionalidad | Prioridad | Tier | Estado | Archivo |
-|---|---|---|---|---|---|
-| F1 | Migrar acceso a Basic + límite 3 recetas + nuevos feature gates | 🔴 | Basic | ✅ Completado | [`produccion/01-migracion-basic.md`](./produccion/01-migracion-basic.md) |
-| F2 | Mejoras visualización (colapsar, sorting, badges margen, costos en summary) | 🟢 | Basic | ✅ Completado | [`produccion/09-mejoras-visualizacion.md`](./produccion/09-mejoras-visualizacion.md) |
-| F3 | Cálculo client-side instantáneo sin POST-redirect | 🔴 | Pro | ⬜ Pendiente | [`produccion/02-calculo-client-side.md`](./produccion/02-calculo-client-side.md) |
-| F4 | Modo "Pedido de Compras" (lista sin costos, checkboxes, agrupación por proveedor) | 🟠 | Pro | ⬜ Pendiente | [`produccion/03-pedido-compras.md`](./produccion/03-pedido-compras.md) |
-| F5 | Guardar y cargar planes de producción (nueva tabla `production_plans`) | 🟠 | Pro | ⬜ Pendiente | [`produccion/04-guardar-cargar-planes.md`](./produccion/04-guardar-cargar-planes.md) |
-| F6 | Precios interactivos + análisis de rentabilidad por presentación | 🟡 | Pro | ⬜ Pendiente | [`produccion/06-precios-interactivos.md`](./produccion/06-precios-interactivos.md) |
-| F7 | Exportación CSV de ingredientes consolidados | 🟡 | Pro | ⬜ Pendiente | [`produccion/07-exportacion-csv.md`](./produccion/07-exportacion-csv.md) |
-| F8 | Comparativa de escenarios A vs B | 🟡 | Pro | ⬜ Pendiente | [`produccion/05-comparativa-escenarios.md`](./produccion/05-comparativa-escenarios.md) |
-| F9 | Checklist de mise en place por receta | 🟢 | Pro | ⬜ Pendiente | [`produccion/08-checklist-mise-en-place.md`](./produccion/08-checklist-mise-en-place.md) |
-| F10 | Indicadores de disponibilidad de stock | 🟡 | Pro | ⬜ Pendiente | [`produccion/10-integracion-stock.md`](./produccion/10-integracion-stock.md) — depende de `stock_tracking` (#7) |
-| F11 | Integración con costos fijos avanzados | 🟡 | Pro | ⬜ Pendiente | [`produccion/11-costos-fijos-avanzados.md`](./produccion/11-costos-fijos-avanzados.md) — depende de `advanced_costs` (#9) |
-| F12 | Totales nutricionales del plan | 🟢 | Pro | ⬜ Pendiente | [`produccion/12-totales-nutricionales.md`](./produccion/12-totales-nutricionales.md) — depende de `nutrition_info` (#10) |
+| Fase | Funcionalidad                                                                     | Prioridad | Tier  | Estado        | Archivo                                                                                                                   |
+| ---- | --------------------------------------------------------------------------------- | --------- | ----- | ------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| F1   | Migrar acceso a Basic + límite 3 recetas + nuevos feature gates                   | 🔴        | Basic | ✅ Completado | [`produccion/01-migracion-basic.md`](./produccion/01-migracion-basic.md)                                                  |
+| F2   | Mejoras visualización (colapsar, sorting, badges margen, costos en summary)       | 🟢        | Basic | ✅ Completado | [`produccion/09-mejoras-visualizacion.md`](./produccion/09-mejoras-visualizacion.md)                                      |
+| F3   | Cálculo client-side instantáneo sin POST-redirect                                 | 🔴        | Pro   | ⬜ Pendiente  | [`produccion/02-calculo-client-side.md`](./produccion/02-calculo-client-side.md)                                          |
+| F4   | Modo "Pedido de Compras" (lista sin costos, checkboxes, agrupación por proveedor) | 🟠        | Pro   | ⬜ Pendiente  | [`produccion/03-pedido-compras.md`](./produccion/03-pedido-compras.md)                                                    |
+| F5   | Guardar y cargar planes de producción (nueva tabla `production_plans`)            | 🟠        | Pro   | ⬜ Pendiente  | [`produccion/04-guardar-cargar-planes.md`](./produccion/04-guardar-cargar-planes.md)                                      |
+| F6   | Precios interactivos + análisis de rentabilidad por presentación                  | 🟡        | Pro   | ⬜ Pendiente  | [`produccion/06-precios-interactivos.md`](./produccion/06-precios-interactivos.md)                                        |
+| F7   | Exportación CSV de ingredientes consolidados                                      | 🟡        | Pro   | ⬜ Pendiente  | [`produccion/07-exportacion-csv.md`](./produccion/07-exportacion-csv.md)                                                  |
+| F8   | Comparativa de escenarios A vs B                                                  | 🟡        | Pro   | ⬜ Pendiente  | [`produccion/05-comparativa-escenarios.md`](./produccion/05-comparativa-escenarios.md)                                    |
+| F9   | Checklist de mise en place por receta                                             | 🟢        | Pro   | ⬜ Pendiente  | [`produccion/08-checklist-mise-en-place.md`](./produccion/08-checklist-mise-en-place.md)                                  |
+| F10  | Indicadores de disponibilidad de stock                                            | 🟡        | Pro   | ⬜ Pendiente  | [`produccion/10-integracion-stock.md`](./produccion/10-integracion-stock.md) — depende de `stock_tracking` (#7)           |
+| F11  | Integración con costos fijos avanzados                                            | 🟡        | Pro   | ⬜ Pendiente  | [`produccion/11-costos-fijos-avanzados.md`](./produccion/11-costos-fijos-avanzados.md) — depende de `advanced_costs` (#9) |
+| F12  | Totales nutricionales del plan                                                    | 🟢        | Pro   | ⬜ Pendiente  | [`produccion/12-totales-nutricionales.md`](./produccion/12-totales-nutricionales.md) — depende de `nutrition_info` (#10)  |
 
 ---
 
@@ -246,22 +246,22 @@ Exponer endpoints para integración con e-commerce, POS, o apps de delivery.
 
 ## Estado actual del proyecto
 
-| Característica                    | Estado                   |
-| --------------------------------- | ------------------------ |
-| CRUD Ingredientes                 | ✅ Completo              |
-| CRUD Recetas                      | ✅ Completo              |
-| Cálculo de costos                 | ✅ Completo              |
-| Presentaciones de venta           | ✅ Completo              |
-| Escalado por batch                | ✅ Completo              |
-| Autenticación (Google OAuth)      | ✅ Completo              |
-| Multi-tenancy (datos por usuario) | ✅ Completo              |
-| Tema claro/oscuro                 | ✅ Completo              |
-| Colores de acento                 | ✅ Completo              |
-| Vista responsive/mobile           | ✅ Completo              |
-| Datos semilla                     | ✅ Completo              |
-| Búsqueda de recetas               | 🚧 Parcial (client-side) |
-| Categorías de recetas             | ✅ Completo              |
-| Instrucciones de preparación      | ✅ Completo              |
-| Duplicar receta                   | ✅ Completo              |
+| Característica                    | Estado                                                                   |
+| --------------------------------- | ------------------------------------------------------------------------ |
+| CRUD Ingredientes                 | ✅ Completo                                                              |
+| CRUD Recetas                      | ✅ Completo                                                              |
+| Cálculo de costos                 | ✅ Completo                                                              |
+| Presentaciones de venta           | ✅ Completo                                                              |
+| Escalado por batch                | ✅ Completo                                                              |
+| Autenticación (Google OAuth)      | ✅ Completo                                                              |
+| Multi-tenancy (datos por usuario) | ✅ Completo                                                              |
+| Tema claro/oscuro                 | ✅ Completo                                                              |
+| Colores de acento                 | ✅ Completo                                                              |
+| Vista responsive/mobile           | ✅ Completo                                                              |
+| Datos semilla                     | ✅ Completo                                                              |
+| Búsqueda de recetas               | 🚧 Parcial (client-side)                                                 |
+| Categorías de recetas             | ✅ Completo                                                              |
+| Instrucciones de preparación      | ✅ Completo                                                              |
+| Duplicar receta                   | ✅ Completo                                                              |
 | Planificador de producción        | 🚧 Fase 1 completada (Basic+Pro). Fase 2 (cálculo client-side) pendiente |
-| Exportación PDF                   | ❌ No implementado       |
+| Exportación PDF                   | ❌ No implementado                                                       |

@@ -46,42 +46,50 @@ const checklistId = `checklist-${recipeId}`;
 ---
 
 <details class="border-border bg-card mt-4 rounded-2xl border shadow-sm">
-  <summary class="hover:bg-muted flex cursor-pointer items-center gap-2 px-5 py-3 text-sm font-bold transition-colors">
+  <summary
+    class="hover:bg-muted flex cursor-pointer items-center gap-2 px-5 py-3 text-sm font-bold transition-colors"
+  >
     <Icon name="lucide:clipboard-check" size={16} class="text-accent-600" />
-    Mise en place — {items.filter(i => i.checked).length} de {items.length} listos
+    Mise en place — {items.filter((i) => i.checked).length} de {items.length} listos
   </summary>
 
   <div class="divide-y border-t px-2 pb-2">
-    {items.map((item) => (
-      <label
-        class:list={[
-          "flex items-center gap-3 rounded-xl px-3 py-2.5 transition-colors cursor-pointer",
-          item.checked ? "opacity-50" : "hover:bg-muted"
-        ]}
-      >
-        <input
-          type="checkbox"
-          class="checklist-checkbox h-4 w-4 rounded"
-          data-recipe-id={recipeId}
-          data-ingredient-id={item.ingredientId}
-          checked={item.checked}
-        />
-        <span class:list={[
-          "flex-1 text-sm",
-          item.checked ? "text-muted-foreground line-through" : "text-foreground"
-        ]}>
-          {item.name}
-          {item.comment && (
-            <span class="text-muted-foreground ml-1 text-xs">
-              — {item.comment}
-            </span>
-          )}
-        </span>
-        <span class="text-secondary-foreground font-mono text-sm tabular-nums">
-          {formatQuantity(item.quantity)} {item.unit}
-        </span>
-      </label>
-    ))}
+    {
+      items.map((item) => (
+        <label
+          class:list={[
+            "flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 transition-colors",
+            item.checked ? "opacity-50" : "hover:bg-muted",
+          ]}
+        >
+          <input
+            type="checkbox"
+            class="checklist-checkbox h-4 w-4 rounded"
+            data-recipe-id={recipeId}
+            data-ingredient-id={item.ingredientId}
+            checked={item.checked}
+          />
+          <span
+            class:list={[
+              "flex-1 text-sm",
+              item.checked
+                ? "text-muted-foreground line-through"
+                : "text-foreground",
+            ]}
+          >
+            {item.name}
+            {item.comment && (
+              <span class="text-muted-foreground ml-1 text-xs">
+                — {item.comment}
+              </span>
+            )}
+          </span>
+          <span class="text-secondary-foreground font-mono text-sm tabular-nums">
+            {formatQuantity(item.quantity)} {item.unit}
+          </span>
+        </label>
+      ))
+    }
   </div>
 
   <div class="flex justify-end gap-2 px-5 pb-3">
@@ -109,7 +117,7 @@ const checklistId = `checklist-${recipeId}`;
 
 ```ts
 // checklist.js (inline en el componente o en produccion.astro)
-const CHECKLIST_KEY = 'kitchcalc_checklist';
+const CHECKLIST_KEY = "kitchcalc_checklist";
 
 interface ChecklistState {
   [recipeId: number]: number[]; // ingredientIds checked
@@ -117,21 +125,25 @@ interface ChecklistState {
 
 function loadChecklistState(): ChecklistState {
   try {
-    return JSON.parse(localStorage.getItem(CHECKLIST_KEY) || '{}');
-  } catch { return {}; }
+    return JSON.parse(localStorage.getItem(CHECKLIST_KEY) || "{}");
+  } catch {
+    return {};
+  }
 }
 
 function saveChecklistState(state: ChecklistState) {
   try {
     localStorage.setItem(CHECKLIST_KEY, JSON.stringify(state));
-  } catch { /* ignorar */ }
+  } catch {
+    /* ignorar */
+  }
 }
 
 function setupChecklists() {
   const state = loadChecklistState();
 
   // Restaurar estado
-  document.querySelectorAll('.checklist-checkbox').forEach((cb) => {
+  document.querySelectorAll(".checklist-checkbox").forEach((cb) => {
     const recipeId = Number(cb.dataset.recipeId);
     const ingredientId = Number(cb.dataset.ingredientId);
     if (state[recipeId]?.includes(ingredientId)) {
@@ -139,7 +151,7 @@ function setupChecklists() {
       updateChecklistItem(cb);
     }
 
-    cb.addEventListener('change', () => {
+    cb.addEventListener("change", () => {
       updateChecklistItem(cb);
       // Actualizar estado
       if (!state[recipeId]) state[recipeId] = [];
@@ -148,7 +160,7 @@ function setupChecklists() {
           state[recipeId].push(ingredientId);
         }
       } else {
-        state[recipeId] = state[recipeId].filter(id => id !== ingredientId);
+        state[recipeId] = state[recipeId].filter((id) => id !== ingredientId);
       }
       saveChecklistState(state);
       updateChecklistCount(recipeId);
@@ -156,25 +168,29 @@ function setupChecklists() {
   });
 
   // Actualizar contadores iniciales
-  document.querySelectorAll('[id^="checklist-"]').forEach(details => {
-    const recipeId = Number(details.id.replace('checklist-', ''));
+  document.querySelectorAll('[id^="checklist-"]').forEach((details) => {
+    const recipeId = Number(details.id.replace("checklist-", ""));
     updateChecklistCount(recipeId);
   });
 
   // Botones marcar/desmarcar todo
-  document.querySelectorAll('[data-action="check-all"]').forEach(btn => {
-    btn.addEventListener('click', () => {
+  document.querySelectorAll('[data-action="check-all"]').forEach((btn) => {
+    btn.addEventListener("click", () => {
       const recipeId = Number(btn.dataset.recipeId);
-      document.querySelectorAll(`.checklist-checkbox[data-recipe-id="${recipeId}"]`).forEach(cb => {
-        (cb as HTMLInputElement).checked = true;
-        updateChecklistItem(cb);
-      });
+      document
+        .querySelectorAll(`.checklist-checkbox[data-recipe-id="${recipeId}"]`)
+        .forEach((cb) => {
+          (cb as HTMLInputElement).checked = true;
+          updateChecklistItem(cb);
+        });
       // Actualizar estado
       if (!state[recipeId]) state[recipeId] = [];
-      document.querySelectorAll(`.checklist-checkbox[data-recipe-id="${recipeId}"]`).forEach(cb => {
-        const ingId = Number(cb.dataset.ingredientId);
-        if (!state[recipeId].includes(ingId)) state[recipeId].push(ingId);
-      });
+      document
+        .querySelectorAll(`.checklist-checkbox[data-recipe-id="${recipeId}"]`)
+        .forEach((cb) => {
+          const ingId = Number(cb.dataset.ingredientId);
+          if (!state[recipeId].includes(ingId)) state[recipeId].push(ingId);
+        });
       saveChecklistState(state);
       updateChecklistCount(recipeId);
     });
@@ -184,25 +200,27 @@ function setupChecklists() {
 }
 
 function updateChecklistItem(checkbox) {
-  const label = checkbox.closest('label');
-  const nameSpan = label.querySelector('span:first-of-type');
+  const label = checkbox.closest("label");
+  const nameSpan = label.querySelector("span:first-of-type");
   if (checkbox.checked) {
-    nameSpan.classList.add('line-through', 'text-muted-foreground');
-    label.classList.add('opacity-50');
-    label.classList.remove('hover:bg-muted');
+    nameSpan.classList.add("line-through", "text-muted-foreground");
+    label.classList.add("opacity-50");
+    label.classList.remove("hover:bg-muted");
   } else {
-    nameSpan.classList.remove('line-through', 'text-muted-foreground');
-    label.classList.remove('opacity-50');
-    label.classList.add('hover:bg-muted');
+    nameSpan.classList.remove("line-through", "text-muted-foreground");
+    label.classList.remove("opacity-50");
+    label.classList.add("hover:bg-muted");
   }
 }
 
 function updateChecklistCount(recipeId: number) {
   const details = document.getElementById(`checklist-${recipeId}`);
   if (!details) return;
-  const checkboxes = details.querySelectorAll('.checklist-checkbox');
-  const checked = details.querySelectorAll('.checklist-checkbox:checked').length;
-  const summary = details.querySelector('summary');
+  const checkboxes = details.querySelectorAll(".checklist-checkbox");
+  const checked = details.querySelectorAll(
+    ".checklist-checkbox:checked",
+  ).length;
+  const summary = details.querySelector("summary");
   if (summary) {
     // Ya tiene el texto "Mise en place — X de Y listos"
     summary.childNodes[summary.childNodes.length - 1].textContent =
@@ -239,13 +257,13 @@ Donde `getChecklistItems` construye los items desde los datos de la receta (que 
 
 ## 4. Archivos involucrados
 
-| Archivo | Cambio |
-|---|---|
-| `src/components/ProductionChecklist.astro` | **Nuevo** — componente de checklist |
-| `src/components/ProductionRecipeBreakdown.astro` | Integrar checklist, pasar datos de ingredientes |
-| `src/lib/production-types.ts` | Agregar `ingredients?: RecipeIngredientWithData[]` a `ProductionRecipeResult` |
-| `src/lib/production-calculator.ts` | Incluir ingredientes en `perRecipe` (sin costos adicionales) |
-| `src/pages/produccion.astro` | Script de checklist (o inline en el componente) |
+| Archivo                                          | Cambio                                                                        |
+| ------------------------------------------------ | ----------------------------------------------------------------------------- |
+| `src/components/ProductionChecklist.astro`       | **Nuevo** — componente de checklist                                           |
+| `src/components/ProductionRecipeBreakdown.astro` | Integrar checklist, pasar datos de ingredientes                               |
+| `src/lib/production-types.ts`                    | Agregar `ingredients?: RecipeIngredientWithData[]` a `ProductionRecipeResult` |
+| `src/lib/production-calculator.ts`               | Incluir ingredientes en `perRecipe` (sin costos adicionales)                  |
+| `src/pages/produccion.astro`                     | Script de checklist (o inline en el componente)                               |
 
 ---
 
