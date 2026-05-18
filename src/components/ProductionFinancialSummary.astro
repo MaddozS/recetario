@@ -1,4 +1,5 @@
 ---
+import { Icon } from "astro-icon/components";
 import type { ProductionSummary } from "@/lib/production-types";
 import { formatCurrency } from "@/lib/formatters";
 
@@ -8,84 +9,163 @@ interface Props {
 
 const { summary } = Astro.props;
 
-const marginColor =
-  summary.effectiveMargin > 20
-    ? "text-success"
-    : summary.effectiveMargin > 10
-      ? "text-warning"
-      : "text-danger";
-
 const noRevenue = summary.projectedRevenue <= 0;
 ---
 
 <div class="production-sheet financial-summary">
-  <div class="grid grid-cols-2 gap-4">
-    <div class="border-border bg-card rounded-2xl border p-5 shadow-sm">
-      <p
-        class="text-muted-foreground text-xs font-bold tracking-[0.16em] uppercase"
-      >
-        Costo de insumos
-      </p>
-      <p class="text-foreground mt-1.5 text-2xl font-black tabular-nums">
-        {formatCurrency(summary.totalIngredientsCost)}
-      </p>
+  <div class="relative sm:hidden -mx-4 px-5">
+    <div class="mb-3 flex items-center justify-between px-1 text-[11px] font-semibold text-subtle-foreground">
+      <span>Resumen financiero</span>
+      <span class="inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-muted-foreground">
+        <Icon name="lucide:move-horizontal" size={12} /> Desliza
+      </span>
     </div>
-    <div class="border-border bg-card rounded-2xl border p-5 shadow-sm">
-      <p
-        class="text-muted-foreground text-xs font-bold tracking-[0.16em] uppercase"
-      >
-        Costo operativo
-      </p>
-      <p class="text-foreground mt-1.5 text-2xl font-black tabular-nums">
-        {formatCurrency(summary.totalOperationalCost)}
-      </p>
-    </div>
-    <div class="border-border bg-card rounded-2xl border p-5 shadow-sm">
-      <p
-        class="text-muted-foreground text-xs font-bold tracking-[0.16em] uppercase"
-      >
-        Ingresos proyectados
-      </p>
-      <p class="text-foreground mt-1.5 text-2xl font-black tabular-nums">
-        {
-          noRevenue ? (
-            <span class="text-muted-foreground text-lg">N/A</span>
+    <div class="pointer-events-none absolute inset-y-0 left-0 z-10 w-3 bg-gradient-to-r from-background/80 to-transparent"></div>
+    <div class="pointer-events-none absolute inset-y-0 right-0 z-10 w-6 bg-gradient-to-l from-background/85 via-background/35 to-transparent"></div>
+    <div class="-mx-1 flex snap-x snap-mandatory gap-3 overflow-x-auto px-1 pb-3 [scrollbar-width:auto] [-webkit-overflow-scrolling:touch]">
+      <!-- COSTO INSUMOS -->
+      <div class="w-[min(68vw,19rem)] min-w-[15.5rem] snap-start bg-card p-5 rounded-2xl border border-border shadow-sm flex flex-col justify-between">
+        <p class="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-subtle-foreground mb-4">
+          <span class="w-7 h-7 rounded-lg bg-red-50 text-red-500 flex items-center justify-center"><Icon name="lucide:trending-down" size={16}/></span>
+          Costo Insumos
+        </p>
+        <div>
+          <p class="text-2xl 2xl:text-3xl font-mono font-semibold text-foreground tabular-nums leading-none truncate">{formatCurrency(summary.totalIngredientsCost)}</p>
+          <p class="text-[11px] font-semibold text-subtle-foreground mt-2 line-clamp-1">Insumos de todas las recetas</p>
+        </div>
+      </div>
+
+      <!-- COSTO OPERATIVO -->
+      <div class="w-[min(68vw,19rem)] min-w-[15.5rem] snap-start bg-card p-5 rounded-2xl border border-border shadow-sm flex flex-col justify-between">
+        <p class="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-subtle-foreground mb-4">
+          <span class="w-7 h-7 rounded-lg bg-muted text-muted-foreground flex items-center justify-center"><Icon name="lucide:pie-chart" size={16}/></span>
+          Costo Operativo
+        </p>
+        <div>
+          <p class="text-2xl 2xl:text-3xl font-mono font-semibold text-foreground tabular-nums leading-none truncate">{formatCurrency(summary.totalOperationalCost)}</p>
+          <p class="text-[11px] font-semibold text-subtle-foreground mt-2 line-clamp-1">Servicios, labor, etc.</p>
+        </div>
+      </div>
+
+      <!-- INGRESOS PROYECTADOS -->
+      <div class="w-[min(68vw,19rem)] min-w-[15.5rem] snap-start bg-card p-5 rounded-2xl border border-accent-100 shadow-sm flex flex-col justify-between relative overflow-hidden">
+        <div class="absolute -right-6 -top-6 w-24 h-24 bg-accent-50 rounded-full opacity-50 pointer-events-none"></div>
+        <p class="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-accent-500 mb-4 relative z-10">
+          <span class="w-7 h-7 rounded-lg bg-accent-50 text-accent-500 flex items-center justify-center"><Icon name="lucide:trending-up" size={16}/></span>
+          Ingresos Proyectados
+        </p>
+        <div class="relative z-10">
+          {noRevenue ? (
+            <p class="text-lg font-semibold text-muted-foreground">N/A</p>
           ) : (
-            formatCurrency(summary.projectedRevenue)
-          )
-        }
-      </p>
-      {
-        noRevenue && (
-          <p class="text-warning mt-1 text-xs">
-            Sin precios de venta configurados
+            <p class="text-2xl 2xl:text-3xl font-mono font-semibold text-accent-600 tabular-nums leading-none truncate">{formatCurrency(summary.projectedRevenue)}</p>
+          )}
+          <p class="text-[11px] font-semibold text-accent-400 mt-2 line-clamp-1">
+            {noRevenue ? "Sin precios de venta configurados" : "Ventas totales proyectadas"}
           </p>
-        )
-      }
-    </div>
-    <div class="border-border bg-card rounded-2xl border p-5 shadow-sm">
-      <p
-        class="text-muted-foreground text-xs font-bold tracking-[0.16em] uppercase"
-      >
-        Ganancia estimada
-      </p>
-      <p
-        class="mt-1.5 text-2xl font-black tabular-nums"
-        class:list={[noRevenue ? "text-muted-foreground" : marginColor]}
-      >
-        {
-          noRevenue ? (
-            <span class="text-muted-foreground text-lg">N/A</span>
+        </div>
+      </div>
+
+      <!-- GANANCIA ESTIMADA -->
+      <div class:list={["w-[min(68vw,19rem)] min-w-[15.5rem] snap-start p-5 rounded-2xl shadow-md flex flex-col justify-between text-white relative overflow-hidden", noRevenue ? "bg-muted" : "bg-[#10b981] dark:bg-emerald-700"]}>
+        {!noRevenue && (
+          <div class="absolute right-0 top-0 opacity-15 pointer-events-none">
+            <Icon name="lucide:trending-up" size={120} class="transform translate-x-6 -translate-y-6" />
+          </div>
+        )}
+        <p class:list={["flex items-center gap-2 text-[10px] font-black uppercase tracking-wider mb-4 relative z-10", noRevenue ? "text-muted-foreground" : "text-emerald-100"]}>
+          <span class:list={["w-7 h-7 rounded-lg flex items-center justify-center", noRevenue ? "bg-muted text-muted-foreground" : "bg-emerald-400/50 text-white"]}>
+            <Icon name="lucide:dollar-sign" size={16}/>
+          </span>
+          Ganancia Estimada
+        </p>
+        <div class="relative z-10">
+          {noRevenue ? (
+            <p class="text-lg font-semibold text-muted-foreground">Sin datos</p>
           ) : (
             <>
-              {formatCurrency(summary.estimatedProfit)}
-              <span class="ml-1 text-base font-bold">
-                ({summary.effectiveMargin.toFixed(1)}%)
-              </span>
+              <p class="text-2xl 2xl:text-3xl font-mono font-semibold tabular-nums leading-none truncate">
+                {formatCurrency(summary.estimatedProfit)}
+                <span class="text-lg 2xl:text-xl font-bold text-emerald-200"> ({summary.effectiveMargin.toFixed(1)}%)</span>
+              </p>
+              <p class="text-[11px] font-semibold text-emerald-100 mt-2 line-clamp-1">Margen de ganancia estimado</p>
             </>
-          )
-        }
+          )}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hidden grid-cols-2 gap-4 sm:grid xl:grid-cols-4">
+    <!-- COSTO INSUMOS -->
+    <div class="bg-card p-5 rounded-2xl border border-border shadow-sm flex flex-col justify-between">
+      <p class="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-subtle-foreground mb-4">
+        <span class="w-7 h-7 rounded-lg bg-red-50 text-red-500 flex items-center justify-center"><Icon name="lucide:trending-down" size={16}/></span>
+        Costo Insumos
       </p>
+      <div>
+        <p class="text-2xl 2xl:text-3xl font-mono font-semibold text-foreground tabular-nums leading-none truncate">{formatCurrency(summary.totalIngredientsCost)}</p>
+        <p class="text-[11px] font-semibold text-subtle-foreground mt-2 line-clamp-1">Insumos de todas las recetas</p>
+      </div>
+    </div>
+
+    <!-- COSTO OPERATIVO -->
+    <div class="bg-card p-5 rounded-2xl border border-border shadow-sm flex flex-col justify-between">
+      <p class="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-subtle-foreground mb-4">
+        <span class="w-7 h-7 rounded-lg bg-muted text-muted-foreground flex items-center justify-center"><Icon name="lucide:pie-chart" size={16}/></span>
+        Costo Operativo
+      </p>
+      <div>
+        <p class="text-2xl 2xl:text-3xl font-mono font-semibold text-foreground tabular-nums leading-none truncate">{formatCurrency(summary.totalOperationalCost)}</p>
+        <p class="text-[11px] font-semibold text-subtle-foreground mt-2 line-clamp-1">Servicios, labor, etc.</p>
+      </div>
+    </div>
+
+    <!-- INGRESOS PROYECTADOS -->
+    <div class="bg-card p-5 rounded-2xl border border-accent-100 shadow-sm flex flex-col justify-between relative overflow-hidden">
+      <div class="absolute -right-6 -top-6 w-24 h-24 bg-accent-50 rounded-full opacity-50 pointer-events-none"></div>
+      <p class="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-accent-500 mb-4 relative z-10">
+        <span class="w-7 h-7 rounded-lg bg-accent-50 text-accent-500 flex items-center justify-center"><Icon name="lucide:trending-up" size={16}/></span>
+        Ingresos Proyectados
+      </p>
+      <div class="relative z-10">
+        {noRevenue ? (
+          <p class="text-lg font-semibold text-muted-foreground">N/A</p>
+        ) : (
+          <p class="text-2xl 2xl:text-3xl font-mono font-semibold text-accent-600 tabular-nums leading-none truncate">{formatCurrency(summary.projectedRevenue)}</p>
+        )}
+        <p class="text-[11px] font-semibold text-accent-400 mt-2 line-clamp-1">
+          {noRevenue ? "Sin precios de venta configurados" : "Ventas totales proyectadas"}
+        </p>
+      </div>
+    </div>
+
+    <!-- GANANCIA ESTIMADA -->
+    <div class:list={["p-5 rounded-2xl shadow-md flex flex-col justify-between text-white relative overflow-hidden", noRevenue ? "bg-card border border-border shadow-sm text-muted-foreground" : "bg-[#10b981] dark:bg-emerald-700"]}>
+      {!noRevenue && (
+        <div class="absolute right-0 top-0 opacity-15 pointer-events-none">
+          <Icon name="lucide:trending-up" size={120} class="transform translate-x-6 -translate-y-6" />
+        </div>
+      )}
+      <p class:list={["flex items-center gap-2 text-[10px] font-black uppercase tracking-wider mb-4 relative z-10", noRevenue ? "text-subtle-foreground" : "text-emerald-100"]}>
+        <span class:list={["w-7 h-7 rounded-lg flex items-center justify-center", noRevenue ? "bg-muted text-muted-foreground" : "bg-emerald-400/50 text-white"]}>
+          <Icon name="lucide:dollar-sign" size={16}/>
+        </span>
+        Ganancia Estimada
+      </p>
+      <div class="relative z-10">
+        {noRevenue ? (
+          <p class="text-lg font-semibold text-muted-foreground">Sin datos</p>
+        ) : (
+          <>
+            <p class="text-2xl 2xl:text-3xl font-mono font-semibold tabular-nums leading-none truncate">
+              {formatCurrency(summary.estimatedProfit)}
+              <span class="text-lg 2xl:text-xl font-bold text-emerald-200"> ({summary.effectiveMargin.toFixed(1)}%)</span>
+            </p>
+            <p class="text-[11px] font-semibold text-emerald-100 mt-2 line-clamp-1">Margen de ganancia estimado</p>
+          </>
+        )}
+      </div>
     </div>
   </div>
 </div>

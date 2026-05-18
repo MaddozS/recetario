@@ -14,13 +14,11 @@ const formatQuantity = (value: number): string => {
   return value.toFixed(2);
 };
 
-const formatQuantityWithConversion = (value: number, unit: string): string => {
+const smartQuantity = (value: number, unit: string): string => {
   const u = unit.toLowerCase();
-  if (u === "kg") {
-    return `${formatQuantity(value)} kg (${formatQuantity(value * 1000)} g)`;
-  }
-  if (u === "lt") {
-    return `${formatQuantity(value)} lt (${formatQuantity(value * 1000)} ml)`;
+  if ((u === "g" || u === "ml") && value >= 1000) {
+    const converted = value / 1000;
+    return `${formatQuantity(converted)} ${u === "g" ? "kg" : "lt"}`;
   }
   return `${formatQuantity(value)} ${unit}`;
 };
@@ -36,23 +34,29 @@ const formatQuantityWithConversion = (value: number, unit: string): string => {
     </p>
   </div>
   <div class="overflow-x-auto">
-    <table class="min-w-full text-left">
+    <table class="min-w-full text-left table-fixed" id="ingredients-sort-table">
       <thead
         class="bg-background text-muted-foreground text-[11px] font-bold tracking-[0.16em] uppercase"
       >
         <tr>
-          <th class="px-6 py-4">Ingrediente</th>
-          <th class="px-6 py-4" colspan="2">Cantidad total</th>
-          <th class="px-6 py-4">Costo unitario</th>
-          <th class="px-6 py-4">Costo total</th>
-          <th class="px-6 py-4">Recetas</th>
+          <th class="px-6 py-4 w-[35%]" data-sort="name">Ingrediente</th>
+          <th class="px-6 py-4 w-[17%]" colspan="2" data-sort="quantity">Cantidad total</th>
+          <th class="px-6 py-4 w-[13%]" data-sort="unitCost">Costo unitario</th>
+          <th class="px-6 py-4 w-[13%]" data-sort="totalCost">Costo total</th>
+          <th class="px-6 py-4 w-[22%]">Recetas</th>
         </tr>
       </thead>
       <tbody class="divide-border-light divide-y dark:divide-gray-950">
         {
           ingredients.map((ing) => (
-            <tr class="hover:bg-hover-muted transition-colors dark:hover:bg-gray-950/70">
-              <td class="px-6 py-4">
+            <tr
+              class="hover:bg-hover-muted transition-colors dark:hover:bg-gray-950/70"
+              data-name={ing.name.toLowerCase()}
+              data-quantity={ing.totalQuantity}
+              data-unitCost={ing.unitCost}
+              data-totalCost={ing.totalCost}
+            >
+              <td class="px-6 py-4 break-words">
                 <div>
                   <p class="text-foreground font-semibold">{ing.name}</p>
                   {ing.brand && (
@@ -67,20 +71,20 @@ const formatQuantityWithConversion = (value: number, unit: string): string => {
                 class="text-secondary-foreground px-6 py-4 font-mono font-semibold whitespace-nowrap tabular-nums"
                 colspan="2"
               >
-                {formatQuantityWithConversion(ing.totalQuantity, ing.unit)}
+                {smartQuantity(ing.totalQuantity, ing.unit)}
               </td>
-              <td class="text-secondary-foreground px-6 py-4 font-mono text-sm tabular-nums">
+              <td class="text-secondary-foreground px-6 py-4 font-mono text-sm tabular-nums whitespace-nowrap">
                 {formatCurrency(ing.unitCost)}/{ing.unit}
               </td>
-              <td class="text-foreground px-6 py-4 font-mono font-semibold tabular-nums">
+              <td class="text-foreground px-6 py-4 font-mono font-semibold tabular-nums whitespace-nowrap">
                 {formatCurrency(ing.totalCost)}
               </td>
-              <td class="px-6 py-4">
+              <td class="px-6 py-4 break-words">
                 <div class="flex flex-wrap gap-1.5">
                   {ing.sourceRecipes.map((src) => (
                     <span class="bg-muted text-secondary-foreground inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium">
-                      {src.recipeName}
-                      <span class="text-subtle-foreground">
+                      <span class="truncate max-w-[20ch]">{src.recipeName}</span>
+                      <span class="text-subtle-foreground shrink-0">
                         (
                         {src.quantity < 1
                           ? src.quantity.toFixed(2)
@@ -100,3 +104,62 @@ const formatQuantityWithConversion = (value: number, unit: string): string => {
     </table>
   </div>
 </div>
+
+<script>
+  function setupSortableTable() {
+    const table = document.getElementById('ingredients-sort-table');
+    if (!table || table.dataset.sortBound === '1') return;
+    table.dataset.sortBound = '1';
+
+    const headers = table.querySelectorAll<HTMLElement>('th[data-sort]');
+    const tbody = table.querySelector('tbody');
+    if (!tbody) return;
+
+    headers.forEach((th) => {
+      const col = th.dataset.sort as string;
+      th.style.cursor = 'pointer';
+
+      const iconSpan = document.createElement('span');
+      iconSpan.className = 'ml-1 inline-block text-[10px]';
+      iconSpan.textContent = ' ';
+      th.appendChild(iconSpan);
+
+      th.addEventListener('click', () => {
+        const dir = th.dataset.dir === 'asc' ? 'desc' : 'asc';
+
+        headers.forEach((h) => {
+          delete h.dataset.dir;
+          const icon = h.querySelector('span:last-child');
+          if (icon) icon.textContent = ' ';
+        });
+
+        th.dataset.dir = dir;
+        iconSpan.textContent = dir === 'asc' ? '▲' : '▼';
+
+        const rows = Array.from(tbody.querySelectorAll<HTMLElement>('tr'));
+
+        rows.sort((a, b) => {
+          let aVal: string | number = a.dataset[col] || '';
+          let bVal: string | number = b.dataset[col] || '';
+
+          if (col === 'name') {
+            aVal = String(aVal);
+            bVal = String(bVal);
+            return dir === 'asc'
+              ? aVal.localeCompare(bVal)
+              : bVal.localeCompare(aVal);
+          }
+
+          aVal = parseFloat(String(aVal)) || 0;
+          bVal = parseFloat(String(bVal)) || 0;
+          return dir === 'asc' ? aVal - bVal : bVal - aVal;
+        });
+
+        rows.forEach((row) => tbody.appendChild(row));
+      });
+    });
+  }
+
+  document.addEventListener('astro:page-load', setupSortableTable);
+  document.addEventListener('astro:after-swap', setupSortableTable);
+</script>

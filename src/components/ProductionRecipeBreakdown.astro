@@ -8,6 +8,63 @@ interface Props {
 }
 
 const { recipes } = Astro.props;
+
+function marginColor(margin: number): string {
+  if (margin > 30) return "text-success";
+  if (margin > 15) return "text-warning";
+  return "text-danger";
+}
+
+function getBestPresentationId(
+  presentations: ProductionRecipeResult["presentations"],
+  totalCost: number,
+): number {
+  return presentations.reduce(
+    (best, p) => {
+      if (!p.revenue || p.revenue <= 0 || totalCost <= 0) return best;
+      const m = ((p.revenue - totalCost) / p.revenue) * 100;
+      return m > best.margin ? { id: p.id, margin: m } : best;
+    },
+    { id: -1, margin: -Infinity },
+  ).id;
+}
+
+function getPresentationMargin(
+  p: ProductionRecipeResult["presentations"][number],
+  totalCost: number,
+): number | null {
+  if (!p.revenue || p.revenue <= 0 || totalCost <= 0) return null;
+  return ((p.revenue - totalCost) / p.revenue) * 100;
+}
+
+type ProcessedRecipe = ProductionRecipeResult & {
+  bestPresentationId: number;
+  processedPresentations: Array<{
+    id: number;
+    name: string;
+    totalUnits: number;
+    unitCost: number;
+    salePrice?: number;
+    revenue: number;
+    margin: number | null;
+    isSelected: boolean;
+    isBest: boolean;
+  }>;
+};
+
+const processedRecipes: ProcessedRecipe[] = recipes.map((recipe) => {
+  const bestId = getBestPresentationId(recipe.presentations, recipe.totalCost);
+  return {
+    ...recipe,
+    bestPresentationId: bestId,
+    processedPresentations: recipe.presentations.map((p) => ({
+      ...p,
+      margin: getPresentationMargin(p, recipe.totalCost),
+      isSelected: p.id === recipe.selectedPresentationId,
+      isBest: p.id === bestId,
+    })),
+  };
+});
 ---
 
 <div class="production-sheet recipe-breakdown space-y-4">
@@ -17,11 +74,8 @@ const { recipes } = Astro.props;
   </h2>
 
   {
-    recipes.map((recipe) => (
-      <details
-        class="border-border bg-card overflow-hidden rounded-2xl border shadow-sm"
-        open
-      >
+    processedRecipes.map((recipe) => (
+      <details class="border-border bg-card overflow-hidden rounded-2xl border shadow-sm">
         <summary class="hover:bg-muted flex cursor-pointer items-center justify-between gap-4 px-6 py-4 transition-colors">
           <div class="min-w-0">
             <div class="flex items-center gap-2">
@@ -34,9 +88,11 @@ const { recipes } = Astro.props;
                 </span>
               )}
             </div>
-            <p class="text-muted-foreground mt-0.5 text-sm">
-              {recipe.batches} batch{recipe.batches !== 1 ? "es" : ""} · Costo
-              total: {formatCurrency(recipe.totalCost)}
+            <p class="text-muted-foreground mt-0.5 text-xs">
+              {recipe.batches} batch{recipe.batches !== 1 ? "es" : ""}· Insumos:{" "}
+              {formatCurrency(recipe.ingredientsCost)}· Operativo:{" "}
+              {formatCurrency(recipe.operationalCost)}· Total:{" "}
+              {formatCurrency(recipe.totalCost)}
             </p>
           </div>
           <Icon
@@ -93,27 +149,31 @@ const { recipes } = Astro.props;
                       <th class="px-4 py-3">Costo unitario</th>
                       <th class="px-4 py-3">Precio venta</th>
                       <th class="px-4 py-3">Ingreso</th>
+                      <th class="px-4 py-3">Margen</th>
                     </tr>
                   </thead>
                   <tbody class="divide-border-light divide-y dark:divide-gray-950">
-                    {recipe.presentations.map((p) => (
+                    {recipe.processedPresentations.map((p) => (
                       <tr
                         class:list={[
                           "hover:bg-hover-muted dark:hover:bg-gray-950/70",
-                          p.id === recipe.selectedPresentationId
-                            ? "bg-accent-50/50"
-                            : "",
+                          p.isSelected ? "bg-accent-50/50" : "",
                         ]}
                       >
-                        <td class="text-foreground px-4 py-3 font-medium">
-                          <span class="flex items-center gap-1.5">
-                            {p.name}
-                            {p.id === recipe.selectedPresentationId && (
-                              <span class="bg-accent-100 text-accent-700 border-accent-200 inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-bold">
-                                Seleccionada
-                              </span>
-                            )}
-                          </span>
+                        <td class="text-foreground px-4 py-3 font-medium align-top">
+                            <div class="text-foreground font-medium">{p.name}</div>
+                            <div class="mt-1 flex flex-wrap gap-1">
+                              {p.isSelected && (
+                                <span class="bg-accent-100 text-accent-700 border-accent-200 inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-bold whitespace-nowrap">
+                                  Seleccionada
+                                </span>
+                              )}
+                              {p.isBest && p.margin !== null && (
+                                <span class="bg-success-bg text-success border-success-border inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-bold whitespace-nowrap">
+                                  Más rentable
+                                </span>
+                              )}
+                            </div>
                         </td>
                         <td class="text-secondary-foreground px-4 py-3 font-mono tabular-nums">
                           {p.totalUnits}
@@ -135,6 +195,15 @@ const { recipes } = Astro.props;
                             formatCurrency(p.revenue)
                           ) : (
                             <span class="text-warning">Sin precio</span>
+                          )}
+                        </td>
+                        <td class="px-4 py-3 font-mono font-semibold tabular-nums">
+                          {p.margin !== null ? (
+                            <span class:list={[marginColor(p.margin)]}>
+                              {p.margin.toFixed(1)}%
+                            </span>
+                          ) : (
+                            <span class="text-muted-foreground">—</span>
                           )}
                         </td>
                       </tr>
