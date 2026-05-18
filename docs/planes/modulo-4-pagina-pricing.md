@@ -136,19 +136,19 @@ const plans = [
 Implementar un toggle que muestre precios mensuales o anuales:
 
 ```astro
-<div class="flex justify-center mb-8">
-  <div class="inline-flex bg-slate-100 rounded-xl p-1">
+<div class="mb-8 flex justify-center">
+  <div class="inline-flex rounded-xl bg-slate-100 p-1">
     <button
       type="button"
       id="billing-monthly"
-      class="px-4 py-2 rounded-lg text-sm font-semibold bg-white shadow-sm"
+      class="rounded-lg bg-white px-4 py-2 text-sm font-semibold shadow-sm"
       >Mensual</button
     >
     <button
       type="button"
       id="billing-yearly"
-      class="px-4 py-2 rounded-lg text-sm font-semibold text-slate-500"
-      >Anual <span class="text-emerald-600 text-xs">-20%</span></button
+      class="rounded-lg px-4 py-2 text-sm font-semibold text-slate-500"
+      >Anual <span class="text-xs text-emerald-600">-20%</span></button
     >
   </div>
 </div>
@@ -228,9 +228,9 @@ Seguir convenciones del proyecto:
 ```astro
 <!-- Mensaje de exito despues de pago -->{
   Astro.url.searchParams.get("success") === "1" && (
-    <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 mb-6">
-      <p class="text-emerald-700 font-semibold">¡Suscripcion activada!</p>
-      <p class="text-emerald-600 text-sm">
+    <div class="mb-6 rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
+      <p class="font-semibold text-emerald-700">¡Suscripcion activada!</p>
+      <p class="text-sm text-emerald-600">
         Tu plan ya esta activo. Disfruta de todas las funciones.
       </p>
     </div>
@@ -240,9 +240,9 @@ Seguir convenciones del proyecto:
 <!-- Mensaje de cancelacion -->
 {
   Astro.url.searchParams.get("canceled") === "1" && (
-    <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-6">
-      <p class="text-amber-700 font-semibold">Suscripcion cancelada</p>
-      <p class="text-amber-600 text-sm">
+    <div class="mb-6 rounded-2xl border border-amber-200 bg-amber-50 p-4">
+      <p class="font-semibold text-amber-700">Suscripcion cancelada</p>
+      <p class="text-sm text-amber-600">
         No se realizo ningun cargo. Puedes intentarlo de nuevo cuando quieras.
       </p>
     </div>

@@ -67,12 +67,12 @@ Link "Ajustes" debe volver a `/settings`.
 ```astro
 <!-- Exito despues de pago -->{
   isSuccess && (
-    <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 mb-6">
+    <div class="mb-6 rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
       <div class="flex items-center gap-3">
         <Icon name="lucide:check-circle" size={20} class="text-emerald-600" />
         <div>
-          <p class="text-emerald-700 font-semibold">¡Pago exitoso!</p>
-          <p class="text-emerald-600 text-sm">
+          <p class="font-semibold text-emerald-700">¡Pago exitoso!</p>
+          <p class="text-sm text-emerald-600">
             Tu suscripcion ha sido activada.
           </p>
         </div>
@@ -84,7 +84,7 @@ Link "Ajustes" debe volver a `/settings`.
 <!-- Alerta de trial -->
 {
   subscription.isTrial && subscription.currentPeriodEnd && (
-    <div class="bg-accent-50 border border-accent-200 rounded-2xl p-4 mb-6">
+    <div class="bg-accent-50 border-accent-200 mb-6 rounded-2xl border p-4">
       <div class="flex items-center gap-3">
         <Icon name="lucide:clock" size={20} class="text-accent-600" />
         <div>
@@ -102,12 +102,12 @@ Link "Ajustes" debe volver a `/settings`.
 <!-- Alerta de cancelacion proxima -->
 {
   subscription.cancelAtPeriodEnd && subscription.currentPeriodEnd && (
-    <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-6">
+    <div class="mb-6 rounded-2xl border border-amber-200 bg-amber-50 p-4">
       <div class="flex items-center gap-3">
         <Icon name="lucide:alert-triangle" size={20} class="text-amber-600" />
         <div>
-          <p class="text-amber-700 font-semibold">Suscripcion cancelada</p>
-          <p class="text-amber-600 text-sm">
+          <p class="font-semibold text-amber-700">Suscripcion cancelada</p>
+          <p class="text-sm text-amber-600">
             Tu plan seguira activo hasta el{" "}
             {subscription.currentPeriodEnd.toLocaleDateString("es-MX")}.
           </p>
@@ -124,7 +124,7 @@ Link "Ajustes" debe volver a `/settings`.
 <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
   <div class="flex items-start justify-between">
     <div>
-      <p class="text-xs font-bold uppercase tracking-[0.18em] text-slate-500">
+      <p class="text-xs font-bold tracking-[0.18em] text-slate-500 uppercase">
         Plan actual
       </p>
       <h2 class="mt-1 text-2xl font-black text-slate-900">
@@ -165,7 +165,7 @@ Link "Ajustes" debe volver a `/settings`.
       }
       {
         subscription.status === "trialing" && (
-          <span class="inline-flex items-center rounded-full bg-accent-100 px-2.5 py-1 text-xs font-bold text-accent-700">
+          <span class="bg-accent-100 text-accent-700 inline-flex items-center rounded-full px-2.5 py-1 text-xs font-bold">
             Trial
           </span>
         )
@@ -178,7 +178,7 @@ Link "Ajustes" debe volver a `/settings`.
       subscription.tier !== "pro" && (
         <a
           href="/pricing"
-          class="inline-flex items-center gap-2 rounded-xl bg-accent-600 px-5 py-3 text-sm font-bold text-white hover:bg-accent-700 transition-colors"
+          class="bg-accent-600 hover:bg-accent-700 inline-flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-bold text-white transition-colors"
         >
           <Icon name="lucide:arrow-up-circle" size={16} />
           {subscription.tier === "free" ? "Suscribirse" : "Actualizar a Pro"}
@@ -191,7 +191,7 @@ Link "Ajustes" debe volver a `/settings`.
         <button
           type="button"
           id="manage-subscription-btn"
-          class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-600 hover:bg-slate-50 transition-colors"
+          class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-600 transition-colors hover:bg-slate-50"
         >
           <Icon name="lucide:credit-card" size={16} />
           Gestionar suscripcion
@@ -205,10 +205,10 @@ Link "Ajustes" debe volver a `/settings`.
 ### 4. Uso de Recursos
 
 ```astro
-<div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
   <!-- Recetas -->
   <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-    <div class="flex items-center justify-between mb-4">
+    <div class="mb-4 flex items-center justify-between">
       <p class="text-sm font-bold text-slate-700">Recetas</p>
       <span class="text-xs font-bold text-slate-400"
         >{recipeCount} / {
@@ -216,16 +216,16 @@ Link "Ajustes" debe volver a `/settings`.
         }</span
       >
     </div>
-    <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+    <div class="h-2 overflow-hidden rounded-full bg-slate-100">
       <div
-        class="h-full bg-accent-500 rounded-full transition-all"
+        class="bg-accent-500 h-full rounded-full transition-all"
         style={`width: ${remainingRecipes === null ? 0 : Math.min(100, (recipeCount / subscription.recipesLimit!) * 100)}%`}
       >
       </div>
     </div>
     {
       remainingRecipes !== null && remainingRecipes <= 3 && (
-        <p class="mt-2 text-xs text-amber-600 font-semibold">
+        <p class="mt-2 text-xs font-semibold text-amber-600">
           Te quedan {remainingRecipes} recetas.{" "}
           <a href="/pricing" class="underline">
             Actualizar plan
@@ -237,7 +237,7 @@ Link "Ajustes" debe volver a `/settings`.
 
   <!-- Ingredientes -->
   <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-    <div class="flex items-center justify-between mb-4">
+    <div class="mb-4 flex items-center justify-between">
       <p class="text-sm font-bold text-slate-700">Ingredientes</p>
       <span class="text-xs font-bold text-slate-400"
         >{ingredientCount} / {
@@ -245,16 +245,16 @@ Link "Ajustes" debe volver a `/settings`.
         }</span
       >
     </div>
-    <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+    <div class="h-2 overflow-hidden rounded-full bg-slate-100">
       <div
-        class="h-full bg-accent-500 rounded-full transition-all"
+        class="bg-accent-500 h-full rounded-full transition-all"
         style={`width: ${remainingIngredients === null ? 0 : Math.min(100, (ingredientCount / subscription.ingredientsLimit!) * 100)}%`}
       >
       </div>
     </div>
     {
       remainingIngredients !== null && remainingIngredients <= 5 && (
-        <p class="mt-2 text-xs text-amber-600 font-semibold">
+        <p class="mt-2 text-xs font-semibold text-amber-600">
           Te quedan {remainingIngredients} ingredientes.{" "}
           <a href="/pricing" class="underline">
             Actualizar plan
@@ -270,8 +270,8 @@ Link "Ajustes" debe volver a `/settings`.
 
 ```astro
 <div class="mt-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-  <h3 class="text-sm font-bold text-slate-700 mb-4">Funciones incluidas</h3>
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+  <h3 class="mb-4 text-sm font-bold text-slate-700">Funciones incluidas</h3>
+  <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
     {
       [
         { key: "recipe_duplicate", label: "Duplicar recetas" },
@@ -340,7 +340,7 @@ En `src/pages/settings.astro`, agregar un link a billing:
 <div class="mt-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
   <div class="flex items-center justify-between">
     <div>
-      <p class="text-xs font-bold uppercase tracking-[0.18em] text-slate-500">
+      <p class="text-xs font-bold tracking-[0.18em] text-slate-500 uppercase">
         Suscripcion
       </p>
       <h3 class="mt-1 text-lg font-bold text-slate-900">Facturacion y plan</h3>
@@ -350,7 +350,7 @@ En `src/pages/settings.astro`, agregar un link a billing:
     </div>
     <a
       href="/settings/billing"
-      class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-50 transition-colors"
+      class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-600 transition-colors hover:bg-slate-50"
     >
       <Icon name="lucide:credit-card" size={16} />
       Gestionar
