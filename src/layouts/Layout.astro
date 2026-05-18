@@ -10,7 +10,7 @@ import type { AccentFamily } from '@/lib/accent-colors'
 import Header from '@/components/Header.astro'
 import RecipesSidebar from '@/components/RecipesSidebar.astro'
 
-const { currentPage } = Astro.props;
+const { currentPage, title } = Astro.props;
 const { currentRecipe, showSideBar, showHeader = true, removeContentWrapper = false } = Astro.props;
 const showMobileNav = currentPage === 'recipes' || currentPage === 'ingredients' || currentPage === 'settings' || currentPage === 'production';
 const isAuthenticated = Boolean(Astro.locals.user && Astro.locals.session);
@@ -36,7 +36,7 @@ const accentCssVars = getAccentCssVars(accent, theme);
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/png" href="/favicon.png" />
 		<meta name="generator" content={Astro.generator} />
-		<title>{`KitchCalc - ${currentPage === 'recipes' ? 'Recetario' : currentPage === 'ingredients' ? 'Inventario' : currentPage === 'settings' ? 'Configuración' : ''}`}</title>
+		<title>{title ?? `KitchCalc - ${currentPage === 'recipes' ? 'Recetario' : currentPage === 'ingredients' ? 'Inventario' : currentPage === 'settings' ? 'Configuración' : currentPage === 'production' ? 'Planificador de Producción' : ''}`}</title>
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
