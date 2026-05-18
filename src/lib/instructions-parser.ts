@@ -273,24 +273,31 @@ export function markdownToEditorHtml(
       return _m;
     });
 
-    processed = processed.replace(/@([a-zA-Záéíóúñü][a-zA-Záéíóúñü0-9_-]*)/g, (_m, ref) => {
-      const key = ref.toLowerCase();
-      for (const ing of ingredients) {
-        if (
-          ing.name.toLowerCase() === key ||
-          ing.name.toLowerCase().replace(/\s+/g, "-") === key ||
-          ing.name.toLowerCase().replace(/\s+/g, "_") === key
-        ) {
-          return `<span data-type="ingredient" data-id="${ing.id}" contenteditable="false" class="tag-badge">${escapeText(ing.name)}</span>`;
+    processed = processed.replace(
+      /@([a-zA-Záéíóúñü][a-zA-Záéíóúñü0-9_-]*)/g,
+      (_m, ref) => {
+        const key = ref.toLowerCase();
+        for (const ing of ingredients) {
+          if (
+            ing.name.toLowerCase() === key ||
+            ing.name.toLowerCase().replace(/\s+/g, "-") === key ||
+            ing.name.toLowerCase().replace(/\s+/g, "_") === key
+          ) {
+            return `<span data-type="ingredient" data-id="${ing.id}" contenteditable="false" class="tag-badge">${escapeText(ing.name)}</span>`;
+          }
         }
-      }
-      return _m;
-    });
+        return _m;
+      },
+    );
 
     processed = processed.replace(
       /⏱\s*(\d+)\s*(seg|min|hr|h(?:ora)?s?)/gi,
       (_m, val: string, unit: string) => {
-        const u = unit.toLowerCase().startsWith("h") ? "hr" : unit.toLowerCase().startsWith("s") ? "seg" : "min";
+        const u = unit.toLowerCase().startsWith("h")
+          ? "hr"
+          : unit.toLowerCase().startsWith("s")
+            ? "seg"
+            : "min";
         return `<span data-type="timer" data-value="${val}" data-unit="${u}" contenteditable="false" class="timer-badge">⏱ ${val} ${u}</span>`;
       },
     );

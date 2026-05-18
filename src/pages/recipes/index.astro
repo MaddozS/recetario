@@ -107,7 +107,6 @@ const showUpgradeModal = Astro.url.searchParams.get("upgrade") === "1";
   {
     recipes.length === 0 ? (
       <section
-        transition:animate="slide"
         class="mx-auto max-w-3xl rounded-2xl border border-border bg-card p-8 shadow-md"
       >
         <EmptyState
@@ -274,13 +273,15 @@ const showUpgradeModal = Astro.url.searchParams.get("upgrade") === "1";
                 {
                   filteredRecipes && filteredRecipes.length > 0 ? (
                     <div id="filtered-grid" class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                      {filteredRecipes.map((r) => (
-                        <RecipeGridCard
-                          id={r.id}
-                          name={r.name}
-                          category={r.category}
-                          ingredientCount={r.ingredientCount}
-                        />
+                      {filteredRecipes.map((r, i) => (
+                        <div style={`--stagger-index:${i}`}>
+                          <RecipeGridCard
+                            id={r.id}
+                            name={r.name}
+                            category={r.category}
+                            ingredientCount={r.ingredientCount}
+                          />
+                        </div>
                       ))}
                     </div>
                   ) : (
@@ -297,7 +298,7 @@ const showUpgradeModal = Astro.url.searchParams.get("upgrade") === "1";
     )
   }
 
-  <dialog id="upgrade-modal" class="fixed inset-0 m-auto w-[92vw] max-w-md rounded-3xl border border-border p-0 shadow-2xl backdrop:bg-slate-900/40">
+  <dialog data-animated id="upgrade-modal" class="fixed inset-0 m-auto w-[92vw] max-w-md rounded-3xl border border-border p-0 shadow-2xl backdrop:bg-slate-900/40">
     <div class="rounded-3xl bg-card p-6">
       <div class="flex items-start gap-3">
         <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-accent-50 text-accent-600">
@@ -370,7 +371,9 @@ const showUpgradeModal = Astro.url.searchParams.get("upgrade") === "1";
         const a = document.createElement("a");
         a.href = `/recipes/${r.id}`;
         a.className =
-          "recipe-grid-card group block rounded-2xl border border-border bg-card p-5 shadow-sm transition-all hover:border-accent-300 hover:bg-accent-50/30 hover:shadow-md";
+          "recipe-grid-card group block rounded-2xl border border-border bg-card p-5 shadow-sm hover:border-accent-300 hover:bg-accent-50/30 hover:shadow-md active:scale-[0.98]";
+        a.style.transition =
+          "transform 160ms var(--ease-out), box-shadow 160ms var(--ease-out), border-color 160ms var(--ease-out), background-color 160ms var(--ease-out)";
         a.innerHTML = `
           <div class="flex items-start justify-between gap-3">
             <div class="min-w-0">
@@ -404,7 +407,11 @@ const showUpgradeModal = Astro.url.searchParams.get("upgrade") === "1";
         const grid = document.createElement("div");
         grid.id = "filtered-grid";
         grid.className = "grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3";
-        recipes.forEach((r) => grid.appendChild(createCard(r)));
+        recipes.forEach((r, i) => {
+          const card = createCard(r);
+          card.style.setProperty("--stagger-index", String(i));
+          grid.appendChild(card);
+        });
         wrapper.innerHTML = "";
         wrapper.appendChild(grid);
       }

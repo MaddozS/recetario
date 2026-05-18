@@ -181,7 +181,11 @@ const visibleSteps = cookingSteps;
         <div class="flex flex-1 flex-col items-center justify-center overflow-y-auto px-6 py-8">
           {visibleSteps.map((step, idx) => (
             <div
-              class={isHtml ? "cooking-mode-step cooking-mode-html-step" : "cooking-mode-step"}
+              class={
+                isHtml
+                  ? "cooking-mode-step cooking-mode-html-step"
+                  : "cooking-mode-step"
+              }
               data-step-index={idx}
               data-step-timers={JSON.stringify(step.timers)}
               style={{ display: idx === 0 ? "flex" : "none" }}
@@ -206,10 +210,27 @@ const visibleSteps = cookingSteps;
                       <div class="kitchen-timer-main">
                         <div class="kitchen-timer-time-area">
                           <span class="kitchen-timer-label">
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <svg
+                              class="h-3 w-3"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                              />
+                            </svg>
                             Temporizador
                           </span>
-                          <span class="kitchen-timer-display" data-timer-display>00:00</span>
+                          <span
+                            class="kitchen-timer-display"
+                            data-timer-display
+                          >
+                            00:00
+                          </span>
                         </div>
                         <div class="kitchen-timer-actions">
                           <button
@@ -218,7 +239,13 @@ const visibleSteps = cookingSteps;
                             data-timer-play
                             title="Iniciar"
                           >
-                            <svg class="w-4 h-4 ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                            <svg
+                              class="ml-0.5 h-4 w-4"
+                              fill="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path d="M8 5v14l11-7z" />
+                            </svg>
                           </button>
                           <button
                             type="button"
@@ -226,12 +253,28 @@ const visibleSteps = cookingSteps;
                             data-timer-reset
                             title="Reiniciar"
                           >
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                            <svg
+                              class="h-4 w-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                              />
+                            </svg>
                           </button>
                         </div>
                       </div>
                       <div class="kitchen-timer-progress">
-                        <div class="kitchen-timer-progress-fill" data-timer-progress style="width: 0%"></div>
+                        <div
+                          class="kitchen-timer-progress-fill"
+                          data-timer-progress
+                          style="width: 0%"
+                        />
                       </div>
                     </div>
                   ))}
@@ -394,10 +437,15 @@ const visibleSteps = cookingSteps;
 
     constructor(container: HTMLElement, value: number, unit: string) {
       this.container = container;
-      this.displayEl = container.querySelector<HTMLElement>("[data-timer-display]")!;
+      this.displayEl = container.querySelector<HTMLElement>(
+        "[data-timer-display]",
+      )!;
       this.playBtn = container.querySelector<HTMLElement>("[data-timer-play]");
-      this.resetBtn = container.querySelector<HTMLElement>("[data-timer-reset]");
-      this.progressFill = container.querySelector<HTMLElement>("[data-timer-progress]");
+      this.resetBtn =
+        container.querySelector<HTMLElement>("[data-timer-reset]");
+      this.progressFill = container.querySelector<HTMLElement>(
+        "[data-timer-progress]",
+      );
       this.initialSeconds =
         unit === "hr" ? value * 3600 : unit === "min" ? value * 60 : value;
       this.secondsLeft = this.initialSeconds;
@@ -439,7 +487,8 @@ const visibleSteps = cookingSteps;
         if (this.secondsLeft <= 0) {
           this.playBtn.innerHTML =
             '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
-          this.playBtn.className = "kitchen-timer-btn kitchen-timer-btn--expired";
+          this.playBtn.className =
+            "kitchen-timer-btn kitchen-timer-btn--expired";
         } else if (this.running) {
           this.playBtn.innerHTML =
             '<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/></svg>';
@@ -457,7 +506,9 @@ const visibleSteps = cookingSteps;
         } else {
           const pct =
             this.initialSeconds > 0
-              ? ((this.initialSeconds - this.secondsLeft) / this.initialSeconds) * 100
+              ? ((this.initialSeconds - this.secondsLeft) /
+                  this.initialSeconds) *
+                100
               : 0;
           this.progressFill.style.width = Math.min(pct, 100) + "%";
         }
@@ -543,7 +594,10 @@ const visibleSteps = cookingSteps;
 
     private playBeep() {
       try {
-        const AC = window.AudioContext || (window as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+        const AC =
+          window.AudioContext ||
+          (window as { webkitAudioContext?: typeof AudioContext })
+            .webkitAudioContext;
         if (!AC) return;
         const audioCtx = new AC();
         const osc = audioCtx.createOscillator();
@@ -553,7 +607,10 @@ const visibleSteps = cookingSteps;
         osc.frequency.value = 880;
         osc.type = "sine";
         gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.6);
+        gain.gain.exponentialRampToValueAtTime(
+          0.01,
+          audioCtx.currentTime + 0.6,
+        );
         osc.start(audioCtx.currentTime);
         osc.stop(audioCtx.currentTime + 0.6);
         setTimeout(() => {

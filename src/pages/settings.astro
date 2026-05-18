@@ -274,6 +274,8 @@ if (feedback) {
     function updateLivePreview(theme: string, accent: string) {
       html.dataset.theme = theme;
       html.dataset.accent = accent;
+      html.dataset.appTheme = theme;
+      html.dataset.appAccent = accent;
 
       if (theme === "dark") {
         html.classList.add("dark");
@@ -402,7 +404,8 @@ if (feedback) {
           const value = btn.dataset.accentOption;
           if (!value) return;
 
-          const currentTheme = html.dataset.theme || "light";
+          const currentTheme =
+            html.dataset.appTheme || html.dataset.theme || "light";
           updateLivePreview(currentTheme, value);
           updateAccentOptions(value);
 

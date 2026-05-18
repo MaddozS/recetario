@@ -112,10 +112,7 @@ const currentPage = "production";
         />
       </div>
     ) : (
-      <div
-        class="mx-auto max-w-5xl space-y-6 px-4 pb-12"
-        transition:animate="slide"
-      >
+      <div class="mx-auto max-w-5xl space-y-6 px-4 pb-12">
         <h1 class="text-foreground flex items-center gap-2 text-xl font-bold">
           <Icon name="lucide:factory" size={24} class="text-accent-600" />
           Planificador de Producción
@@ -136,7 +133,7 @@ const currentPage = "production";
               />
               <ProductionFinancialSummary summary={results.summary} />
               <ProductionRecipeBreakdown recipes={results.summary.perRecipe} />
-              <div class="flex justify-center no-print">
+              <div class="no-print flex justify-center">
                 <button
                   onclick="window.print()"
                   class="border-border bg-card text-muted-foreground hover:bg-background inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border px-6 py-3 text-sm font-bold transition-colors"
@@ -153,7 +150,12 @@ const currentPage = "production";
   }
 </Layout>
 
-<script type="application/json" id="production-data" is:inline set:html={recipeDataJson}></script>
+<script
+  type="application/json"
+  id="production-data"
+  is:inline
+  set:html={recipeDataJson}
+/>
 
 <script>
   import { calculateProduction } from "../lib/production-calculator";
@@ -191,7 +193,9 @@ const currentPage = "production";
 
   function renderIngredientsTable(ingredients: any[]): string {
     if (ingredients.length === 0) return "";
-    const rows = ingredients.map((ing) => `
+    const rows = ingredients
+      .map(
+        (ing) => `
         <tr class="hover:bg-hover-muted transition-colors dark:hover:bg-gray-950/70">
           <td class="px-6 py-4 break-words">
             <div>
@@ -203,13 +207,19 @@ const currentPage = "production";
           <td class="text-secondary-foreground px-6 py-4 font-mono text-sm tabular-nums whitespace-nowrap">${formatCurrency(ing.unitCost)}/${ing.unit}</td>
           <td class="text-foreground px-6 py-4 font-mono font-semibold tabular-nums whitespace-nowrap">${formatCurrency(ing.totalCost)}</td>
           <td class="px-6 py-4 break-words">
-            <div class="flex flex-wrap gap-1.5">${ing.sourceRecipes.map((src) => `
+            <div class="flex flex-wrap gap-1.5">${ing.sourceRecipes
+              .map(
+                (src) => `
               <span class="bg-muted text-secondary-foreground inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium">
                 <span class="truncate max-w-[20ch]">${escHtml(src.recipeName)}</span>
                 <span class="text-subtle-foreground shrink-0">(${src.quantity < 1 ? src.quantity.toFixed(2) : Number.isInteger(src.quantity) ? src.quantity : src.quantity.toFixed(1)} ${ing.unit})</span>
-              </span>`).join("")}</div>
+              </span>`,
+              )
+              .join("")}</div>
           </td>
-        </tr>`).join("");
+        </tr>`,
+      )
+      .join("");
 
     return `<div class="production-sheet ingredients-table border-border bg-card overflow-hidden rounded-2xl border shadow-sm">
   <div class="border-border border-b px-6 py-4">
@@ -228,24 +238,50 @@ const currentPage = "production";
   }
 
   function renderFinancialSummary(summary: any): string {
-    const { totalIngredientsCost, totalOperationalCost, projectedRevenue, estimatedProfit, effectiveMargin } = summary;
+    const {
+      totalIngredientsCost,
+      totalOperationalCost,
+      projectedRevenue,
+      estimatedProfit,
+      effectiveMargin,
+    } = summary;
     const noRevenue = projectedRevenue <= 0;
-    const mobileCard = (icon: string, iconBg: string, iconColor: string, label: string, value: string, sub: string, extraClasses: string) =>
+    const mobileCard = (
+      icon: string,
+      iconBg: string,
+      iconColor: string,
+      label: string,
+      value: string,
+      sub: string,
+      extraClasses: string,
+    ) =>
       `<div class="w-[min(68vw,19rem)] min-w-[15.5rem] snap-start bg-card p-5 rounded-2xl border border-border shadow-sm flex flex-col justify-between ${extraClasses}">
         <p class="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-subtle-foreground mb-4"><span class="w-7 h-7 rounded-lg ${iconBg} ${iconColor} flex items-center justify-center">${icon}</span>${label}</p>
         <div><p class="text-2xl font-mono font-semibold text-foreground tabular-nums leading-none truncate">${value}</p><p class="text-[11px] font-semibold text-subtle-foreground mt-2">${sub}</p></div>
       </div>`;
 
-    const desktopCard = (icon: string, iconBg: string, iconColor: string, label: string, value: string, sub: string, extraClasses: string) =>
+    const desktopCard = (
+      icon: string,
+      iconBg: string,
+      iconColor: string,
+      label: string,
+      value: string,
+      sub: string,
+      extraClasses: string,
+    ) =>
       `<div class="bg-card p-5 rounded-2xl border border-border shadow-sm flex flex-col justify-between ${extraClasses}">
         <p class="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-subtle-foreground mb-4"><span class="w-7 h-7 rounded-lg ${iconBg} ${iconColor} flex items-center justify-center">${icon}</span>${label}</p>
         <div><p class="text-2xl font-mono font-semibold text-foreground tabular-nums leading-none truncate">${value}</p><p class="text-[11px] font-semibold text-subtle-foreground mt-2">${sub}</p></div>
       </div>`;
 
-    const downIcon = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>';
-    const pieIcon = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>';
-    const pkgIcon = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 7v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7"/><polyline points="12 2 2 7 22 7 12 2"/></svg>';
-    const dollarIcon = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>';
+    const downIcon =
+      '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>';
+    const pieIcon =
+      '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>';
+    const pkgIcon =
+      '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 7v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7"/><polyline points="12 2 2 7 22 7 12 2"/></svg>';
+    const dollarIcon =
+      '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>';
 
     return `<div class="production-sheet financial-summary">
   <div class="sm:hidden relative -mx-4 px-5">
@@ -278,18 +314,26 @@ const currentPage = "production";
 
   function renderRecipeBreakdown(recipes: any[]): string {
     if (recipes.length === 0) return "";
-    const items = recipes.map((r) => {
-      const bestId = r.presentations.reduce((best: any, p: any) => {
-        if (!p.revenue || p.revenue <= 0 || r.totalCost <= 0) return best;
-        const m = ((p.revenue - r.totalCost) / p.revenue) * 100;
-        return m > best.margin ? { id: p.id, margin: m } : best;
-      }, { id: -1, margin: -Infinity }).id;
+    const items = recipes
+      .map((r) => {
+        const bestId = r.presentations.reduce(
+          (best: any, p: any) => {
+            if (!p.revenue || p.revenue <= 0 || r.totalCost <= 0) return best;
+            const m = ((p.revenue - r.totalCost) / p.revenue) * 100;
+            return m > best.margin ? { id: p.id, margin: m } : best;
+          },
+          { id: -1, margin: -Infinity },
+        ).id;
 
-      const presRows = r.presentations.map((p: any) => {
-        const margin = p.revenue > 0 && r.totalCost > 0 ? ((p.revenue - r.totalCost) / p.revenue) * 100 : null;
-        const isSel = p.id === r.selectedPresentationId;
-        const isBest = p.id === bestId;
-        return `<tr class="hover:bg-hover-muted dark:hover:bg-gray-950/70${isSel ? " bg-accent-50/50" : ""}">
+        const presRows = r.presentations
+          .map((p: any) => {
+            const margin =
+              p.revenue > 0 && r.totalCost > 0
+                ? ((p.revenue - r.totalCost) / p.revenue) * 100
+                : null;
+            const isSel = p.id === r.selectedPresentationId;
+            const isBest = p.id === bestId;
+            return `<tr class="hover:bg-hover-muted dark:hover:bg-gray-950/70${isSel ? " bg-accent-50/50" : ""}">
           <td class="text-foreground px-4 py-3 font-medium align-top">
             <div class="text-foreground font-medium">${escHtml(p.name)}</div>
             <div class="mt-1 flex flex-wrap gap-1">${isSel ? '<span class="bg-accent-100 text-accent-700 border-accent-200 inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-bold whitespace-nowrap">Seleccionada</span>' : ""}${isBest && margin !== null ? '<span class="bg-success-bg text-success border-success-border inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-bold whitespace-nowrap">Más rentable</span>' : ""}</div>
@@ -300,9 +344,10 @@ const currentPage = "production";
           <td class="text-foreground px-4 py-3 font-mono font-semibold tabular-nums">${p.revenue > 0 ? formatCurrency(p.revenue) : '<span class="text-warning">Sin precio</span>'}</td>
           <td class="px-4 py-3 font-mono font-semibold tabular-nums">${margin !== null ? `<span class="${marginColor(margin)}">${margin.toFixed(1)}%</span>` : '<span class="text-muted-foreground">—</span>'}</td>
         </tr>`;
-      }).join("");
+          })
+          .join("");
 
-      return `<details class="border-border bg-card overflow-hidden rounded-2xl border shadow-sm">
+        return `<details class="border-border bg-card overflow-hidden rounded-2xl border shadow-sm">
     <summary class="hover:bg-muted flex cursor-pointer items-center justify-between gap-4 px-6 py-4 transition-colors">
       <div class="min-w-0"><div class="flex items-center gap-2"><h3 class="text-foreground truncate text-base font-bold">${escHtml(r.recipeName)}</h3>${r.category ? `<span class="bg-muted text-muted-foreground border-border shrink-0 rounded-full border px-2.5 py-0.5 text-[11px] font-semibold">${escHtml(r.category)}</span>` : ""}</div>
         <p class="text-muted-foreground mt-0.5 text-xs">${r.batches} batch${r.batches !== 1 ? "es" : ""} · Insumos: ${formatCurrency(r.ingredientsCost)} · Operativo: ${formatCurrency(r.operationalCost)} · Total: ${formatCurrency(r.totalCost)}</p>
@@ -320,7 +365,8 @@ const currentPage = "production";
       ${r.presentations.length > 0 ? `<div><h4 class="text-muted-foreground mb-3 text-xs font-bold tracking-[0.16em] uppercase">Presentaciones</h4><div class="border-border overflow-x-auto rounded-xl border"><table class="min-w-full text-left text-sm"><thead class="bg-background text-muted-foreground text-[11px] font-bold tracking-[0.16em] uppercase"><tr><th class="px-4 py-3">Presentación</th><th class="px-4 py-3">Unidades totales</th><th class="px-4 py-3">Costo unitario</th><th class="px-4 py-3">Precio venta</th><th class="px-4 py-3">Ingreso</th><th class="px-4 py-3">Margen</th></tr></thead><tbody class="divide-border-light divide-y dark:divide-gray-950">${presRows}</tbody></table></div></div>` : '<div class="bg-muted rounded-xl p-4 text-center"><p class="text-muted-foreground text-sm">Sin presentaciones configuradas</p></div>'}
     </div>
   </details>`;
-    }).join("");
+      })
+      .join("");
 
     return `<div class="production-sheet recipe-breakdown space-y-4">
   <h2 class="text-foreground flex items-center gap-2 text-lg font-bold"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-accent-600"><path d="M3 7v6a4 4 0 0 0 4 4h10a4 4 0 0 0 4-4V7"/><path d="M12 3v16"/><path d="m8 11 4-4 4 4"/></svg>Desglose por receta</h2>${items}</div>`;
@@ -328,12 +374,29 @@ const currentPage = "production";
 
   function readSelections(isPro: boolean): any[] {
     const sel: any[] = [];
-    document.querySelectorAll<HTMLInputElement>('#recipe-selector-form input[name="recipe_id"]:checked').forEach((cb) => {
-      const recipeId = Number(cb.value);
-      const row = cb.closest("[data-recipe-row]") as HTMLElement;
-      if (!isPro && sel.length >= BASIC_LIMIT) return;
-      sel.push({ recipeId, batches: Number(row?.querySelector<HTMLInputElement>('input[name="batches"]')?.value) || 1, presentationId: Number(row?.querySelector<HTMLSelectElement>('select[name="presentation_id"]')?.value) || undefined });
-    });
+    document
+      .querySelectorAll<HTMLInputElement>(
+        '#recipe-selector-form input[name="recipe_id"]:checked',
+      )
+      .forEach((cb) => {
+        const recipeId = Number(cb.value);
+        const row = cb.closest("[data-recipe-row]") as HTMLElement;
+        if (!isPro && sel.length >= BASIC_LIMIT) return;
+        sel.push({
+          recipeId,
+          batches:
+            Number(
+              row?.querySelector<HTMLInputElement>('input[name="batches"]')
+                ?.value,
+            ) || 1,
+          presentationId:
+            Number(
+              row?.querySelector<HTMLSelectElement>(
+                'select[name="presentation_id"]',
+              )?.value,
+            ) || undefined,
+        });
+      });
     return sel;
   }
 
@@ -341,7 +404,9 @@ const currentPage = "production";
     const p = new URLSearchParams();
     p.set("recipes", selections.map((s) => s.recipeId).join(","));
     p.set("batches", selections.map((s) => s.batches).join(","));
-    const presIds = selections.map((s) => s.presentationId).filter((id) => id !== undefined);
+    const presIds = selections
+      .map((s) => s.presentationId)
+      .filter((id) => id !== undefined);
     if (presIds.length > 0) p.set("presentations", presIds.join(","));
     history.replaceState(null, "", `/produccion?${p.toString()}`);
   }
@@ -352,9 +417,11 @@ const currentPage = "production";
   }
 
   function recalculate() {
-    const isPro = !document.querySelector('[data-basic-limit]');
+    const isPro = !document.querySelector("[data-basic-limit]");
     const sel = readSelections(isPro);
-    const recipes = sel.map((s) => recipeData.find((r: any) => r.id === s.recipeId)).filter(Boolean);
+    const recipes = sel
+      .map((s) => recipeData.find((r: any) => r.id === s.recipeId))
+      .filter(Boolean);
 
     const resultsEl = document.getElementById("production-results");
     if (!resultsEl) return;
@@ -367,7 +434,11 @@ const currentPage = "production";
     }
 
     const result = calculateProduction(sel, recipes);
-    resultsEl.innerHTML = renderIngredientsTable(result.consolidatedIngredients) + renderFinancialSummary(result.summary) + renderRecipeBreakdown(result.summary.perRecipe) + '<div class="flex justify-center no-print"><button onclick="window.print()" class="border-border bg-card text-muted-foreground hover:bg-background inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border px-6 py-3 text-sm font-bold transition-colors"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> Imprimir hoja de producción</button></div>';
+    resultsEl.innerHTML =
+      renderIngredientsTable(result.consolidatedIngredients) +
+      renderFinancialSummary(result.summary) +
+      renderRecipeBreakdown(result.summary.perRecipe) +
+      '<div class="flex justify-center no-print"><button onclick="window.print()" class="border-border bg-card text-muted-foreground hover:bg-background inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border px-6 py-3 text-sm font-bold transition-colors"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> Imprimir hoja de producción</button></div>';
     updateURL(sel);
     updateCounter(sel.length);
   }
@@ -382,12 +453,19 @@ const currentPage = "production";
     if (calcBtn) calcBtn.addEventListener("click", () => recalculate());
 
     const isPro = !form.hasAttribute("data-basic-limit");
-    function onChange() { clearTimeout(debounceTimer); debounceTimer = setTimeout(recalculate, 150); }
+    function onChange() {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(recalculate, 150);
+    }
 
     function syncDisabledStates() {
       if (isPro || !form) return;
-      const checkboxes = form.querySelectorAll<HTMLInputElement>('input[name="recipe_id"]');
-      const checkedCount = form.querySelectorAll<HTMLInputElement>('input[name="recipe_id"]:checked').length;
+      const checkboxes = form.querySelectorAll<HTMLInputElement>(
+        'input[name="recipe_id"]',
+      );
+      const checkedCount = form.querySelectorAll<HTMLInputElement>(
+        'input[name="recipe_id"]:checked',
+      ).length;
       const atLimit = checkedCount >= BASIC_LIMIT;
       checkboxes.forEach((cb) => {
         if (!cb.checked) {
@@ -416,7 +494,9 @@ const currentPage = "production";
           controls?.classList.add("hidden");
         }
         if (!isPro) {
-          const checkedCount = form.querySelectorAll<HTMLInputElement>('input[name="recipe_id"]:checked').length;
+          const checkedCount = form.querySelectorAll<HTMLInputElement>(
+            'input[name="recipe_id"]:checked',
+          ).length;
           if ((t as HTMLInputElement).checked && checkedCount > BASIC_LIMIT) {
             (t as HTMLInputElement).checked = false;
             row?.classList.remove("bg-accent-50", "ring-accent-200", "ring-1");
@@ -428,7 +508,10 @@ const currentPage = "production";
           syncDisabledStates();
         }
         onChange();
-      } else if (t.matches('input[name="batches"]') || t.matches('select[name="presentation_id"]')) {
+      } else if (
+        t.matches('input[name="batches"]') ||
+        t.matches('select[name="presentation_id"]')
+      ) {
         onChange();
       }
     });
@@ -441,7 +524,11 @@ const currentPage = "production";
   function init() {
     const dataEl = document.getElementById("production-data");
     if (dataEl) {
-      try { recipeData = JSON.parse(dataEl.textContent || "[]"); } catch { recipeData = []; }
+      try {
+        recipeData = JSON.parse(dataEl.textContent || "[]");
+      } catch {
+        recipeData = [];
+      }
     }
     bindEvents();
   }

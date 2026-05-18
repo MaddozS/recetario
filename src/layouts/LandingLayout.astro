@@ -65,8 +65,8 @@ const accentCssVars = getAccentCssVars("coral", landingTheme);
         opacity: 0;
         transform: translateY(24px);
         transition:
-          opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
-          transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+          opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+          transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
       }
       [data-reveal].reveal-visible {
         opacity: 1;
@@ -77,8 +77,8 @@ const accentCssVars = getAccentCssVars("coral", landingTheme);
         opacity: 0;
         transform: translateY(20px);
         transition:
-          opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
-          transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+          opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+          transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         transition-delay: calc(var(--reveal-delay, 0ms));
       }
       .reveal-visible .reveal-item {
@@ -97,9 +97,9 @@ const accentCssVars = getAccentCssVars("coral", landingTheme);
 
       .card-hover {
         transition:
-          transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-          box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-          border-color 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+          transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+          box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+          border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1);
       }
       .card-hover:hover {
         transform: translateY(-6px);
@@ -163,7 +163,6 @@ const accentCssVars = getAccentCssVars("coral", landingTheme);
           localStorage.getItem("kitchcalc_landing_theme") || "light";
         const html = document.documentElement;
         html.dataset.theme = theme;
-        html.dataset.accent = "coral";
         if (theme === "dark") {
           html.classList.add("dark");
         } else {

@@ -30,7 +30,7 @@ const accentCssVars = getAccentCssVars(accent, theme);
 ---
 
 <!doctype html>
-<html lang="en" class:list={[theme === 'dark' ? 'dark' : '']} data-theme={theme} data-accent={accent} style={accentCssVars}>
+<html lang="en" class:list={[theme === 'dark' ? 'dark' : '']} data-theme={theme} data-accent={accent} data-app-accent={accent} data-app-theme={theme} style={accentCssVars}>
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
@@ -57,10 +57,10 @@ const accentCssVars = getAccentCssVars(accent, theme);
         showSideBar && (
           <>
             <!-- Mobile Overlay -->
-            <div id="mobile-sidebar-overlay" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 hidden lg:hidden opacity-0 transition-opacity duration-300"></div>
+            <div id="mobile-sidebar-overlay" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden lg:hidden opacity-0" style="transition: opacity 250ms var(--ease-out)"></div>
             
             <!-- Sidebar -->
-            <aside id="app-sidebar" class="fixed inset-y-0 left-0 z-50 w-[85%] max-w-[320px] -translate-x-full lg:translate-x-0 lg:static lg:w-[320px] xl:w-90 flex-none border-r border-border bg-card lg:overflow-y-auto flex flex-col transition-transform duration-300 ease-in-out shadow-2xl lg:shadow-none" transition:animate="none">
+            <aside id="app-sidebar" class="fixed inset-y-0 left-0 z-[60] w-[85%] max-w-[320px] -translate-x-full lg:translate-x-0 lg:static lg:w-[320px] xl:w-90 flex-none border-r border-border bg-card lg:overflow-y-auto flex flex-col shadow-2xl lg:shadow-none" style="transition: transform 250ms var(--ease-out)" transition:animate="none">
               <RecipesSidebar
                 recipes={recipes}
                 currentRecipe={currentRecipe}
@@ -76,7 +76,7 @@ const accentCssVars = getAccentCssVars(accent, theme);
         !removeContentWrapper ? 'p-4 md:p-8 pb-24 lg:pb-8' : '',
         "flex-1 overflow-y-auto w-full bg-linear-to-br from-background to-muted"
       ]}>
-        <div class="max-w-7xl mx-auto" transition:name="app-content">
+        <div class="max-w-7xl mx-auto" transition:name="app-content" transition:animate="slide">
           <slot />
         </div>
       </main>
@@ -85,7 +85,7 @@ const accentCssVars = getAccentCssVars(accent, theme);
     {
       showMobileNav && (
         <nav
-          class="lg:hidden fixed inset-x-0 bottom-0 z-50 px-3 pb-[calc(env(safe-area-inset-bottom)+0.45rem)]"
+          class="lg:hidden fixed inset-x-0 bottom-0 z-40 px-3 pb-[calc(env(safe-area-inset-bottom)+0.45rem)]"
           transition:name="mobile-nav"
           transition:animate="none"
         >
@@ -152,34 +152,6 @@ const accentCssVars = getAccentCssVars(accent, theme);
 </style>
 
 <style is:global>
-  @keyframes appContentEnter {
-    from {
-      opacity: 0;
-      transform: translateY(10px) scale(0.994);
-      filter: blur(5px);
-    }
-
-    to {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-      filter: blur(0);
-    }
-  }
-
-  @keyframes appContentExit {
-    from {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-      filter: blur(0);
-    }
-
-    to {
-      opacity: 0;
-      transform: translateY(-4px) scale(0.998);
-      filter: blur(2px);
-    }
-  }
-
   @media (prefers-reduced-motion: no-preference) {
     ::view-transition-group(root) {
       z-index: 0;
@@ -189,26 +161,6 @@ const accentCssVars = getAccentCssVars(accent, theme);
     ::view-transition-new(root) {
       animation: none;
       mix-blend-mode: normal;
-    }
-
-    ::view-transition-group(app-content) {
-      z-index: 10;
-      animation-duration: 380ms;
-      animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
-    }
-
-    ::view-transition-old(app-content),
-    ::view-transition-new(app-content) {
-      mix-blend-mode: normal;
-      transform-origin: center top;
-    }
-
-    ::view-transition-old(app-content) {
-      animation: appContentExit 220ms cubic-bezier(0.4, 0, 0.9, 1) both;
-    }
-
-    ::view-transition-new(app-content) {
-      animation: appContentEnter 380ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
     }
 
     ::view-transition-group(mobile-nav) {
@@ -238,8 +190,8 @@ const accentCssVars = getAccentCssVars(accent, theme);
 
   function applyTheme() {
     const html = document.documentElement;
-    const theme = html.dataset.theme || 'light';
-    const accent = html.dataset.accent || 'indigo';
+    const theme = html.dataset.appTheme || 'light';
+    const accent = html.dataset.appAccent || 'indigo';
 
     if (theme === 'dark') {
       html.classList.add('dark');

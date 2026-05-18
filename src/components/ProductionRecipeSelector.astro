@@ -59,9 +59,20 @@ for (const r of recipes) {
         </a>
       </div>
     ) : (
-      <form id="recipe-selector-form" class="space-y-4" data-basic-limit={!isProUser ? "" : undefined}>
+      <form
+        id="recipe-selector-form"
+        class="space-y-4"
+        data-basic-limit={!isProUser ? "" : undefined}
+      >
         {!isProUser && (
-          <div class="border-warning-border bg-warning-bg rounded-xl border p-4" id="upgrade-banner" class:list={["hidden", selectedIds.size >= maxRecipes ? "" : "hidden"]}>
+          <div
+            class="border-warning-border bg-warning-bg rounded-xl border p-4"
+            id="upgrade-banner"
+            class:list={[
+              "hidden",
+              selectedIds.size >= maxRecipes ? "" : "hidden",
+            ]}
+          >
             <p class="text-warning text-sm font-semibold">
               Límite de {maxRecipes} recetas alcanzado en plan Basic.
             </p>
@@ -87,7 +98,7 @@ for (const r of recipes) {
                       <label
                         data-recipe-row
                         class:list={[
-                          "flex flex-wrap cursor-pointer items-center gap-3 rounded-xl p-3 transition-colors",
+                          "flex cursor-pointer flex-wrap items-center gap-3 rounded-xl p-3 transition-colors",
                           isSelected
                             ? "bg-accent-50 ring-accent-200 ring-1"
                             : "hover:bg-muted",
@@ -110,7 +121,10 @@ for (const r of recipes) {
                             {recipe.ingredientCount} ingredientes
                           </span>
                         </span>
-                        <span class="recipe-controls flex shrink-0 items-center gap-2 w-full sm:w-auto justify-end sm:justify-start" class:list={[isSelected ? '' : 'hidden']}>
+                        <span
+                          class="recipe-controls flex w-full shrink-0 items-center justify-end gap-2 sm:w-auto sm:justify-start"
+                          class:list={[isSelected ? "" : "hidden"]}
+                        >
                           {(() => {
                             const sel = selections.find(
                               (s) => s.recipeId === recipe.id,
@@ -120,24 +134,21 @@ for (const r of recipes) {
                             );
                             return (
                               <>
-                                {presentations &&
-                                  presentations.length > 1 && (
-                                    <select
-                                      name="presentation_id"
-                                      class="border-border bg-background text-foreground focus:ring-accent-500/20 focus:border-accent-500 rounded-lg border px-2 py-2 text-xs font-medium focus:ring-2 focus:outline-none"
-                                    >
-                                      {presentations.map((p) => (
-                                        <option
-                                          value={p.id}
-                                          selected={
-                                            p.id === sel?.presentationId
-                                          }
-                                        >
-                                          {p.name}
-                                        </option>
-                                      ))}
-                                    </select>
-                                  )}
+                                {presentations && presentations.length > 1 && (
+                                  <select
+                                    name="presentation_id"
+                                    class="border-border bg-background text-foreground focus:ring-accent-500/20 focus:border-accent-500 rounded-lg border px-2 py-2 text-xs font-medium focus:ring-2 focus:outline-none"
+                                  >
+                                    {presentations.map((p) => (
+                                      <option
+                                        value={p.id}
+                                        selected={p.id === sel?.presentationId}
+                                      >
+                                        {p.name}
+                                      </option>
+                                    ))}
+                                  </select>
+                                )}
                                 <span class="text-muted-foreground text-[11px] font-semibold">
                                   Batches:
                                 </span>
@@ -167,7 +178,7 @@ for (const r of recipes) {
                 <label
                   data-recipe-row
                   class:list={[
-                    "flex flex-wrap cursor-pointer items-center gap-3 rounded-xl p-3 transition-colors",
+                    "flex cursor-pointer flex-wrap items-center gap-3 rounded-xl p-3 transition-colors",
                     isSelected
                       ? "bg-accent-50 ring-accent-200 ring-1"
                       : "hover:bg-muted",
@@ -190,14 +201,15 @@ for (const r of recipes) {
                       {recipe.ingredientCount} ingredientes
                     </span>
                   </span>
-                  <span class="recipe-controls flex shrink-0 items-center gap-2 w-full sm:w-auto justify-end sm:justify-start" class:list={[isSelected ? '' : 'hidden']}>
+                  <span
+                    class="recipe-controls flex w-full shrink-0 items-center justify-end gap-2 sm:w-auto sm:justify-start"
+                    class:list={[isSelected ? "" : "hidden"]}
+                  >
                     {(() => {
                       const sel = selections.find(
                         (s) => s.recipeId === recipe.id,
                       );
-                      const presentations = recipePresentations?.get(
-                        recipe.id,
-                      );
+                      const presentations = recipePresentations?.get(recipe.id);
                       return (
                         <>
                           {presentations && presentations.length > 1 && (
@@ -236,7 +248,8 @@ for (const r of recipes) {
 
         <div class="flex items-center justify-between pt-2">
           <span class="text-muted-foreground text-sm">
-            <span id="selected-count">{selections.length}</span> de {recipes.length} recetas seleccionadas
+            <span id="selected-count">{selections.length}</span> de{" "}
+            {recipes.length} recetas seleccionadas
           </span>
           <button
             id="calc-production-btn"

@@ -35,46 +35,47 @@ const recipeIngredientIdsJson = JSON.stringify(recipeIngredientIds);
     data-form-id={recipeEditFormId}
   >
     <div
-      class="instructions-toolbar border-border bg-muted flex items-center gap-1 rounded-t-xl border px-3 py-2 overflow-x-auto"
+      class="instructions-toolbar border-border bg-muted flex items-center gap-1 overflow-x-auto rounded-t-xl border px-3 py-2"
     >
       <button
         type="button"
         class="toolbar-btn text-muted-foreground hover:bg-accent-50 hover:text-accent-600 inline-flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-lg transition-colors"
         data-toolbar-btn="bold"
-        title="Negritas"
-      ><Icon name="lucide:bold" size={16} /></button>
+        title="Negritas"><Icon name="lucide:bold" size={16} /></button
+      >
       <button
         type="button"
         class="toolbar-btn text-muted-foreground hover:bg-accent-50 hover:text-accent-600 inline-flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-lg transition-colors"
         data-toolbar-btn="italic"
-        title="Cursiva"
-      ><Icon name="lucide:italic" size={16} /></button>
-      <div class="wysiwyg-separator shrink-0 mx-1"></div>
+        title="Cursiva"><Icon name="lucide:italic" size={16} /></button
+      >
+      <div class="wysiwyg-separator mx-1 shrink-0"></div>
       <button
         type="button"
         class="toolbar-btn text-muted-foreground hover:bg-accent-50 hover:text-accent-600 inline-flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-lg transition-colors"
         data-toolbar-btn="numbered-list"
         title="Lista numerada"
-      ><Icon name="lucide:list-ordered" size={16} /></button>
+        ><Icon name="lucide:list-ordered" size={16} /></button
+      >
       <button
         type="button"
         class="toolbar-btn text-muted-foreground hover:bg-accent-50 hover:text-accent-600 inline-flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-lg transition-colors"
         data-toolbar-btn="bullet-list"
-        title="Lista con viñetas"
-      ><Icon name="lucide:list" size={16} /></button>
-      <div class="wysiwyg-separator shrink-0 mx-1"></div>
+        title="Lista con viñetas"><Icon name="lucide:list" size={16} /></button
+      >
+      <div class="wysiwyg-separator mx-1 shrink-0"></div>
       <button
         type="button"
         class="toolbar-btn text-muted-foreground hover:bg-accent-50 hover:text-accent-600 inline-flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-lg transition-colors"
         data-toolbar-btn="heading"
-        title="Sección"
-      ><Icon name="lucide:heading" size={16} /></button>
-      <div class="wysiwyg-separator shrink-0 mx-1"></div>
+        title="Sección"><Icon name="lucide:heading" size={16} /></button
+      >
+      <div class="wysiwyg-separator mx-1 shrink-0"></div>
 
       <div class="relative shrink-0">
         <button
           type="button"
-          class="inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-lg px-3 text-sm font-medium text-accent-700 bg-accent-50 hover:bg-accent-100 transition-colors whitespace-nowrap"
+          class="text-accent-700 bg-accent-50 hover:bg-accent-100 inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-lg px-3 text-sm font-medium whitespace-nowrap transition-colors"
           data-ingredient-btn
           title="Insertar ingrediente"
         >
@@ -85,13 +86,14 @@ const recipeIngredientIdsJson = JSON.stringify(recipeIngredientIds);
         <div
           class="ingredient-dropdown bg-card border-border fixed z-30 hidden overflow-hidden rounded-xl border shadow-xl"
           data-ingredient-dropdown
-        ></div>
+        >
+        </div>
       </div>
 
       <div class="relative shrink-0">
         <button
           type="button"
-          class="inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-lg px-3 text-sm font-medium text-secondary-foreground bg-muted hover:bg-hover-muted transition-colors whitespace-nowrap"
+          class="text-secondary-foreground bg-muted hover:bg-hover-muted inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-lg px-3 text-sm font-medium whitespace-nowrap transition-colors"
           data-timer-btn
           title="Insertar temporizador"
         >
@@ -99,10 +101,7 @@ const recipeIngredientIdsJson = JSON.stringify(recipeIngredientIds);
           <span class="hidden sm:inline">Temporizador</span>
           <Icon name="lucide:chevron-down" size={14} />
         </button>
-        <div
-          class="timer-popover fixed z-30 hidden"
-          data-timer-popover
-        ></div>
+        <div class="timer-popover fixed z-30" data-timer-popover></div>
       </div>
     </div>
 
@@ -111,13 +110,15 @@ const recipeIngredientIdsJson = JSON.stringify(recipeIngredientIds);
         class="contenteditable-editor bg-background text-secondary-foreground min-h-72 w-full border-0 p-4 text-sm leading-relaxed outline-none focus:ring-0 lg:min-h-88"
         contenteditable="true"
         data-contenteditable
-      ></div>
+      >
+      </div>
     </div>
 
     <div
-      class="mention-dropdown bg-card border-border fixed z-30 hidden overflow-hidden rounded-xl border shadow-xl"
+      class="mention-dropdown bg-card border-border fixed z-30 overflow-hidden rounded-xl border shadow-xl"
       data-mention-dropdown
-    ></div>
+    >
+    </div>
   </div>
 </div>
 
@@ -130,7 +131,8 @@ const recipeIngredientIdsJson = JSON.stringify(recipeIngredientIds);
     if (!editor || editor.dataset.editorBound) return;
     editor.dataset.editorBound = "1";
 
-    const rawIngredients: { id: number; name: string }[] = editor.dataset.ingredients
+    const rawIngredients: { id: number; name: string }[] = editor.dataset
+      .ingredients
       ? JSON.parse(editor.dataset.ingredients)
       : [];
     const recipeIds: number[] = editor.dataset.recipeIngredientIds
@@ -200,10 +202,7 @@ const recipeIngredientIdsJson = JSON.stringify(recipeIngredientIds);
       return span;
     }
 
-    function createTimerSpan(
-      value: string,
-      unit: string,
-    ): HTMLSpanElement {
+    function createTimerSpan(value: string, unit: string): HTMLSpanElement {
       const span = document.createElement("span");
       span.contentEditable = "false";
       span.dataset.type = "timer";
@@ -235,10 +234,7 @@ const recipeIngredientIdsJson = JSON.stringify(recipeIngredientIds);
       if (looksLikeHtml(raw)) {
         contentEditable.innerHTML = sanitizeHtml(raw);
       } else {
-        contentEditable.innerHTML = markdownToEditorHtml(
-          raw,
-          rawIngredients,
-        );
+        contentEditable.innerHTML = markdownToEditorHtml(raw, rawIngredients);
       }
     }
 
@@ -311,29 +307,31 @@ const recipeIngredientIdsJson = JSON.stringify(recipeIngredientIds);
       }
       ingredientDropdown.innerHTML = html;
 
-      ingredientDropdown.querySelectorAll<HTMLElement>("[data-ingredient-id]").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          const id = Number(btn.dataset.ingredientId);
-          const name = idToName(id);
-          if (!name) return;
-          contentEditable.focus();
-          const sel = window.getSelection();
-          if (sel && sel.rangeCount) {
-            const range = sel.getRangeAt(0);
-            range.deleteContents();
-            const span = createTagSpan(name, id, isInRecipe(id));
-            range.insertNode(span);
-            const spacer = document.createTextNode(" ");
-            span.after(spacer);
-            range.setStartAfter(spacer);
-            range.collapse(true);
-            sel.removeAllRanges();
-            sel.addRange(range);
-          }
-          closeIngredientDropdown();
-          updateHiddenTA();
+      ingredientDropdown
+        .querySelectorAll<HTMLElement>("[data-ingredient-id]")
+        .forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const id = Number(btn.dataset.ingredientId);
+            const name = idToName(id);
+            if (!name) return;
+            contentEditable.focus();
+            const sel = window.getSelection();
+            if (sel && sel.rangeCount) {
+              const range = sel.getRangeAt(0);
+              range.deleteContents();
+              const span = createTagSpan(name, id, isInRecipe(id));
+              range.insertNode(span);
+              const spacer = document.createTextNode(" ");
+              span.after(spacer);
+              range.setStartAfter(spacer);
+              range.collapse(true);
+              sel.removeAllRanges();
+              sel.addRange(range);
+            }
+            closeIngredientDropdown();
+            updateHiddenTA();
+          });
         });
-      });
     }
 
     function openIngredientDropdown() {
@@ -370,7 +368,7 @@ const recipeIngredientIdsJson = JSON.stringify(recipeIngredientIds);
     function renderTimerPopover() {
       if (!timerPopover) return;
       timerPopover.innerHTML =
-        '<label>A\u00f1adir tiempo</label>' +
+        "<label>A\u00f1adir tiempo</label>" +
         '<div class="flex gap-2 mb-3">' +
         '<input type="number" id="timer-value-input" value="' +
         timerValue +
@@ -389,12 +387,10 @@ const recipeIngredientIdsJson = JSON.stringify(recipeIngredientIds);
         "</div>" +
         '<button type="button" id="timer-insert-btn" class="w-full bg-accent-600 hover:bg-accent-700 text-white text-sm font-bold py-2 rounded-lg transition-colors">Insertar</button>';
 
-      const valueInput = timerPopover.querySelector<HTMLInputElement>(
-        "#timer-value-input",
-      );
-      const unitSelect = timerPopover.querySelector<HTMLSelectElement>(
-        "#timer-unit-select",
-      );
+      const valueInput =
+        timerPopover.querySelector<HTMLInputElement>("#timer-value-input");
+      const unitSelect =
+        timerPopover.querySelector<HTMLSelectElement>("#timer-unit-select");
 
       valueInput?.addEventListener("input", () => {
         timerValue = valueInput.value || "1";
@@ -403,9 +399,8 @@ const recipeIngredientIdsJson = JSON.stringify(recipeIngredientIds);
         timerUnit = unitSelect.value;
       });
 
-      const insertBtn = timerPopover.querySelector<HTMLElement>(
-        "#timer-insert-btn",
-      );
+      const insertBtn =
+        timerPopover.querySelector<HTMLElement>("#timer-insert-btn");
       if (insertBtn) {
         insertBtn.addEventListener("click", () => {
           const val = valueInput?.value || "15";
@@ -434,18 +429,21 @@ const recipeIngredientIdsJson = JSON.stringify(recipeIngredientIds);
       closeAllDropdowns();
       if (!timerPopover) return;
       renderTimerPopover();
-      timerPopover.classList.remove("hidden");
+      timerPopover.classList.add("timer-popover-open");
       positionDropdown(timerBtn!, timerPopover!);
     }
 
     function closeTimerPopover() {
-      if (timerPopover) timerPopover.classList.add("hidden");
+      if (timerPopover) timerPopover.classList.remove("timer-popover-open");
     }
 
     if (timerBtn) {
       timerBtn.addEventListener("click", (e) => {
         e.stopPropagation();
-        if (timerPopover && !timerPopover.classList.contains("hidden")) {
+        if (
+          timerPopover &&
+          timerPopover.classList.contains("timer-popover-open")
+        ) {
           closeTimerPopover();
         } else {
           openTimerPopover();
@@ -455,22 +453,17 @@ const recipeIngredientIdsJson = JSON.stringify(recipeIngredientIds);
 
     // --- Position dropdown ---
 
-    function positionDropdown(
-      anchor: HTMLElement,
-      dropdown: HTMLElement,
-    ) {
+    function positionDropdown(anchor: HTMLElement, dropdown: HTMLElement) {
       const rect = anchor.getBoundingClientRect();
       const spaceBelow = window.innerHeight - rect.bottom;
       const dropdownHeight = 320;
       if (spaceBelow < dropdownHeight && rect.top > dropdownHeight) {
-        dropdown.style.top = rect.top - Math.min(dropdownHeight, rect.top - 8) + "px";
+        dropdown.style.top =
+          rect.top - Math.min(dropdownHeight, rect.top - 8) + "px";
       } else {
         dropdown.style.top = rect.bottom + 4 + "px";
       }
-      dropdown.style.left = Math.min(
-        rect.left,
-        window.innerWidth - 220,
-      ) + "px";
+      dropdown.style.left = Math.min(rect.left, window.innerWidth - 220) + "px";
       dropdown.style.minWidth = "200px";
       dropdown.style.maxHeight = "16rem";
       dropdown.style.overflowY = "auto";
@@ -660,8 +653,7 @@ const recipeIngredientIdsJson = JSON.stringify(recipeIngredientIds);
       ) {
         if (e.key === "ArrowDown") {
           e.preventDefault();
-          mentionActiveIndex =
-            (mentionActiveIndex + 1) % mentionResults.length;
+          mentionActiveIndex = (mentionActiveIndex + 1) % mentionResults.length;
           updateMentionActive();
         } else if (e.key === "ArrowUp") {
           e.preventDefault();
@@ -693,8 +685,8 @@ const recipeIngredientIdsJson = JSON.stringify(recipeIngredientIds);
             prev &&
             prev.nodeType === Node.ELEMENT_NODE &&
             ((prev as HTMLElement).classList?.contains("tag-badge") ||
-            (prev as HTMLElement).classList?.contains("timer-badge") ||
-            (prev as HTMLElement).classList?.contains("tag-badge--outlined"))
+              (prev as HTMLElement).classList?.contains("timer-badge") ||
+              (prev as HTMLElement).classList?.contains("tag-badge--outlined"))
           ) {
             e.preventDefault();
             const tagRange = document.createRange();
@@ -728,7 +720,7 @@ const recipeIngredientIdsJson = JSON.stringify(recipeIngredientIds);
         }
         if (
           timerPopover &&
-          !timerPopover.classList.contains("hidden") &&
+          timerPopover.classList.contains("timer-popover-open") &&
           document.activeElement !== timerBtn &&
           !timerPopover.contains(document.activeElement)
         ) {
@@ -779,7 +771,7 @@ const recipeIngredientIdsJson = JSON.stringify(recipeIngredientIds);
       }
       if (
         timerPopover &&
-        !timerPopover.classList.contains("hidden") &&
+        timerPopover.classList.contains("timer-popover-open") &&
         !timerBtn?.contains(target) &&
         !timerPopover.contains(target)
       ) {

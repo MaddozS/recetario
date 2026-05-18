@@ -160,20 +160,22 @@ const processedRecipes: ProcessedRecipe[] = recipes.map((recipe) => {
                           p.isSelected ? "bg-accent-50/50" : "",
                         ]}
                       >
-                        <td class="text-foreground px-4 py-3 font-medium align-top">
-                            <div class="text-foreground font-medium">{p.name}</div>
-                            <div class="mt-1 flex flex-wrap gap-1">
-                              {p.isSelected && (
-                                <span class="bg-accent-100 text-accent-700 border-accent-200 inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-bold whitespace-nowrap">
-                                  Seleccionada
-                                </span>
-                              )}
-                              {p.isBest && p.margin !== null && (
-                                <span class="bg-success-bg text-success border-success-border inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-bold whitespace-nowrap">
-                                  Más rentable
-                                </span>
-                              )}
-                            </div>
+                        <td class="text-foreground px-4 py-3 align-top font-medium">
+                          <div class="text-foreground font-medium">
+                            {p.name}
+                          </div>
+                          <div class="mt-1 flex flex-wrap gap-1">
+                            {p.isSelected && (
+                              <span class="bg-accent-100 text-accent-700 border-accent-200 inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-bold whitespace-nowrap">
+                                Seleccionada
+                              </span>
+                            )}
+                            {p.isBest && p.margin !== null && (
+                              <span class="bg-success-bg text-success border-success-border inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-bold whitespace-nowrap">
+                                Más rentable
+                              </span>
+                            )}
+                          </div>
                         </td>
                         <td class="text-secondary-foreground px-4 py-3 font-mono tabular-nums">
                           {p.totalUnits}

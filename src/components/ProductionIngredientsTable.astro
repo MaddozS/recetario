@@ -34,16 +34,18 @@ const smartQuantity = (value: number, unit: string): string => {
     </p>
   </div>
   <div class="overflow-x-auto">
-    <table class="min-w-full text-left table-fixed" id="ingredients-sort-table">
+    <table class="min-w-full table-fixed text-left" id="ingredients-sort-table">
       <thead
         class="bg-background text-muted-foreground text-[11px] font-bold tracking-[0.16em] uppercase"
       >
         <tr>
-          <th class="px-6 py-4 w-[35%]" data-sort="name">Ingrediente</th>
-          <th class="px-6 py-4 w-[17%]" colspan="2" data-sort="quantity">Cantidad total</th>
-          <th class="px-6 py-4 w-[13%]" data-sort="unitCost">Costo unitario</th>
-          <th class="px-6 py-4 w-[13%]" data-sort="totalCost">Costo total</th>
-          <th class="px-6 py-4 w-[22%]">Recetas</th>
+          <th class="w-[35%] px-6 py-4" data-sort="name">Ingrediente</th>
+          <th class="w-[17%] px-6 py-4" colspan="2" data-sort="quantity"
+            >Cantidad total</th
+          >
+          <th class="w-[13%] px-6 py-4" data-sort="unitCost">Costo unitario</th>
+          <th class="w-[13%] px-6 py-4" data-sort="totalCost">Costo total</th>
+          <th class="w-[22%] px-6 py-4">Recetas</th>
         </tr>
       </thead>
       <tbody class="divide-border-light divide-y dark:divide-gray-950">
@@ -73,17 +75,19 @@ const smartQuantity = (value: number, unit: string): string => {
               >
                 {smartQuantity(ing.totalQuantity, ing.unit)}
               </td>
-              <td class="text-secondary-foreground px-6 py-4 font-mono text-sm tabular-nums whitespace-nowrap">
+              <td class="text-secondary-foreground px-6 py-4 font-mono text-sm whitespace-nowrap tabular-nums">
                 {formatCurrency(ing.unitCost)}/{ing.unit}
               </td>
-              <td class="text-foreground px-6 py-4 font-mono font-semibold tabular-nums whitespace-nowrap">
+              <td class="text-foreground px-6 py-4 font-mono font-semibold whitespace-nowrap tabular-nums">
                 {formatCurrency(ing.totalCost)}
               </td>
               <td class="px-6 py-4 break-words">
                 <div class="flex flex-wrap gap-1.5">
                   {ing.sourceRecipes.map((src) => (
                     <span class="bg-muted text-secondary-foreground inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium">
-                      <span class="truncate max-w-[20ch]">{src.recipeName}</span>
+                      <span class="max-w-[20ch] truncate">
+                        {src.recipeName}
+                      </span>
                       <span class="text-subtle-foreground shrink-0">
                         (
                         {src.quantity < 1
@@ -107,52 +111,52 @@ const smartQuantity = (value: number, unit: string): string => {
 
 <script>
   function setupSortableTable() {
-    const table = document.getElementById('ingredients-sort-table');
-    if (!table || table.dataset.sortBound === '1') return;
-    table.dataset.sortBound = '1';
+    const table = document.getElementById("ingredients-sort-table");
+    if (!table || table.dataset.sortBound === "1") return;
+    table.dataset.sortBound = "1";
 
-    const headers = table.querySelectorAll<HTMLElement>('th[data-sort]');
-    const tbody = table.querySelector('tbody');
+    const headers = table.querySelectorAll<HTMLElement>("th[data-sort]");
+    const tbody = table.querySelector("tbody");
     if (!tbody) return;
 
     headers.forEach((th) => {
       const col = th.dataset.sort as string;
-      th.style.cursor = 'pointer';
+      th.style.cursor = "pointer";
 
-      const iconSpan = document.createElement('span');
-      iconSpan.className = 'ml-1 inline-block text-[10px]';
-      iconSpan.textContent = ' ';
+      const iconSpan = document.createElement("span");
+      iconSpan.className = "ml-1 inline-block text-[10px]";
+      iconSpan.textContent = " ";
       th.appendChild(iconSpan);
 
-      th.addEventListener('click', () => {
-        const dir = th.dataset.dir === 'asc' ? 'desc' : 'asc';
+      th.addEventListener("click", () => {
+        const dir = th.dataset.dir === "asc" ? "desc" : "asc";
 
         headers.forEach((h) => {
           delete h.dataset.dir;
-          const icon = h.querySelector('span:last-child');
-          if (icon) icon.textContent = ' ';
+          const icon = h.querySelector("span:last-child");
+          if (icon) icon.textContent = " ";
         });
 
         th.dataset.dir = dir;
-        iconSpan.textContent = dir === 'asc' ? '▲' : '▼';
+        iconSpan.textContent = dir === "asc" ? "▲" : "▼";
 
-        const rows = Array.from(tbody.querySelectorAll<HTMLElement>('tr'));
+        const rows = Array.from(tbody.querySelectorAll<HTMLElement>("tr"));
 
         rows.sort((a, b) => {
-          let aVal: string | number = a.dataset[col] || '';
-          let bVal: string | number = b.dataset[col] || '';
+          let aVal: string | number = a.dataset[col] || "";
+          let bVal: string | number = b.dataset[col] || "";
 
-          if (col === 'name') {
+          if (col === "name") {
             aVal = String(aVal);
             bVal = String(bVal);
-            return dir === 'asc'
+            return dir === "asc"
               ? aVal.localeCompare(bVal)
               : bVal.localeCompare(aVal);
           }
 
           aVal = parseFloat(String(aVal)) || 0;
           bVal = parseFloat(String(bVal)) || 0;
-          return dir === 'asc' ? aVal - bVal : bVal - aVal;
+          return dir === "asc" ? aVal - bVal : bVal - aVal;
         });
 
         rows.forEach((row) => tbody.appendChild(row));
@@ -160,6 +164,6 @@ const smartQuantity = (value: number, unit: string): string => {
     });
   }
 
-  document.addEventListener('astro:page-load', setupSortableTable);
-  document.addEventListener('astro:after-swap', setupSortableTable);
+  document.addEventListener("astro:page-load", setupSortableTable);
+  document.addEventListener("astro:after-swap", setupSortableTable);
 </script>

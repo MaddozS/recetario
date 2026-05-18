@@ -474,6 +474,7 @@ void getPresentationFormErrorMessage;
 
       {isEditMode && (
         <dialog
+          data-animated
           id={recipeDeleteDialogId}
           class="fixed inset-0 m-auto w-[calc(100vw-1.5rem)] max-w-md rounded-3xl p-0 backdrop:bg-slate-900/55"
         >
@@ -512,6 +513,7 @@ void getPresentationFormErrorMessage;
 
       {hasFeature(subscription, 'recipe_duplicate') && (
         <dialog
+          data-animated
           id={recipeDuplicateDialogId}
           class="fixed inset-0 m-auto w-[calc(100vw-1.5rem)] max-w-md rounded-3xl p-0 backdrop:bg-slate-900/55"
         >
@@ -1022,6 +1024,7 @@ void getPresentationFormErrorMessage;
     </div>
 
     <dialog
+      data-animated
       id={createPresentationDialogId}
       class="fixed inset-0 m-auto w-[92vw] max-w-md max-h-[calc(100dvh-2rem)] rounded-3xl border border-border p-0 shadow-2xl backdrop:bg-slate-900/40"
     >

@@ -81,6 +81,10 @@
   --tw-warning-solid: #f59e0b;
   --tw-ring: #4f46e5;
   --tw-ring-offset: #f8fafc;
+
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 /* Dark mode variable overrides */
@@ -111,14 +115,102 @@
   --tw-ring-offset: oklch(0.176 0.008 258);
 }
 
+@layer base {
+  button:not([data-no-scale]) {
+    transition: transform 160ms var(--ease-out);
+  }
+  button:active:not([data-no-scale]) {
+    transform: scale(0.97);
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .card-hover:hover {
+    transform: translateY(-6px);
+  }
+
+  [data-reveal].reveal-visible .card-hover:hover {
+    transform: translateY(-6px);
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .card-hover:hover {
+    transform: none;
+  }
+}
+
+dialog[data-animated] {
+  opacity: 0;
+  transform: scale(0.95);
+  transition:
+    opacity 200ms var(--ease-out),
+    transform 200ms var(--ease-out),
+    overlay 200ms var(--ease-out) allow-discrete,
+    display 200ms var(--ease-out) allow-discrete;
+}
+
+dialog[data-animated][open] {
+  opacity: 1;
+  transform: scale(1);
+}
+
+@starting-style {
+  dialog[data-animated][open] {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+dialog[data-animated]::backdrop {
+  opacity: 0;
+  transition:
+    opacity 200ms var(--ease-out),
+    overlay 200ms var(--ease-out) allow-discrete,
+    display 200ms var(--ease-out) allow-discrete;
+}
+
+dialog[data-animated][open]::backdrop {
+  opacity: 1;
+}
+
+@starting-style {
+  dialog[data-animated][open]::backdrop {
+    opacity: 0;
+  }
+}
+
+@layer base {
+  select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1rem;
+    padding-right: 2.5rem;
+    transition:
+      border-color 150ms var(--ease-out),
+      box-shadow 150ms var(--ease-out);
+  }
+
+  select:focus {
+    border-color: var(--aw-accent-500, #6366f1);
+    box-shadow: 0 0 0 3px
+      color-mix(in srgb, var(--aw-accent-500, #6366f1) 20%, transparent);
+    outline: none;
+  }
+}
+
 @keyframes page-enter {
   from {
     opacity: 0;
-    transform: translateY(10px) scale(0.995);
+    transform: translateY(10px) scale(0.994);
+    filter: blur(2px);
   }
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
+    filter: blur(0);
   }
 }
 
@@ -126,20 +218,22 @@
   from {
     opacity: 1;
     transform: translateY(0) scale(1);
+    filter: blur(0);
   }
   to {
     opacity: 0;
-    transform: translateY(-8px) scale(0.995);
+    transform: translateY(-4px) scale(0.998);
+    filter: blur(2px);
   }
 }
 
 @media (prefers-reduced-motion: no-preference) {
   ::view-transition-old(root) {
-    animation: page-exit 180ms cubic-bezier(0.4, 0, 1, 1) both;
+    animation: page-exit 150ms cubic-bezier(0.5, 0, 0.8, 0.5) both;
   }
 
   ::view-transition-new(root) {
-    animation: page-enter 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation: page-enter 250ms var(--ease-out) both;
   }
 }
 
@@ -455,11 +549,19 @@
 
 /* Mention autocomplete dropdown */
 .mention-dropdown {
-  display: none;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-4px);
+  transition:
+    opacity 150ms var(--ease-out),
+    transform 150ms var(--ease-out);
+  transform-origin: top center;
 }
 
 .mention-dropdown.mention-dropdown-open {
-  display: block;
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
 }
 
 .mention-item {
@@ -514,6 +616,17 @@
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
   padding: 0.75rem;
   min-width: 14rem;
+  opacity: 0;
+  transform: scale(0.95);
+  transform-origin: top left;
+  transition:
+    opacity 150ms var(--ease-out),
+    transform 150ms var(--ease-out);
+}
+
+.timer-popover.timer-popover-open {
+  opacity: 1;
+  transform: scale(1);
 }
 
 .dark .timer-popover {
@@ -570,7 +683,7 @@
   text-align: center;
   max-width: 36rem;
   width: 100%;
-  animation: cookingStepIn 0.25s ease-out both;
+  animation: cookingStepIn 0.25s var(--ease-out) both;
 }
 
 .cooking-mode-step-number {
@@ -720,7 +833,9 @@
   border: 1px solid var(--tw-border, #e2e8f0);
   background: var(--tw-card, #ffffff);
   min-width: 15rem;
-  transition: border-color 0.3s, background 0.3s;
+  transition:
+    border-color 200ms var(--ease-out),
+    background 200ms var(--ease-out);
 }
 
 .dark .kitchen-timer-card {
@@ -770,7 +885,7 @@
 
 .kitchen-timer-card--expired .kitchen-timer-display {
   color: var(--tw-danger, #be123c);
-  animation: timerPulse 1s ease-in-out infinite;
+  animation: timerPulse 1s var(--ease-in-out) infinite;
 }
 
 /* Controls */
@@ -786,7 +901,7 @@
   align-items: center;
   justify-content: center;
   border-radius: 0.75rem;
-  transition: all 0.15s;
+  transition: transform 160ms var(--ease-out);
   cursor: pointer;
   border: none;
   line-height: 1;
@@ -880,8 +995,13 @@
 }
 
 @keyframes timerPulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
 /* Mobile responsive */
@@ -964,43 +1084,12 @@
     opacity: 0;
     transform: translateY(6px);
   }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 .recipe-grid-card {
-  animation: cardFadeIn 0.25s ease-out both;
-}
-.recipe-grid-card:nth-child(1) {
-  animation-delay: 0ms;
-}
-.recipe-grid-card:nth-child(2) {
-  animation-delay: 35ms;
-}
-.recipe-grid-card:nth-child(3) {
-  animation-delay: 70ms;
-}
-.recipe-grid-card:nth-child(4) {
-  animation-delay: 105ms;
-}
-.recipe-grid-card:nth-child(5) {
-  animation-delay: 140ms;
-}
-.recipe-grid-card:nth-child(6) {
-  animation-delay: 175ms;
-}
-.recipe-grid-card:nth-child(7) {
-  animation-delay: 210ms;
-}
-.recipe-grid-card:nth-child(8) {
-  animation-delay: 245ms;
-}
-.recipe-grid-card:nth-child(9) {
-  animation-delay: 280ms;
-}
-.recipe-grid-card:nth-child(10) {
-  animation-delay: 315ms;
-}
-.recipe-grid-card:nth-child(11) {
-  animation-delay: 350ms;
-}
-.recipe-grid-card:nth-child(12) {
-  animation-delay: 385ms;
+  animation: cardFadeIn 0.25s var(--ease-out) both;
+  animation-delay: calc(var(--stagger-index, 0) * 35ms);
 }
