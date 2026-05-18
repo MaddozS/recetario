@@ -18,3 +18,6 @@ export const UNIT_OPTIONS = [
 
 /** Unidad por defecto para selects de unidad. */
 export const DEFAULT_UNIT = UNIT_OPTIONS[0]; // "kg"
+
+/** Límite de recetas por plan de producción para usuarios Basic. */
+export const PRODUCTION_BASIC_RECIPE_LIMIT = 3;

@@ -33,6 +33,8 @@ const FREE_FEATURES: Record<string, boolean> = {
   recipe_photos: false,
   stock_tracking: false,
   production_planner: false,
+  production_save: false,
+  production_advanced: false,
   pdf_export: false,
   advanced_costs: false,
   change_history: false,

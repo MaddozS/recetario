@@ -35,6 +35,8 @@ export type ProductionRecipeResult = {
   operationalCost: number;
   totalCost: number;
   selectedPresentationId?: number;
+  totalWeightGrams?: number;
+  totalVolumeMl?: number;
   presentations: {
     id: number;
     name: string;
