@@ -10,7 +10,9 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "postinstall": "npx prisma generate",
+    "vercel-build": "npx prisma generate && npx prisma migrate deploy && astro build"
   },
   "dependencies": {
     "@astrojs/ts-plugin": "^1.10.8",
