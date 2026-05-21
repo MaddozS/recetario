@@ -7,9 +7,6 @@ settings:
 importers:
   .:
     dependencies:
-      "@astrojs/ts-plugin":
-        specifier: ^1.10.8
-        version: 1.10.8
       "@astrojs/vercel":
         specifier: 10.0.7
         version: 10.0.7(astro@6.3.3(@types/node@25.8.0)(@vercel/functions@3.5.1)(jiti@2.7.0)(lightningcss@1.32.0)(rollup@4.60.3)(tsx@4.22.0)(yaml@2.9.0))(react@19.2.6)(rollup@4.60.3)
@@ -40,9 +37,6 @@ importers:
       isomorphic-dompurify:
         specifier: ^3.13.0
         version: 3.13.0(@noble/hashes@2.2.0)
-      marked:
-        specifier: 18.0.3
-        version: 18.0.3
       pg:
         specifier: 8.20.0
         version: 8.20.0
@@ -56,6 +50,9 @@ importers:
       "@astrojs/check":
         specifier: 0.9.9
         version: 0.9.9(prettier-plugin-astro@0.14.1)(prettier@3.8.3)(typescript@6.0.3)
+      "@astrojs/ts-plugin":
+        specifier: ^1.10.8
+        version: 1.10.8
       "@eslint/js":
         specifier: 10.0.1
         version: 10.0.1(eslint@10.4.0(jiti@2.7.0))
@@ -4090,14 +4087,6 @@ packages:
       {
         integrity: sha512-wiYz4+JrLyb/DqW2hkFJxP7Vd7JuTDm77fvbM8VfEQdmSMqcImWeeRbHwZjBjIFki/VaMK2BhFi7oUUZeM5bqw==,
       }
-
-  marked@18.0.3:
-    resolution:
-      {
-        integrity: sha512-7VT90JOkDeaRWpfjOReRGPEKn0ecdARBkDGL+tT1wZY0efPPqkUxLUSmzy/C7TIylQYJC9STISEsCHrqb/7VIA==,
-      }
-    engines: { node: ">= 20" }
-    hasBin: true
 
   mdast-util-definitions@6.0.0:
     resolution:
@@ -8601,8 +8590,6 @@ snapshots:
       source-map-js: 1.2.1
 
   markdown-table@3.0.4: {}
-
-  marked@18.0.3: {}
 
   mdast-util-definitions@6.0.0:
     dependencies:
