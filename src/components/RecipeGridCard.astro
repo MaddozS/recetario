@@ -65,7 +65,6 @@ const cardMenuId = `card-menu-${id}`;
     id={cardMenuId}
     data-card-menu
     class="border-border bg-card absolute top-11 right-3 z-30 min-w-40 rounded-xl border p-1 shadow-lg"
-    style="opacity: 0; transform: scale(0.95); pointer-events: none; transition: opacity 150ms var(--ease-out), transform 150ms var(--ease-out)"
     role="menu"
   >
     <a
@@ -146,6 +145,13 @@ const cardMenuId = `card-menu-${id}`;
     }
   }
 
+  [data-card-menu] {
+    opacity: 0;
+    transform: scale(0.95);
+    pointer-events: none;
+    transition: opacity 150ms var(--ease-out), transform 150ms var(--ease-out);
+  }
+
   [data-card-menu].card-menu-open {
     opacity: 1;
     transform: scale(1);
@@ -155,10 +161,10 @@ const cardMenuId = `card-menu-${id}`;
 
 <script>
   function setupCardMenus() {
-    const triggers = document.querySelectorAll<HTMLElement>("[data-card-menu-trigger]");
+    const triggers = document.querySelectorAll("[data-card-menu-trigger]") as NodeListOf<HTMLElement>;
 
     function closeAllMenus() {
-      document.querySelectorAll("[data-card-menu]").forEach((menu) => {
+      (document.querySelectorAll("[data-card-menu]") as NodeListOf<HTMLElement>).forEach((menu) => {
         menu.classList.remove("card-menu-open");
         const trigger = document.querySelector(
           `[data-card-menu-trigger="${menu.id}"]`,
