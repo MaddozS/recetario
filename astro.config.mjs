@@ -81,6 +81,7 @@ export default defineConfig({
           "user",
           "x",
           "zap",
+          "zoom-in",
         ],
       },
     }),
