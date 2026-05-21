@@ -1,50 +1,35 @@
 ---
-import { Icon } from "astro-icon/components";
-
 const features = [
   {
     icon: "lucide:calculator",
     title: "Costeo con márgenes",
     description:
       "Calcula el costo real de cada receta con ingredientes, márgenes y precios de venta sugeridos automáticamente.",
+    image: "/ss_recetas.png",
   },
   {
     icon: "lucide:package-search",
     title: "Gestión de ingredientes",
     description:
       "Administra tu inventario de ingredientes con precios actualizados, unidades y stock disponible.",
+    image: "/ss_ingredientes.png",
   },
   {
-    icon: "lucide:bar-chart-3",
+    icon: "lucide:trending-up",
     title: "Planificador de producción",
     description:
       "Planifica tu producción con multiplicadores de batch, costos por unidad y proyecciones de rentabilidad.",
-  },
-  {
-    icon: "lucide:copy",
-    title: "Duplicar recetas",
-    description:
-      "Crea variaciones de tus recetas al instante duplicándolas y ajustando ingredientes o cantidades.",
-  },
-  {
-    icon: "lucide:warehouse",
-    title: "Control de stock",
-    description:
-      "Lleva el control de tu inventario con alertas de stock bajo y seguimiento de ingredientes.",
-  },
-  {
-    icon: "lucide:file-text",
-    title: "Exportar a PDF",
-    description:
-      "Exporta tus recetas y costos a PDF para compartir con tu equipo o imprimir fácilmente.",
+    image: "/ss_produccion.png",
   },
 ];
 ---
 
-<section id="features" data-reveal class="bg-background py-24 md:py-32">
+<section id="features" class="bg-background py-24 md:py-32" style="content-visibility: auto; contain-intrinsic-size: 800px">
   <div class="mx-auto max-w-7xl px-6">
-    <div class="mx-auto max-w-2xl text-center">
-      <h2 class="text-foreground text-3xl font-black md:text-4xl">
+    <div class="mx-auto max-w-2xl text-center" data-reveal>
+      <h2
+        class="landing-heading text-foreground text-3xl font-black md:text-4xl"
+      >
         Todo lo que necesitas para costear
       </h2>
       <p class="text-muted-foreground mt-4 text-lg">
@@ -53,22 +38,39 @@ const features = [
       </p>
     </div>
 
-    <div class="mt-16 grid gap-6 sm:grid-cols-2 md:gap-8 lg:grid-cols-3">
+    <div class="mt-12 space-y-12 sm:mt-20 sm:space-y-20 md:space-y-28">
       {
-        features.map((f, i) => (
-          <div
-            class="reveal-item card-hover border-border bg-card rounded-2xl border p-6 md:p-8"
-            style={`--reveal-delay: ${i * 80}ms`}
-          >
-            <div class="bg-accent-50 dark:bg-accent-950 flex h-12 w-12 items-center justify-center rounded-xl">
-              <Icon name={f.icon} size={24} class="text-accent-600" />
+        features.map((f, i) => {
+          const isEven = i % 2 === 0;
+          return (
+            <div
+              class="grid items-center gap-10 md:grid-cols-2 md:gap-16"
+              data-reveal={isEven ? "left" : "right"}
+            >
+              <div class={isEven ? "md:order-1" : "md:order-2"}>
+                <div class="mx-auto max-w-lg">
+                  <h3 class="text-foreground text-2xl font-bold">
+                    {f.title}
+                  </h3>
+                  <p class="text-muted-foreground mt-3 text-base leading-relaxed">
+                    {f.description}
+                  </p>
+                </div>
+              </div>
+              <div class={isEven ? "md:order-2" : "md:order-1"}>
+                <div class="mx-auto w-full max-w-md">
+                  <img
+                    src={f.image}
+                    alt={`Pantalla de la funcionalidad de ${f.title} en KitchCalc`}
+                    class="shadow-accent-tint border-border/50 h-auto w-full rounded-2xl border"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+              </div>
             </div>
-            <h3 class="text-foreground mt-5 text-lg font-bold">{f.title}</h3>
-            <p class="text-muted-foreground mt-2 text-sm leading-relaxed">
-              {f.description}
-            </p>
-          </div>
-        ))
+          );
+        })
       }
     </div>
   </div>

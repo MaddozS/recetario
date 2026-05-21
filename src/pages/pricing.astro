@@ -1,5 +1,6 @@
 ---
 import { Icon } from "astro-icon/components";
+import { Badge } from "@/components/ui";
 import Layout from "@/layouts/Layout.astro";
 
 if (!Astro.locals.session || !Astro.locals.user) {
@@ -161,12 +162,14 @@ const isCanceled = Astro.url.searchParams.get("canceled") === "1";
         <button
           type="button"
           data-billing-period="monthly"
+          aria-pressed="true"
           class="bg-card text-foreground rounded-lg px-4 py-2 text-sm font-semibold shadow-sm transition-all"
           >Mensual</button
         >
         <button
           type="button"
           data-billing-period="yearly"
+          aria-pressed="false"
           class="text-muted-foreground rounded-lg px-4 py-2 text-sm font-semibold transition-all"
           >Anual <span class="text-success text-xs font-bold">-20%</span
           ></button
@@ -190,14 +193,14 @@ const isCanceled = Astro.url.searchParams.get("canceled") === "1";
               ]}
             >
               {plan.id === "pro" && (
-                <span class="bg-accent-600 mb-4 inline-flex items-center self-start rounded-full px-2.5 py-1 text-xs font-bold text-white">
-                  Mas popular
-                </span>
+                <Badge variant="tier" color="accent" class="mb-4 self-start">
+                  Más popular
+                </Badge>
               )}
               {plan.id === "basic" && (
-                <span class="bg-success-bg text-success mb-4 inline-flex items-center self-start rounded-full px-2.5 py-1 text-xs font-bold">
+                <Badge variant="tier" color="success" class="mb-4 self-start">
                   Recomendado
-                </span>
+                </Badge>
               )}
 
               <h2 class="text-foreground text-xl font-black">{plan.name}</h2>
@@ -320,11 +323,15 @@ const isCanceled = Astro.url.searchParams.get("canceled") === "1";
           "px-4 py-2 rounded-lg text-sm font-semibold bg-card text-foreground shadow-sm transition-all";
         yearlyBtn.className =
           "px-4 py-2 rounded-lg text-sm font-semibold text-muted-foreground transition-all";
+        monthlyBtn.setAttribute("aria-pressed", "true");
+        yearlyBtn.setAttribute("aria-pressed", "false");
       } else {
         yearlyBtn.className =
           "px-4 py-2 rounded-lg text-sm font-semibold bg-card text-foreground shadow-sm transition-all";
         monthlyBtn.className =
           "px-4 py-2 rounded-lg text-sm font-semibold text-muted-foreground transition-all";
+        yearlyBtn.setAttribute("aria-pressed", "true");
+        monthlyBtn.setAttribute("aria-pressed", "false");
       }
     }
 

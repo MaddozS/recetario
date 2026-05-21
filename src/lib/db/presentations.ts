@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import type { Prisma } from "../../../generated/prisma/client.js";
 import type {
   RecipePresentation,
   CreatePresentationInput,
@@ -106,7 +107,7 @@ export async function updatePresentation(
   try {
     const data = await prisma.recipePresentation.update({
       where: { id, recipeId },
-      data: updates as any,
+      data: updates as Prisma.RecipePresentationUncheckedUpdateInput,
     });
 
     await touchRecipeUpdatedAt(recipeId);

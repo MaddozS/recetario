@@ -1,0 +1,16 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import EmptyState from "@/components/EmptyState.astro";
+---
+
+<Layout currentPage="" title="Pagina no encontrada | KitchCalc">
+  <div class="flex min-h-[60vh] items-center justify-center p-4">
+    <EmptyState
+      icon="lucide:search-x"
+      title="Pagina no encontrada"
+      description="La pagina que buscas no existe o fue movida."
+      actionLabel="Volver al recetario"
+      actionHref="/recipes"
+    />
+  </div>
+</Layout>

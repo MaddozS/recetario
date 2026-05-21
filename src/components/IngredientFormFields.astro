@@ -46,6 +46,7 @@ const inputClasses =
     id={`${idPrefix}-name`}
     name="name"
     type="text"
+    required
     placeholder="Ej. Harina de trigo extra fina"
     class={inputClasses}
     autocomplete="off"
@@ -90,6 +91,7 @@ const inputClasses =
       id={`${idPrefix}-price`}
       name="price"
       type="text"
+      required
       inputmode="decimal"
       placeholder="0.00"
       class={`${inputClasses} pl-8 font-mono`}
@@ -116,6 +118,7 @@ const inputClasses =
     />
     <select
       name="unit"
+      aria-label="Unidad de medida"
       class="border-border bg-card text-secondary-foreground border-0 border-l px-3 py-3 text-sm font-semibold outline-none"
     >
       {

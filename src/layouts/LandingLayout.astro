@@ -13,20 +13,20 @@ const accentCssVars = getAccentCssVars("coral", landingTheme);
   class:list={[landingTheme === "dark" ? "dark" : ""]}
   data-theme={landingTheme}
   data-accent="coral"
-  style={accentCssVars}
+  style={`${accentCssVars}; color-scheme: light dark`}
 >
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/png" href="/favicon.png" />
     <meta name="generator" content={Astro.generator} />
     <meta
       name="description"
-      content="KitchCalc — Calcula el costo real de tus recetas. Gestión de costos, márgenes y precios para tu negocio de alimentos."
+      content="KitchCalc | Calcula el costo real de tus recetas. Gestion de costos, margenes y precios para tu negocio de alimentos."
     />
     <meta
       property="og:title"
-      content="KitchCalc — Calcula el costo real de tus recetas"
+      content="KitchCalc | Calcula el costo real de tus recetas"
     />
     <meta
       property="og:description"
@@ -34,12 +34,14 @@ const accentCssVars = getAccentCssVars("coral", landingTheme);
     />
     <meta property="og:image" content="/kitchcalc_logo.svg" />
     <meta name="twitter:card" content="summary_large_image" />
-    <title>KitchCalc — Calcula el costo real de tus recetas</title>
+    <title>KitchCalc | Calcula el costo real de tus recetas</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
     />
     <ClientRouter />
     <script is:inline>
@@ -50,7 +52,15 @@ const accentCssVars = getAccentCssVars("coral", landingTheme);
     </script>
   </head>
   <body class="bg-background text-foreground">
+    <a
+      href="#main-content"
+      class="focus:text-foreground focus:bg-card focus:border-border sr-only fixed top-4 left-4 z-60 rounded-xl border px-4 py-2 text-sm font-bold shadow-md focus:not-sr-only"
+    >
+      Saltar al contenido
+    </a>
+
     <slot />
+
     <style is:global>
       html {
         scroll-behavior: smooth;
@@ -63,22 +73,35 @@ const accentCssVars = getAccentCssVars("coral", landingTheme);
 
       [data-reveal] {
         opacity: 0;
-        transform: translateY(24px);
         transition:
-          opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-          transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+          opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+          transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      [data-reveal]:not([data-reveal="left"]):not([data-reveal="right"]):not(
+          [data-reveal="scale"]
+        ) {
+        transform: translateY(28px);
+      }
+      [data-reveal="left"] {
+        transform: translateX(-30px);
+      }
+      [data-reveal="right"] {
+        transform: translateX(30px);
+      }
+      [data-reveal="scale"] {
+        transform: scale(0.94);
       }
       [data-reveal].reveal-visible {
         opacity: 1;
-        transform: translateY(0);
+        transform: translateY(0) translateX(0) scale(1);
       }
 
       .reveal-item {
         opacity: 0;
         transform: translateY(20px);
         transition:
-          opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-          transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+          opacity 0.4s cubic-bezier(0.23, 1, 0.32, 1),
+          transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
         transition-delay: calc(var(--reveal-delay, 0ms));
       }
       .reveal-visible .reveal-item {
@@ -95,35 +118,81 @@ const accentCssVars = getAccentCssVars("coral", landingTheme);
         }
       }
 
+      :root {
+        --card-hover-shadow: 0 12px 40px -8px rgb(0 0 0 / 0.12), 0 0 0 1px var(--aw-accent-200);
+        --pricing-hover-shadow: 0 16px 48px -12px rgb(0 0 0 / 0.12), 0 4px 12px -4px rgb(0 0 0 / 0.06);
+        --pricing-pro-hover-shadow: 0 20px 56px -12px color-mix(in srgb, var(--aw-accent-500) 25%, transparent), 0 4px 16px -4px color-mix(in srgb, var(--aw-accent-500) 12%, transparent);
+        --hero-pattern-color: color-mix(in srgb, var(--aw-accent-500) 10%, transparent);
+      }
+      .dark {
+        --card-hover-shadow: 0 12px 40px -8px rgb(0 0 0 / 0.4), 0 0 0 1px var(--aw-accent-300);
+        --pricing-hover-shadow: 0 16px 48px -12px rgb(0 0 0 / 0.4), 0 4px 12px -4px color-mix(in srgb, var(--aw-accent-500) 15%, transparent);
+        --pricing-pro-hover-shadow: 0 20px 56px -12px color-mix(in srgb, var(--aw-accent-500) 35%, transparent), 0 4px 16px -4px color-mix(in srgb, var(--aw-accent-500) 15%, transparent);
+        --hero-pattern-color: color-mix(in srgb, var(--aw-accent-400) 12%, transparent);
+      }
+
       .card-hover {
         transition:
-          transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-          box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-          border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+          transform 0.25s cubic-bezier(0.23, 1, 0.32, 1),
+          box-shadow 0.25s cubic-bezier(0.23, 1, 0.32, 1),
+          border-color 0.25s cubic-bezier(0.23, 1, 0.32, 1);
       }
       .card-hover:hover {
         transform: translateY(-6px);
         border-color: var(--aw-accent-200, #c7d2fe);
-        box-shadow:
-          0 12px 40px -8px rgb(0 0 0 / 0.12),
-          0 0 0 1px var(--aw-accent-200, #c7d2fe);
+        box-shadow: var(--card-hover-shadow);
       }
-      .dark .card-hover:hover {
-        box-shadow:
-          0 12px 40px -8px rgb(0 0 0 / 0.4),
-          0 0 0 1px var(--aw-accent-300, #a5b4fc);
+
+      .pricing-card-hover {
+        transition:
+          transform 0.25s cubic-bezier(0.23, 1, 0.32, 1),
+          box-shadow 0.25s cubic-bezier(0.23, 1, 0.32, 1);
+      }
+      .pricing-card-hover:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--pricing-hover-shadow);
+      }
+
+      @media (min-width: 1024px) {
+        .pricing-card-hover-pro {
+          transform: scale(1.05);
+          transition:
+            transform 0.25s cubic-bezier(0.23, 1, 0.32, 1),
+            box-shadow 0.25s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        .pricing-card-hover-pro:hover {
+          transform: scale(1.05) translateY(-4px);
+          box-shadow: var(--pricing-pro-hover-shadow);
+        }
       }
 
       .hero-bg {
         isolation: isolate;
-        background: linear-gradient(
-          142deg,
-          color-mix(in oklab, var(--tw-card) 50%, var(--aw-accent-50)) 0%,
-          color-mix(in oklab, var(--tw-bg) 60%, var(--aw-accent-200)) 45%,
-          color-mix(in oklab, var(--tw-card) 45%, var(--aw-accent-400)) 100%
-        );
-        background-color: var(--tw-bg);
+        background:
+          radial-gradient(
+            ellipse 80% 60% at 30% 40%,
+            color-mix(in oklab, var(--aw-accent-200) 55%, transparent) 0%,
+            transparent 70%
+          ),
+          radial-gradient(
+            ellipse 60% 50% at 70% 60%,
+            color-mix(in oklab, var(--aw-accent-300) 40%, transparent) 0%,
+            transparent 60%
+          ),
+          var(--tw-bg);
       }
+
+      .hero-pattern {
+        background-image: repeating-linear-gradient(
+          45deg,
+          transparent,
+          transparent 48px,
+          var(--hero-pattern-color) 48px,
+          var(--hero-pattern-color) 49px
+        );
+        background-size: 69px 69px;
+      }
+
       .plan-pro {
         animation: pro-pulse 2.5s ease-in-out infinite;
       }
@@ -135,18 +204,24 @@ const accentCssVars = getAccentCssVars("coral", landingTheme);
         100% {
           box-shadow:
             0 0 0 1px var(--aw-accent-200, #c7d2fe),
-            0 8px 30px -6px rgb(0 0 0 / 0.08);
+            0 8px 30px -6px
+              color-mix(in srgb, var(--aw-accent-500) 20%, transparent);
         }
         50% {
           box-shadow:
             0 0 0 2px var(--aw-accent-300, #a5b4fc),
-            0 8px 40px -4px var(--aw-accent-400, #818cf8);
+            0 8px 40px -4px
+              color-mix(in srgb, var(--aw-accent-500) 40%, transparent);
         }
       }
       @media (prefers-reduced-motion: reduce) {
         .plan-pro {
           animation: none;
         }
+      }
+
+      .landing-heading {
+        text-wrap: balance;
       }
     </style>
     <script>
@@ -202,8 +277,38 @@ const accentCssVars = getAccentCssVars("coral", landingTheme);
         });
       }
 
+      function setupRevealItems() {
+        const parents = document.querySelectorAll("[data-reveal-parent]");
+        if (parents.length === 0) return;
+
+        const childObserver = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting && entry.target instanceof HTMLElement) {
+                entry.target.classList.add("reveal-visible");
+                childObserver.unobserve(entry.target);
+              }
+            });
+          },
+          { threshold: 0.1, rootMargin: "0px 0px -40px 0px" },
+        );
+
+        parents.forEach((parent) => {
+          if (
+            parent instanceof HTMLElement &&
+            !parent.classList.contains("reveal-visible")
+          ) {
+            childObserver.observe(parent);
+          }
+        });
+      }
+
       setupScrollReveal();
-      document.addEventListener("astro:after-swap", setupScrollReveal);
+      setupRevealItems();
+      document.addEventListener("astro:after-swap", () => {
+        setupScrollReveal();
+        setupRevealItems();
+      });
 
       applyTheme();
       document.addEventListener("astro:after-swap", applyTheme);

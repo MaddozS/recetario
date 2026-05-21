@@ -1,6 +1,7 @@
 ---
 import { Icon } from "astro-icon/components";
 import Layout from "@/layouts/Layout.astro";
+import { Button, Card } from "@/components/ui";
 import {
   createIngredient,
   deleteIngredient,
@@ -42,10 +43,6 @@ const labelClasses =
   "mb-1.5 block text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground";
 const inputClasses =
   "w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground outline-none transition placeholder:text-subtle-foreground focus:border-accent-300 focus:bg-card focus:ring-2 focus:ring-accent-500/20";
-const secondaryButtonClasses =
-  "inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-border bg-card px-5 py-3 text-sm font-bold text-muted-foreground transition-colors hover:bg-background";
-const primaryButtonClasses =
-  "inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-accent-600 px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-accent-700 disabled:cursor-not-allowed disabled:bg-muted disabled:text-subtle-foreground";
 
 const buildIngredientsUrl = (feedback?: Feedback) => {
   const params = new URLSearchParams();
@@ -249,7 +246,7 @@ const ingredientUsage = await listIngredientUsage(ownerId);
 void redirectWithFeedback;
 ---
 
-<Layout currentPage="ingredients" showSideBar={false}>
+<Layout currentPage="ingredients" showSideBar={true}>
   {
     feedbackType && feedbackMessage && (
       <FeedbackAlert
@@ -260,10 +257,7 @@ void redirectWithFeedback;
     )
   }
 
-  <section
-    class="border-border bg-card mb-6 hidden rounded-2xl border p-6 shadow-sm lg:block"
-    transition:animate="slide"
-  >
+  <Card padding="lg" class="mb-6 hidden lg:block" transition:animate="slide">
     <div
       class="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between"
     >
@@ -296,23 +290,21 @@ void redirectWithFeedback;
       >
         <UnitCostDisplay defaultUnit={DEFAULT_UNIT} />
 
-        <button
+        <Button
+          variant="primary"
+          icon="plus"
           type="submit"
-          class={`${primaryButtonClasses} min-w-52 shadow-sm shadow-accent-200`}
           data-submit-button
           disabled
+          class="shadow-accent-200 min-w-52 shadow-sm"
         >
-          <Icon name="lucide:plus" size={18} />
           Agregar Insumo
-        </button>
+        </Button>
       </div>
     </form>
-  </section>
+  </Card>
 
-  <section
-    class="border-border bg-card overflow-hidden rounded-2xl border shadow-sm"
-    transition:animate="slide"
-  >
+  <Card class="overflow-hidden !p-0" transition:animate="slide">
     <div class="border-border border-b px-4 py-4 sm:px-6">
       <div
         class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between"
@@ -332,16 +324,17 @@ void redirectWithFeedback;
         <div
           class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end"
         >
-          <button
-            type="button"
-            class={`${primaryButtonClasses} lg:hidden`}
+          <Button
+            variant="primary"
+            icon="plus"
             data-open-create-modal
+            class="lg:hidden"
           >
-            <Icon name="lucide:plus" size={18} />
             Agregar Insumo
-          </button>
+          </Button>
 
           <label class="relative block w-full sm:w-80">
+            <span class="sr-only">Buscar ingrediente</span>
             <span
               class="text-subtle-foreground pointer-events-none absolute inset-y-0 left-4 flex items-center"
             >
@@ -373,7 +366,7 @@ void redirectWithFeedback;
                   <th class="px-6 py-4 text-right">Acciones</th>
                 </tr>
               </thead>
-              <tbody class="divide-border-light divide-y dark:divide-gray-950">
+              <tbody class="divide-border-light divide-y">
                 {ingredients.map((ingredient) => {
                   const usedRecipes = ingredientUsage[ingredient.id] || [];
                   const usedRecipesPayload = encodeURIComponent(
@@ -402,7 +395,7 @@ void redirectWithFeedback;
 
                   return (
                     <tr
-                      class="hover:bg-hover-muted transition-colors dark:hover:bg-gray-950/70"
+                      class="hover:bg-hover-muted dark:hover:bg-hover-muted transition-colors"
                       data-ingredient-row
                       data-search={searchText}
                     >
@@ -447,20 +440,21 @@ void redirectWithFeedback;
                       </td>
                       <td class="px-6 py-5 text-right">
                         <div class="flex items-center justify-end gap-2">
-                          <button
-                            type="button"
-                            class="text-subtle-foreground hover:bg-accent-50 hover:text-accent-600 inline-flex h-9 w-9 items-center justify-center rounded-full transition-colors"
-                            title="Editar ingrediente"
-                            aria-label="Editar ingrediente"
+                          <Button
+                            variant="ghost"
+                            icon="pencil"
+                            size="sm"
+                            class="text-subtle-foreground hover:bg-accent-50 hover:text-accent-600 min-h-11 min-w-11 rounded-full"
                             data-edit-trigger
                             data-ingredient-payload={ingredientPayload}
-                          >
-                            <Icon name="lucide:pencil" size={16} />
-                          </button>
+                            aria-label="Editar ingrediente"
+                          />
 
-                          <button
-                            type="button"
-                            class="text-danger hover:bg-danger-bg hover:text-danger inline-flex h-9 w-9 items-center justify-center rounded-full transition-colors"
+                          <Button
+                            variant="ghost"
+                            icon="trash-2"
+                            size="sm"
+                            class="text-danger hover:bg-danger-bg hover:text-danger min-h-11 min-w-11 rounded-full"
                             title={
                               usedRecipes.length > 0
                                 ? "Ingrediente en uso"
@@ -475,9 +469,7 @@ void redirectWithFeedback;
                             data-ingredient-id={ingredient.id}
                             data-ingredient-name={ingredient.name}
                             data-used-recipes={usedRecipesPayload}
-                          >
-                            <Icon name="lucide:trash-2" size={16} />
-                          </button>
+                          />
                         </div>
                       </td>
                     </tr>
@@ -489,7 +481,7 @@ void redirectWithFeedback;
 
           <div
             hidden
-            class="border-border-light border-t px-6 py-10 text-center dark:border-gray-950"
+            class="border-border-light border-t px-6 py-10 text-center"
             data-ingredient-search-empty
           >
             <div class="mx-auto flex max-w-sm flex-col items-center">
@@ -517,12 +509,12 @@ void redirectWithFeedback;
         </div>
       )
     }
-  </section>
+  </Card>
 
   <dialog
     data-animated
     id="create-ingredient-modal"
-    class="fixed inset-0 m-auto w-[calc(100vw-1.5rem)] max-w-lg rounded-3xl p-0 backdrop:bg-slate-900/55 lg:hidden"
+    class="fixed inset-0 m-auto w-[calc(100vw-2rem)] max-w-lg rounded-3xl p-0 backdrop:bg-backdrop/50 lg:hidden"
   >
     <div
       class="border-border bg-card max-h-[min(82vh,44rem)] overflow-y-auto rounded-3xl border p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom)+4.75rem)] shadow-2xl"
@@ -560,22 +552,10 @@ void redirectWithFeedback;
         </div>
 
         <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-          <button
-            type="button"
-            class={secondaryButtonClasses}
-            data-close-create-modal
-          >
-            Cancelar
-          </button>
-          <button
-            type="submit"
-            class={primaryButtonClasses}
-            data-submit-button
-            disabled
-          >
-            <Icon name="lucide:plus" size={18} />
+          <Button variant="secondary" data-close-create-modal>Cancelar</Button>
+          <Button variant="primary" icon="plus" type="submit" data-submit-button disabled>
             Agregar Insumo
-          </button>
+          </Button>
         </div>
       </form>
     </div>
@@ -584,7 +564,7 @@ void redirectWithFeedback;
   <dialog
     data-animated
     id="edit-ingredient-modal"
-    class="fixed inset-0 m-auto w-[calc(100vw-1.5rem)] max-w-xl rounded-3xl p-0 backdrop:bg-slate-900/55"
+    class="fixed inset-0 m-auto w-[calc(100vw-2rem)] max-w-xl rounded-3xl p-0 backdrop:bg-backdrop/50"
   >
     <div
       class="border-border bg-card max-h-[min(82vh,44rem)] overflow-y-auto rounded-3xl border p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom)+1.5rem)] shadow-2xl"
@@ -595,6 +575,11 @@ void redirectWithFeedback;
           <p class="text-muted-foreground mt-1 text-sm">
             Ajusta todos los datos del ingrediente sin perder consistencia en el
             costeo.
+          </p>
+          <p
+            id="edit-modal-error"
+            class="text-danger mt-2 hidden text-xs font-semibold"
+          >
           </p>
         </div>
 
@@ -710,22 +695,16 @@ void redirectWithFeedback;
         </div>
 
         <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-          <button
-            type="button"
-            class={secondaryButtonClasses}
-            data-close-edit-modal
-          >
-            Cancelar
-          </button>
-          <button
+          <Button variant="secondary" data-close-edit-modal> Cancelar </Button>
+          <Button
+            variant="primary"
+            icon="check"
             type="submit"
-            class={primaryButtonClasses}
             data-submit-button
             disabled
           >
-            <Icon name="lucide:check" size={18} />
             Guardar cambios
-          </button>
+          </Button>
         </div>
       </form>
     </div>
@@ -734,7 +713,7 @@ void redirectWithFeedback;
   <dialog
     data-animated
     id="delete-confirm-modal"
-    class="fixed inset-0 m-auto w-[calc(100vw-1.5rem)] max-w-md rounded-3xl p-0 backdrop:bg-slate-900/55"
+    class="fixed inset-0 m-auto w-[calc(100vw-2rem)] max-w-md rounded-3xl p-0 backdrop:bg-backdrop/50"
   >
     <div class="border-border bg-card rounded-3xl border p-6 shadow-2xl">
       <div class="flex items-start gap-3">
@@ -777,23 +756,16 @@ void redirectWithFeedback;
           id="delete-ingredient-id"
           value=""
         />
-        <button type="button" class={secondaryButtonClasses} id="cancel-delete">
-          Cancelar
-        </button>
-        <button
-          type="submit"
-          class="bg-danger-solid hover:bg-danger-solid inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-bold text-white transition-colors disabled:cursor-not-allowed disabled:opacity-60"
-          id="confirm-delete"
-        >
+        <Button variant="secondary" id="cancel-delete"> Cancelar </Button>
+        <Button variant="danger" type="submit" id="confirm-delete">
           Eliminar
-        </button>
+        </Button>
       </form>
     </div>
   </dialog>
 
   <script>
-    // @ts-nocheck
-    const parseIngredientNumber = (value) => {
+    const parseIngredientNumber = (value: unknown) => {
       const normalized = String(value ?? "")
         .trim()
         .replace(",", ".");
@@ -804,7 +776,7 @@ void redirectWithFeedback;
     import { formatCurrency } from "@/lib/formatters";
     import { bindDialogBackdrop } from "@/lib/dialog";
 
-    const syncIngredientFormState = (form) => {
+    const syncIngredientFormState = (form: HTMLElement) => {
       const nameInput = form.querySelector('[name="name"]');
       const priceInput = form.querySelector('[name="price"]');
       const quantityInput = form.querySelector('[name="purchaseQuantity"]');
@@ -839,7 +811,7 @@ void redirectWithFeedback;
       }
     };
 
-    const bindIngredientForm = (form) => {
+    const bindIngredientForm = (form: Element) => {
       if (!(form instanceof HTMLFormElement)) return;
       if (form.dataset.ingredientBound === "1") return;
 
@@ -1005,7 +977,14 @@ void redirectWithFeedback;
             syncIngredientFormState(form);
             modal.showModal();
           } catch {
-            window.alert("No se pudo cargar el ingrediente para editarlo.");
+            const errorEl = document.getElementById("edit-modal-error");
+            if (errorEl) {
+              errorEl.textContent =
+                "No se pudo cargar el ingrediente para editarlo.";
+              errorEl.classList.remove("hidden");
+              setTimeout(() => errorEl.classList.add("hidden"), 4000);
+            }
+            modal.showModal();
           }
         });
       });
@@ -1104,7 +1083,7 @@ void redirectWithFeedback;
         const overlay = document.createElement("div");
         overlay.style.cssText =
           "position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.2);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(2px)";
-        overlay.innerHTML = `<style>@keyframes sp{to{rotate:360deg}}</style><div style="background:var(--color-card,#fff);border-radius:1rem;padding:2rem 2.5rem;display:flex;flex-direction:column;align-items:center;gap:0.75rem;box-shadow:0 20px 60px rgba(0,0,0,0.15)">
+        overlay.innerHTML = `<div style="background:var(--color-card,#fff);border-radius:1rem;padding:2rem 2.5rem;display:flex;flex-direction:column;align-items:center;gap:0.75rem;box-shadow:0 20px 60px rgba(0,0,0,0.15)">
           <svg style="animation:sp 0.7s linear infinite;width:28px;height:28px;color:var(--color-accent-600,#4f46e5)" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
           <span style="font-size:0.875rem;font-weight:600;color:var(--color-foreground,#0f172a)">Guardando\u2026</span>
           </div>`;

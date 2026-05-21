@@ -11,7 +11,7 @@ const { id, name, category, timeAgo } = Astro.props;
 
 <a
   href={`/recipes/${id}`}
-  class="group border-border bg-card hover:border-accent-300 block rounded-xl border p-3 shadow-sm transition-all hover:shadow-md"
+  class="group recipe-mini-card border-border bg-card hover:border-accent-300 block rounded-xl border p-3 shadow-sm transition-all hover:shadow-md"
 >
   <p
     class="text-secondary-foreground group-hover:text-accent-700 truncate text-sm font-bold transition-colors"
@@ -31,3 +31,23 @@ const { id, name, category, timeAgo } = Astro.props;
     </span>
   </div>
 </a>
+
+<style define:vars={{}}>
+  @media (prefers-reduced-motion: no-preference) {
+    @keyframes miniCardFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(4px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .recipe-mini-card {
+      animation: miniCardFadeIn 0.2s var(--ease-out) both;
+      animation-delay: calc(var(--stagger-index, 0) * 50ms);
+    }
+  }
+</style>

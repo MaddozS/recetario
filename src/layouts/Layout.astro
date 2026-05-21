@@ -2,7 +2,6 @@
 import '@/styles/global.css'
 import { ClientRouter } from "astro:transitions";
 import { Icon } from 'astro-icon/components'
-import { listRecipeSummaries } from '@/lib/db/recipes'
 import { getUserPreferences } from '@/lib/db/preferences'
 import { hasFeature } from '@/lib/subscription'
 import { getAccentCssVars } from '@/lib/accent-colors'
@@ -11,38 +10,43 @@ import Header from '@/components/Header.astro'
 import RecipesSidebar from '@/components/RecipesSidebar.astro'
 
 const { currentPage, title } = Astro.props;
-const { currentRecipe, showSideBar, showHeader = true, removeContentWrapper = false } = Astro.props;
+const { showSideBar, showHeader = true, removeContentWrapper = false } = Astro.props;
 const showMobileNav = currentPage === 'recipes' || currentPage === 'ingredients' || currentPage === 'settings' || currentPage === 'production';
 const isAuthenticated = Boolean(Astro.locals.user && Astro.locals.session);
 const authenticatedUserName = Astro.locals.user?.name || Astro.locals.user?.email || null;
+const authenticatedUserImage = Astro.locals.user?.image || null;
 const subscription = Astro.locals.subscription;
 const showProduction = subscription ? hasFeature(subscription, 'production_planner') : false;
 const userId = Astro.locals.user?.id;
 
-const [recipes, userPrefs] = await Promise.all([
-  (showSideBar && userId) ? listRecipeSummaries(userId) : Promise.resolve([]),
-  userId ? getUserPreferences(userId) : Promise.resolve(null),
-]);
+const userPrefs = userId ? await getUserPreferences(userId) : null;
 const recipeHref = '/recipes';
 const theme = userPrefs?.theme ?? 'light';
 const accent = (userPrefs?.accentColor ?? 'indigo') as AccentFamily;
 const accentCssVars = getAccentCssVars(accent, theme);
+const sidebarCollapsed = Astro.cookies.get("kitchcalc-sidebar-collapsed")?.value === "1";
 ---
 
 <!doctype html>
 <html lang="en" class:list={[theme === 'dark' ? 'dark' : '']} data-theme={theme} data-accent={accent} data-app-accent={accent} data-app-theme={theme} style={accentCssVars}>
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<link rel="icon" type="image/png" href="/favicon.png" />
 		<meta name="generator" content={Astro.generator} />
+		<meta name="description" content="KitchCalc | Calculadora de costo de recetas, inventario de ingredientes y planificador de produccion." />
+		<meta property="og:title" content={title ?? "KitchCalc | Costeo Inteligente"} />
+		<meta property="og:description" content="Calculadora de costo de recetas, inventario de ingredientes y planificador de produccion." />
+		<meta property="og:type" content="website" />
+		<meta name="twitter:card" content="summary" />
 		<title>{title ?? `KitchCalc - ${currentPage === 'recipes' ? 'Recetario' : currentPage === 'ingredients' ? 'Inventario' : currentPage === 'settings' ? 'Configuración' : currentPage === 'production' ? 'Planificador de Producción' : ''}`}</title>
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <ClientRouter />
 	</head>
-	<body class="bg-background flex flex-col min-h-dvh lg:h-dvh lg:overflow-hidden">
+	<body class="bg-background flex flex-col min-h-dvh md:h-dvh md:overflow-hidden">
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:bg-accent-600 focus:text-white focus:rounded-xl focus:px-4 focus:py-2 focus:outline-none">Saltar al contenido</a>
     {showHeader && (
       <Header
         currentPage={currentPage}
@@ -52,29 +56,30 @@ const accentCssVars = getAccentCssVars(accent, theme);
       />
     )}
     
-    <div class="flex flex-1 flex-col lg:flex-row overflow-hidden relative">
+    <div class="flex flex-1 flex-col md:flex-row overflow-hidden relative">
       {
         showSideBar && (
           <>
             <!-- Mobile Overlay -->
-            <div id="mobile-sidebar-overlay" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 hidden lg:hidden opacity-0" style="transition: opacity 250ms var(--ease-out)"></div>
+            <div id="mobile-sidebar-overlay" class="fixed inset-0 bg-backdrop/40 backdrop-blur-sm z-50 hidden md:hidden opacity-0"></div>
             
             <!-- Sidebar -->
-            <aside id="app-sidebar" class="fixed inset-y-0 left-0 z-[60] w-[85%] max-w-[320px] -translate-x-full lg:translate-x-0 lg:static lg:w-[320px] xl:w-90 flex-none border-r border-border bg-card lg:overflow-y-auto flex flex-col shadow-2xl lg:shadow-none" style="transition: transform 250ms var(--ease-out)" transition:animate="none">
+            <aside id="app-sidebar" data-collapsed={sidebarCollapsed ? "1" : "0"} class="fixed inset-y-0 left-0 z-[60] w-[85%] max-w-[320px] -translate-x-full md:translate-x-0 md:static md:w-auto md:max-w-none md:flex-none md:border-r md:border-border md:bg-card md:flex md:flex-col shadow-2xl md:shadow-none" transition:animate="none">
               <RecipesSidebar
-                recipes={recipes}
-                currentRecipe={currentRecipe}
+                currentPage={currentPage}
                 isAuthenticated={isAuthenticated}
                 userName={authenticatedUserName}
+                userImage={authenticatedUserImage}
                 subscription={subscription}
+                showProduction={showProduction}
               />
             </aside>
           </>
         )
       }
-      <main class:list={[
-        !removeContentWrapper ? 'p-4 md:p-8 pb-24 lg:pb-8' : '',
-        "flex-1 overflow-y-auto w-full bg-linear-to-br from-background to-muted"
+      <main id="main-content" class:list={[
+        !removeContentWrapper ? 'p-4 md:p-8 pb-24 md:pb-8' : '',
+        "flex-1 overflow-y-auto w-full bg-background"
       ]}>
         <div class="max-w-7xl mx-auto" transition:name="app-content" transition:animate="slide">
           <slot />
@@ -85,54 +90,54 @@ const accentCssVars = getAccentCssVars(accent, theme);
     {
       showMobileNav && (
         <nav
-          class="lg:hidden fixed inset-x-0 bottom-0 z-40 px-3 pb-[calc(env(safe-area-inset-bottom)+0.45rem)]"
+          class="md:hidden fixed inset-x-0 bottom-0 z-40 px-3 pb-[calc(env(safe-area-inset-bottom)+0.45rem)]"
           transition:name="mobile-nav"
           transition:animate="none"
         >
-          <div class="rounded-2xl border border-border bg-card/95 backdrop-blur shadow-[0_-8px_24px_rgba(15,23,42,0.08)] dark:shadow-[0_-8px_24px_rgba(0,0,0,0.4)] p-1.5 gap-1.5"
+          <div class="rounded-2xl border border-border bg-card shadow-[0_-8px_24px_var(--tw-shadow-color,rgba(0,0,0,0.08))] dark:shadow-[0_-8px_24px_rgba(0,0,0,0.4)] p-1 sm:p-1.5 gap-1"
             class:list={[showProduction ? 'grid grid-cols-4' : 'grid grid-cols-3']}
           >
             <a
               href={recipeHref}
               class:list={[
-                'min-h-11 rounded-xl flex items-center justify-center gap-2 text-sm font-bold transition-colors',
+                'min-h-11 rounded-xl flex flex-col items-center justify-center gap-0.5 text-[11px] sm:text-xs font-bold transition-colors',
                 currentPage === 'recipes' ? 'bg-accent-600 text-white' : 'text-muted-foreground hover:bg-muted'
               ]}
             >
               <Icon name="lucide:book-open" size={16} />
-              Recetas
+              <span>Recetas</span>
             </a>
             <a
               href="/ingredients"
               class:list={[
-                'min-h-11 rounded-xl flex items-center justify-center gap-2 text-sm font-bold transition-colors',
+                'min-h-11 rounded-xl flex flex-col items-center justify-center gap-0.5 text-[11px] sm:text-xs font-bold transition-colors',
                 currentPage === 'ingredients' ? 'bg-accent-600 text-white' : 'text-muted-foreground hover:bg-muted'
               ]}
             >
               <Icon name="lucide:package-search" size={16} />
-              Ingredientes
+              <span>Ingredientes</span>
             </a>
             {showProduction && (
               <a
                 href="/produccion"
                 class:list={[
-                  'min-h-11 rounded-xl flex items-center justify-center gap-2 text-sm font-bold transition-colors',
+                  'min-h-11 rounded-xl flex flex-col items-center justify-center gap-0.5 text-[11px] sm:text-xs font-bold transition-colors',
                   currentPage === 'production' ? 'bg-accent-600 text-white' : 'text-muted-foreground hover:bg-muted'
                 ]}
               >
                 <Icon name="lucide:factory" size={16} />
-                Producción
+                <span>Producción</span>
               </a>
             )}
             <a
               href="/settings"
               class:list={[
-                'min-h-11 rounded-xl flex items-center justify-center gap-2 text-sm font-bold transition-colors',
+                'min-h-11 rounded-xl flex flex-col items-center justify-center gap-0.5 text-[11px] sm:text-xs font-bold transition-colors',
                 currentPage === 'settings' ? 'bg-accent-600 text-white' : 'text-muted-foreground hover:bg-muted'
               ]}
             >
               <Icon name="lucide:settings" size={16} />
-              Ajustes
+              <span>Configuración</span>
             </a>
           </div>
         </nav>
