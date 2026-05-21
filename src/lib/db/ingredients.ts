@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import type { Prisma } from "../../../generated/prisma/client.js";
 import type {
   Ingredient,
   CreateIngredientInput,
@@ -155,7 +156,7 @@ export async function updateIngredient(
   try {
     const data = await prisma.ingredient.update({
       where: { id: ingredientId, ownerId },
-      data: updates as any,
+      data: updates as Prisma.IngredientUncheckedUpdateInput,
     });
 
     invalidateIngredientCache(ownerId);

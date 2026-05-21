@@ -67,7 +67,7 @@ const visibleSteps = cookingSteps;
   class="bg-card border-border mx-1 mt-6 overflow-hidden rounded-2xl border shadow-sm sm:mx-2 lg:mx-8"
 >
   <div
-    class="border-border-light flex items-center justify-between gap-3 border-b px-5 py-5 sm:px-6 lg:px-8 dark:border-gray-950"
+    class="border-border-light flex items-center justify-between gap-3 border-b px-5 py-5 sm:px-6 lg:px-8"
   >
     <h2 class="text-foreground flex items-center gap-2 text-sm font-bold">
       <Icon name="lucide:list-checks" size={16} class="text-accent-500" />
@@ -87,8 +87,9 @@ const visibleSteps = cookingSteps;
           <button
             type="button"
             data-open-cooking-mode
-            class="text-muted-foreground hover:bg-accent-50 hover:text-accent-600 inline-flex h-8 w-8 items-center justify-center rounded-lg transition-colors"
+            class="text-muted-foreground hover:bg-accent-50 hover:text-accent-600 inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg transition-colors"
             title="Modo cocina"
+            aria-label="Modo cocina"
           >
             <Icon name="lucide:cooking-pot" size={16} />
           </button>
@@ -172,7 +173,8 @@ const visibleSteps = cookingSteps;
           <button
             type="button"
             data-close-cooking-mode
-            class="border-border text-muted-foreground hover:bg-background hover:text-secondary-foreground inline-flex h-10 w-10 items-center justify-center rounded-xl border transition-colors"
+            class="border-border text-muted-foreground hover:bg-background hover:text-secondary-foreground inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border transition-colors"
+            aria-label="Cerrar modo cocina"
           >
             <Icon name="lucide:x" size={18} />
           </button>
@@ -273,7 +275,7 @@ const visibleSteps = cookingSteps;
                         <div
                           class="kitchen-timer-progress-fill"
                           data-timer-progress
-                          style="width: 0%"
+                          style="transform: scaleX(0)"
                         />
                       </div>
                     </div>
@@ -502,7 +504,7 @@ const visibleSteps = cookingSteps;
 
       if (this.progressFill) {
         if (this.secondsLeft <= 0) {
-          this.progressFill.style.width = "100%";
+          this.progressFill.style.transform = "scaleX(1)";
         } else {
           const pct =
             this.initialSeconds > 0
@@ -510,7 +512,7 @@ const visibleSteps = cookingSteps;
                   this.initialSeconds) *
                 100
               : 0;
-          this.progressFill.style.width = Math.min(pct, 100) + "%";
+          this.progressFill.style.transform = `scaleX(${Math.min(pct, 100) / 100})`;
         }
       }
     }

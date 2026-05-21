@@ -1,0 +1,38 @@
+---
+interface Props {
+  padding?: "sm" | "md" | "lg";
+  hover?: boolean;
+  accent?: boolean;
+  class?: string;
+}
+
+const {
+  padding = "md",
+  hover = false,
+  accent = false,
+  class: extraClass = "",
+} = Astro.props;
+
+const paddingMap: Record<string, string> = {
+  sm: "p-4",
+  md: "p-5",
+  lg: "p-6",
+};
+
+const hoverClass = hover
+  ? "hover:border-accent-300 hover:shadow-md transition-all"
+  : "";
+const accentClass = accent ? "border-accent-100" : "border-border";
+---
+
+<div
+  class:list={[
+    "bg-card rounded-2xl border shadow-sm",
+    paddingMap[padding],
+    hoverClass,
+    accentClass,
+    extraClass,
+  ]}
+>
+  <slot />
+</div>

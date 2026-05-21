@@ -39,34 +39,34 @@ const recipeIngredientIdsJson = JSON.stringify(recipeIngredientIds);
     >
       <button
         type="button"
-        class="toolbar-btn text-muted-foreground hover:bg-accent-50 hover:text-accent-600 inline-flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-lg transition-colors"
+        class="toolbar-btn text-muted-foreground hover:bg-accent-50 hover:text-accent-600 inline-flex min-h-11 min-w-11 shrink-0 cursor-pointer items-center justify-center rounded-lg transition-colors"
         data-toolbar-btn="bold"
         title="Negritas"><Icon name="lucide:bold" size={16} /></button
       >
       <button
         type="button"
-        class="toolbar-btn text-muted-foreground hover:bg-accent-50 hover:text-accent-600 inline-flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-lg transition-colors"
+        class="toolbar-btn text-muted-foreground hover:bg-accent-50 hover:text-accent-600 inline-flex min-h-11 min-w-11 shrink-0 cursor-pointer items-center justify-center rounded-lg transition-colors"
         data-toolbar-btn="italic"
         title="Cursiva"><Icon name="lucide:italic" size={16} /></button
       >
       <div class="wysiwyg-separator mx-1 shrink-0"></div>
       <button
         type="button"
-        class="toolbar-btn text-muted-foreground hover:bg-accent-50 hover:text-accent-600 inline-flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-lg transition-colors"
+        class="toolbar-btn text-muted-foreground hover:bg-accent-50 hover:text-accent-600 inline-flex min-h-11 min-w-11 shrink-0 cursor-pointer items-center justify-center rounded-lg transition-colors"
         data-toolbar-btn="numbered-list"
         title="Lista numerada"
         ><Icon name="lucide:list-ordered" size={16} /></button
       >
       <button
         type="button"
-        class="toolbar-btn text-muted-foreground hover:bg-accent-50 hover:text-accent-600 inline-flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-lg transition-colors"
+        class="toolbar-btn text-muted-foreground hover:bg-accent-50 hover:text-accent-600 inline-flex min-h-11 min-w-11 shrink-0 cursor-pointer items-center justify-center rounded-lg transition-colors"
         data-toolbar-btn="bullet-list"
         title="Lista con viñetas"><Icon name="lucide:list" size={16} /></button
       >
       <div class="wysiwyg-separator mx-1 shrink-0"></div>
       <button
         type="button"
-        class="toolbar-btn text-muted-foreground hover:bg-accent-50 hover:text-accent-600 inline-flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-lg transition-colors"
+        class="toolbar-btn text-muted-foreground hover:bg-accent-50 hover:text-accent-600 inline-flex min-h-11 min-w-11 shrink-0 cursor-pointer items-center justify-center rounded-lg transition-colors"
         data-toolbar-btn="heading"
         title="Sección"><Icon name="lucide:heading" size={16} /></button
       >
@@ -107,7 +107,7 @@ const recipeIngredientIdsJson = JSON.stringify(recipeIngredientIds);
 
     <div class="border-border overflow-hidden rounded-b-xl border-x border-b">
       <div
-        class="contenteditable-editor bg-background text-secondary-foreground min-h-72 w-full border-0 p-4 text-sm leading-relaxed outline-none focus:ring-0 lg:min-h-88"
+        class="contenteditable-editor bg-background text-secondary-foreground focus-visible:ring-accent-500 min-h-72 w-full border-0 p-4 text-sm leading-relaxed outline-none focus-visible:ring-2 lg:min-h-88"
         contenteditable="true"
         data-contenteditable
       >

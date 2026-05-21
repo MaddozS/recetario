@@ -15,7 +15,6 @@
     "vercel-build": "npx prisma generate && npx prisma migrate deploy && astro build"
   },
   "dependencies": {
-    "@astrojs/ts-plugin": "^1.10.8",
     "@astrojs/vercel": "10.0.7",
     "@iconify-json/lucide": "1.2.107",
     "@prisma/adapter-pg": "7.8.0",
@@ -26,13 +25,13 @@
     "better-auth": "1.6.11",
     "dotenv": "17.4.2",
     "isomorphic-dompurify": "^3.13.0",
-    "marked": "18.0.3",
     "pg": "8.20.0",
     "stripe": "22.1.1",
     "tailwindcss": "4.3.0"
   },
   "devDependencies": {
     "@astrojs/check": "0.9.9",
+    "@astrojs/ts-plugin": "^1.10.8",
     "@eslint/js": "10.0.1",
     "@types/node": "25.8.0",
     "@types/pg": "8.20.0",

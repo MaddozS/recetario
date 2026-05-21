@@ -35,7 +35,7 @@ const unitProfit = defaultSalePrice - unitCost;
 ---
 
 <presentation-card
-  class="bg-card border-border hover:border-border group flex h-full flex-col rounded-2xl border p-5 shadow-sm transition-all dark:hover:border-slate-600"
+  class="bg-card border-border flex h-full flex-col rounded-2xl border p-5 shadow-sm transition-all"
   data-id={id}
   data-multiplier={multiplier}
   data-cost={costoProduccionRealBatch}
@@ -51,14 +51,15 @@ const unitProfit = defaultSalePrice - unitCost;
       <input
         name="presentationName"
         type="text"
-        class="presentation-name focus:ring-accent-500/20 text-foreground -ml-1 w-full min-w-0 rounded-lg border-none bg-transparent p-1 text-xl font-bold focus:ring-2"
+        class="presentation-name font-[family-name:var(--font-display)] focus:ring-accent-500/20 text-foreground -ml-1 w-full min-w-0 rounded-lg border-none bg-transparent p-1 text-lg font-bold focus:ring-2"
         value={name}
+        required
         readonly
       />
       <div class="flex shrink-0 items-center gap-1">
         <button
           type="button"
-          class="delete-btn text-danger hover:text-danger hover:bg-danger-bg hidden h-8 w-8 items-center justify-center rounded-full bg-transparent transition-colors"
+          class="delete-btn text-danger hover:text-danger hover:bg-danger-bg hidden min-h-11 min-w-11 items-center justify-center rounded-full bg-transparent transition-colors"
           aria-label="Eliminar presentación"
           title="Eliminar"
         >
@@ -66,7 +67,7 @@ const unitProfit = defaultSalePrice - unitCost;
         </button>
         <button
           type="button"
-          class="edit-btn text-subtle-foreground hover:text-accent-600 hover:bg-accent-50 flex h-8 w-8 items-center justify-center rounded-full bg-transparent transition-colors"
+          class="edit-btn text-subtle-foreground hover:text-accent-600 hover:bg-accent-50 flex min-h-11 min-w-11 items-center justify-center rounded-full bg-transparent transition-colors"
           aria-label="Editar presentación"
           aria-pressed="false"
           title="Editar"
@@ -94,6 +95,7 @@ const unitProfit = defaultSalePrice - unitCost;
           name="unitsPerBatch"
           type="number"
           step="any"
+          min="0.01"
           class="presentation-units text-foreground w-8 border-none bg-transparent p-0 text-center font-mono text-xs font-semibold read-only:pointer-events-none focus:ring-0"
           value={unitsPerBatch}
           readonly
@@ -117,12 +119,12 @@ const unitProfit = defaultSalePrice - unitCost;
     <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
       <div class="shrink-0 space-y-0.5">
         <p
-          class="text-subtle-foreground text-[10px] font-bold tracking-widest uppercase"
+          class="text-subtle-foreground text-[11px] font-bold tracking-[0.16em] uppercase"
         >
           Costo unitario
         </p>
         <p
-          class="unit-cost-display text-foreground font-mono text-[20px] font-semibold tabular-nums"
+          class="unit-cost-display text-foreground font-mono text-lg font-semibold tabular-nums"
         >
           ${unitCost.toFixed(2)}
         </p>
@@ -133,11 +135,11 @@ const unitProfit = defaultSalePrice - unitCost;
       >
         <div class="flex min-w-0 shrink-0 flex-col">
           <p
-            class="text-accent-700 mb-0.5 text-[10px] font-bold tracking-widest uppercase"
+            class="text-accent-700 mb-0.5 text-[11px] font-bold tracking-[0.16em] uppercase"
           >
             Precio Venta
           </p>
-          <p class="text-accent-400/80 text-[10px]">
+          <p class="text-muted-foreground text-[10px]">
             Sugerido: <span
               class="recommended-price-display font-mono font-semibold"
               >${unitPriceRecommended.toFixed(2)}</span
@@ -175,19 +177,21 @@ const unitProfit = defaultSalePrice - unitCost;
     <div class="mt-auto flex items-end justify-between gap-4">
       <div class="space-y-0.5">
         <p
-          class="text-subtle-foreground text-[10px] font-bold tracking-widest uppercase"
+          class="text-subtle-foreground text-[11px] font-bold tracking-[0.16em] uppercase"
         >
           Ganancia / Pz
         </p>
         <p
-          class="text-success profit-display font-mono text-[20px] font-semibold tabular-nums"
+          class="text-success profit-display font-mono text-lg font-semibold tabular-nums"
         >
           ${unitProfit.toFixed(2)}
         </p>
       </div>
       <div class="w-[60%] max-w-60 pb-1">
         <div class="mb-2 flex items-center justify-between text-xs">
-          <span class="margin-label text-success">Saludable</span>
+          <span class="margin-label text-success" title="Margen sobre precio: (precio - costo) / precio"
+            >Saludable</span
+          >
           <span
             class="margin-percent-display text-foreground font-mono font-semibold"
             >0.0%</span
@@ -210,11 +214,13 @@ const unitProfit = defaultSalePrice - unitCost;
         <Icon name="lucide:check" size={18} />
         Guardar Cambios
       </button>
+      <p class="text-danger text-xs font-semibold mt-2 hidden presentation-error"></p>
     </div>
   </form>
 
   <dialog
-    class="delete-dialog fixed inset-0 m-auto w-[calc(100vw-1.5rem)] max-w-md rounded-3xl p-0 backdrop:bg-slate-900/55"
+    data-animated
+    class="delete-dialog fixed inset-0 m-auto w-[calc(100vw-2rem)] max-w-md rounded-3xl p-0 backdrop:bg-slate-900/50"
   >
     <div class="border-border bg-card rounded-3xl border p-6 shadow-2xl">
       <div class="flex items-start gap-3">
@@ -224,9 +230,9 @@ const unitProfit = defaultSalePrice - unitCost;
           <Icon name="lucide:trash-2" size={18} />
         </div>
         <div>
-          <h3 class="text-foreground text-lg font-bold">
+          <h2 class="text-foreground text-lg font-bold">
             Confirmar eliminación
-          </h3>
+          </h2>
           <p class="text-muted-foreground mt-2 text-sm">
             ¿Eliminar esta presentación? Esta acción no se puede deshacer.
           </p>
@@ -242,7 +248,7 @@ const unitProfit = defaultSalePrice - unitCost;
         </button>
         <button
           type="button"
-          class="delete-confirm-btn bg-danger-solid hover:bg-danger-solid inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-bold text-white transition-colors"
+          class="delete-confirm-btn bg-danger-solid hover:bg-danger-hover inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-bold text-white transition-colors"
         >
           <Icon name="lucide:trash-2" size={16} /> Eliminar
         </button>
@@ -252,37 +258,41 @@ const unitProfit = defaultSalePrice - unitCost;
 </presentation-card>
 
 <script>
-  // @ts-nocheck
   import { bindDialogBackdrop } from "@/lib/dialog";
 
   class PresentationCard extends HTMLElement {
-    isEditing = false;
-    btnDelete = null;
-    btnEdit = null;
-    inputName = null;
-    inputUnits = null;
-    inputPrice = null;
-    priceMeasure = null;
-    yieldValue = null;
-    unitCostDisplay = null;
-    recommendedPriceDisplay = null;
-    profitDisplay = null;
-    marginLabel = null;
-    marginPercentDisplay = null;
-    marginBar = null;
-    saveBar = null;
-    btnSave = null;
-    deleteDialog = null;
-    btnDeleteCancel = null;
-    btnDeleteConfirm = null;
-    form = null;
-    multiplier = 1;
-    costoBatch = 0;
-    precioRecBatch = 0;
-    originalName = "";
-    originalUnits = "0";
-    originalPrice = "0";
-    salePriceDirty = false;
+    isEditing: boolean = false;
+    btnDelete: HTMLButtonElement | null = null;
+    btnEdit: HTMLButtonElement | null = null;
+    inputName: HTMLInputElement | null = null;
+    inputUnits: HTMLInputElement | null = null;
+    inputPrice: HTMLInputElement | null = null;
+    priceMeasure: HTMLSpanElement | null = null;
+    yieldValue: HTMLSpanElement | null = null;
+    unitCostDisplay: HTMLParagraphElement | null = null;
+    recommendedPriceDisplay: HTMLSpanElement | null = null;
+    profitDisplay: HTMLParagraphElement | null = null;
+    marginLabel: HTMLSpanElement | null = null;
+    marginPercentDisplay: HTMLSpanElement | null = null;
+    marginBar: HTMLDivElement | null = null;
+    saveBar: HTMLDivElement | null = null;
+    btnSave: HTMLButtonElement | null = null;
+    deleteDialog: HTMLDialogElement | null = null;
+    btnDeleteCancel: HTMLButtonElement | null = null;
+    btnDeleteConfirm: HTMLButtonElement | null = null;
+    form: HTMLFormElement | null = null;
+    presentationError: HTMLParagraphElement | null = null;
+    saveBtnOriginalText: string = "";
+    saveBtnOriginalIconHTML: string = "";
+    multiplier: number = 1;
+    costoBatch: number = 0;
+    precioRecBatch: number = 0;
+    originalName: string = "";
+    originalUnits: string = "0";
+    originalPrice: string = "0";
+    salePriceDirty: boolean = false;
+    errorDismissTimeout: number | undefined = undefined;
+    escHandler: ((e: KeyboardEvent) => void) | null = null;
 
     connectedCallback() {
       if (this.dataset.bound === "1") return;
@@ -308,6 +318,7 @@ const unitProfit = defaultSalePrice - unitCost;
       this.deleteDialog = this.querySelector(".delete-dialog");
       this.btnDeleteCancel = this.querySelector(".delete-cancel-btn");
       this.btnDeleteConfirm = this.querySelector(".delete-confirm-btn");
+      this.presentationError = this.querySelector(".presentation-error");
       this.form = this.querySelector("form");
 
       this.multiplier = parseFloat(this.dataset.multiplier || "1");
@@ -328,6 +339,19 @@ const unitProfit = defaultSalePrice - unitCost;
         this.calculate();
       });
 
+      this.escHandler = (e) => {
+        if (e.key === "Escape" && this.isEditing) {
+          this.toggleEdit(false);
+        }
+      };
+      document.addEventListener("keydown", this.escHandler);
+
+      if (this.btnSave) {
+        this.saveBtnOriginalText = (this.btnSave.textContent || "").trim();
+        this.saveBtnOriginalIconHTML =
+          this.btnSave.querySelector("svg")?.outerHTML || "";
+      }
+
       if (this.deleteDialog) {
         bindDialogBackdrop(this.deleteDialog);
       }
@@ -335,14 +359,26 @@ const unitProfit = defaultSalePrice - unitCost;
       this.form?.addEventListener("submit", async (e) => {
         e.preventDefault();
 
+        if (!this.form) return;
+
+        if (!this.form.checkValidity()) {
+          this.form.reportValidity();
+          return;
+        }
+
+        const parsedPrice = parseFloat(this.inputPrice?.value || "");
+        if (this.inputPrice?.value.trim() !== "" && (!Number.isFinite(parsedPrice) || parsedPrice < 0)) {
+          this.showError("El precio de venta debe ser un número mayor o igual a 0.");
+          return;
+        }
+
         if (this.btnSave) {
           this.btnSave.disabled = true;
           this.btnSave.classList.add("opacity-75", "cursor-not-allowed");
+          this.btnSave.innerHTML = `<svg class="animate-spin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="32"><animate attributeName="stroke-dashoffset" values="32;0" dur="0.8s" repeatCount="indefinite" /></circle></svg> Guardando...`;
         }
 
         try {
-          if (!this.form) return;
-
           const formData = new FormData(this.form);
           if (!this.salePriceDirty) {
             formData.delete("salePrice");
@@ -358,7 +394,7 @@ const unitProfit = defaultSalePrice - unitCost;
 
           if (response.redirected) {
             throw new Error(
-              "Tu sesion expiro. Recarga la pagina e inicia sesion nuevamente.",
+              "Tu sesión expiró. Recarga la página e inicia sesión nuevamente.",
             );
           }
 
@@ -369,12 +405,12 @@ const unitProfit = defaultSalePrice - unitCost;
 
           const contentType = response.headers.get("content-type") || "";
           if (!contentType.includes("application/json")) {
-            throw new Error("La respuesta del servidor no fue valida.");
+            throw new Error("La respuesta del servidor no fue válida.");
           }
 
           const payload = await response.json().catch(() => null);
           if (!payload?.presentation) {
-            throw new Error("La respuesta del servidor no fue valida.");
+            throw new Error("La respuesta del servidor no fue válida.");
           }
 
           this.applyPresentation(payload.presentation);
@@ -386,11 +422,12 @@ const unitProfit = defaultSalePrice - unitCost;
             error instanceof Error && error.message
               ? error.message
               : "Hubo un error al guardar los cambios.";
-          alert(message);
+          this.showError(message);
         } finally {
           if (this.btnSave) {
             this.btnSave.disabled = false;
             this.btnSave.classList.remove("opacity-75", "cursor-not-allowed");
+            this.btnSave.innerHTML = this.saveBtnOriginalIconHTML + " " + this.saveBtnOriginalText;
           }
         }
       });
@@ -399,11 +436,49 @@ const unitProfit = defaultSalePrice - unitCost;
       this.calculate();
     }
 
+    showError(message: string) {
+      if (!this.presentationError) return;
+      if (this.errorDismissTimeout) {
+        clearTimeout(this.errorDismissTimeout);
+      }
+      this.presentationError.textContent = message;
+      this.presentationError.classList.remove("hidden");
+      let dismissBtn = this.presentationError.querySelector(
+        ".error-dismiss-btn",
+      );
+      if (!dismissBtn) {
+        dismissBtn = document.createElement("button");
+        (dismissBtn as HTMLButtonElement).type = "button";
+        dismissBtn.setAttribute("aria-label", "Cerrar mensaje");
+        dismissBtn.className =
+          "error-dismiss-btn ml-2 inline-flex items-center justify-center rounded-full hover:bg-danger-bg transition-colors w-5 h-5 text-xs font-bold";
+        dismissBtn.textContent = "\u00D7";
+        dismissBtn.addEventListener("click", () => this.clearError());
+        this.presentationError.appendChild(dismissBtn);
+      }
+    }
+
+    clearError() {
+      if (!this.presentationError) return;
+      this.presentationError.classList.add("hidden");
+      if (this.errorDismissTimeout) {
+        clearTimeout(this.errorDismissTimeout);
+        this.errorDismissTimeout = undefined;
+      }
+    }
+
     openDeleteDialog() {
       if (!(this.deleteDialog instanceof HTMLDialogElement)) return;
 
       if (!this.deleteDialog.open) {
         this.deleteDialog.showModal();
+      }
+    }
+
+    disconnectedCallback() {
+      if (this.escHandler) {
+        document.removeEventListener("keydown", this.escHandler);
+        this.escHandler = null;
       }
     }
 
@@ -442,7 +517,7 @@ const unitProfit = defaultSalePrice - unitCost;
 
         if (response.redirected) {
           throw new Error(
-            "Tu sesion expiro. Recarga la pagina e inicia sesion nuevamente.",
+            "Tu sesión expiró. Recarga la página e inicia sesión nuevamente.",
           );
         }
 
@@ -455,12 +530,12 @@ const unitProfit = defaultSalePrice - unitCost;
 
         const contentType = response.headers.get("content-type") || "";
         if (!contentType.includes("application/json")) {
-          throw new Error("La respuesta del servidor no fue valida.");
+          throw new Error("La respuesta del servidor no fue válida.");
         }
 
         const payload = await response.json().catch(() => null);
         if (!payload?.deleted) {
-          throw new Error("La respuesta del servidor no fue valida.");
+          throw new Error("La respuesta del servidor no fue válida.");
         }
 
         this.closeDeleteDialog();
@@ -471,7 +546,7 @@ const unitProfit = defaultSalePrice - unitCost;
           error instanceof Error && error.message
             ? error.message
             : "Hubo un error al eliminar la presentación.";
-        alert(message);
+        this.showError(message);
       } finally {
         if (this.btnDelete) {
           this.btnDelete.disabled = false;
@@ -488,7 +563,7 @@ const unitProfit = defaultSalePrice - unitCost;
       }
     }
 
-    applyPresentation(presentation) {
+    applyPresentation(presentation: { name?: string; unitsPerBatch?: number; salePrice?: number | null }) {
       const unitsPerBatch = Number(presentation?.unitsPerBatch ?? 0);
       const totalUnits = unitsPerBatch * this.multiplier;
       const hasUnits = totalUnits > 0;
@@ -519,6 +594,7 @@ const unitProfit = defaultSalePrice - unitCost;
       const inputs = [this.inputName, this.inputUnits, this.inputPrice];
 
       if (this.isEditing) {
+        this.clearError();
         this.salePriceDirty = false;
         this.originalName = this.inputName?.value || "";
         this.originalUnits = this.inputUnits?.value || "0";
@@ -612,12 +688,14 @@ const unitProfit = defaultSalePrice - unitCost;
       }
 
       const measuredValue = value.trim().length > 0 ? value.trim() : "0.00";
-      this.priceMeasure.textContent = measuredValue;
 
-      const measuredWidth = this.priceMeasure.getBoundingClientRect().width;
-      const nextWidth = Math.max(Math.ceil(measuredWidth + 4), 28);
-
-      this.inputPrice.style.width = `${nextWidth}px`;
+      requestAnimationFrame(() => {
+        if (!this.priceMeasure || !this.inputPrice) return;
+        this.priceMeasure.textContent = measuredValue;
+        const measuredWidth = this.priceMeasure.scrollWidth;
+        const nextWidth = Math.max(Math.ceil(measuredWidth + 4), 28);
+        this.inputPrice.style.width = `${nextWidth}px`;
+      });
     }
 
     calculate() {
@@ -645,7 +723,7 @@ const unitProfit = defaultSalePrice - unitCost;
       const marginPercent = salePrice > 0 ? (unitProfit / salePrice) * 100 : 0;
       const marginWidth = Math.min(Math.max(marginPercent, 0), 100);
 
-      let marginLabel = "Margen negativo";
+      let marginLabel = "Bajo";
       let marginColor = "bg-danger-solid";
       let marginTextColor = "text-danger";
 
@@ -657,10 +735,6 @@ const unitProfit = defaultSalePrice - unitCost;
         marginLabel = "Medio";
         marginColor = "bg-warning-solid";
         marginTextColor = "text-warning";
-      } else if (marginPercent >= 0) {
-        marginLabel = "Bajo";
-        marginColor = "bg-danger-solid";
-        marginTextColor = "text-danger";
       }
 
       if (this.yieldValue)
@@ -674,7 +748,7 @@ const unitProfit = defaultSalePrice - unitCost;
           "$" + unitPriceRecommended.toFixed(2);
       if (this.profitDisplay) {
         this.profitDisplay.textContent = "$" + unitProfit.toFixed(2);
-        this.profitDisplay.className = `text-[22px] font-mono font-semibold tabular-nums profit-display ${marginTextColor}`;
+        this.profitDisplay.className = `text-lg font-mono font-semibold tabular-nums profit-display ${marginTextColor}`;
       }
       if (this.marginPercentDisplay)
         this.marginPercentDisplay.textContent = marginPercent.toFixed(1) + "%";

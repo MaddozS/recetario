@@ -1,63 +1,217 @@
 ---
 import { Icon } from "astro-icon/components";
+import { Badge } from "@/components/ui";
 
 interface Props {
   id: number;
   name: string;
   category?: string;
   ingredientCount: number;
+  canDuplicate?: boolean;
 }
 
-const { id, name, category, ingredientCount } = Astro.props;
+const {
+  id,
+  name,
+  category,
+  ingredientCount,
+  canDuplicate = false,
+} = Astro.props;
+const cardMenuId = `card-menu-${id}`;
 ---
 
-<a
-  href={`/recipes/${id}`}
-  class="recipe-grid-card group border-border bg-card hover:border-accent-300 hover:bg-accent-50/30 block rounded-2xl border p-5 shadow-sm hover:shadow-md active:scale-[0.98]"
-  style="transition: transform 160ms var(--ease-out), box-shadow 160ms var(--ease-out), border-color 160ms var(--ease-out), background-color 160ms var(--ease-out)"
->
-  <div class="flex items-start justify-between gap-3">
-    <div class="min-w-0">
-      <h3
-        class="text-secondary-foreground group-hover:text-accent-700 truncate font-bold transition-colors"
-      >
-        {name}
-      </h3>
-      <div class="mt-2 flex flex-wrap items-center gap-2">
-        {
-          category && (
-            <span class="bg-accent-50 text-accent-600 border-accent-200 inline-flex items-center rounded-full border px-2.5 py-0.5 text-[11px] font-semibold">
-              {category}
-            </span>
-          )
-        }
-        <span class="text-muted-foreground text-xs">
-          {ingredientCount}
-          {ingredientCount === 1 ? "ingrediente" : "ingredientes"}
-        </span>
+<div class="card-with-menu relative" data-card-id={id}>
+  <a
+    href={`/recipes/${id}`}
+    class="recipe-grid-card group border-border bg-card hover:border-accent-300 hover:bg-accent-50/30 block rounded-2xl border p-5 shadow-sm hover:shadow-md active:scale-[0.98]"
+    style="transition: transform 160ms var(--ease-out), box-shadow 160ms var(--ease-out), border-color 160ms var(--ease-out), background-color 160ms var(--ease-out)"
+  >
+    <div class="flex items-start justify-between gap-3">
+      <div class="min-w-0">
+        <h3
+          class="text-secondary-foreground group-hover:text-accent-700 truncate font-bold transition-colors"
+        >
+          {name}
+        </h3>
+        <div class="mt-2 flex flex-wrap items-center gap-2">
+          {
+            category && (
+              <Badge variant="category" color="accent">
+                {category}
+              </Badge>
+            )
+          }
+          <span class="text-muted-foreground text-xs">
+            {ingredientCount}
+            {ingredientCount === 1 ? "ingrediente" : "ingredientes"}
+          </span>
+        </div>
       </div>
     </div>
-    <Icon
-      name="lucide:chevron-right"
-      size={18}
-      class="text-subtle-foreground group-hover:text-accent-500 mt-1 flex-none transition-colors"
-    />
+  </a>
+
+  <button
+    type="button"
+    data-card-menu-trigger={cardMenuId}
+    class="text-subtle-foreground hover:bg-muted hover:text-secondary-foreground focus-visible:ring-accent-500 absolute top-3 right-3 z-10 inline-flex min-h-11 min-w-11 cursor-pointer items-center justify-center rounded-lg transition-all focus:outline-none focus-visible:ring-2"
+    aria-label="Acciones"
+    aria-haspopup="true"
+    aria-expanded="false"
+  >
+    <Icon name="lucide:ellipsis-vertical" size={16} />
+  </button>
+
+  <div
+    id={cardMenuId}
+    data-card-menu
+    class="border-border bg-card absolute top-11 right-3 z-30 min-w-40 rounded-xl border p-1 shadow-lg"
+    role="menu"
+  >
+    <a
+      href={`/recipes/${id}?edit=true`}
+      class="text-muted-foreground hover:bg-accent-50 hover:text-accent-600 flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors"
+      role="menuitem"
+    >
+      <svg
+        width="14"
+        height="14"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        ><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"></path><path
+          d="m15 5 4 4"></path></svg
+      >
+      Editar
+    </a>
+    {
+      canDuplicate && (
+        <>
+          <form
+            method="POST"
+            id={`duplicate-form-${id}`}
+            data-astro-reload
+            class="hidden"
+          >
+            <input type="hidden" name="action" value="duplicate_recipe" />
+            <input type="hidden" name="recipeId" value={id} />
+          </form>
+          <button
+            type="submit"
+            form={`duplicate-form-${id}`}
+            class="text-muted-foreground hover:bg-accent-50 hover:text-accent-600 flex w-full cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors"
+            role="menuitem"
+          >
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <>
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+              </>
+            </svg>
+            Duplicar
+          </button>
+        </>
+      )
+    }
   </div>
-</a>
+</div>
 
 <style define:vars={{}}>
-  @keyframes cardFadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(6px);
+  @media (prefers-reduced-motion: no-preference) {
+    @keyframes cardFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
-    to {
-      opacity: 1;
-      transform: translateY(0);
+    .recipe-grid-card {
+      animation: cardFadeIn 0.25s var(--ease-out) both;
+      animation-delay: calc(var(--stagger-index, 0) * 35ms);
     }
   }
-  .recipe-grid-card {
-    animation: cardFadeIn 0.25s var(--ease-out) both;
-    animation-delay: calc(var(--stagger-index, 0) * 35ms);
+
+  [data-card-menu] {
+    opacity: 0;
+    transform: scale(0.95);
+    pointer-events: none;
+    transition: opacity 150ms var(--ease-out), transform 150ms var(--ease-out);
+  }
+
+  [data-card-menu].card-menu-open {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
   }
 </style>
+
+<script>
+  function setupCardMenus() {
+    const triggers = document.querySelectorAll("[data-card-menu-trigger]") as NodeListOf<HTMLElement>;
+
+    function closeAllMenus() {
+      (document.querySelectorAll("[data-card-menu]") as NodeListOf<HTMLElement>).forEach((menu) => {
+        menu.classList.remove("card-menu-open");
+        const trigger = document.querySelector(
+          `[data-card-menu-trigger="${menu.id}"]`,
+        );
+        if (trigger) {
+          trigger.setAttribute("aria-expanded", "false");
+        }
+      });
+    }
+
+    triggers.forEach((trigger) => {
+      if (trigger.dataset.cardMenuBound === "1") return;
+      trigger.dataset.cardMenuBound = "1";
+
+      trigger.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const menuId = trigger.dataset.cardMenuTrigger;
+        if (!menuId) return;
+        const menu = document.getElementById(menuId);
+        if (!menu) return;
+
+        const isOpen = menu.classList.contains("card-menu-open");
+
+        closeAllMenus();
+
+        if (!isOpen) {
+          menu.classList.add("card-menu-open");
+          trigger.setAttribute("aria-expanded", "true");
+        }
+      });
+    });
+
+    document.addEventListener("click", (e) => {
+      const target = e.target;
+      if (
+        target instanceof HTMLElement &&
+        !target.closest("[data-card-menu-trigger]") &&
+        !target.closest("[data-card-menu]")
+      ) {
+        closeAllMenus();
+      }
+    });
+  }
+
+  document.addEventListener("astro:page-load", setupCardMenus);
+  document.addEventListener("astro:after-swap", setupCardMenus);
+  setupCardMenus();
+</script>

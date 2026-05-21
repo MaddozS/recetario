@@ -1,5 +1,6 @@
 ---
 import { Icon } from "astro-icon/components";
+import { Button, Card } from "@/components/ui";
 import type { RecipeSummary } from "@/lib/db/types";
 import type { ProductionRecipeSelection } from "@/lib/production-types";
 
@@ -36,9 +37,7 @@ for (const r of recipes) {
 }
 ---
 
-<div
-  class="production-selector border-border bg-card rounded-2xl border p-6 shadow-sm"
->
+<Card padding="lg" class="production-selector">
   <h2 class="text-foreground mb-4 text-lg font-bold">Seleccionar recetas</h2>
 
   {
@@ -50,13 +49,9 @@ for (const r of recipes) {
         <p class="text-muted-foreground text-sm">
           No hay recetas. Crea una receta primero.
         </p>
-        <a
-          href="/recipes"
-          class="bg-accent-600 hover:bg-accent-700 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-bold text-white transition-colors"
-        >
-          <Icon name="lucide:plus" size={16} />
+        <Button variant="primary" icon="plus" href="/recipes">
           Ir a recetas
-        </a>
+        </Button>
       </div>
     ) : (
       <form
@@ -263,4 +258,4 @@ for (const r of recipes) {
       </form>
     )
   }
-</div>
+</Card>
