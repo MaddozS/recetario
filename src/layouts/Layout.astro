@@ -32,7 +32,9 @@ const sidebarCollapsed = Astro.cookies.get("kitchcalc-sidebar-collapsed")?.value
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="icon" type="image/svg+xml" href="/kitchcalc_logo.svg" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/kitchcalc_logo.webp" />
 		<meta name="generator" content={Astro.generator} />
 		<meta name="description" content="KitchCalc | Calculadora de costo de recetas, inventario de ingredientes y planificador de produccion." />
 		<meta property="og:title" content={title ?? "KitchCalc | Costeo Inteligente"} />
