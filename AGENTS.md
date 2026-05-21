@@ -5,6 +5,8 @@
 Astro 6 SSR app deployed to **Vercel**. Package manager: **pnpm** (v9+). Node >= 22.12.0.
 Database: **PostgreSQL** via **Prisma ORM** (`@prisma/adapter-pg` + `pg.Pool`).
 
+**When working with Astro features**, use the `Astro_docs_search_astro_docs` MCP tool to look up official Astro documentation for correct APIs, patterns, and conventions rather than guessing.
+
 ## Commands
 
 | Command                    | Purpose                                      |
@@ -205,6 +207,20 @@ Simpler layout for marketing pages. Uses `coral` accent, supports `landing_theme
 
 ## Component catalog
 
+### Design System UI primitives (`src/components/ui/`)
+
+Import from barrel: `import { Button, Card, Input, Badge, Dialog, FinancialSummary, SectionHeading } from "@/components/ui"`.
+
+| Component | File | Props | Purpose |
+|-----------|------|-------|---------|
+| `Button` | `Button.astro` | `variant` (primary/secondary/danger/ghost), `size` (sm/md/lg), `href`, `icon`, `type`, `disabled`, `loading` | Button/link with 4 visual variants + loading spinner |
+| `Card` | `Card.astro` | `padding` (sm/md/lg), `hover`, `accent` | Content container with rounded-2xl, shadow, optional hover lift |
+| `Input` | `Input.astro` | `label`, `name`, `type`, `placeholder`, `required`, `error`, `monospace` | Form input with label, error state, monospace mode |
+| `Badge` | `Badge.astro` | `variant` (category/tier/outline/status), `color` (accent/success/danger/warning/neutral) | Pill badge with 4 variants x 5 colors |
+| `Dialog` | `Dialog.astro` | `id`, `title`, `description` | Modal dialog with animated backdrop using `data-animated` + `backdrop:bg-backdrop/50` |
+| `FinancialSummary` | `FinancialSummary.astro` | `rows`, `highlightRow`, `isEditMode`, `editFormId`, `editFields` | POS-receipt style financial metrics card |
+| `SectionHeading` | `SectionHeading.astro` | `icon`, `title`, `subtitle`, `level` (h1/h2/h3) | Icon + title + subtitle section header |
+
 ### App components (`src/components/`)
 
 | Component                        | Props                                                             | Purpose                                              |
@@ -214,9 +230,10 @@ Simpler layout for marketing pages. Uses `coral` accent, supports `landing_theme
 | `IngredientFormFields.astro`     | `ingredient?`, `units`, `mode`                                    | Shared ingredient form fields (create/edit)          |
 | `PresentationCard.astro`         | `presentation`, `canEdit?`, `canDelete?`                          | Single presentation display/edit card                |
 | `UnitCostDisplay.astro`          | `unitCost`, `unit`                                                | Unit cost display with formatting                    |
-| `FeedbackAlert.astro`            | `type`, `message`                                                 | Success/error alert banner (from URL search params)  |
+| `FeedbackAlert.astro`            | `type`, `message`, `recipes?`                                     | Success/error alert banner (from URL search params)  |
 | `EmptyState.astro`              | `icon`, `title`, `description`, `actionLabel`, `actionHref`       | Empty state placeholder with optional CTA            |
 | `UpgradePrompt.astro`            | `feature`, `description?`, `tier`                                 | Locked feature upgrade prompt (used in `<dialog>`)   |
+| `BillingSection.astro`           | `subscription`, `recipeCount`, `ingredientCount`, `remainingRecipes`, `remainingIngredients`, `showBackButton?`, `isSuccess?`, `isCanceled?` | Subscription plan card + usage bars + feature list (used in both settings.astro and settings/billing.astro) |
 | `ProductionFinancialSummary.astro` | —                                                               | Production cost/revenue summary card                 |
 | `ProductionIngredientsTable.astro` | —                                                               | Consolidated ingredient table for production         |
 | `ProductionRecipeBreakdown.astro` | —                                                               | Per-recipe cost breakdown in production              |
@@ -233,6 +250,17 @@ Simpler layout for marketing pages. Uses `coral` accent, supports `landing_theme
 | `PricingSection.astro`      | Pricing cards (Free/Basic/Pro) with Stripe checkout   |
 | `CTASection.astro`          | Bottom CTA banner                                    |
 | `LandingFooter.astro`       | Footer with links                                    |
+
+## UI component usage rules
+
+- **ALWAYS** use `Button` component for all buttons/links (`variant="primary|secondary|danger|ghost"`). No raw `<button>` elements with inline class replication.
+- **ALWAYS** use `Input` component for form inputs (`label`, `name`, `monospace`, `error` props). No raw `<input>` elements with manual label/class patterns.
+- **ALWAYS** use `Dialog` component for modals (with `data-animated`). No raw `<dialog>` with `backdrop:bg-slate-900/50` — use `backdrop:bg-backdrop/50` token.
+- **ALWAYS** use `Icon` from `astro-icon/components` with `lucide:*` names for icons. No inline SVGs.
+- **ALWAYS** use `FeedbackAlert` component for error/success feedback banners. No inline banner markup.
+- **Use semantic color tokens** (`bg-card`, `text-foreground`, `border-border`) instead of hardcoded Tailwind colors (`bg-white`, `text-slate-900`, `border-slate-200`).
+- **Use `backdrop:bg-backdrop/50`** on dialog backdrops. Never `backdrop:bg-slate-900/50` (hardcoded color, breaks dark mode).
+- **BillingSection** component consolidates billing display. Used in both `settings.astro` tab and `settings/billing.astro` page. Avoid duplicating billing markup.
 
 ## Form handling patterns
 
