@@ -1,25 +1,30 @@
 ---
+import { Icon } from "astro-icon/components";
+
 const features = [
   {
     icon: "lucide:calculator",
     title: "Costeo con márgenes",
     description:
       "Calcula el costo real de cada receta con ingredientes, márgenes y precios de venta sugeridos automáticamente.",
-    image: "/ss_recetas.png",
+    imageLight: "/receta_light.webp",
+    imageDark: "/receta_dark.webp",
   },
   {
     icon: "lucide:package-search",
     title: "Gestión de ingredientes",
     description:
       "Administra tu inventario de ingredientes con precios actualizados, unidades y stock disponible.",
-    image: "/ss_ingredientes.png",
+    imageLight: "/ingredientes_light.webp",
+    imageDark: "/ingredientes_dark.webp",
   },
   {
     icon: "lucide:trending-up",
     title: "Planificador de producción",
     description:
       "Planifica tu producción con multiplicadores de batch, costos por unidad y proyecciones de rentabilidad.",
-    image: "/ss_produccion.png",
+    imageLight: "/produccion_light.webp",
+    imageDark: "/produccion_dark.webp",
   },
 ];
 ---
@@ -59,13 +64,33 @@ const features = [
               </div>
               <div class={isEven ? "md:order-2" : "md:order-1"}>
                 <div class="mx-auto w-full max-w-md">
-                  <img
-                    src={f.image}
-                    alt={`Pantalla de la funcionalidad de ${f.title} en KitchCalc`}
-                    class="shadow-accent-tint border-border/50 h-auto w-full rounded-2xl border"
-                    loading="lazy"
-                    decoding="async"
-                  />
+                  <button
+                    type="button"
+                    data-lightbox-trigger
+                    data-light-src={f.imageLight}
+                    data-dark-src={f.imageDark}
+                    class="group/lightbox w-full cursor-pointer text-left"
+                    aria-label={`Ampliar imagen de ${f.title}`}
+                  >
+                    <img
+                      src={f.imageLight}
+                      alt={`Pantalla de la funcionalidad de ${f.title} en KitchCalc`}
+                      class="dark:hidden shadow-accent-tint border-border/50 h-auto w-full rounded-2xl border transition-shadow duration-200 group-hover/lightbox:shadow-lg group-hover/lightbox:shadow-accent-300/20"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    <img
+                      src={f.imageDark}
+                      alt={`Pantalla de la funcionalidad de ${f.title} en KitchCalc - modo oscuro`}
+                      class="hidden dark:block shadow-accent-tint border-border/50 h-auto w-full rounded-2xl border transition-shadow duration-200 group-hover/lightbox:shadow-lg group-hover/lightbox:shadow-accent-300/20"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    <span class="text-muted-foreground/60 mt-1.5 flex items-center gap-1.5 text-xs transition-opacity group-hover/lightbox:opacity-100 md:opacity-0">
+                      <Icon name="lucide:zoom-in" size={14} />
+                      Click para ampliar
+                    </span>
+                  </button>
                 </div>
               </div>
             </div>
@@ -75,3 +100,119 @@ const features = [
     </div>
   </div>
 </section>
+
+<dialog
+  data-lightbox
+  class="backdrop:bg-black/70 border-none bg-transparent p-0 open:grid open:place-items-center open:w-screen open:h-dvh"
+>
+  <div class="relative">
+    <img
+      data-lightbox-img
+      class="max-h-[85dvh] max-w-[90vw] h-auto w-auto block rounded-2xl border border-border/30 object-contain shadow-2xl"
+      alt=""
+    />
+  </div>
+  <button
+    type="button"
+    data-lightbox-close
+    class="text-muted-foreground hover:text-foreground bg-background/80 hover:bg-background fixed top-4 right-4 z-20 flex min-h-10 min-w-10 cursor-pointer items-center justify-center rounded-full backdrop-blur-sm transition-colors"
+    aria-label="Cerrar"
+  >
+    <Icon name="lucide:x" size={22} />
+  </button>
+</dialog>
+
+<style>
+  [data-lightbox]::backdrop {
+    backdrop-filter: blur(4px);
+    animation: backdropIn 200ms var(--ease-out);
+  }
+
+  [data-lightbox].closing::backdrop {
+    animation: backdropOut 150ms var(--ease-in);
+  }
+
+  [data-lightbox][open] > div:first-child {
+    animation: lightboxIn 200ms var(--ease-out);
+  }
+
+  [data-lightbox].closing > div:first-child {
+    animation: lightboxOut 150ms var(--ease-in);
+  }
+
+  @keyframes lightboxIn {
+    from { opacity: 0; transform: scale(0.92); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  @keyframes lightboxOut {
+    from { opacity: 1; transform: scale(1); }
+    to { opacity: 0; transform: scale(0.92); }
+  }
+
+  @keyframes backdropIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes backdropOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+</style>
+
+<script>
+  function setupLightbox() {
+    const dialog = document.querySelector("[data-lightbox]") as HTMLDialogElement | null;
+    const img = dialog?.querySelector("[data-lightbox-img]") as HTMLImageElement | null;
+    const closeBtn = dialog?.querySelector("[data-lightbox-close]") as HTMLButtonElement | null;
+    if (!dialog || !img || !closeBtn) return;
+    if (dialog.dataset.lightboxBound === "1") return;
+    dialog.dataset.lightboxBound = "1";
+
+    const triggers = document.querySelectorAll("[data-lightbox-trigger]") as NodeListOf<HTMLElement>;
+
+    function closeLightbox() {
+      if (!dialog!.open) return;
+      dialog!.classList.add("closing");
+      setTimeout(() => {
+        dialog!.classList.remove("closing");
+        dialog!.close();
+      }, 150);
+    }
+
+    function openLightbox(src: string, alt: string) {
+      img!.src = src;
+      img!.alt = alt;
+      dialog!.showModal();
+    }
+
+    triggers.forEach((trigger) => {
+      if (trigger.dataset.triggerBound === "1") return;
+      trigger.dataset.triggerBound = "1";
+
+      trigger.addEventListener("click", () => {
+        const isDark = document.documentElement.classList.contains("dark");
+        const src = isDark
+          ? trigger.getAttribute("data-dark-src")
+          : trigger.getAttribute("data-light-src");
+        const lightAlt =
+          trigger.querySelector("img")?.getAttribute("alt") ?? "";
+        const darkAlt =
+          trigger.querySelectorAll("img")[1]?.getAttribute("alt") ?? "";
+        const alt = isDark ? darkAlt : lightAlt;
+        if (src) openLightbox(src, alt);
+      });
+    });
+
+    closeBtn.addEventListener("click", closeLightbox);
+
+    dialog.addEventListener("click", (e: MouseEvent) => {
+      if (e.target === dialog) closeLightbox();
+    });
+  }
+
+  document.addEventListener("astro:page-load", setupLightbox);
+  document.addEventListener("astro:after-swap", setupLightbox);
+  setupLightbox();
+</script>
