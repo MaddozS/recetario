@@ -12,7 +12,7 @@
     "astro": "astro",
     "format": "prettier --write .",
     "postinstall": "npx prisma generate",
-    "vercel-build": "npx prisma generate && (npx prisma migrate resolve --applied 20260511231128_init 2>/dev/null || true) && npx prisma migrate deploy && astro buil"
+    "vercel-build": "npx prisma generate && npx prisma migrate deploy && astro build"
   },
   "dependencies": {
     "@astrojs/vercel": "10.0.7",
