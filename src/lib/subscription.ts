@@ -22,10 +22,12 @@ export type UserSubscriptionInfo = {
   recipesLimit: number | null;
   ingredientsLimit: number | null;
   features: Record<string, boolean>;
+  priceCents: number | null;
+  currency: string | null;
+  billingInterval: "monthly" | "yearly" | null;
   currentPeriodEnd: Date | null;
   cancelAtPeriodEnd: boolean;
   isTrial: boolean;
-  billingInterval: "monthly" | "yearly" | null;
 };
 
 const FREE_FEATURES: Record<string, boolean> = {
@@ -50,10 +52,12 @@ export function getDefaultSubscription(): UserSubscriptionInfo {
     recipesLimit: 10,
     ingredientsLimit: 30,
     features: { ...FREE_FEATURES },
+    priceCents: null,
+    currency: null,
+    billingInterval: null,
     currentPeriodEnd: null,
     cancelAtPeriodEnd: false,
     isTrial: false,
-    billingInterval: null,
   };
 }
 
@@ -72,10 +76,12 @@ export function resolveSubscription(
     recipesLimit: sub.recipesLimit,
     ingredientsLimit: sub.ingredientsLimit,
     features: sub.features ?? { ...FREE_FEATURES },
+    priceCents: sub.priceCents ?? null,
+    currency: sub.currency ?? null,
+    billingInterval: (sub.billingInterval as "monthly" | "yearly" | null) ?? null,
     currentPeriodEnd: sub.currentPeriodEnd,
     cancelAtPeriodEnd: sub.cancelAtPeriodEnd,
     isTrial: sub.status === "trialing",
-    billingInterval: null,
   };
 }
 

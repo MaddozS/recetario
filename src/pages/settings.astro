@@ -17,7 +17,7 @@ import {
   getRemainingRecipes,
   getRemainingIngredients,
 } from "@/lib/subscription";
-import { countUserRecipes, countUserIngredients } from "@/lib/db/billing";
+import { countUserRecipes, countUserIngredients, getPricingPlans } from "@/lib/db/billing";
 import FeedbackAlert from "@/components/FeedbackAlert.astro";
 
 if (!Astro.locals.session || !Astro.locals.user) {
@@ -38,6 +38,8 @@ const [prefs, recipeCount, ingredientCount] = await Promise.all([
   countUserRecipes(ownerId),
   countUserIngredients(ownerId),
 ]);
+
+const plans = await getPricingPlans();
 
 const remainingRecipes = getRemainingRecipes(subscription, recipeCount);
 const remainingIngredients = getRemainingIngredients(
@@ -320,6 +322,7 @@ if (feedback) {
       >
         <BillingSection
           {subscription}
+          {plans}
           {recipeCount}
           {ingredientCount}
           {remainingRecipes}

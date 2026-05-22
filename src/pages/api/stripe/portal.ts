@@ -1,11 +1,6 @@
 import type { APIRoute } from "astro";
-import Stripe from "stripe";
+import { stripe } from "@/lib/stripe";
 import { getUserSubscription } from "@/lib/db/billing";
-
-const stripe = new Stripe(
-  import.meta.env.STRIPE_SECRET_KEY || process.env.STRIPE_SECRET_KEY || "",
-  { apiVersion: "2026-04-22.dahlia" },
-);
 
 export const POST: APIRoute = async ({ locals, url }) => {
   if (!locals.user) {

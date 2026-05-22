@@ -1,16 +1,12 @@
 import type { APIRoute } from "astro";
-import Stripe from "stripe";
+import type Stripe from "stripe";
+import { stripe } from "@/lib/stripe";
 import {
   createOrUpdateSubscription,
   cancelSubscription,
   markSubscriptionPastDue,
   seedSubscriptionPlans,
 } from "@/lib/db/billing";
-
-const stripe = new Stripe(
-  import.meta.env.STRIPE_SECRET_KEY || process.env.STRIPE_SECRET_KEY || "",
-  { apiVersion: "2026-04-22.dahlia" },
-);
 
 const webhookSecret =
   import.meta.env.STRIPE_WEBHOOK_SECRET ||

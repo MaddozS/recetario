@@ -1,5 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import { cacheSet } from "@/lib/cache";
+import { stripe } from "@/lib/stripe";
+import { TIER_CONFIG } from "@/lib/plans-config";
+import { formatCurrency } from "@/lib/formatters";
+import type Stripe from "stripe";
 
 function invalidateSubCache(userId: string) {
   cacheSet(`sub:${userId}`, undefined, 0);
@@ -35,64 +39,150 @@ const PRO_FEATURES: Record<string, boolean> = {
   cooking_mode: true,
 };
 
-const SEED_PLANS = [
-  {
-    id: "basic_monthly",
-    stripePriceId:
-      import.meta.env.STRIPE_PRICE_ID_BASIC_MONTHLY ||
-      process.env.STRIPE_PRICE_ID_BASIC_MONTHLY ||
-      "",
-    name: "KitchCalc Basic",
-    tier: "basic",
-    billingInterval: "monthly",
-    priceCents: 500,
-    recipesLimit: 75,
-    ingredientsLimit: null as number | null,
-    featuresJson: BASIC_FEATURES,
-  },
-  {
-    id: "basic_yearly",
-    stripePriceId:
-      import.meta.env.STRIPE_PRICE_ID_BASIC_YEARLY ||
-      process.env.STRIPE_PRICE_ID_BASIC_YEARLY ||
-      "",
-    name: "KitchCalc Basic",
-    tier: "basic",
-    billingInterval: "yearly",
-    priceCents: 4800,
-    recipesLimit: 75,
-    ingredientsLimit: null as number | null,
-    featuresJson: BASIC_FEATURES,
-  },
-  {
-    id: "pro_monthly",
-    stripePriceId:
-      import.meta.env.STRIPE_PRICE_ID_PRO_MONTHLY ||
-      process.env.STRIPE_PRICE_ID_PRO_MONTHLY ||
-      "",
-    name: "KitchCalc Pro",
-    tier: "pro",
-    billingInterval: "monthly",
-    priceCents: 1000,
-    recipesLimit: null as number | null,
-    ingredientsLimit: null as number | null,
-    featuresJson: PRO_FEATURES,
-  },
-  {
-    id: "pro_yearly",
-    stripePriceId:
-      import.meta.env.STRIPE_PRICE_ID_PRO_YEARLY ||
-      process.env.STRIPE_PRICE_ID_PRO_YEARLY ||
-      "",
-    name: "KitchCalc Pro",
-    tier: "pro",
-    billingInterval: "yearly",
-    priceCents: 8400,
-    recipesLimit: null as number | null,
-    ingredientsLimit: null as number | null,
-    featuresJson: PRO_FEATURES,
-  },
-];
+const FEATURE_FLAGS: Record<string, Record<string, boolean>> = {
+  basic: BASIC_FEATURES,
+  pro: PRO_FEATURES,
+};
+
+async function syncPlansFromStripe(): Promise<void> {
+  const prices = await stripe.prices.list({
+    active: true,
+    expand: ["data.product"],
+    limit: 100,
+  });
+
+  for (const price of prices.data) {
+    const product = price.product as Stripe.Product;
+    const tier = product.metadata?.tier;
+    if (!tier) continue;
+
+    const interval = price.recurring?.interval ?? "";
+    if (!["month", "year"].includes(interval)) continue;
+
+    const id = `${tier}_${interval}ly`;
+    const featuresJson = JSON.stringify(FEATURE_FLAGS[tier] ?? {});
+
+    await prisma.subscriptionPlan.upsert({
+      where: { id },
+      update: {
+        stripePriceId: price.id,
+        name: product.name,
+        tier,
+        billingInterval: interval === "month" ? "monthly" : "yearly",
+        priceCents: price.unit_amount ?? 0,
+        currency: price.currency ?? "mxn",
+        recipesLimit: product.metadata?.recipes_limit
+          ? parseInt(product.metadata.recipes_limit)
+          : null,
+        ingredientsLimit: product.metadata?.ingredients_limit
+          ? parseInt(product.metadata.ingredients_limit)
+          : null,
+        featuresJson,
+      },
+      create: {
+        id,
+        stripePriceId: price.id,
+        name: product.name,
+        tier,
+        billingInterval: interval === "month" ? "monthly" : "yearly",
+        priceCents: price.unit_amount ?? 0,
+        currency: price.currency ?? "mxn",
+        recipesLimit: product.metadata?.recipes_limit
+          ? parseInt(product.metadata.recipes_limit)
+          : null,
+        ingredientsLimit: product.metadata?.ingredients_limit
+          ? parseInt(product.metadata.ingredients_limit)
+          : null,
+        featuresJson,
+      },
+    });
+  }
+}
+
+export async function seedSubscriptionPlans(): Promise<void> {
+  try {
+    await syncPlansFromStripe();
+  } catch (error) {
+    console.error("Failed to sync plans from Stripe:", error);
+  }
+}
+
+export interface PricingPlan {
+  id: string;
+  tier: string;
+  name: string;
+  description: string;
+  badge: { text: string; class: string } | null;
+  currency: string;
+  monthlyPriceId: string | null;
+  monthlyDisplay: string | null;
+  yearlyPriceId: string | null;
+  yearlyDisplay: string | null;
+  yearlyPerMonthDisplay: string | null;
+  features: { text: string; included: boolean; status?: "coming_soon" }[];
+}
+
+export async function getPricingPlans(): Promise<PricingPlan[]> {
+  const plans = await prisma.subscriptionPlan.findMany({
+    orderBy: { id: "asc" },
+  });
+
+  const priceMap: Record<
+    string,
+    { priceId: string; priceCents: number; currency: string }
+  > = {};
+  for (const plan of plans) {
+    priceMap[plan.id] = {
+      priceId: plan.stripePriceId,
+      priceCents: plan.priceCents,
+      currency: plan.currency,
+    };
+  }
+
+  const result: PricingPlan[] = [];
+
+  for (const [tier, config] of Object.entries(TIER_CONFIG)) {
+    const monthlyKey = `${tier}_monthly`;
+    const yearlyKey = `${tier}_yearly`;
+
+    const monthly = priceMap[monthlyKey] ?? null;
+    const yearly = priceMap[yearlyKey] ?? null;
+
+    if (tier !== "free" && !monthly && !yearly) continue;
+
+    const monthlyDisplay =
+      tier !== "free" && monthly
+        ? formatCurrency(monthly.priceCents / 100)
+        : null;
+
+    const yearlyDisplay =
+      tier !== "free" && yearly
+        ? formatCurrency(yearly.priceCents / 100)
+        : null;
+
+    const yearlyPerMonthDisplay =
+      tier !== "free" && yearly
+        ? formatCurrency(yearly.priceCents / 12 / 100)
+        : null;
+
+    result.push({
+      id: tier,
+      tier,
+      name: config.name,
+      description: config.description,
+      badge: config.badge,
+      currency: (monthly?.currency ?? yearly?.currency ?? "mxn").toUpperCase(),
+      monthlyPriceId: monthly?.priceId ?? null,
+      monthlyDisplay,
+      yearlyPriceId: yearly?.priceId ?? null,
+      yearlyDisplay,
+      yearlyPerMonthDisplay,
+      features: config.features,
+    });
+  }
+
+  return result;
+}
 
 export type UserSubscription = {
   id: string;
@@ -105,6 +195,9 @@ export type UserSubscription = {
   recipesLimit: number | null;
   ingredientsLimit: number | null;
   features: Record<string, boolean>;
+  priceCents: number | null;
+  currency: string | null;
+  billingInterval: string | null;
   currentPeriodStart: Date | null;
   currentPeriodEnd: Date | null;
   cancelAtPeriodEnd: boolean;
@@ -123,41 +216,6 @@ export type CreateSubscriptionInput = {
   cancelAtPeriodEnd: boolean;
   trialEnd?: Date | null;
 };
-
-export async function seedSubscriptionPlans(): Promise<void> {
-  for (const plan of SEED_PLANS) {
-    if (!plan.stripePriceId) continue;
-
-    try {
-      await prisma.subscriptionPlan.upsert({
-        where: { id: plan.id },
-        update: {
-          stripePriceId: plan.stripePriceId,
-          name: plan.name,
-          tier: plan.tier,
-          billingInterval: plan.billingInterval,
-          priceCents: plan.priceCents,
-          recipesLimit: plan.recipesLimit,
-          ingredientsLimit: plan.ingredientsLimit,
-          featuresJson: JSON.stringify(plan.featuresJson),
-        },
-        create: {
-          id: plan.id,
-          stripePriceId: plan.stripePriceId,
-          name: plan.name,
-          tier: plan.tier,
-          billingInterval: plan.billingInterval,
-          priceCents: plan.priceCents,
-          recipesLimit: plan.recipesLimit,
-          ingredientsLimit: plan.ingredientsLimit,
-          featuresJson: JSON.stringify(plan.featuresJson),
-        },
-      });
-    } catch (error) {
-      console.error("Failed to seed plan:", plan.id, error);
-    }
-  }
-}
 
 export async function getUserSubscription(
   userId: string,
@@ -186,6 +244,9 @@ export async function getUserSubscription(
     recipesLimit: data.plan?.recipesLimit ?? null,
     ingredientsLimit: data.plan?.ingredientsLimit ?? null,
     features: parseFeaturesJson(data.plan?.featuresJson ?? "{}"),
+    priceCents: data.plan?.priceCents ?? null,
+    currency: data.plan?.currency ?? null,
+    billingInterval: data.plan?.billingInterval ?? null,
     currentPeriodStart: data.currentPeriodStart,
     currentPeriodEnd: data.currentPeriodEnd,
     cancelAtPeriodEnd: data.cancelAtPeriodEnd,
@@ -216,11 +277,10 @@ export async function createOrUpdateSubscription(
 
   if (!resolvedPlanId || !resolvedUserId) return;
 
-  const id = `sub_${resolvedUserId}_${resolvedPlanId}`;
-
   await prisma.subscription.upsert({
     where: { stripeSubscriptionId: input.stripeSubscriptionId },
     update: {
+      id: input.stripeSubscriptionId,
       userId: resolvedUserId,
       stripeCustomerId: input.stripeCustomerId,
       planId: resolvedPlanId,
@@ -231,7 +291,7 @@ export async function createOrUpdateSubscription(
       trialEnd: input.trialEnd ?? null,
     },
     create: {
-      id,
+      id: input.stripeSubscriptionId,
       userId: resolvedUserId,
       stripeCustomerId: input.stripeCustomerId,
       stripeSubscriptionId: input.stripeSubscriptionId,
@@ -254,11 +314,12 @@ export async function cancelSubscription(
     where: { stripeSubscriptionId },
     select: { userId: true },
   });
+  if (!sub) return;
   await prisma.subscription.update({
     where: { stripeSubscriptionId },
     data: { status: "canceled", cancelAtPeriodEnd: true },
   });
-  if (sub) invalidateSubCache(sub.userId);
+  invalidateSubCache(sub.userId);
 }
 
 export async function markSubscriptionPastDue(
@@ -268,11 +329,12 @@ export async function markSubscriptionPastDue(
     where: { stripeSubscriptionId },
     select: { userId: true },
   });
+  if (!sub) return;
   await prisma.subscription.update({
     where: { stripeSubscriptionId },
     data: { status: "past_due" },
   });
-  if (sub) invalidateSubCache(sub.userId);
+  invalidateSubCache(sub.userId);
 }
 
 export async function getPlanByStripePriceId(stripePriceId: string): Promise<{
