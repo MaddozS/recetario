@@ -27,6 +27,7 @@ export default defineConfig({
       include: {
         lucide: [
           "alert-triangle",
+          "arrow-left",
           "arrow-up-circle",
           "bold",
           "book-open",
