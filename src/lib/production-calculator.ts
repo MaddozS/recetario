@@ -69,6 +69,8 @@ export function calculateProduction(
     if (!Number.isFinite(batches) || batches <= 0) continue;
 
     let recipeIngredientCost = 0;
+    let recipeWeightGrams = 0;
+    let recipeVolumeMl = 0;
 
     for (const ri of recipe.ingredients) {
       if (!ri.quantity || ri.quantity <= 0) continue;
@@ -86,6 +88,13 @@ export function calculateProduction(
       );
       const cost = unitCost * adjustedQuantity;
       recipeIngredientCost += cost;
+
+      const u = ri.unit.toLowerCase();
+      const rawQty = ri.quantity * batches;
+      if (u === "g") recipeWeightGrams += rawQty;
+      else if (u === "kg") recipeWeightGrams += rawQty * 1000;
+      else if (u === "ml") recipeVolumeMl += rawQty;
+      else if (u === "lt") recipeVolumeMl += rawQty * 1000;
 
       const existing = ingredientMap.get(ri.ingredientId);
       if (existing) {
@@ -184,6 +193,8 @@ export function calculateProduction(
         operationalCost: recipeOperationalCost,
         totalCost: recipeTotalCost,
         selectedPresentationId,
+        totalWeightGrams: recipeWeightGrams > 0 ? recipeWeightGrams : undefined,
+        totalVolumeMl: recipeVolumeMl > 0 ? recipeVolumeMl : undefined,
         presentations: candidatePresentations,
       });
     } else {
@@ -198,6 +209,8 @@ export function calculateProduction(
         ingredientsCost: recipeIngredientCost,
         operationalCost: recipeOperationalCost,
         totalCost: recipeTotalCost,
+        totalWeightGrams: recipeWeightGrams > 0 ? recipeWeightGrams : undefined,
+        totalVolumeMl: recipeVolumeMl > 0 ? recipeVolumeMl : undefined,
         presentations: [],
       });
     }

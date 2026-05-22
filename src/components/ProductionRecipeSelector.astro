@@ -1,5 +1,6 @@
 ---
 import { Icon } from "astro-icon/components";
+import { Button, Card } from "@/components/ui";
 import type { RecipeSummary } from "@/lib/db/types";
 import type { ProductionRecipeSelection } from "@/lib/production-types";
 
@@ -12,9 +13,16 @@ interface Props {
   recipes: RecipeSummary[];
   selections: ProductionRecipeSelection[];
   recipePresentations?: Map<number, PresentationOption[]>;
+  maxRecipes?: number;
 }
 
-const { recipes, selections, recipePresentations } = Astro.props;
+const {
+  recipes,
+  selections,
+  recipePresentations,
+  maxRecipes = Infinity,
+} = Astro.props;
+const isProUser = maxRecipes === Infinity;
 const selectedIds = new Set(selections.map((s) => s.recipeId));
 const categories = [
   ...new Set(
@@ -29,46 +37,67 @@ for (const r of recipes) {
 }
 ---
 
-<div
-  class="production-selector rounded-2xl border border-border bg-card p-6 shadow-sm"
->
-  <h2 class="text-lg font-bold text-foreground mb-4">Seleccionar recetas</h2>
+<Card padding="lg" class="production-selector">
+  <h2 class="text-foreground mb-4 text-lg font-bold">Seleccionar recetas</h2>
 
   {
     recipes.length === 0 ? (
       <div class="flex flex-col items-center gap-3 py-8 text-center">
-        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-muted text-subtle-foreground">
+        <div class="bg-muted text-subtle-foreground flex h-12 w-12 items-center justify-center rounded-2xl">
           <Icon name="lucide:book-x" size={20} />
         </div>
-        <p class="text-sm text-muted-foreground">
+        <p class="text-muted-foreground text-sm">
           No hay recetas. Crea una receta primero.
         </p>
-        <a
-          href="/recipes"
-          class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-accent-600 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-accent-700"
-        >
-          <Icon name="lucide:plus" size={16} />
+        <Button variant="primary" icon="plus" href="/recipes">
           Ir a recetas
-        </a>
+        </Button>
       </div>
     ) : (
-      <form method="post" data-astro-reload class="space-y-4">
+      <form
+        id="recipe-selector-form"
+        class="space-y-4"
+        data-basic-limit={!isProUser ? "" : undefined}
+      >
+        {!isProUser && (
+          <div
+            class="border-warning-border bg-warning-bg rounded-xl border p-4"
+            id="upgrade-banner"
+            class:list={[
+              "hidden",
+              selectedIds.size >= maxRecipes ? "" : "hidden",
+            ]}
+          >
+            <p class="text-warning text-sm font-semibold">
+              Límite de {maxRecipes} recetas alcanzado en plan Basic.
+            </p>
+            <a href="/pricing" class="text-accent-600 text-sm font-bold">
+              Actualizar a Pro para planificar recetas ilimitadas →
+            </a>
+          </div>
+        )}
         {categories.length > 0
           ? categories.map((cat) => (
               <fieldset>
-                <legend class="text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground mb-2 px-1">
+                <legend class="text-muted-foreground mb-2 px-1 text-[11px] font-bold tracking-[0.18em] uppercase">
                   {cat}
                 </legend>
-                <div class="space-y-1">
+                <div class="space-y-2">
                   {(grouped[cat] || []).map((recipe: RecipeSummary) => {
                     const isSelected = selectedIds.has(recipe.id);
+                    const atLimit =
+                      !isProUser &&
+                      selectedIds.size >= maxRecipes &&
+                      !isSelected;
                     return (
                       <label
+                        data-recipe-row
                         class:list={[
-                          "flex items-center gap-3 rounded-xl p-3 transition-colors cursor-pointer",
+                          "flex cursor-pointer flex-wrap items-center gap-3 rounded-xl p-3 transition-colors",
                           isSelected
-                            ? "bg-accent-50 ring-1 ring-accent-200"
+                            ? "bg-accent-50 ring-accent-200 ring-1"
                             : "hover:bg-muted",
+                          atLimit ? "opacity-40" : "",
                         ]}
                       >
                         <input
@@ -76,61 +105,60 @@ for (const r of recipes) {
                           name="recipe_id"
                           value={recipe.id}
                           checked={isSelected}
-                          class="h-4 w-4 rounded border-border text-accent-600 focus:ring-accent-500"
+                          disabled={atLimit}
+                          class="border-border text-accent-600 focus:ring-accent-500 h-4 w-4 rounded disabled:opacity-30"
                         />
-                        <span class="flex-1 min-w-0">
-                          <span class="block text-sm font-semibold text-foreground truncate">
+                        <span class="min-w-0 flex-1">
+                          <span class="text-foreground block truncate text-sm font-semibold">
                             {recipe.name}
                           </span>
-                          <span class="block text-xs text-muted-foreground">
+                          <span class="text-muted-foreground block text-xs">
                             {recipe.ingredientCount} ingredientes
                           </span>
                         </span>
-                        {isSelected && (
-                          <span class="flex items-center gap-2 shrink-0">
-                            {(() => {
-                              const sel = selections.find(
-                                (s) => s.recipeId === recipe.id,
-                              );
-                              const presentations = recipePresentations?.get(
-                                recipe.id,
-                              );
-                              return (
-                                <>
-                                  {presentations &&
-                                    presentations.length > 1 && (
-                                      <select
-                                        name="presentation_id"
-                                        class="rounded-lg border border-border bg-background px-2 py-2 text-xs font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-accent-500/20 focus:border-accent-500"
+                        <span
+                          class="recipe-controls flex w-full shrink-0 items-center justify-end gap-2 sm:w-auto sm:justify-start"
+                          class:list={[isSelected ? "" : "hidden"]}
+                        >
+                          {(() => {
+                            const sel = selections.find(
+                              (s) => s.recipeId === recipe.id,
+                            );
+                            const presentations = recipePresentations?.get(
+                              recipe.id,
+                            );
+                            return (
+                              <>
+                                {presentations && presentations.length > 1 && (
+                                  <select
+                                    name="presentation_id"
+                                    class="border-border bg-background text-foreground focus:ring-accent-500/20 focus:border-accent-500 rounded-lg border px-2 py-2 text-xs font-medium focus:ring-2 focus:outline-none"
+                                  >
+                                    {presentations.map((p) => (
+                                      <option
+                                        value={p.id}
+                                        selected={p.id === sel?.presentationId}
                                       >
-                                        {presentations.map((p) => (
-                                          <option
-                                            value={p.id}
-                                            selected={
-                                              p.id === sel?.presentationId
-                                            }
-                                          >
-                                            {p.name}
-                                          </option>
-                                        ))}
-                                      </select>
-                                    )}
-                                  <span class="text-[11px] font-semibold text-muted-foreground">
-                                    Batches:
-                                  </span>
-                                  <input
-                                    type="number"
-                                    name="batches"
-                                    value={sel?.batches || 1}
-                                    min="0.5"
-                                    step="0.5"
-                                    class="w-20 rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground font-mono text-center focus:outline-none focus:ring-2 focus:ring-accent-500/20 focus:border-accent-500"
-                                  />
-                                </>
-                              );
-                            })()}
-                          </span>
-                        )}
+                                        {p.name}
+                                      </option>
+                                    ))}
+                                  </select>
+                                )}
+                                <span class="text-muted-foreground text-[11px] font-semibold">
+                                  Batches:
+                                </span>
+                                <input
+                                  type="number"
+                                  name="batches"
+                                  value={sel?.batches || 1}
+                                  min="0.5"
+                                  step="0.5"
+                                  class="border-border bg-background text-foreground focus:ring-accent-500/20 focus:border-accent-500 w-20 rounded-lg border px-3 py-2 text-center font-mono text-sm focus:ring-2 focus:outline-none"
+                                />
+                              </>
+                            );
+                          })()}
+                        </span>
                       </label>
                     );
                   })}
@@ -139,13 +167,17 @@ for (const r of recipes) {
             ))
           : recipes.map((recipe) => {
               const isSelected = selectedIds.has(recipe.id);
+              const atLimit =
+                !isProUser && selectedIds.size >= maxRecipes && !isSelected;
               return (
                 <label
+                  data-recipe-row
                   class:list={[
-                    "flex items-center gap-3 rounded-xl p-3 transition-colors cursor-pointer",
+                    "flex cursor-pointer flex-wrap items-center gap-3 rounded-xl p-3 transition-colors",
                     isSelected
-                      ? "bg-accent-50 ring-1 ring-accent-200"
+                      ? "bg-accent-50 ring-accent-200 ring-1"
                       : "hover:bg-muted",
+                    atLimit ? "opacity-40" : "",
                   ]}
                 >
                   <input
@@ -153,72 +185,71 @@ for (const r of recipes) {
                     name="recipe_id"
                     value={recipe.id}
                     checked={isSelected}
-                    class="h-4 w-4 rounded border-border text-accent-600 focus:ring-accent-500"
+                    disabled={atLimit}
+                    class="border-border text-accent-600 focus:ring-accent-500 h-4 w-4 rounded disabled:opacity-30"
                   />
-                  <span class="flex-1 min-w-0">
-                    <span class="block text-sm font-semibold text-foreground truncate">
+                  <span class="min-w-0 flex-1">
+                    <span class="text-foreground block truncate text-sm font-semibold">
                       {recipe.name}
                     </span>
-                    <span class="block text-xs text-muted-foreground">
+                    <span class="text-muted-foreground block text-xs">
                       {recipe.ingredientCount} ingredientes
                     </span>
                   </span>
-                  {isSelected && (
-                    <span class="flex items-center gap-2 shrink-0">
-                      {(() => {
-                        const sel = selections.find(
-                          (s) => s.recipeId === recipe.id,
-                        );
-                        const presentations = recipePresentations?.get(
-                          recipe.id,
-                        );
-                        return (
-                          <>
-                            {presentations && presentations.length > 1 && (
-                              <select
-                                name="presentation_id"
-                                class="rounded-lg border border-border bg-background px-2 py-2 text-xs font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-accent-500/20 focus:border-accent-500"
-                              >
-                                {presentations.map((p) => (
-                                  <option
-                                    value={p.id}
-                                    selected={p.id === sel?.presentationId}
-                                  >
-                                    {p.name}
-                                  </option>
-                                ))}
-                              </select>
-                            )}
-                            <span class="text-[11px] font-semibold text-muted-foreground">
-                              Batches:
-                            </span>
-                            <input
-                              type="number"
-                              name="batches"
-                              value={sel?.batches || 1}
-                              min="0.5"
-                              step="0.5"
-                              class="w-20 rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground font-mono text-center focus:outline-none focus:ring-2 focus:ring-accent-500/20 focus:border-accent-500"
-                            />
-                          </>
-                        );
-                      })()}
-                    </span>
-                  )}
+                  <span
+                    class="recipe-controls flex w-full shrink-0 items-center justify-end gap-2 sm:w-auto sm:justify-start"
+                    class:list={[isSelected ? "" : "hidden"]}
+                  >
+                    {(() => {
+                      const sel = selections.find(
+                        (s) => s.recipeId === recipe.id,
+                      );
+                      const presentations = recipePresentations?.get(recipe.id);
+                      return (
+                        <>
+                          {presentations && presentations.length > 1 && (
+                            <select
+                              name="presentation_id"
+                              class="border-border bg-background text-foreground focus:ring-accent-500/20 focus:border-accent-500 rounded-lg border px-2 py-2 text-xs font-medium focus:ring-2 focus:outline-none"
+                            >
+                              {presentations.map((p) => (
+                                <option
+                                  value={p.id}
+                                  selected={p.id === sel?.presentationId}
+                                >
+                                  {p.name}
+                                </option>
+                              ))}
+                            </select>
+                          )}
+                          <span class="text-muted-foreground text-[11px] font-semibold">
+                            Batches:
+                          </span>
+                          <input
+                            type="number"
+                            name="batches"
+                            value={sel?.batches || 1}
+                            min="0.5"
+                            step="0.5"
+                            class="border-border bg-background text-foreground focus:ring-accent-500/20 focus:border-accent-500 w-20 rounded-lg border px-3 py-2 text-center font-mono text-sm focus:ring-2 focus:outline-none"
+                          />
+                        </>
+                      );
+                    })()}
+                  </span>
                 </label>
               );
             })}
 
-        {selections.length === 0 && (
-          <p class="text-center text-sm text-muted-foreground pt-2">
-            Selecciona las recetas para planificar tu producción
-          </p>
-        )}
-
-        <div class="flex justify-end pt-2">
+        <div class="flex items-center justify-between pt-2">
+          <span class="text-muted-foreground text-sm">
+            <span id="selected-count">{selections.length}</span> de{" "}
+            {recipes.length} recetas seleccionadas
+          </span>
           <button
-            type="submit"
-            class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-accent-600 px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-accent-700"
+            id="calc-production-btn"
+            type="button"
+            class="bg-accent-600 hover:bg-accent-700 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-6 py-3 text-sm font-bold text-white transition-colors"
           >
             <Icon name="lucide:calculator" size={16} />
             Calcular producción
@@ -227,4 +258,4 @@ for (const r of recipes) {
       </form>
     )
   }
-</div>
+</Card>

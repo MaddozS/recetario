@@ -33,11 +33,14 @@ const FREE_FEATURES: Record<string, boolean> = {
   recipe_photos: false,
   stock_tracking: false,
   production_planner: false,
+  production_save: false,
+  production_advanced: false,
   pdf_export: false,
   advanced_costs: false,
   change_history: false,
   data_import_export: false,
   nutrition_info: false,
+  cooking_mode: false,
 };
 
 export function getDefaultSubscription(): UserSubscriptionInfo {

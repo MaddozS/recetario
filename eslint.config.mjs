@@ -6,5 +6,5 @@ export default [
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
   ...pluginAstro.configs.recommended,
-  { ignores: ["dist/", ".vercel/", ".astro/"] },
+  { ignores: ["dist/", ".vercel/", ".astro/", ".agent/", "node_modules/", "generated/", ".agents/", "run_migration.mjs"] },
 ];

@@ -13,7 +13,7 @@ const isAuthenticated = Boolean(Astro.locals.user && Astro.locals.session);
 
 <LandingLayout>
   <LandingNavbar isAuthenticated={isAuthenticated} />
-  <main>
+  <main id="main-content" tabindex="-1">
     <HeroSection />
     <FeaturesSection />
     <HowItWorksSection />

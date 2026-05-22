@@ -9,12 +9,15 @@ const BASIC_FEATURES: Record<string, boolean> = {
   recipe_duplicate: true,
   recipe_photos: true,
   stock_tracking: true,
-  production_planner: false,
+  production_planner: true,
+  production_save: false,
+  production_advanced: false,
   pdf_export: false,
   advanced_costs: false,
   change_history: false,
   data_import_export: false,
   nutrition_info: false,
+  cooking_mode: false,
 };
 
 const PRO_FEATURES: Record<string, boolean> = {
@@ -22,11 +25,14 @@ const PRO_FEATURES: Record<string, boolean> = {
   recipe_photos: true,
   stock_tracking: true,
   production_planner: true,
+  production_save: true,
+  production_advanced: true,
   pdf_export: true,
   advanced_costs: true,
   change_history: true,
   data_import_export: true,
   nutrition_info: true,
+  cooking_mode: true,
 };
 
 const SEED_PLANS = [

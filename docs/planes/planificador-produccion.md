@@ -63,7 +63,7 @@ Solo renderizar cuando `hasFeature(subscription, 'production_planner')` es true.
 <a
   href="/produccion"
   class:list={[
-    "min-h-11 rounded-xl flex items-center justify-center gap-2 text-sm font-bold transition-colors",
+    "flex min-h-11 items-center justify-center gap-2 rounded-xl text-sm font-bold transition-colors",
     currentPage === "production"
       ? "bg-accent-600 text-white"
       : "text-muted-foreground hover:bg-muted",
@@ -234,7 +234,7 @@ const currentPage = "production";
 <Layout title="Planificador de Producción" currentPage={currentPage}>
   {
     !canAccess ? (
-      <div class="max-w-lg mx-auto mt-16 px-4">
+      <div class="mx-auto mt-16 max-w-lg px-4">
         <UpgradePrompt
           tier="pro"
           feature="Planificador de producción"
@@ -242,8 +242,8 @@ const currentPage = "production";
         />
       </div>
     ) : (
-      <div class="max-w-5xl mx-auto px-4 py-6 space-y-6">
-        <h1 class="text-xl font-bold text-foreground flex items-center gap-2">
+      <div class="mx-auto max-w-5xl space-y-6 px-4 py-6">
+        <h1 class="text-foreground flex items-center gap-2 text-xl font-bold">
           <Icon name="lucide:factory" size={24} class="text-accent-600" />
           Planificador de Producción
         </h1>

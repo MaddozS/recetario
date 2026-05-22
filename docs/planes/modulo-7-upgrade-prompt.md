@@ -79,7 +79,7 @@ const price = tier === "pro" ? "$10/mes" : "$5/mes";
     </button>
     <a
       href={`/pricing?plan=${tier}`}
-      class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-accent-600 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-accent-700"
+      class="bg-accent-600 hover:bg-accent-700 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-bold text-white transition-colors"
     >
       <Icon name="lucide:arrow-up-circle" size={16} />
       Suscribirse a {tierLabel}
@@ -147,7 +147,7 @@ const canUsePlanner = hasFeature(subscription, "production_planner");
   canUsePlanner ? (
     <ProductionPlanner />
   ) : (
-    <div class="max-w-md mx-auto">
+    <div class="mx-auto max-w-md">
       <UpgradePrompt
         feature="Planificador de produccion"
         description="Planifica corridas de produccion multi-receta, calcula insumos consolidados y genera listas de compra."
@@ -194,10 +194,10 @@ export const POST: APIRoute = async ({ locals }) => {
   class="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3"
 >
   <Icon name="lucide:lock" size={16} class="text-slate-400" />
-  <p class="text-sm text-slate-600 flex-1">{feature} - Requiere {tierLabel}</p>
+  <p class="flex-1 text-sm text-slate-600">{feature} - Requiere {tierLabel}</p>
   <a
     href="/pricing"
-    class="text-sm font-bold text-accent-600 hover:text-accent-700"
+    class="text-accent-600 hover:text-accent-700 text-sm font-bold"
     >Actualizar</a
   >
 </div>
@@ -208,17 +208,17 @@ export const POST: APIRoute = async ({ locals }) => {
 ```astro
 <!-- Variant banner -->
 <div
-  class="flex items-center justify-between rounded-xl bg-accent-50 border border-accent-200 px-4 py-3"
+  class="bg-accent-50 border-accent-200 flex items-center justify-between rounded-xl border px-4 py-3"
 >
   <div class="flex items-center gap-2">
     <Icon name="lucide:zap" size={16} class="text-accent-600" />
-    <p class="text-sm text-accent-700">
+    <p class="text-accent-700 text-sm">
       Desbloquea <strong>{feature}</strong> con el plan {tierLabel}
     </p>
   </div>
   <a
     href="/pricing"
-    class="text-sm font-bold text-accent-600 hover:text-accent-700"
+    class="text-accent-600 hover:text-accent-700 text-sm font-bold"
     >Ver planes</a
   >
 </div>

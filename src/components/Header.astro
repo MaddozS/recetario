@@ -1,21 +1,15 @@
 ---
 import { Icon } from "astro-icon/components";
-import { hasFeature } from "@/lib/subscription";
+import { Button } from "@/components/ui";
 
 const {
-  currentPage,
   showMenuButton,
   isAuthenticated = false,
-  recipeHref = "/recipes",
-  subscription = null,
 } = Astro.props;
-
-const showProduction =
-  subscription && hasFeature(subscription, "production_planner");
 ---
 
 <header
-  class="flex-none flex items-center gap-3 md:gap-4 bg-card px-4 md:px-6 py-3 md:py-4 border-b border-border z-10 relative"
+  class="bg-card border-border relative z-10 flex flex-none items-center gap-3 border-b px-4 py-3 md:gap-4 md:px-6 md:py-4"
   transition:animate="none"
 >
   <div class="flex min-w-0 flex-1 items-center gap-3 md:gap-4">
@@ -23,7 +17,7 @@ const showProduction =
       showMenuButton && (
         <button
           id="mobile-menu-btn"
-          class="lg:hidden text-muted-foreground hover:text-secondary-foreground border border-border hover:bg-background p-2 rounded-xl transition-colors"
+          class="text-muted-foreground hover:text-secondary-foreground border-border hover:bg-background inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border p-2 transition-colors md:hidden"
           aria-label="Abrir menú"
         >
           <Icon name="lucide:menu" size={20} />
@@ -33,120 +27,30 @@ const showProduction =
     <img
       src="/kitchcalc_logo.svg"
       alt="KitchCalc"
-      class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl shadow-md shadow-accent-100"
+      class="shadow-accent-100 h-9 w-9 rounded-xl shadow-md sm:h-10 sm:w-10"
     />
     <div>
-      <h1 class="text-lg sm:text-xl font-bold text-foreground leading-tight">
+      <h1 class="text-foreground text-lg leading-tight font-bold sm:text-xl">
         KitchCalc
       </h1>
-      <p class="text-muted-foreground text-[10px] sm:text-xs font-medium">
+      <p class="text-muted-foreground text-[10px] font-medium sm:text-xs">
         Costeo Inteligente
       </p>
     </div>
   </div>
-  <div class="hidden lg:flex bg-muted/50 rounded-xl p-1.5 border border-border">
-    <a
-      href={recipeHref}
-      class:list={[
-        "flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold transition-all",
-        currentPage === "recipes"
-          ? "bg-accent-600 text-white shadow-sm"
-          : "text-muted-foreground hover:text-secondary-foreground hover:bg-muted",
-      ]}
-    >
-      <Icon
-        name="lucide:book-open"
-        size={18}
-        class={currentPage === "recipes"
-          ? "text-white"
-          : "text-subtle-foreground"}
-      />
-      Recetario
-    </a>
-    <a
-      href="/ingredients"
-      class:list={[
-        "flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold transition-all",
-        currentPage === "ingredients"
-          ? "bg-accent-600 text-white shadow-sm"
-          : "text-muted-foreground hover:text-secondary-foreground hover:bg-muted",
-      ]}
-    >
-      <Icon
-        name="lucide:shopping-cart"
-        size={18}
-        class={currentPage === "ingredients"
-          ? "text-white"
-          : "text-subtle-foreground"}
-      />
-      Ingredientes
-    </a>
-    {
-      showProduction && (
-        <a
-          href="/produccion"
-          class:list={[
-            "flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold transition-all",
-            currentPage === "production"
-              ? "bg-accent-600 text-white shadow-sm"
-              : "text-muted-foreground hover:text-secondary-foreground hover:bg-muted",
-          ]}
-        >
-          <Icon
-            name="lucide:factory"
-            size={18}
-            class={
-              currentPage === "production"
-                ? "text-white"
-                : "text-subtle-foreground"
-            }
-          />
-          Producción
-        </a>
-      )
-    }
-    <a
-      href="/settings"
-      class:list={[
-        "flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold transition-all",
-        currentPage === "settings"
-          ? "bg-accent-600 text-white shadow-sm"
-          : "text-muted-foreground hover:text-secondary-foreground hover:bg-muted",
-      ]}
-    >
-      <Icon
-        name="lucide:settings"
-        size={18}
-        class={currentPage === "settings"
-          ? "text-white"
-          : "text-subtle-foreground"}
-      />
-      Ajustes
-    </a>
-  </div>
   {
     isAuthenticated && (
       <div class="ml-auto flex shrink-0 items-center justify-end gap-2 sm:gap-3">
-        {subscription && (
-          <span class="hidden sm:inline-flex items-center rounded-full bg-accent-100 px-2.5 py-1 text-xs font-bold text-accent-700">
-            {subscription.tier === "free"
-              ? "Free"
-              : subscription.tier === "basic"
-                ? "Basic"
-                : "Pro"}
-          </span>
-        )}
-        <button
+        <Button
+          variant="secondary"
+          icon="log-out"
           id="sign-out-button"
-          type="button"
-          class="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-2 text-sm font-semibold text-muted-foreground transition-colors hover:border-border hover:bg-background hover:text-foreground disabled:cursor-not-allowed disabled:opacity-70"
-          aria-label="Cerrar sesión"
+          ariaLabel="Cerrar sesión"
         >
-          <Icon name="lucide:log-out" size={16} />
           <span data-sign-out-label class="hidden sm:inline">
             Cerrar sesión
           </span>
-        </button>
+        </Button>
       </div>
     )
   }
@@ -191,7 +95,7 @@ const showProduction =
       overlay.id = "sign-out-overlay";
       overlay.style.cssText =
         "position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(2px)";
-      overlay.innerHTML = `<style>@keyframes sp{to{rotate:360deg}}</style><div style="background:var(--color-card,#fff);border-radius:1rem;padding:2rem 2.5rem;display:flex;flex-direction:column;align-items:center;gap:0.75rem;box-shadow:0 20px 60px rgba(0,0,0,0.15)">
+      overlay.innerHTML = `<div style="background:var(--color-card,#fff);border-radius:1rem;padding:2rem 2.5rem;display:flex;flex-direction:column;align-items:center;gap:0.75rem;box-shadow:0 20px 60px rgba(0,0,0,0.15)">
         <svg style="animation:sp 0.7s linear infinite;width:28px;height:28px;color:var(--color-accent-600,#4f46e5)" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
         <span style="font-size:0.875rem;font-weight:600;color:var(--color-foreground,#0f172a)">Cerrando sesi\u00f3n\u2026</span>
         </div>`;

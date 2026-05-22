@@ -35,7 +35,7 @@ const unitProfit = defaultSalePrice - unitCost;
 ---
 
 <presentation-card
-  class="bg-card p-5 rounded-2xl border border-border shadow-sm hover:border-border dark:hover:border-slate-600 transition-all group flex flex-col h-full"
+  class="bg-card border-border flex h-full flex-col rounded-2xl border p-5 shadow-sm transition-all"
   data-id={id}
   data-multiplier={multiplier}
   data-cost={costoProduccionRealBatch}
@@ -43,22 +43,23 @@ const unitProfit = defaultSalePrice - unitCost;
   data-units={unitsPerBatch}
   data-price={defaultSalePrice}
 >
-  <form method="post" class="flex flex-col h-full grow">
+  <form method="post" class="flex h-full grow flex-col">
     <input type="hidden" name="action" value="update_presentation" />
     <input type="hidden" name="presentationId" value={id} />
 
-    <div class="flex justify-between items-start gap-3 mb-2">
+    <div class="mb-2 flex items-start justify-between gap-3">
       <input
         name="presentationName"
         type="text"
-        class="presentation-name min-w-0 font-bold text-xl bg-transparent border-none focus:ring-2 focus:ring-accent-500/20 p-1 -ml-1 rounded-lg text-foreground w-full"
+        class="presentation-name font-[family-name:var(--font-display)] focus:ring-accent-500/20 text-foreground -ml-1 w-full min-w-0 rounded-lg border-none bg-transparent p-1 text-lg font-bold focus:ring-2"
         value={name}
+        required
         readonly
       />
-      <div class="flex items-center gap-1 shrink-0">
+      <div class="flex shrink-0 items-center gap-1">
         <button
           type="button"
-          class="delete-btn hidden h-8 w-8 rounded-full bg-transparent text-danger hover:text-danger hover:bg-danger-bg transition-colors items-center justify-center"
+          class="delete-btn text-danger hover:text-danger hover:bg-danger-bg hidden min-h-11 min-w-11 items-center justify-center rounded-full bg-transparent transition-colors"
           aria-label="Eliminar presentación"
           title="Eliminar"
         >
@@ -66,7 +67,7 @@ const unitProfit = defaultSalePrice - unitCost;
         </button>
         <button
           type="button"
-          class="edit-btn h-8 w-8 rounded-full bg-transparent text-subtle-foreground hover:text-accent-600 hover:bg-accent-50 transition-colors flex items-center justify-center"
+          class="edit-btn text-subtle-foreground hover:text-accent-600 hover:bg-accent-50 flex min-h-11 min-w-11 items-center justify-center rounded-full bg-transparent transition-colors"
           aria-label="Editar presentación"
           aria-pressed="false"
           title="Editar"
@@ -85,16 +86,17 @@ const unitProfit = defaultSalePrice - unitCost;
       </div>
     </div>
 
-    <div class="flex flex-wrap items-center gap-2 mb-6">
+    <div class="mb-6 flex flex-wrap items-center gap-2">
       <div
-        class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md border border-border bg-background text-xs text-muted-foreground focus-within:ring-2 focus-within:ring-accent-500/20 focus-within:border-accent-300 transition-all"
+        class="border-border bg-background text-muted-foreground focus-within:ring-accent-500/20 focus-within:border-accent-300 inline-flex items-center gap-1 rounded-md border px-2.5 py-1 text-xs transition-all focus-within:ring-2"
       >
         <span>Rinde:</span>
         <input
           name="unitsPerBatch"
           type="number"
           step="any"
-          class="presentation-units w-8 bg-transparent border-none p-0 text-center text-xs text-foreground font-mono font-semibold focus:ring-0 read-only:pointer-events-none"
+          min="0.01"
+          class="presentation-units text-foreground w-8 border-none bg-transparent p-0 text-center font-mono text-xs font-semibold read-only:pointer-events-none focus:ring-0"
           value={unitsPerBatch}
           readonly
         />
@@ -103,9 +105,9 @@ const unitProfit = defaultSalePrice - unitCost;
 
       {
         Math.abs(multiplier - 1) > 0.0001 && (
-          <div class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md border border-accent-200 bg-accent-50 text-xs text-accent-700 transition-all">
+          <div class="border-accent-200 bg-accent-50 text-accent-700 inline-flex items-center gap-1 rounded-md border px-2.5 py-1 text-xs transition-all">
             <span class="font-semibold">Con x{multiplier}:</span>
-            <span class="font-mono font-semibold yield-value">
+            <span class="yield-value font-mono font-semibold">
               {Math.round(totalUnits * 100) / 100}
             </span>
             <span>piezas</span>
@@ -114,30 +116,30 @@ const unitProfit = defaultSalePrice - unitCost;
       }
     </div>
 
-    <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
-      <div class="space-y-0.5 shrink-0">
+    <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+      <div class="shrink-0 space-y-0.5">
         <p
-          class="text-[10px] font-bold text-subtle-foreground uppercase tracking-widest"
+          class="text-subtle-foreground text-[11px] font-bold tracking-[0.16em] uppercase"
         >
           Costo unitario
         </p>
         <p
-          class="unit-cost-display text-[20px] font-mono font-semibold text-foreground tabular-nums"
+          class="unit-cost-display text-foreground font-mono text-lg font-semibold tabular-nums"
         >
           ${unitCost.toFixed(2)}
         </p>
       </div>
 
       <div
-        class="bg-accent-50/50 border border-accent-100 rounded-xl px-2.5 py-2 sm:px-3 sm:py-2.5 grow flex flex-wrap items-center justify-between gap-y-1 max-w-65"
+        class="bg-accent-50/50 border-accent-100 flex max-w-65 grow flex-wrap items-center justify-between gap-y-1 rounded-xl border px-2.5 py-2 sm:px-3 sm:py-2.5"
       >
-        <div class="flex flex-col shrink-0 min-w-0">
+        <div class="flex min-w-0 shrink-0 flex-col">
           <p
-            class="text-[10px] font-bold text-accent-700 uppercase tracking-widest mb-0.5"
+            class="text-accent-700 mb-0.5 text-[11px] font-bold tracking-[0.16em] uppercase"
           >
             Precio Venta
           </p>
-          <p class="text-[10px] text-accent-400/80">
+          <p class="text-muted-foreground text-[10px]">
             Sugerido: <span
               class="recommended-price-display font-mono font-semibold"
               >${unitPriceRecommended.toFixed(2)}</span
@@ -145,24 +147,24 @@ const unitProfit = defaultSalePrice - unitCost;
           </p>
         </div>
         <div
-          class="relative flex items-center justify-end focus-within:bg-card focus-within:ring-2 focus-within:ring-accent-500/20 focus-within:border-accent-300 rounded-md border border-transparent transition-all px-1 -mr-1 shrink-0"
+          class="focus-within:bg-card focus-within:ring-accent-500/20 focus-within:border-accent-300 relative -mr-1 flex shrink-0 items-center justify-end rounded-md border border-transparent px-1 transition-all focus-within:ring-2"
         >
           <span
-            class="text-[20px] font-mono font-semibold text-accent-600 mr-0.5 pointer-events-none"
+            class="text-accent-600 pointer-events-none mr-0.5 font-mono text-[20px] font-semibold"
             >$</span
           >
           <input
             name="salePrice"
             type="text"
             inputmode="decimal"
-            class="presentation-price bg-transparent border-none p-0 text-[20px] font-mono font-semibold text-accent-600 text-left tabular-nums focus:ring-0 read-only:pointer-events-none min-w-[3ch] max-w-full"
+            class="presentation-price text-accent-600 max-w-full min-w-[3ch] border-none bg-transparent p-0 text-left font-mono text-[20px] font-semibold tabular-nums read-only:pointer-events-none focus:ring-0"
             style={`width: ${Math.max(defaultSalePrice.toFixed(2).length + 1, 4)}ch;`}
             value={defaultSalePrice.toFixed(2)}
             readonly
           />
           <span
             aria-hidden="true"
-            class="presentation-price-measure pointer-events-none absolute left-0 top-0 invisible whitespace-pre text-[20px] font-mono font-semibold tabular-nums"
+            class="presentation-price-measure pointer-events-none invisible absolute top-0 left-0 font-mono text-[20px] font-semibold whitespace-pre tabular-nums"
           >
             {defaultSalePrice.toFixed(2)}
           </span>
@@ -172,28 +174,30 @@ const unitProfit = defaultSalePrice - unitCost;
 
     <hr class="border-border-light my-1 mb-5" />
 
-    <div class="flex items-end justify-between gap-4 mt-auto">
+    <div class="mt-auto flex items-end justify-between gap-4">
       <div class="space-y-0.5">
         <p
-          class="text-[10px] font-bold text-subtle-foreground uppercase tracking-widest"
+          class="text-subtle-foreground text-[11px] font-bold tracking-[0.16em] uppercase"
         >
           Ganancia / Pz
         </p>
         <p
-          class="text-[20px] font-mono font-semibold text-success tabular-nums profit-display"
+          class="text-success profit-display font-mono text-lg font-semibold tabular-nums"
         >
           ${unitProfit.toFixed(2)}
         </p>
       </div>
-      <div class="pb-1 w-[60%] max-w-60">
-        <div class="flex items-center justify-between text-xs mb-2">
-          <span class="margin-label text-success">Saludable</span>
+      <div class="w-[60%] max-w-60 pb-1">
+        <div class="mb-2 flex items-center justify-between text-xs">
+          <span class="margin-label text-success" title="Margen sobre precio: (precio - costo) / precio"
+            >Saludable</span
+          >
           <span
-            class="margin-percent-display font-mono font-semibold text-foreground"
+            class="margin-percent-display text-foreground font-mono font-semibold"
             >0.0%</span
           >
         </div>
-        <div class="h-2.5 rounded-full bg-muted overflow-hidden">
+        <div class="bg-muted h-2.5 overflow-hidden rounded-full">
           <div
             class="margin-bar h-full rounded-full transition-all duration-500"
           >
@@ -202,32 +206,34 @@ const unitProfit = defaultSalePrice - unitCost;
       </div>
     </div>
 
-    <div class="save-bar hidden mt-5 pt-4 border-t border-border-light">
+    <div class="save-bar border-border-light mt-5 hidden border-t pt-4">
       <button
         type="submit"
-        class="save-btn w-full inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-accent-600 px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-accent-700 shadow-sm shadow-accent-200"
+        class="save-btn bg-accent-600 hover:bg-accent-700 shadow-accent-200 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl px-6 py-3 text-sm font-bold text-white shadow-sm transition-colors"
       >
         <Icon name="lucide:check" size={18} />
         Guardar Cambios
       </button>
+      <p class="text-danger text-xs font-semibold mt-2 hidden presentation-error"></p>
     </div>
   </form>
 
   <dialog
-    class="delete-dialog fixed inset-0 m-auto w-[calc(100vw-1.5rem)] max-w-md rounded-3xl p-0 backdrop:bg-slate-900/55"
+    data-animated
+    class="delete-dialog fixed inset-0 m-auto w-[calc(100vw-2rem)] max-w-md rounded-3xl p-0 backdrop:bg-slate-900/50"
   >
-    <div class="rounded-3xl border border-border bg-card p-6 shadow-2xl">
+    <div class="border-border bg-card rounded-3xl border p-6 shadow-2xl">
       <div class="flex items-start gap-3">
         <div
-          class="flex h-11 w-11 items-center justify-center rounded-2xl bg-danger-bg text-danger"
+          class="bg-danger-bg text-danger flex h-11 w-11 items-center justify-center rounded-2xl"
         >
           <Icon name="lucide:trash-2" size={18} />
         </div>
         <div>
-          <h3 class="text-lg font-bold text-foreground">
+          <h2 class="text-foreground text-lg font-bold">
             Confirmar eliminación
-          </h3>
-          <p class="mt-2 text-sm text-muted-foreground">
+          </h2>
+          <p class="text-muted-foreground mt-2 text-sm">
             ¿Eliminar esta presentación? Esta acción no se puede deshacer.
           </p>
         </div>
@@ -236,13 +242,13 @@ const unitProfit = defaultSalePrice - unitCost;
       <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
         <button
           type="button"
-          class="delete-cancel-btn inline-flex min-h-11 items-center justify-center rounded-xl border border-border bg-card px-5 py-3 text-sm font-bold text-muted-foreground transition-colors hover:bg-background"
+          class="delete-cancel-btn border-border bg-card text-muted-foreground hover:bg-background inline-flex min-h-11 items-center justify-center rounded-xl border px-5 py-3 text-sm font-bold transition-colors"
         >
           Cancelar
         </button>
         <button
           type="button"
-          class="delete-confirm-btn inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-danger-solid px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-danger-solid"
+          class="delete-confirm-btn bg-danger-solid hover:bg-danger-hover inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-bold text-white transition-colors"
         >
           <Icon name="lucide:trash-2" size={16} /> Eliminar
         </button>
@@ -252,37 +258,41 @@ const unitProfit = defaultSalePrice - unitCost;
 </presentation-card>
 
 <script>
-  // @ts-nocheck
   import { bindDialogBackdrop } from "@/lib/dialog";
 
   class PresentationCard extends HTMLElement {
-    isEditing = false;
-    btnDelete = null;
-    btnEdit = null;
-    inputName = null;
-    inputUnits = null;
-    inputPrice = null;
-    priceMeasure = null;
-    yieldValue = null;
-    unitCostDisplay = null;
-    recommendedPriceDisplay = null;
-    profitDisplay = null;
-    marginLabel = null;
-    marginPercentDisplay = null;
-    marginBar = null;
-    saveBar = null;
-    btnSave = null;
-    deleteDialog = null;
-    btnDeleteCancel = null;
-    btnDeleteConfirm = null;
-    form = null;
-    multiplier = 1;
-    costoBatch = 0;
-    precioRecBatch = 0;
-    originalName = "";
-    originalUnits = "0";
-    originalPrice = "0";
-    salePriceDirty = false;
+    isEditing: boolean = false;
+    btnDelete: HTMLButtonElement | null = null;
+    btnEdit: HTMLButtonElement | null = null;
+    inputName: HTMLInputElement | null = null;
+    inputUnits: HTMLInputElement | null = null;
+    inputPrice: HTMLInputElement | null = null;
+    priceMeasure: HTMLSpanElement | null = null;
+    yieldValue: HTMLSpanElement | null = null;
+    unitCostDisplay: HTMLParagraphElement | null = null;
+    recommendedPriceDisplay: HTMLSpanElement | null = null;
+    profitDisplay: HTMLParagraphElement | null = null;
+    marginLabel: HTMLSpanElement | null = null;
+    marginPercentDisplay: HTMLSpanElement | null = null;
+    marginBar: HTMLDivElement | null = null;
+    saveBar: HTMLDivElement | null = null;
+    btnSave: HTMLButtonElement | null = null;
+    deleteDialog: HTMLDialogElement | null = null;
+    btnDeleteCancel: HTMLButtonElement | null = null;
+    btnDeleteConfirm: HTMLButtonElement | null = null;
+    form: HTMLFormElement | null = null;
+    presentationError: HTMLParagraphElement | null = null;
+    saveBtnOriginalText: string = "";
+    saveBtnOriginalIconHTML: string = "";
+    multiplier: number = 1;
+    costoBatch: number = 0;
+    precioRecBatch: number = 0;
+    originalName: string = "";
+    originalUnits: string = "0";
+    originalPrice: string = "0";
+    salePriceDirty: boolean = false;
+    errorDismissTimeout: number | undefined = undefined;
+    escHandler: ((e: KeyboardEvent) => void) | null = null;
 
     connectedCallback() {
       if (this.dataset.bound === "1") return;
@@ -308,6 +318,7 @@ const unitProfit = defaultSalePrice - unitCost;
       this.deleteDialog = this.querySelector(".delete-dialog");
       this.btnDeleteCancel = this.querySelector(".delete-cancel-btn");
       this.btnDeleteConfirm = this.querySelector(".delete-confirm-btn");
+      this.presentationError = this.querySelector(".presentation-error");
       this.form = this.querySelector("form");
 
       this.multiplier = parseFloat(this.dataset.multiplier || "1");
@@ -328,6 +339,19 @@ const unitProfit = defaultSalePrice - unitCost;
         this.calculate();
       });
 
+      this.escHandler = (e) => {
+        if (e.key === "Escape" && this.isEditing) {
+          this.toggleEdit(false);
+        }
+      };
+      document.addEventListener("keydown", this.escHandler);
+
+      if (this.btnSave) {
+        this.saveBtnOriginalText = (this.btnSave.textContent || "").trim();
+        this.saveBtnOriginalIconHTML =
+          this.btnSave.querySelector("svg")?.outerHTML || "";
+      }
+
       if (this.deleteDialog) {
         bindDialogBackdrop(this.deleteDialog);
       }
@@ -335,14 +359,26 @@ const unitProfit = defaultSalePrice - unitCost;
       this.form?.addEventListener("submit", async (e) => {
         e.preventDefault();
 
+        if (!this.form) return;
+
+        if (!this.form.checkValidity()) {
+          this.form.reportValidity();
+          return;
+        }
+
+        const parsedPrice = parseFloat(this.inputPrice?.value || "");
+        if (this.inputPrice?.value.trim() !== "" && (!Number.isFinite(parsedPrice) || parsedPrice < 0)) {
+          this.showError("El precio de venta debe ser un número mayor o igual a 0.");
+          return;
+        }
+
         if (this.btnSave) {
           this.btnSave.disabled = true;
           this.btnSave.classList.add("opacity-75", "cursor-not-allowed");
+          this.btnSave.innerHTML = `<svg class="animate-spin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="32"><animate attributeName="stroke-dashoffset" values="32;0" dur="0.8s" repeatCount="indefinite" /></circle></svg> Guardando...`;
         }
 
         try {
-          if (!this.form) return;
-
           const formData = new FormData(this.form);
           if (!this.salePriceDirty) {
             formData.delete("salePrice");
@@ -358,7 +394,7 @@ const unitProfit = defaultSalePrice - unitCost;
 
           if (response.redirected) {
             throw new Error(
-              "Tu sesion expiro. Recarga la pagina e inicia sesion nuevamente.",
+              "Tu sesión expiró. Recarga la página e inicia sesión nuevamente.",
             );
           }
 
@@ -369,12 +405,12 @@ const unitProfit = defaultSalePrice - unitCost;
 
           const contentType = response.headers.get("content-type") || "";
           if (!contentType.includes("application/json")) {
-            throw new Error("La respuesta del servidor no fue valida.");
+            throw new Error("La respuesta del servidor no fue válida.");
           }
 
           const payload = await response.json().catch(() => null);
           if (!payload?.presentation) {
-            throw new Error("La respuesta del servidor no fue valida.");
+            throw new Error("La respuesta del servidor no fue válida.");
           }
 
           this.applyPresentation(payload.presentation);
@@ -386,11 +422,12 @@ const unitProfit = defaultSalePrice - unitCost;
             error instanceof Error && error.message
               ? error.message
               : "Hubo un error al guardar los cambios.";
-          alert(message);
+          this.showError(message);
         } finally {
           if (this.btnSave) {
             this.btnSave.disabled = false;
             this.btnSave.classList.remove("opacity-75", "cursor-not-allowed");
+            this.btnSave.innerHTML = this.saveBtnOriginalIconHTML + " " + this.saveBtnOriginalText;
           }
         }
       });
@@ -399,11 +436,49 @@ const unitProfit = defaultSalePrice - unitCost;
       this.calculate();
     }
 
+    showError(message: string) {
+      if (!this.presentationError) return;
+      if (this.errorDismissTimeout) {
+        clearTimeout(this.errorDismissTimeout);
+      }
+      this.presentationError.textContent = message;
+      this.presentationError.classList.remove("hidden");
+      let dismissBtn = this.presentationError.querySelector(
+        ".error-dismiss-btn",
+      );
+      if (!dismissBtn) {
+        dismissBtn = document.createElement("button");
+        (dismissBtn as HTMLButtonElement).type = "button";
+        dismissBtn.setAttribute("aria-label", "Cerrar mensaje");
+        dismissBtn.className =
+          "error-dismiss-btn ml-2 inline-flex items-center justify-center rounded-full hover:bg-danger-bg transition-colors w-5 h-5 text-xs font-bold";
+        dismissBtn.textContent = "\u00D7";
+        dismissBtn.addEventListener("click", () => this.clearError());
+        this.presentationError.appendChild(dismissBtn);
+      }
+    }
+
+    clearError() {
+      if (!this.presentationError) return;
+      this.presentationError.classList.add("hidden");
+      if (this.errorDismissTimeout) {
+        clearTimeout(this.errorDismissTimeout);
+        this.errorDismissTimeout = undefined;
+      }
+    }
+
     openDeleteDialog() {
       if (!(this.deleteDialog instanceof HTMLDialogElement)) return;
 
       if (!this.deleteDialog.open) {
         this.deleteDialog.showModal();
+      }
+    }
+
+    disconnectedCallback() {
+      if (this.escHandler) {
+        document.removeEventListener("keydown", this.escHandler);
+        this.escHandler = null;
       }
     }
 
@@ -442,7 +517,7 @@ const unitProfit = defaultSalePrice - unitCost;
 
         if (response.redirected) {
           throw new Error(
-            "Tu sesion expiro. Recarga la pagina e inicia sesion nuevamente.",
+            "Tu sesión expiró. Recarga la página e inicia sesión nuevamente.",
           );
         }
 
@@ -455,12 +530,12 @@ const unitProfit = defaultSalePrice - unitCost;
 
         const contentType = response.headers.get("content-type") || "";
         if (!contentType.includes("application/json")) {
-          throw new Error("La respuesta del servidor no fue valida.");
+          throw new Error("La respuesta del servidor no fue válida.");
         }
 
         const payload = await response.json().catch(() => null);
         if (!payload?.deleted) {
-          throw new Error("La respuesta del servidor no fue valida.");
+          throw new Error("La respuesta del servidor no fue válida.");
         }
 
         this.closeDeleteDialog();
@@ -471,7 +546,7 @@ const unitProfit = defaultSalePrice - unitCost;
           error instanceof Error && error.message
             ? error.message
             : "Hubo un error al eliminar la presentación.";
-        alert(message);
+        this.showError(message);
       } finally {
         if (this.btnDelete) {
           this.btnDelete.disabled = false;
@@ -488,7 +563,7 @@ const unitProfit = defaultSalePrice - unitCost;
       }
     }
 
-    applyPresentation(presentation) {
+    applyPresentation(presentation: { name?: string; unitsPerBatch?: number; salePrice?: number | null }) {
       const unitsPerBatch = Number(presentation?.unitsPerBatch ?? 0);
       const totalUnits = unitsPerBatch * this.multiplier;
       const hasUnits = totalUnits > 0;
@@ -519,6 +594,7 @@ const unitProfit = defaultSalePrice - unitCost;
       const inputs = [this.inputName, this.inputUnits, this.inputPrice];
 
       if (this.isEditing) {
+        this.clearError();
         this.salePriceDirty = false;
         this.originalName = this.inputName?.value || "";
         this.originalUnits = this.inputUnits?.value || "0";
@@ -612,12 +688,14 @@ const unitProfit = defaultSalePrice - unitCost;
       }
 
       const measuredValue = value.trim().length > 0 ? value.trim() : "0.00";
-      this.priceMeasure.textContent = measuredValue;
 
-      const measuredWidth = this.priceMeasure.getBoundingClientRect().width;
-      const nextWidth = Math.max(Math.ceil(measuredWidth + 4), 28);
-
-      this.inputPrice.style.width = `${nextWidth}px`;
+      requestAnimationFrame(() => {
+        if (!this.priceMeasure || !this.inputPrice) return;
+        this.priceMeasure.textContent = measuredValue;
+        const measuredWidth = this.priceMeasure.scrollWidth;
+        const nextWidth = Math.max(Math.ceil(measuredWidth + 4), 28);
+        this.inputPrice.style.width = `${nextWidth}px`;
+      });
     }
 
     calculate() {
@@ -645,7 +723,7 @@ const unitProfit = defaultSalePrice - unitCost;
       const marginPercent = salePrice > 0 ? (unitProfit / salePrice) * 100 : 0;
       const marginWidth = Math.min(Math.max(marginPercent, 0), 100);
 
-      let marginLabel = "Margen negativo";
+      let marginLabel = "Bajo";
       let marginColor = "bg-danger-solid";
       let marginTextColor = "text-danger";
 
@@ -657,10 +735,6 @@ const unitProfit = defaultSalePrice - unitCost;
         marginLabel = "Medio";
         marginColor = "bg-warning-solid";
         marginTextColor = "text-warning";
-      } else if (marginPercent >= 0) {
-        marginLabel = "Bajo";
-        marginColor = "bg-danger-solid";
-        marginTextColor = "text-danger";
       }
 
       if (this.yieldValue)
@@ -674,7 +748,7 @@ const unitProfit = defaultSalePrice - unitCost;
           "$" + unitPriceRecommended.toFixed(2);
       if (this.profitDisplay) {
         this.profitDisplay.textContent = "$" + unitProfit.toFixed(2);
-        this.profitDisplay.className = `text-[22px] font-mono font-semibold tabular-nums profit-display ${marginTextColor}`;
+        this.profitDisplay.className = `text-lg font-mono font-semibold tabular-nums profit-display ${marginTextColor}`;
       }
       if (this.marginPercentDisplay)
         this.marginPercentDisplay.textContent = marginPercent.toFixed(1) + "%";

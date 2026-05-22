@@ -1,76 +1,61 @@
 ---
 import { Icon } from "astro-icon/components";
-import type { RecipeSummary } from "@/lib/db/types";
+import { Badge } from "@/components/ui";
 import type { UserSubscriptionInfo } from "@/lib/subscription";
 
-const {
-  recipes = [],
-  currentRecipe,
-  isAuthenticated = false,
-  userName = null,
-  subscription = null,
-} = Astro.props as {
-  recipes?: RecipeSummary[];
-  currentRecipe?: number | string;
+interface Props {
+  currentPage: string;
   isAuthenticated?: boolean;
   userName?: string | null;
+  userImage?: string | null;
   subscription?: UserSubscriptionInfo | null;
-};
-const normalizedUserName =
-  typeof userName === "string" && userName.trim().length > 0
-    ? userName.trim()
-    : null;
-const userInitial = normalizedUserName
-  ? normalizedUserName.charAt(0).toUpperCase()
-  : "U";
-const createRecipeDialogId = "create-recipe-dialog";
+  showProduction?: boolean;
+}
+
+const {
+  currentPage,
+  isAuthenticated = false,
+  subscription = null,
+  showProduction = false,
+} = Astro.props;
+
+const isActive = (page: string) => currentPage === page;
 ---
 
-<div class="flex flex-col h-full bg-card relative">
-  <!-- Mobile Sidebar Header -->
+<div class="bg-card relative flex h-full flex-col">
+  <!-- Mobile Sidebar Header (close button + user/logo) -->
   <div
-    class="lg:hidden p-4 border-b border-border flex items-center gap-3 flex-none"
+    class="border-border flex flex-none items-center gap-3 border-b p-4 md:hidden"
   >
     <button
       id="close-sidebar-btn"
-      class="text-muted-foreground hover:text-secondary-foreground border border-border hover:bg-background p-2 rounded-xl transition-colors"
+      class="text-muted-foreground hover:text-secondary-foreground border-border hover:bg-background rounded-xl border p-2 transition-colors"
       aria-label="Cerrar menú"
     >
       <Icon name="lucide:x" size={20} />
     </button>
     {
-      isAuthenticated && normalizedUserName ? (
-        <div class="flex min-w-0 items-center gap-3">
-          <div class="flex h-11 w-11 flex-none items-center justify-center rounded-xl bg-accent-600 text-sm font-bold text-white shadow-md shadow-accent-100">
-            {userInitial}
-          </div>
-          <div class="min-w-0">
-            <p class="text-[11px] font-semibold uppercase tracking-[0.12em] text-subtle-foreground">
-              Sesion activa
-            </p>
-            <p class="truncate text-base font-bold text-foreground">
-              {normalizedUserName}
-            </p>
-            {subscription && (
-              <span class="inline-flex items-center rounded-full bg-accent-100 px-2 py-0.5 text-[10px] font-bold text-accent-700 mt-0.5">
-                {subscription.tier === "free"
-                  ? "Free"
-                  : subscription.tier === "basic"
-                    ? "Basic"
-                    : "Pro"}
-              </span>
-            )}
-          </div>
+      isAuthenticated ? (
+        <div class="flex items-center gap-3">
+          <Badge variant="tier" color="accent">
+            {subscription?.tier === "free"
+              ? "Free"
+              : subscription?.tier === "basic"
+                ? "Basic"
+                : subscription?.tier === "pro"
+                  ? "Pro"
+                  : "Free"}
+          </Badge>
         </div>
       ) : (
         <>
-          <div class="bg-accent-600 p-2 rounded-xl text-white shadow-md shadow-accent-100">
+          <div class="bg-accent-600 shadow-accent-100 rounded-xl p-2 text-white shadow-md">
             <Icon name="lucide:chef-hat" size={20} />
           </div>
           <div>
-            <h1 class="text-base font-bold text-foreground leading-tight">
+            <p class="text-foreground text-base leading-tight font-bold">
               KitchCalc
-            </h1>
+            </p>
             <p class="text-muted-foreground text-[10px] font-medium">
               Costeo Inteligente
             </p>
@@ -80,323 +65,215 @@ const createRecipeDialogId = "create-recipe-dialog";
     }
   </div>
 
-  <!-- Sidebar Search -->
-  <div
-    class="p-4 lg:p-6 lg:pb-4 border-b border-border flex-none sticky top-0 bg-card z-10"
+  <!-- Section Navigation -->
+  <nav
+    class="flex-1 space-y-1 overflow-y-auto px-3 pt-4 pb-2"
+    aria-label="Secciones"
   >
-    <div class="relative">
+    <a
+      href="/recipes"
+      class:list={[
+        "sidebar-link flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors",
+        isActive("recipes")
+          ? "bg-accent-600 text-white"
+          : "text-muted-foreground hover:text-secondary-foreground hover:bg-muted",
+      ]}
+      title="Recetas"
+    >
       <Icon
-        name="lucide:search"
-        size={18}
-        class="absolute left-3.5 top-1/2 -translate-y-1/2 text-subtle-foreground"
+        name="lucide:book-open"
+        size={20}
+        class="sidebar-link-icon shrink-0"
       />
-      <input
-        type="search"
-        id="recipeSearch"
-        placeholder="Buscar receta..."
-        class="w-full pl-10 pr-4 py-2.5 bg-background border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-accent-500/20 focus:border-accent-500 transition-colors placeholder:text-subtle-foreground"
-      />
-    </div>
-    <div class="relative mt-2">
+      <span class="sidebar-label truncate">Recetas</span>
+    </a>
+    <a
+      href="/ingredients"
+      class:list={[
+        "sidebar-link flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors",
+        isActive("ingredients")
+          ? "bg-accent-600 text-white"
+          : "text-muted-foreground hover:text-secondary-foreground hover:bg-muted",
+      ]}
+      title="Ingredientes"
+    >
       <Icon
-        name="lucide:tag"
-        size={18}
-        class="absolute left-3.5 top-1/2 -translate-y-1/2 text-subtle-foreground pointer-events-none"
+        name="lucide:package-search"
+        size={20}
+        class="sidebar-link-icon shrink-0"
       />
-      <select
-        id="categoryFilter"
-        class="w-full pl-10 pr-4 py-2.5 bg-background border border-border rounded-xl text-sm text-secondary-foreground focus:outline-none focus:ring-2 focus:ring-accent-500/20 focus:border-accent-500 transition-colors appearance-none"
-      >
-        <option value="">Todas las categorías</option>
-        {
-          [...new Set(recipes.map((r) => r.category).filter(Boolean))].map(
-            (cat) => <option value={cat}>{cat}</option>,
-          )
-        }
-      </select>
-    </div>
-  </div>
-
-  <!-- Recipe List (Desktop & Mobile) -->
-  <div class="flex-1 overflow-y-auto px-3 py-4 space-y-1 recipe-list">
+      <span class="sidebar-label truncate">Ingredientes</span>
+    </a>
     {
-      recipes.map((recipe) => {
-        const isActive = currentRecipe?.toString() === recipe.id.toString();
-        const category = recipe.category || "Sin categoría";
-        return (
-          <a
-            href={`/recipes/${recipe.id}`}
-            data-astro-reload
-            class={`recipe-item block w-full p-3 rounded-xl transition-colors ${isActive ? "bg-accent-50" : "hover:bg-background"}`}
-            data-name={recipe.name.toLowerCase()}
-            data-category={recipe.category || ""}
-          >
-            <div class="flex items-center justify-between">
-              <div>
-                <p
-                  class={`font-semibold text-sm ${isActive ? "text-accent-700" : "text-secondary-foreground"}`}
-                >
-                  {recipe.name}
-                </p>
-                <div class="flex items-center gap-1.5 mt-1 text-[11px]">
-                  <span
-                    class={
-                      isActive
-                        ? "text-accent-500 font-medium"
-                        : "text-muted-foreground"
-                    }
-                  >
-                    {recipe.ingredientCount} ingredientes
-                  </span>
-                  <span
-                    class={
-                      isActive ? "text-accent-300" : "text-subtle-foreground"
-                    }
-                  >
-                    &bull;
-                  </span>
-                  <span
-                    class={
-                      isActive ? "text-accent-400" : "text-subtle-foreground"
-                    }
-                  >
-                    {category}
-                  </span>
-                </div>
-              </div>
-              {isActive && (
-                <Icon
-                  name="lucide:chevron-right"
-                  size={16}
-                  class="text-accent-500 flex-none"
-                />
-              )}
-            </div>
-          </a>
-        );
-      })
+      showProduction && (
+        <a
+          href="/produccion"
+          class:list={[
+            "sidebar-link flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors",
+            isActive("production")
+              ? "bg-accent-600 text-white"
+              : "text-muted-foreground hover:text-secondary-foreground hover:bg-muted",
+          ]}
+          title="Producción"
+        >
+          <Icon
+            name="lucide:factory"
+            size={20}
+            class="sidebar-link-icon shrink-0"
+          />
+          <span class="sidebar-label truncate">Producción</span>
+        </a>
+      )
     }
-
-    <div
-      id="noResults"
-      class="hidden py-8 text-center text-muted-foreground text-sm"
+    <a
+      href="/settings"
+      class:list={[
+        "sidebar-link flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors",
+        isActive("settings")
+          ? "bg-accent-600 text-white"
+          : "text-muted-foreground hover:text-secondary-foreground hover:bg-muted",
+      ]}
+      title="Configuración"
     >
-      No se encontraron recetas
+      <Icon
+        name="lucide:settings"
+        size={20}
+        class="sidebar-link-icon shrink-0"
+      />
+      <span class="sidebar-label truncate">Configuración</span>
+    </a>
+  </nav>
+
+  <!-- Sidebar Footer: plan badge + collapse toggle (desktop only) -->
+  <div class="border-border hidden border-t md:block">
+    <div class="flex items-center justify-between p-3">
+      <div class="flex items-center gap-2">
+        <Badge variant="tier" color="accent" class="sidebar-footer-badge">
+          {
+            subscription?.tier === "free"
+              ? "Free"
+              : subscription?.tier === "basic"
+                ? "Basic"
+                : subscription?.tier === "pro"
+                  ? "Pro"
+                  : "Free"
+          }
+        </Badge>
+      </div>
+      <button
+        type="button"
+        id="sidebar-collapse-toggle"
+        class="sidebar-collapse-btn text-subtle-foreground hover:text-secondary-foreground hover:bg-muted inline-flex h-11 min-h-11 w-11 min-w-11 shrink-0 items-center justify-center rounded-lg transition-colors"
+        aria-label="Colapsar sidebar"
+        title="Colapsar sidebar"
+      >
+        <Icon
+          id="collapse-icon-collapsed"
+          name="lucide:chevron-right"
+          size={18}
+          class="hidden"
+        />
+        <Icon
+          id="collapse-icon-expanded"
+          name="lucide:chevron-left"
+          size={18}
+        />
+      </button>
     </div>
   </div>
-
-  <!-- Sticky Bottom Action -->
-  <div
-    class="p-6 border-t border-border flex-none sticky bottom-0 bg-card/95 backdrop-blur z-10"
-  >
-    <button
-      type="button"
-      data-open-create-recipe-dialog={createRecipeDialogId}
-      class="w-full inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-accent-600 px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-accent-700"
-    >
-      <Icon name="lucide:plus" size={16} />
-      Nueva Receta
-    </button>
-  </div>
-
-  <dialog
-    id={createRecipeDialogId}
-    class="fixed inset-0 m-auto w-[92vw] max-w-md max-h-[calc(100dvh-2rem)] rounded-3xl border border-border p-0 shadow-2xl backdrop:bg-slate-900/40"
-  >
-    <form
-      method="post"
-      action="/recipes"
-      data-astro-reload
-      class="max-h-[calc(100dvh-2rem)] overflow-auto rounded-3xl bg-card p-6"
-    >
-      <input type="hidden" name="action" value="create_recipe" />
-
-      <div class="flex items-start justify-between gap-4">
-        <div>
-          <p
-            class="text-xs font-black uppercase tracking-[0.18em] text-accent-500"
-          >
-            Nueva receta
-          </p>
-          <h2 class="mt-2 text-xl font-black text-foreground">
-            Escribe el nombre inicial
-          </h2>
-          <p class="mt-2 text-sm text-muted-foreground">
-            Puedes cambiarlo despues desde la vista de edicion.
-          </p>
-        </div>
-        <button
-          type="button"
-          data-close-create-recipe-dialog={createRecipeDialogId}
-          class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border text-muted-foreground transition-colors hover:bg-background hover:text-secondary-foreground"
-          aria-label="Cerrar modal"
-        >
-          <Icon name="lucide:x" size={18} />
-        </button>
-      </div>
-
-      <label
-        class="mt-6 block text-sm font-semibold text-secondary-foreground"
-        for="create-recipe-name"
-      >
-        Nombre de la receta
-      </label>
-      <input
-        id="create-recipe-name"
-        name="recipeName"
-        type="text"
-        required
-        maxlength="120"
-        placeholder="Ej. Brownie clasico"
-        class="mt-2 w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground outline-none transition-colors placeholder:text-subtle-foreground focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20"
-      />
-
-      <div class="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-        <button
-          type="button"
-          data-close-create-recipe-dialog={createRecipeDialogId}
-          class="inline-flex min-h-11 items-center justify-center rounded-xl border border-border bg-card px-5 py-3 text-sm font-bold text-muted-foreground transition-colors hover:bg-background"
-        >
-          Cancelar
-        </button>
-        <button
-          type="submit"
-          class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-accent-600 px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-accent-700"
-        >
-          <Icon name="lucide:plus" size={16} />
-          Crear receta
-        </button>
-      </div>
-    </form>
-  </dialog>
 </div>
 
+<style is:global>
+  #app-sidebar {
+    transition: translate 250ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  #mobile-sidebar-overlay {
+    transition: opacity 250ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @media (min-width: 768px) {
+    #app-sidebar {
+      width: 220px;
+      transition:
+        translate 250ms cubic-bezier(0.16, 1, 0.3, 1),
+        width 200ms ease;
+    }
+    #app-sidebar[data-collapsed="1"] {
+      width: 64px;
+    }
+    #app-sidebar[data-collapsed="1"] .sidebar-label {
+      opacity: 0;
+      width: 0;
+      overflow: hidden;
+    }
+    #app-sidebar[data-collapsed="1"] a.sidebar-link {
+      justify-content: center;
+      padding-left: 0;
+      padding-right: 0;
+      gap: 0;
+    }
+    #app-sidebar[data-collapsed="1"] .sidebar-link-icon {
+      margin: 0;
+    }
+    #app-sidebar[data-collapsed="1"] .sidebar-footer-badge {
+      display: none;
+    }
+    #app-sidebar[data-collapsed="1"] .sidebar-collapse-btn {
+      margin: 0 auto;
+    }
+    .sidebar-label {
+      transition: opacity 150ms ease;
+    }
+  }
+</style>
+
 <script>
-  import { bindDialogBackdrop } from "@/lib/dialog";
+  function setupSidebarCollapse() {
+    const sidebar = document.getElementById("app-sidebar");
+    const toggle = document.getElementById("sidebar-collapse-toggle");
+    const iconCollapsed = document.getElementById("collapse-icon-collapsed");
+    const iconExpanded = document.getElementById("collapse-icon-expanded");
 
-  function setupRecipesSidebar() {
-    const searchInput = document.getElementById("recipeSearch");
-    const recipeItems = document.querySelectorAll(".recipe-item");
-    const noResults = document.getElementById("noResults");
-    const dialogId = "create-recipe-dialog";
-    const dialog = document.getElementById(dialogId);
-    const nameInput = document.getElementById("create-recipe-name");
-    const openButtons = document.querySelectorAll(
-      `[data-open-create-recipe-dialog="${dialogId}"]`,
-    );
-    const closeButtons = document.querySelectorAll(
-      `[data-close-create-recipe-dialog="${dialogId}"]`,
-    );
+    if (!sidebar || !toggle || !iconCollapsed || !iconExpanded) return;
+    if (toggle.dataset.collapseBound === "1") return;
+    toggle.dataset.collapseBound = "1";
 
-    function filterRecipes() {
-      const categoryFilter = document.getElementById("categoryFilter");
-      const searchTerm = (
-        searchInput instanceof HTMLInputElement ? searchInput.value : ""
-      )
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "");
-      const catValue =
-        categoryFilter instanceof HTMLSelectElement ? categoryFilter.value : "";
-      let visibleCount = 0;
+    const STORAGE_KEY = "kitchcalc-sidebar-collapsed";
 
-      recipeItems.forEach((item) => {
-        if (!(item instanceof HTMLElement)) return;
+    function setCollapsed(collapsed: boolean) {
+      sidebar!.setAttribute("data-collapsed", collapsed ? "1" : "0");
+      iconCollapsed!.classList.toggle("hidden", !collapsed);
+      iconExpanded!.classList.toggle("hidden", collapsed);
+      toggle!.setAttribute(
+        "aria-label",
+        collapsed ? "Expandir sidebar" : "Colapsar sidebar",
+      );
+      toggle!.setAttribute(
+        "title",
+        collapsed ? "Expandir sidebar" : "Colapsar sidebar",
+      );
 
-        const name = item.getAttribute("data-name") || "";
-        const normalizedName = name
-          .normalize("NFD")
-          .replace(/[\u0300-\u036f]/g, "");
-        const itemCat = item.getAttribute("data-category") || "";
-
-        const matchesSearch = normalizedName.includes(searchTerm);
-        const matchesCat = !catValue || itemCat === catValue;
-
-        if (matchesSearch && matchesCat) {
-          item.style.display = "block";
-          visibleCount++;
-        } else {
-          item.style.display = "none";
-        }
-      });
-
-      if (noResults instanceof HTMLElement) {
-        if (visibleCount === 0 && searchTerm.length > 0) {
-          noResults.classList.remove("hidden");
-        } else {
-          noResults.classList.add("hidden");
-        }
+      try {
+        localStorage.setItem(STORAGE_KEY, collapsed ? "1" : "0");
+        document.cookie = `kitchcalc-sidebar-collapsed=${collapsed ? "1" : "0"}; path=/; max-age=31536000; SameSite=Lax`;
+      } catch {
+        /* noop */
       }
     }
 
-    if (
-      searchInput instanceof HTMLInputElement &&
-      searchInput.dataset.recipeSearchBound !== "1"
-    ) {
-      searchInput.dataset.recipeSearchBound = "1";
-      searchInput.addEventListener("input", filterRecipes);
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored === "1") setCollapsed(true);
+    } catch {
+      /* noop */
     }
 
-    const categoryFilter = document.getElementById("categoryFilter");
-    if (
-      categoryFilter instanceof HTMLSelectElement &&
-      categoryFilter.dataset.categoryFilterBound !== "1"
-    ) {
-      categoryFilter.dataset.categoryFilterBound = "1";
-      categoryFilter.addEventListener("change", filterRecipes);
-    }
-
-    if (!(dialog instanceof HTMLDialogElement)) {
-      return;
-    }
-
-    const openDialog = () => {
-      const form = dialog.querySelector("form");
-
-      if (form instanceof HTMLFormElement) {
-        form.reset();
-      }
-
-      if (!dialog.open) {
-        dialog.showModal();
-      }
-
-      if (nameInput instanceof HTMLInputElement) {
-        requestAnimationFrame(() => nameInput.focus());
-      }
-    };
-
-    const closeDialog = () => {
-      if (dialog.open) {
-        dialog.close();
-      }
-    };
-
-    openButtons.forEach((button) => {
-      if (!(button instanceof HTMLButtonElement)) return;
-      if (button.dataset.createRecipeDialogBound === "1") return;
-
-      button.dataset.createRecipeDialogBound = "1";
-      button.addEventListener("click", openDialog);
+    toggle.addEventListener("click", () => {
+      const isCollapsed = sidebar.getAttribute("data-collapsed") === "1";
+      setCollapsed(!isCollapsed);
     });
-
-    closeButtons.forEach((button) => {
-      if (!(button instanceof HTMLButtonElement)) return;
-      if (button.dataset.createRecipeDialogBound === "1") return;
-
-      button.dataset.createRecipeDialogBound = "1";
-      button.addEventListener("click", closeDialog);
-    });
-
-    if (dialog.dataset.createRecipeDialogBound === "1") {
-      return;
-    }
-
-    dialog.dataset.createRecipeDialogBound = "1";
-    bindDialogBackdrop(dialog);
   }
 
-  document.addEventListener("astro:page-load", setupRecipesSidebar);
-  document.addEventListener("astro:after-swap", setupRecipesSidebar);
-  setupRecipesSidebar();
+  document.addEventListener("astro:page-load", setupSidebarCollapse);
+  document.addEventListener("astro:after-swap", setupSidebarCollapse);
+  setupSidebarCollapse();
 </script>

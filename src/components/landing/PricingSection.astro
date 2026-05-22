@@ -73,54 +73,64 @@ const plans = [
 ];
 ---
 
-<section id="pricing" data-reveal class="py-24 md:py-32 bg-background">
-  <div class="max-w-7xl mx-auto px-6">
-    <div class="text-center max-w-2xl mx-auto">
-      <h2 class="text-3xl md:text-4xl font-black text-foreground">
+<section id="pricing" data-reveal class="bg-background py-24 md:py-32" style="content-visibility: auto; contain-intrinsic-size: 900px">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6">
+    <div class="mx-auto max-w-2xl text-center" data-reveal>
+      <h2
+        class="landing-heading text-foreground text-3xl font-black md:text-4xl"
+      >
         Planes y precios
       </h2>
-      <p class="mt-4 text-lg text-muted-foreground">
+      <p class="text-muted-foreground mt-4 text-lg">
         Elige el plan que mejor se adapte a tu negocio.
       </p>
     </div>
 
-    <div class="flex justify-center mt-8">
+    <div class="mt-8 flex justify-center" data-reveal>
       <div
-        class="inline-flex bg-muted rounded-xl p-1"
+        class="bg-muted inline-flex rounded-xl p-1"
         id="pricing-toggle-landing"
+        role="radiogroup"
       >
         <button
           type="button"
           data-period="monthly"
-          class="px-5 py-2.5 rounded-lg text-sm font-semibold bg-card text-foreground shadow-sm transition-all"
+          role="radio"
+          aria-checked="true"
+          class="bg-card text-foreground rounded-lg px-5 min-h-11 text-sm font-semibold shadow-sm transition-all"
           >Mensual</button
         >
         <button
           type="button"
           data-period="yearly"
-          class="px-5 py-2.5 rounded-lg text-sm font-semibold text-muted-foreground transition-all"
+          role="radio"
+          aria-checked="false"
+          class="text-muted-foreground rounded-lg px-5 min-h-11 text-sm font-semibold transition-all"
           >Anual <span class="text-success text-xs font-bold">-20%</span
           ></button
         >
       </div>
     </div>
 
-    <div class="grid md:grid-cols-3 gap-6 lg:gap-8 mt-12 max-w-5xl mx-auto">
+    <div class="relative mx-auto mt-12 max-w-5xl">
+      <div
+        class="pricing-scroll flex snap-x snap-mandatory gap-4 overflow-x-auto py-5 sm:gap-6 lg:overflow-visible"
+      >
       {
         plans.map((plan, i) => (
           <div
             class:list={[
-              "rounded-2xl border bg-card p-6 md:p-8 flex flex-col relative reveal-item card-hover",
+              "reveal-item bg-card relative flex min-w-[280px] shrink-0 snap-start flex-col rounded-2xl p-7 sm:min-w-[320px] md:p-8 lg:min-w-0 lg:flex-1",
               plan.id === "pro"
-                ? "border-accent-300 plan-pro"
-                : "border-border",
+                ? "shadow-accent-tint plan-pro pricing-card-hover-pro bg-card dark:bg-accent-950/10 z-10"
+                : "pricing-card-hover shadow-sm",
             ]}
             style={`--reveal-delay: ${i * 100}ms`}
           >
             {plan.badge && (
               <span
                 class:list={[
-                  "inline-flex self-start items-center rounded-full px-3 py-1 text-xs font-bold mb-4",
+                  "mb-4 inline-flex items-center self-start rounded-md px-3 py-1 text-xs font-bold",
                   plan.badge.class,
                 ]}
               >
@@ -128,24 +138,24 @@ const plans = [
               </span>
             )}
 
-            <h3 class="text-xl font-black text-foreground">{plan.name}</h3>
-            <p class="mt-1 text-sm text-muted-foreground">{plan.description}</p>
+            <h3 class="text-foreground break-words text-xl font-black">{plan.name}</h3>
+            <p class="text-muted-foreground mt-1 break-words text-sm">{plan.description}</p>
 
             <div class="mt-4">
               <div data-plan-price data-plan={plan.id}>
                 <div data-price-view="monthly">
-                  <p class="text-3xl md:text-4xl font-black text-foreground">
+                  <p class="text-foreground text-3xl font-black md:text-4xl">
                     {plan.priceMonthly === 0
                       ? "Gratis"
                       : `$${plan.priceMonthly}`}
                     {plan.id !== "free" && (
-                      <span class="text-base font-semibold text-subtle-foreground">
+                      <span class="text-subtle-foreground text-base font-semibold">
                         /mes
                       </span>
                     )}
                   </p>
                   {plan.id !== "free" && (
-                    <p class="mt-0.5 text-xs text-subtle-foreground">
+                    <p class="text-subtle-foreground mt-0.5 text-xs">
                       Facturado mensualmente
                     </p>
                   )}
@@ -153,18 +163,18 @@ const plans = [
                 <div data-price-view="yearly" class="hidden">
                   {plan.id !== "free" ? (
                     <>
-                      <p class="text-3xl md:text-4xl font-black text-foreground">
+                      <p class="text-foreground text-3xl font-black md:text-4xl">
                         ${plan.priceYearlyPerMonth}
-                        <span class="text-base font-semibold text-subtle-foreground">
+                        <span class="text-subtle-foreground text-base font-semibold">
                           /mes
                         </span>
                       </p>
-                      <p class="mt-0.5 text-xs text-subtle-foreground">
+                      <p class="text-subtle-foreground mt-0.5 text-xs">
                         USD ${plan.priceYearly} facturados anualmente
                       </p>
                     </>
                   ) : (
-                    <p class="text-3xl md:text-4xl font-black text-foreground">
+                    <p class="text-foreground text-3xl font-black md:text-4xl">
                       Gratis
                     </p>
                   )}
@@ -175,20 +185,18 @@ const plans = [
             <a
               href={plan.href}
               class:list={[
-                "mt-6 w-full inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-bold transition-all text-center",
+                "mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl px-5 min-h-11 text-center text-sm font-bold transition-all active:scale-[0.97]",
                 plan.id === "pro"
-                  ? "bg-accent-600 text-white hover:bg-accent-700"
-                  : plan.id === "free"
-                    ? "border border-border bg-card text-secondary-foreground hover:bg-background"
-                    : "border border-border bg-card text-secondary-foreground hover:bg-background",
+                  ? "bg-accent-600 hover:bg-accent-700 shadow-accent-tint text-white"
+                  : "border-border bg-card text-secondary-foreground hover:bg-background border",
               ]}
             >
               {plan.cta}
             </a>
 
-            <div class="mt-6 space-y-3 flex-1">
+            <div class="mt-6 min-w-0 flex-1 space-y-3">
               {plan.features.map((f) => (
-                <div class="flex items-center gap-2.5 text-sm">
+                <div class="flex min-w-0 items-center gap-2.5 text-sm">
                   <Icon
                     name={f.included ? "lucide:check" : "lucide:x"}
                     size={16}
@@ -201,6 +209,7 @@ const plans = [
                       f.included
                         ? "text-secondary-foreground"
                         : "text-subtle-foreground",
+                      "break-words",
                     ]}
                   >
                     {f.text}
@@ -211,9 +220,23 @@ const plans = [
           </div>
         ))
       }
+    <div
+      aria-hidden="true"
+      class="pointer-events-none absolute inset-y-0 right-0 w-16 bg-linear-to-r from-transparent to-background lg:hidden"
+    >
     </div>
   </div>
 </section>
+
+<style is:global>
+  .pricing-scroll::-webkit-scrollbar {
+    display: none;
+  }
+  .pricing-scroll {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+</style>
 
 <script>
   function setupPricingToggle() {
@@ -228,12 +251,14 @@ const plans = [
     function updateUI() {
       btns.forEach((btn) => {
         const period = btn.getAttribute("data-period");
-        if (period === activePeriod) {
+        const isActive = period === activePeriod;
+        btn.setAttribute("aria-checked", isActive ? "true" : "false");
+        if (isActive) {
           btn.className =
-            "px-5 py-2.5 rounded-lg text-sm font-semibold bg-card text-foreground shadow-sm transition-all";
+            "px-5 min-h-11 rounded-lg text-sm font-semibold bg-card text-foreground shadow-sm transition-all";
         } else {
           btn.className =
-            "px-5 py-2.5 rounded-lg text-sm font-semibold text-muted-foreground transition-all";
+            "px-5 min-h-11 rounded-lg text-sm font-semibold text-muted-foreground transition-all";
         }
       });
 
@@ -247,11 +272,24 @@ const plans = [
       });
     }
 
+    function activate(period: string) {
+      activePeriod = period;
+      updateUI();
+    }
+
     btns.forEach((btn) => {
       btn.addEventListener("click", () => {
-        activePeriod = btn.getAttribute("data-period") || "monthly";
-        updateUI();
+        activate(btn.getAttribute("data-period") || "monthly");
       });
+    });
+
+    toggle.addEventListener("keydown", (e: KeyboardEvent) => {
+      if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+      e.preventDefault();
+      const periods = ["monthly", "yearly"];
+      const idx = periods.indexOf(activePeriod);
+      const next = e.key === "ArrowRight" ? (idx + 1) % periods.length : (idx - 1 + periods.length) % periods.length;
+      activate(periods[next]);
     });
 
     updateUI();

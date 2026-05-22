@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import type { Prisma } from "../../../generated/prisma/client.js";
 import type {
   RecipeSummary,
   RecipeWithIngredients,
@@ -81,7 +82,51 @@ export async function getRecipeById(
     return null;
   }
 
-  const result: RecipeWithIngredients = {
+  const result: RecipeWithIngredients = normalizeRecipeRow(recipe);
+  cacheSet(cacheKey, result, 60);
+  return result;
+}
+
+export async function getRecipesByIds(
+  ids: number[],
+  ownerId: string,
+): Promise<RecipeWithIngredients[]> {
+  if (ids.length === 0) return [];
+
+  const rows = await prisma.recipe.findMany({
+    where: { id: { in: ids }, ownerId },
+    include: {
+      recipeIngredients: {
+        include: {
+          ingredient: true,
+        },
+      },
+      presentations: true,
+    },
+  });
+
+  const results = rows.map(normalizeRecipeRow);
+
+  for (const r of results) {
+    cacheSet(`recipe:${r.id}`, r, 60);
+  }
+
+  return results;
+}
+
+type RecipeWithIncludes = Prisma.RecipeGetPayload<{
+  include: {
+    recipeIngredients: {
+      include: {
+        ingredient: true;
+      };
+    };
+    presentations: true;
+  };
+}>;
+
+function normalizeRecipeRow(recipe: RecipeWithIncludes): RecipeWithIngredients {
+  return {
     id: recipe.id,
     name: recipe.name,
     category: normalizeOptionalText(recipe.category),
@@ -113,9 +158,6 @@ export async function getRecipeById(
       salePrice: row.salePrice !== null ? toNumber(row.salePrice) : undefined,
     })),
   };
-
-  cacheSet(cacheKey, result, 60);
-  return result;
 }
 
 export async function createRecipe(
