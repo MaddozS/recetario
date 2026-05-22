@@ -1,4 +1,4 @@
-import DOMPurify from "isomorphic-dompurify";
+import sanitizeHtmlLib from "sanitize-html";
 
 const ALLOWED_TAGS = [
   "div",
@@ -16,21 +16,22 @@ const ALLOWED_TAGS = [
   "span",
 ];
 
-const ALLOWED_ATTRS = [
-  "data-type",
-  "data-id",
-  "data-value",
-  "data-unit",
-  "data-ref",
-  "class",
-  "contenteditable",
-];
+const ALLOWED_ATTRS = {
+  "*": [
+    "data-type",
+    "data-id",
+    "data-value",
+    "data-unit",
+    "data-ref",
+    "class",
+    "contenteditable",
+  ],
+};
 
 export function sanitizeHtml(html: string): string {
-  return DOMPurify.sanitize(html, {
-    ALLOWED_TAGS,
-    ALLOWED_ATTR: ALLOWED_ATTRS,
-    ALLOW_DATA_ATTR: false,
+  return sanitizeHtmlLib(html, {
+    allowedTags: ALLOWED_TAGS,
+    allowedAttributes: ALLOWED_ATTRS,
   });
 }
 
