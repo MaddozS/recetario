@@ -3,7 +3,6 @@ import { Icon } from "astro-icon/components";
 import Layout from "@/layouts/Layout.astro";
 import {
   createRecipe,
-  getRecipeById,
   listRecipeSummaries,
   duplicateRecipe,
 } from "@/lib/db/recipes";
@@ -74,13 +73,6 @@ if (Astro.request.method === "POST") {
 }
 
 const recipes = await listRecipeSummaries(ownerId);
-
-if (recipes.length === 1) {
-  const recipe = await getRecipeById(recipes[0].id, ownerId);
-  if (recipe) {
-    return Astro.redirect(`/recipes/${recipes[0].id}`);
-  }
-}
 
 const ingredientUsage = recipes.length > 0 ? await listIngredientUsage(ownerId) : {};
 const categoryCount = new Set(recipes.filter((r) => r.category).map((r) => r.category)).size;
@@ -258,7 +250,7 @@ const showUpgradeModal = Astro.url.searchParams.get("upgrade") === "1";
             </Button>
           </div>
 
-          <div class="flex items-center gap-2 overflow-x-auto pb-3 sm:flex-wrap sm:overflow-visible [scrollbar-width:thin] [-webkit-overflow-scrolling:touch]">
+          <div class="flex items-center gap-2 overflow-x-auto pb-3 sm:flex-wrap sm:overflow-visible scrollbar-thin [-webkit-overflow-scrolling:touch]">
             {
               [...new Set(recipes.filter((r) => r.category).map((r) => r.category!))].map(
                 (cat) => {
