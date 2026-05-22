@@ -78,6 +78,7 @@ model SubscriptionPlan {
   tier             String
   billingInterval  String          @map("billing_interval")
   priceCents       Int             @map("price_cents")
+  currency         String          @default("mxn")
   recipesLimit     Int?            @map("recipes_limit")
   ingredientsLimit Int?            @map("ingredients_limit")
   featuresJson     String          @map("features_json")
