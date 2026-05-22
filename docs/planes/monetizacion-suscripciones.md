@@ -32,7 +32,7 @@ Este documento define el modelo de negocio por suscripciones para KitchCalc, una
 | **Duplicar receta**            | No        | Sí                | Sí                |
 | **Fotos de recetas**           | No        | Sí (1 por receta) | Sí + galería      |
 | **Stock de ingredientes**      | No        | Sí                | Sí                |
-| **Planificador de producción** | No        | No                | **Sí**            |
+| **Planificador de producción** | No        | Sí (máx 3 recetas)| **Sí (ilimitado)**|
 | **Exportar PDF / Imprimir**    | No        | No                | **Sí**            |
 | **Costos fijos avanzados**     | No        | No                | Sí                |
 | **Historial de cambios**       | No        | No                | Sí                |
@@ -66,7 +66,7 @@ Con solo Free/Pro saltamos de $0 a $10. Muchos usuarios caseros se sienten cómo
 | Instrucciones               | ✅ Completo   | Free              |
 | Duplicar receta             | ✅ Completo   | Basic             |
 | Costos fijos avanzados      | 🔜 Pendiente  | **Pro**           |
-| Planificador de producción  | 🔜 Pendiente  | **Pro**           |
+| Planificador de producción  | 🚧 Fase 1 OK  | **Basic+** (3 rec) / Pro (ilimitado) |
 | Fotos de recetas            | 🔜 Pendiente  | Basic             |
 | Stock de ingredientes       | 🔜 Pendiente  | Basic             |
 | Exportar PDF                | 🔜 Pendiente  | **Pro**           |
