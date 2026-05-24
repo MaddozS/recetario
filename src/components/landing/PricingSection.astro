@@ -1,76 +1,15 @@
 ---
 import { Icon } from "astro-icon/components";
+import type { PricingPlan } from "@/lib/db/billing";
 
 const { isAuthenticated = false } = Astro.props;
 
-const plans = [
-  {
-    id: "free",
-    name: "Free",
-    priceMonthly: 0,
-    priceYearly: 0,
-    priceYearlyPerMonth: 0,
-    description: "Para empezar a costear",
-    badge: null,
-    cta: "Comenzar gratis",
-    href: isAuthenticated ? "/recipes" : "/sign-in?return_url=/recipes",
-    features: [
-      { text: "Hasta 10 recetas", included: true },
-      { text: "Hasta 30 ingredientes", included: true },
-      { text: "Costeo básico con márgenes", included: true },
-      { text: "Categorías e instrucciones", included: true },
-      { text: "Duplicar recetas", included: false },
-      { text: "Fotos de recetas", included: false },
-      { text: "Stock de ingredientes", included: false },
-      { text: "Planificador de producción", included: false },
-      { text: "Exportar a PDF", included: false },
-    ],
-  },
-  {
-    id: "basic",
-    name: "Basic",
-    priceMonthly: 5,
-    priceYearly: 48,
-    priceYearlyPerMonth: 4,
-    description: "Para negocios en crecimiento",
-    badge: { text: "Recomendado", class: "bg-success-bg text-success" },
-    cta: "Elegir Basic",
-    href: isAuthenticated ? "/pricing" : "/sign-in?return_url=/pricing",
-    features: [
-      { text: "Hasta 75 recetas", included: true },
-      { text: "Ingredientes ilimitados", included: true },
-      { text: "Costeo básico con márgenes", included: true },
-      { text: "Categorías e instrucciones", included: true },
-      { text: "Duplicar recetas", included: true },
-      { text: "Fotos de recetas", included: true },
-      { text: "Stock de ingredientes", included: true },
-      { text: "Planificador de producción", included: false },
-      { text: "Exportar a PDF", included: false },
-    ],
-  },
-  {
-    id: "pro",
-    name: "Pro",
-    priceMonthly: 10,
-    priceYearly: 84,
-    priceYearlyPerMonth: 7,
-    description: "Para profesionales",
-    badge: { text: "Más popular", class: "bg-accent-600 text-white" },
-    cta: "Elegir Pro",
-    href: isAuthenticated ? "/pricing" : "/sign-in?return_url=/pricing",
-    features: [
-      { text: "Recetas ilimitadas", included: true },
-      { text: "Ingredientes ilimitados", included: true },
-      { text: "Costeo básico con márgenes", included: true },
-      { text: "Categorías e instrucciones", included: true },
-      { text: "Duplicar recetas", included: true },
-      { text: "Fotos de recetas", included: true },
-      { text: "Stock de ingredientes", included: true },
-      { text: "Planificador de producción", included: true },
-      { text: "Exportar a PDF", included: true },
-    ],
-  },
-];
+interface Props {
+  isAuthenticated?: boolean;
+  plans: PricingPlan[];
+}
+
+const { plans } = Astro.props as Props;
 ---
 
 <section id="pricing" data-reveal class="bg-background py-24 md:py-32" style="content-visibility: auto; contain-intrinsic-size: 900px">
@@ -117,7 +56,16 @@ const plans = [
         class="pricing-scroll flex snap-x snap-mandatory gap-4 overflow-x-auto py-5 sm:gap-6 lg:overflow-visible"
       >
       {
-        plans.map((plan, i) => (
+        plans.map((plan, i) => {
+          const isFree = plan.id === "free";
+          const ctaHref = plan.id === "free"
+            ? (isAuthenticated ? "/recipes" : "/sign-in?return_url=/recipes")
+            : (isAuthenticated ? "/pricing" : "/sign-in?return_url=/pricing");
+          const ctaLabel = plan.id === "free"
+            ? "Comenzar gratis"
+            : `Elegir ${plan.name}`;
+
+          return (
           <div
             class:list={[
               "reveal-item bg-card relative flex min-w-[280px] shrink-0 snap-start flex-col rounded-2xl p-7 sm:min-w-[320px] md:p-8 lg:min-w-0 lg:flex-1",
@@ -144,37 +92,37 @@ const plans = [
             <div class="mt-4">
               <div data-plan-price data-plan={plan.id}>
                 <div data-price-view="monthly">
-                  <p class="text-foreground text-3xl font-black md:text-4xl">
-                    {plan.priceMonthly === 0
-                      ? "Gratis"
-                      : `$${plan.priceMonthly}`}
-                    {plan.id !== "free" && (
-                      <span class="text-subtle-foreground text-base font-semibold">
-                        /mes
-                      </span>
-                    )}
-                  </p>
-                  {plan.id !== "free" && (
-                    <p class="text-subtle-foreground mt-0.5 text-xs">
-                      Facturado mensualmente
-                    </p>
-                  )}
-                </div>
-                <div data-price-view="yearly" class="hidden">
-                  {plan.id !== "free" ? (
+                  {isFree ? (
+                    <p class="text-foreground text-2xl font-black md:text-3xl">Gratis</p>
+                  ) : (
                     <>
-                      <p class="text-foreground text-3xl font-black md:text-4xl">
-                        ${plan.priceYearlyPerMonth}
+                      <p class="text-foreground text-2xl font-black md:text-3xl whitespace-nowrap">
+                        {plan.currency} {plan.monthlyDisplay}
                         <span class="text-subtle-foreground text-base font-semibold">
                           /mes
                         </span>
                       </p>
                       <p class="text-subtle-foreground mt-0.5 text-xs">
-                        USD ${plan.priceYearly} facturados anualmente
+                        Facturado mensualmente
+                      </p>
+                    </>
+                  )}
+                </div>
+                <div data-price-view="yearly" class="hidden">
+                  {!isFree ? (
+                    <>
+                      <p class="text-foreground text-2xl font-black md:text-3xl whitespace-nowrap">
+                        {plan.currency} {plan.yearlyPerMonthDisplay}
+                        <span class="text-subtle-foreground text-base font-semibold">
+                          /mes
+                        </span>
+                      </p>
+                      <p class="text-subtle-foreground mt-0.5 text-xs">
+                        {plan.currency} {plan.yearlyDisplay} facturados anualmente
                       </p>
                     </>
                   ) : (
-                    <p class="text-foreground text-3xl font-black md:text-4xl">
+                    <p class="text-foreground text-2xl font-black md:text-3xl">
                       Gratis
                     </p>
                   )}
@@ -183,7 +131,7 @@ const plans = [
             </div>
 
             <a
-              href={plan.href}
+              href={ctaHref}
               class:list={[
                 "mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl px-5 min-h-11 text-center text-sm font-bold transition-all active:scale-[0.97]",
                 plan.id === "pro"
@@ -191,34 +139,45 @@ const plans = [
                   : "border-border bg-card text-secondary-foreground hover:bg-background border",
               ]}
             >
-              {plan.cta}
+              {ctaLabel}
             </a>
 
             <div class="mt-6 min-w-0 flex-1 space-y-3">
-              {plan.features.map((f) => (
+              {plan.features.map((f) => {
+                const isComingSoon = f.status === "coming_soon";
+                const icon = isComingSoon
+                  ? "lucide:clock"
+                  : f.included
+                    ? "lucide:check"
+                    : "lucide:x";
+                const iconClass = isComingSoon
+                  ? "text-subtle-foreground"
+                  : f.included
+                    ? "text-success"
+                    : "text-subtle-foreground";
+                const textClass = isComingSoon
+                  ? "text-subtle-foreground"
+                  : f.included
+                    ? "text-secondary-foreground"
+                    : "text-subtle-foreground";
+                return (
                 <div class="flex min-w-0 items-center gap-2.5 text-sm">
                   <Icon
-                    name={f.included ? "lucide:check" : "lucide:x"}
+                    name={icon}
                     size={16}
-                    class:list={[
-                      f.included ? "text-success" : "text-subtle-foreground",
-                    ]}
+                    class:list={[iconClass]}
                   />
                   <span
-                    class:list={[
-                      f.included
-                        ? "text-secondary-foreground"
-                        : "text-subtle-foreground",
-                      "break-words",
-                    ]}
+                    class:list={[textClass, "break-words"]}
                   >
                     {f.text}
                   </span>
                 </div>
-              ))}
+                );
+              })}
             </div>
           </div>
-        ))
+        )})
       }
     <div
       aria-hidden="true"

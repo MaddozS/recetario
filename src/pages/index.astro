@@ -7,8 +7,10 @@ import HowItWorksSection from "@/components/landing/HowItWorksSection.astro";
 import PricingSection from "@/components/landing/PricingSection.astro";
 import CTASection from "@/components/landing/CTASection.astro";
 import LandingFooter from "@/components/landing/LandingFooter.astro";
+import { getPricingPlans } from "@/lib/db/billing";
 
 const isAuthenticated = Boolean(Astro.locals.user && Astro.locals.session);
+const plans = await getPricingPlans();
 ---
 
 <LandingLayout>
@@ -17,7 +19,7 @@ const isAuthenticated = Boolean(Astro.locals.user && Astro.locals.session);
     <HeroSection />
     <FeaturesSection />
     <HowItWorksSection />
-    <PricingSection isAuthenticated={isAuthenticated} />
+    <PricingSection isAuthenticated={isAuthenticated} plans={plans} />
     <CTASection />
   </main>
   <LandingFooter />

@@ -4,7 +4,7 @@ import {
   getRemainingRecipes,
   getRemainingIngredients,
 } from "@/lib/subscription";
-import { countUserRecipes, countUserIngredients } from "@/lib/db/billing";
+import { countUserRecipes, countUserIngredients, getPricingPlans } from "@/lib/db/billing";
 import BillingSection from "@/components/BillingSection.astro";
 
 if (!Astro.locals.session || !Astro.locals.user) {
@@ -16,6 +16,7 @@ const subscription = Astro.locals.subscription;
 
 const recipeCount = await countUserRecipes(ownerId);
 const ingredientCount = await countUserIngredients(ownerId);
+const plans = await getPricingPlans();
 
 const remainingRecipes = getRemainingRecipes(subscription, recipeCount);
 const remainingIngredients = getRemainingIngredients(
@@ -31,6 +32,7 @@ const isCanceled = Astro.url.searchParams.get("canceled") === "1";
   <section class="mx-auto max-w-3xl space-y-6">
     <BillingSection
       {subscription}
+      {plans}
       {recipeCount}
       {ingredientCount}
       {remainingRecipes}

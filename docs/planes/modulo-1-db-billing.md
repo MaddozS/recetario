@@ -31,12 +31,15 @@ Este archivo contiene todas las funciones CRUD para billing.
   "recipe_duplicate": true,
   "recipe_photos": true,
   "stock_tracking": true,
-  "production_planner": false,
+  "production_planner": true,
+  "production_save": false,
+  "production_advanced": false,
   "pdf_export": false,
   "advanced_costs": false,
   "change_history": false,
   "data_import_export": false,
-  "nutrition_info": false
+  "nutrition_info": false,
+  "cooking_mode": false
 }
 ```
 
