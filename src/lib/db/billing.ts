@@ -123,28 +123,25 @@ export interface PricingPlan {
 }
 
 export async function getPricingPlans(): Promise<PricingPlan[]> {
-  const priceIds: Record<string, string | undefined> = {
-    basicMonthly:
-      import.meta.env.STRIPE_PRICE_ID_BASIC_MONTHLY ||
-      process.env.STRIPE_PRICE_ID_BASIC_MONTHLY,
-    basicYearly:
-      import.meta.env.STRIPE_PRICE_ID_BASIC_YEARLY ||
-      process.env.STRIPE_PRICE_ID_BASIC_YEARLY,
-    proMonthly:
-      import.meta.env.STRIPE_PRICE_ID_PRO_MONTHLY ||
-      process.env.STRIPE_PRICE_ID_PRO_MONTHLY,
-    proYearly:
-      import.meta.env.STRIPE_PRICE_ID_PRO_YEARLY ||
-      process.env.STRIPE_PRICE_ID_PRO_YEARLY,
-  };
+  const knownTiers = Object.keys(TIER_CONFIG).filter(
+    (t) => t !== "free",
+  );
 
-  const PLAN_PRICES: Record<
+  const plans = await prisma.subscriptionPlan.findMany({
+    where: { tier: { in: knownTiers } },
+  });
+
+  const priceMap: Record<
     string,
-    { monthly: number; yearly: number }
-  > = {
-    basic: { monthly: 5, yearly: 48 },
-    pro: { monthly: 10, yearly: 84 },
-  };
+    { priceId: string; priceCents: number; currency: string }
+  > = {};
+  for (const plan of plans) {
+    priceMap[plan.id] = {
+      priceId: plan.stripePriceId,
+      priceCents: plan.priceCents,
+      currency: plan.currency,
+    };
+  }
 
   const result: PricingPlan[] = [];
 
@@ -167,21 +164,39 @@ export async function getPricingPlans(): Promise<PricingPlan[]> {
       continue;
     }
 
-    const pp = PLAN_PRICES[tier];
-    if (!pp) continue;
+    const monthlyKey = `${tier}_monthly`;
+    const yearlyKey = `${tier}_yearly`;
 
-    const monthlyPriceId = priceIds[`${tier}Monthly`] ?? null;
-    const yearlyPriceId = priceIds[`${tier}Yearly`] ?? null;
+    let monthly = priceMap[monthlyKey] ?? null;
+    let yearly = priceMap[yearlyKey] ?? null;
 
-    const monthlyDisplay = monthlyPriceId
-      ? formatCurrency(pp.monthly)
-      : null;
-    const yearlyDisplay = yearlyPriceId
-      ? formatCurrency(pp.yearly)
-      : null;
-    const yearlyPerMonthDisplay = yearlyPriceId
-      ? formatCurrency(pp.yearly / 12)
-      : null;
+    if (!monthly) {
+      const envId = envPriceId(tier, "monthly");
+      if (envId)
+        monthly = { priceId: envId, priceCents: 0, currency: "usd" };
+    }
+    if (!yearly) {
+      const envId = envPriceId(tier, "yearly");
+      if (envId)
+        yearly = { priceId: envId, priceCents: 0, currency: "usd" };
+    }
+
+    if (!monthly && !yearly) continue;
+
+    const monthlyDisplay =
+      monthly && monthly.priceCents > 0
+        ? formatCurrency(monthly.priceCents / 100)
+        : null;
+
+    const yearlyDisplay =
+      yearly && yearly.priceCents > 0
+        ? formatCurrency(yearly.priceCents / 100)
+        : null;
+
+    const yearlyPerMonthDisplay =
+      yearly && yearly.priceCents > 0
+        ? formatCurrency(yearly.priceCents / 12 / 100)
+        : null;
 
     result.push({
       id: tier,
@@ -189,10 +204,14 @@ export async function getPricingPlans(): Promise<PricingPlan[]> {
       name: config.name,
       description: config.description,
       badge: config.badge,
-      currency: "USD",
-      monthlyPriceId,
+      currency: (
+        monthly?.currency ??
+        yearly?.currency ??
+        "usd"
+      ).toUpperCase(),
+      monthlyPriceId: monthly?.priceId ?? null,
       monthlyDisplay,
-      yearlyPriceId,
+      yearlyPriceId: yearly?.priceId ?? null,
       yearlyDisplay,
       yearlyPerMonthDisplay,
       features: config.features,
@@ -200,6 +219,18 @@ export async function getPricingPlans(): Promise<PricingPlan[]> {
   }
 
   return result;
+}
+
+function envPriceId(
+  tier: string,
+  interval: "monthly" | "yearly",
+): string | null {
+  const key = `STRIPE_PRICE_ID_${tier.toUpperCase()}_${interval.toUpperCase()}`;
+  return (
+    (import.meta.env as Record<string, string | undefined>)[key] ??
+    (process.env as Record<string, string | undefined>)?.[key] ??
+    null
+  );
 }
 
 export type UserSubscription = {
