@@ -123,47 +123,65 @@ export interface PricingPlan {
 }
 
 export async function getPricingPlans(): Promise<PricingPlan[]> {
-  const plans = await prisma.subscriptionPlan.findMany({
-    orderBy: { id: "asc" },
-  });
+  const priceIds: Record<string, string | undefined> = {
+    basicMonthly:
+      import.meta.env.STRIPE_PRICE_ID_BASIC_MONTHLY ||
+      process.env.STRIPE_PRICE_ID_BASIC_MONTHLY,
+    basicYearly:
+      import.meta.env.STRIPE_PRICE_ID_BASIC_YEARLY ||
+      process.env.STRIPE_PRICE_ID_BASIC_YEARLY,
+    proMonthly:
+      import.meta.env.STRIPE_PRICE_ID_PRO_MONTHLY ||
+      process.env.STRIPE_PRICE_ID_PRO_MONTHLY,
+    proYearly:
+      import.meta.env.STRIPE_PRICE_ID_PRO_YEARLY ||
+      process.env.STRIPE_PRICE_ID_PRO_YEARLY,
+  };
 
-  const priceMap: Record<
+  const PLAN_PRICES: Record<
     string,
-    { priceId: string; priceCents: number; currency: string }
-  > = {};
-  for (const plan of plans) {
-    priceMap[plan.id] = {
-      priceId: plan.stripePriceId,
-      priceCents: plan.priceCents,
-      currency: plan.currency,
-    };
-  }
+    { monthly: number; yearly: number }
+  > = {
+    basic: { monthly: 5, yearly: 48 },
+    pro: { monthly: 10, yearly: 84 },
+  };
 
   const result: PricingPlan[] = [];
 
   for (const [tier, config] of Object.entries(TIER_CONFIG)) {
-    const monthlyKey = `${tier}_monthly`;
-    const yearlyKey = `${tier}_yearly`;
+    if (tier === "free") {
+      result.push({
+        id: "free",
+        tier: "free",
+        name: config.name,
+        description: config.description,
+        badge: config.badge,
+        currency: "USD",
+        monthlyPriceId: null,
+        monthlyDisplay: null,
+        yearlyPriceId: null,
+        yearlyDisplay: null,
+        yearlyPerMonthDisplay: null,
+        features: config.features,
+      });
+      continue;
+    }
 
-    const monthly = priceMap[monthlyKey] ?? null;
-    const yearly = priceMap[yearlyKey] ?? null;
+    const pp = PLAN_PRICES[tier];
+    if (!pp) continue;
 
-    if (tier !== "free" && !monthly && !yearly) continue;
+    const monthlyPriceId = priceIds[`${tier}Monthly`] ?? null;
+    const yearlyPriceId = priceIds[`${tier}Yearly`] ?? null;
 
-    const monthlyDisplay =
-      tier !== "free" && monthly
-        ? formatCurrency(monthly.priceCents / 100)
-        : null;
-
-    const yearlyDisplay =
-      tier !== "free" && yearly
-        ? formatCurrency(yearly.priceCents / 100)
-        : null;
-
-    const yearlyPerMonthDisplay =
-      tier !== "free" && yearly
-        ? formatCurrency(yearly.priceCents / 12 / 100)
-        : null;
+    const monthlyDisplay = monthlyPriceId
+      ? formatCurrency(pp.monthly)
+      : null;
+    const yearlyDisplay = yearlyPriceId
+      ? formatCurrency(pp.yearly)
+      : null;
+    const yearlyPerMonthDisplay = yearlyPriceId
+      ? formatCurrency(pp.yearly / 12)
+      : null;
 
     result.push({
       id: tier,
@@ -171,10 +189,10 @@ export async function getPricingPlans(): Promise<PricingPlan[]> {
       name: config.name,
       description: config.description,
       badge: config.badge,
-      currency: (monthly?.currency ?? yearly?.currency ?? "mxn").toUpperCase(),
-      monthlyPriceId: monthly?.priceId ?? null,
+      currency: "USD",
+      monthlyPriceId,
       monthlyDisplay,
-      yearlyPriceId: yearly?.priceId ?? null,
+      yearlyPriceId,
       yearlyDisplay,
       yearlyPerMonthDisplay,
       features: config.features,
