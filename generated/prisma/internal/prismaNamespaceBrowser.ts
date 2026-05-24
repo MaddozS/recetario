@@ -150,7 +150,8 @@ export const SubscriptionPlanScalarFieldEnum = {
   currency: 'currency',
   recipesLimit: 'recipesLimit',
   ingredientsLimit: 'ingredientsLimit',
-  featuresJson: 'featuresJson'
+  featuresJson: 'featuresJson',
+  active: 'active'
 } as const
 
 export type SubscriptionPlanScalarFieldEnum = (typeof SubscriptionPlanScalarFieldEnum)[keyof typeof SubscriptionPlanScalarFieldEnum]

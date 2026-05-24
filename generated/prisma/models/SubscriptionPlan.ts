@@ -49,6 +49,7 @@ export type SubscriptionPlanMinAggregateOutputType = {
   recipesLimit: number | null
   ingredientsLimit: number | null
   featuresJson: string | null
+  active: boolean | null
 }
 
 export type SubscriptionPlanMaxAggregateOutputType = {
@@ -62,6 +63,7 @@ export type SubscriptionPlanMaxAggregateOutputType = {
   recipesLimit: number | null
   ingredientsLimit: number | null
   featuresJson: string | null
+  active: boolean | null
 }
 
 export type SubscriptionPlanCountAggregateOutputType = {
@@ -75,6 +77,7 @@ export type SubscriptionPlanCountAggregateOutputType = {
   recipesLimit: number
   ingredientsLimit: number
   featuresJson: number
+  active: number
   _all: number
 }
 
@@ -102,6 +105,7 @@ export type SubscriptionPlanMinAggregateInputType = {
   recipesLimit?: true
   ingredientsLimit?: true
   featuresJson?: true
+  active?: true
 }
 
 export type SubscriptionPlanMaxAggregateInputType = {
@@ -115,6 +119,7 @@ export type SubscriptionPlanMaxAggregateInputType = {
   recipesLimit?: true
   ingredientsLimit?: true
   featuresJson?: true
+  active?: true
 }
 
 export type SubscriptionPlanCountAggregateInputType = {
@@ -128,6 +133,7 @@ export type SubscriptionPlanCountAggregateInputType = {
   recipesLimit?: true
   ingredientsLimit?: true
   featuresJson?: true
+  active?: true
   _all?: true
 }
 
@@ -228,6 +234,7 @@ export type SubscriptionPlanGroupByOutputType = {
   recipesLimit: number | null
   ingredientsLimit: number | null
   featuresJson: string
+  active: boolean
   _count: SubscriptionPlanCountAggregateOutputType | null
   _avg: SubscriptionPlanAvgAggregateOutputType | null
   _sum: SubscriptionPlanSumAggregateOutputType | null
@@ -264,6 +271,7 @@ export type SubscriptionPlanWhereInput = {
   recipesLimit?: Prisma.IntNullableFilter<"SubscriptionPlan"> | number | null
   ingredientsLimit?: Prisma.IntNullableFilter<"SubscriptionPlan"> | number | null
   featuresJson?: Prisma.StringFilter<"SubscriptionPlan"> | string
+  active?: Prisma.BoolFilter<"SubscriptionPlan"> | boolean
   subscriptions?: Prisma.SubscriptionListRelationFilter
 }
 
@@ -278,6 +286,7 @@ export type SubscriptionPlanOrderByWithRelationInput = {
   recipesLimit?: Prisma.SortOrderInput | Prisma.SortOrder
   ingredientsLimit?: Prisma.SortOrderInput | Prisma.SortOrder
   featuresJson?: Prisma.SortOrder
+  active?: Prisma.SortOrder
   subscriptions?: Prisma.SubscriptionOrderByRelationAggregateInput
 }
 
@@ -295,6 +304,7 @@ export type SubscriptionPlanWhereUniqueInput = Prisma.AtLeast<{
   recipesLimit?: Prisma.IntNullableFilter<"SubscriptionPlan"> | number | null
   ingredientsLimit?: Prisma.IntNullableFilter<"SubscriptionPlan"> | number | null
   featuresJson?: Prisma.StringFilter<"SubscriptionPlan"> | string
+  active?: Prisma.BoolFilter<"SubscriptionPlan"> | boolean
   subscriptions?: Prisma.SubscriptionListRelationFilter
 }, "id">
 
@@ -309,6 +319,7 @@ export type SubscriptionPlanOrderByWithAggregationInput = {
   recipesLimit?: Prisma.SortOrderInput | Prisma.SortOrder
   ingredientsLimit?: Prisma.SortOrderInput | Prisma.SortOrder
   featuresJson?: Prisma.SortOrder
+  active?: Prisma.SortOrder
   _count?: Prisma.SubscriptionPlanCountOrderByAggregateInput
   _avg?: Prisma.SubscriptionPlanAvgOrderByAggregateInput
   _max?: Prisma.SubscriptionPlanMaxOrderByAggregateInput
@@ -330,6 +341,7 @@ export type SubscriptionPlanScalarWhereWithAggregatesInput = {
   recipesLimit?: Prisma.IntNullableWithAggregatesFilter<"SubscriptionPlan"> | number | null
   ingredientsLimit?: Prisma.IntNullableWithAggregatesFilter<"SubscriptionPlan"> | number | null
   featuresJson?: Prisma.StringWithAggregatesFilter<"SubscriptionPlan"> | string
+  active?: Prisma.BoolWithAggregatesFilter<"SubscriptionPlan"> | boolean
 }
 
 export type SubscriptionPlanCreateInput = {
@@ -343,6 +355,7 @@ export type SubscriptionPlanCreateInput = {
   recipesLimit?: number | null
   ingredientsLimit?: number | null
   featuresJson: string
+  active?: boolean
   subscriptions?: Prisma.SubscriptionCreateNestedManyWithoutPlanInput
 }
 
@@ -357,6 +370,7 @@ export type SubscriptionPlanUncheckedCreateInput = {
   recipesLimit?: number | null
   ingredientsLimit?: number | null
   featuresJson: string
+  active?: boolean
   subscriptions?: Prisma.SubscriptionUncheckedCreateNestedManyWithoutPlanInput
 }
 
@@ -371,6 +385,7 @@ export type SubscriptionPlanUpdateInput = {
   recipesLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   ingredientsLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   featuresJson?: Prisma.StringFieldUpdateOperationsInput | string
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   subscriptions?: Prisma.SubscriptionUpdateManyWithoutPlanNestedInput
 }
 
@@ -385,6 +400,7 @@ export type SubscriptionPlanUncheckedUpdateInput = {
   recipesLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   ingredientsLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   featuresJson?: Prisma.StringFieldUpdateOperationsInput | string
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
   subscriptions?: Prisma.SubscriptionUncheckedUpdateManyWithoutPlanNestedInput
 }
 
@@ -399,6 +415,7 @@ export type SubscriptionPlanCreateManyInput = {
   recipesLimit?: number | null
   ingredientsLimit?: number | null
   featuresJson: string
+  active?: boolean
 }
 
 export type SubscriptionPlanUpdateManyMutationInput = {
@@ -412,6 +429,7 @@ export type SubscriptionPlanUpdateManyMutationInput = {
   recipesLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   ingredientsLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   featuresJson?: Prisma.StringFieldUpdateOperationsInput | string
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type SubscriptionPlanUncheckedUpdateManyInput = {
@@ -425,6 +443,7 @@ export type SubscriptionPlanUncheckedUpdateManyInput = {
   recipesLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   ingredientsLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   featuresJson?: Prisma.StringFieldUpdateOperationsInput | string
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type SubscriptionPlanCountOrderByAggregateInput = {
@@ -438,6 +457,7 @@ export type SubscriptionPlanCountOrderByAggregateInput = {
   recipesLimit?: Prisma.SortOrder
   ingredientsLimit?: Prisma.SortOrder
   featuresJson?: Prisma.SortOrder
+  active?: Prisma.SortOrder
 }
 
 export type SubscriptionPlanAvgOrderByAggregateInput = {
@@ -457,6 +477,7 @@ export type SubscriptionPlanMaxOrderByAggregateInput = {
   recipesLimit?: Prisma.SortOrder
   ingredientsLimit?: Prisma.SortOrder
   featuresJson?: Prisma.SortOrder
+  active?: Prisma.SortOrder
 }
 
 export type SubscriptionPlanMinOrderByAggregateInput = {
@@ -470,6 +491,7 @@ export type SubscriptionPlanMinOrderByAggregateInput = {
   recipesLimit?: Prisma.SortOrder
   ingredientsLimit?: Prisma.SortOrder
   featuresJson?: Prisma.SortOrder
+  active?: Prisma.SortOrder
 }
 
 export type SubscriptionPlanSumOrderByAggregateInput = {
@@ -489,6 +511,10 @@ export type NullableIntFieldUpdateOperationsInput = {
   decrement?: number
   multiply?: number
   divide?: number
+}
+
+export type BoolFieldUpdateOperationsInput = {
+  set?: boolean
 }
 
 export type SubscriptionPlanCreateNestedOneWithoutSubscriptionsInput = {
@@ -516,6 +542,7 @@ export type SubscriptionPlanCreateWithoutSubscriptionsInput = {
   recipesLimit?: number | null
   ingredientsLimit?: number | null
   featuresJson: string
+  active?: boolean
 }
 
 export type SubscriptionPlanUncheckedCreateWithoutSubscriptionsInput = {
@@ -529,6 +556,7 @@ export type SubscriptionPlanUncheckedCreateWithoutSubscriptionsInput = {
   recipesLimit?: number | null
   ingredientsLimit?: number | null
   featuresJson: string
+  active?: boolean
 }
 
 export type SubscriptionPlanCreateOrConnectWithoutSubscriptionsInput = {
@@ -558,6 +586,7 @@ export type SubscriptionPlanUpdateWithoutSubscriptionsInput = {
   recipesLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   ingredientsLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   featuresJson?: Prisma.StringFieldUpdateOperationsInput | string
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type SubscriptionPlanUncheckedUpdateWithoutSubscriptionsInput = {
@@ -571,6 +600,7 @@ export type SubscriptionPlanUncheckedUpdateWithoutSubscriptionsInput = {
   recipesLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   ingredientsLimit?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   featuresJson?: Prisma.StringFieldUpdateOperationsInput | string
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 
@@ -615,6 +645,7 @@ export type SubscriptionPlanSelect<ExtArgs extends runtime.Types.Extensions.Inte
   recipesLimit?: boolean
   ingredientsLimit?: boolean
   featuresJson?: boolean
+  active?: boolean
   subscriptions?: boolean | Prisma.SubscriptionPlan$subscriptionsArgs<ExtArgs>
   _count?: boolean | Prisma.SubscriptionPlanCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["subscriptionPlan"]>
@@ -630,6 +661,7 @@ export type SubscriptionPlanSelectCreateManyAndReturn<ExtArgs extends runtime.Ty
   recipesLimit?: boolean
   ingredientsLimit?: boolean
   featuresJson?: boolean
+  active?: boolean
 }, ExtArgs["result"]["subscriptionPlan"]>
 
 export type SubscriptionPlanSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -643,6 +675,7 @@ export type SubscriptionPlanSelectUpdateManyAndReturn<ExtArgs extends runtime.Ty
   recipesLimit?: boolean
   ingredientsLimit?: boolean
   featuresJson?: boolean
+  active?: boolean
 }, ExtArgs["result"]["subscriptionPlan"]>
 
 export type SubscriptionPlanSelectScalar = {
@@ -656,9 +689,10 @@ export type SubscriptionPlanSelectScalar = {
   recipesLimit?: boolean
   ingredientsLimit?: boolean
   featuresJson?: boolean
+  active?: boolean
 }
 
-export type SubscriptionPlanOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "stripePriceId" | "name" | "tier" | "billingInterval" | "priceCents" | "currency" | "recipesLimit" | "ingredientsLimit" | "featuresJson", ExtArgs["result"]["subscriptionPlan"]>
+export type SubscriptionPlanOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "stripePriceId" | "name" | "tier" | "billingInterval" | "priceCents" | "currency" | "recipesLimit" | "ingredientsLimit" | "featuresJson" | "active", ExtArgs["result"]["subscriptionPlan"]>
 export type SubscriptionPlanInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   subscriptions?: boolean | Prisma.SubscriptionPlan$subscriptionsArgs<ExtArgs>
   _count?: boolean | Prisma.SubscriptionPlanCountOutputTypeDefaultArgs<ExtArgs>
@@ -682,6 +716,7 @@ export type $SubscriptionPlanPayload<ExtArgs extends runtime.Types.Extensions.In
     recipesLimit: number | null
     ingredientsLimit: number | null
     featuresJson: string
+    active: boolean
   }, ExtArgs["result"]["subscriptionPlan"]>
   composites: {}
 }
@@ -1116,6 +1151,7 @@ export interface SubscriptionPlanFieldRefs {
   readonly recipesLimit: Prisma.FieldRef<"SubscriptionPlan", 'Int'>
   readonly ingredientsLimit: Prisma.FieldRef<"SubscriptionPlan", 'Int'>
   readonly featuresJson: Prisma.FieldRef<"SubscriptionPlan", 'String'>
+  readonly active: Prisma.FieldRef<"SubscriptionPlan", 'Boolean'>
 }
     
 

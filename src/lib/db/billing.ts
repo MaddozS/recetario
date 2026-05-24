@@ -44,6 +44,8 @@ const FEATURE_FLAGS: Record<string, Record<string, boolean>> = {
   pro: PRO_FEATURES,
 };
 
+const KNOWN_TIERS = Object.keys(TIER_CONFIG).filter((t) => t !== "free");
+
 async function syncPlansFromStripe(): Promise<void> {
   const prices = await stripe.prices.list({
     active: true,
@@ -51,15 +53,18 @@ async function syncPlansFromStripe(): Promise<void> {
     limit: 100,
   });
 
+  const syncedIds: string[] = [];
+
   for (const price of prices.data) {
     const product = price.product as Stripe.Product;
     const tier = product.metadata?.tier;
-    if (!tier) continue;
+    if (!tier || !KNOWN_TIERS.includes(tier)) continue;
 
     const interval = price.recurring?.interval ?? "";
     if (!["month", "year"].includes(interval)) continue;
 
     const id = `${tier}_${interval}ly`;
+    syncedIds.push(id);
     const featuresJson = JSON.stringify(FEATURE_FLAGS[tier] ?? {});
 
     await prisma.subscriptionPlan.upsert({
@@ -70,7 +75,7 @@ async function syncPlansFromStripe(): Promise<void> {
         tier,
         billingInterval: interval === "month" ? "monthly" : "yearly",
         priceCents: price.unit_amount ?? 0,
-        currency: price.currency ?? "mxn",
+        currency: price.currency ?? "usd",
         recipesLimit: product.metadata?.recipes_limit
           ? parseInt(product.metadata.recipes_limit)
           : null,
@@ -78,6 +83,7 @@ async function syncPlansFromStripe(): Promise<void> {
           ? parseInt(product.metadata.ingredients_limit)
           : null,
         featuresJson,
+        active: true,
       },
       create: {
         id,
@@ -86,7 +92,7 @@ async function syncPlansFromStripe(): Promise<void> {
         tier,
         billingInterval: interval === "month" ? "monthly" : "yearly",
         priceCents: price.unit_amount ?? 0,
-        currency: price.currency ?? "mxn",
+        currency: price.currency ?? "usd",
         recipesLimit: product.metadata?.recipes_limit
           ? parseInt(product.metadata.recipes_limit)
           : null,
@@ -94,7 +100,19 @@ async function syncPlansFromStripe(): Promise<void> {
           ? parseInt(product.metadata.ingredients_limit)
           : null,
         featuresJson,
+        active: true,
       },
+    });
+  }
+
+  if (syncedIds.length > 0) {
+    await prisma.subscriptionPlan.updateMany({
+      where: {
+        id: { notIn: syncedIds },
+        tier: { in: KNOWN_TIERS },
+        active: true,
+      },
+      data: { active: false },
     });
   }
 }
@@ -123,12 +141,9 @@ export interface PricingPlan {
 }
 
 export async function getPricingPlans(): Promise<PricingPlan[]> {
-  const knownTiers = Object.keys(TIER_CONFIG).filter(
-    (t) => t !== "free",
-  );
-
   const plans = await prisma.subscriptionPlan.findMany({
-    where: { tier: { in: knownTiers } },
+    where: { active: true, tier: { in: KNOWN_TIERS } },
+    orderBy: { id: "asc" },
   });
 
   const priceMap: Record<
@@ -167,36 +182,20 @@ export async function getPricingPlans(): Promise<PricingPlan[]> {
     const monthlyKey = `${tier}_monthly`;
     const yearlyKey = `${tier}_yearly`;
 
-    let monthly = priceMap[monthlyKey] ?? null;
-    let yearly = priceMap[yearlyKey] ?? null;
-
-    if (!monthly) {
-      const envId = envPriceId(tier, "monthly");
-      if (envId)
-        monthly = { priceId: envId, priceCents: 0, currency: "usd" };
-    }
-    if (!yearly) {
-      const envId = envPriceId(tier, "yearly");
-      if (envId)
-        yearly = { priceId: envId, priceCents: 0, currency: "usd" };
-    }
+    const monthly = priceMap[monthlyKey] ?? null;
+    const yearly = priceMap[yearlyKey] ?? null;
 
     if (!monthly && !yearly) continue;
 
-    const monthlyDisplay =
-      monthly && monthly.priceCents > 0
-        ? formatCurrency(monthly.priceCents / 100)
-        : null;
-
-    const yearlyDisplay =
-      yearly && yearly.priceCents > 0
-        ? formatCurrency(yearly.priceCents / 100)
-        : null;
-
-    const yearlyPerMonthDisplay =
-      yearly && yearly.priceCents > 0
-        ? formatCurrency(yearly.priceCents / 12 / 100)
-        : null;
+    const monthlyDisplay = monthly
+      ? formatCurrency(monthly.priceCents / 100)
+      : null;
+    const yearlyDisplay = yearly
+      ? formatCurrency(yearly.priceCents / 100)
+      : null;
+    const yearlyPerMonthDisplay = yearly
+      ? formatCurrency(yearly.priceCents / 12 / 100)
+      : null;
 
     result.push({
       id: tier,
@@ -219,18 +218,6 @@ export async function getPricingPlans(): Promise<PricingPlan[]> {
   }
 
   return result;
-}
-
-function envPriceId(
-  tier: string,
-  interval: "monthly" | "yearly",
-): string | null {
-  const key = `STRIPE_PRICE_ID_${tier.toUpperCase()}_${interval.toUpperCase()}`;
-  return (
-    (import.meta.env as Record<string, string | undefined>)[key] ??
-    (process.env as Record<string, string | undefined>)?.[key] ??
-    null
-  );
 }
 
 export type UserSubscription = {
