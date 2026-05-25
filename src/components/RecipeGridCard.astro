@@ -97,6 +97,7 @@ const cardMenuId = `card-menu-${id}`;
           >
             <input type="hidden" name="action" value="duplicate_recipe" />
             <input type="hidden" name="recipeId" value={id} />
+            <input type="hidden" name="_csrf" value={Astro.locals.csrfToken || ""} />
           </form>
           <button
             type="submit"

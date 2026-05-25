@@ -1,11 +1,19 @@
 import type { APIRoute } from "astro";
 import { stripe } from "@/lib/stripe";
 import { getUserSubscription } from "@/lib/db/billing";
+import { validateCsrf } from "@/lib/csrf";
 
-export const POST: APIRoute = async ({ locals, url }) => {
+export const POST: APIRoute = async ({ request, locals, url }) => {
   if (!locals.user) {
     return new Response(JSON.stringify({ error: "Authentication required" }), {
       status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  if (!validateCsrf(request)) {
+    return new Response(JSON.stringify({ error: "CSRF validation failed" }), {
+      status: 403,
       headers: { "Content-Type": "application/json" },
     });
   }

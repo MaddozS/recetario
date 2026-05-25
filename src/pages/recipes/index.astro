@@ -16,6 +16,7 @@ import RecipeGridCard from "@/components/RecipeGridCard.astro";
 import RecipeStats from "@/components/RecipeStats.astro";
 import { Button, Card } from "@/components/ui";
 import FeedbackAlert from "@/components/FeedbackAlert.astro";
+import { validateCsrf } from "@/lib/csrf";
 
 if (!Astro.locals.session || !Astro.locals.user) {
   Astro.redirect("/sign-in");
@@ -31,6 +32,11 @@ const subscription = Astro.locals.subscription;
 
 if (Astro.request.method === "POST") {
   const formData = await Astro.request.formData();
+
+  if (!validateCsrf(Astro.request, formData)) {
+    return Astro.redirect("/recipes");
+  }
+
   const action = String(formData.get("action") || "");
   let createdRecipeId: number | null = null;
 
@@ -336,6 +342,7 @@ const showUpgradeModal = Astro.url.searchParams.get("upgrade") === "1";
       class="bg-card max-h-[calc(100dvh-2rem)] overflow-auto rounded-3xl border border-border p-6"
     >
       <input type="hidden" name="action" value="create_recipe" />
+      <input type="hidden" name="_csrf" value={Astro.locals.csrfToken || ""} />
       <div class="flex items-start justify-between gap-4">
         <div>
           <p class="text-accent-500 text-xs font-black tracking-[0.18em] uppercase">Nueva receta</p>

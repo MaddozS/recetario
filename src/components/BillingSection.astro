@@ -248,7 +248,15 @@ const currencyLabel = subscription.currency?.toUpperCase() ?? "";
         '<span class="flex items-center gap-2"><svg class="animate-spin h-4 w-4" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg> Cargando...</span>';
 
       try {
-        const res = await fetch("/api/stripe/portal", { method: "POST" });
+        const csrfToken = document.cookie
+          .split("; ")
+          .find((row) => row.startsWith("csrf_token="))
+          ?.split("=")[1];
+
+        const headers: Record<string, string> = {};
+        if (csrfToken) headers["x-csrf-token"] = csrfToken;
+
+        const res = await fetch("/api/stripe/portal", { method: "POST", headers });
         const data = await res.json();
 
         if (data.url) {

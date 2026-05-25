@@ -12,6 +12,7 @@ declare namespace App {
     user: AppUser | null;
     session: { user: AppUser } | null;
     subscription: import("./lib/subscription").UserSubscriptionInfo;
+    csrfToken: string | null;
   }
 
   interface ImportMetaEnv {

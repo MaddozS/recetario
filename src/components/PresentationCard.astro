@@ -46,6 +46,7 @@ const unitProfit = defaultSalePrice - unitCost;
   <form method="post" class="flex h-full grow flex-col">
     <input type="hidden" name="action" value="update_presentation" />
     <input type="hidden" name="presentationId" value={id} />
+    <input type="hidden" name="_csrf" value={Astro.locals.csrfToken || ""} />
 
     <div class="mb-2 flex items-start justify-between gap-3">
       <input

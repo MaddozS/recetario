@@ -1,11 +1,19 @@
 import type { APIRoute } from "astro";
 import { stripe } from "@/lib/stripe";
 import { getPlanByStripePriceId, getStripeCustomerId } from "@/lib/db/billing";
+import { validateCsrf } from "@/lib/csrf";
 
 export const POST: APIRoute = async ({ request, locals }) => {
   if (!locals.user) {
     return new Response(JSON.stringify({ error: "Authentication required" }), {
       status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  if (!validateCsrf(request)) {
+    return new Response(JSON.stringify({ error: "CSRF validation failed" }), {
+      status: 403,
       headers: { "Content-Type": "application/json" },
     });
   }
@@ -37,6 +45,21 @@ export const POST: APIRoute = async ({ request, locals }) => {
     });
   }
 
+  const appOrigin = new URL(request.url).origin;
+
+  function safeRedirectUrl(input: string | undefined, fallback: string): string {
+    if (!input) return fallback;
+    if (input.startsWith("/") && !input.startsWith("//")) return input;
+    try {
+      const parsed = new URL(input);
+      if (parsed.origin === appOrigin) return input;
+    } catch {
+      // Relative paths without protocol — allow if they start with /
+      if (input.startsWith("/") && !input.startsWith("//")) return input;
+    }
+    return fallback;
+  }
+
   const userId = locals.user.id;
   const userEmail = locals.user.email;
 
@@ -60,10 +83,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
     subscription_data: {
       trial_period_days: 14,
     },
-    success_url:
-      successUrl || `${new URL(request.url).origin}/settings/billing?success=1`,
-    cancel_url:
-      cancelUrl || `${new URL(request.url).origin}/pricing?canceled=1`,
+    success_url: safeRedirectUrl(successUrl, `${appOrigin}/settings/billing?success=1`),
+    cancel_url: safeRedirectUrl(cancelUrl, `${appOrigin}/pricing?canceled=1`),
     metadata: {
       userId,
       planId: plan.id,

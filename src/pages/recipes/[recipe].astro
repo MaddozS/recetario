@@ -18,6 +18,7 @@ import {
 import { hasFeature } from '@/lib/subscription';
 import { parseNumberInput } from '@/lib/form-utils';
 import { sanitizeHtml } from '@/lib/html-sanitizer';
+import { validateCsrf } from '@/lib/csrf';
 import { UNIT_OPTIONS } from '@/lib/constants';
 import FeedbackAlert from '../../components/FeedbackAlert.astro';
 import InstructionsEditor from '../../components/InstructionsEditor.astro';
@@ -116,6 +117,11 @@ const getPresentationFormErrorMessage = (error: unknown, fallback: string) => {
 
 if (Astro.request.method === 'POST') {
   const formData = await Astro.request.formData();
+
+  if (!validateCsrf(Astro.request, formData)) {
+    return Astro.redirect(Astro.url.pathname);
+  }
+
   const action = String(formData.get('action') || '');
 
   if (action === 'update_presentation') {
@@ -464,16 +470,19 @@ void getPresentationFormErrorMessage;
       {isEditMode && (
         <form id={recipeEditFormId} method="POST" action={Astro.url.pathname} class="hidden" data-astro-reload>
           <input type="hidden" name="action" value="update_recipe" />
+          <input type="hidden" name="_csrf" value={Astro.locals.csrfToken || ""} />
           <input type="hidden" name="instructions" value={instructions || ""} data-hidden-ta />
         </form>
       )}
 
       <form id={recipeDeleteFormId} method="POST" action={Astro.url.pathname} class="hidden" data-astro-reload>
         <input type="hidden" name="action" value="delete_recipe" />
+        <input type="hidden" name="_csrf" value={Astro.locals.csrfToken || ""} />
       </form>
 
       <form id="recipe-duplicate-form" method="POST" class="hidden" data-astro-reload>
         <input type="hidden" name="action" value="duplicate_recipe" />
+        <input type="hidden" name="_csrf" value={Astro.locals.csrfToken || ""} />
       </form>
 
         <dialog
@@ -879,6 +888,7 @@ void getPresentationFormErrorMessage;
         class="max-h-[calc(100dvh-2rem)] overflow-auto rounded-3xl bg-card p-6"
       >
         <input type="hidden" name="action" value="create_presentation" />
+        <input type="hidden" name="_csrf" value={Astro.locals.csrfToken || ""} />
 
         <div class="flex items-start justify-between gap-4">
           <div>

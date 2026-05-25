@@ -19,6 +19,7 @@ import {
 } from "@/lib/subscription";
 import { countUserRecipes, countUserIngredients, getPricingPlans } from "@/lib/db/billing";
 import FeedbackAlert from "@/components/FeedbackAlert.astro";
+import { validateCsrf } from "@/lib/csrf";
 
 if (!Astro.locals.session || !Astro.locals.user) {
   return Astro.redirect("/sign-in");
@@ -57,6 +58,11 @@ let feedback: Feedback | null = null;
 
 if (Astro.request.method === "POST") {
   const formData = await Astro.request.formData();
+
+  if (!validateCsrf(Astro.request, formData)) {
+    return Astro.redirect("/settings");
+  }
+
   const theme = formData.get("theme") as string;
   const accentColor = formData.get("accentColor") as string;
 
@@ -197,6 +203,7 @@ if (feedback) {
           action={"/settings" +
             (activeTab !== "profile" ? "?tab=" + activeTab : "")}
         >
+          <input type="hidden" name="_csrf" value={Astro.locals.csrfToken || ""} />
           <Card padding="lg" class="space-y-8">
             {/* Theme Toggle */}
             <div>
