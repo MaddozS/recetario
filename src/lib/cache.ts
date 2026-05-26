@@ -1,56 +1,42 @@
-const MAX_SIZE = 1000;
-const store = new Map<string, { value: unknown; expiresAt: number }>();
-const stats = { hits: 0, misses: 0, sets: 0, evictions: 0 };
+import { prisma } from "@/lib/prisma";
 
-function evictIfNeeded(): void {
-  if (store.size <= MAX_SIZE) return;
-  const now = Date.now();
-  const entries = [...store.entries()].sort(
-    (a, b) => a[1].expiresAt - b[1].expiresAt,
-  );
-  for (const [key, entry] of entries) {
-    if (store.size <= MAX_SIZE * 0.8) break;
-    if (entry.expiresAt <= now) {
-      store.delete(key);
-      stats.evictions++;
-    } else {
-      store.delete(key);
-      stats.evictions++;
-    }
+export async function cacheGet<T>(key: string): Promise<T | undefined> {
+  try {
+    const entry = await prisma.cacheEntry.findUnique({ where: { key } });
+    if (!entry || Number(entry.expiresAt) <= Date.now()) return undefined;
+    return JSON.parse(entry.value) as T;
+  } catch {
+    return undefined;
   }
 }
 
-export function cacheGet<T>(key: string): T | undefined {
-  const entry = store.get(key);
-  if (entry && entry.expiresAt > Date.now()) {
-    stats.hits++;
-    return entry.value as T;
-  }
-  if (entry) {
-    store.delete(key);
-  }
-  stats.misses++;
-  return undefined;
-}
-
-export function cacheSet(
+export async function cacheSet(
   key: string,
   value: unknown,
   ttlSeconds: number,
-): void {
-  store.set(key, { value, expiresAt: Date.now() + ttlSeconds * 1000 });
-  stats.sets++;
-  evictIfNeeded();
+): Promise<void> {
+  try {
+    await prisma.cacheEntry.upsert({
+      where: { key },
+      update: {
+        value: JSON.stringify(value),
+        expiresAt: BigInt(Date.now() + ttlSeconds * 1000),
+      },
+      create: {
+        key,
+        value: JSON.stringify(value),
+        expiresAt: BigInt(Date.now() + ttlSeconds * 1000),
+      },
+    });
+  } catch {
+    // Non-critical
+  }
 }
 
-export function cacheDelete(key: string): void {
-  store.delete(key);
-}
-
-export function cacheClear(): void {
-  store.clear();
-}
-
-export function cacheStats() {
-  return { ...stats, size: store.size };
+export async function cacheDelete(key: string): Promise<void> {
+  try {
+    await prisma.cacheEntry.delete({ where: { key } });
+  } catch {
+    // Non-critical
+  }
 }

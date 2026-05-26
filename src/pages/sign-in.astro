@@ -51,6 +51,11 @@ import LandingLayout from "@/layouts/LandingLayout.astro";
         class="border-danger-border bg-danger-bg text-danger mb-4 hidden rounded-xl border px-4 py-3 text-sm font-semibold"
       >
       </div>
+      <div
+        id="sign-in-verify-error"
+        class="border-warning-border bg-warning-bg text-warning mb-4 hidden rounded-xl border px-4 py-3 text-sm font-semibold"
+      >
+      </div>
 
       <form id="sign-in-form" class="space-y-4">
         <div>
@@ -134,6 +139,11 @@ import LandingLayout from "@/layouts/LandingLayout.astro";
         >
           Iniciar sesión
         </Button>
+        <p class="text-center">
+          <Button variant="secondary" href="/forgot-password" size="sm"
+            >¿Olvidaste tu contraseña?</Button
+          >
+        </p>
       </form>
 
       <div class="relative my-6">
@@ -227,13 +237,45 @@ import LandingLayout from "@/layouts/LandingLayout.astro";
 
         try {
           await signInWithEmail(email, password);
+          sessionStorage.removeItem("kitchcalc:signup_email");
           window.location.href = "/recipes";
         } catch (err: unknown) {
           overlay.remove();
-          showError((err as { message?: string })?.message || "Credenciales inválidas.");
           submitBtn.disabled = false;
           submitBtn.textContent = "Iniciar sesión";
           if (googleBtn) (googleBtn as HTMLButtonElement).disabled = false;
+
+          const e = err as { code?: string; message?: string };
+          if (e.code === "EMAIL_NOT_VERIFIED") {
+            hideError();
+            const verifyEl = document.getElementById("sign-in-verify-error");
+            if (verifyEl) {
+              verifyEl.innerHTML =
+                `Debes verificar tu email antes de iniciar sesi\u00f3n. Revisa tu bandeja. ` +
+                `<button id="resend-verify-signin" class="underline font-bold hover:opacity-80">Reenviar correo</button>`;
+              verifyEl.classList.remove("hidden");
+              document.getElementById("resend-verify-signin")?.addEventListener("click", async (ev) => {
+                const btn = ev.currentTarget as HTMLButtonElement;
+                btn.textContent = "Enviando...";
+                btn.setAttribute("disabled", "true");
+                try {
+                  const { authClient } = await import("@/lib/auth-client");
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  await (authClient as any).sendVerificationEmail({
+                    email,
+                    callbackURL: `${window.location.origin}/sign-in`,
+                  });
+                  btn.textContent = "Reenviado. Revisa tu correo!";
+                  btn.classList.add("pointer-events-none");
+                } catch {
+                  btn.textContent = "Error. Reintentar";
+                  btn.removeAttribute("disabled");
+                }
+              });
+            }
+          } else {
+            showError(e.message || "Credenciales inv\u00e1lidas.");
+          }
         }
       });
     }

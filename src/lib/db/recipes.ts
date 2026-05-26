@@ -27,7 +27,7 @@ export async function listRecipeSummaries(
   ownerId: string,
 ): Promise<RecipeSummary[]> {
   const cacheKey = `recipes:${ownerId}`;
-  const cached = cacheGet<RecipeSummary[]>(cacheKey);
+  const cached = await cacheGet<RecipeSummary[]>(cacheKey);
   if (cached) return cached;
 
   const rows = await prisma.recipe.findMany({
@@ -50,7 +50,7 @@ export async function listRecipeSummaries(
     updatedAt: row.updatedAt?.toISOString(),
   }));
 
-  cacheSet(cacheKey, result, 60);
+  await cacheSet(cacheKey, result, 60);
   return result;
 }
 
@@ -62,7 +62,7 @@ export async function getRecipeById(
   if (!Number.isFinite(id)) return null;
 
   const cacheKey = `recipe:${id}`;
-  const cached = cacheGet<RecipeWithIngredients | null>(cacheKey);
+  const cached = await cacheGet<RecipeWithIngredients | null>(cacheKey);
   if (cached !== undefined) return cached;
 
   const recipe = await prisma.recipe.findFirst({
@@ -78,12 +78,12 @@ export async function getRecipeById(
   });
 
   if (!recipe) {
-    cacheSet(cacheKey, null, 60);
+    await cacheSet(cacheKey, null, 60);
     return null;
   }
 
   const result: RecipeWithIngredients = normalizeRecipeRow(recipe);
-  cacheSet(cacheKey, result, 60);
+  await cacheSet(cacheKey, result, 60);
   return result;
 }
 
@@ -108,7 +108,7 @@ export async function getRecipesByIds(
   const results = rows.map(normalizeRecipeRow);
 
   for (const r of results) {
-    cacheSet(`recipe:${r.id}`, r, 60);
+    await cacheSet(`recipe:${r.id}`, r, 60);
   }
 
   return results;

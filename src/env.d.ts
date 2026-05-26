@@ -5,6 +5,7 @@ type AppUser = {
   email: string | null;
   name: string | null;
   image: string | null;
+  role: string;
 };
 
 declare namespace App {

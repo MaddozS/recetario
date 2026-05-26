@@ -22,7 +22,7 @@ export async function getUserPreferences(
   userId: string,
 ): Promise<UserPreferences | null> {
   const cacheKey = `prefs:${userId}`;
-  const cached = cacheGet<UserPreferences | null>(cacheKey);
+  const cached = await cacheGet<UserPreferences | null>(cacheKey);
   if (cached !== undefined) return cached;
 
   const data = await prisma.userPreferences.findUnique({
@@ -39,7 +39,7 @@ export async function getUserPreferences(
       }
     : null;
 
-  cacheSet(cacheKey, result, 60);
+  await cacheSet(cacheKey, result, 60);
   return result;
 }
 
@@ -70,6 +70,6 @@ export async function upsertUserPreferences(
   });
 
   const result = { userId: data.userId, theme, accentColor };
-  cacheSet(`prefs:${userId}`, result, 60);
+  await cacheSet(`prefs:${userId}`, result, 60);
   return result;
 }

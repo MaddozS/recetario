@@ -190,137 +190,121 @@ if (feedback) {
           </div>
         </div>
       </Card>
-    </div>
 
-    {/* Preferences Tab */}
-    <div
-      data-tab-content="preferences"
-        class:list={["space-y-8", activeTab !== "preferences" && "hidden"]}
-      >
-        {/* Preferences Form */}
-        <form
-          method="post"
-          action={"/settings" +
-            (activeTab !== "profile" ? "?tab=" + activeTab : "")}
-        >
-          <input type="hidden" name="_csrf" value={Astro.locals.csrfToken || ""} />
-          <Card padding="lg" class="space-y-8">
-            {/* Theme Toggle */}
-            <div>
-              <p
-                class="text-muted-foreground mb-3 text-[11px] font-bold tracking-[0.18em] uppercase"
-              >
-                Tema
-              </p>
-              <div
-                class="bg-muted/50 border-border flex max-w-xs gap-2 rounded-xl border p-1.5"
-              >
-                <button
-                  type="button"
-                  data-theme-option="light"
-                  data-theme-active={currentTheme === "light" ? "1" : "0"}
-                  aria-pressed={currentTheme === "light" ? "true" : "false"}
-                  class:list={[
-                    "flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-all",
-                    currentTheme === "light"
-                      ? "bg-accent-600 text-white shadow-sm"
-                      : "text-muted-foreground hover:text-secondary-foreground hover:bg-muted",
-                  ]}
-                >
-                  <Icon name="lucide:sun" size={16} />
-                  Claro
-                </button>
-                <button
-                  type="button"
-                  data-theme-option="dark"
-                  data-theme-active={currentTheme === "dark" ? "1" : "0"}
-                  aria-pressed={currentTheme === "dark" ? "true" : "false"}
-                  class:list={[
-                    "flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-all",
-                    currentTheme === "dark"
-                      ? "bg-accent-600 text-white shadow-sm"
-                      : "text-muted-foreground hover:text-secondary-foreground hover:bg-muted",
-                  ]}
-                >
-                  <Icon name="lucide:moon" size={16} />
-                  Oscuro
-                </button>
-              </div>
-              <input
-                type="hidden"
-                name="theme"
-                id="theme-input"
-                value={currentTheme}
-              />
-            </div>
-
-            {/* Accent Color Picker */}
-            <div>
-              <p
-                class="text-muted-foreground mb-3 text-[11px] font-bold tracking-[0.18em] uppercase"
-              >
-                Color de acento
-              </p>
-              <div class="grid max-w-xl grid-cols-3 gap-3 sm:grid-cols-6">
-                {
-                  ACCENT_FAMILIES.map((family) => {
-                    const isSelected = currentAccent === family;
-                    const previewColor = getAccentPreviewColor(family);
-                    return (
-                      <button
-                        type="button"
-                        data-accent-option={family}
-                        data-accent-active={isSelected ? "1" : "0"}
-                        aria-pressed={isSelected ? "true" : "false"}
-                        class:list={[
-                          "flex flex-col items-center gap-2 rounded-xl p-3 transition-all",
-                          isSelected
-                            ? "ring-accent-500 bg-accent-50 ring-2 ring-offset-1"
-                            : "hover:bg-background border-border border",
-                        ]}
-                      >
-                        <span
-                          class:list={[
-                            "h-8 w-8 rounded-lg border",
-                            isSelected ? "border-accent-400" : "border-border",
-                          ]}
-                          style={`background-color:${previewColor}`}
-                        />
-                        <span
-                          class:list={[
-                            "text-[11px] font-semibold",
-                            isSelected
-                              ? "text-accent-700"
-                              : "text-muted-foreground",
-                          ]}
-                        >
-                          {ACCENT_LABELS[family]}
-                        </span>
-                      </button>
-                    );
-                  })
-                }
-              </div>
-              <input
-                type="hidden"
-                name="accentColor"
-                id="accent-input"
-                value={currentAccent}
-              />
-            </div>
-
-            {/* divider */}
-            <div class="border-border border-t"></div>
-
-            {/* Save Button */}
-            <div id="save-btn-wrapper" class="mt-6 flex hidden justify-end">
-              <Button variant="primary" type="submit" icon="check">
-                Guardar preferencias
-              </Button>
-            </div>
-          </Card>
+      {/* Change Email */}
+      <Card padding="lg">
+        <h2 class="text-foreground text-lg font-bold">Cambiar email</h2>
+        <p class="text-muted-foreground mt-1 text-sm">
+          Actualiza la dirección de correo electrónico asociada a tu cuenta.
+        </p>
+        <div
+          id="change-email-feedback"
+          class="mt-4 hidden rounded-xl border px-4 py-3 text-sm font-semibold"
+        ></div>
+        <form id="change-email-form" class="mt-4 max-w-sm space-y-4">
+          <div>
+            <label
+              for="new-email"
+              class="text-muted-foreground mb-1.5 block text-xs font-bold tracking-wider uppercase"
+            >
+              Nuevo email
+            </label>
+            <input
+              id="new-email"
+              type="email"
+              required
+              class="border-border bg-background text-foreground placeholder:text-subtle-foreground focus:border-accent-300 focus:ring-accent-500/20 w-full rounded-xl border px-4 py-3 text-sm transition outline-none focus:ring-2"
+              placeholder="nuevo@email.com"
+              autocomplete="email"
+            />
+          </div>
+          <div>
+            <label
+              for="email-current-password"
+              class="text-muted-foreground mb-1.5 block text-xs font-bold tracking-wider uppercase"
+            >
+              Contraseña actual
+            </label>
+            <input
+              id="email-current-password"
+              type="password"
+              required
+              class="border-border bg-background text-foreground placeholder:text-subtle-foreground focus:border-accent-300 focus:ring-accent-500/20 w-full rounded-xl border px-4 py-3 text-sm transition outline-none focus:ring-2"
+              autocomplete="current-password"
+            />
+          </div>
+          <Button variant="primary" type="submit" icon="mail">
+            Cambiar email
+          </Button>
         </form>
-      </div>
+      </Card>
+
+      {/* Change Password */}
+      <Card padding="lg">
+        <h2 class="text-foreground text-lg font-bold">Cambiar contraseña</h2>
+        <p class="text-muted-foreground mt-1 text-sm">
+          Usa al menos 6 caracteres para tu nueva contraseña.
+        </p>
+        <div
+          id="change-password-feedback"
+          class="mt-4 hidden rounded-xl border px-4 py-3 text-sm font-semibold"
+        ></div>
+        <form id="change-password-form" class="mt-4 max-w-sm space-y-4">
+          <div>
+            <label
+              for="current-password"
+              class="text-muted-foreground mb-1.5 block text-xs font-bold tracking-wider uppercase"
+            >
+              Contraseña actual
+            </label>
+            <input
+              id="current-password"
+              type="password"
+              required
+              class="border-border bg-background text-foreground placeholder:text-subtle-foreground focus:border-accent-300 focus:ring-accent-500/20 w-full rounded-xl border px-4 py-3 text-sm transition outline-none focus:ring-2"
+              autocomplete="current-password"
+            />
+          </div>
+          <div>
+            <label
+              for="new-password"
+              class="text-muted-foreground mb-1.5 block text-xs font-bold tracking-wider uppercase"
+            >
+              Nueva contraseña
+            </label>
+            <input
+              id="new-password"
+              type="password"
+              required
+              minlength={6}
+              class="border-border bg-background text-foreground placeholder:text-subtle-foreground focus:border-accent-300 focus:ring-accent-500/20 w-full rounded-xl border px-4 py-3 text-sm transition outline-none focus:ring-2"
+              placeholder="Mínimo 6 caracteres"
+              autocomplete="new-password"
+            />
+          </div>
+          <div>
+            <label
+              for="confirm-new-password"
+              class="text-muted-foreground mb-1.5 block text-xs font-bold tracking-wider uppercase"
+            >
+              Confirmar contraseña
+            </label>
+            <input
+              id="confirm-new-password"
+              type="password"
+              required
+              minlength={6}
+              class="border-border bg-background text-foreground placeholder:text-subtle-foreground focus:border-accent-300 focus:ring-accent-500/20 w-full rounded-xl border px-4 py-3 text-sm transition outline-none focus:ring-2"
+              placeholder="Repite tu contraseña"
+              autocomplete="new-password"
+            />
+          </div>
+          <Button variant="primary" type="submit" icon="lock">
+            Cambiar contraseña
+          </Button>
+        </form>
+      </Card>
+    </div>
 
       {/* Billing Tab */}
       <div
@@ -571,6 +555,123 @@ if (feedback) {
     document.addEventListener("astro:page-load", setupSettingsTabs);
     document.addEventListener("astro:after-swap", setupSettingsTabs);
     setupSettingsTabs();
+  </script>
+
+  <script>
+    function setupAccountForms() {
+      function showFeedback(
+        el: HTMLElement | null,
+        type: "success" | "error",
+        msg: string,
+      ) {
+        if (!el) return;
+        el.textContent = msg;
+        el.classList.remove("hidden");
+        el.className = el.className.replace(
+          /border-(success|danger)-(border|bg)/g,
+          "",
+        );
+        el.classList.add(
+          type === "success" ? "border-success-border bg-success-bg text-success" : "border-danger-border bg-danger-bg text-danger",
+        );
+      }
+
+      const emailForm = document.getElementById(
+        "change-email-form",
+      ) as HTMLFormElement | null;
+      if (emailForm && !emailForm.dataset.bound) {
+        emailForm.dataset.bound = "1";
+        emailForm.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const newEmail = (
+            document.getElementById("new-email") as HTMLInputElement
+          ).value.trim();
+          const password = (
+            document.getElementById(
+              "email-current-password",
+            ) as HTMLInputElement
+          ).value;
+          const fb = document.getElementById("change-email-feedback");
+          try {
+            const res = await fetch("/api/account/change-email", {
+              method: "POST",
+              headers: { "Content-Type": "application/x-www-form-urlencoded" },
+              body: new URLSearchParams({
+                newEmail,
+                currentPassword: password,
+              }),
+            });
+            if (res.ok) {
+              showFeedback(fb, "success", "Email actualizado correctamente.");
+              emailForm.reset();
+            } else {
+              const text = await res.text();
+              showFeedback(fb, "error", text || "Error al cambiar el email.");
+            }
+          } catch {
+            showFeedback(fb, "error", "Error de conexión.");
+          }
+        });
+      }
+
+      const pwdForm = document.getElementById(
+        "change-password-form",
+      ) as HTMLFormElement | null;
+      if (pwdForm && !pwdForm.dataset.bound) {
+        pwdForm.dataset.bound = "1";
+        pwdForm.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const currentPassword = (
+            document.getElementById("current-password") as HTMLInputElement
+          ).value;
+          const newPassword = (
+            document.getElementById("new-password") as HTMLInputElement
+          ).value;
+          const confirmPassword = (
+            document.getElementById("confirm-new-password") as HTMLInputElement
+          ).value;
+          const fb = document.getElementById("change-password-feedback");
+
+          if (newPassword.length < 6) {
+            showFeedback(
+              fb,
+              "error",
+              "La contraseña debe tener al menos 6 caracteres.",
+            );
+            return;
+          }
+          if (newPassword !== confirmPassword) {
+            showFeedback(fb, "error", "Las contraseñas no coinciden.");
+            return;
+          }
+
+          try {
+            const res = await fetch("/api/account/change-password", {
+              method: "POST",
+              headers: { "Content-Type": "application/x-www-form-urlencoded" },
+              body: new URLSearchParams({ currentPassword, newPassword }),
+            });
+            if (res.ok) {
+              showFeedback(
+                fb,
+                "success",
+                "Contraseña actualizada correctamente.",
+              );
+              pwdForm.reset();
+            } else {
+              const text = await res.text();
+              showFeedback(fb, "error", text || "Error al cambiar la contraseña.");
+            }
+          } catch {
+            showFeedback(fb, "error", "Error de conexión.");
+          }
+        });
+      }
+    }
+
+    document.addEventListener("astro:page-load", setupAccountForms);
+    document.addEventListener("astro:after-swap", setupAccountForms);
+    setupAccountForms();
   </script>
 
 </Layout>

@@ -1,40 +1,46 @@
-interface RateLimitEntry {
-  count: number;
-  resetAt: number;
-}
+import { prisma } from "@/lib/prisma";
 
-const store = new Map<string, RateLimitEntry>();
-
-const CLEANUP_INTERVAL = 60_000;
-let lastCleanup = Date.now();
-
-function cleanup() {
-  const now = Date.now();
-  if (now - lastCleanup < CLEANUP_INTERVAL) return;
-  lastCleanup = now;
-  for (const [key, entry] of store) {
-    if (entry.resetAt <= now) store.delete(key);
-  }
-}
-
-export function rateLimitCheck(
+export async function rateLimitCheck(
   key: string,
   maxAttempts: number,
   windowSeconds: number,
-): { allowed: boolean; remaining: number } {
-  cleanup();
-  const now = Date.now();
-  const entry = store.get(key);
+): Promise<{ allowed: boolean; remaining: number }> {
+  try {
+    const now = Date.now();
+    const windowMs = windowSeconds * 1000;
 
-  if (!entry || entry.resetAt <= now) {
-    store.set(key, { count: 1, resetAt: now + windowSeconds * 1000 });
+    const existing = await prisma.rateLimitEntry.findUnique({
+      where: { key },
+    });
+
+    if (!existing || Number(existing.resetAt) <= now) {
+      await prisma.rateLimitEntry.upsert({
+        where: { key },
+        update: {
+          count: 1,
+          resetAt: BigInt(now + windowMs),
+        },
+        create: {
+          key,
+          count: 1,
+          resetAt: BigInt(now + windowMs),
+        },
+      });
+      return { allowed: true, remaining: maxAttempts - 1 };
+    }
+
+    if (existing.count >= maxAttempts) {
+      return { allowed: false, remaining: 0 };
+    }
+
+    await prisma.rateLimitEntry.update({
+      where: { key },
+      data: { count: existing.count + 1 },
+    });
+
+    return { allowed: true, remaining: maxAttempts - existing.count - 1 };
+  } catch {
+    // Fail open on DB errors
     return { allowed: true, remaining: maxAttempts - 1 };
   }
-
-  if (entry.count >= maxAttempts) {
-    return { allowed: false, remaining: 0 };
-  }
-
-  entry.count++;
-  return { allowed: true, remaining: maxAttempts - entry.count };
 }

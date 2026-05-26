@@ -16,7 +16,7 @@ function invalidateIngredientCache(ownerId: string) {
 
 export async function listIngredients(ownerId: string): Promise<Ingredient[]> {
   const cacheKey = `ingredients:${ownerId}`;
-  const cached = cacheGet<Ingredient[]>(cacheKey);
+  const cached = await cacheGet<Ingredient[]>(cacheKey);
   if (cached) return cached;
 
   const rows = await prisma.ingredient.findMany({
@@ -34,7 +34,7 @@ export async function listIngredients(ownerId: string): Promise<Ingredient[]> {
     supplier: normalizeOptionalText(row.supplier),
   }));
 
-  cacheSet(cacheKey, result, 60);
+  await cacheSet(cacheKey, result, 60);
   return result;
 }
 
@@ -42,7 +42,7 @@ export async function listIngredientUsage(
   ownerId: string,
 ): Promise<Record<number, string[]>> {
   const cacheKey = `ingredient_usage:${ownerId}`;
-  const cached = cacheGet<Record<number, string[]>>(cacheKey);
+  const cached = await cacheGet<Record<number, string[]>>(cacheKey);
   if (cached) return cached;
 
   const rows = await prisma.recipeIngredient.findMany({
@@ -62,7 +62,7 @@ export async function listIngredientUsage(
     usageByIngredient[row.ingredientId].push(row.recipe.name);
   }
 
-  cacheSet(cacheKey, usageByIngredient, 60);
+  await cacheSet(cacheKey, usageByIngredient, 60);
   return usageByIngredient;
 }
 
