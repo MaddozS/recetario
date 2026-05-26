@@ -1,16 +1,13 @@
 <!--
-Sync Impact Report — v1.0.0 → v1.1.1
+Sync Impact Report — v1.1.1 → v1.2.0
 
-Version change: 1.0.0 → 1.1.1 (MINOR → PATCH)
+Version change: 1.1.1 → 1.2.0 (PATCH → MINOR)
 Modified principles:
-  - III. Design by Constitution: added (NON-NEGOTIABLE) marker to heading
-  - I, III, V editorial fixes
+  - III. Design by Constitution: added The Theme Triad Rule, The Independence Rule
+  - Development Workflow / Client-side Patterns: added Optimistic updates pattern
+  - Data Layer: added UserPreferences.theme valid values
 Added sections: (none)
 Removed sections: (none)
-Fixed:
-  - Principle III heading now includes (NON-NEGOTIABLE) to match Governance text
-  - Typo "Commitment message" → "Commit"
-  - Reworded `.dark` contradiction in Accessibility to match Token Bridge Rule
 Templates requiring updates:
   - .specify/templates/plan-template.md: ✅ reviewed — no changes needed
   - .specify/templates/spec-template.md: ✅ reviewed — compatible
@@ -72,6 +69,12 @@ review standard for all UI work.
 - The Flat-By-Default Rule: surfaces are flat at rest. Shadows appear only as a
   response to state (hover, focus, overlay). Depth comes from background color
   shifts, not shadow stacks.
+- The Theme Triad Rule: the app supports three theme modes — "System default"
+  (follow OS), "Light", and "Dark". When set to "System", the app reactively
+  tracks the OS color scheme in real-time. The default for users with no saved
+  preference is to follow the OS.
+- The Independence Rule: theme mode (light/dark/system) and accent color are
+  independent user preferences. Changing one does not affect the other.
 - Motion uses CSS custom properties (`--ease-out`, `--duration-fast`, etc.)
   defined in `src/styles/global.css`. Animate only `transform` and `opacity`.
   Respect `prefers-reduced-motion: reduce`.
@@ -177,6 +180,8 @@ The stack is locked and MUST NOT change without a MAJOR constitution amendment.
 - **Models**: Ingredient, Recipe, RecipeIngredient, RecipePresentation,
   UserPreferences, SubscriptionPlan, Subscription, User, Session, Account,
   Verification, RateLimitEntry, CacheEntry, AuditLog.
+- **UserPreferences.theme**: accepts `"system"`, `"light"`, or `"dark"`.
+  Default (no saved preference) is `"system"` — follow OS color scheme.
 - **Relations**: Recipe `CASCADE` deletes RecipeIngredients. Ingredient
   `RESTRICT` on delete (blocked if referenced by any recipe — returns
   `{ status: "blocked", recipes: [...] }`).
@@ -238,6 +243,9 @@ The stack is locked and MUST NOT change without a MAJOR constitution amendment.
 - **Lifecycle**: Bind on both `astro:page-load` and `astro:after-swap`.
 - **Theme**: `applyTheme()` reads `html.dataset.theme` / `html.dataset.accent`.
   No `.dark` CSS overrides — semantic tokens auto-adapt.
+- **Optimistic updates**: preference changes (theme, accent) apply optimistically
+  in the UI before server confirmation. On server failure, revert to previous
+  state and show non-blocking error notification.
 - **Dialog**: Native `<dialog>` with `data-animated` for enter/exit transitions.
   `bindDialogBackdrop(dialogElement)` for click-outside-to-close
   (`src/lib/dialog.ts`).
@@ -279,4 +287,4 @@ of the Constitution.
 - MINOR: New principle or materially expanded guidance.
 - PATCH: Clarifications, wording refinements, typo fixes.
 
-**Version**: 1.1.1 | **Ratified**: 2026-05-25 | **Last Amended**: 2026-05-26
+**Version**: 1.2.0 | **Ratified**: 2026-05-25 | **Last Amended**: 2026-05-26
