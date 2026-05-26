@@ -72,3 +72,18 @@ export type Verification = Prisma.VerificationModel
  * 
  */
 export type Subscription = Prisma.SubscriptionModel
+/**
+ * Model RateLimitEntry
+ * 
+ */
+export type RateLimitEntry = Prisma.RateLimitEntryModel
+/**
+ * Model CacheEntry
+ * 
+ */
+export type CacheEntry = Prisma.CacheEntryModel
+/**
+ * Model AuditLog
+ * 
+ */
+export type AuditLog = Prisma.AuditLogModel
