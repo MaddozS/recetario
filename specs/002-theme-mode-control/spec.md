@@ -90,7 +90,7 @@ Once a user selects a theme preference (or the system default is applied), all a
 
 ### Key Entities
 
-- **UserPreferences**: Represents the user's theme and accent color settings. Already exists in the database with `theme` (currently `"light"` / `"dark"`) and `accentColor` fields. The `theme` field will be extended to support `"system"` as a third valid value to represent "follow OS preference".
+- **UserPreferences**: Represents the user's theme and accent color settings. Already exists in the database with `theme` (currently `"light"` / `"dark"`) and `accentColor` fields. The `theme` field will be extended to support `"system"` as a third valid value to represent "follow OS preference". Default for new users: `theme: "system"`, `accentColor: "coral"`.
 - **Theme**: The effective visual mode applied to the UI — either `light` or `dark`. This is the resolved output after considering whether the user selected an explicit mode or the system default.
 
 ## Success Criteria
@@ -105,7 +105,7 @@ Once a user selects a theme preference (or the system default is applied), all a
 
 ## Assumptions
 
-- Accent color selection is explicitly out of scope — this feature covers only light/dark/system theme mode
+- Accent color selection logic is explicitly out of scope — this feature only adds the theme mode control. However, the existing accent picker UI in Settings > Preferences will be completed as infrastructure (the picker already existed in the JS but was missing its HTML). The default accent color for new users changes from `indigo` to `coral` to match the landing page.
 - The landing/public pages (sign-in, sign-up, pricing) have their own separate theme system and are not affected by this feature
 - Users who have already saved a "light" or "dark" preference will keep their existing choice; only users who select "System" (or have no preference) will follow OS detection
 - The existing authentication system (Better Auth) will be reused — theme preferences are tied to the authenticated user account

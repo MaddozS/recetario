@@ -48,10 +48,16 @@ const remainingIngredients = getRemainingIngredients(
   ingredientCount,
 );
 
-const currentTheme = prefs?.theme ?? "light";
-const currentAccent = (prefs?.accentColor ?? "indigo") as AccentFamily;
+const currentTheme = prefs?.theme ?? "system";
+const currentAccent = (prefs?.accentColor ?? "coral") as AccentFamily;
 
 const activeTab = Astro.url.searchParams.get("tab") || "profile";
+
+const themeOptions = [
+  { value: "system", label: "Automático", icon: "lucide:monitor" },
+  { value: "light", label: "Claro", icon: "lucide:sun" },
+  { value: "dark", label: "Oscuro", icon: "lucide:moon" },
+] as const;
 
 type Feedback = { type: "success" | "error"; message: string };
 let feedback: Feedback | null = null;
@@ -68,7 +74,7 @@ if (Astro.request.method === "POST") {
 
   try {
     await upsertUserPreferences(user.id, {
-      theme: theme === "dark" ? "dark" : "light",
+      theme: ["system", "light", "dark"].includes(theme) ? theme : "system",
       accentColor: ACCENT_FAMILIES.includes(accentColor as AccentFamily)
         ? accentColor
         : undefined,
@@ -150,7 +156,7 @@ if (feedback) {
     {/* Profile Tab */}
     <div
       data-tab-content="profile"
-      class:list={["space-y-8", activeTab !== "profile" && "hidden"]}
+      class:list={["space-y-6", activeTab !== "profile" && "hidden"]}
     >
       {/* Profile Card */}
       <Card padding="lg">
@@ -173,7 +179,7 @@ if (feedback) {
           </div>
           <div class="min-w-0">
             <p
-              class="text-muted-foreground text-xs font-bold tracking-[0.15em] uppercase"
+              class="text-muted-foreground text-xs font-bold tracking-[0.16em] uppercase"
             >
               Sesion de Google
             </p>
@@ -205,7 +211,7 @@ if (feedback) {
           <div>
             <label
               for="new-email"
-              class="text-muted-foreground mb-1.5 block text-xs font-bold tracking-wider uppercase"
+              class="text-muted-foreground mb-2 block text-xs font-bold tracking-wider uppercase"
             >
               Nuevo email
             </label>
@@ -221,7 +227,7 @@ if (feedback) {
           <div>
             <label
               for="email-current-password"
-              class="text-muted-foreground mb-1.5 block text-xs font-bold tracking-wider uppercase"
+              class="text-muted-foreground mb-2 block text-xs font-bold tracking-wider uppercase"
             >
               Contraseña actual
             </label>
@@ -253,7 +259,7 @@ if (feedback) {
           <div>
             <label
               for="current-password"
-              class="text-muted-foreground mb-1.5 block text-xs font-bold tracking-wider uppercase"
+              class="text-muted-foreground mb-2 block text-xs font-bold tracking-wider uppercase"
             >
               Contraseña actual
             </label>
@@ -268,7 +274,7 @@ if (feedback) {
           <div>
             <label
               for="new-password"
-              class="text-muted-foreground mb-1.5 block text-xs font-bold tracking-wider uppercase"
+              class="text-muted-foreground mb-2 block text-xs font-bold tracking-wider uppercase"
             >
               Nueva contraseña
             </label>
@@ -285,7 +291,7 @@ if (feedback) {
           <div>
             <label
               for="confirm-new-password"
-              class="text-muted-foreground mb-1.5 block text-xs font-bold tracking-wider uppercase"
+              class="text-muted-foreground mb-2 block text-xs font-bold tracking-wider uppercase"
             >
               Confirmar contraseña
             </label>
@@ -306,6 +312,93 @@ if (feedback) {
       </Card>
     </div>
 
+      {/* Preferences Tab */}
+      <div
+        data-tab-content="preferences"
+        class:list={[activeTab !== "preferences" && "hidden"]}
+      >
+        <form id="preferences-form" method="POST" action="/settings?tab=preferences">
+          <input type="hidden" name="csrf" value={Astro.locals.csrfToken} />
+          <input type="hidden" id="theme-input" name="theme" value={currentTheme} />
+          <input type="hidden" id="accent-input" name="accentColor" value={currentAccent} />
+
+          <div class="space-y-6">
+          <Card padding="lg">
+            <h2 class="text-foreground text-lg font-bold">Tema</h2>
+            <p class="text-muted-foreground mt-1 text-sm">
+              Selecciona cómo quieres que se vea la aplicación.
+            </p>
+            <div class="mt-4 flex flex-wrap gap-2">
+              {themeOptions.map((opt) => {
+                const isActive = currentTheme === opt.value;
+                return (
+                  <Button
+                    variant={isActive ? "primary" : "secondary"}
+                    size="md"
+                    icon={opt.icon.replace("lucide:", "")}
+                    data-theme-option={opt.value}
+                    data-theme-active={isActive ? "1" : "0"}
+                    aria-pressed={isActive ? "true" : "false"}
+                  >
+                    {opt.label}
+                  </Button>
+                );
+              })}
+            </div>
+          </Card>
+
+          <Card padding="lg">
+            <h2 class="text-foreground text-lg font-bold">Color de acento</h2>
+            <p class="text-muted-foreground mt-1 text-sm">
+              Personaliza el color principal de la aplicación.
+            </p>
+            <div class="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {ACCENT_FAMILIES.map((family) => {
+                const isActive = currentAccent === family;
+                return (
+                  <button
+                    type="button"
+                    data-accent-option={family}
+                    data-accent-active={isActive ? "1" : "0"}
+                    aria-pressed={isActive ? "true" : "false"}
+                    class:list={[
+                      "inline-flex items-center justify-center gap-2 font-semibold transition-colors rounded-xl min-h-10 px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:outline-none",
+                      isActive
+                        ? "ring-2 ring-accent-500 ring-offset-1 bg-accent-50"
+                        : "border border-border bg-card text-muted-foreground hover:bg-background",
+                    ]}
+                  >
+                    <span
+                      class="block h-5 w-5 flex-none rounded-full border"
+                      style={`background-color: ${getAccentPreviewColor(family)}`}
+                      class:list={[
+                        isActive ? "border-accent-400" : "border-border",
+                      ]}
+                    />
+                    <span
+                      class:list={[
+                        isActive
+                          ? "text-accent-700"
+                          : "text-muted-foreground",
+                      ]}
+                    >
+                      {ACCENT_LABELS[family]}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </Card>
+
+          <div id="save-btn-wrapper" class="hidden">
+            <Button variant="primary" type="submit" icon="save">
+              Guardar cambios
+            </Button>
+          </div>
+          </div>
+        </form>
+      </div>
+
       {/* Billing Tab */}
       <div
         data-tab-content="billing"
@@ -325,25 +418,43 @@ if (feedback) {
   <script>
     import { getAccentCssVars } from "@/lib/accent-colors";
 
+    function getEffectiveTheme(pref: string): string {
+      if (pref === "system") {
+        if (typeof window.matchMedia === "function") {
+          return window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light";
+        }
+        return "light";
+      }
+      return pref;
+    }
+
     function setupSettings() {
       const themeInput = document.getElementById("theme-input");
       const accentInput = document.getElementById("accent-input");
+      const prefsForm = document.getElementById("preferences-form");
       const html = document.documentElement;
 
+      // Track saved values for optimistic revert
+      let savedTheme: string | null = null;
+      let savedAccent: string | null = null;
+
       function updateLivePreview(theme: string, accent: string) {
+        const effective = getEffectiveTheme(theme);
         html.dataset.theme = theme;
         html.dataset.accent = accent;
         html.dataset.appTheme = theme;
         html.dataset.appAccent = accent;
 
-        if (theme === "dark") {
+        if (effective === "dark") {
           html.classList.add("dark");
         } else {
           html.classList.remove("dark");
         }
 
         try {
-          html.style.cssText = getAccentCssVars(accent, theme);
+          html.style.cssText = getAccentCssVars(accent, effective);
         } catch {
           // Ignore if function not available
         }
@@ -356,16 +467,20 @@ if (feedback) {
             const value = el.dataset.themeOption;
             const isActive = value === selected;
             el.dataset.themeActive = isActive ? "1" : "0";
+            el.setAttribute("aria-pressed", isActive ? "true" : "false");
 
             const selectedClasses = [
               "bg-accent-600",
               "text-white",
               "shadow-sm",
+              "hover:bg-accent-700",
             ];
             const unselectedClasses = [
+              "border",
+              "border-border",
+              "bg-card",
               "text-muted-foreground",
-              "hover:text-secondary-foreground",
-              "hover:bg-muted",
+              "hover:bg-background",
             ];
 
             if (isActive) {
@@ -385,6 +500,7 @@ if (feedback) {
             const value = el.dataset.accentOption;
             const isActive = value === selected;
             el.dataset.accentActive = isActive ? "1" : "0";
+            el.setAttribute("aria-pressed", isActive ? "true" : "false");
 
             const swatch = el.querySelector<HTMLElement>("span:first-child");
             const label = el.querySelector<HTMLElement>("span:last-child");
@@ -448,7 +564,7 @@ if (feedback) {
               value,
               accentInput instanceof HTMLInputElement
                 ? accentInput.value
-                : "indigo",
+                : "coral",
             );
             updateThemeOptions(value);
 
@@ -472,7 +588,9 @@ if (feedback) {
             if (!value) return;
 
             const currentTheme =
-              html.dataset.appTheme || html.dataset.theme || "light";
+              themeInput instanceof HTMLInputElement
+                ? themeInput.value
+                : "system";
             updateLivePreview(currentTheme, value);
             updateAccentOptions(value);
 
@@ -486,23 +604,88 @@ if (feedback) {
 
       // Show save button only when preferences have changed
       const originalTheme =
-        themeInput instanceof HTMLInputElement ? themeInput.value : "light";
+        themeInput instanceof HTMLInputElement ? themeInput.value : "system";
       const originalAccent =
-        accentInput instanceof HTMLInputElement ? accentInput.value : "indigo";
+        accentInput instanceof HTMLInputElement ? accentInput.value : "coral";
       const saveBtnWrapper = document.getElementById("save-btn-wrapper");
 
       function checkIfChanged() {
         const currentTheme =
-          themeInput instanceof HTMLInputElement ? themeInput.value : "light";
+          themeInput instanceof HTMLInputElement ? themeInput.value : "system";
         const currentAccent =
           accentInput instanceof HTMLInputElement
             ? accentInput.value
-            : "indigo";
+            : "coral";
         const changed =
           currentTheme !== originalTheme || currentAccent !== originalAccent;
         if (saveBtnWrapper) {
           saveBtnWrapper.classList.toggle("hidden", !changed);
         }
+      }
+
+      // Optimistic save: intercept form submit, use fetch
+      if (prefsForm && !prefsForm.dataset.optimisticBound) {
+        prefsForm.dataset.optimisticBound = "1";
+
+        prefsForm.addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const formData = new FormData(prefsForm as HTMLFormElement);
+          const newTheme = formData.get("theme") as string;
+          const newAccent = formData.get("accentColor") as string;
+
+          try {
+            const params = new URLSearchParams();
+            formData.forEach((value, key) => params.append(key, value as string));
+
+            const res = await fetch("/settings?tab=preferences", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+              },
+              body: params,
+            });
+
+            if (res.ok) {
+              // Update originals to match saved values
+              savedTheme = newTheme;
+              savedAccent = newAccent;
+              if (saveBtnWrapper) {
+                saveBtnWrapper.classList.add("hidden");
+              }
+            } else {
+              // Revert on failure
+              const fallbackTheme = savedTheme || originalTheme;
+              const fallbackAccent = savedAccent || originalAccent;
+              updateLivePreview(fallbackTheme, fallbackAccent);
+              updateThemeOptions(fallbackTheme);
+              updateAccentOptions(fallbackAccent);
+              if (themeInput instanceof HTMLInputElement) {
+                themeInput.value = fallbackTheme;
+              }
+              if (accentInput instanceof HTMLInputElement) {
+                accentInput.value = fallbackAccent;
+              }
+              checkIfChanged();
+              alert("Error al guardar las preferencias. Se ha revertido el cambio.");
+            }
+          } catch {
+            // Network error — revert
+            const fallbackTheme = savedTheme || originalTheme;
+            const fallbackAccent = savedAccent || originalAccent;
+            updateLivePreview(fallbackTheme, fallbackAccent);
+            updateThemeOptions(fallbackTheme);
+            updateAccentOptions(fallbackAccent);
+            if (themeInput instanceof HTMLInputElement) {
+              themeInput.value = fallbackTheme;
+            }
+            if (accentInput instanceof HTMLInputElement) {
+              accentInput.value = fallbackAccent;
+            }
+            checkIfChanged();
+            alert("Error de conexión. Se ha revertido el cambio.");
+          }
+        });
       }
     }
 
