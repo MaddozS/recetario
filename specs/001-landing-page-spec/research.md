@@ -83,7 +83,7 @@ Code review manual de los 7 componentes landing + LandingLayout + global.css. Ve
 
 ### High impact
 
-1. **Dual images in FeaturesSection**: Each feature renders two `<img>` tags (light + dark), one hidden via `dark:hidden` / `hidden dark:block`. Both trigger network requests regardless of theme. **Fix**: Use `<picture>` with `<source media="(prefers-color-scheme: dark)">` or swap `src` via JS on theme toggle.
+1. **Dual images in FeaturesSection**: Each feature renders two `<img>` tags (light + dark), one hidden via `dark:hidden` / `hidden dark:block`. Both trigger network requests regardless of theme. **Fix**: Single `<img>` con `data-light-src`/`data-dark-src` + `MutationObserver` sobre la clase `.dark` del `<html>`. Swap vía JS respeta el toggle manual de tema (no OS-level `prefers-color-scheme`).
 
 2. **Google Fonts payload**: Outfit (7 weights) + JetBrains Mono (5 weights) = ~300-400KB. Current `media="print" onload="this.media='all'"` loads both fully. **Fix**: Subset fonts to weights actually used (Outfit 400/600/700, JetBrains Mono 400/500). Consider `font-display: optional` for non-critical weights.
 
@@ -108,7 +108,7 @@ Code review manual de los 7 componentes landing + LandingLayout + global.css. Ve
 | Decision | Rationale | Alternatives Considered |
 |---|---|---|
 | Replace all hardcoded colors with semantic tokens | Token Bridge Rule (NON-NEGOTIABLE) | N/A |
-| Refactor dual `<img>` to `<picture>` | Reduce payload ~50%, eliminate wasted requests | JS swap on theme toggle (more complex, same result) |
+| Refactor dual `<img>` to single img + JS `MutationObserver` | Reduce payload ~50%, respeta toggle manual de tema (no OS-level) | `<picture>` con `prefers-color-scheme` (roto con toggle manual), JS swap sin observer (no reacciona a cambios de tema) |
 | Darken `text-subtle-foreground` token | WCAG 2.1 AA compliance (4.5:1) | Keep current (fails compliance), add contrast toggle (overkill) |
 | Add img dimensions to feature screenshots | Eliminate CLS, improve Lighthouse score | Aspect ratio boxes (maintenance overhead) |
 | Subset Google Fonts weights | Reduce font payload ~40% | WOFF2 conversion (standard practice already in use) |

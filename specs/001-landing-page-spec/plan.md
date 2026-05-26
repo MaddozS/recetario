@@ -99,5 +99,5 @@ src/
 
 | Violación | Why Needed | Simpler Alternative Rejected |
 |-----------|------------|-------------------------------|
-| Dual `<img>` refactor | Eliminar duplicación de imágenes, reducir payload ~50% en FeaturesSection | Dejar ambas imágenes — aceptable pero subóptimo (las dos se descargan) |
+| Dual `<img>` refactor | Eliminar duplicación de imágenes, reducir payload ~50% en FeaturesSection. Approach final: single `<img>` + `MutationObserver` sobre clase `.dark` (no `<picture>` — app usa toggle manual, no OS-level) | Dejar ambas imágenes — aceptable pero subóptimo (las dos se descargan) |
 | Token replacement en 4 componentes | Cumplir Token Bridge Rule NON-NEGOTIABLE | Ignorar violación — bloquea merge según Constitution |

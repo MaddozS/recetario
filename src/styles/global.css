@@ -72,7 +72,7 @@
   --tw-fg: #0f172a;
   --tw-secondary-fg: #334155;
   --tw-muted-fg: #64748b;
-  --tw-subtle-fg: #94a3b8;
+  --tw-subtle-fg: #78716c;
   --tw-border: #e2e8f0;
   --tw-border-light: #f1f5f9;
   --tw-backdrop: rgba(15, 23, 42, 0.5);
@@ -111,7 +111,7 @@
   --tw-fg: oklch(0.856 0.005 258);
   --tw-secondary-fg: oklch(0.78 0.006 258);
   --tw-muted-fg: oklch(0.637 0.01 258);
-  --tw-subtle-fg: oklch(0.44 0.012 258);
+  --tw-subtle-fg: oklch(0.6 0.012 258);
   --tw-border: oklch(0.31 0.008 258);
   --tw-border-light: #030712;
   --tw-backdrop: rgba(0, 0, 0, 0.6);

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui";
 <section
   data-landing-hero
   data-reveal
-  class="hero-bg relative flex min-h-[85vh] items-center overflow-hidden pt-16 sm:min-h-screen"
+  class="hero-bg relative grid min-h-[calc(100dvh-1px)] overflow-hidden sm:min-h-dvh"
 >
   <div
     aria-hidden="true"
@@ -13,9 +13,9 @@ import { Button } from "@/components/ui";
   >
   </div>
   <div
-    class="relative z-10 mx-auto w-full max-w-7xl px-6 py-12 sm:py-16 md:py-20 lg:py-28"
+    class="relative z-10 mx-auto w-full max-w-7xl place-self-center px-6 py-16 sm:py-20 md:py-24 lg:py-28 xl:py-32 2xl:py-36"
   >
-    <div class="grid items-center gap-12 lg:grid-cols-[1fr_auto] lg:gap-16">
+    <div class="grid items-center gap-12 lg:grid-cols-[1fr_auto] lg:gap-16 xl:gap-20 2xl:gap-24">
       <div class="text-center lg:text-left" data-reveal-parent>
         <h1
           class="landing-heading text-foreground reveal-item leading-[1.05] font-black tracking-[-0.03em] sm:leading-[0.95]"
@@ -125,7 +125,7 @@ import { Button } from "@/components/ui";
           style="transition-delay: 150ms"
         >
           <div
-            class="shadow-accent-tint bg-accent-500/35 absolute -inset-10 rounded-[3rem] blur-3xl will-change-transform"
+            class="shadow-accent-tint bg-accent-500/35 absolute -inset-10 rounded-[3rem] blur-3xl"
           >
           </div>
           <img
@@ -166,10 +166,16 @@ import { Button } from "@/components/ui";
   function animateCountUp(el: HTMLElement) {
     const rawValue = el.dataset.countUp || "0";
     const target = parseFloat(rawValue);
-    const duration = 800;
-    const start = performance.now();
     const decimalPlaces = (rawValue.split(".")[1] || "").length;
     const prefix = el.textContent.startsWith("+$") ? "+$" : "$";
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      el.textContent = prefix + target.toFixed(decimalPlaces);
+      return;
+    }
+
+    const duration = 800;
+    const start = performance.now();
 
     function update(now: number) {
       const elapsed = now - start;

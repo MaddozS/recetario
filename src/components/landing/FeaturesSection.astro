@@ -29,7 +29,7 @@ const features = [
 ];
 ---
 
-<section id="features" class="bg-background py-24 md:py-32" style="content-visibility: auto; contain-intrinsic-size: 800px">
+<section id="features" class="bg-background py-24 scroll-mt-16 md:py-32" style="content-visibility: auto; contain-intrinsic-size: 800px">
   <div class="mx-auto max-w-7xl px-6">
     <div class="mx-auto max-w-2xl text-center" data-reveal>
       <h2
@@ -74,17 +74,14 @@ const features = [
                   >
                     <img
                       src={f.imageLight}
+                      data-light-src={f.imageLight}
+                      data-dark-src={f.imageDark}
                       alt={`Pantalla de la funcionalidad de ${f.title} en KitchCalc`}
-                      class="dark:hidden shadow-accent-tint border-border/50 h-auto w-full rounded-2xl border transition-shadow duration-200 group-hover/lightbox:shadow-lg group-hover/lightbox:shadow-accent-300/20"
+                      class="shadow-accent-tint border-border/50 h-auto w-full rounded-2xl border transition-shadow duration-200 group-hover/lightbox:shadow-lg group-hover/lightbox:shadow-accent-300/20 theme-aware-img"
                       loading="lazy"
                       decoding="async"
-                    />
-                    <img
-                      src={f.imageDark}
-                      alt={`Pantalla de la funcionalidad de ${f.title} en KitchCalc - modo oscuro`}
-                      class="hidden dark:block shadow-accent-tint border-border/50 h-auto w-full rounded-2xl border transition-shadow duration-200 group-hover/lightbox:shadow-lg group-hover/lightbox:shadow-accent-300/20"
-                      loading="lazy"
-                      decoding="async"
+                      width="800"
+                      height="600"
                     />
                     <span class="text-muted-foreground/60 mt-1.5 flex items-center gap-1.5 text-xs transition-opacity group-hover/lightbox:opacity-100 md:opacity-0">
                       <Icon name="lucide:zoom-in" size={14} />
@@ -103,7 +100,7 @@ const features = [
 
 <dialog
   data-lightbox
-  class="backdrop:bg-black/70 border-none bg-transparent p-0 open:grid open:place-items-center open:w-screen open:h-dvh"
+  class="backdrop:bg-backdrop/50 border-none bg-transparent p-0 open:grid open:place-items-center open:w-screen open:h-dvh"
 >
   <div class="relative">
     <img
@@ -159,6 +156,17 @@ const features = [
     from { opacity: 1; }
     to { opacity: 0; }
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-lightbox]::backdrop,
+    [data-lightbox].closing::backdrop {
+      animation: none !important;
+    }
+    [data-lightbox][open] > div:first-child,
+    [data-lightbox].closing > div:first-child {
+      animation: none !important;
+    }
+  }
 </style>
 
 <script>
@@ -196,11 +204,8 @@ const features = [
         const src = isDark
           ? trigger.getAttribute("data-dark-src")
           : trigger.getAttribute("data-light-src");
-        const lightAlt =
-          trigger.querySelector("img")?.getAttribute("alt") ?? "";
-        const darkAlt =
-          trigger.querySelectorAll("img")[1]?.getAttribute("alt") ?? "";
-        const alt = isDark ? darkAlt : lightAlt;
+        const imgEl = trigger.querySelector("img");
+        const alt = imgEl?.getAttribute("alt") ?? "";
         if (src) openLightbox(src, alt);
       });
     });
@@ -212,7 +217,32 @@ const features = [
     });
   }
 
+  function setupFeatureThemeImages() {
+    const imgs = document.querySelectorAll<HTMLImageElement>(".theme-aware-img");
+    if (imgs.length === 0) return;
+
+    function updateImages() {
+      const isDark = document.documentElement.classList.contains("dark");
+      imgs.forEach((img) => {
+        const key = isDark ? "darkSrc" : "lightSrc";
+        const src = img.dataset[key];
+        if (src && img.src !== src) img.src = src;
+      });
+    }
+
+    updateImages();
+
+    const observer = new MutationObserver(() => updateImages());
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+  }
+
   document.addEventListener("astro:page-load", setupLightbox);
   document.addEventListener("astro:after-swap", setupLightbox);
+  document.addEventListener("astro:page-load", setupFeatureThemeImages);
+  document.addEventListener("astro:after-swap", setupFeatureThemeImages);
   setupLightbox();
+  setupFeatureThemeImages();
 </script>

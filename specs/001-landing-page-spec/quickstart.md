@@ -40,14 +40,17 @@ Replace dual `<img>` pattern:
 <img src={lightSrc} class="dark:hidden" ... />
 <img src={darkSrc} class="hidden dark:block" ... />
 
-<!-- AFTER: single picture element -->
-<picture>
-  <source srcset={darkSrc} media="(prefers-color-scheme: dark)" />
-  <img src={lightSrc} ... />
-</picture>
+<!-- AFTER: single img with data attrs + MutationObserver -->
+<img
+  src={lightSrc}
+  data-light-src={lightSrc}
+  data-dark-src={darkSrc}
+  class="... theme-aware-img"   ← add .theme-aware-img class
+  width="800" height="600"
+/>
 ```
 
-Also update lightbox JS to use `matchMedia("(prefers-color-scheme: dark)")` instead of checking `document.documentElement.classList`.
+Also add JS (`setupFeatureThemeImages()`) que usa `MutationObserver` sobre `document.documentElement` para detectar cambios en la clase `.dark` y actualizar `img.src`. NO usar `<picture>` con `prefers-color-scheme` porque el app usa toggle manual, no OS-level. Actualizar lightbox JS para usar `document.documentElement.classList.contains("dark")` en vez de `matchMedia("prefers-color-scheme")`.
 
 ### 4. Add img dimensions — FeaturesSection
 
