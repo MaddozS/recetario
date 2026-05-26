@@ -104,7 +104,7 @@ Un visitante convencido por el contenido de la landing procede a registrarse a t
 
 ### Edge Cases
 
-- ¿Qué sucede cuando no hay conexión a internet? La página debe cargar completamente desde el servidor (SSR) y ser funcional sin JavaScript para el contenido estático.
+- ¿Qué sucede cuando no hay conexión a internet? La página debe cargar completamente desde el servidor (SSR). Sin JavaScript: todo el contenido textual y layout deben renderizarse (HTML + CSS completo), las imágenes de features deben cargarse con `<noscript>` fallback o etiquetas `<img>` directas. No funcionan sin JS: lightbox, pricing toggle, scroll reveal, scroll spy, count-up animation, mobile drawer — estos requieren JavaScript.
 - ¿Cómo se comporta el toggle mensual/anual cuando los precios de Stripe no están disponibles? Los precios deben mostrar valores por defecto o indicar que no están disponibles temporalmente.
 - ¿Qué ocurre cuando un usuario ya autenticado llega a la landing? El navbar debe mostrar "Ir a la app" en lugar de "Comenzar gratis".
 - ¿Cómo se manejan las imágenes en modo oscuro vs claro? Cada captura de pantalla debe tener su versión para cada tema.
@@ -128,7 +128,7 @@ Un visitante convencido por el contenido de la landing procede a registrarse a t
 - **FR-010**: Sistema DEBE incluir un footer con enlaces a Funciones, Cómo funciona, Precios, Iniciar sesión, Registrarse, Privacidad y Términos.
 - **FR-011**: Sistema DEBE adaptarse a tres tamaños de pantalla: móvil, tablet y desktop con layout responsivo.
 - **FR-012**: Sistema DEBE soportar modo oscuro y modo claro para todas las secciones, incluyendo imágenes temáticas.
-- **FR-013**: Sistema DEBE animar la entrada de elementos al hacer scroll con efecto de revelación progresiva.
+- **FR-013**: Sistema DEBE animar la entrada de elementos al hacer scroll con efecto de revelación progresiva: transición de opacidad (0 → 1) y translación vertical (30px → 0), duración 600ms, easing `cubic-bezier(0.16, 1, 0.3, 1)`, stagger de 150ms entre elementos, usando solo `transform` y `opacity`.
 - **FR-014**: Sistema DEBE incluir meta tags SEO (título, descripción, Open Graph) en español orientados a emprendedores gastronómicos.
 - **FR-015**: Sistema DEBE redirigir a usuarios autenticados a la aplicación en lugar de mostrar CTAs de registro.
 - **FR-016**: Sistema DEBE cargar precios dinámicamente desde Stripe, con fallback a valores por defecto si la sincronización falla.
