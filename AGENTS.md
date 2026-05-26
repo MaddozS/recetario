@@ -109,6 +109,6 @@ pnpm dev
 
 <!-- SPECKIT START -->
 
-**Active Plan**: `specs/001-landing-page-spec/plan.md` — Landing Page audit & improvement plan.
+**Active Plan**: `specs/002-theme-mode-control/plan.md` — Theme Mode Control (system-aware light/dark toggle).
 
 <!-- SPECKIT END -->

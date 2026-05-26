@@ -88,7 +88,7 @@ export type DeleteRecipeResult =
 
 export type UserPreferences = {
   userId: string;
-  theme: "light" | "dark";
+  theme: "system" | "light" | "dark";
   accentColor:
     | "indigo"
     | "violet"

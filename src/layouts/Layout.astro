@@ -21,8 +21,8 @@ const userId = Astro.locals.user?.id;
 
 const userPrefs = userId ? await getUserPreferences(userId) : null;
 const recipeHref = '/recipes';
-const theme = userPrefs?.theme ?? 'light';
-const accent = (userPrefs?.accentColor ?? 'indigo') as AccentFamily;
+const theme = userPrefs?.theme ?? 'system';
+const accent = (userPrefs?.accentColor ?? 'coral') as AccentFamily;
 const accentCssVars = getAccentCssVars(accent, theme);
 const sidebarCollapsed = Astro.cookies.get("kitchcalc-sidebar-collapsed")?.value === "1";
 ---
@@ -30,6 +30,24 @@ const sidebarCollapsed = Astro.cookies.get("kitchcalc-sidebar-collapsed")?.value
 <!doctype html>
 <html lang="en" class:list={[theme === 'dark' ? 'dark' : '']} data-theme={theme} data-accent={accent} data-app-accent={accent} data-app-theme={theme} style={accentCssVars}>
 	<head>
+		<script is:inline>
+      (function() {
+        const html = document.documentElement;
+        const stored = html.dataset.appTheme || 'system';
+        if (stored === 'system') {
+          const mq = window.matchMedia;
+          if (mq) {
+            const isDark = mq('(prefers-color-scheme: dark)').matches;
+            if (isDark) {
+              html.classList.add('dark');
+            } else {
+              html.classList.remove('dark');
+            }
+            html.dataset.theme = isDark ? 'dark' : 'light';
+          }
+        }
+      })();
+    </script>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/svg+xml" href="/kitchcalc_logo.svg" />
@@ -195,23 +213,43 @@ const sidebarCollapsed = Astro.cookies.get("kitchcalc-sidebar-collapsed")?.value
 <script>
   import { getAccentCssVars } from "@/lib/accent-colors";
 
+  function getEffectiveTheme(pref: string): string {
+    if (pref === 'system') {
+      if (typeof window.matchMedia === 'function') {
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+      return 'light';
+    }
+    return pref;
+  }
+
   function applyTheme() {
     const html = document.documentElement;
-    const theme = html.dataset.appTheme || 'light';
-    const accent = html.dataset.appAccent || 'indigo';
+    const stored = html.dataset.appTheme || 'system';
+    const accent = html.dataset.appAccent || 'coral';
+    const effective = getEffectiveTheme(stored);
 
-    if (theme === 'dark') {
+    if (effective === 'dark') {
       html.classList.add('dark');
     } else {
       html.classList.remove('dark');
     }
 
     if (typeof getAccentCssVars === 'function') {
-      html.style.cssText = getAccentCssVars(accent as string, theme);
+      html.style.cssText = getAccentCssVars(accent as string, effective);
     }
   }
 
+  function setupOsListener() {
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    mq.addEventListener('change', () => {
+      const stored = document.documentElement.dataset.appTheme || 'system';
+      if (stored === 'system') applyTheme();
+    });
+  }
+
   applyTheme();
+  setupOsListener();
 
   document.addEventListener('astro:after-swap', applyTheme);
 
