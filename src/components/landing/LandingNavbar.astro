@@ -44,17 +44,17 @@ const { isAuthenticated = false } = Astro.props;
 
     <div class="hidden items-center gap-6 md:flex">
       <a
-        href="#features"
+        href="/#features"
         class="text-muted-foreground hover:text-foreground focus-visible:ring-accent-500 text-sm font-medium transition-colors focus-visible:ring-2 rounded"
         >Funciones</a
       >
       <a
-        href="#how-it-works"
+        href="/#how-it-works"
         class="text-muted-foreground hover:text-foreground focus-visible:ring-accent-500 text-sm font-medium transition-colors focus-visible:ring-2 rounded"
         >Cómo funciona</a
       >
       <a
-        href="#pricing"
+        href="/#pricing"
         class="text-muted-foreground hover:text-foreground focus-visible:ring-accent-500 text-sm font-medium transition-colors focus-visible:ring-2 rounded"
         >Precios</a
       >
@@ -114,17 +114,17 @@ const { isAuthenticated = false } = Astro.props;
     </div>
     <nav class="mt-8 space-y-5">
       <a
-        href="#features"
+        href="/#features"
         class="text-foreground hover:text-accent-600 focus-visible:ring-accent-500 block text-lg font-medium transition-colors focus-visible:ring-2 rounded"
         >Funciones</a
       >
       <a
-        href="#how-it-works"
+        href="/#how-it-works"
         class="text-foreground hover:text-accent-600 focus-visible:ring-accent-500 block text-lg font-medium transition-colors focus-visible:ring-2 rounded"
         >Cómo funciona</a
       >
       <a
-        href="#pricing"
+        href="/#pricing"
         class="text-foreground hover:text-accent-600 focus-visible:ring-accent-500 block text-lg font-medium transition-colors focus-visible:ring-2 rounded"
         >Precios</a
       >
@@ -232,7 +232,7 @@ const { isAuthenticated = false } = Astro.props;
       function (entries) {
         entries.forEach(function (entry) {
           const links = document.querySelectorAll(
-            'a[href="#' + entry.target.id + '"]',
+            'a[href$="#' + entry.target.id + '"]',
           );
           links.forEach(function (link) {
             if (entry.isIntersecting) {
