@@ -106,3 +106,9 @@ rm -rf node_modules pnpm-lock.yaml
 pnpm install
 pnpm dev
 ```
+
+<!-- SPECKIT START -->
+
+**Active Plan**: `specs/001-landing-page-spec/plan.md` — Landing Page audit & improvement plan.
+
+<!-- SPECKIT END -->

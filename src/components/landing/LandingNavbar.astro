@@ -163,6 +163,10 @@ const { isAuthenticated = false } = Astro.props;
   #landing-mobile-menu[data-open="1"] #landing-mobile-panel {
     transform: translateX(0);
   }
+  a[data-spy-active] {
+    color: var(--aw-accent-600);
+  }
+
   @media (prefers-reduced-motion: reduce) {
     #landing-mobile-backdrop,
     #landing-mobile-panel {
@@ -232,9 +236,9 @@ const { isAuthenticated = false } = Astro.props;
           );
           links.forEach(function (link) {
             if (entry.isIntersecting) {
-              link.classList.add("text-accent-600");
+              link.setAttribute("data-spy-active", "1");
             } else {
-              link.classList.remove("text-accent-600");
+              link.removeAttribute("data-spy-active");
             }
           });
         });
