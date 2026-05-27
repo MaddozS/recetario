@@ -46,6 +46,9 @@ export const auth = betterAuth({
       disableSignUp: true,
     },
   },
+  onAPIError: {
+    errorURL: "/sign-in",
+  },
   session: {
     cookieCache: {
       enabled: true,

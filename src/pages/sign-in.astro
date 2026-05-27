@@ -4,6 +4,28 @@ import { Button } from "@/components/ui";
 import LandingLayout from "@/layouts/LandingLayout.astro";
 
 if (Astro.locals.session) return Astro.redirect("/recipes");
+
+const AUTH_ERROR_MESSAGES: Record<string, string> = {
+  signup_disabled:
+    "No se pudo iniciar sesi\u00f3n con Google. La cuenta no est\u00e1 vinculada.",
+  account_not_linked:
+    "No se pudo iniciar sesi\u00f3n con Google. La cuenta no est\u00e1 vinculada.",
+  oauth_provider_not_found: "Proveedor de autenticaci\u00f3n no configurado.",
+  state_mismatch: "Error de seguridad. Intenta de nuevo.",
+  state_not_found: "Error de seguridad. Intenta de nuevo.",
+  please_restart_the_process:
+    "El proceso de autenticaci\u00f3n expir\u00f3. Intenta de nuevo.",
+  invalid_callback_request: "Error de autenticaci\u00f3n. Intenta de nuevo.",
+  internal_server_error: "Error interno. Intenta de nuevo m\u00e1s tarde.",
+  unable_to_create_session: "Error al crear sesi\u00f3n. Intenta de nuevo.",
+  email_not_found: "Error de autenticaci\u00f3n. Intenta de nuevo.",
+};
+
+const errorCode = Astro.url.searchParams.get("error");
+const errorMessage = errorCode
+  ? (AUTH_ERROR_MESSAGES[errorCode] ??
+    "Error de autenticaci\u00f3n. Intenta de nuevo.")
+  : "";
 ---
 
 <LandingLayout>
@@ -51,8 +73,12 @@ if (Astro.locals.session) return Astro.redirect("/recipes");
       <div
         id="sign-in-error"
         role="alert"
-        class="border-danger-border bg-danger-bg text-danger mb-4 hidden rounded-xl border px-4 py-3 text-sm font-semibold"
+        class:list={{
+          hidden: !errorMessage,
+          "border-danger-border bg-danger-bg text-danger mb-4 rounded-xl border px-4 py-3 text-sm font-semibold": true,
+        }}
       >
+        {errorMessage}
       </div>
       <div
         id="sign-in-verify-error"
