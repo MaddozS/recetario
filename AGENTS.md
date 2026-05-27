@@ -111,7 +111,7 @@ pnpm dev
 
 <!-- SPECKIT START -->
 
-**Active Plan**: `specs/004-sign-in-page/plan.md` — Sign-in Page (generic security errors, Google disableSignUp, redirect param support, responsive audit).
+**Active Plan**: `specs/005-sign-up-page/plan.md` — User Registration Page (firstName/lastName fields, email+password sign-up, Google sign-up with profile mapping, Prisma migration for new User columns).
 
 <!-- SPECKIT END -->
 
