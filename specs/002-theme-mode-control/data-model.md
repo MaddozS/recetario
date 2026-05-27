@@ -6,8 +6,8 @@
 
 **Theme field** — extended valid values:
 
-| Field | Type | Current Values | New Values | Default |
-|-------|------|----------------|------------|---------|
+| Field   | Type     | Current Values      | New Values                      | Default                                          |
+| ------- | -------- | ------------------- | ------------------------------- | ------------------------------------------------ |
 | `theme` | `String` | `"light"`, `"dark"` | `"system"`, `"light"`, `"dark"` | `"system"` (inferred — no saved row = follow OS) |
 
 **No schema migration needed** — `theme` is a free-text `String` in Prisma.

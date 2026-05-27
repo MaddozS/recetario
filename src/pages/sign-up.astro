@@ -232,7 +232,10 @@ import LandingLayout from "@/layouts/LandingLayout.astro";
           <span data-google-label>Continuar con Google</span>
         </button>
 
-        <p class="text-muted-foreground mt-6 text-center text-sm" data-sign-up-footer>
+        <p
+          class="text-muted-foreground mt-6 text-center text-sm"
+          data-sign-up-footer
+        >
           ¿Ya tienes cuenta?
           <Button variant="secondary" href="/sign-in" size="sm" class="ml-1"
             >Inicia sesión</Button
@@ -241,7 +244,10 @@ import LandingLayout from "@/layouts/LandingLayout.astro";
       </div>
 
       <!-- Verification sent state -->
-      <div id="sign-up-verified" class="hidden flex flex-col items-center text-center">
+      <div
+        id="sign-up-verified"
+        class="flex hidden flex-col items-center text-center"
+      >
         <div
           class="bg-success-bg mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl"
         >
@@ -253,16 +259,24 @@ import LandingLayout from "@/layouts/LandingLayout.astro";
         </p>
         <p class="text-foreground mt-1 font-semibold" id="verified-email"></p>
         <p class="text-muted-foreground mt-3 text-xs">
-          Haz clic en el enlace del correo para activar tu cuenta. Si no lo ves, revisa tu carpeta de spam.
+          Haz clic en el enlace del correo para activar tu cuenta. Si no lo ves,
+          revisa tu carpeta de spam.
         </p>
         <div class="mt-6 w-full space-y-3">
-          <Button id="resend-verification" variant="secondary" class="w-full" type="button">
+          <Button
+            id="resend-verification"
+            variant="secondary"
+            class="w-full"
+            type="button"
+          >
             Reenviar correo
           </Button>
           <span id="resend-status" class="hidden text-xs"></span>
         </div>
         <div class="mt-4">
-          <Button variant="secondary" href="/sign-in" size="sm">Ir al inicio de sesión</Button>
+          <Button variant="secondary" href="/sign-in" size="sm"
+            >Ir al inicio de sesión</Button
+          >
         </div>
       </div>
     </div>
@@ -343,7 +357,10 @@ import LandingLayout from "@/layouts/LandingLayout.astro";
           showVerificationView(email);
         } catch (err: unknown) {
           overlay.remove();
-          showError((err as { message?: string })?.message || "Error al crear la cuenta.");
+          showError(
+            (err as { message?: string })?.message ||
+              "Error al crear la cuenta.",
+          );
           submitBtn.disabled = false;
           submitBtn.textContent = "Crear cuenta";
           if (googleBtn) (googleBtn as HTMLButtonElement).disabled = false;
@@ -380,14 +397,23 @@ import LandingLayout from "@/layouts/LandingLayout.astro";
           btn.classList.remove("opacity-60", "pointer-events-none");
           if (label) label.textContent = "Continuar con Google";
           if (submitBtn) submitBtn.disabled = false;
-          showError((err as { message?: string })?.message || "Error al iniciar sesión con Google.");
+          showError(
+            (err as { message?: string })?.message ||
+              "Error al iniciar sesión con Google.",
+          );
         }
       });
     }
   }
 
-  document.addEventListener("astro:page-load", () => { setupSignUp(); checkPendingVerification(); });
-  document.addEventListener("astro:after-swap", () => { setupSignUp(); checkPendingVerification(); });
+  document.addEventListener("astro:page-load", () => {
+    setupSignUp();
+    checkPendingVerification();
+  });
+  document.addEventListener("astro:after-swap", () => {
+    setupSignUp();
+    checkPendingVerification();
+  });
   setupSignUp();
   checkPendingVerification();
 

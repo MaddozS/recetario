@@ -145,7 +145,11 @@ const currentPage = "production";
               <ProductionFinancialSummary summary={results.summary} />
               <ProductionRecipeBreakdown recipes={results.summary.perRecipe} />
               <div class="no-print flex justify-center">
-                <Button variant="secondary" icon="printer" onclick="window.print()">
+                <Button
+                  variant="secondary"
+                  icon="printer"
+                  onclick="window.print()"
+                >
                   Imprimir hoja de producción
                 </Button>
               </div>
@@ -205,7 +209,9 @@ const currentPage = "production";
     return "text-danger";
   }
 
-  function renderIngredientsTable(ingredients: ConsolidatedIngredient[]): string {
+  function renderIngredientsTable(
+    ingredients: ConsolidatedIngredient[],
+  ): string {
     if (ingredients.length === 0) return "";
     const rows = ingredients
       .map(

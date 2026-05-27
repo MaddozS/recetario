@@ -3,10 +3,7 @@ import { auth } from "@/lib/auth";
 import { getUserSubscription, seedSubscriptionPlans } from "@/lib/db/billing";
 import { resolveSubscription } from "@/lib/subscription";
 import { cacheGet, cacheSet } from "@/lib/cache";
-import {
-  generateToken,
-  getCsrfCookie,
-} from "@/lib/csrf";
+import { generateToken, getCsrfCookie } from "@/lib/csrf";
 import { logAuditEvent } from "@/lib/db/audit";
 
 const globals = globalThis as typeof globalThis & {
@@ -33,7 +30,11 @@ function clientIp(request: Request): string {
   );
 }
 
-async function detectSignInEvent(path: string, userId: string, request: Request) {
+async function detectSignInEvent(
+  path: string,
+  userId: string,
+  request: Request,
+) {
   if (SIGN_IN_PATHS.some((p) => path.includes(p))) {
     await logAuditEvent({
       userId,
@@ -58,7 +59,8 @@ export const onRequest = defineMiddleware(async (context, next) => {
       email: session.user.email ?? null,
       name: userName,
       image: session.user.image ?? null,
-      role: (session.user as Record<string, unknown>).role as string ?? "USER",
+      role:
+        ((session.user as Record<string, unknown>).role as string) ?? "USER",
     };
 
     context.locals.user = appUser;
@@ -73,7 +75,8 @@ export const onRequest = defineMiddleware(async (context, next) => {
     }
 
     const subCacheKey = `sub:${session.user.id}`;
-    let sub = await cacheGet<ReturnType<typeof resolveSubscription>>(subCacheKey);
+    let sub =
+      await cacheGet<ReturnType<typeof resolveSubscription>>(subCacheKey);
     if (!sub) {
       try {
         const dbSub = await getUserSubscription(session.user.id);

@@ -8,7 +8,7 @@
 
 **Input**: User description: "KitchCalc Landing Page - La landing page de KitchCalc se enfoca en mostrar las capacidades del software de manera resumida pero atractiva, mostrando lo que los usuarios pueden lograr con la app. Pese a ser una app relacionada con la cocina el enfoque no es anotar solo recetas, si no mostrarle a los emprendedores y cocineros que venden sus productos como el software el ayuda a calcular de manera eficiente los costos y sus ganacias."
 
-## User Scenarios & Testing *(mandatory)*
+## User Scenarios & Testing _(mandatory)_
 
 ### User Story 1 - Visitante descubre el software (Priority: P1)
 
@@ -112,7 +112,7 @@ Un visitante convencido por el contenido de la landing procede a registrarse a t
 - ¿Cómo se comportan las animaciones de revelación en navegadores con prefers-reduced-motion? Deben desactivarse o simplificarse.
 - ¿Qué sucede en pantallas muy pequeñas (< 360px)? El diseño debe ajustarse sin romperse, con scroll horizontal en la sección de precios si es necesario.
 
-## Requirements *(mandatory)*
+## Requirements _(mandatory)_
 
 ### Functional Requirements
 
@@ -134,12 +134,12 @@ Un visitante convencido por el contenido de la landing procede a registrarse a t
 - **FR-016**: Sistema DEBE cargar precios dinámicamente desde Stripe, con fallback a valores por defecto si la sincronización falla.
 - **FR-017**: Sistema DEBE incluir navegación móvil con menú desplegable (drawer) accesible por teclado y con soporte para tecla Escape.
 
-### Key Entities *(include if feature involves data)*
+### Key Entities _(include if feature involves data)_
 
 - **PricingPlan**: Representa un plan de suscripción con nombre, precio (mensual/anual), lista de características por disponibilidad, y badge promocional. Los datos se componen desde Stripe (precios) y configuración local (características).
 - **FeatureFlag**: Indica si una funcionalidad está disponible (✅), no disponible (❌), o próximamente (🔜) para cada plan. Se define en configuración local.
 
-## Success Criteria *(mandatory)*
+## Success Criteria _(mandatory)_
 
 ### Measurable Outcomes
 

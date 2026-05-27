@@ -20,8 +20,8 @@
 
 **Purpose**: Confirm environment and base page readiness
 
-- [ ] T001 Verify `pnpm dev` runs at `localhost:4321` and `/sign-in` renders the existing page
-- [ ] T002 [P] Read and confirm existing `src/lib/auth.ts` Google provider config (lines 42-47) and `src/lib/sign-in.ts` (lines 1-25) for current state
+- [x] T001 Verify `pnpm dev` runs at `localhost:4321` and `/sign-in` renders the existing page
+- [x] T002 [P] Read and confirm existing `src/lib/auth.ts` Google provider config (lines 42-47) and `src/lib/sign-in.ts` (lines 1-25) for current state
 
 ---
 
@@ -31,8 +31,8 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T003 Add `disableSignUp: true` to `socialProviders.google` in `src/lib/auth.ts:42-47`
-- [ ] T004 [P] Update `signInWithGoogle` in `src/lib/sign-in.ts:3-8` to accept optional `redirectUrl` param and pass it as `callbackURL`
+- [x] T003 Add `disableSignUp: true` to `socialProviders.google` in `src/lib/auth.ts:42-47`
+- [x] T004 [P] Update `signInWithGoogle` in `src/lib/sign-in.ts:3-8` to accept optional `redirectUrl` param and pass it as `callbackURL`
 
 **Checkpoint**: Auth backend configured — user story implementation can now begin
 
@@ -46,10 +46,10 @@
 
 ### Implementation for User Story 1
 
-- [ ] T005 [P] [US1] Add `getSafeRedirect()` helper function in `<script>` section of `src/pages/sign-in.astro` that reads `?redirect=` from `URLSearchParams`, validates it starts with `/` and contains no `//` or `:`, returns validated path or `/recipes` as fallback
-- [ ] T006 [US1] Update email form submit handler in `src/pages/sign-in.astro:238-279` to use `redirectTarget` from `getSafeRedirect()` instead of hardcoded `"/recipes"` in `window.location.href`
-- [ ] T007 [US1] Verify generic error message: ensure catch block at line 276-278 produces `"Credenciales inválidas."` for all non-EMAIL_NOT_VERIFIED errors, with no differentiation between wrong password and non-existent account
-- [ ] T008 [US1] Verify email not verified flow: ensure `EMAIL_NOT_VERIFIED` code handler at lines 249-275 still shows the specific message with resend button
+- [x] T005 [P] [US1] Add `getSafeRedirect()` helper function in `<script>` section of `src/pages/sign-in.astro` that reads `?redirect=` from `URLSearchParams`, validates it starts with `/` and contains no `//` or `:`, returns validated path or `/recipes` as fallback
+- [x] T006 [US1] Update email form submit handler in `src/pages/sign-in.astro:238-279` to use `redirectTarget` from `getSafeRedirect()` instead of hardcoded `"/recipes"` in `window.location.href`
+- [x] T007 [US1] Verify generic error message: ensure catch block at line 276-278 produces `"Credenciales inválidas."` for all non-EMAIL_NOT_VERIFIED errors, with no differentiation between wrong password and non-existent account
+- [x] T008 [US1] Verify email not verified flow: ensure `EMAIL_NOT_VERIFIED` code handler at lines 249-275 still shows the specific message with resend button
 
 **Checkpoint**: Email/password sign-in with redirect param and generic security errors fully functional
 
@@ -63,16 +63,7 @@
 
 ### Implementation for User Story 4
 
-- [ ] T014 [US4] Verify middleware session guard: test that navigating to `/sign-in` while authenticated redirects to `/recipes`. If middleware does not handle this, add frontmatter guard to `src/pages/sign-in.astro:1-5`:
-```astro
----
-import { Icon } from "astro-icon/components";
-import { Button } from "@/components/ui";
-import LandingLayout from "@/layouts/LandingLayout.astro";
-
-if (Astro.locals.session) return Astro.redirect("/recipes");
----
-```
+- [x] T014 [US4] Verify middleware session guard: test that navigating to `/sign-in` while authenticated redirects to `/recipes`. If middleware does not handle this, add frontmatter guard to `src/pages/sign-in.astro:1-5`
 
 **Checkpoint**: Session guard active — authenticated users cannot see sign-in page
 
@@ -86,9 +77,9 @@ if (Astro.locals.session) return Astro.redirect("/recipes");
 
 ### Implementation for User Story 2
 
-- [ ] T009 [US2] Update Google button click handler in `src/pages/sign-in.astro:287-314` to call `signInWithGoogle(redirectTarget)` passing the validated redirect target
-- [ ] T010 [US2] Handle `disableSignUp` error: in Google catch block at line 306-313, ensure error message is generic (e.g., `"No se pudo iniciar sesión con Google."`) — replace permissive message at line 312 if it reveals account linking state
-- [ ] T011 [US2] Verify Google sign-in overlay/spinner still shows during OAuth redirect (lines 295-302) and buttons disable properly
+- [x] T009 [US2] Update Google button click handler in `src/pages/sign-in.astro:287-314` to call `signInWithGoogle(redirectTarget)` passing the validated redirect target
+- [x] T010 [US2] Handle `disableSignUp` error: in Google catch block at line 306-313, ensure error message is generic (`"No se pudo iniciar sesión con Google."`) — no longer reveals account linking state
+- [x] T011 [US2] Verify Google sign-in overlay/spinner still shows during OAuth redirect (lines 295-302) and buttons disable properly
 - [ ] T012 [US2] Manually test: Google sign-in WITH linked account → session created, redirected correctly
 - [ ] T013 [US2] Manually test: Google sign-in WITHOUT linked account → error displayed, verify no new User row in DB via `npx prisma studio`
 
@@ -104,8 +95,8 @@ if (Astro.locals.session) return Astro.redirect("/recipes");
 
 ### Implementation for User Story 3
 
-- [ ] T015 [US3] Verify "Regístrate" link at `src/pages/sign-in.astro:182` navigates to `/sign-up`
-- [ ] T016 [US3] Verify "¿Olvidaste tu contraseña?" link at `src/pages/sign-in.astro:143` navigates to `/forgot-password`
+- [x] T015 [US3] Verify "Regístrate" link at `src/pages/sign-in.astro:182` navigates to `/sign-up`
+- [x] T016 [US3] Verify "¿Olvidaste tu contraseña?" link at `src/pages/sign-in.astro:143` navigates to `/forgot-password`
 
 **Checkpoint**: Navigation links confirmed working
 
@@ -115,14 +106,14 @@ if (Astro.locals.session) return Astro.redirect("/recipes");
 
 **Purpose**: Fix findings from [impeccable-audit.md](./impeccable-audit.md) (18/20 score)
 
-- [ ] T017 Fix P1 responsive issue: change `min-h-[80vh] pt-20` to `min-h-dvh py-20` on container div at `src/pages/sign-in.astro:30` to prevent content overflow on landscape mobile viewports
-- [ ] T018 Fix P2 responsive issue: add responsive padding `p-6 sm:p-10 pt-8 sm:pt-12` on card div at `src/pages/sign-in.astro:32` for narrow screens
-- [ ] T019 Fix P2 a11y issue: add `role="alert"` to `#sign-in-error` div at `src/pages/sign-in.astro:49-53` and `#sign-in-verify-error` div at `src/pages/sign-in.astro:54-58` for screen reader announcements
-- [ ] T020 Fix P3 a11y issue: add `aria-hidden="true"` to spinner SVGs in overlay HTML templates at `src/pages/sign-in.astro:232-233` and `src/pages/sign-in.astro:298-299`
-- [ ] T021 Run `pnpm astro check` and fix any type errors
-- [ ] T022 Run `pnpm eslint .` and fix any lint errors
+- [x] T017 Fix P1 responsive issue: change `min-h-[80vh] pt-20` to `min-h-dvh py-20` on container div at `src/pages/sign-in.astro:30` to prevent content overflow on landscape mobile viewports
+- [x] T018 Fix P2 responsive issue: add responsive padding `p-6 sm:p-10 pt-8 sm:pt-12` on card div at `src/pages/sign-in.astro:32` for narrow screens
+- [x] T019 Fix P2 a11y issue: add `role="alert"` to `#sign-in-error` div at `src/pages/sign-in.astro:49-53` and `#sign-in-verify-error` div at `src/pages/sign-in.astro:54-58` for screen reader announcements
+- [x] T020 Fix P3 a11y issue: add `aria-hidden="true"` to spinner SVGs in overlay HTML templates at `src/pages/sign-in.astro:232-233` and `src/pages/sign-in.astro:298-299`
+- [x] T021 Run `pnpm astro check` and fix any type errors
+- [x] T022 Run `pnpm eslint .` and fix any lint errors
 - [ ] T023 Run through quickstart.md verification checklist: test all 14 items including password toggle (FR-015) and navbar (FR-016)
-- [ ] T024 [P] Run `pnpm format` to ensure consistent code style
+- [x] T024 [P] Run `pnpm format` to ensure consistent code style
 
 ---
 

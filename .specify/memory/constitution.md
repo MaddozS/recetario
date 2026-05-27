@@ -64,7 +64,7 @@ review standard for all UI work.
   computed or entered numeric value — renders in JetBrains Mono with
   tabular-nums.
 - The One Label Rule: tracked-uppercase label style (`text-[11px] font-bold
-  uppercase tracking-[0.16em]`) appears on form field labels and input group
+uppercase tracking-[0.16em]`) appears on form field labels and input group
   headings only. Not as decorative kickers.
 - The Flat-By-Default Rule: surfaces are flat at rest. Shadows appear only as a
   response to state (hover, focus, overlay). Depth comes from background color
@@ -269,6 +269,7 @@ Any conflict between this Constitution and a local convention resolves in favor
 of the Constitution.
 
 **Amendment process:**
+
 1. Propose the change with documented rationale.
 2. If MAJOR or MINOR: seek team review and approval.
 3. Update the Constitution, increment the version, set `LAST_AMENDED_DATE` to
@@ -276,12 +277,14 @@ of the Constitution.
 4. Propagate changes to dependent templates if needed.
 
 **Compliance:**
+
 - All PRs and reviews MUST verify Constitution compliance.
 - Complexity MUST be justified. If a solution is harder than the problem,
   it is a violation of Principle I (Clean Code).
 - Violations of NON-NEGOTIABLE principles (I, III) block merge until resolved.
 
 **Versioning:**
+
 - MAJOR: Backward-incompatible governance changes, principle removals or
   redefinitions.
 - MINOR: New principle or materially expanded guidance.

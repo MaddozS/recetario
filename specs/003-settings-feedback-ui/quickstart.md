@@ -8,13 +8,13 @@ Only one file: `src/pages/settings.astro` (860 lines)
 
 ### Changes by section
 
-| Section | Lines | Change |
-|---------|-------|--------|
-| Script 1 (setupSettings) | 418–695 | Replace `alert()` calls with dynamic `FeedbackAlert` at top of section; add loading spinner toggling on submit |
-| Script 2 (setupSettingsTabs) | 697–741 | No changes (tab logic independent) |
+| Section                      | Lines   | Change                                                                                                                                                  |
+| ---------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Script 1 (setupSettings)     | 418–695 | Replace `alert()` calls with dynamic `FeedbackAlert` at top of section; add loading spinner toggling on submit                                          |
+| Script 2 (setupSettingsTabs) | 697–741 | No changes (tab logic independent)                                                                                                                      |
 | Script 3 (setupAccountForms) | 743–858 | Add disabled state logic to submit buttons based on field emptiness; add loading spinner during submission; verify feedback elements use correct tokens |
-| Template (preferences form) | 315–400 | Add `FeedbackAlert` container element at top of section; pass `loading` prop to submit button |
-| Template (account forms) | 200–312 | Add `disabled` binding to submit buttons; verify `loading` prop wiring |
+| Template (preferences form)  | 315–400 | Add `FeedbackAlert` container element at top of section; pass `loading` prop to submit button                                                           |
+| Template (account forms)     | 200–312 | Add `disabled` binding to submit buttons; verify `loading` prop wiring                                                                                  |
 
 ## No changes needed
 

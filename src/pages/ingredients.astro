@@ -520,7 +520,7 @@ void redirectWithFeedback;
   <dialog
     data-animated
     id="create-ingredient-modal"
-    class="fixed inset-0 m-auto w-[calc(100vw-2rem)] max-w-lg rounded-3xl p-0 backdrop:bg-backdrop/50 lg:hidden"
+    class="backdrop:bg-backdrop/50 fixed inset-0 m-auto w-[calc(100vw-2rem)] max-w-lg rounded-3xl p-0 lg:hidden"
   >
     <div
       class="border-border bg-card max-h-[min(82vh,44rem)] overflow-y-auto rounded-3xl border p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom)+4.75rem)] shadow-2xl"
@@ -549,8 +549,12 @@ void redirectWithFeedback;
         data-ingredient-form
         data-astro-reload
       >
-      <input type="hidden" name="action" value="create" />
-      <input type="hidden" name="_csrf" value={Astro.locals.csrfToken || ""} />
+        <input type="hidden" name="action" value="create" />
+        <input
+          type="hidden"
+          name="_csrf"
+          value={Astro.locals.csrfToken || ""}
+        />
 
         <IngredientFormFields idPrefix="mobile" />
 
@@ -560,7 +564,13 @@ void redirectWithFeedback;
 
         <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
           <Button variant="secondary" data-close-create-modal>Cancelar</Button>
-          <Button variant="primary" icon="plus" type="submit" data-submit-button disabled>
+          <Button
+            variant="primary"
+            icon="plus"
+            type="submit"
+            data-submit-button
+            disabled
+          >
             Agregar Insumo
           </Button>
         </div>
@@ -571,7 +581,7 @@ void redirectWithFeedback;
   <dialog
     data-animated
     id="edit-ingredient-modal"
-    class="fixed inset-0 m-auto w-[calc(100vw-2rem)] max-w-xl rounded-3xl p-0 backdrop:bg-backdrop/50"
+    class="backdrop:bg-backdrop/50 fixed inset-0 m-auto w-[calc(100vw-2rem)] max-w-xl rounded-3xl p-0"
   >
     <div
       class="border-border bg-card max-h-[min(82vh,44rem)] overflow-y-auto rounded-3xl border p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom)+1.5rem)] shadow-2xl"
@@ -608,7 +618,11 @@ void redirectWithFeedback;
       >
         <input type="hidden" name="action" value="update" />
         <input type="hidden" name="ingredientId" value="" />
-        <input type="hidden" name="_csrf" value={Astro.locals.csrfToken || ""} />
+        <input
+          type="hidden"
+          name="_csrf"
+          value={Astro.locals.csrfToken || ""}
+        />
 
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div class="md:col-span-2">
@@ -721,7 +735,7 @@ void redirectWithFeedback;
   <dialog
     data-animated
     id="delete-confirm-modal"
-    class="fixed inset-0 m-auto w-[calc(100vw-2rem)] max-w-md rounded-3xl p-0 backdrop:bg-backdrop/50"
+    class="backdrop:bg-backdrop/50 fixed inset-0 m-auto w-[calc(100vw-2rem)] max-w-md rounded-3xl p-0"
   >
     <div class="border-border bg-card rounded-3xl border p-6 shadow-2xl">
       <div class="flex items-start gap-3">
@@ -758,11 +772,12 @@ void redirectWithFeedback;
         data-astro-reload
       >
         <input type="hidden" name="action" value="delete" />
+        <input type="hidden" name="ingredientId" id="delete-ingredient-id" />
         <input
           type="hidden"
-          name="ingredientId"
-          id="delete-ingredient-id" />
-        <input type="hidden" name="_csrf" value={Astro.locals.csrfToken || ""} />
+          name="_csrf"
+          value={Astro.locals.csrfToken || ""}
+        />
         <Button variant="secondary" id="cancel-delete"> Cancelar </Button>
         <Button variant="danger" type="submit" id="confirm-delete">
           Eliminar

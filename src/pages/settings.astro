@@ -17,7 +17,11 @@ import {
   getRemainingRecipes,
   getRemainingIngredients,
 } from "@/lib/subscription";
-import { countUserRecipes, countUserIngredients, getPricingPlans } from "@/lib/db/billing";
+import {
+  countUserRecipes,
+  countUserIngredients,
+  getPricingPlans,
+} from "@/lib/db/billing";
 import FeedbackAlert from "@/components/FeedbackAlert.astro";
 import { validateCsrf } from "@/lib/csrf";
 
@@ -206,7 +210,8 @@ if (feedback) {
         <div
           id="change-email-feedback"
           class="mt-4 hidden rounded-xl border px-4 py-3 text-sm font-semibold"
-        ></div>
+        >
+        </div>
         <form id="change-email-form" class="mt-4 max-w-sm space-y-4">
           <div>
             <label
@@ -236,22 +241,58 @@ if (feedback) {
                 id="email-current-password"
                 type="password"
                 required
-                class="border-border bg-background text-foreground placeholder:text-subtle-foreground focus:border-accent-300 focus:ring-accent-500/20 w-full rounded-xl border px-4 py-3 text-sm transition outline-none focus:ring-2 pr-11"
+                class="border-border bg-background text-foreground placeholder:text-subtle-foreground focus:border-accent-300 focus:ring-accent-500/20 w-full rounded-xl border px-4 py-3 pr-11 text-sm transition outline-none focus:ring-2"
                 autocomplete="current-password"
               />
               <button
                 type="button"
                 data-pw-toggle="email-current-password"
-                class="text-muted-foreground hover:text-foreground absolute right-3 top-1/2 -translate-y-1/2 flex cursor-pointer items-center"
+                class="text-muted-foreground hover:text-foreground absolute top-1/2 right-3 flex -translate-y-1/2 cursor-pointer items-center"
                 aria-label="Mostrar contraseña"
                 tabindex="-1"
               >
-                <svg data-pw-eye class="h-[18px] w-[18px]" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-                <svg data-pw-eye-off class="h-[18px] w-[18px] hidden" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>
+                <svg
+                  data-pw-eye
+                  class="h-[18px] w-[18px]"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  ><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"
+                  ></path><circle cx="12" cy="12" r="3"></circle></svg
+                >
+                <svg
+                  data-pw-eye-off
+                  class="hidden h-[18px] w-[18px]"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  ><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"></path><path
+                    d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"
+                  ></path><path
+                    d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"
+                  ></path><line x1="2" x2="22" y1="2" y2="22"></line></svg
+                >
               </button>
             </div>
           </div>
-          <Button variant="primary" type="submit" icon="mail" id="change-email-btn">
+          <Button
+            variant="primary"
+            type="submit"
+            icon="mail"
+            id="change-email-btn"
+          >
             Cambiar email
           </Button>
         </form>
@@ -266,7 +307,8 @@ if (feedback) {
         <div
           id="change-password-feedback"
           class="mt-4 hidden rounded-xl border px-4 py-3 text-sm font-semibold"
-        ></div>
+        >
+        </div>
         <form id="change-password-form" class="mt-4 max-w-sm space-y-4">
           <div>
             <label
@@ -280,18 +322,49 @@ if (feedback) {
                 id="current-password"
                 type="password"
                 required
-                class="border-border bg-background text-foreground placeholder:text-subtle-foreground focus:border-accent-300 focus:ring-accent-500/20 w-full rounded-xl border px-4 py-3 text-sm transition outline-none focus:ring-2 pr-11"
+                class="border-border bg-background text-foreground placeholder:text-subtle-foreground focus:border-accent-300 focus:ring-accent-500/20 w-full rounded-xl border px-4 py-3 pr-11 text-sm transition outline-none focus:ring-2"
                 autocomplete="current-password"
               />
               <button
                 type="button"
                 data-pw-toggle="current-password"
-                class="text-muted-foreground hover:text-foreground absolute right-3 top-1/2 -translate-y-1/2 flex cursor-pointer items-center"
+                class="text-muted-foreground hover:text-foreground absolute top-1/2 right-3 flex -translate-y-1/2 cursor-pointer items-center"
                 aria-label="Mostrar contraseña"
                 tabindex="-1"
               >
-                <svg data-pw-eye class="h-[18px] w-[18px]" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-                <svg data-pw-eye-off class="h-[18px] w-[18px] hidden" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>
+                <svg
+                  data-pw-eye
+                  class="h-[18px] w-[18px]"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  ><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"
+                  ></path><circle cx="12" cy="12" r="3"></circle></svg
+                >
+                <svg
+                  data-pw-eye-off
+                  class="hidden h-[18px] w-[18px]"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  ><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"></path><path
+                    d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"
+                  ></path><path
+                    d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"
+                  ></path><line x1="2" x2="22" y1="2" y2="22"></line></svg
+                >
               </button>
             </div>
           </div>
@@ -308,19 +381,50 @@ if (feedback) {
                 type="password"
                 required
                 minlength={6}
-                class="border-border bg-background text-foreground placeholder:text-subtle-foreground focus:border-accent-300 focus:ring-accent-500/20 w-full rounded-xl border px-4 py-3 text-sm transition outline-none focus:ring-2 pr-11"
+                class="border-border bg-background text-foreground placeholder:text-subtle-foreground focus:border-accent-300 focus:ring-accent-500/20 w-full rounded-xl border px-4 py-3 pr-11 text-sm transition outline-none focus:ring-2"
                 placeholder="Mínimo 6 caracteres"
                 autocomplete="new-password"
               />
               <button
                 type="button"
                 data-pw-toggle="new-password"
-                class="text-muted-foreground hover:text-foreground absolute right-3 top-1/2 -translate-y-1/2 flex cursor-pointer items-center"
+                class="text-muted-foreground hover:text-foreground absolute top-1/2 right-3 flex -translate-y-1/2 cursor-pointer items-center"
                 aria-label="Mostrar contraseña"
                 tabindex="-1"
               >
-                <svg data-pw-eye class="h-[18px] w-[18px]" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-                <svg data-pw-eye-off class="h-[18px] w-[18px] hidden" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>
+                <svg
+                  data-pw-eye
+                  class="h-[18px] w-[18px]"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  ><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"
+                  ></path><circle cx="12" cy="12" r="3"></circle></svg
+                >
+                <svg
+                  data-pw-eye-off
+                  class="hidden h-[18px] w-[18px]"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  ><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"></path><path
+                    d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"
+                  ></path><path
+                    d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"
+                  ></path><line x1="2" x2="22" y1="2" y2="22"></line></svg
+                >
               </button>
             </div>
           </div>
@@ -337,71 +441,123 @@ if (feedback) {
                 type="password"
                 required
                 minlength={6}
-                class="border-border bg-background text-foreground placeholder:text-subtle-foreground focus:border-accent-300 focus:ring-accent-500/20 w-full rounded-xl border px-4 py-3 text-sm transition outline-none focus:ring-2 pr-11"
+                class="border-border bg-background text-foreground placeholder:text-subtle-foreground focus:border-accent-300 focus:ring-accent-500/20 w-full rounded-xl border px-4 py-3 pr-11 text-sm transition outline-none focus:ring-2"
                 placeholder="Repite tu contraseña"
                 autocomplete="new-password"
               />
               <button
                 type="button"
                 data-pw-toggle="confirm-new-password"
-                class="text-muted-foreground hover:text-foreground absolute right-3 top-1/2 -translate-y-1/2 flex cursor-pointer items-center"
+                class="text-muted-foreground hover:text-foreground absolute top-1/2 right-3 flex -translate-y-1/2 cursor-pointer items-center"
                 aria-label="Mostrar contraseña"
                 tabindex="-1"
               >
-                <svg data-pw-eye class="h-[18px] w-[18px]" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-                <svg data-pw-eye-off class="h-[18px] w-[18px] hidden" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>
+                <svg
+                  data-pw-eye
+                  class="h-[18px] w-[18px]"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  ><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"
+                  ></path><circle cx="12" cy="12" r="3"></circle></svg
+                >
+                <svg
+                  data-pw-eye-off
+                  class="hidden h-[18px] w-[18px]"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  ><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"></path><path
+                    d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"
+                  ></path><path
+                    d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"
+                  ></path><line x1="2" x2="22" y1="2" y2="22"></line></svg
+                >
               </button>
             </div>
           </div>
-          <Button variant="primary" type="submit" icon="lock" id="change-password-btn">
+          <Button
+            variant="primary"
+            type="submit"
+            icon="lock"
+            id="change-password-btn"
+          >
             Cambiar contraseña
           </Button>
         </form>
       </Card>
     </div>
 
-      {/* Preferences Tab */}
+    {/* Preferences Tab */}
+    <div
+      data-tab-content="preferences"
+      class:list={[activeTab !== "preferences" && "hidden"]}
+    >
       <div
-        data-tab-content="preferences"
-        class:list={[activeTab !== "preferences" && "hidden"]}
+        id="preferences-feedback"
+        class="mb-4 hidden rounded-2xl border px-4 py-3 text-sm"
+        role="alert"
+        aria-atomic="true"
+        aria-live="assertive"
+        tabindex="-1"
       >
-        <div
-          id="preferences-feedback"
-          class="hidden mb-4 rounded-2xl border px-4 py-3 text-sm"
-          role="alert"
-          aria-atomic="true"
-          aria-live="assertive"
-          tabindex="-1"
-        >
-          <p id="preferences-feedback-message" class="font-semibold"></p>
-        </div>
-        <form id="preferences-form" method="POST" action="/settings?tab=preferences">
-          <input type="hidden" name="_csrf" value={Astro.locals.csrfToken} />
-          <input type="hidden" id="theme-input" name="theme" value={currentTheme} />
-          <input type="hidden" id="accent-input" name="accentColor" value={currentAccent} />
+        <p id="preferences-feedback-message" class="font-semibold"></p>
+      </div>
+      <form
+        id="preferences-form"
+        method="POST"
+        action="/settings?tab=preferences"
+      >
+        <input type="hidden" name="_csrf" value={Astro.locals.csrfToken} />
+        <input
+          type="hidden"
+          id="theme-input"
+          name="theme"
+          value={currentTheme}
+        />
+        <input
+          type="hidden"
+          id="accent-input"
+          name="accentColor"
+          value={currentAccent}
+        />
 
-          <div class="space-y-6">
+        <div class="space-y-6">
           <Card padding="lg">
             <h2 class="text-foreground text-lg font-bold">Tema</h2>
             <p class="text-muted-foreground mt-1 text-sm">
               Selecciona cómo quieres que se vea la aplicación.
             </p>
             <div class="mt-4 flex flex-wrap gap-2">
-              {themeOptions.map((opt) => {
-                const isActive = currentTheme === opt.value;
-                return (
-                  <Button
-                    variant={isActive ? "primary" : "secondary"}
-                    size="md"
-                    icon={opt.icon.replace("lucide:", "")}
-                    data-theme-option={opt.value}
-                    data-theme-active={isActive ? "1" : "0"}
-                    aria-pressed={isActive ? "true" : "false"}
-                  >
-                    {opt.label}
-                  </Button>
-                );
-              })}
+              {
+                themeOptions.map((opt) => {
+                  const isActive = currentTheme === opt.value;
+                  return (
+                    <Button
+                      variant={isActive ? "primary" : "secondary"}
+                      size="md"
+                      icon={opt.icon.replace("lucide:", "")}
+                      data-theme-option={opt.value}
+                      data-theme-active={isActive ? "1" : "0"}
+                      aria-pressed={isActive ? "true" : "false"}
+                    >
+                      {opt.label}
+                    </Button>
+                  );
+                })
+              }
             </div>
           </Card>
 
@@ -410,41 +566,43 @@ if (feedback) {
             <p class="text-muted-foreground mt-1 text-sm">
               Personaliza el color principal de la aplicación.
             </p>
-            <div class="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-2">
-              {ACCENT_FAMILIES.map((family) => {
-                const isActive = currentAccent === family;
-                return (
-                  <button
-                    type="button"
-                    data-accent-option={family}
-                    data-accent-active={isActive ? "1" : "0"}
-                    aria-pressed={isActive ? "true" : "false"}
-                    class:list={[
-                      "inline-flex items-center justify-center gap-2 font-semibold transition-colors rounded-xl min-h-10 px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:outline-none",
-                      isActive
-                        ? "ring-2 ring-accent-500 ring-offset-1 bg-accent-50"
-                        : "border border-border bg-card text-muted-foreground hover:bg-background",
-                    ]}
-                  >
-                    <span
-                      class="block h-5 w-5 flex-none rounded-full border"
-                      style={`background-color: ${getAccentPreviewColor(family)}`}
+            <div class="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
+              {
+                ACCENT_FAMILIES.map((family) => {
+                  const isActive = currentAccent === family;
+                  return (
+                    <button
+                      type="button"
+                      data-accent-option={family}
+                      data-accent-active={isActive ? "1" : "0"}
+                      aria-pressed={isActive ? "true" : "false"}
                       class:list={[
-                        isActive ? "border-accent-400" : "border-border",
-                      ]}
-                    />
-                    <span
-                      class:list={[
+                        "focus-visible:ring-accent-500 inline-flex min-h-10 items-center justify-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold transition-colors focus-visible:ring-2 focus-visible:outline-none",
                         isActive
-                          ? "text-accent-700"
-                          : "text-muted-foreground",
+                          ? "ring-accent-500 bg-accent-50 ring-2 ring-offset-1"
+                          : "border-border bg-card text-muted-foreground hover:bg-background border",
                       ]}
                     >
-                      {ACCENT_LABELS[family]}
-                    </span>
-                  </button>
-                );
-              })}
+                      <span
+                        class="block h-5 w-5 flex-none rounded-full border"
+                        style={`background-color: ${getAccentPreviewColor(family)}`}
+                        class:list={[
+                          isActive ? "border-accent-400" : "border-border",
+                        ]}
+                      />
+                      <span
+                        class:list={[
+                          isActive
+                            ? "text-accent-700"
+                            : "text-muted-foreground",
+                        ]}
+                      >
+                        {ACCENT_LABELS[family]}
+                      </span>
+                    </button>
+                  );
+                })
+              }
             </div>
           </Card>
 
@@ -453,24 +611,24 @@ if (feedback) {
               Guardar cambios
             </Button>
           </div>
-          </div>
-        </form>
-      </div>
+        </div>
+      </form>
+    </div>
 
-      {/* Billing Tab */}
-      <div
-        data-tab-content="billing"
-        class:list={["space-y-6", activeTab !== "billing" && "hidden"]}
-      >
-        <BillingSection
-          {subscription}
-          {plans}
-          {recipeCount}
-          {ingredientCount}
-          {remainingRecipes}
-          {remainingIngredients}
-        />
-      </div>
+    {/* Billing Tab */}
+    <div
+      data-tab-content="billing"
+      class:list={["space-y-6", activeTab !== "billing" && "hidden"]}
+    >
+      <BillingSection
+        {subscription}
+        {plans}
+        {recipeCount}
+        {ingredientCount}
+        {remainingRecipes}
+        {remainingIngredients}
+      />
+    </div>
   </section>
 
   <script>
@@ -665,10 +823,14 @@ if (feedback) {
       let originalAccent =
         accentInput instanceof HTMLInputElement ? accentInput.value : "coral";
       const saveBtnWrapper = document.getElementById("save-btn-wrapper");
-      const saveBtn = document.querySelector<HTMLButtonElement>("#save-btn-wrapper button");
+      const saveBtn = document.querySelector<HTMLButtonElement>(
+        "#save-btn-wrapper button",
+      );
       const saveBtnIcon = saveBtn?.querySelector<HTMLElement>("svg");
       const prefsFeedback = document.getElementById("preferences-feedback");
-      const prefsFeedbackMsg = document.getElementById("preferences-feedback-message");
+      const prefsFeedbackMsg = document.getElementById(
+        "preferences-feedback-message",
+      );
 
       function setSaveBtnLoading(loading: boolean) {
         if (!saveBtn) return;
@@ -676,8 +838,14 @@ if (feedback) {
         saveBtn.setAttribute("aria-busy", loading ? "true" : "false");
         if (loading && saveBtnIcon) {
           saveBtnIcon.style.display = "none";
-          const spinner = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-          spinner.setAttribute("class", "h-4 w-4 animate-[sp_0.7s_linear_infinite]");
+          const spinner = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "svg",
+          );
+          spinner.setAttribute(
+            "class",
+            "h-4 w-4 animate-[sp_0.7s_linear_infinite]",
+          );
           spinner.setAttribute("width", "24");
           spinner.setAttribute("height", "24");
           spinner.setAttribute("viewBox", "0 0 24 24");
@@ -717,9 +885,7 @@ if (feedback) {
         const currentTheme =
           themeInput instanceof HTMLInputElement ? themeInput.value : "system";
         const currentAccent =
-          accentInput instanceof HTMLInputElement
-            ? accentInput.value
-            : "coral";
+          accentInput instanceof HTMLInputElement ? accentInput.value : "coral";
         const changed =
           currentTheme !== originalTheme || currentAccent !== originalAccent;
         if (saveBtnWrapper) {
@@ -746,7 +912,9 @@ if (feedback) {
 
           try {
             const params = new URLSearchParams();
-            formData.forEach((value, key) => params.append(key, value as string));
+            formData.forEach((value, key) =>
+              params.append(key, value as string),
+            );
 
             const res = await fetch("/settings?tab=preferences", {
               method: "POST",
@@ -760,19 +928,32 @@ if (feedback) {
               originalTheme = newTheme;
               originalAccent = newAccent;
               if (saveBtnWrapper) saveBtnWrapper.classList.add("hidden");
-              showPrefsFeedback("success", "Preferencias guardadas correctamente.");
+              showPrefsFeedback(
+                "success",
+                "Preferencias guardadas correctamente.",
+              );
             } else {
               const fallbackTheme = savedTheme || originalTheme;
               const fallbackAccent = savedAccent || originalAccent;
               updateLivePreview(fallbackTheme, fallbackAccent);
               updateThemeOptions(fallbackTheme);
               updateAccentOptions(fallbackAccent);
-              if (themeInput instanceof HTMLInputElement) themeInput.value = fallbackTheme;
-              if (accentInput instanceof HTMLInputElement) accentInput.value = fallbackAccent;
+              if (themeInput instanceof HTMLInputElement)
+                themeInput.value = fallbackTheme;
+              if (accentInput instanceof HTMLInputElement)
+                accentInput.value = fallbackAccent;
               checkIfChanged();
               let text = "";
-              try { text = await res.text(); } catch { text = ""; }
-              showPrefsFeedback("error", text || "Error al guardar las preferencias. Se ha revertido el cambio.");
+              try {
+                text = await res.text();
+              } catch {
+                text = "";
+              }
+              showPrefsFeedback(
+                "error",
+                text ||
+                  "Error al guardar las preferencias. Se ha revertido el cambio.",
+              );
             }
           } catch {
             const fallbackTheme = savedTheme || originalTheme;
@@ -780,10 +961,15 @@ if (feedback) {
             updateLivePreview(fallbackTheme, fallbackAccent);
             updateThemeOptions(fallbackTheme);
             updateAccentOptions(fallbackAccent);
-            if (themeInput instanceof HTMLInputElement) themeInput.value = fallbackTheme;
-            if (accentInput instanceof HTMLInputElement) accentInput.value = fallbackAccent;
+            if (themeInput instanceof HTMLInputElement)
+              themeInput.value = fallbackTheme;
+            if (accentInput instanceof HTMLInputElement)
+              accentInput.value = fallbackAccent;
             checkIfChanged();
-            showPrefsFeedback("error", "Error de conexión. Se ha revertido el cambio.");
+            showPrefsFeedback(
+              "error",
+              "Error de conexión. Se ha revertido el cambio.",
+            );
           } finally {
             setSaveBtnLoading(false);
           }
@@ -845,21 +1031,32 @@ if (feedback) {
   <script>
     function setupAccountForms() {
       function setupPasswordToggles() {
-        document.querySelectorAll<HTMLButtonElement>("[data-pw-toggle]").forEach((btn) => {
-          if (btn.dataset.pwToggleBound === "1") return;
-          btn.dataset.pwToggleBound = "1";
-          btn.addEventListener("click", () => {
-            const inputId = btn.dataset.pwToggle;
-            if (!inputId) return;
-            const input = document.getElementById(inputId) as HTMLInputElement | null;
-            if (!input) return;
-            const isPassword = input.type === "password";
-            input.type = isPassword ? "text" : "password";
-            btn.querySelector<HTMLElement>("[data-pw-eye]")?.classList.toggle("hidden", !isPassword);
-            btn.querySelector<HTMLElement>("[data-pw-eye-off]")?.classList.toggle("hidden", isPassword);
-            btn.setAttribute("aria-label", isPassword ? "Ocultar contraseña" : "Mostrar contraseña");
+        document
+          .querySelectorAll<HTMLButtonElement>("[data-pw-toggle]")
+          .forEach((btn) => {
+            if (btn.dataset.pwToggleBound === "1") return;
+            btn.dataset.pwToggleBound = "1";
+            btn.addEventListener("click", () => {
+              const inputId = btn.dataset.pwToggle;
+              if (!inputId) return;
+              const input = document.getElementById(
+                inputId,
+              ) as HTMLInputElement | null;
+              if (!input) return;
+              const isPassword = input.type === "password";
+              input.type = isPassword ? "text" : "password";
+              btn
+                .querySelector<HTMLElement>("[data-pw-eye]")
+                ?.classList.toggle("hidden", !isPassword);
+              btn
+                .querySelector<HTMLElement>("[data-pw-eye-off]")
+                ?.classList.toggle("hidden", isPassword);
+              btn.setAttribute(
+                "aria-label",
+                isPassword ? "Ocultar contraseña" : "Mostrar contraseña",
+              );
+            });
           });
-        });
       }
 
       setupPasswordToggles();
@@ -893,8 +1090,14 @@ if (feedback) {
         const icon = btn.querySelector<HTMLElement>("svg:not([data-spinner])");
         if (loading && icon) {
           icon.style.display = "none";
-          const spinner = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-          spinner.setAttribute("class", "h-4 w-4 animate-[sp_0.7s_linear_infinite]");
+          const spinner = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "svg",
+          );
+          spinner.setAttribute(
+            "class",
+            "h-4 w-4 animate-[sp_0.7s_linear_infinite]",
+          );
           spinner.setAttribute("width", "24");
           spinner.setAttribute("height", "24");
           spinner.setAttribute("viewBox", "0 0 24 24");
@@ -915,23 +1118,43 @@ if (feedback) {
 
       function mapServerError(text: string, fallback: string): string {
         const err = text.toLowerCase();
-        if (err.includes("unauthorized") || err.includes("incorrect") || err.includes("wrong")) return "Contraseña actual incorrecta.";
-        if (err.includes("too many requests") || err.includes("rate limit")) return "Demasiados intentos. Intenta de nuevo más tarde.";
+        if (
+          err.includes("unauthorized") ||
+          err.includes("incorrect") ||
+          err.includes("wrong")
+        )
+          return "Contraseña actual incorrecta.";
+        if (err.includes("too many requests") || err.includes("rate limit"))
+          return "Demasiados intentos. Intenta de nuevo más tarde.";
         return text || fallback;
       }
 
       function updateEmailBtnState() {
-        const btn = document.getElementById("change-email-btn") as HTMLButtonElement | null;
-        const email = (document.getElementById("new-email") as HTMLInputElement)?.value.trim();
-        const pwd = (document.getElementById("email-current-password") as HTMLInputElement)?.value;
+        const btn = document.getElementById(
+          "change-email-btn",
+        ) as HTMLButtonElement | null;
+        const email = (
+          document.getElementById("new-email") as HTMLInputElement
+        )?.value.trim();
+        const pwd = (
+          document.getElementById("email-current-password") as HTMLInputElement
+        )?.value;
         if (btn) btn.disabled = !email || !pwd;
       }
 
       function updatePasswordBtnState() {
-        const btn = document.getElementById("change-password-btn") as HTMLButtonElement | null;
-        const current = (document.getElementById("current-password") as HTMLInputElement)?.value;
-        const newPwd = (document.getElementById("new-password") as HTMLInputElement)?.value;
-        const confirmPwd = (document.getElementById("confirm-new-password") as HTMLInputElement)?.value;
+        const btn = document.getElementById(
+          "change-password-btn",
+        ) as HTMLButtonElement | null;
+        const current = (
+          document.getElementById("current-password") as HTMLInputElement
+        )?.value;
+        const newPwd = (
+          document.getElementById("new-password") as HTMLInputElement
+        )?.value;
+        const confirmPwd = (
+          document.getElementById("confirm-new-password") as HTMLInputElement
+        )?.value;
         if (btn) btn.disabled = !current || !newPwd || !confirmPwd;
       }
 
@@ -940,8 +1163,12 @@ if (feedback) {
       ) as HTMLFormElement | null;
       if (emailForm && !emailForm.dataset.bound) {
         emailForm.dataset.bound = "1";
-        const emailInput = document.getElementById("new-email") as HTMLInputElement | null;
-        const pwdInput = document.getElementById("email-current-password") as HTMLInputElement | null;
+        const emailInput = document.getElementById(
+          "new-email",
+        ) as HTMLInputElement | null;
+        const pwdInput = document.getElementById(
+          "email-current-password",
+        ) as HTMLInputElement | null;
         emailInput?.addEventListener("input", updateEmailBtnState);
         pwdInput?.addEventListener("input", updateEmailBtnState);
         updateEmailBtnState();
@@ -951,25 +1178,42 @@ if (feedback) {
           const newEmail = emailInput?.value.trim() || "";
           const password = pwdInput?.value || "";
           const fb = document.getElementById("change-email-feedback");
-          const btn = document.getElementById("change-email-btn") as HTMLButtonElement | null;
+          const btn = document.getElementById(
+            "change-email-btn",
+          ) as HTMLButtonElement | null;
 
           setBtnLoading(btn, true);
           try {
             const res = await fetch("/api/account/change-email", {
               method: "POST",
               headers: { "Content-Type": "application/x-www-form-urlencoded" },
-              body: new URLSearchParams({ newEmail, currentPassword: password }),
+              body: new URLSearchParams({
+                newEmail,
+                currentPassword: password,
+              }),
             });
             if (res.ok) {
               showFeedback(fb, "success", "Email actualizado correctamente.");
               emailForm.reset();
               updateEmailBtnState();
             } else if (res.status === 401) {
-              showFeedback(fb, "error", "Sesión expirada. Vuelve a iniciar sesión.");
+              showFeedback(
+                fb,
+                "error",
+                "Sesión expirada. Vuelve a iniciar sesión.",
+              );
             } else {
               let text = "";
-              try { text = await res.text(); } catch { text = ""; }
-              showFeedback(fb, "error", mapServerError(text, "Error al cambiar el email."));
+              try {
+                text = await res.text();
+              } catch {
+                text = "";
+              }
+              showFeedback(
+                fb,
+                "error",
+                mapServerError(text, "Error al cambiar el email."),
+              );
             }
           } catch (err) {
             console.error("[change-password] fetch error:", err);
@@ -985,9 +1229,15 @@ if (feedback) {
       ) as HTMLFormElement | null;
       if (pwdForm && !pwdForm.dataset.bound) {
         pwdForm.dataset.bound = "1";
-        const currentInput = document.getElementById("current-password") as HTMLInputElement | null;
-        const newPwdInput = document.getElementById("new-password") as HTMLInputElement | null;
-        const confirmPwdInput = document.getElementById("confirm-new-password") as HTMLInputElement | null;
+        const currentInput = document.getElementById(
+          "current-password",
+        ) as HTMLInputElement | null;
+        const newPwdInput = document.getElementById(
+          "new-password",
+        ) as HTMLInputElement | null;
+        const confirmPwdInput = document.getElementById(
+          "confirm-new-password",
+        ) as HTMLInputElement | null;
         currentInput?.addEventListener("input", updatePasswordBtnState);
         newPwdInput?.addEventListener("input", updatePasswordBtnState);
         confirmPwdInput?.addEventListener("input", updatePasswordBtnState);
@@ -999,10 +1249,16 @@ if (feedback) {
           const newPassword = newPwdInput?.value || "";
           const confirmPassword = confirmPwdInput?.value || "";
           const fb = document.getElementById("change-password-feedback");
-          const btn = document.getElementById("change-password-btn") as HTMLButtonElement | null;
+          const btn = document.getElementById(
+            "change-password-btn",
+          ) as HTMLButtonElement | null;
 
           if (newPassword.length < 6) {
-            showFeedback(fb, "error", "La contraseña debe tener al menos 6 caracteres.");
+            showFeedback(
+              fb,
+              "error",
+              "La contraseña debe tener al menos 6 caracteres.",
+            );
             return;
           }
           if (newPassword !== confirmPassword) {
@@ -1018,15 +1274,31 @@ if (feedback) {
               body: new URLSearchParams({ currentPassword, newPassword }),
             });
             if (res.ok) {
-              showFeedback(fb, "success", "Contraseña actualizada correctamente.");
+              showFeedback(
+                fb,
+                "success",
+                "Contraseña actualizada correctamente.",
+              );
               pwdForm.reset();
               updatePasswordBtnState();
             } else if (res.status === 401) {
-              showFeedback(fb, "error", "Sesión expirada. Vuelve a iniciar sesión.");
+              showFeedback(
+                fb,
+                "error",
+                "Sesión expirada. Vuelve a iniciar sesión.",
+              );
             } else {
               let text = "";
-              try { text = await res.text(); } catch { text = ""; }
-              showFeedback(fb, "error", mapServerError(text, "Error al cambiar la contraseña."));
+              try {
+                text = await res.text();
+              } catch {
+                text = "";
+              }
+              showFeedback(
+                fb,
+                "error",
+                mapServerError(text, "Error al cambiar la contraseña."),
+              );
             }
           } catch (err) {
             console.error("[change-password] fetch error:", err);
@@ -1042,5 +1314,4 @@ if (feedback) {
     document.addEventListener("astro:after-swap", setupAccountForms);
     setupAccountForms();
   </script>
-
 </Layout>

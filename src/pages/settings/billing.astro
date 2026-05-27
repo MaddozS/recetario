@@ -4,7 +4,11 @@ import {
   getRemainingRecipes,
   getRemainingIngredients,
 } from "@/lib/subscription";
-import { countUserRecipes, countUserIngredients, getPricingPlans } from "@/lib/db/billing";
+import {
+  countUserRecipes,
+  countUserIngredients,
+  getPricingPlans,
+} from "@/lib/db/billing";
 import BillingSection from "@/components/BillingSection.astro";
 
 if (!Astro.locals.session || !Astro.locals.user) {

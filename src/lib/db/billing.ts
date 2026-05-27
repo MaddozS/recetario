@@ -203,11 +203,7 @@ export async function getPricingPlans(): Promise<PricingPlan[]> {
       name: config.name,
       description: config.description,
       badge: config.badge,
-      currency: (
-        monthly?.currency ??
-        yearly?.currency ??
-        "usd"
-      ).toUpperCase(),
+      currency: (monthly?.currency ?? yearly?.currency ?? "usd").toUpperCase(),
       monthlyPriceId: monthly?.priceId ?? null,
       monthlyDisplay,
       yearlyPriceId: yearly?.priceId ?? null,

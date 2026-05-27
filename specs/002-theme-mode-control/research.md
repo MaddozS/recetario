@@ -10,6 +10,7 @@ reads `window.matchMedia('(prefers-color-scheme: dark)')` and sets
 the pattern already used in `LandingLayout.astro` for landing pages.
 
 **Rationale**:
+
 - Works in all browsers that support `prefers-color-scheme` (no Chromium-only
   client hints dependency)
 - Already proven pattern in the codebase (`LandingLayout.astro` line 49-54)
@@ -18,6 +19,7 @@ the pattern already used in `LandingLayout.astro` for landing pages.
   before any content paints for "System" users
 
 **Alternatives considered**:
+
 - Server-side via `Sec-CH-Prefers-Color-Scheme` header: Chromium-only, adds
   middleware complexity, no fallback for Firefox/Safari
 - Server-side via `User-Agent` detection: Unreliable, inaccurate
@@ -31,6 +33,7 @@ at the application layer in `src/lib/db/preferences.ts` and the TypeScript type
 in `src/lib/db/types.ts`.
 
 **Rationale**:
+
 - The existing Prisma schema stores `theme` as `String` (not an enum), so
   adding `"system"` as a valid value does not require a migration
 - Runtime validation in `upsertUserPreferences()` will reject invalid values
@@ -44,6 +47,7 @@ in `src/lib/db/types.ts`.
 server-side handler already validates CSRF via `validateCsrfToken()`.
 
 **Rationale**:
+
 - The Settings page already has CSRF set up (lines 59-83 in settings.astro)
 - The POST handler reads `theme` and `accent` fields — just need to wire the
   Preferences tab form with the same mechanism
@@ -57,6 +61,7 @@ listener that re-evaluates the effective theme when the OS preference changes.
 Only active when user preference is `"system"`.
 
 **Rationale**:
+
 - Simple, well-documented browser API
 - No external dependencies needed
 - Listener is cleaned up on page navigation (astro:before-swap)
@@ -68,6 +73,7 @@ and accent color picker as two separate, independent controls. Changing one
 does not affect the other.
 
 **Rationale**:
+
 - Constitution Independence Rule
 - Existing JS (`setupSettings()` in settings.astro) already separates
   `updateThemeOptions()` and `updateAccentOptions()` — the HTML just needs

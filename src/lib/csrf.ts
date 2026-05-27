@@ -28,10 +28,7 @@ export function setCsrfCookieHeader(headers: Headers, token: string): void {
   );
 }
 
-export function validateCsrf(
-  request: Request,
-  formData?: FormData,
-): boolean {
+export function validateCsrf(request: Request, formData?: FormData): boolean {
   const cookieHeader = request.headers.get("cookie") ?? "";
   const cookieToken = extractCookie(cookieHeader, CSRF_COOKIE);
   if (!cookieToken) return false;

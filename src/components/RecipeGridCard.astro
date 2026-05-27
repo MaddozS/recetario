@@ -97,7 +97,11 @@ const cardMenuId = `card-menu-${id}`;
           >
             <input type="hidden" name="action" value="duplicate_recipe" />
             <input type="hidden" name="recipeId" value={id} />
-            <input type="hidden" name="_csrf" value={Astro.locals.csrfToken || ""} />
+            <input
+              type="hidden"
+              name="_csrf"
+              value={Astro.locals.csrfToken || ""}
+            />
           </form>
           <button
             type="submit"
@@ -150,7 +154,9 @@ const cardMenuId = `card-menu-${id}`;
     opacity: 0;
     transform: scale(0.95);
     pointer-events: none;
-    transition: opacity 150ms var(--ease-out), transform 150ms var(--ease-out);
+    transition:
+      opacity 150ms var(--ease-out),
+      transform 150ms var(--ease-out);
   }
 
   [data-card-menu].card-menu-open {
@@ -162,10 +168,14 @@ const cardMenuId = `card-menu-${id}`;
 
 <script>
   function setupCardMenus() {
-    const triggers = document.querySelectorAll("[data-card-menu-trigger]") as NodeListOf<HTMLElement>;
+    const triggers = document.querySelectorAll(
+      "[data-card-menu-trigger]",
+    ) as NodeListOf<HTMLElement>;
 
     function closeAllMenus() {
-      (document.querySelectorAll("[data-card-menu]") as NodeListOf<HTMLElement>).forEach((menu) => {
+      (
+        document.querySelectorAll("[data-card-menu]") as NodeListOf<HTMLElement>
+      ).forEach((menu) => {
         menu.classList.remove("card-menu-open");
         const trigger = document.querySelector(
           `[data-card-menu-trigger="${menu.id}"]`,

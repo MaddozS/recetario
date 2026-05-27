@@ -7,18 +7,18 @@ No `.env.local` — use `.env`.
 
 ## Commands
 
-| Command | Purpose |
-|---|---|
-| `pnpm dev` | Dev server at `localhost:4321` |
-| `pnpm build` | Production build |
-| `pnpm preview` | Preview build locally |
-| `pnpm format` | Prettier whole project |
-| `pnpm astro check` | Type-check `.astro` + `.ts` |
-| `pnpm eslint .` | Lint JS/TS/Astro |
-| `npx prisma migrate dev --name X` | Create migration |
-| `npx prisma generate` | Regenerate client |
-| `npx prisma studio` | Open Prisma Studio |
-| `npx tsx prisma/seed.ts` | Run seed manually |
+| Command                           | Purpose                        |
+| --------------------------------- | ------------------------------ |
+| `pnpm dev`                        | Dev server at `localhost:4321` |
+| `pnpm build`                      | Production build               |
+| `pnpm preview`                    | Preview build locally          |
+| `pnpm format`                     | Prettier whole project         |
+| `pnpm astro check`                | Type-check `.astro` + `.ts`    |
+| `pnpm eslint .`                   | Lint JS/TS/Astro               |
+| `npx prisma migrate dev --name X` | Create migration               |
+| `npx prisma generate`             | Regenerate client              |
+| `npx prisma studio`               | Open Prisma Studio             |
+| `npx tsx prisma/seed.ts`          | Run seed manually              |
 
 **postinstall** runs `npx prisma generate` automatically.
 **vercel-build**: `npx prisma generate && npx prisma migrate deploy && astro build`.
@@ -41,6 +41,7 @@ Better Auth via `src/lib/auth.ts` (server singleton) + `src/lib/auth-client.ts` 
 ### Data layer
 
 **PostgreSQL + Prisma ORM** with `@prisma/adapter-pg` + `pg.Pool` (max 3, 30s idle). Singleton in `src/lib/prisma.ts`.
+
 - Output: `generated/prisma/` (non-standard — set in `schema.prisma:7`)
 - Import via `@/lib/db/*` barrel (`index.ts`). Direct `@/lib/prisma` only for raw access.
 - Multi-tenant: every record has `ownerId`. Scoped by `RECIPES_STATIC_OWNER_ID`/`EMAIL` env vars for seed users.
@@ -48,18 +49,18 @@ Better Auth via `src/lib/auth.ts` (server singleton) + `src/lib/auth-client.ts` 
 
 ### Key gotchas
 
-| Gotcha | Detail |
-|---|---|
-| **Import paths** | `@/lib/db/ingredients`, `@/lib/db/recipes`, `@/lib/db/billing`, etc. | |
-| **Forms** | No Astro Actions. POST to same page, read `Astro.request.formData()`, redirect. Spanish locale: `parseNumberInput()` converts comma→dot. |
-| **Recipe update** | Destructive: `$transaction` deletes all `RecipeIngredient` rows then re-creates. |
-| **Ingredient delete** | Blocked if referenced by any recipe (returns `{ status: "blocked", recipes: [...] }`). |
-| **RecipeIngredient** | Composite PK `@@id([recipeId, ingredientId])`. |
-| **Feature flags** | 12 keys in `FREE_FEATURES` (all false). Basic enables 5; Pro enables all 12. |
-| **Tsconfig exclude** | `["dist, .agent/**, .astro/**, node_modules/**, .vercel/**"]` — single comma string, likely buggy. |
-| **Subscription cache** | Middleware caches subscription for 60s via `src/lib/cache.ts`. |
-| **pnpm allowed builds** | Only `esbuild`, `sharp`, `@prisma/engines`, `prisma` (`pnpm-workspace.yaml`). |
-| **Vercel ephemeral** | Always set `DATABASE_URL` for persistence. |
+| Gotcha                  | Detail                                                                                                                                   |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | --- |
+| **Import paths**        | `@/lib/db/ingredients`, `@/lib/db/recipes`, `@/lib/db/billing`, etc.                                                                     |     |
+| **Forms**               | No Astro Actions. POST to same page, read `Astro.request.formData()`, redirect. Spanish locale: `parseNumberInput()` converts comma→dot. |
+| **Recipe update**       | Destructive: `$transaction` deletes all `RecipeIngredient` rows then re-creates.                                                         |
+| **Ingredient delete**   | Blocked if referenced by any recipe (returns `{ status: "blocked", recipes: [...] }`).                                                   |
+| **RecipeIngredient**    | Composite PK `@@id([recipeId, ingredientId])`.                                                                                           |
+| **Feature flags**       | 12 keys in `FREE_FEATURES` (all false). Basic enables 5; Pro enables all 12.                                                             |
+| **Tsconfig exclude**    | `["dist, .agent/**, .astro/**, node_modules/**, .vercel/**"]` — single comma string, likely buggy.                                       |
+| **Subscription cache**  | Middleware caches subscription for 60s via `src/lib/cache.ts`.                                                                           |
+| **pnpm allowed builds** | Only `esbuild`, `sharp`, `@prisma/engines`, `prisma` (`pnpm-workspace.yaml`).                                                            |
+| **Vercel ephemeral**    | Always set `DATABASE_URL` for persistence.                                                                                               |
 
 ### Modules you might miss
 
@@ -74,9 +75,10 @@ Better Auth via `src/lib/auth.ts` (server singleton) + `src/lib/auth-client.ts` 
 ### Stripe billing
 
 3 routes in `src/pages/api/stripe/`:
+
 - `checkout` (POST, auth) — creates Checkout Session, returns `{ url }`
 - `portal` (POST, auth) — creates Customer Portal session
-- `webhook` (POST, no auth*) — handles `checkout.session.completed`, `invoice.paid`, `invoice.payment_failed`, `customer.subscription.deleted`, `customer.subscription.updated`
+- `webhook` (POST, no auth\*) — handles `checkout.session.completed`, `invoice.paid`, `invoice.payment_failed`, `customer.subscription.deleted`, `customer.subscription.updated`
 
 API version: `2026-04-22.dahlia`.
 
@@ -89,7 +91,7 @@ API version: `2026-04-22.dahlia`.
 
 ## UI conventions
 
-- **ALWAYS** use `Button`, `Input`, `Dialog`, `Icon` (astro-icon, lucide:*), `Badge`, `Card`, `FeedbackAlert`, `SectionHeading`, `FinancialSummary` from `@/components/ui` barrel.
+- **ALWAYS** use `Button`, `Input`, `Dialog`, `Icon` (astro-icon, lucide:\*), `Badge`, `Card`, `FeedbackAlert`, `SectionHeading`, `FinancialSummary` from `@/components/ui` barrel.
 - **ALWAYS** use semantic tokens (`bg-card`, `text-foreground`, `border-border`, `accent-*`). Never hardcoded colors.
 - **Dialog backdrops**: use `backdrop:bg-backdrop/50`, never `backdrop:bg-slate-900/50`.
 

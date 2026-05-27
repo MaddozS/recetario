@@ -8,14 +8,15 @@
 
 **Findings**:
 
-| # | Issue | Severity | Detail |
-|---|-------|----------|--------|
-| 1 | No `main` landmark | P2 Minor | Page content wrapped in `<div>`, not `<main>`. The `LandingLayout` likely provides `<main>`, verify. |
-| 2 | No `aria-describedby` on error container | P2 Minor | `#sign-in-error` div shows errors but is not linked to inputs via `aria-describedby`. |
-| 3 | No session expiry warning | P3 Polish | If session expires mid-fill, no visual indication. Edge case. |
-| 4 | Spinner SVG lacks `aria-hidden` | P3 Polish | Loading spinner is decorative, should have `aria-hidden="true"`. |
+| #   | Issue                                    | Severity  | Detail                                                                                               |
+| --- | ---------------------------------------- | --------- | ---------------------------------------------------------------------------------------------------- |
+| 1   | No `main` landmark                       | P2 Minor  | Page content wrapped in `<div>`, not `<main>`. The `LandingLayout` likely provides `<main>`, verify. |
+| 2   | No `aria-describedby` on error container | P2 Minor  | `#sign-in-error` div shows errors but is not linked to inputs via `aria-describedby`.                |
+| 3   | No session expiry warning                | P3 Polish | If session expires mid-fill, no visual indication. Edge case.                                        |
+| 4   | Spinner SVG lacks `aria-hidden`          | P3 Polish | Loading spinner is decorative, should have `aria-hidden="true"`.                                     |
 
 **Positives**:
+
 - All inputs have proper `<label for="...">` associations
 - Password toggle has `aria-label` that updates dynamically
 - Buttons are true `<button>` elements, not `<div role="button">`
@@ -27,6 +28,7 @@
 ### 2. Performance — Score: 4/4 (Excellent)
 
 **Positives**:
+
 - No layout thrashing — DOM reads and writes are batched
 - No animated layout properties — only `transform` and `opacity` used for spinner
 - No expensive CSS animations — spinner uses `animation: sp 0.7s linear infinite`
@@ -39,6 +41,7 @@
 ### 3. Theming — Score: 4/4 (Excellent)
 
 **Positives**:
+
 - Zero hardcoded colors — all use semantic tokens: `bg-card`, `text-foreground`, `text-muted-foreground`, `border-border`, `bg-background`, `bg-accent-500`, `bg-accent-50`, `text-accent-600`, `border-danger-border`, `bg-danger-bg`, `text-danger`, `border-warning-border`, `bg-warning-bg`, `text-warning`
 - LandingLayout handles theme toggle (`toggleLandingTheme()`)
 - Dark mode auto-adapts via semantic tokens — no `.dark` class selectors
@@ -51,15 +54,16 @@
 
 **Findings**:
 
-| # | Issue | Severity | Detail |
-|---|-------|----------|--------|
-| 1 | `min-h-[80vh]` + `pt-20` on short viewports | P1 Major | On landscape mobile (e.g., iPhone SE 375×667 landscape = 375×375), `pt-20` (80px) + nav height (64px) + card padding leaves ~231px for card. Card itself is ~380px at min-content. Content may overflow. Fix: `min-h-screen` or `py-20`. |
-| 2 | Card `p-10 pt-12` — large padding on small screens | P2 Minor | On 320px width, `p-10` (40px × 2) + 320px = 240px max content width. Tight but functional with `max-w-sm` (384px). Consider `px-6 py-8` on mobile. |
-| 3 | No horizontal scroll issues | ✅ | `max-w-sm` + `px-4` wrapper prevents overflow. |
+| #   | Issue                                              | Severity | Detail                                                                                                                                                                                                                                   |
+| --- | -------------------------------------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | `min-h-[80vh]` + `pt-20` on short viewports        | P1 Major | On landscape mobile (e.g., iPhone SE 375×667 landscape = 375×375), `pt-20` (80px) + nav height (64px) + card padding leaves ~231px for card. Card itself is ~380px at min-content. Content may overflow. Fix: `min-h-screen` or `py-20`. |
+| 2   | Card `p-10 pt-12` — large padding on small screens | P2 Minor | On 320px width, `p-10` (40px × 2) + 320px = 240px max content width. Tight but functional with `max-w-sm` (384px). Consider `px-6 py-8` on mobile.                                                                                       |
+| 3   | No horizontal scroll issues                        | ✅       | `max-w-sm` + `px-4` wrapper prevents overflow.                                                                                                                                                                                           |
 
 ### 5. Anti-Patterns — Score: 4/4 (Excellent)
 
 **Checklist**:
+
 - ❌ Side-stripe borders: None found. Borders are full (`border` class).
 - ❌ Gradient text: None found.
 - ❌ Glassmorphism as default: None. Overlay uses blur intentionally for loading state — purposeful, not decorative.
@@ -68,11 +72,13 @@
 - ❌ Modal as first thought: N/A — direct page, not a modal.
 
 **AI Slop Test**:
+
 - **First-order**: Category "sign-in page" + "coral accent" + "centered card" does risk feeling generic. But the chef-hat icon, KitchCalc branding, and Spanish copy break the SaaS-template reflex.
 - **Second-order**: Not "SaaS cream" — uses clean semantic tokens on a dark/light toggle system. Intentional, not template-default.
 - **Verdict**: Pass. Human-crafted feel.
 
 **Positives**:
+
 - No decorative elements — the accent bar at top (`bg-accent-500 absolute top-0 right-8 left-8 h-1`) is restrained (One Voice Rule)
 - No bounce/elastic easing
 - No nested cards
@@ -82,14 +88,14 @@
 
 ## Audit Health Score
 
-| # | Dimension | Score | Key Finding |
-|---|-----------|-------|-------------|
-| 1 | Accessibility | 3/4 | Missing `aria-describedby` on error element |
-| 2 | Performance | 4/4 | No issues found |
-| 3 | Responsive Design | 3/4 | `min-h-[80vh]` + `pt-20` may overflow on landscape mobile |
-| 4 | Theming | 4/4 | No issues found |
-| 5 | Anti-Patterns | 4/4 | No issues found |
-| **Total** | | **18/20** | **Excellent** |
+| #         | Dimension         | Score     | Key Finding                                               |
+| --------- | ----------------- | --------- | --------------------------------------------------------- |
+| 1         | Accessibility     | 3/4       | Missing `aria-describedby` on error element               |
+| 2         | Performance       | 4/4       | No issues found                                           |
+| 3         | Responsive Design | 3/4       | `min-h-[80vh]` + `pt-20` may overflow on landscape mobile |
+| 4         | Theming           | 4/4       | No issues found                                           |
+| 5         | Anti-Patterns     | 4/4       | No issues found                                           |
+| **Total** |                   | **18/20** | **Excellent**                                             |
 
 ---
 

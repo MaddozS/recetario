@@ -44,6 +44,7 @@ No blocking prerequisites. All changes affect client-side behavior within a sing
 **Goal**: Replace native `alert()` calls in the preferences optimistic save flow with a `FeedbackAlert` component rendered at the top of the section. Show a loading spinner in the save button during submission.
 
 **Independent Test**: Open Settings → Preferencias tab. Change a theme option. The "Guardar cambios" button appears. Click it. Observe:
+
 - Button shows a spinner during the request
 - On success: green banner at section top says "Preferencias guardadas correctamente."
 - On failure: red banner at section top shows error message, selections revert

@@ -53,6 +53,7 @@ emailVerification: {
 6. Add resend verification email endpoint
 
 **Files to change:**
+
 - `src/lib/auth.ts` — add emailVerification config
 - `src/lib/email.ts` — new file, mail sending utility
 - `src/pages/sign-up.astro` — update copy, remove "No verificamos email"
@@ -74,6 +75,7 @@ emailVerification: {
 6. Add rate limiting on forgot-password endpoint
 
 **Files to change:**
+
 - `src/pages/sign-in.astro` — add "Forgot password?" link below form
 - `src/pages/forgot-password.astro` — new file
 - `src/pages/reset-password.astro` — new file
@@ -96,6 +98,7 @@ emailVerification: {
 3. Or: wrap existing `rateLimiter.check()` to use KV with same API surface
 
 **Files to change:**
+
 - `src/lib/rate-limiter.ts` — replace Map with persistent storage
 - `.env` — add `KV_REST_API_URL` and `KV_REST_API_TOKEN` if using KV
 - `package.json` — add `@vercel/kv` if using KV
@@ -115,6 +118,7 @@ emailVerification: {
 3. Set larger TTL for subscription cache (e.g., 5 minutes) since KV is shared
 
 **Files to change:**
+
 - `src/lib/cache.ts` — replace Map with persistent storage
 - `src/middleware.ts` — update import if changing interface
 - `src/layouts/Layout.astro` — update import if changing interface
@@ -130,6 +134,7 @@ emailVerification: {
 **Current state:** No UI or API to delete an account. GDPR/privacy risk for EU users.
 
 **What to do (when decided):**
+
 1. Add "Delete account" section to settings page with confirmation dialog
 2. Create `src/pages/api/account/delete.ts` endpoint
 3. Cascade delete: Sessions, Accounts, Preferences, Subscriptions, Recipes, Ingredients, etc.
@@ -139,6 +144,7 @@ emailVerification: {
 7. Add audit log entry
 
 **Files to change (when implemented):**
+
 - `src/pages/settings.astro` — add delete section + dialog
 - `src/pages/api/account/delete.ts` — new file
 - `src/lib/db/account.ts` — new file, deletion logic
@@ -161,6 +167,7 @@ emailVerification: {
 7. CSRF protection on all POST endpoints
 
 **Files to change:**
+
 - `src/pages/settings.astro` — add email/password change forms
 - `src/pages/api/account/change-email.ts` — new file
 - `src/pages/api/account/change-password.ts` — new file
@@ -183,6 +190,7 @@ emailVerification: {
 6. Restore `src/pages/api/account/sessions/all.ts` (DELETE all)
 
 **Files to restore:**
+
 - `src/pages/settings.astro` — add sessions tab + content block + JS
 - `src/pages/api/account/sessions.ts` — API endpoint
 - `src/pages/api/account/sessions/all.ts` — API endpoint
@@ -203,6 +211,7 @@ emailVerification: {
 4. At minimum: add CSP header in middleware to limit script execution
 
 **Files to change:**
+
 - `src/middleware.ts` — update `httpOnly` setting, add CSP header
 - Optionally migrate client-side fetch calls to form submissions
 
@@ -226,6 +235,7 @@ Better Auth supports TOTP natively. Minor effort, significant security gain.
 6. Re-add "Seguridad" tab to settings nav
 
 **Files to restore:**
+
 - `src/lib/auth.ts` — twoFactor config
 - `src/lib/auth-client.ts` — twoFactorClient plugin
 - `src/pages/settings/mfa.astro` — MFA settings page
@@ -245,6 +255,7 @@ Better Auth supports TOTP natively. Minor effort, significant security gain.
 3. Track by IP, same window as email sign-in
 
 **Files to change:**
+
 - `src/pages/api/auth/[...all].ts` — add OAuth rate limit check
 
 ---
@@ -259,6 +270,7 @@ No record of sign-ins, sign-ups, password changes, email changes, etc. Debugging
 4. Add admin dashboard or settings viewer for user's own log
 
 **Files to change:**
+
 - `prisma/schema.prisma` — add AuditLog model
 - `src/lib/db/audit.ts` — new file, log operations
 - `src/middleware.ts` — log sign-ins
@@ -276,6 +288,7 @@ No `role` field on User model. All users are equal. No admin panel, no moderatio
 4. Create simple admin dashboard for user management (future)
 
 **Files to change:**
+
 - `prisma/schema.prisma` — add Role enum + role field
 - `src/middleware.ts` — populate role in locals
 - `src/lib/auth.ts` — add role to session
@@ -294,6 +307,7 @@ P2 ✅/🔄: Google OAuth rate limit → audit log → role system  |  🔒 MFA/
 ### Enabling hidden features
 
 To re-enable Session Management or MFA/2FA:
+
 1. Follow the "Files to restore" lists in their respective sections above
 2. Re-add any removed lucide icons to `astro.config.mjs`
 3. Run `pnpm astro check` to verify

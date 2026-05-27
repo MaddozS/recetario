@@ -14,13 +14,13 @@ Code review manual de los 7 componentes landing + LandingLayout + global.css. Ve
 
 ### Current coverage
 
-| Breakpoint | Files | Purpose |
-|---|---|---|
-| `sm` (640px) | Navbar, Hero, Features, HowItWorks, Pricing, CTA, Footer | Layout shifts, font sizing, spacing |
-| `md` (768px) | Navbar, Hero, Features, HowItWorks, Pricing, CTA, Footer | Grid columns, section padding, mobile menu toggle |
-| `lg` (1024px) | Hero, Pricing, CTA, Layout | Hero grid columns, pricing overflow, CTA font |
-| `xl` (1280px) | No explicit usage | — |
-| `2xl` (1536px) | No explicit usage | — |
+| Breakpoint     | Files                                                    | Purpose                                           |
+| -------------- | -------------------------------------------------------- | ------------------------------------------------- |
+| `sm` (640px)   | Navbar, Hero, Features, HowItWorks, Pricing, CTA, Footer | Layout shifts, font sizing, spacing               |
+| `md` (768px)   | Navbar, Hero, Features, HowItWorks, Pricing, CTA, Footer | Grid columns, section padding, mobile menu toggle |
+| `lg` (1024px)  | Hero, Pricing, CTA, Layout                               | Hero grid columns, pricing overflow, CTA font     |
+| `xl` (1280px)  | No explicit usage                                        | —                                                 |
+| `2xl` (1536px) | No explicit usage                                        | —                                                 |
 
 ### Issues
 
@@ -37,6 +37,7 @@ Code review manual de los 7 componentes landing + LandingLayout + global.css. Ve
 ## Findings — Dark/Light Theme
 
 ### Mechanism
+
 - `LandingLayout.astro` inline script prevents FOUC (reads localStorage before paint)
 - `.dark` class toggle on `<html>` drives all theme changes
 - `@custom-variant dark (&:where(.dark, .dark *))` in Tailwind v4
@@ -59,19 +60,19 @@ Code review manual de los 7 componentes landing + LandingLayout + global.css. Ve
 
 ### High priority
 
-| Location | Current | Ratio | Issue |
-|---|---|---|---|
+| Location                                            | Current               | Ratio  | Issue                                                                                           |
+| --------------------------------------------------- | --------------------- | ------ | ----------------------------------------------------------------------------------------------- |
 | `text-subtle-foreground` on `bg-background` (light) | `#94a3b8` / `#f8fafc` | ~2.6:1 | Fails WCAG AA (4.5:1). Used in HowItWorks stat badges, Pricing secondary prices, Footer bullets |
-| `text-muted-foreground` on `bg-background` (light) | `#64748b` / `#f8fafc` | ~4.1:1 | Borderline WCAG AA. Used extensively for descriptive text |
-| `text-muted-foreground/60` on FeaturesSection | Reduced to 60% | ~2.5:1 | Lightbox hint text, only on hover — acceptable but suboptimal |
+| `text-muted-foreground` on `bg-background` (light)  | `#64748b` / `#f8fafc` | ~4.1:1 | Borderline WCAG AA. Used extensively for descriptive text                                       |
+| `text-muted-foreground/60` on FeaturesSection       | Reduced to 60%        | ~2.5:1 | Lightbox hint text, only on hover — acceptable but suboptimal                                   |
 
 ### Medium priority
 
-| Location | Current | Issue |
-|---|---|---|
-| `--tw-border-light` in dark mode | `#030712` | Near-black on dark bg — nearly invisible |
-| CTA secondary button (dark mode) | `text-white` on accent gradient | White on lighter portions of gradient may be ~3.5:1 |
-| HowItWorks step circle dark mode | `bg-accent-600` → shade-500, `text-white` | OK for accent-500 on dark bg |
+| Location                         | Current                                   | Issue                                               |
+| -------------------------------- | ----------------------------------------- | --------------------------------------------------- |
+| `--tw-border-light` in dark mode | `#030712`                                 | Near-black on dark bg — nearly invisible            |
+| CTA secondary button (dark mode) | `text-white` on accent gradient           | White on lighter portions of gradient may be ~3.5:1 |
+| HowItWorks step circle dark mode | `bg-accent-600` → shade-500, `text-white` | OK for accent-500 on dark bg                        |
 
 **Decision**: Darken `text-subtle-foreground` from `#94a3b8` to meet 4.5:1 minimum or use `text-muted-foreground` for critical text. Evaluate `text-muted-foreground` increase to `#78716c` (target ~5.5:1).
 **Rationale**: WCAG 2.1 AA compliance. Non-negotiable for public-facing website.
@@ -105,12 +106,12 @@ Code review manual de los 7 componentes landing + LandingLayout + global.css. Ve
 
 ## Consolidated Decisions
 
-| Decision | Rationale | Alternatives Considered |
-|---|---|---|
-| Replace all hardcoded colors with semantic tokens | Token Bridge Rule (NON-NEGOTIABLE) | N/A |
+| Decision                                                    | Rationale                                                        | Alternatives Considered                                                                                                |
+| ----------------------------------------------------------- | ---------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| Replace all hardcoded colors with semantic tokens           | Token Bridge Rule (NON-NEGOTIABLE)                               | N/A                                                                                                                    |
 | Refactor dual `<img>` to single img + JS `MutationObserver` | Reduce payload ~50%, respeta toggle manual de tema (no OS-level) | `<picture>` con `prefers-color-scheme` (roto con toggle manual), JS swap sin observer (no reacciona a cambios de tema) |
-| Darken `text-subtle-foreground` token | WCAG 2.1 AA compliance (4.5:1) | Keep current (fails compliance), add contrast toggle (overkill) |
-| Add img dimensions to feature screenshots | Eliminate CLS, improve Lighthouse score | Aspect ratio boxes (maintenance overhead) |
-| Subset Google Fonts weights | Reduce font payload ~40% | WOFF2 conversion (standard practice already in use) |
-| Add xl/2xl responsive adjustments | Complete Tailwind v4 breakpoint coverage | Container queries (unnecessary for page-level sections) |
-| Verify all accent-relevant contrast pairs | Prevent accessibility regressions from accent shift | No verification (risk of dark-mode inaccessibility) |
+| Darken `text-subtle-foreground` token                       | WCAG 2.1 AA compliance (4.5:1)                                   | Keep current (fails compliance), add contrast toggle (overkill)                                                        |
+| Add img dimensions to feature screenshots                   | Eliminate CLS, improve Lighthouse score                          | Aspect ratio boxes (maintenance overhead)                                                                              |
+| Subset Google Fonts weights                                 | Reduce font payload ~40%                                         | WOFF2 conversion (standard practice already in use)                                                                    |
+| Add xl/2xl responsive adjustments                           | Complete Tailwind v4 breakpoint coverage                         | Container queries (unnecessary for page-level sections)                                                                |
+| Verify all accent-relevant contrast pairs                   | Prevent accessibility regressions from accent shift              | No verification (risk of dark-mode inaccessibility)                                                                    |

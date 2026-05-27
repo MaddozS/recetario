@@ -8,7 +8,7 @@
 
 **Input**: User description: "Página de inicio de sesión solo accesible sin sesión activa. Esquema de colores landing page. Opciones: email/contraseña y Google (solo cuentas existentes, sin auto-crear). Link a ¿olvidaste contraseña? y registro. Errores genéricos por seguridad."
 
-## User Scenarios & Testing *(mandatory)*
+## User Scenarios & Testing _(mandatory)_
 
 ### User Story 1 - Inicio de sesión con email y contraseña (Priority: P1)
 
@@ -82,7 +82,7 @@ Usuario que ya tiene sesión iniciada no puede acceder a la página de inicio de
 - Usuario intenta fuerza bruta: la capa de rate limiting del backend (ya existente) limita intentos repetidos.
 - Parámetro `redirect` con URL externa o maliciosa: el sistema ignora el parámetro y redirige a `/recipes` por seguridad.
 
-## Requirements *(mandatory)*
+## Requirements _(mandatory)_
 
 ### Functional Requirements
 
@@ -107,7 +107,7 @@ Usuario que ya tiene sesión iniciada no puede acceder a la página de inicio de
 
 - **User (Usuario)**: Entidad existente con atributos de email, contraseña (hash), estado de verificación de email, y vinculaciones OAuth (Google). Gestionado por el sistema de autenticación existente.
 
-## Success Criteria *(mandatory)*
+## Success Criteria _(mandatory)_
 
 ### Measurable Outcomes
 

@@ -32,15 +32,15 @@ Impeccable audit score: **18/20** (Excellent). 1 P1 responsive issue, 2 P2 acces
 
 ## Constitution Check
 
-*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
+_GATE: Must pass before Phase 0 research. Re-check after Phase 1 design._
 
-| Principle | Status | Notes |
-|-----------|--------|-------|
-| I. Clean Code | ✅ PASS | <300 lines per file, no new files, no dead code |
-| II. Simple UX, Clear UI | ✅ PASS | Single-purpose page, Spanish UI, semantic tokens |
+| Principle                   | Status  | Notes                                                            |
+| --------------------------- | ------- | ---------------------------------------------------------------- |
+| I. Clean Code               | ✅ PASS | <300 lines per file, no new files, no dead code                  |
+| II. Simple UX, Clear UI     | ✅ PASS | Single-purpose page, Spanish UI, semantic tokens                 |
 | III. Design by Constitution | ✅ PASS | LandingLayout, `bg-card`, `text-foreground`, no hardcoded colors |
-| IV. TypeScript Strictness | ✅ PASS | All changes in `.ts`/`.astro` with strict types |
-| V. Technology Lock-in | ✅ PASS | Astro 6, Better Auth, Tailwind V4 — no new tech added |
+| IV. TypeScript Strictness   | ✅ PASS | All changes in `.ts`/`.astro` with strict types                  |
+| V. Technology Lock-in       | ✅ PASS | Astro 6, Better Auth, Tailwind V4 — no new tech added            |
 
 **Gate result: PASS**. No violations. No complexity tracking needed.
 

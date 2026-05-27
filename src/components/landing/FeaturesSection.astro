@@ -29,7 +29,11 @@ const features = [
 ];
 ---
 
-<section id="features" class="bg-background py-24 scroll-mt-16 md:py-32" style="content-visibility: auto; contain-intrinsic-size: 800px">
+<section
+  id="features"
+  class="bg-background scroll-mt-16 py-24 md:py-32"
+  style="content-visibility: auto; contain-intrinsic-size: 800px"
+>
   <div class="mx-auto max-w-7xl px-6">
     <div class="mx-auto max-w-2xl text-center" data-reveal>
       <h2
@@ -54,9 +58,7 @@ const features = [
             >
               <div class={isEven ? "md:order-1" : "md:order-2"}>
                 <div class="mx-auto max-w-lg">
-                  <h3 class="text-foreground text-2xl font-bold">
-                    {f.title}
-                  </h3>
+                  <h3 class="text-foreground text-2xl font-bold">{f.title}</h3>
                   <p class="text-muted-foreground mt-3 text-base leading-relaxed">
                     {f.description}
                   </p>
@@ -77,7 +79,7 @@ const features = [
                       data-light-src={f.imageLight}
                       data-dark-src={f.imageDark}
                       alt={`Pantalla de la funcionalidad de ${f.title} en KitchCalc`}
-                      class="shadow-accent-tint border-border/50 h-auto w-full rounded-2xl border transition-shadow duration-200 group-hover/lightbox:shadow-lg group-hover/lightbox:shadow-accent-300/20 theme-aware-img"
+                      class="shadow-accent-tint border-border/50 group-hover/lightbox:shadow-accent-300/20 theme-aware-img h-auto w-full rounded-2xl border transition-shadow duration-200 group-hover/lightbox:shadow-lg"
                       loading="lazy"
                       decoding="async"
                       width="800"
@@ -100,12 +102,12 @@ const features = [
 
 <dialog
   data-lightbox
-  class="backdrop:bg-backdrop/50 border-none bg-transparent p-0 open:grid open:place-items-center open:w-screen open:h-dvh"
+  class="backdrop:bg-backdrop/50 border-none bg-transparent p-0 open:grid open:h-dvh open:w-screen open:place-items-center"
 >
   <div class="relative">
     <img
       data-lightbox-img
-      class="max-h-[85dvh] max-w-[90vw] h-auto w-auto block rounded-2xl border border-border/30 object-contain shadow-2xl"
+      class="border-border/30 block h-auto max-h-[85dvh] w-auto max-w-[90vw] rounded-2xl border object-contain shadow-2xl"
       alt=""
     />
   </div>
@@ -138,23 +140,43 @@ const features = [
   }
 
   @keyframes lightboxIn {
-    from { opacity: 0; transform: scale(0.92); }
-    to { opacity: 1; transform: scale(1); }
+    from {
+      opacity: 0;
+      transform: scale(0.92);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
   }
 
   @keyframes lightboxOut {
-    from { opacity: 1; transform: scale(1); }
-    to { opacity: 0; transform: scale(0.92); }
+    from {
+      opacity: 1;
+      transform: scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: scale(0.92);
+    }
   }
 
   @keyframes backdropIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
 
   @keyframes backdropOut {
-    from { opacity: 1; }
-    to { opacity: 0; }
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -171,14 +193,22 @@ const features = [
 
 <script>
   function setupLightbox() {
-    const dialog = document.querySelector("[data-lightbox]") as HTMLDialogElement | null;
-    const img = dialog?.querySelector("[data-lightbox-img]") as HTMLImageElement | null;
-    const closeBtn = dialog?.querySelector("[data-lightbox-close]") as HTMLButtonElement | null;
+    const dialog = document.querySelector(
+      "[data-lightbox]",
+    ) as HTMLDialogElement | null;
+    const img = dialog?.querySelector(
+      "[data-lightbox-img]",
+    ) as HTMLImageElement | null;
+    const closeBtn = dialog?.querySelector(
+      "[data-lightbox-close]",
+    ) as HTMLButtonElement | null;
     if (!dialog || !img || !closeBtn) return;
     if (dialog.dataset.lightboxBound === "1") return;
     dialog.dataset.lightboxBound = "1";
 
-    const triggers = document.querySelectorAll("[data-lightbox-trigger]") as NodeListOf<HTMLElement>;
+    const triggers = document.querySelectorAll(
+      "[data-lightbox-trigger]",
+    ) as NodeListOf<HTMLElement>;
 
     function closeLightbox() {
       if (!dialog!.open) return;
@@ -218,7 +248,8 @@ const features = [
   }
 
   function setupFeatureThemeImages() {
-    const imgs = document.querySelectorAll<HTMLImageElement>(".theme-aware-img");
+    const imgs =
+      document.querySelectorAll<HTMLImageElement>(".theme-aware-img");
     if (imgs.length === 0) return;
 
     function updateImages() {

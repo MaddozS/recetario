@@ -78,7 +78,8 @@ export function resolveSubscription(
     features: sub.features ?? { ...FREE_FEATURES },
     priceCents: sub.priceCents ?? null,
     currency: sub.currency ?? null,
-    billingInterval: (sub.billingInterval as "monthly" | "yearly" | null) ?? null,
+    billingInterval:
+      (sub.billingInterval as "monthly" | "yearly" | null) ?? null,
     currentPeriodEnd: sub.currentPeriodEnd,
     cancelAtPeriodEnd: sub.cancelAtPeriodEnd,
     isTrial: sub.status === "trialing",
