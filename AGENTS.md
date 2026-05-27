@@ -109,6 +109,6 @@ pnpm dev
 
 <!-- SPECKIT START -->
 
-**Active Plan**: `specs/003-settings-feedback-ui/plan.md` — Settings Feedback UI (confirmation messages, error feedback, disabled buttons, loading spinners).
+**Active Plan**: `specs/004-sign-in-page/plan.md` — Sign-in Page (generic security errors, Google disableSignUp, redirect param support, responsive audit).
 
 <!-- SPECKIT END -->
