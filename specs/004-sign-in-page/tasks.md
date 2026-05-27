@@ -55,25 +55,7 @@
 
 ---
 
-## Phase 4: User Story 2 — Google Sign-in (Existing Accounts Only) (Priority: P2)
-
-**Goal**: Google OAuth sign-in only works for already-linked accounts, respects `?redirect=` param, shows error without auto-creating accounts.
-
-**Independent Test**: Sign in with Google on a linked account → successful. Sign in with Google on an unlinked account → error message, no account created. Check DB — no new User row.
-
-### Implementation for User Story 2
-
-- [ ] T009 [US2] Update Google button click handler in `src/pages/sign-in.astro:287-314` to call `signInWithGoogle(redirectTarget)` passing the validated redirect target
-- [ ] T010 [US2] Handle `disableSignUp` error: in Google catch block at line 306-313, ensure error message is generic (e.g., `"No se pudo iniciar sesión con Google."`) — replace permissive message at line 312 if it reveals account linking state
-- [ ] T011 [US2] Verify Google sign-in overlay/spinner still shows during OAuth redirect (lines 295-302) and buttons disable properly
-- [ ] T012 [US2] Manually test: Google sign-in WITH linked account → session created, redirected correctly
-- [ ] T013 [US2] Manually test: Google sign-in WITHOUT linked account → error displayed, verify no new User row in DB via `npx prisma studio`
-
-**Checkpoint**: Google sign-in restricted to existing accounts, redirect param supported
-
----
-
-## Phase 5: User Story 4 — Session Guard (Priority: P1)
+## Phase 4: User Story 4 — Session Guard (Priority: P1)
 
 **Goal**: Users with active session cannot access `/sign-in` page; immediately redirected.
 
@@ -96,6 +78,24 @@ if (Astro.locals.session) return Astro.redirect("/recipes");
 
 ---
 
+## Phase 5: User Story 2 — Google Sign-in (Existing Accounts Only) (Priority: P2)
+
+**Goal**: Google OAuth sign-in only works for already-linked accounts, respects `?redirect=` param, shows error without auto-creating accounts.
+
+**Independent Test**: Sign in with Google on a linked account → successful. Sign in with Google on an unlinked account → error message, no account created. Check DB — no new User row.
+
+### Implementation for User Story 2
+
+- [ ] T009 [US2] Update Google button click handler in `src/pages/sign-in.astro:287-314` to call `signInWithGoogle(redirectTarget)` passing the validated redirect target
+- [ ] T010 [US2] Handle `disableSignUp` error: in Google catch block at line 306-313, ensure error message is generic (e.g., `"No se pudo iniciar sesión con Google."`) — replace permissive message at line 312 if it reveals account linking state
+- [ ] T011 [US2] Verify Google sign-in overlay/spinner still shows during OAuth redirect (lines 295-302) and buttons disable properly
+- [ ] T012 [US2] Manually test: Google sign-in WITH linked account → session created, redirected correctly
+- [ ] T013 [US2] Manually test: Google sign-in WITHOUT linked account → error displayed, verify no new User row in DB via `npx prisma studio`
+
+**Checkpoint**: Google sign-in restricted to existing accounts, redirect param supported
+
+---
+
 ## Phase 6: User Story 3 — Navigation Links (Priority: P3)
 
 **Goal**: "Regístrate" and "¿Olvidaste tu contraseña?" links navigate correctly.
@@ -115,13 +115,13 @@ if (Astro.locals.session) return Astro.redirect("/recipes");
 
 **Purpose**: Fix findings from [impeccable-audit.md](./impeccable-audit.md) (18/20 score)
 
-- [ ] T017 [P] Fix P1 responsive issue: change `min-h-[80vh] pt-20` to `min-h-dvh py-20` on container div at `src/pages/sign-in.astro:30` to prevent content overflow on landscape mobile viewports
-- [ ] T018 [P] Fix P2 responsive issue: add responsive padding `p-6 sm:p-10 pt-8 sm:pt-12` on card div at `src/pages/sign-in.astro:32` for narrow screens
-- [ ] T019 [P] Fix P2 a11y issue: add `role="alert"` to `#sign-in-error` div at `src/pages/sign-in.astro:49-53` and `#sign-in-verify-error` div at `src/pages/sign-in.astro:54-58` for screen reader announcements
-- [ ] T020 [P] Fix P3 a11y issue: add `aria-hidden="true"` to spinner SVGs in overlay HTML templates at `src/pages/sign-in.astro:232-233` and `src/pages/sign-in.astro:298-299`
+- [ ] T017 Fix P1 responsive issue: change `min-h-[80vh] pt-20` to `min-h-dvh py-20` on container div at `src/pages/sign-in.astro:30` to prevent content overflow on landscape mobile viewports
+- [ ] T018 Fix P2 responsive issue: add responsive padding `p-6 sm:p-10 pt-8 sm:pt-12` on card div at `src/pages/sign-in.astro:32` for narrow screens
+- [ ] T019 Fix P2 a11y issue: add `role="alert"` to `#sign-in-error` div at `src/pages/sign-in.astro:49-53` and `#sign-in-verify-error` div at `src/pages/sign-in.astro:54-58` for screen reader announcements
+- [ ] T020 Fix P3 a11y issue: add `aria-hidden="true"` to spinner SVGs in overlay HTML templates at `src/pages/sign-in.astro:232-233` and `src/pages/sign-in.astro:298-299`
 - [ ] T021 Run `pnpm astro check` and fix any type errors
 - [ ] T022 Run `pnpm eslint .` and fix any lint errors
-- [ ] T023 Run through quickstart.md verification checklist: test all 14 items
+- [ ] T023 Run through quickstart.md verification checklist: test all 14 items including password toggle (FR-015) and navbar (FR-016)
 - [ ] T024 [P] Run `pnpm format` to ensure consistent code style
 
 ---
@@ -133,8 +133,8 @@ if (Astro.locals.session) return Astro.redirect("/recipes");
 - **Setup (Phase 1)**: No dependencies — start immediately
 - **Foundational (Phase 2)**: Depends on Setup — BLOCKS US1 and US2
 - **US1 (Phase 3)**: Depends on Foundational — No dependencies on other stories
-- **US2 (Phase 4)**: Depends on Foundational (T003, T004) — May share `getSafeRedirect()` from US1 T005
-- **US4 (Phase 5)**: Depends on Setup only — can run anytime after T001
+- **US4 (Phase 4)**: Depends on Setup only — can run anytime after T001
+- **US2 (Phase 5)**: Depends on Foundational (T003, T004) — May share `getSafeRedirect()` from US1 T005
 - **US3 (Phase 6)**: No dependencies — verification only, can run anytime
 - **Polish (Phase 7)**: Depends on US1+US2 completion (modifies same files)
 
@@ -149,16 +149,16 @@ if (Astro.locals.session) return Astro.redirect("/recipes");
 
 - T005 (helper) before T006 (handler uses it)
 - T009 (Google handler) after T005 (uses `redirectTarget`)
-- T017-T020 independent of each other (different attributes on same file — sequential execution preferred to avoid merge conflicts)
+- T017-T020: sequential only — all modify `src/pages/sign-in.astro`; execute in order to avoid merge conflicts
 
 ### Parallel Opportunities
 
 - T001 and T002 can run in parallel
 - T003 and T004 can run in parallel (different files)
 - T015 and T016 can run in parallel (verification only)
-- T017, T018, T019, T020 can run in parallel if done as separate commits
+- T017-T020 execute sequentially only (same file, different lines — avoid merge conflicts)
 - T021 and T022 can run in parallel
-- US4 (Phase 5) can run in parallel with any other phase
+- US4 (Phase 4) can run in parallel with any other phase
 
 ---
 
@@ -173,11 +173,15 @@ Task: "Update signInWithGoogle in src/lib/sign-in.ts to accept redirectUrl param
 ## Parallel Example: Phase 7 Polish
 
 ```bash
-# Launch all audit fixes together (different CSS attributes):
-Task: "Fix P1 responsive: min-h-dvh py-20 in src/pages/sign-in.astro"
-Task: "Fix P2 responsive: responsive padding in src/pages/sign-in.astro"
-Task: "Fix P2 a11y: role=alert on error divs in src/pages/sign-in.astro"
+# Audit fixes (sequential — same file src/pages/sign-in.astro):
+Task: "Fix P1 responsive: min-h-dvh py-20" → then
+Task: "Fix P2 responsive: responsive padding" → then
+Task: "Fix P2 a11y: role=alert on error divs" → then
 Task: "Fix P3 a11y: aria-hidden=true on spinner SVGs"
+
+# Quality checks (parallel — different tools):
+Task: "Run pnpm astro check"
+Task: "Run pnpm eslint ."
 ```
 
 ---
@@ -189,7 +193,7 @@ Task: "Fix P3 a11y: aria-hidden=true on spinner SVGs"
 1. Complete Phase 1: Setup
 2. Complete Phase 2: Foundational (critical — blocks US1)
 3. Complete Phase 3: US1 — Email/password with redirect + security
-4. Complete Phase 5: US4 — Session guard
+4. Complete Phase 4: US4 — Session guard
 5. **STOP and VALIDATE**: Test US1 + US4 independently per quickstart.md
 6. Run `pnpm astro check` + `pnpm eslint .`
 7. Deploy if ready
@@ -198,14 +202,14 @@ Task: "Fix P3 a11y: aria-hidden=true on spinner SVGs"
 
 1. Setup + Foundational → Foundation ready
 2. Add US1 (Email sign-in) → Test → Deploy (MVP)
-3. Add US2 (Google sign-in) → Test → Deploy
-4. Add US3 (Links verify) → Test → Deploy
-5. Add US4 (Session guard) → Test → Deploy
+3. Add US4 (Session guard) → Test → Deploy
+4. Add US2 (Google sign-in) → Test → Deploy
+5. Add US3 (Links verify) → Test → Deploy
 6. Polish → Test → Deploy
 
 ### Single Developer Strategy
 
-Recommended order: T001 → T002 → T003 → T004 → T005 → T006 → T007 → T008 → T009 → T010 → T011 → T012 → T013 → T014 → T015 → T016 → T017 → T018 → T019 → T020 → T021 → T022 → T023 → T024
+Recommended order: T001 → T002 → T003 → T004 → T005 → T006 → T007 → T008 → T014 → T009 → T010 → T011 → T012 → T013 → T015 → T016 → T017 → T018 → T019 → T020 → T021 → T022 → T023 → T024
 
 ---
 
