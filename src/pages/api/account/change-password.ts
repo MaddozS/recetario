@@ -28,7 +28,7 @@ export const POST: APIRoute = async ({ request }) => {
       body: {
         currentPassword,
         newPassword,
-        revokeOtherSessions: true,
+        revokeOtherSessions: false,
       },
     });
     await logAuditEvent({

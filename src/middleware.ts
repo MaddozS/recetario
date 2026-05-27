@@ -85,7 +85,8 @@ export const onRequest = defineMiddleware(async (context, next) => {
     }
     context.locals.subscription = sub;
 
-    const csrfToken = generateToken();
+    const existingToken = context.cookies.get(getCsrfCookie())?.value;
+    const csrfToken = existingToken ?? generateToken();
     context.locals.csrfToken = csrfToken;
     context.cookies.set(getCsrfCookie(), csrfToken, {
       path: "/",
