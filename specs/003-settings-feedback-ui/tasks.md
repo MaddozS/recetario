@@ -51,10 +51,10 @@ No blocking prerequisites. All changes affect client-side behavior within a sing
 
 ### Implementation for User Story 1
 
-- [ ] T001 [US1] Add `FeedbackAlert` container element at top of preferences section in `src/pages/settings.astro` (around line 315, before the form)
-- [ ] T002 [US1] Replace native `alert()` calls with dynamic `FeedbackAlert` rendering in the optimistic save submit handler (script 1, lines 670 and 686 of `src/pages/settings.astro`)
-- [ ] T003 [US1] Wire loading spinner to preferences save button via the `loading` prop on the `Button` component — set `true` on submit, `false` after response (script 1 in `src/pages/settings.astro`)
-- [ ] T004 [US1] Add focus management: after `FeedbackAlert` appears, call `.focus()` on it (script 1 in `src/pages/settings.astro`)
+- [x] T001 [US1] Add `FeedbackAlert` container element at top of preferences section in `src/pages/settings.astro` (around line 315, before the form)
+- [x] T002 [US1] Replace native `alert()` calls with dynamic `FeedbackAlert` rendering in the optimistic save submit handler (script 1, lines 670 and 686 of `src/pages/settings.astro`)
+- [x] T003 [US1] Wire loading spinner to preferences save button via the `loading` prop on the `Button` component — set `true` on submit, `false` after response (script 1 in `src/pages/settings.astro`)
+- [x] T004 [US1] Add focus management: after `FeedbackAlert` appears, call `.focus()` on it (script 1 in `src/pages/settings.astro`)
 
 **Checkpoint**: Preferences form now shows design-system feedback instead of native alerts. Button shows spinner during save. MVP deliverable.
 
@@ -68,9 +68,9 @@ No blocking prerequisites. All changes affect client-side behavior within a sing
 
 ### Implementation for User Story 2
 
-- [ ] T005 [US2] Add input event listeners to toggle `disabled` prop on the "Cambiar email" submit button based on field emptiness (script 3 in `src/pages/settings.astro`, around line 762)
-- [ ] T006 [US2] Add input event listeners to toggle `disabled` prop on the "Cambiar contraseña" submit button based on field emptiness (script 3 in `src/pages/settings.astro`, around line 800)
-- [ ] T007 [US2] Ensure the preferences save button is hidden when no changes (existing `checkIfChanged` toggles `hidden` class on `#save-btn-wrapper`) — add `disabled` attribute to the button for screen reader consistency (script 1 in `src/pages/settings.astro`, around line 612)
+- [x] T005 [US2] Add input event listeners to toggle `disabled` prop on the "Cambiar email" submit button based on field emptiness (script 3 in `src/pages/settings.astro`, around line 762)
+- [x] T006 [US2] Add input event listeners to toggle `disabled` prop on the "Cambiar contraseña" submit button based on field emptiness (script 3 in `src/pages/settings.astro`, around line 800)
+- [x] T007 [US2] Ensure the preferences save button is hidden when no changes (existing `checkIfChanged` toggles `hidden` class on `#save-btn-wrapper`) — add `disabled` attribute to the button for screen reader consistency (script 1 in `src/pages/settings.astro`, around line 612)
 
 **Checkpoint**: Account forms show disabled state when fields are empty; preferences button is hidden until a change is detected.
 
@@ -84,10 +84,10 @@ No blocking prerequisites. All changes affect client-side behavior within a sing
 
 ### Implementation for User Story 3
 
-- [ ] T008 [US3] Wire loading spinner to the "Cambiar email" submit button via the `loading` prop — set `true` on submit, `false` after response (script 3 in `src/pages/settings.astro`, around line 767)
-- [ ] T009 [US3] Wire loading spinner to the "Cambiar contraseña" submit button via the `loading` prop — set `true` on submit, `false` after response (script 3 in `src/pages/settings.astro`, around line 805)
-- [ ] T010 [US3] Add focus management to account form feedback elements: call `.focus()` on `#change-email-feedback` and `#change-password-feedback` when they appear (script 3 in `src/pages/settings.astro`)
-- [ ] T011 [US3] Audit account form feedback elements to confirm they use correct semantic tokens: `border-success-border bg-success-bg text-success` for success, `border-danger-border bg-danger-bg text-danger` for error (script 3 `showFeedback` function in `src/pages/settings.astro`, around line 745). If any non-compliant classes are found, replace them with the correct semantic tokens.
+- [x] T008 [US3] Wire loading spinner to the "Cambiar email" submit button via the `loading` prop — set `true` on submit, `false` after response (script 3 in `src/pages/settings.astro`, around line 767)
+- [x] T009 [US3] Wire loading spinner to the "Cambiar contraseña" submit button via the `loading` prop — set `true` on submit, `false` after response (script 3 in `src/pages/settings.astro`, around line 805)
+- [x] T010 [US3] Add focus management to account form feedback elements: call `.focus()` on `#change-email-feedback` and `#change-password-feedback` when they appear (script 3 in `src/pages/settings.astro`)
+- [x] T011 [US3] Audit account form feedback elements to confirm they use correct semantic tokens: `border-success-border bg-success-bg text-success` for success, `border-danger-border bg-danger-bg text-danger` for error (script 3 `showFeedback` function in `src/pages/settings.astro`, around line 745). If any non-compliant classes are found, replace them with the correct semantic tokens.
 
 **Checkpoint**: Account forms now show loading spinners and have proper focus management.
 
@@ -97,8 +97,8 @@ No blocking prerequisites. All changes affect client-side behavior within a sing
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T012 Search the entire `src/pages/settings.astro` for any remaining native `alert()` calls and replace with `FeedbackAlert`
-- [ ] T013 Run `pnpm astro check` and `pnpm eslint .` — fix all errors before merging
+- [x] T012 Search the entire `src/pages/settings.astro` for any remaining native `alert()` calls and replace with `FeedbackAlert`
+- [x] T013 Run `pnpm astro check` and `pnpm eslint .` — fix all errors before merging
 
 ---
 
