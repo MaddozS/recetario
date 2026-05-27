@@ -1,1 +1,143 @@
-{"nodes": [{"id": "users_maddozs_personal_projects_recetario_specs_002_theme_mode_control_data_model_md", "label": "data-model.md", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/data-model.md", "source_location": "L1"}, {"id": "002_theme_mode_control_data_model_data_model_theme_mode_control", "label": "Data Model: Theme Mode Control", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/data-model.md", "source_location": "L1"}, {"id": "002_theme_mode_control_data_model_entity_changes", "label": "Entity Changes", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/data-model.md", "source_location": "L3"}, {"id": "002_theme_mode_control_data_model_userpreferences_existing", "label": "UserPreferences (existing)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/data-model.md", "source_location": "L5"}, {"id": "002_theme_mode_control_data_model_typescript_type_update", "label": "TypeScript type update", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/data-model.md", "source_location": "L16"}, {"id": "002_theme_mode_control_data_model_codeblock_1", "label": "code:diff (- theme: \"light\" | \"dark\";)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/data-model.md", "source_location": "L20"}, {"id": "002_theme_mode_control_data_model_validation_update", "label": "Validation update", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/data-model.md", "source_location": "L25"}, {"id": "002_theme_mode_control_data_model_state_transitions", "label": "State transitions", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/data-model.md", "source_location": "L32"}, {"id": "002_theme_mode_control_data_model_codeblock_2", "label": "code:block2 (\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/data-model.md", "source_location": "L34"}], "edges": [{"source": "users_maddozs_personal_projects_recetario_specs_002_theme_mode_control_data_model_md", "target": "002_theme_mode_control_data_model_data_model_theme_mode_control", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/data-model.md", "source_location": "L1", "weight": 1.0}, {"source": "002_theme_mode_control_data_model_data_model_theme_mode_control", "target": "002_theme_mode_control_data_model_entity_changes", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/data-model.md", "source_location": "L3", "weight": 1.0}, {"source": "002_theme_mode_control_data_model_entity_changes", "target": "002_theme_mode_control_data_model_userpreferences_existing", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/data-model.md", "source_location": "L5", "weight": 1.0}, {"source": "002_theme_mode_control_data_model_entity_changes", "target": "002_theme_mode_control_data_model_typescript_type_update", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/data-model.md", "source_location": "L16", "weight": 1.0}, {"source": "002_theme_mode_control_data_model_typescript_type_update", "target": "002_theme_mode_control_data_model_codeblock_1", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/data-model.md", "source_location": "L20", "weight": 1.0}, {"source": "002_theme_mode_control_data_model_entity_changes", "target": "002_theme_mode_control_data_model_validation_update", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/data-model.md", "source_location": "L25", "weight": 1.0}, {"source": "002_theme_mode_control_data_model_entity_changes", "target": "002_theme_mode_control_data_model_state_transitions", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/data-model.md", "source_location": "L32", "weight": 1.0}, {"source": "002_theme_mode_control_data_model_state_transitions", "target": "002_theme_mode_control_data_model_codeblock_2", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/data-model.md", "source_location": "L34", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "users_maddozs_personal_projects_recetario_specs_002_theme_mode_control_data_model_md",
+      "label": "data-model.md",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/data-model.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "002_theme_mode_control_data_model_data_model_theme_mode_control",
+      "label": "Data Model: Theme Mode Control",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/data-model.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "002_theme_mode_control_data_model_entity_changes",
+      "label": "Entity Changes",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/data-model.md",
+      "source_location": "L3"
+    },
+    {
+      "id": "002_theme_mode_control_data_model_userpreferences_existing",
+      "label": "UserPreferences (existing)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/data-model.md",
+      "source_location": "L5"
+    },
+    {
+      "id": "002_theme_mode_control_data_model_typescript_type_update",
+      "label": "TypeScript type update",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/data-model.md",
+      "source_location": "L16"
+    },
+    {
+      "id": "002_theme_mode_control_data_model_codeblock_1",
+      "label": "code:diff (- theme: \"light\" | \"dark\";)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/data-model.md",
+      "source_location": "L20"
+    },
+    {
+      "id": "002_theme_mode_control_data_model_validation_update",
+      "label": "Validation update",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/data-model.md",
+      "source_location": "L25"
+    },
+    {
+      "id": "002_theme_mode_control_data_model_state_transitions",
+      "label": "State transitions",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/data-model.md",
+      "source_location": "L32"
+    },
+    {
+      "id": "002_theme_mode_control_data_model_codeblock_2",
+      "label": "code:block2 (\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/data-model.md",
+      "source_location": "L34"
+    }
+  ],
+  "edges": [
+    {
+      "source": "users_maddozs_personal_projects_recetario_specs_002_theme_mode_control_data_model_md",
+      "target": "002_theme_mode_control_data_model_data_model_theme_mode_control",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/data-model.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "002_theme_mode_control_data_model_data_model_theme_mode_control",
+      "target": "002_theme_mode_control_data_model_entity_changes",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/data-model.md",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "002_theme_mode_control_data_model_entity_changes",
+      "target": "002_theme_mode_control_data_model_userpreferences_existing",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/data-model.md",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "002_theme_mode_control_data_model_entity_changes",
+      "target": "002_theme_mode_control_data_model_typescript_type_update",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/data-model.md",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "002_theme_mode_control_data_model_typescript_type_update",
+      "target": "002_theme_mode_control_data_model_codeblock_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/data-model.md",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "002_theme_mode_control_data_model_entity_changes",
+      "target": "002_theme_mode_control_data_model_validation_update",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/data-model.md",
+      "source_location": "L25",
+      "weight": 1.0
+    },
+    {
+      "source": "002_theme_mode_control_data_model_entity_changes",
+      "target": "002_theme_mode_control_data_model_state_transitions",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/data-model.md",
+      "source_location": "L32",
+      "weight": 1.0
+    },
+    {
+      "source": "002_theme_mode_control_data_model_state_transitions",
+      "target": "002_theme_mode_control_data_model_codeblock_2",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/data-model.md",
+      "source_location": "L34",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

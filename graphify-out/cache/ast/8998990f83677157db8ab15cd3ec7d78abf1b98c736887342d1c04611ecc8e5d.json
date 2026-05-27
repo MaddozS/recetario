@@ -1,1 +1,301 @@
-{"nodes": [{"id": "users_maddozs_personal_projects_recetario_src_pages_pricing_astro", "label": "pricing.astro", "file_type": "code", "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro", "source_location": "L1"}, {"id": "pages_pricing_getbuttonlabel", "label": "getButtonLabel()", "file_type": "code", "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro", "source_location": "L16"}, {"id": "pages_pricing_buttonlabel", "label": "buttonLabel", "file_type": "code", "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro", "source_location": "L103"}, {"id": "pages_pricing_toggle", "label": "toggle", "file_type": "code", "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro", "source_location": "L226"}, {"id": "pages_pricing_monthlybtn", "label": "monthlyBtn", "file_type": "code", "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro", "source_location": "L232"}, {"id": "pages_pricing_yearlybtn", "label": "yearlyBtn", "file_type": "code", "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro", "source_location": "L233"}, {"id": "pages_pricing_updatetoggleui", "label": "updateToggleUI()", "file_type": "code", "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro", "source_location": "L235"}, {"id": "pages_pricing_syncprices", "label": "syncPrices()", "file_type": "code", "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro", "source_location": "L259"}, {"id": "pages_pricing_string", "label": "string", "file_type": "code", "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro", "source_location": "L319"}, {"id": "components", "label": "astro-icon/components", "file_type": "code", "source_file": "astro-icon/components", "confidence": "EXTRACTED"}, {"id": "users_maddozs_personal_projects_recetario_src_components_ui", "label": "@/components/ui", "file_type": "code", "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ui", "confidence": "EXTRACTED"}, {"id": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro", "label": "@/layouts/Layout.astro", "file_type": "code", "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro", "confidence": "EXTRACTED"}, {"id": "users_maddozs_personal_projects_recetario_src_lib_db_billing", "label": "@/lib/db/billing", "file_type": "code", "source_file": "/Users/maddozs/personal-projects/recetario/src/lib/db/billing", "confidence": "EXTRACTED"}], "edges": [{"source": "users_maddozs_personal_projects_recetario_src_pages_pricing_astro", "target": "users_maddozs_personal_projects_recetario_src_components_ui_index_ts", "relation": "imports_from", "context": "import", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro", "source_location": "L3", "weight": 1.0}, {"source": "users_maddozs_personal_projects_recetario_src_pages_pricing_astro", "target": "ui_index_badge", "relation": "imports", "context": "import", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro", "source_location": "L3", "weight": 1.0}, {"source": "users_maddozs_personal_projects_recetario_src_pages_pricing_astro", "target": "ui_index_button", "relation": "imports", "context": "import", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro", "source_location": "L3", "weight": 1.0}, {"source": "users_maddozs_personal_projects_recetario_src_pages_pricing_astro", "target": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro", "relation": "imports_from", "context": "import", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro", "source_location": "L4", "weight": 1.0}, {"source": "users_maddozs_personal_projects_recetario_src_pages_pricing_astro", "target": "users_maddozs_personal_projects_recetario_src_lib_db_billing_ts", "relation": "imports_from", "context": "import", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro", "source_location": "L5", "weight": 1.0}, {"source": "users_maddozs_personal_projects_recetario_src_pages_pricing_astro", "target": "db_billing_getpricingplans", "relation": "imports", "context": "import", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro", "source_location": "L5", "weight": 1.0}, {"source": "users_maddozs_personal_projects_recetario_src_pages_pricing_astro", "target": "pages_pricing_getbuttonlabel", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro", "source_location": "L16", "weight": 1.0}, {"source": "users_maddozs_personal_projects_recetario_src_pages_pricing_astro", "target": "pages_pricing_buttonlabel", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro", "source_location": "L103", "weight": 1.0}, {"source": "users_maddozs_personal_projects_recetario_src_pages_pricing_astro", "target": "pages_pricing_toggle", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro", "source_location": "L226", "weight": 1.0}, {"source": "users_maddozs_personal_projects_recetario_src_pages_pricing_astro", "target": "pages_pricing_monthlybtn", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro", "source_location": "L232", "weight": 1.0}, {"source": "users_maddozs_personal_projects_recetario_src_pages_pricing_astro", "target": "pages_pricing_yearlybtn", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro", "source_location": "L233", "weight": 1.0}, {"source": "users_maddozs_personal_projects_recetario_src_pages_pricing_astro", "target": "pages_pricing_updatetoggleui", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro", "source_location": "L235", "weight": 1.0}, {"source": "users_maddozs_personal_projects_recetario_src_pages_pricing_astro", "target": "pages_pricing_syncprices", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro", "source_location": "L259", "weight": 1.0}, {"source": "users_maddozs_personal_projects_recetario_src_pages_pricing_astro", "target": "pages_pricing_string", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro", "source_location": "L319", "weight": 1.0}, {"source": "users_maddozs_personal_projects_recetario_src_pages_pricing_astro", "target": "components", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro"}, {"source": "users_maddozs_personal_projects_recetario_src_pages_pricing_astro", "target": "users_maddozs_personal_projects_recetario_src_components_ui", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro"}, {"source": "users_maddozs_personal_projects_recetario_src_pages_pricing_astro", "target": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro"}, {"source": "users_maddozs_personal_projects_recetario_src_pages_pricing_astro", "target": "users_maddozs_personal_projects_recetario_src_lib_db_billing", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro"}], "raw_calls": [{"caller_nid": "pages_pricing_updatetoggleui", "callee": "setAttribute", "is_member_call": true, "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro", "source_location": "L247"}, {"caller_nid": "pages_pricing_updatetoggleui", "callee": "setAttribute", "is_member_call": true, "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro", "source_location": "L248"}, {"caller_nid": "pages_pricing_updatetoggleui", "callee": "setAttribute", "is_member_call": true, "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro", "source_location": "L254"}, {"caller_nid": "pages_pricing_updatetoggleui", "callee": "setAttribute", "is_member_call": true, "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro", "source_location": "L255"}, {"caller_nid": "pages_pricing_syncprices", "callee": "forEach", "is_member_call": true, "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro", "source_location": "L260"}, {"caller_nid": "pages_pricing_syncprices", "callee": "querySelectorAll", "is_member_call": true, "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro", "source_location": "L260"}]}
+{
+  "nodes": [
+    {
+      "id": "users_maddozs_personal_projects_recetario_src_pages_pricing_astro",
+      "label": "pricing.astro",
+      "file_type": "code",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro",
+      "source_location": "L1"
+    },
+    {
+      "id": "pages_pricing_getbuttonlabel",
+      "label": "getButtonLabel()",
+      "file_type": "code",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro",
+      "source_location": "L16"
+    },
+    {
+      "id": "pages_pricing_buttonlabel",
+      "label": "buttonLabel",
+      "file_type": "code",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro",
+      "source_location": "L103"
+    },
+    {
+      "id": "pages_pricing_toggle",
+      "label": "toggle",
+      "file_type": "code",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro",
+      "source_location": "L226"
+    },
+    {
+      "id": "pages_pricing_monthlybtn",
+      "label": "monthlyBtn",
+      "file_type": "code",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro",
+      "source_location": "L232"
+    },
+    {
+      "id": "pages_pricing_yearlybtn",
+      "label": "yearlyBtn",
+      "file_type": "code",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro",
+      "source_location": "L233"
+    },
+    {
+      "id": "pages_pricing_updatetoggleui",
+      "label": "updateToggleUI()",
+      "file_type": "code",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro",
+      "source_location": "L235"
+    },
+    {
+      "id": "pages_pricing_syncprices",
+      "label": "syncPrices()",
+      "file_type": "code",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro",
+      "source_location": "L259"
+    },
+    {
+      "id": "pages_pricing_string",
+      "label": "string",
+      "file_type": "code",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro",
+      "source_location": "L319"
+    },
+    {
+      "id": "components",
+      "label": "astro-icon/components",
+      "file_type": "code",
+      "source_file": "astro-icon/components",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "users_maddozs_personal_projects_recetario_src_components_ui",
+      "label": "@/components/ui",
+      "file_type": "code",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ui",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro",
+      "label": "@/layouts/Layout.astro",
+      "file_type": "code",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "users_maddozs_personal_projects_recetario_src_lib_db_billing",
+      "label": "@/lib/db/billing",
+      "file_type": "code",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/lib/db/billing",
+      "confidence": "EXTRACTED"
+    }
+  ],
+  "edges": [
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_pages_pricing_astro",
+      "target": "users_maddozs_personal_projects_recetario_src_components_ui_index_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_pages_pricing_astro",
+      "target": "ui_index_badge",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_pages_pricing_astro",
+      "target": "ui_index_button",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_pages_pricing_astro",
+      "target": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_pages_pricing_astro",
+      "target": "users_maddozs_personal_projects_recetario_src_lib_db_billing_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_pages_pricing_astro",
+      "target": "db_billing_getpricingplans",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_pages_pricing_astro",
+      "target": "pages_pricing_getbuttonlabel",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_pages_pricing_astro",
+      "target": "pages_pricing_buttonlabel",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro",
+      "source_location": "L103",
+      "weight": 1.0
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_pages_pricing_astro",
+      "target": "pages_pricing_toggle",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro",
+      "source_location": "L226",
+      "weight": 1.0
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_pages_pricing_astro",
+      "target": "pages_pricing_monthlybtn",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro",
+      "source_location": "L232",
+      "weight": 1.0
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_pages_pricing_astro",
+      "target": "pages_pricing_yearlybtn",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro",
+      "source_location": "L233",
+      "weight": 1.0
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_pages_pricing_astro",
+      "target": "pages_pricing_updatetoggleui",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro",
+      "source_location": "L235",
+      "weight": 1.0
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_pages_pricing_astro",
+      "target": "pages_pricing_syncprices",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro",
+      "source_location": "L259",
+      "weight": 1.0
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_pages_pricing_astro",
+      "target": "pages_pricing_string",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro",
+      "source_location": "L319",
+      "weight": 1.0
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_pages_pricing_astro",
+      "target": "components",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro"
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_pages_pricing_astro",
+      "target": "users_maddozs_personal_projects_recetario_src_components_ui",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro"
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_pages_pricing_astro",
+      "target": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro"
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_pages_pricing_astro",
+      "target": "users_maddozs_personal_projects_recetario_src_lib_db_billing",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro"
+    }
+  ],
+  "raw_calls": [
+    {
+      "caller_nid": "pages_pricing_updatetoggleui",
+      "callee": "setAttribute",
+      "is_member_call": true,
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro",
+      "source_location": "L247"
+    },
+    {
+      "caller_nid": "pages_pricing_updatetoggleui",
+      "callee": "setAttribute",
+      "is_member_call": true,
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro",
+      "source_location": "L248"
+    },
+    {
+      "caller_nid": "pages_pricing_updatetoggleui",
+      "callee": "setAttribute",
+      "is_member_call": true,
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro",
+      "source_location": "L254"
+    },
+    {
+      "caller_nid": "pages_pricing_updatetoggleui",
+      "callee": "setAttribute",
+      "is_member_call": true,
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro",
+      "source_location": "L255"
+    },
+    {
+      "caller_nid": "pages_pricing_syncprices",
+      "callee": "forEach",
+      "is_member_call": true,
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro",
+      "source_location": "L260"
+    },
+    {
+      "caller_nid": "pages_pricing_syncprices",
+      "callee": "querySelectorAll",
+      "is_member_call": true,
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro",
+      "source_location": "L260"
+    }
+  ]
+}

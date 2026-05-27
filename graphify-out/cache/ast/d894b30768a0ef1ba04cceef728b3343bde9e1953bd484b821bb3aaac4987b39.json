@@ -1,1 +1,671 @@
-{"nodes": [{"id": "users_maddozs_personal_projects_recetario_agents_skills_business_analyst_reference_md", "label": "REFERENCE.md", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L1"}, {"id": "business_analyst_reference_business_analyst_reference_guide", "label": "Business Analyst Reference Guide", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L1"}, {"id": "business_analyst_reference_table_of_contents", "label": "Table of Contents", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L5"}, {"id": "business_analyst_reference_interview_frameworks", "label": "Interview Frameworks", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L13"}, {"id": "business_analyst_reference_5_whys_framework", "label": "5 Whys Framework", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L15"}, {"id": "business_analyst_reference_codeblock_1", "label": "code:block1 (Problem: Users abandon checkout process)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L29"}, {"id": "business_analyst_reference_jobs_to_be_done_jtbd_framework", "label": "Jobs-to-be-Done (JTBD) Framework", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L48"}, {"id": "business_analyst_reference_codeblock_2", "label": "code:block2 (Job: \"When I'm planning my weekly meals, I want to quickly f)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L68"}, {"id": "business_analyst_reference_smart_goals_framework", "label": "SMART Goals Framework", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L84"}, {"id": "business_analyst_reference_problem_solution_fit_framework", "label": "Problem-Solution Fit Framework", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L120"}, {"id": "business_analyst_reference_question_types_and_techniques", "label": "Question Types and Techniques", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L157"}, {"id": "business_analyst_reference_open_ended_questions", "label": "Open-Ended Questions", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L159"}, {"id": "business_analyst_reference_probing_follow_ups", "label": "Probing Follow-Ups", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L178"}, {"id": "business_analyst_reference_comparison_questions", "label": "Comparison Questions", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L198"}, {"id": "business_analyst_reference_quantifying_questions", "label": "Quantifying Questions", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L216"}, {"id": "business_analyst_reference_questions_to_avoid", "label": "Questions to Avoid", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L235"}, {"id": "business_analyst_reference_discovery_process", "label": "Discovery Process", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L257"}, {"id": "business_analyst_reference_phase_1_problem_understanding", "label": "Phase 1: Problem Understanding", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L259"}, {"id": "business_analyst_reference_phase_2_solution_exploration", "label": "Phase 2: Solution Exploration", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L282"}, {"id": "business_analyst_reference_phase_3_requirements_definition", "label": "Phase 3: Requirements Definition", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L305"}, {"id": "business_analyst_reference_phase_4_validation_handoff", "label": "Phase 4: Validation & Handoff", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L328"}, {"id": "business_analyst_reference_documentation_best_practices", "label": "Documentation Best Practices", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L351"}, {"id": "business_analyst_reference_writing_clear_requirements", "label": "Writing Clear Requirements", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L353"}, {"id": "business_analyst_reference_documenting_assumptions", "label": "Documenting Assumptions", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L369"}, {"id": "business_analyst_reference_codeblock_3", "label": "code:block3 (Assumption: Users have reliable internet connectivity)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L380"}, {"id": "business_analyst_reference_capturing_risks", "label": "Capturing Risks", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L387"}, {"id": "business_analyst_reference_codeblock_4", "label": "code:block4 (Risk: Third-party API may have rate limits)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L391"}, {"id": "business_analyst_reference_version_control", "label": "Version Control", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L400"}, {"id": "business_analyst_reference_common_pitfalls", "label": "Common Pitfalls", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L408"}, {"id": "business_analyst_reference_pitfall_1_jumping_to_solutions_too_quickly", "label": "Pitfall 1: Jumping to Solutions Too Quickly", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L410"}, {"id": "business_analyst_reference_pitfall_2_accepting_vague_responses", "label": "Pitfall 2: Accepting Vague Responses", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L421"}, {"id": "business_analyst_reference_pitfall_3_ignoring_the_why", "label": "Pitfall 3: Ignoring the \"Why\"", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L431"}, {"id": "business_analyst_reference_pitfall_4_confirmation_bias", "label": "Pitfall 4: Confirmation Bias", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L441"}, {"id": "business_analyst_reference_pitfall_5_analysis_paralysis", "label": "Pitfall 5: Analysis Paralysis", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L452"}, {"id": "business_analyst_reference_pitfall_6_poor_documentation", "label": "Pitfall 6: Poor Documentation", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L463"}, {"id": "business_analyst_reference_pitfall_7_skipping_validation", "label": "Pitfall 7: Skipping Validation", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L474"}, {"id": "business_analyst_reference_quick_reference_checklist", "label": "Quick Reference Checklist", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L485"}, {"id": "business_analyst_reference_before_the_interview", "label": "Before the Interview", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L487"}, {"id": "business_analyst_reference_during_the_interview", "label": "During the Interview", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L495"}, {"id": "business_analyst_reference_after_the_interview", "label": "After the Interview", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L506"}, {"id": "business_analyst_reference_product_brief_completeness", "label": "Product Brief Completeness", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L515"}, {"id": "business_analyst_reference_additional_resources", "label": "Additional Resources", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L526"}], "edges": [{"source": "users_maddozs_personal_projects_recetario_agents_skills_business_analyst_reference_md", "target": "business_analyst_reference_business_analyst_reference_guide", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L1", "weight": 1.0}, {"source": "business_analyst_reference_business_analyst_reference_guide", "target": "business_analyst_reference_table_of_contents", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L5", "weight": 1.0}, {"source": "business_analyst_reference_business_analyst_reference_guide", "target": "business_analyst_reference_interview_frameworks", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L13", "weight": 1.0}, {"source": "business_analyst_reference_interview_frameworks", "target": "business_analyst_reference_5_whys_framework", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L15", "weight": 1.0}, {"source": "business_analyst_reference_5_whys_framework", "target": "business_analyst_reference_codeblock_1", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L29", "weight": 1.0}, {"source": "business_analyst_reference_interview_frameworks", "target": "business_analyst_reference_jobs_to_be_done_jtbd_framework", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L48", "weight": 1.0}, {"source": "business_analyst_reference_jobs_to_be_done_jtbd_framework", "target": "business_analyst_reference_codeblock_2", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L68", "weight": 1.0}, {"source": "business_analyst_reference_interview_frameworks", "target": "business_analyst_reference_smart_goals_framework", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L84", "weight": 1.0}, {"source": "business_analyst_reference_interview_frameworks", "target": "business_analyst_reference_problem_solution_fit_framework", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L120", "weight": 1.0}, {"source": "business_analyst_reference_business_analyst_reference_guide", "target": "business_analyst_reference_question_types_and_techniques", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L157", "weight": 1.0}, {"source": "business_analyst_reference_question_types_and_techniques", "target": "business_analyst_reference_open_ended_questions", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L159", "weight": 1.0}, {"source": "business_analyst_reference_question_types_and_techniques", "target": "business_analyst_reference_probing_follow_ups", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L178", "weight": 1.0}, {"source": "business_analyst_reference_question_types_and_techniques", "target": "business_analyst_reference_comparison_questions", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L198", "weight": 1.0}, {"source": "business_analyst_reference_question_types_and_techniques", "target": "business_analyst_reference_quantifying_questions", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L216", "weight": 1.0}, {"source": "business_analyst_reference_question_types_and_techniques", "target": "business_analyst_reference_questions_to_avoid", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L235", "weight": 1.0}, {"source": "business_analyst_reference_business_analyst_reference_guide", "target": "business_analyst_reference_discovery_process", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L257", "weight": 1.0}, {"source": "business_analyst_reference_discovery_process", "target": "business_analyst_reference_phase_1_problem_understanding", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L259", "weight": 1.0}, {"source": "business_analyst_reference_discovery_process", "target": "business_analyst_reference_phase_2_solution_exploration", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L282", "weight": 1.0}, {"source": "business_analyst_reference_discovery_process", "target": "business_analyst_reference_phase_3_requirements_definition", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L305", "weight": 1.0}, {"source": "business_analyst_reference_discovery_process", "target": "business_analyst_reference_phase_4_validation_handoff", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L328", "weight": 1.0}, {"source": "business_analyst_reference_business_analyst_reference_guide", "target": "business_analyst_reference_documentation_best_practices", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L351", "weight": 1.0}, {"source": "business_analyst_reference_documentation_best_practices", "target": "business_analyst_reference_writing_clear_requirements", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L353", "weight": 1.0}, {"source": "business_analyst_reference_documentation_best_practices", "target": "business_analyst_reference_documenting_assumptions", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L369", "weight": 1.0}, {"source": "business_analyst_reference_documenting_assumptions", "target": "business_analyst_reference_codeblock_3", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L380", "weight": 1.0}, {"source": "business_analyst_reference_documentation_best_practices", "target": "business_analyst_reference_capturing_risks", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L387", "weight": 1.0}, {"source": "business_analyst_reference_capturing_risks", "target": "business_analyst_reference_codeblock_4", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L391", "weight": 1.0}, {"source": "business_analyst_reference_documentation_best_practices", "target": "business_analyst_reference_version_control", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L400", "weight": 1.0}, {"source": "business_analyst_reference_business_analyst_reference_guide", "target": "business_analyst_reference_common_pitfalls", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L408", "weight": 1.0}, {"source": "business_analyst_reference_common_pitfalls", "target": "business_analyst_reference_pitfall_1_jumping_to_solutions_too_quickly", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L410", "weight": 1.0}, {"source": "business_analyst_reference_common_pitfalls", "target": "business_analyst_reference_pitfall_2_accepting_vague_responses", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L421", "weight": 1.0}, {"source": "business_analyst_reference_common_pitfalls", "target": "business_analyst_reference_pitfall_3_ignoring_the_why", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L431", "weight": 1.0}, {"source": "business_analyst_reference_common_pitfalls", "target": "business_analyst_reference_pitfall_4_confirmation_bias", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L441", "weight": 1.0}, {"source": "business_analyst_reference_common_pitfalls", "target": "business_analyst_reference_pitfall_5_analysis_paralysis", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L452", "weight": 1.0}, {"source": "business_analyst_reference_common_pitfalls", "target": "business_analyst_reference_pitfall_6_poor_documentation", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L463", "weight": 1.0}, {"source": "business_analyst_reference_common_pitfalls", "target": "business_analyst_reference_pitfall_7_skipping_validation", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L474", "weight": 1.0}, {"source": "business_analyst_reference_business_analyst_reference_guide", "target": "business_analyst_reference_quick_reference_checklist", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L485", "weight": 1.0}, {"source": "business_analyst_reference_quick_reference_checklist", "target": "business_analyst_reference_before_the_interview", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L487", "weight": 1.0}, {"source": "business_analyst_reference_quick_reference_checklist", "target": "business_analyst_reference_during_the_interview", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L495", "weight": 1.0}, {"source": "business_analyst_reference_quick_reference_checklist", "target": "business_analyst_reference_after_the_interview", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L506", "weight": 1.0}, {"source": "business_analyst_reference_quick_reference_checklist", "target": "business_analyst_reference_product_brief_completeness", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L515", "weight": 1.0}, {"source": "business_analyst_reference_business_analyst_reference_guide", "target": "business_analyst_reference_additional_resources", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md", "source_location": "L526", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "users_maddozs_personal_projects_recetario_agents_skills_business_analyst_reference_md",
+      "label": "REFERENCE.md",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "business_analyst_reference_business_analyst_reference_guide",
+      "label": "Business Analyst Reference Guide",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "business_analyst_reference_table_of_contents",
+      "label": "Table of Contents",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L5"
+    },
+    {
+      "id": "business_analyst_reference_interview_frameworks",
+      "label": "Interview Frameworks",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L13"
+    },
+    {
+      "id": "business_analyst_reference_5_whys_framework",
+      "label": "5 Whys Framework",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L15"
+    },
+    {
+      "id": "business_analyst_reference_codeblock_1",
+      "label": "code:block1 (Problem: Users abandon checkout process)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L29"
+    },
+    {
+      "id": "business_analyst_reference_jobs_to_be_done_jtbd_framework",
+      "label": "Jobs-to-be-Done (JTBD) Framework",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L48"
+    },
+    {
+      "id": "business_analyst_reference_codeblock_2",
+      "label": "code:block2 (Job: \"When I'm planning my weekly meals, I want to quickly f)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L68"
+    },
+    {
+      "id": "business_analyst_reference_smart_goals_framework",
+      "label": "SMART Goals Framework",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L84"
+    },
+    {
+      "id": "business_analyst_reference_problem_solution_fit_framework",
+      "label": "Problem-Solution Fit Framework",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L120"
+    },
+    {
+      "id": "business_analyst_reference_question_types_and_techniques",
+      "label": "Question Types and Techniques",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L157"
+    },
+    {
+      "id": "business_analyst_reference_open_ended_questions",
+      "label": "Open-Ended Questions",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L159"
+    },
+    {
+      "id": "business_analyst_reference_probing_follow_ups",
+      "label": "Probing Follow-Ups",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L178"
+    },
+    {
+      "id": "business_analyst_reference_comparison_questions",
+      "label": "Comparison Questions",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L198"
+    },
+    {
+      "id": "business_analyst_reference_quantifying_questions",
+      "label": "Quantifying Questions",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L216"
+    },
+    {
+      "id": "business_analyst_reference_questions_to_avoid",
+      "label": "Questions to Avoid",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L235"
+    },
+    {
+      "id": "business_analyst_reference_discovery_process",
+      "label": "Discovery Process",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L257"
+    },
+    {
+      "id": "business_analyst_reference_phase_1_problem_understanding",
+      "label": "Phase 1: Problem Understanding",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L259"
+    },
+    {
+      "id": "business_analyst_reference_phase_2_solution_exploration",
+      "label": "Phase 2: Solution Exploration",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L282"
+    },
+    {
+      "id": "business_analyst_reference_phase_3_requirements_definition",
+      "label": "Phase 3: Requirements Definition",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L305"
+    },
+    {
+      "id": "business_analyst_reference_phase_4_validation_handoff",
+      "label": "Phase 4: Validation & Handoff",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L328"
+    },
+    {
+      "id": "business_analyst_reference_documentation_best_practices",
+      "label": "Documentation Best Practices",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L351"
+    },
+    {
+      "id": "business_analyst_reference_writing_clear_requirements",
+      "label": "Writing Clear Requirements",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L353"
+    },
+    {
+      "id": "business_analyst_reference_documenting_assumptions",
+      "label": "Documenting Assumptions",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L369"
+    },
+    {
+      "id": "business_analyst_reference_codeblock_3",
+      "label": "code:block3 (Assumption: Users have reliable internet connectivity)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L380"
+    },
+    {
+      "id": "business_analyst_reference_capturing_risks",
+      "label": "Capturing Risks",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L387"
+    },
+    {
+      "id": "business_analyst_reference_codeblock_4",
+      "label": "code:block4 (Risk: Third-party API may have rate limits)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L391"
+    },
+    {
+      "id": "business_analyst_reference_version_control",
+      "label": "Version Control",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L400"
+    },
+    {
+      "id": "business_analyst_reference_common_pitfalls",
+      "label": "Common Pitfalls",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L408"
+    },
+    {
+      "id": "business_analyst_reference_pitfall_1_jumping_to_solutions_too_quickly",
+      "label": "Pitfall 1: Jumping to Solutions Too Quickly",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L410"
+    },
+    {
+      "id": "business_analyst_reference_pitfall_2_accepting_vague_responses",
+      "label": "Pitfall 2: Accepting Vague Responses",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L421"
+    },
+    {
+      "id": "business_analyst_reference_pitfall_3_ignoring_the_why",
+      "label": "Pitfall 3: Ignoring the \"Why\"",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L431"
+    },
+    {
+      "id": "business_analyst_reference_pitfall_4_confirmation_bias",
+      "label": "Pitfall 4: Confirmation Bias",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L441"
+    },
+    {
+      "id": "business_analyst_reference_pitfall_5_analysis_paralysis",
+      "label": "Pitfall 5: Analysis Paralysis",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L452"
+    },
+    {
+      "id": "business_analyst_reference_pitfall_6_poor_documentation",
+      "label": "Pitfall 6: Poor Documentation",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L463"
+    },
+    {
+      "id": "business_analyst_reference_pitfall_7_skipping_validation",
+      "label": "Pitfall 7: Skipping Validation",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L474"
+    },
+    {
+      "id": "business_analyst_reference_quick_reference_checklist",
+      "label": "Quick Reference Checklist",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L485"
+    },
+    {
+      "id": "business_analyst_reference_before_the_interview",
+      "label": "Before the Interview",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L487"
+    },
+    {
+      "id": "business_analyst_reference_during_the_interview",
+      "label": "During the Interview",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L495"
+    },
+    {
+      "id": "business_analyst_reference_after_the_interview",
+      "label": "After the Interview",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L506"
+    },
+    {
+      "id": "business_analyst_reference_product_brief_completeness",
+      "label": "Product Brief Completeness",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L515"
+    },
+    {
+      "id": "business_analyst_reference_additional_resources",
+      "label": "Additional Resources",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L526"
+    }
+  ],
+  "edges": [
+    {
+      "source": "users_maddozs_personal_projects_recetario_agents_skills_business_analyst_reference_md",
+      "target": "business_analyst_reference_business_analyst_reference_guide",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "business_analyst_reference_business_analyst_reference_guide",
+      "target": "business_analyst_reference_table_of_contents",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "business_analyst_reference_business_analyst_reference_guide",
+      "target": "business_analyst_reference_interview_frameworks",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "business_analyst_reference_interview_frameworks",
+      "target": "business_analyst_reference_5_whys_framework",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "business_analyst_reference_5_whys_framework",
+      "target": "business_analyst_reference_codeblock_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L29",
+      "weight": 1.0
+    },
+    {
+      "source": "business_analyst_reference_interview_frameworks",
+      "target": "business_analyst_reference_jobs_to_be_done_jtbd_framework",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L48",
+      "weight": 1.0
+    },
+    {
+      "source": "business_analyst_reference_jobs_to_be_done_jtbd_framework",
+      "target": "business_analyst_reference_codeblock_2",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L68",
+      "weight": 1.0
+    },
+    {
+      "source": "business_analyst_reference_interview_frameworks",
+      "target": "business_analyst_reference_smart_goals_framework",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L84",
+      "weight": 1.0
+    },
+    {
+      "source": "business_analyst_reference_interview_frameworks",
+      "target": "business_analyst_reference_problem_solution_fit_framework",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L120",
+      "weight": 1.0
+    },
+    {
+      "source": "business_analyst_reference_business_analyst_reference_guide",
+      "target": "business_analyst_reference_question_types_and_techniques",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L157",
+      "weight": 1.0
+    },
+    {
+      "source": "business_analyst_reference_question_types_and_techniques",
+      "target": "business_analyst_reference_open_ended_questions",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L159",
+      "weight": 1.0
+    },
+    {
+      "source": "business_analyst_reference_question_types_and_techniques",
+      "target": "business_analyst_reference_probing_follow_ups",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L178",
+      "weight": 1.0
+    },
+    {
+      "source": "business_analyst_reference_question_types_and_techniques",
+      "target": "business_analyst_reference_comparison_questions",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L198",
+      "weight": 1.0
+    },
+    {
+      "source": "business_analyst_reference_question_types_and_techniques",
+      "target": "business_analyst_reference_quantifying_questions",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L216",
+      "weight": 1.0
+    },
+    {
+      "source": "business_analyst_reference_question_types_and_techniques",
+      "target": "business_analyst_reference_questions_to_avoid",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L235",
+      "weight": 1.0
+    },
+    {
+      "source": "business_analyst_reference_business_analyst_reference_guide",
+      "target": "business_analyst_reference_discovery_process",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L257",
+      "weight": 1.0
+    },
+    {
+      "source": "business_analyst_reference_discovery_process",
+      "target": "business_analyst_reference_phase_1_problem_understanding",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L259",
+      "weight": 1.0
+    },
+    {
+      "source": "business_analyst_reference_discovery_process",
+      "target": "business_analyst_reference_phase_2_solution_exploration",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L282",
+      "weight": 1.0
+    },
+    {
+      "source": "business_analyst_reference_discovery_process",
+      "target": "business_analyst_reference_phase_3_requirements_definition",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L305",
+      "weight": 1.0
+    },
+    {
+      "source": "business_analyst_reference_discovery_process",
+      "target": "business_analyst_reference_phase_4_validation_handoff",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L328",
+      "weight": 1.0
+    },
+    {
+      "source": "business_analyst_reference_business_analyst_reference_guide",
+      "target": "business_analyst_reference_documentation_best_practices",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L351",
+      "weight": 1.0
+    },
+    {
+      "source": "business_analyst_reference_documentation_best_practices",
+      "target": "business_analyst_reference_writing_clear_requirements",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L353",
+      "weight": 1.0
+    },
+    {
+      "source": "business_analyst_reference_documentation_best_practices",
+      "target": "business_analyst_reference_documenting_assumptions",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L369",
+      "weight": 1.0
+    },
+    {
+      "source": "business_analyst_reference_documenting_assumptions",
+      "target": "business_analyst_reference_codeblock_3",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L380",
+      "weight": 1.0
+    },
+    {
+      "source": "business_analyst_reference_documentation_best_practices",
+      "target": "business_analyst_reference_capturing_risks",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L387",
+      "weight": 1.0
+    },
+    {
+      "source": "business_analyst_reference_capturing_risks",
+      "target": "business_analyst_reference_codeblock_4",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L391",
+      "weight": 1.0
+    },
+    {
+      "source": "business_analyst_reference_documentation_best_practices",
+      "target": "business_analyst_reference_version_control",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L400",
+      "weight": 1.0
+    },
+    {
+      "source": "business_analyst_reference_business_analyst_reference_guide",
+      "target": "business_analyst_reference_common_pitfalls",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L408",
+      "weight": 1.0
+    },
+    {
+      "source": "business_analyst_reference_common_pitfalls",
+      "target": "business_analyst_reference_pitfall_1_jumping_to_solutions_too_quickly",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L410",
+      "weight": 1.0
+    },
+    {
+      "source": "business_analyst_reference_common_pitfalls",
+      "target": "business_analyst_reference_pitfall_2_accepting_vague_responses",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L421",
+      "weight": 1.0
+    },
+    {
+      "source": "business_analyst_reference_common_pitfalls",
+      "target": "business_analyst_reference_pitfall_3_ignoring_the_why",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L431",
+      "weight": 1.0
+    },
+    {
+      "source": "business_analyst_reference_common_pitfalls",
+      "target": "business_analyst_reference_pitfall_4_confirmation_bias",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L441",
+      "weight": 1.0
+    },
+    {
+      "source": "business_analyst_reference_common_pitfalls",
+      "target": "business_analyst_reference_pitfall_5_analysis_paralysis",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L452",
+      "weight": 1.0
+    },
+    {
+      "source": "business_analyst_reference_common_pitfalls",
+      "target": "business_analyst_reference_pitfall_6_poor_documentation",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L463",
+      "weight": 1.0
+    },
+    {
+      "source": "business_analyst_reference_common_pitfalls",
+      "target": "business_analyst_reference_pitfall_7_skipping_validation",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L474",
+      "weight": 1.0
+    },
+    {
+      "source": "business_analyst_reference_business_analyst_reference_guide",
+      "target": "business_analyst_reference_quick_reference_checklist",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L485",
+      "weight": 1.0
+    },
+    {
+      "source": "business_analyst_reference_quick_reference_checklist",
+      "target": "business_analyst_reference_before_the_interview",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L487",
+      "weight": 1.0
+    },
+    {
+      "source": "business_analyst_reference_quick_reference_checklist",
+      "target": "business_analyst_reference_during_the_interview",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L495",
+      "weight": 1.0
+    },
+    {
+      "source": "business_analyst_reference_quick_reference_checklist",
+      "target": "business_analyst_reference_after_the_interview",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L506",
+      "weight": 1.0
+    },
+    {
+      "source": "business_analyst_reference_quick_reference_checklist",
+      "target": "business_analyst_reference_product_brief_completeness",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L515",
+      "weight": 1.0
+    },
+    {
+      "source": "business_analyst_reference_business_analyst_reference_guide",
+      "target": "business_analyst_reference_additional_resources",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/REFERENCE.md",
+      "source_location": "L526",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

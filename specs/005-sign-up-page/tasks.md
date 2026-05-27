@@ -20,8 +20,8 @@
 
 **Purpose**: Database schema changes needed for all user stories
 
-- [ ] T001 Add `firstName` and `lastName` fields to User model in `prisma/schema.prisma` per data-model.md (fields `firstName String @map("first_name")`, `lastName String @map("last_name")`)
-- [ ] T002 Run `npx prisma migrate dev --name add_first_last_name` to create migration, then `npx prisma generate` to regenerate client
+- [x] T001 Add `firstName` and `lastName` fields to User model in `prisma/schema.prisma` per data-model.md (fields `firstName String @map("first_name")`, `lastName String @map("last_name")`)
+- [x] T002 Run `npx prisma migrate dev --name add_first_last_name` to create migration, then `npx prisma generate` to regenerate client
 
 **Checkpoint**: Prisma schema updated, migration applied, client regenerated
 
@@ -33,9 +33,9 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T003 Update `src/lib/auth.ts`: add `user.additionalFields` with `firstName` and `lastName` (both type `"string"`, required `true`)
-- [ ] T004 [P] Update `src/lib/auth.ts`: change `disableSignUp` from `true` to `false` on Google social provider, add `mapProfileToUser` mapping `profile.given_name` → `firstName`, `profile.family_name` → `lastName`
-- [ ] T005 Update `signUpWithEmail` function in `src/lib/sign-in.ts` to accept `firstName` and `lastName` parameters, pass them as additional fields alongside `name: \`${firstName} ${lastName}\``
+- [x] T003 Update `src/lib/auth.ts`: add `user.additionalFields` with `firstName` and `lastName` (both type `"string"`, required `true`)
+- [x] T004 Update `src/lib/auth.ts`: change `disableSignUp` from `true` to `false` on Google social provider, add `mapProfileToUser` mapping `profile.given_name` → `firstName`, `profile.family_name` → `lastName`
+- [x] T005 Update `signUpWithEmail` function in `src/lib/sign-in.ts` to accept `firstName` and `lastName` parameters, pass them as additional fields alongside `name: \`${firstName} ${lastName}\``
 
 **Checkpoint**: Auth foundation ready — `additionalFields` configured, Google provider allows sign-up, client function updated
 
@@ -49,10 +49,10 @@
 
 ### Implementation for User Story 1
 
-- [ ] T006 [US1] Add `nombre` (first_name) input field before email field in `src/pages/sign-up.astro` — use same styles as existing email field, `required`, `autocomplete="given-name"`, label "Nombre", placeholder "Tu nombre"
-- [ ] T007 [US1] Add `apellido` (last_name) input field before email field in `src/pages/sign-up.astro` — use same styles, `required`, `autocomplete="family-name"`, label "Apellido", placeholder "Tu apellido"
-- [ ] T008 [US1] Update form submit handler in `src/pages/sign-up.astro`: read nombre/apellido inputs, trim whitespace, validate non-empty, pass to updated `signUpWithEmail(email, password, firstName, lastName)`
-- [ ] T009 [US1] Add client-side validation for name fields in `src/pages/sign-up.astro`: show error if first or last name is empty after trimming
+- [x] T006 [US1] Add `nombre` (first_name) input field before email field in `src/pages/sign-up.astro` — use same styles as existing email field, `required`, `autocomplete="given-name"`, label "Nombre", placeholder "Tu nombre"
+- [x] T007 [US1] Add `apellido` (last_name) input field before email field in `src/pages/sign-up.astro` — use same styles, `required`, `autocomplete="family-name"`, label "Apellido", placeholder "Tu apellido"
+- [x] T008 [US1] Update form submit handler in `src/pages/sign-up.astro`: read nombre/apellido inputs, trim whitespace, validate non-empty, pass to updated `signUpWithEmail(email, password, firstName, lastName)`
+- [x] T009 [US1] Add client-side validation for name fields in `src/pages/sign-up.astro`: show error if first or last name consists only of whitespace after trimming (the `required` attribute covers truly empty fields; this handles spaces-only input)
 
 **Checkpoint**: Email registration with first/last name fully functional — form submits, account created, verification email sent
 
@@ -66,7 +66,7 @@
 
 ### Implementation for User Story 4
 
-- [ ] T010 [US4] Verify `src/pages/sign-up.astro` frontmatter has `if (Astro.locals.session) return Astro.redirect("/recipes");` guard — add if missing
+- [x] T010 [US4] Verify `src/pages/sign-up.astro` frontmatter has `if (Astro.locals.session) return Astro.redirect("/recipes");` guard — add if missing
 
 **Checkpoint**: Session guard active — signed-in users never see sign-up page
 
@@ -80,8 +80,8 @@
 
 ### Implementation for User Story 2
 
-- [ ] T011 [US2] Verify Google sign-up button in `src/pages/sign-up.astro` calls `signInWithGoogle()` with proper redirect — ensure `callbackURL` respects `?redirect=` query param (reuse `getSafeRedirect()` pattern from sign-in page)
-- [ ] T012 [US2] Add `getSafeRedirect()` helper (or extract shared) in `src/pages/sign-up.astro` to validate redirect parameter for Google sign-up flow
+- [x] T011 [US2] Verify Google sign-up button in `src/pages/sign-up.astro` calls `signInWithGoogle()` with proper redirect — ensure `callbackURL` respects `?redirect=` query param (reuse `getSafeRedirect()` pattern from sign-in page)
+- [x] T012 [US2] Add `getSafeRedirect()` helper (or extract shared) in `src/pages/sign-up.astro` to validate redirect parameter for Google sign-up flow
 
 **Checkpoint**: Google registration functional — button creates account with profile mapping, redirects correctly
 
@@ -95,9 +95,9 @@
 
 ### Implementation for User Story 5
 
-- [ ] T013 [US5] Audit `src/pages/sign-up.astro` form fields: ensure all labels use tracked-uppercase style (`text-[11px] font-bold uppercase tracking-[0.16em]` or equivalent `text-xs font-bold tracking-wider uppercase`), matching sign-in page pattern
-- [ ] T014 [US5] Audit `src/pages/sign-up.astro` input styles: ensure all inputs use semantic tokens (`border-border bg-background text-foreground placeholder:text-subtle-foreground focus:border-accent-300 focus:ring-accent-500/20`), matching sign-in page
-- [ ] T015 [US5] Verify password toggle buttons in `src/pages/sign-up.astro` use correct SVG icons and aria-labels (matching sign-in page pattern with `data-password-toggle`, `data-eye-open`, `data-eye-closed`)
+- [x] T013 [US5] Audit `src/pages/sign-up.astro` form fields: ensure all labels use tracked-uppercase style (`text-[11px] font-bold uppercase tracking-[0.16em]` or equivalent `text-xs font-bold tracking-wider uppercase`), matching sign-in page pattern
+- [x] T014 [US5] Audit `src/pages/sign-up.astro` input styles: ensure all inputs use semantic tokens (`border-border bg-background text-foreground placeholder:text-subtle-foreground focus:border-accent-300 focus:ring-accent-500/20`), matching sign-in page
+- [x] T015 [US5] Verify password toggle buttons in `src/pages/sign-up.astro` use correct SVG icons and aria-labels (matching sign-in page pattern with `data-password-toggle`, `data-eye-open`, `data-eye-closed`)
 
 **Checkpoint**: Visual consistency verified — sign-up page indistinguishable in quality from sign-in page
 
@@ -111,8 +111,8 @@
 
 ### Implementation for User Story 3
 
-- [ ] T016 [US3] Verify `/sign-up` footer link "¿Ya tienes cuenta? Inicia sesión" exists and links to `/sign-in` in `src/pages/sign-up.astro`
-- [ ] T017 [US3] Verify `/sign-in` footer link "¿No tienes cuenta? Regístrate" exists and links to `/sign-up` in `src/pages/sign-in.astro`
+- [x] T016 [US3] Verify `/sign-up` footer link "¿Ya tienes cuenta? Inicia sesión" exists and links to `/sign-in` in `src/pages/sign-up.astro`
+- [x] T017 [US3] Verify `/sign-in` footer link "¿No tienes cuenta? Regístrate" exists and links to `/sign-up` in `src/pages/sign-in.astro`
 
 **Checkpoint**: Bidirectional navigation between sign-up and sign-in pages working
 
@@ -122,12 +122,12 @@
 
 **Purpose**: Cleanup, verification, and final quality checks
 
-- [ ] T018 Remove `signup_disabled` error code from `AUTH_ERROR_MESSAGES` in `src/pages/sign-in.astro` (no longer relevant since `disableSignUp: false`)
-- [ ] T019 Run `pnpm astro check` and fix any type errors
-- [ ] T020 Run `pnpm eslint .` and fix any lint errors
-- [ ] T021 Run `pnpm format` to ensure consistent code formatting
-- [ ] T022 Manual verification: test full email registration flow in `pnpm dev` (fill name/last name, submit, verify email screen, resend verification)
-- [ ] T023 Manual verification: test full Google registration flow in `pnpm dev` (click Google button, complete OAuth, verify redirect to /recipes)
+- [x] T018 Remove `signup_disabled` error code from `AUTH_ERROR_MESSAGES` in `src/pages/sign-in.astro` (no longer relevant since `disableSignUp: false`)
+- [x] T019 Run `pnpm astro check` and fix any type errors
+- [x] T020 Run `pnpm eslint .` and fix any lint errors
+- [x] T021 Run `pnpm format` to ensure consistent code formatting
+- [x] T022 Manual verification: test full email registration flow in `pnpm dev` (fill name/last name, submit, verify the verification confirmation view appears with correct email, test resend-verification button, verify sessionStorage persistence on page reload)
+- [x] T023 Manual verification: test full Google registration flow in `pnpm dev` (click Google button, complete OAuth, verify redirect to /recipes)
 
 ---
 
@@ -162,7 +162,7 @@
 
 ### Parallel Opportunities
 
-- T003 and T004: same file (`src/lib/auth.ts`) but adjacent config changes — combine into one task
+- T003 and T004: same file (`src/lib/auth.ts`) — execute sequentially (additionalFields first, then Google config)
 - T006 and T007: both add input fields to same file — implement together
 - US1 and US4: independent P1 stories, can start in parallel
 - US2 and US5: independent P2 stories, can start in parallel after P1

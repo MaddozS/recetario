@@ -1,1 +1,255 @@
-{"nodes": [{"id": "users_maddozs_personal_projects_recetario_specs_001_landing_page_spec_research_md", "label": "research.md", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md", "source_location": "L1"}, {"id": "001_landing_page_spec_research_research_landing_page_audit", "label": "Research: Landing Page Audit", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md", "source_location": "L1"}, {"id": "001_landing_page_spec_research_method", "label": "Method", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md", "source_location": "L7"}, {"id": "001_landing_page_spec_research_findings_responsive_breakpoints_tailwind_v4", "label": "Findings \u2014 Responsive Breakpoints (Tailwind v4)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md", "source_location": "L13"}, {"id": "001_landing_page_spec_research_current_coverage", "label": "Current coverage", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md", "source_location": "L15"}, {"id": "001_landing_page_spec_research_issues", "label": "Issues", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md", "source_location": "L25"}, {"id": "001_landing_page_spec_research_findings_dark_light_theme", "label": "Findings \u2014 Dark/Light Theme", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md", "source_location": "L37"}, {"id": "001_landing_page_spec_research_mechanism", "label": "Mechanism", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md", "source_location": "L39"}, {"id": "001_landing_page_spec_research_issues_47", "label": "Issues", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md", "source_location": "L47"}, {"id": "001_landing_page_spec_research_findings_contrast_issues", "label": "Findings \u2014 Contrast Issues", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md", "source_location": "L59"}, {"id": "001_landing_page_spec_research_high_priority", "label": "High priority", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md", "source_location": "L61"}, {"id": "001_landing_page_spec_research_medium_priority", "label": "Medium priority", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md", "source_location": "L69"}, {"id": "001_landing_page_spec_research_findings_performance_improvements", "label": "Findings \u2014 Performance Improvements", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md", "source_location": "L83"}, {"id": "001_landing_page_spec_research_high_impact", "label": "High impact", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md", "source_location": "L85"}, {"id": "001_landing_page_spec_research_medium_impact", "label": "Medium impact", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md", "source_location": "L93"}, {"id": "001_landing_page_spec_research_consolidated_decisions", "label": "Consolidated Decisions", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md", "source_location": "L107"}], "edges": [{"source": "users_maddozs_personal_projects_recetario_specs_001_landing_page_spec_research_md", "target": "001_landing_page_spec_research_research_landing_page_audit", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md", "source_location": "L1", "weight": 1.0}, {"source": "001_landing_page_spec_research_research_landing_page_audit", "target": "001_landing_page_spec_research_method", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md", "source_location": "L7", "weight": 1.0}, {"source": "001_landing_page_spec_research_research_landing_page_audit", "target": "001_landing_page_spec_research_findings_responsive_breakpoints_tailwind_v4", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md", "source_location": "L13", "weight": 1.0}, {"source": "001_landing_page_spec_research_findings_responsive_breakpoints_tailwind_v4", "target": "001_landing_page_spec_research_current_coverage", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md", "source_location": "L15", "weight": 1.0}, {"source": "001_landing_page_spec_research_findings_responsive_breakpoints_tailwind_v4", "target": "001_landing_page_spec_research_issues", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md", "source_location": "L25", "weight": 1.0}, {"source": "001_landing_page_spec_research_research_landing_page_audit", "target": "001_landing_page_spec_research_findings_dark_light_theme", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md", "source_location": "L37", "weight": 1.0}, {"source": "001_landing_page_spec_research_findings_dark_light_theme", "target": "001_landing_page_spec_research_mechanism", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md", "source_location": "L39", "weight": 1.0}, {"source": "001_landing_page_spec_research_findings_dark_light_theme", "target": "001_landing_page_spec_research_issues_47", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md", "source_location": "L47", "weight": 1.0}, {"source": "001_landing_page_spec_research_research_landing_page_audit", "target": "001_landing_page_spec_research_findings_contrast_issues", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md", "source_location": "L59", "weight": 1.0}, {"source": "001_landing_page_spec_research_findings_contrast_issues", "target": "001_landing_page_spec_research_high_priority", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md", "source_location": "L61", "weight": 1.0}, {"source": "001_landing_page_spec_research_findings_contrast_issues", "target": "001_landing_page_spec_research_medium_priority", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md", "source_location": "L69", "weight": 1.0}, {"source": "001_landing_page_spec_research_research_landing_page_audit", "target": "001_landing_page_spec_research_findings_performance_improvements", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md", "source_location": "L83", "weight": 1.0}, {"source": "001_landing_page_spec_research_findings_performance_improvements", "target": "001_landing_page_spec_research_high_impact", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md", "source_location": "L85", "weight": 1.0}, {"source": "001_landing_page_spec_research_findings_performance_improvements", "target": "001_landing_page_spec_research_medium_impact", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md", "source_location": "L93", "weight": 1.0}, {"source": "001_landing_page_spec_research_research_landing_page_audit", "target": "001_landing_page_spec_research_consolidated_decisions", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md", "source_location": "L107", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "users_maddozs_personal_projects_recetario_specs_001_landing_page_spec_research_md",
+      "label": "research.md",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "001_landing_page_spec_research_research_landing_page_audit",
+      "label": "Research: Landing Page Audit",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "001_landing_page_spec_research_method",
+      "label": "Method",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md",
+      "source_location": "L7"
+    },
+    {
+      "id": "001_landing_page_spec_research_findings_responsive_breakpoints_tailwind_v4",
+      "label": "Findings \u2014 Responsive Breakpoints (Tailwind v4)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md",
+      "source_location": "L13"
+    },
+    {
+      "id": "001_landing_page_spec_research_current_coverage",
+      "label": "Current coverage",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md",
+      "source_location": "L15"
+    },
+    {
+      "id": "001_landing_page_spec_research_issues",
+      "label": "Issues",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md",
+      "source_location": "L25"
+    },
+    {
+      "id": "001_landing_page_spec_research_findings_dark_light_theme",
+      "label": "Findings \u2014 Dark/Light Theme",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md",
+      "source_location": "L37"
+    },
+    {
+      "id": "001_landing_page_spec_research_mechanism",
+      "label": "Mechanism",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md",
+      "source_location": "L39"
+    },
+    {
+      "id": "001_landing_page_spec_research_issues_47",
+      "label": "Issues",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md",
+      "source_location": "L47"
+    },
+    {
+      "id": "001_landing_page_spec_research_findings_contrast_issues",
+      "label": "Findings \u2014 Contrast Issues",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md",
+      "source_location": "L59"
+    },
+    {
+      "id": "001_landing_page_spec_research_high_priority",
+      "label": "High priority",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md",
+      "source_location": "L61"
+    },
+    {
+      "id": "001_landing_page_spec_research_medium_priority",
+      "label": "Medium priority",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md",
+      "source_location": "L69"
+    },
+    {
+      "id": "001_landing_page_spec_research_findings_performance_improvements",
+      "label": "Findings \u2014 Performance Improvements",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md",
+      "source_location": "L83"
+    },
+    {
+      "id": "001_landing_page_spec_research_high_impact",
+      "label": "High impact",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md",
+      "source_location": "L85"
+    },
+    {
+      "id": "001_landing_page_spec_research_medium_impact",
+      "label": "Medium impact",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md",
+      "source_location": "L93"
+    },
+    {
+      "id": "001_landing_page_spec_research_consolidated_decisions",
+      "label": "Consolidated Decisions",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md",
+      "source_location": "L107"
+    }
+  ],
+  "edges": [
+    {
+      "source": "users_maddozs_personal_projects_recetario_specs_001_landing_page_spec_research_md",
+      "target": "001_landing_page_spec_research_research_landing_page_audit",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "001_landing_page_spec_research_research_landing_page_audit",
+      "target": "001_landing_page_spec_research_method",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "001_landing_page_spec_research_research_landing_page_audit",
+      "target": "001_landing_page_spec_research_findings_responsive_breakpoints_tailwind_v4",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "001_landing_page_spec_research_findings_responsive_breakpoints_tailwind_v4",
+      "target": "001_landing_page_spec_research_current_coverage",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "001_landing_page_spec_research_findings_responsive_breakpoints_tailwind_v4",
+      "target": "001_landing_page_spec_research_issues",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md",
+      "source_location": "L25",
+      "weight": 1.0
+    },
+    {
+      "source": "001_landing_page_spec_research_research_landing_page_audit",
+      "target": "001_landing_page_spec_research_findings_dark_light_theme",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md",
+      "source_location": "L37",
+      "weight": 1.0
+    },
+    {
+      "source": "001_landing_page_spec_research_findings_dark_light_theme",
+      "target": "001_landing_page_spec_research_mechanism",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md",
+      "source_location": "L39",
+      "weight": 1.0
+    },
+    {
+      "source": "001_landing_page_spec_research_findings_dark_light_theme",
+      "target": "001_landing_page_spec_research_issues_47",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md",
+      "source_location": "L47",
+      "weight": 1.0
+    },
+    {
+      "source": "001_landing_page_spec_research_research_landing_page_audit",
+      "target": "001_landing_page_spec_research_findings_contrast_issues",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md",
+      "source_location": "L59",
+      "weight": 1.0
+    },
+    {
+      "source": "001_landing_page_spec_research_findings_contrast_issues",
+      "target": "001_landing_page_spec_research_high_priority",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md",
+      "source_location": "L61",
+      "weight": 1.0
+    },
+    {
+      "source": "001_landing_page_spec_research_findings_contrast_issues",
+      "target": "001_landing_page_spec_research_medium_priority",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md",
+      "source_location": "L69",
+      "weight": 1.0
+    },
+    {
+      "source": "001_landing_page_spec_research_research_landing_page_audit",
+      "target": "001_landing_page_spec_research_findings_performance_improvements",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md",
+      "source_location": "L83",
+      "weight": 1.0
+    },
+    {
+      "source": "001_landing_page_spec_research_findings_performance_improvements",
+      "target": "001_landing_page_spec_research_high_impact",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md",
+      "source_location": "L85",
+      "weight": 1.0
+    },
+    {
+      "source": "001_landing_page_spec_research_findings_performance_improvements",
+      "target": "001_landing_page_spec_research_medium_impact",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md",
+      "source_location": "L93",
+      "weight": 1.0
+    },
+    {
+      "source": "001_landing_page_spec_research_research_landing_page_audit",
+      "target": "001_landing_page_spec_research_consolidated_decisions",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/research.md",
+      "source_location": "L107",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

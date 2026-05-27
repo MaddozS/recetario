@@ -1,1 +1,207 @@
-{"nodes": [{"id": "users_maddozs_personal_projects_recetario_tsconfig_json", "label": "tsconfig.json", "file_type": "code", "source_file": "/Users/maddozs/personal-projects/recetario/tsconfig.json", "source_location": "L1"}, {"id": "recetario_tsconfig_extends", "label": "extends", "file_type": "code", "source_file": "/Users/maddozs/personal-projects/recetario/tsconfig.json", "source_location": "L2"}, {"id": "recetario_tsconfig_include", "label": "include", "file_type": "code", "source_file": "/Users/maddozs/personal-projects/recetario/tsconfig.json", "source_location": "L3"}, {"id": "recetario_tsconfig_exclude", "label": "exclude", "file_type": "code", "source_file": "/Users/maddozs/personal-projects/recetario/tsconfig.json", "source_location": "L4"}, {"id": "recetario_tsconfig_compileroptions", "label": "compilerOptions", "file_type": "code", "source_file": "/Users/maddozs/personal-projects/recetario/tsconfig.json", "source_location": "L5"}, {"id": "recetario_tsconfig_compileroptions_baseurl", "label": "baseUrl", "file_type": "code", "source_file": "/Users/maddozs/personal-projects/recetario/tsconfig.json", "source_location": "L6"}, {"id": "recetario_tsconfig_compileroptions_paths", "label": "paths", "file_type": "code", "source_file": "/Users/maddozs/personal-projects/recetario/tsconfig.json", "source_location": "L7"}, {"id": "recetario_tsconfig_paths", "label": "@/*", "file_type": "code", "source_file": "/Users/maddozs/personal-projects/recetario/tsconfig.json", "source_location": "L8"}, {"id": "recetario_tsconfig_compileroptions_verbatimmodulesyntax", "label": "verbatimModuleSyntax", "file_type": "code", "source_file": "/Users/maddozs/personal-projects/recetario/tsconfig.json", "source_location": "L10"}, {"id": "recetario_tsconfig_compileroptions_plugins", "label": "plugins", "file_type": "code", "source_file": "/Users/maddozs/personal-projects/recetario/tsconfig.json", "source_location": "L11"}], "edges": [{"source": "users_maddozs_personal_projects_recetario_tsconfig_json", "target": "recetario_tsconfig_extends", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/tsconfig.json", "source_location": "L2", "weight": 1.0}, {"source": "users_maddozs_personal_projects_recetario_tsconfig_json", "target": "ref_astro_tsconfigs_base", "relation": "extends", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/tsconfig.json", "source_location": "L2", "weight": 1.0, "context": "import"}, {"source": "users_maddozs_personal_projects_recetario_tsconfig_json", "target": "recetario_tsconfig_include", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/tsconfig.json", "source_location": "L3", "weight": 1.0}, {"source": "recetario_tsconfig_include", "target": "ref_astro_types_d_ts", "relation": "extends", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/tsconfig.json", "source_location": "L3", "weight": 1.0, "context": "import"}, {"source": "recetario_tsconfig_include", "target": "ref", "relation": "extends", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/tsconfig.json", "source_location": "L3", "weight": 1.0, "context": "import"}, {"source": "users_maddozs_personal_projects_recetario_tsconfig_json", "target": "recetario_tsconfig_exclude", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/tsconfig.json", "source_location": "L4", "weight": 1.0}, {"source": "recetario_tsconfig_exclude", "target": "ref_dist_agent_astro_node_modules_vercel", "relation": "extends", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/tsconfig.json", "source_location": "L4", "weight": 1.0, "context": "import"}, {"source": "users_maddozs_personal_projects_recetario_tsconfig_json", "target": "recetario_tsconfig_compileroptions", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/tsconfig.json", "source_location": "L5", "weight": 1.0}, {"source": "recetario_tsconfig_compileroptions", "target": "recetario_tsconfig_compileroptions_baseurl", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/tsconfig.json", "source_location": "L6", "weight": 1.0}, {"source": "recetario_tsconfig_compileroptions", "target": "recetario_tsconfig_compileroptions_paths", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/tsconfig.json", "source_location": "L7", "weight": 1.0}, {"source": "recetario_tsconfig_compileroptions_paths", "target": "recetario_tsconfig_paths", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/tsconfig.json", "source_location": "L8", "weight": 1.0}, {"source": "recetario_tsconfig_paths", "target": "ref_src", "relation": "extends", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/tsconfig.json", "source_location": "L8", "weight": 1.0, "context": "import"}, {"source": "recetario_tsconfig_compileroptions", "target": "recetario_tsconfig_compileroptions_verbatimmodulesyntax", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/tsconfig.json", "source_location": "L10", "weight": 1.0}, {"source": "recetario_tsconfig_compileroptions", "target": "recetario_tsconfig_compileroptions_plugins", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/tsconfig.json", "source_location": "L11", "weight": 1.0}]}
+{
+  "nodes": [
+    {
+      "id": "users_maddozs_personal_projects_recetario_tsconfig_json",
+      "label": "tsconfig.json",
+      "file_type": "code",
+      "source_file": "/Users/maddozs/personal-projects/recetario/tsconfig.json",
+      "source_location": "L1"
+    },
+    {
+      "id": "recetario_tsconfig_extends",
+      "label": "extends",
+      "file_type": "code",
+      "source_file": "/Users/maddozs/personal-projects/recetario/tsconfig.json",
+      "source_location": "L2"
+    },
+    {
+      "id": "recetario_tsconfig_include",
+      "label": "include",
+      "file_type": "code",
+      "source_file": "/Users/maddozs/personal-projects/recetario/tsconfig.json",
+      "source_location": "L3"
+    },
+    {
+      "id": "recetario_tsconfig_exclude",
+      "label": "exclude",
+      "file_type": "code",
+      "source_file": "/Users/maddozs/personal-projects/recetario/tsconfig.json",
+      "source_location": "L4"
+    },
+    {
+      "id": "recetario_tsconfig_compileroptions",
+      "label": "compilerOptions",
+      "file_type": "code",
+      "source_file": "/Users/maddozs/personal-projects/recetario/tsconfig.json",
+      "source_location": "L5"
+    },
+    {
+      "id": "recetario_tsconfig_compileroptions_baseurl",
+      "label": "baseUrl",
+      "file_type": "code",
+      "source_file": "/Users/maddozs/personal-projects/recetario/tsconfig.json",
+      "source_location": "L6"
+    },
+    {
+      "id": "recetario_tsconfig_compileroptions_paths",
+      "label": "paths",
+      "file_type": "code",
+      "source_file": "/Users/maddozs/personal-projects/recetario/tsconfig.json",
+      "source_location": "L7"
+    },
+    {
+      "id": "recetario_tsconfig_paths",
+      "label": "@/*",
+      "file_type": "code",
+      "source_file": "/Users/maddozs/personal-projects/recetario/tsconfig.json",
+      "source_location": "L8"
+    },
+    {
+      "id": "recetario_tsconfig_compileroptions_verbatimmodulesyntax",
+      "label": "verbatimModuleSyntax",
+      "file_type": "code",
+      "source_file": "/Users/maddozs/personal-projects/recetario/tsconfig.json",
+      "source_location": "L10"
+    },
+    {
+      "id": "recetario_tsconfig_compileroptions_plugins",
+      "label": "plugins",
+      "file_type": "code",
+      "source_file": "/Users/maddozs/personal-projects/recetario/tsconfig.json",
+      "source_location": "L11"
+    }
+  ],
+  "edges": [
+    {
+      "source": "users_maddozs_personal_projects_recetario_tsconfig_json",
+      "target": "recetario_tsconfig_extends",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/tsconfig.json",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_tsconfig_json",
+      "target": "ref_astro_tsconfigs_base",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/tsconfig.json",
+      "source_location": "L2",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_tsconfig_json",
+      "target": "recetario_tsconfig_include",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/tsconfig.json",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "recetario_tsconfig_include",
+      "target": "ref_astro_types_d_ts",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/tsconfig.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "recetario_tsconfig_include",
+      "target": "ref",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/tsconfig.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_tsconfig_json",
+      "target": "recetario_tsconfig_exclude",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/tsconfig.json",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "recetario_tsconfig_exclude",
+      "target": "ref_dist_agent_astro_node_modules_vercel",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/tsconfig.json",
+      "source_location": "L4",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_tsconfig_json",
+      "target": "recetario_tsconfig_compileroptions",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/tsconfig.json",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "recetario_tsconfig_compileroptions",
+      "target": "recetario_tsconfig_compileroptions_baseurl",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/tsconfig.json",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "recetario_tsconfig_compileroptions",
+      "target": "recetario_tsconfig_compileroptions_paths",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/tsconfig.json",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "recetario_tsconfig_compileroptions_paths",
+      "target": "recetario_tsconfig_paths",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/tsconfig.json",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "recetario_tsconfig_paths",
+      "target": "ref_src",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/tsconfig.json",
+      "source_location": "L8",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "recetario_tsconfig_compileroptions",
+      "target": "recetario_tsconfig_compileroptions_verbatimmodulesyntax",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/tsconfig.json",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "recetario_tsconfig_compileroptions",
+      "target": "recetario_tsconfig_compileroptions_plugins",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/tsconfig.json",
+      "source_location": "L11",
+      "weight": 1.0
+    }
+  ]
+}

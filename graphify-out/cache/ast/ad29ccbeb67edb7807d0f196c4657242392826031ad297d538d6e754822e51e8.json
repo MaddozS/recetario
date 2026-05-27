@@ -1,1 +1,175 @@
-{"nodes": [{"id": "users_maddozs_personal_projects_recetario_specs_002_theme_mode_control_quickstart_md", "label": "quickstart.md", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/quickstart.md", "source_location": "L1"}, {"id": "002_theme_mode_control_quickstart_quickstart_theme_mode_control", "label": "Quickstart: Theme Mode Control", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/quickstart.md", "source_location": "L1"}, {"id": "002_theme_mode_control_quickstart_files_to_modify", "label": "Files to modify", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/quickstart.md", "source_location": "L3"}, {"id": "002_theme_mode_control_quickstart_quick_reference", "label": "Quick reference", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/quickstart.md", "source_location": "L12"}, {"id": "002_theme_mode_control_quickstart_theme_type", "label": "Theme type", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/quickstart.md", "source_location": "L14"}, {"id": "002_theme_mode_control_quickstart_codeblock_1", "label": "code:typescript (type Theme = \"system\" | \"light\" | \"dark\";)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/quickstart.md", "source_location": "L16"}, {"id": "002_theme_mode_control_quickstart_applytheme_logic", "label": "applyTheme() logic", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/quickstart.md", "source_location": "L20"}, {"id": "002_theme_mode_control_quickstart_codeblock_2", "label": "code:javascript (function applyTheme() {)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/quickstart.md", "source_location": "L22"}, {"id": "002_theme_mode_control_quickstart_os_listener", "label": "OS listener", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/quickstart.md", "source_location": "L35"}, {"id": "002_theme_mode_control_quickstart_codeblock_3", "label": "code:javascript (const mq = window.matchMedia(\"(prefers-color-scheme: dark)\"))", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/quickstart.md", "source_location": "L37"}, {"id": "002_theme_mode_control_quickstart_verify", "label": "Verify", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/quickstart.md", "source_location": "L44"}], "edges": [{"source": "users_maddozs_personal_projects_recetario_specs_002_theme_mode_control_quickstart_md", "target": "002_theme_mode_control_quickstart_quickstart_theme_mode_control", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/quickstart.md", "source_location": "L1", "weight": 1.0}, {"source": "002_theme_mode_control_quickstart_quickstart_theme_mode_control", "target": "002_theme_mode_control_quickstart_files_to_modify", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/quickstart.md", "source_location": "L3", "weight": 1.0}, {"source": "002_theme_mode_control_quickstart_quickstart_theme_mode_control", "target": "002_theme_mode_control_quickstart_quick_reference", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/quickstart.md", "source_location": "L12", "weight": 1.0}, {"source": "002_theme_mode_control_quickstart_quick_reference", "target": "002_theme_mode_control_quickstart_theme_type", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/quickstart.md", "source_location": "L14", "weight": 1.0}, {"source": "002_theme_mode_control_quickstart_theme_type", "target": "002_theme_mode_control_quickstart_codeblock_1", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/quickstart.md", "source_location": "L16", "weight": 1.0}, {"source": "002_theme_mode_control_quickstart_quick_reference", "target": "002_theme_mode_control_quickstart_applytheme_logic", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/quickstart.md", "source_location": "L20", "weight": 1.0}, {"source": "002_theme_mode_control_quickstart_applytheme_logic", "target": "002_theme_mode_control_quickstart_codeblock_2", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/quickstart.md", "source_location": "L22", "weight": 1.0}, {"source": "002_theme_mode_control_quickstart_quick_reference", "target": "002_theme_mode_control_quickstart_os_listener", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/quickstart.md", "source_location": "L35", "weight": 1.0}, {"source": "002_theme_mode_control_quickstart_os_listener", "target": "002_theme_mode_control_quickstart_codeblock_3", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/quickstart.md", "source_location": "L37", "weight": 1.0}, {"source": "002_theme_mode_control_quickstart_quickstart_theme_mode_control", "target": "002_theme_mode_control_quickstart_verify", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/quickstart.md", "source_location": "L44", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "users_maddozs_personal_projects_recetario_specs_002_theme_mode_control_quickstart_md",
+      "label": "quickstart.md",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/quickstart.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "002_theme_mode_control_quickstart_quickstart_theme_mode_control",
+      "label": "Quickstart: Theme Mode Control",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/quickstart.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "002_theme_mode_control_quickstart_files_to_modify",
+      "label": "Files to modify",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/quickstart.md",
+      "source_location": "L3"
+    },
+    {
+      "id": "002_theme_mode_control_quickstart_quick_reference",
+      "label": "Quick reference",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/quickstart.md",
+      "source_location": "L12"
+    },
+    {
+      "id": "002_theme_mode_control_quickstart_theme_type",
+      "label": "Theme type",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/quickstart.md",
+      "source_location": "L14"
+    },
+    {
+      "id": "002_theme_mode_control_quickstart_codeblock_1",
+      "label": "code:typescript (type Theme = \"system\" | \"light\" | \"dark\";)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/quickstart.md",
+      "source_location": "L16"
+    },
+    {
+      "id": "002_theme_mode_control_quickstart_applytheme_logic",
+      "label": "applyTheme() logic",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/quickstart.md",
+      "source_location": "L20"
+    },
+    {
+      "id": "002_theme_mode_control_quickstart_codeblock_2",
+      "label": "code:javascript (function applyTheme() {)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/quickstart.md",
+      "source_location": "L22"
+    },
+    {
+      "id": "002_theme_mode_control_quickstart_os_listener",
+      "label": "OS listener",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/quickstart.md",
+      "source_location": "L35"
+    },
+    {
+      "id": "002_theme_mode_control_quickstart_codeblock_3",
+      "label": "code:javascript (const mq = window.matchMedia(\"(prefers-color-scheme: dark)\"))",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/quickstart.md",
+      "source_location": "L37"
+    },
+    {
+      "id": "002_theme_mode_control_quickstart_verify",
+      "label": "Verify",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/quickstart.md",
+      "source_location": "L44"
+    }
+  ],
+  "edges": [
+    {
+      "source": "users_maddozs_personal_projects_recetario_specs_002_theme_mode_control_quickstart_md",
+      "target": "002_theme_mode_control_quickstart_quickstart_theme_mode_control",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/quickstart.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "002_theme_mode_control_quickstart_quickstart_theme_mode_control",
+      "target": "002_theme_mode_control_quickstart_files_to_modify",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/quickstart.md",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "002_theme_mode_control_quickstart_quickstart_theme_mode_control",
+      "target": "002_theme_mode_control_quickstart_quick_reference",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/quickstart.md",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "002_theme_mode_control_quickstart_quick_reference",
+      "target": "002_theme_mode_control_quickstart_theme_type",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/quickstart.md",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "002_theme_mode_control_quickstart_theme_type",
+      "target": "002_theme_mode_control_quickstart_codeblock_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/quickstart.md",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "002_theme_mode_control_quickstart_quick_reference",
+      "target": "002_theme_mode_control_quickstart_applytheme_logic",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/quickstart.md",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "002_theme_mode_control_quickstart_applytheme_logic",
+      "target": "002_theme_mode_control_quickstart_codeblock_2",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/quickstart.md",
+      "source_location": "L22",
+      "weight": 1.0
+    },
+    {
+      "source": "002_theme_mode_control_quickstart_quick_reference",
+      "target": "002_theme_mode_control_quickstart_os_listener",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/quickstart.md",
+      "source_location": "L35",
+      "weight": 1.0
+    },
+    {
+      "source": "002_theme_mode_control_quickstart_os_listener",
+      "target": "002_theme_mode_control_quickstart_codeblock_3",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/quickstart.md",
+      "source_location": "L37",
+      "weight": 1.0
+    },
+    {
+      "source": "002_theme_mode_control_quickstart_quickstart_theme_mode_control",
+      "target": "002_theme_mode_control_quickstart_verify",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/002-theme-mode-control/quickstart.md",
+      "source_location": "L44",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

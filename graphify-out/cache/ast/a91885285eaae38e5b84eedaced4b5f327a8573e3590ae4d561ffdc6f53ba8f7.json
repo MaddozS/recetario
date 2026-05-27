@@ -1,1 +1,399 @@
-{"nodes": [{"id": "users_maddozs_personal_projects_recetario_agents_skills_email_and_password_best_practices_skill_md", "label": "SKILL.md", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md", "source_location": "L1"}, {"id": "email_and_password_best_practices_skill_quick_start", "label": "Quick Start", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md", "source_location": "L6"}, {"id": "email_and_password_best_practices_skill_email_verification_setup", "label": "Email Verification Setup", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md", "source_location": "L16"}, {"id": "email_and_password_best_practices_skill_codeblock_1", "label": "code:ts (import { betterAuth } from \"better-auth\";)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md", "source_location": "L20"}, {"id": "email_and_password_best_practices_skill_requiring_email_verification", "label": "Requiring Email Verification", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md", "source_location": "L39"}, {"id": "email_and_password_best_practices_skill_codeblock_2", "label": "code:ts (export const auth = betterAuth({)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md", "source_location": "L43"}, {"id": "email_and_password_best_practices_skill_client_side_validation", "label": "Client Side Validation", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md", "source_location": "L53"}, {"id": "email_and_password_best_practices_skill_callback_urls", "label": "Callback URLs", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md", "source_location": "L57"}, {"id": "email_and_password_best_practices_skill_codeblock_3", "label": "code:ts (const { data, error } = await authClient.signUp.email({)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md", "source_location": "L61"}, {"id": "email_and_password_best_practices_skill_password_reset_flows", "label": "Password Reset Flows", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md", "source_location": "L67"}, {"id": "email_and_password_best_practices_skill_codeblock_4", "label": "code:ts (import { betterAuth } from \"better-auth\";)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md", "source_location": "L71"}, {"id": "email_and_password_best_practices_skill_security_considerations", "label": "Security Considerations", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md", "source_location": "L95"}, {"id": "email_and_password_best_practices_skill_codeblock_5", "label": "code:ts (export const auth = betterAuth({)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md", "source_location": "L101"}, {"id": "email_and_password_best_practices_skill_token_security", "label": "Token Security", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md", "source_location": "L114"}, {"id": "email_and_password_best_practices_skill_codeblock_6", "label": "code:ts (export const auth = betterAuth({)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md", "source_location": "L118"}, {"id": "email_and_password_best_practices_skill_session_revocation", "label": "Session Revocation", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md", "source_location": "L129"}, {"id": "email_and_password_best_practices_skill_codeblock_7", "label": "code:ts (export const auth = betterAuth({)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md", "source_location": "L133"}, {"id": "email_and_password_best_practices_skill_password_requirements", "label": "Password Requirements", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md", "source_location": "L142"}, {"id": "email_and_password_best_practices_skill_codeblock_8", "label": "code:ts (export const auth = betterAuth({)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md", "source_location": "L146"}, {"id": "email_and_password_best_practices_skill_sending_the_password_reset", "label": "Sending the Password Reset", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md", "source_location": "L156"}, {"id": "email_and_password_best_practices_skill_codeblock_9", "label": "code:ts (const data = await auth.api.requestPasswordReset({)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md", "source_location": "L160"}, {"id": "email_and_password_best_practices_skill_codeblock_10", "label": "code:ts (const { data, error } = await authClient.requestPasswordRese)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md", "source_location": "L171"}, {"id": "email_and_password_best_practices_skill_password_hashing", "label": "Password Hashing", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md", "source_location": "L180"}, {"id": "email_and_password_best_practices_skill_custom_hashing_algorithm", "label": "Custom Hashing Algorithm", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md", "source_location": "L184"}, {"id": "email_and_password_best_practices_skill_codeblock_11", "label": "code:ts (import { betterAuth } from \"better-auth\";)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md", "source_location": "L188"}], "edges": [{"source": "users_maddozs_personal_projects_recetario_agents_skills_email_and_password_best_practices_skill_md", "target": "email_and_password_best_practices_skill_quick_start", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md", "source_location": "L6", "weight": 1.0}, {"source": "users_maddozs_personal_projects_recetario_agents_skills_email_and_password_best_practices_skill_md", "target": "email_and_password_best_practices_skill_email_verification_setup", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md", "source_location": "L16", "weight": 1.0}, {"source": "email_and_password_best_practices_skill_email_verification_setup", "target": "email_and_password_best_practices_skill_codeblock_1", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md", "source_location": "L20", "weight": 1.0}, {"source": "email_and_password_best_practices_skill_email_verification_setup", "target": "email_and_password_best_practices_skill_requiring_email_verification", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md", "source_location": "L39", "weight": 1.0}, {"source": "email_and_password_best_practices_skill_requiring_email_verification", "target": "email_and_password_best_practices_skill_codeblock_2", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md", "source_location": "L43", "weight": 1.0}, {"source": "users_maddozs_personal_projects_recetario_agents_skills_email_and_password_best_practices_skill_md", "target": "email_and_password_best_practices_skill_client_side_validation", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md", "source_location": "L53", "weight": 1.0}, {"source": "users_maddozs_personal_projects_recetario_agents_skills_email_and_password_best_practices_skill_md", "target": "email_and_password_best_practices_skill_callback_urls", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md", "source_location": "L57", "weight": 1.0}, {"source": "email_and_password_best_practices_skill_callback_urls", "target": "email_and_password_best_practices_skill_codeblock_3", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md", "source_location": "L61", "weight": 1.0}, {"source": "users_maddozs_personal_projects_recetario_agents_skills_email_and_password_best_practices_skill_md", "target": "email_and_password_best_practices_skill_password_reset_flows", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md", "source_location": "L67", "weight": 1.0}, {"source": "email_and_password_best_practices_skill_password_reset_flows", "target": "email_and_password_best_practices_skill_codeblock_4", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md", "source_location": "L71", "weight": 1.0}, {"source": "email_and_password_best_practices_skill_password_reset_flows", "target": "email_and_password_best_practices_skill_security_considerations", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md", "source_location": "L95", "weight": 1.0}, {"source": "email_and_password_best_practices_skill_security_considerations", "target": "email_and_password_best_practices_skill_codeblock_5", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md", "source_location": "L101", "weight": 1.0}, {"source": "email_and_password_best_practices_skill_security_considerations", "target": "email_and_password_best_practices_skill_token_security", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md", "source_location": "L114", "weight": 1.0}, {"source": "email_and_password_best_practices_skill_token_security", "target": "email_and_password_best_practices_skill_codeblock_6", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md", "source_location": "L118", "weight": 1.0}, {"source": "email_and_password_best_practices_skill_security_considerations", "target": "email_and_password_best_practices_skill_session_revocation", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md", "source_location": "L129", "weight": 1.0}, {"source": "email_and_password_best_practices_skill_session_revocation", "target": "email_and_password_best_practices_skill_codeblock_7", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md", "source_location": "L133", "weight": 1.0}, {"source": "email_and_password_best_practices_skill_security_considerations", "target": "email_and_password_best_practices_skill_password_requirements", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md", "source_location": "L142", "weight": 1.0}, {"source": "email_and_password_best_practices_skill_password_requirements", "target": "email_and_password_best_practices_skill_codeblock_8", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md", "source_location": "L146", "weight": 1.0}, {"source": "email_and_password_best_practices_skill_password_reset_flows", "target": "email_and_password_best_practices_skill_sending_the_password_reset", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md", "source_location": "L156", "weight": 1.0}, {"source": "email_and_password_best_practices_skill_sending_the_password_reset", "target": "email_and_password_best_practices_skill_codeblock_9", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md", "source_location": "L160", "weight": 1.0}, {"source": "email_and_password_best_practices_skill_sending_the_password_reset", "target": "email_and_password_best_practices_skill_codeblock_10", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md", "source_location": "L171", "weight": 1.0}, {"source": "users_maddozs_personal_projects_recetario_agents_skills_email_and_password_best_practices_skill_md", "target": "email_and_password_best_practices_skill_password_hashing", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md", "source_location": "L180", "weight": 1.0}, {"source": "email_and_password_best_practices_skill_password_hashing", "target": "email_and_password_best_practices_skill_custom_hashing_algorithm", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md", "source_location": "L184", "weight": 1.0}, {"source": "email_and_password_best_practices_skill_custom_hashing_algorithm", "target": "email_and_password_best_practices_skill_codeblock_11", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md", "source_location": "L188", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "users_maddozs_personal_projects_recetario_agents_skills_email_and_password_best_practices_skill_md",
+      "label": "SKILL.md",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "email_and_password_best_practices_skill_quick_start",
+      "label": "Quick Start",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md",
+      "source_location": "L6"
+    },
+    {
+      "id": "email_and_password_best_practices_skill_email_verification_setup",
+      "label": "Email Verification Setup",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md",
+      "source_location": "L16"
+    },
+    {
+      "id": "email_and_password_best_practices_skill_codeblock_1",
+      "label": "code:ts (import { betterAuth } from \"better-auth\";)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md",
+      "source_location": "L20"
+    },
+    {
+      "id": "email_and_password_best_practices_skill_requiring_email_verification",
+      "label": "Requiring Email Verification",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md",
+      "source_location": "L39"
+    },
+    {
+      "id": "email_and_password_best_practices_skill_codeblock_2",
+      "label": "code:ts (export const auth = betterAuth({)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md",
+      "source_location": "L43"
+    },
+    {
+      "id": "email_and_password_best_practices_skill_client_side_validation",
+      "label": "Client Side Validation",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md",
+      "source_location": "L53"
+    },
+    {
+      "id": "email_and_password_best_practices_skill_callback_urls",
+      "label": "Callback URLs",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md",
+      "source_location": "L57"
+    },
+    {
+      "id": "email_and_password_best_practices_skill_codeblock_3",
+      "label": "code:ts (const { data, error } = await authClient.signUp.email({)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md",
+      "source_location": "L61"
+    },
+    {
+      "id": "email_and_password_best_practices_skill_password_reset_flows",
+      "label": "Password Reset Flows",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md",
+      "source_location": "L67"
+    },
+    {
+      "id": "email_and_password_best_practices_skill_codeblock_4",
+      "label": "code:ts (import { betterAuth } from \"better-auth\";)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md",
+      "source_location": "L71"
+    },
+    {
+      "id": "email_and_password_best_practices_skill_security_considerations",
+      "label": "Security Considerations",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md",
+      "source_location": "L95"
+    },
+    {
+      "id": "email_and_password_best_practices_skill_codeblock_5",
+      "label": "code:ts (export const auth = betterAuth({)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md",
+      "source_location": "L101"
+    },
+    {
+      "id": "email_and_password_best_practices_skill_token_security",
+      "label": "Token Security",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md",
+      "source_location": "L114"
+    },
+    {
+      "id": "email_and_password_best_practices_skill_codeblock_6",
+      "label": "code:ts (export const auth = betterAuth({)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md",
+      "source_location": "L118"
+    },
+    {
+      "id": "email_and_password_best_practices_skill_session_revocation",
+      "label": "Session Revocation",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md",
+      "source_location": "L129"
+    },
+    {
+      "id": "email_and_password_best_practices_skill_codeblock_7",
+      "label": "code:ts (export const auth = betterAuth({)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md",
+      "source_location": "L133"
+    },
+    {
+      "id": "email_and_password_best_practices_skill_password_requirements",
+      "label": "Password Requirements",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md",
+      "source_location": "L142"
+    },
+    {
+      "id": "email_and_password_best_practices_skill_codeblock_8",
+      "label": "code:ts (export const auth = betterAuth({)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md",
+      "source_location": "L146"
+    },
+    {
+      "id": "email_and_password_best_practices_skill_sending_the_password_reset",
+      "label": "Sending the Password Reset",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md",
+      "source_location": "L156"
+    },
+    {
+      "id": "email_and_password_best_practices_skill_codeblock_9",
+      "label": "code:ts (const data = await auth.api.requestPasswordReset({)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md",
+      "source_location": "L160"
+    },
+    {
+      "id": "email_and_password_best_practices_skill_codeblock_10",
+      "label": "code:ts (const { data, error } = await authClient.requestPasswordRese)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md",
+      "source_location": "L171"
+    },
+    {
+      "id": "email_and_password_best_practices_skill_password_hashing",
+      "label": "Password Hashing",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md",
+      "source_location": "L180"
+    },
+    {
+      "id": "email_and_password_best_practices_skill_custom_hashing_algorithm",
+      "label": "Custom Hashing Algorithm",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md",
+      "source_location": "L184"
+    },
+    {
+      "id": "email_and_password_best_practices_skill_codeblock_11",
+      "label": "code:ts (import { betterAuth } from \"better-auth\";)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md",
+      "source_location": "L188"
+    }
+  ],
+  "edges": [
+    {
+      "source": "users_maddozs_personal_projects_recetario_agents_skills_email_and_password_best_practices_skill_md",
+      "target": "email_and_password_best_practices_skill_quick_start",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_agents_skills_email_and_password_best_practices_skill_md",
+      "target": "email_and_password_best_practices_skill_email_verification_setup",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "email_and_password_best_practices_skill_email_verification_setup",
+      "target": "email_and_password_best_practices_skill_codeblock_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "email_and_password_best_practices_skill_email_verification_setup",
+      "target": "email_and_password_best_practices_skill_requiring_email_verification",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md",
+      "source_location": "L39",
+      "weight": 1.0
+    },
+    {
+      "source": "email_and_password_best_practices_skill_requiring_email_verification",
+      "target": "email_and_password_best_practices_skill_codeblock_2",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md",
+      "source_location": "L43",
+      "weight": 1.0
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_agents_skills_email_and_password_best_practices_skill_md",
+      "target": "email_and_password_best_practices_skill_client_side_validation",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md",
+      "source_location": "L53",
+      "weight": 1.0
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_agents_skills_email_and_password_best_practices_skill_md",
+      "target": "email_and_password_best_practices_skill_callback_urls",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md",
+      "source_location": "L57",
+      "weight": 1.0
+    },
+    {
+      "source": "email_and_password_best_practices_skill_callback_urls",
+      "target": "email_and_password_best_practices_skill_codeblock_3",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md",
+      "source_location": "L61",
+      "weight": 1.0
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_agents_skills_email_and_password_best_practices_skill_md",
+      "target": "email_and_password_best_practices_skill_password_reset_flows",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md",
+      "source_location": "L67",
+      "weight": 1.0
+    },
+    {
+      "source": "email_and_password_best_practices_skill_password_reset_flows",
+      "target": "email_and_password_best_practices_skill_codeblock_4",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md",
+      "source_location": "L71",
+      "weight": 1.0
+    },
+    {
+      "source": "email_and_password_best_practices_skill_password_reset_flows",
+      "target": "email_and_password_best_practices_skill_security_considerations",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md",
+      "source_location": "L95",
+      "weight": 1.0
+    },
+    {
+      "source": "email_and_password_best_practices_skill_security_considerations",
+      "target": "email_and_password_best_practices_skill_codeblock_5",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md",
+      "source_location": "L101",
+      "weight": 1.0
+    },
+    {
+      "source": "email_and_password_best_practices_skill_security_considerations",
+      "target": "email_and_password_best_practices_skill_token_security",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md",
+      "source_location": "L114",
+      "weight": 1.0
+    },
+    {
+      "source": "email_and_password_best_practices_skill_token_security",
+      "target": "email_and_password_best_practices_skill_codeblock_6",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md",
+      "source_location": "L118",
+      "weight": 1.0
+    },
+    {
+      "source": "email_and_password_best_practices_skill_security_considerations",
+      "target": "email_and_password_best_practices_skill_session_revocation",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md",
+      "source_location": "L129",
+      "weight": 1.0
+    },
+    {
+      "source": "email_and_password_best_practices_skill_session_revocation",
+      "target": "email_and_password_best_practices_skill_codeblock_7",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md",
+      "source_location": "L133",
+      "weight": 1.0
+    },
+    {
+      "source": "email_and_password_best_practices_skill_security_considerations",
+      "target": "email_and_password_best_practices_skill_password_requirements",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md",
+      "source_location": "L142",
+      "weight": 1.0
+    },
+    {
+      "source": "email_and_password_best_practices_skill_password_requirements",
+      "target": "email_and_password_best_practices_skill_codeblock_8",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md",
+      "source_location": "L146",
+      "weight": 1.0
+    },
+    {
+      "source": "email_and_password_best_practices_skill_password_reset_flows",
+      "target": "email_and_password_best_practices_skill_sending_the_password_reset",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md",
+      "source_location": "L156",
+      "weight": 1.0
+    },
+    {
+      "source": "email_and_password_best_practices_skill_sending_the_password_reset",
+      "target": "email_and_password_best_practices_skill_codeblock_9",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md",
+      "source_location": "L160",
+      "weight": 1.0
+    },
+    {
+      "source": "email_and_password_best_practices_skill_sending_the_password_reset",
+      "target": "email_and_password_best_practices_skill_codeblock_10",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md",
+      "source_location": "L171",
+      "weight": 1.0
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_agents_skills_email_and_password_best_practices_skill_md",
+      "target": "email_and_password_best_practices_skill_password_hashing",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md",
+      "source_location": "L180",
+      "weight": 1.0
+    },
+    {
+      "source": "email_and_password_best_practices_skill_password_hashing",
+      "target": "email_and_password_best_practices_skill_custom_hashing_algorithm",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md",
+      "source_location": "L184",
+      "weight": 1.0
+    },
+    {
+      "source": "email_and_password_best_practices_skill_custom_hashing_algorithm",
+      "target": "email_and_password_best_practices_skill_codeblock_11",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/email-and-password-best-practices/SKILL.md",
+      "source_location": "L188",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

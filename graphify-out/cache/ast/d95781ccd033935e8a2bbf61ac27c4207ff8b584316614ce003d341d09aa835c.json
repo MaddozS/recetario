@@ -1,1 +1,316 @@
-{"nodes": [{"id": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro", "label": "Layout.astro", "file_type": "code", "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro", "source_location": "L1"}, {"id": "layouts_layout_isauthenticated", "label": "isAuthenticated", "file_type": "code", "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro", "source_location": "L15"}, {"id": "layouts_layout_accentcssvars", "label": "accentCssVars", "file_type": "code", "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro", "source_location": "L26"}, {"id": "layouts_layout_if", "label": "if()", "file_type": "code", "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro", "source_location": "L218"}, {"id": "users_maddozs_personal_projects_recetario_src_styles_global_css", "label": "@/styles/global.css", "file_type": "code", "source_file": "/Users/maddozs/personal-projects/recetario/src/styles/global.css", "confidence": "EXTRACTED"}, {"id": "astro_transitions", "label": "astro:transitions", "file_type": "code", "source_file": "astro:transitions", "confidence": "EXTRACTED"}, {"id": "components", "label": "astro-icon/components", "file_type": "code", "source_file": "astro-icon/components", "confidence": "EXTRACTED"}, {"id": "users_maddozs_personal_projects_recetario_src_lib_db_preferences", "label": "@/lib/db/preferences", "file_type": "code", "source_file": "/Users/maddozs/personal-projects/recetario/src/lib/db/preferences", "confidence": "EXTRACTED"}, {"id": "users_maddozs_personal_projects_recetario_src_lib_subscription", "label": "@/lib/subscription", "file_type": "code", "source_file": "/Users/maddozs/personal-projects/recetario/src/lib/subscription", "confidence": "EXTRACTED"}, {"id": "users_maddozs_personal_projects_recetario_src_lib_accent_colors", "label": "@/lib/accent-colors", "file_type": "code", "source_file": "/Users/maddozs/personal-projects/recetario/src/lib/accent-colors", "confidence": "EXTRACTED"}, {"id": "users_maddozs_personal_projects_recetario_src_components_header_astro", "label": "@/components/Header.astro", "file_type": "code", "source_file": "/Users/maddozs/personal-projects/recetario/src/components/Header.astro", "confidence": "EXTRACTED"}, {"id": "users_maddozs_personal_projects_recetario_src_components_recipessidebar_astro", "label": "@/components/RecipesSidebar.astro", "file_type": "code", "source_file": "/Users/maddozs/personal-projects/recetario/src/components/RecipesSidebar.astro", "confidence": "EXTRACTED"}], "edges": [{"source": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro", "target": "astro_transitions", "relation": "imports_from", "context": "import", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro", "source_location": "L3", "weight": 1.0}, {"source": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro", "target": "components", "relation": "imports_from", "context": "import", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro", "source_location": "L4", "weight": 1.0}, {"source": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro", "target": "users_maddozs_personal_projects_recetario_src_lib_db_preferences_ts", "relation": "imports_from", "context": "import", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro", "source_location": "L5", "weight": 1.0}, {"source": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro", "target": "db_preferences_getuserpreferences", "relation": "imports", "context": "import", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro", "source_location": "L5", "weight": 1.0}, {"source": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro", "target": "users_maddozs_personal_projects_recetario_src_lib_subscription_ts", "relation": "imports_from", "context": "import", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro", "source_location": "L6", "weight": 1.0}, {"source": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro", "target": "lib_subscription_hasfeature", "relation": "imports", "context": "import", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro", "source_location": "L6", "weight": 1.0}, {"source": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro", "target": "users_maddozs_personal_projects_recetario_src_lib_accent_colors_ts", "relation": "imports_from", "context": "import", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro", "source_location": "L7", "weight": 1.0}, {"source": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro", "target": "lib_accent_colors_getaccentcssvars", "relation": "imports", "context": "import", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro", "source_location": "L7", "weight": 1.0}, {"source": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro", "target": "users_maddozs_personal_projects_recetario_src_lib_accent_colors_ts", "relation": "imports_from", "context": "import", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro", "source_location": "L8", "weight": 1.0}, {"source": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro", "target": "lib_accent_colors_accentfamily", "relation": "imports", "context": "import", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro", "source_location": "L8", "weight": 1.0}, {"source": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro", "target": "users_maddozs_personal_projects_recetario_src_components_header_astro", "relation": "imports_from", "context": "import", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro", "source_location": "L9", "weight": 1.0}, {"source": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro", "target": "users_maddozs_personal_projects_recetario_src_components_recipessidebar_astro", "relation": "imports_from", "context": "import", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro", "source_location": "L10", "weight": 1.0}, {"source": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro", "target": "layouts_layout_isauthenticated", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro", "source_location": "L15", "weight": 1.0}, {"source": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro", "target": "layouts_layout_accentcssvars", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro", "source_location": "L26", "weight": 1.0}, {"source": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro", "target": "layouts_layout_if", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro", "source_location": "L218", "weight": 1.0}, {"source": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro", "target": "users_maddozs_personal_projects_recetario_src_styles_global_css", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro"}, {"source": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro", "target": "astro_transitions", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro"}, {"source": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro", "target": "components", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro"}, {"source": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro", "target": "users_maddozs_personal_projects_recetario_src_lib_db_preferences", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro"}, {"source": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro", "target": "users_maddozs_personal_projects_recetario_src_lib_subscription", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro"}, {"source": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro", "target": "users_maddozs_personal_projects_recetario_src_lib_accent_colors", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro"}, {"source": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro", "target": "users_maddozs_personal_projects_recetario_src_lib_accent_colors", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro"}, {"source": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro", "target": "users_maddozs_personal_projects_recetario_src_components_header_astro", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro"}, {"source": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro", "target": "users_maddozs_personal_projects_recetario_src_components_recipessidebar_astro", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro"}, {"source": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro", "target": "users_maddozs_personal_projects_recetario_src_lib_accent_colors", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro"}], "raw_calls": [{"caller_nid": "layouts_layout_if", "callee": "matchMedia", "is_member_call": true, "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro", "source_location": "L219"}]}
+{
+  "nodes": [
+    {
+      "id": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro",
+      "label": "Layout.astro",
+      "file_type": "code",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro",
+      "source_location": "L1"
+    },
+    {
+      "id": "layouts_layout_isauthenticated",
+      "label": "isAuthenticated",
+      "file_type": "code",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro",
+      "source_location": "L15"
+    },
+    {
+      "id": "layouts_layout_accentcssvars",
+      "label": "accentCssVars",
+      "file_type": "code",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro",
+      "source_location": "L26"
+    },
+    {
+      "id": "layouts_layout_if",
+      "label": "if()",
+      "file_type": "code",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro",
+      "source_location": "L218"
+    },
+    {
+      "id": "users_maddozs_personal_projects_recetario_src_styles_global_css",
+      "label": "@/styles/global.css",
+      "file_type": "code",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/styles/global.css",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "astro_transitions",
+      "label": "astro:transitions",
+      "file_type": "code",
+      "source_file": "astro:transitions",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "components",
+      "label": "astro-icon/components",
+      "file_type": "code",
+      "source_file": "astro-icon/components",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "users_maddozs_personal_projects_recetario_src_lib_db_preferences",
+      "label": "@/lib/db/preferences",
+      "file_type": "code",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/lib/db/preferences",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "users_maddozs_personal_projects_recetario_src_lib_subscription",
+      "label": "@/lib/subscription",
+      "file_type": "code",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/lib/subscription",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "users_maddozs_personal_projects_recetario_src_lib_accent_colors",
+      "label": "@/lib/accent-colors",
+      "file_type": "code",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/lib/accent-colors",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "users_maddozs_personal_projects_recetario_src_components_header_astro",
+      "label": "@/components/Header.astro",
+      "file_type": "code",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/components/Header.astro",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "users_maddozs_personal_projects_recetario_src_components_recipessidebar_astro",
+      "label": "@/components/RecipesSidebar.astro",
+      "file_type": "code",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/components/RecipesSidebar.astro",
+      "confidence": "EXTRACTED"
+    }
+  ],
+  "edges": [
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro",
+      "target": "astro_transitions",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro",
+      "target": "components",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro",
+      "target": "users_maddozs_personal_projects_recetario_src_lib_db_preferences_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro",
+      "target": "db_preferences_getuserpreferences",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro",
+      "target": "users_maddozs_personal_projects_recetario_src_lib_subscription_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro",
+      "target": "lib_subscription_hasfeature",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro",
+      "target": "users_maddozs_personal_projects_recetario_src_lib_accent_colors_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro",
+      "target": "lib_accent_colors_getaccentcssvars",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro",
+      "target": "users_maddozs_personal_projects_recetario_src_lib_accent_colors_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro",
+      "target": "lib_accent_colors_accentfamily",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro",
+      "target": "users_maddozs_personal_projects_recetario_src_components_header_astro",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro",
+      "target": "users_maddozs_personal_projects_recetario_src_components_recipessidebar_astro",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro",
+      "target": "layouts_layout_isauthenticated",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro",
+      "target": "layouts_layout_accentcssvars",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro",
+      "source_location": "L26",
+      "weight": 1.0
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro",
+      "target": "layouts_layout_if",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro",
+      "source_location": "L218",
+      "weight": 1.0
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro",
+      "target": "users_maddozs_personal_projects_recetario_src_styles_global_css",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro"
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro",
+      "target": "astro_transitions",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro"
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro",
+      "target": "components",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro"
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro",
+      "target": "users_maddozs_personal_projects_recetario_src_lib_db_preferences",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro"
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro",
+      "target": "users_maddozs_personal_projects_recetario_src_lib_subscription",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro"
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro",
+      "target": "users_maddozs_personal_projects_recetario_src_lib_accent_colors",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro"
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro",
+      "target": "users_maddozs_personal_projects_recetario_src_lib_accent_colors",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro"
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro",
+      "target": "users_maddozs_personal_projects_recetario_src_components_header_astro",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro"
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro",
+      "target": "users_maddozs_personal_projects_recetario_src_components_recipessidebar_astro",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro"
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_layouts_layout_astro",
+      "target": "users_maddozs_personal_projects_recetario_src_lib_accent_colors",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro"
+    }
+  ],
+  "raw_calls": [
+    {
+      "caller_nid": "layouts_layout_if",
+      "callee": "matchMedia",
+      "is_member_call": true,
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro",
+      "source_location": "L219"
+    }
+  ]
+}

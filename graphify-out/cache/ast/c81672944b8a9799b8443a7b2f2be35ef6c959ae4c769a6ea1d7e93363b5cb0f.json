@@ -1,1 +1,399 @@
-{"nodes": [{"id": "users_maddozs_personal_projects_recetario_docs_landing_page_spec_md", "label": "landing-page-spec.md", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md", "source_location": "L1"}, {"id": "docs_landing_page_spec_kitchcalc_landing_page_especificaci\u00f3n", "label": "KitchCalc Landing Page \u2014 Especificaci\u00f3n", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md", "source_location": "L1"}, {"id": "docs_landing_page_spec_1_prop\u00f3sito", "label": "1. Prop\u00f3sito", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md", "source_location": "L3"}, {"id": "docs_landing_page_spec_2_stack_t\u00e9cnico", "label": "2. Stack t\u00e9cnico", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md", "source_location": "L7"}, {"id": "docs_landing_page_spec_3_estructura_general", "label": "3. Estructura general", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md", "source_location": "L20"}, {"id": "docs_landing_page_spec_codeblock_1", "label": "code:block1 (LandingLayout)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md", "source_location": "L22"}, {"id": "docs_landing_page_spec_4_secciones", "label": "4. Secciones", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md", "source_location": "L37"}, {"id": "docs_landing_page_spec_4_1_landingnavbar_src_components_landing_landingnavbar_astro", "label": "4.1 LandingNavbar (`/src/components/landing/LandingNavbar.astro`)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md", "source_location": "L39"}, {"id": "docs_landing_page_spec_4_2_herosection_src_components_landing_herosection_astro", "label": "4.2 HeroSection (`/src/components/landing/HeroSection.astro`)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md", "source_location": "L51"}, {"id": "docs_landing_page_spec_4_3_featuressection_src_components_landing_featuressection_astro", "label": "4.3 FeaturesSection (`/src/components/landing/FeaturesSection.astro`)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md", "source_location": "L65"}, {"id": "docs_landing_page_spec_4_4_howitworkssection_src_components_landing_howitworkssection_astro", "label": "4.4 HowItWorksSection (`/src/components/landing/HowItWorksSection.astro`)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md", "source_location": "L81"}, {"id": "docs_landing_page_spec_4_5_pricingsection_src_components_landing_pricingsection_astro", "label": "4.5 PricingSection (`/src/components/landing/PricingSection.astro`)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md", "source_location": "L97"}, {"id": "docs_landing_page_spec_4_6_ctasection_src_components_landing_ctasection_astro", "label": "4.6 CTASection (`/src/components/landing/CTASection.astro`)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md", "source_location": "L121"}, {"id": "docs_landing_page_spec_4_7_landingfooter_src_components_landing_landingfooter_astro", "label": "4.7 LandingFooter (`/src/components/landing/LandingFooter.astro`)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md", "source_location": "L135"}, {"id": "docs_landing_page_spec_5_dise\u00f1o_visual", "label": "5. Dise\u00f1o visual", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md", "source_location": "L145"}, {"id": "docs_landing_page_spec_5_1_sistema_de_colores_coral", "label": "5.1 Sistema de colores (Coral)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md", "source_location": "L147"}, {"id": "docs_landing_page_spec_5_2_sombras_hover", "label": "5.2 Sombras hover", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md", "source_location": "L156"}, {"id": "docs_landing_page_spec_5_3_animaciones", "label": "5.3 Animaciones", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md", "source_location": "L164"}, {"id": "docs_landing_page_spec_5_4_tipograf\u00eda", "label": "5.4 Tipograf\u00eda", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md", "source_location": "L175"}, {"id": "docs_landing_page_spec_5_5_responsive", "label": "5.5 Responsive", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md", "source_location": "L184"}, {"id": "docs_landing_page_spec_6_seo_meta", "label": "6. SEO & Meta", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md", "source_location": "L194"}, {"id": "docs_landing_page_spec_7_arquitectura_de_datos", "label": "7. Arquitectura de datos", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md", "source_location": "L205"}, {"id": "docs_landing_page_spec_8_edge_cases", "label": "8. Edge cases", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md", "source_location": "L212"}, {"id": "docs_landing_page_spec_9_componentes_y_archivos", "label": "9. Componentes y archivos", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md", "source_location": "L225"}, {"id": "docs_landing_page_spec_10_archivos_multimedia", "label": "10. Archivos multimedia", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md", "source_location": "L241"}], "edges": [{"source": "users_maddozs_personal_projects_recetario_docs_landing_page_spec_md", "target": "docs_landing_page_spec_kitchcalc_landing_page_especificaci\u00f3n", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md", "source_location": "L1", "weight": 1.0}, {"source": "docs_landing_page_spec_kitchcalc_landing_page_especificaci\u00f3n", "target": "docs_landing_page_spec_1_prop\u00f3sito", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md", "source_location": "L3", "weight": 1.0}, {"source": "docs_landing_page_spec_kitchcalc_landing_page_especificaci\u00f3n", "target": "docs_landing_page_spec_2_stack_t\u00e9cnico", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md", "source_location": "L7", "weight": 1.0}, {"source": "docs_landing_page_spec_kitchcalc_landing_page_especificaci\u00f3n", "target": "docs_landing_page_spec_3_estructura_general", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md", "source_location": "L20", "weight": 1.0}, {"source": "docs_landing_page_spec_3_estructura_general", "target": "docs_landing_page_spec_codeblock_1", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md", "source_location": "L22", "weight": 1.0}, {"source": "docs_landing_page_spec_kitchcalc_landing_page_especificaci\u00f3n", "target": "docs_landing_page_spec_4_secciones", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md", "source_location": "L37", "weight": 1.0}, {"source": "docs_landing_page_spec_4_secciones", "target": "docs_landing_page_spec_4_1_landingnavbar_src_components_landing_landingnavbar_astro", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md", "source_location": "L39", "weight": 1.0}, {"source": "docs_landing_page_spec_4_secciones", "target": "docs_landing_page_spec_4_2_herosection_src_components_landing_herosection_astro", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md", "source_location": "L51", "weight": 1.0}, {"source": "docs_landing_page_spec_4_secciones", "target": "docs_landing_page_spec_4_3_featuressection_src_components_landing_featuressection_astro", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md", "source_location": "L65", "weight": 1.0}, {"source": "docs_landing_page_spec_4_secciones", "target": "docs_landing_page_spec_4_4_howitworkssection_src_components_landing_howitworkssection_astro", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md", "source_location": "L81", "weight": 1.0}, {"source": "docs_landing_page_spec_4_secciones", "target": "docs_landing_page_spec_4_5_pricingsection_src_components_landing_pricingsection_astro", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md", "source_location": "L97", "weight": 1.0}, {"source": "docs_landing_page_spec_4_secciones", "target": "docs_landing_page_spec_4_6_ctasection_src_components_landing_ctasection_astro", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md", "source_location": "L121", "weight": 1.0}, {"source": "docs_landing_page_spec_4_secciones", "target": "docs_landing_page_spec_4_7_landingfooter_src_components_landing_landingfooter_astro", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md", "source_location": "L135", "weight": 1.0}, {"source": "docs_landing_page_spec_kitchcalc_landing_page_especificaci\u00f3n", "target": "docs_landing_page_spec_5_dise\u00f1o_visual", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md", "source_location": "L145", "weight": 1.0}, {"source": "docs_landing_page_spec_5_dise\u00f1o_visual", "target": "docs_landing_page_spec_5_1_sistema_de_colores_coral", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md", "source_location": "L147", "weight": 1.0}, {"source": "docs_landing_page_spec_5_dise\u00f1o_visual", "target": "docs_landing_page_spec_5_2_sombras_hover", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md", "source_location": "L156", "weight": 1.0}, {"source": "docs_landing_page_spec_5_dise\u00f1o_visual", "target": "docs_landing_page_spec_5_3_animaciones", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md", "source_location": "L164", "weight": 1.0}, {"source": "docs_landing_page_spec_5_dise\u00f1o_visual", "target": "docs_landing_page_spec_5_4_tipograf\u00eda", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md", "source_location": "L175", "weight": 1.0}, {"source": "docs_landing_page_spec_5_dise\u00f1o_visual", "target": "docs_landing_page_spec_5_5_responsive", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md", "source_location": "L184", "weight": 1.0}, {"source": "docs_landing_page_spec_kitchcalc_landing_page_especificaci\u00f3n", "target": "docs_landing_page_spec_6_seo_meta", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md", "source_location": "L194", "weight": 1.0}, {"source": "docs_landing_page_spec_kitchcalc_landing_page_especificaci\u00f3n", "target": "docs_landing_page_spec_7_arquitectura_de_datos", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md", "source_location": "L205", "weight": 1.0}, {"source": "docs_landing_page_spec_kitchcalc_landing_page_especificaci\u00f3n", "target": "docs_landing_page_spec_8_edge_cases", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md", "source_location": "L212", "weight": 1.0}, {"source": "docs_landing_page_spec_kitchcalc_landing_page_especificaci\u00f3n", "target": "docs_landing_page_spec_9_componentes_y_archivos", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md", "source_location": "L225", "weight": 1.0}, {"source": "docs_landing_page_spec_kitchcalc_landing_page_especificaci\u00f3n", "target": "docs_landing_page_spec_10_archivos_multimedia", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md", "source_location": "L241", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "users_maddozs_personal_projects_recetario_docs_landing_page_spec_md",
+      "label": "landing-page-spec.md",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "docs_landing_page_spec_kitchcalc_landing_page_especificaci\u00f3n",
+      "label": "KitchCalc Landing Page \u2014 Especificaci\u00f3n",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "docs_landing_page_spec_1_prop\u00f3sito",
+      "label": "1. Prop\u00f3sito",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md",
+      "source_location": "L3"
+    },
+    {
+      "id": "docs_landing_page_spec_2_stack_t\u00e9cnico",
+      "label": "2. Stack t\u00e9cnico",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md",
+      "source_location": "L7"
+    },
+    {
+      "id": "docs_landing_page_spec_3_estructura_general",
+      "label": "3. Estructura general",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md",
+      "source_location": "L20"
+    },
+    {
+      "id": "docs_landing_page_spec_codeblock_1",
+      "label": "code:block1 (LandingLayout)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md",
+      "source_location": "L22"
+    },
+    {
+      "id": "docs_landing_page_spec_4_secciones",
+      "label": "4. Secciones",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md",
+      "source_location": "L37"
+    },
+    {
+      "id": "docs_landing_page_spec_4_1_landingnavbar_src_components_landing_landingnavbar_astro",
+      "label": "4.1 LandingNavbar (`/src/components/landing/LandingNavbar.astro`)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md",
+      "source_location": "L39"
+    },
+    {
+      "id": "docs_landing_page_spec_4_2_herosection_src_components_landing_herosection_astro",
+      "label": "4.2 HeroSection (`/src/components/landing/HeroSection.astro`)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md",
+      "source_location": "L51"
+    },
+    {
+      "id": "docs_landing_page_spec_4_3_featuressection_src_components_landing_featuressection_astro",
+      "label": "4.3 FeaturesSection (`/src/components/landing/FeaturesSection.astro`)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md",
+      "source_location": "L65"
+    },
+    {
+      "id": "docs_landing_page_spec_4_4_howitworkssection_src_components_landing_howitworkssection_astro",
+      "label": "4.4 HowItWorksSection (`/src/components/landing/HowItWorksSection.astro`)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md",
+      "source_location": "L81"
+    },
+    {
+      "id": "docs_landing_page_spec_4_5_pricingsection_src_components_landing_pricingsection_astro",
+      "label": "4.5 PricingSection (`/src/components/landing/PricingSection.astro`)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md",
+      "source_location": "L97"
+    },
+    {
+      "id": "docs_landing_page_spec_4_6_ctasection_src_components_landing_ctasection_astro",
+      "label": "4.6 CTASection (`/src/components/landing/CTASection.astro`)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md",
+      "source_location": "L121"
+    },
+    {
+      "id": "docs_landing_page_spec_4_7_landingfooter_src_components_landing_landingfooter_astro",
+      "label": "4.7 LandingFooter (`/src/components/landing/LandingFooter.astro`)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md",
+      "source_location": "L135"
+    },
+    {
+      "id": "docs_landing_page_spec_5_dise\u00f1o_visual",
+      "label": "5. Dise\u00f1o visual",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md",
+      "source_location": "L145"
+    },
+    {
+      "id": "docs_landing_page_spec_5_1_sistema_de_colores_coral",
+      "label": "5.1 Sistema de colores (Coral)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md",
+      "source_location": "L147"
+    },
+    {
+      "id": "docs_landing_page_spec_5_2_sombras_hover",
+      "label": "5.2 Sombras hover",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md",
+      "source_location": "L156"
+    },
+    {
+      "id": "docs_landing_page_spec_5_3_animaciones",
+      "label": "5.3 Animaciones",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md",
+      "source_location": "L164"
+    },
+    {
+      "id": "docs_landing_page_spec_5_4_tipograf\u00eda",
+      "label": "5.4 Tipograf\u00eda",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md",
+      "source_location": "L175"
+    },
+    {
+      "id": "docs_landing_page_spec_5_5_responsive",
+      "label": "5.5 Responsive",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md",
+      "source_location": "L184"
+    },
+    {
+      "id": "docs_landing_page_spec_6_seo_meta",
+      "label": "6. SEO & Meta",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md",
+      "source_location": "L194"
+    },
+    {
+      "id": "docs_landing_page_spec_7_arquitectura_de_datos",
+      "label": "7. Arquitectura de datos",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md",
+      "source_location": "L205"
+    },
+    {
+      "id": "docs_landing_page_spec_8_edge_cases",
+      "label": "8. Edge cases",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md",
+      "source_location": "L212"
+    },
+    {
+      "id": "docs_landing_page_spec_9_componentes_y_archivos",
+      "label": "9. Componentes y archivos",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md",
+      "source_location": "L225"
+    },
+    {
+      "id": "docs_landing_page_spec_10_archivos_multimedia",
+      "label": "10. Archivos multimedia",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md",
+      "source_location": "L241"
+    }
+  ],
+  "edges": [
+    {
+      "source": "users_maddozs_personal_projects_recetario_docs_landing_page_spec_md",
+      "target": "docs_landing_page_spec_kitchcalc_landing_page_especificaci\u00f3n",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_landing_page_spec_kitchcalc_landing_page_especificaci\u00f3n",
+      "target": "docs_landing_page_spec_1_prop\u00f3sito",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_landing_page_spec_kitchcalc_landing_page_especificaci\u00f3n",
+      "target": "docs_landing_page_spec_2_stack_t\u00e9cnico",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_landing_page_spec_kitchcalc_landing_page_especificaci\u00f3n",
+      "target": "docs_landing_page_spec_3_estructura_general",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_landing_page_spec_3_estructura_general",
+      "target": "docs_landing_page_spec_codeblock_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md",
+      "source_location": "L22",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_landing_page_spec_kitchcalc_landing_page_especificaci\u00f3n",
+      "target": "docs_landing_page_spec_4_secciones",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md",
+      "source_location": "L37",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_landing_page_spec_4_secciones",
+      "target": "docs_landing_page_spec_4_1_landingnavbar_src_components_landing_landingnavbar_astro",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md",
+      "source_location": "L39",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_landing_page_spec_4_secciones",
+      "target": "docs_landing_page_spec_4_2_herosection_src_components_landing_herosection_astro",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md",
+      "source_location": "L51",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_landing_page_spec_4_secciones",
+      "target": "docs_landing_page_spec_4_3_featuressection_src_components_landing_featuressection_astro",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md",
+      "source_location": "L65",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_landing_page_spec_4_secciones",
+      "target": "docs_landing_page_spec_4_4_howitworkssection_src_components_landing_howitworkssection_astro",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md",
+      "source_location": "L81",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_landing_page_spec_4_secciones",
+      "target": "docs_landing_page_spec_4_5_pricingsection_src_components_landing_pricingsection_astro",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md",
+      "source_location": "L97",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_landing_page_spec_4_secciones",
+      "target": "docs_landing_page_spec_4_6_ctasection_src_components_landing_ctasection_astro",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md",
+      "source_location": "L121",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_landing_page_spec_4_secciones",
+      "target": "docs_landing_page_spec_4_7_landingfooter_src_components_landing_landingfooter_astro",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md",
+      "source_location": "L135",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_landing_page_spec_kitchcalc_landing_page_especificaci\u00f3n",
+      "target": "docs_landing_page_spec_5_dise\u00f1o_visual",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md",
+      "source_location": "L145",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_landing_page_spec_5_dise\u00f1o_visual",
+      "target": "docs_landing_page_spec_5_1_sistema_de_colores_coral",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md",
+      "source_location": "L147",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_landing_page_spec_5_dise\u00f1o_visual",
+      "target": "docs_landing_page_spec_5_2_sombras_hover",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md",
+      "source_location": "L156",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_landing_page_spec_5_dise\u00f1o_visual",
+      "target": "docs_landing_page_spec_5_3_animaciones",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md",
+      "source_location": "L164",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_landing_page_spec_5_dise\u00f1o_visual",
+      "target": "docs_landing_page_spec_5_4_tipograf\u00eda",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md",
+      "source_location": "L175",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_landing_page_spec_5_dise\u00f1o_visual",
+      "target": "docs_landing_page_spec_5_5_responsive",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md",
+      "source_location": "L184",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_landing_page_spec_kitchcalc_landing_page_especificaci\u00f3n",
+      "target": "docs_landing_page_spec_6_seo_meta",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md",
+      "source_location": "L194",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_landing_page_spec_kitchcalc_landing_page_especificaci\u00f3n",
+      "target": "docs_landing_page_spec_7_arquitectura_de_datos",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md",
+      "source_location": "L205",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_landing_page_spec_kitchcalc_landing_page_especificaci\u00f3n",
+      "target": "docs_landing_page_spec_8_edge_cases",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md",
+      "source_location": "L212",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_landing_page_spec_kitchcalc_landing_page_especificaci\u00f3n",
+      "target": "docs_landing_page_spec_9_componentes_y_archivos",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md",
+      "source_location": "L225",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_landing_page_spec_kitchcalc_landing_page_especificaci\u00f3n",
+      "target": "docs_landing_page_spec_10_archivos_multimedia",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/landing-page-spec.md",
+      "source_location": "L241",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

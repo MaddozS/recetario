@@ -32,15 +32,15 @@ Add first-name and last-name fields to the sign-up form and to the User model (B
 
 _GATE: Must pass before Phase 0 research. Re-check after Phase 1 design._
 
-| Principle | Status | Notes |
-|-----------|--------|-------|
-| I. Clean Code (NON-NEGOTIABLE) | PASS | Existing patterns followed. No dead code. `@/lib/db/*` barrel for DB access. |
-| II. Simple UX, Clear UI | PASS | Form follows sign-in page patterns. POST to same page. Spanish UI. |
-| III. Design by Constitution (NON-NEGOTIABLE) | PASS | `LandingLayout`, semantic tokens, flat-by-default, same structure as sign-in. |
-| IV. TypeScript Strictness + Type Safety | PASS | `additionalFields` types inferred from auth config. Prisma types as source of truth. |
-| V. Technology Lock-in | PASS | No new frameworks. Astro + Tailwind + Prisma + Better Auth only. |
-| Security & Data | PASS | Rate limiting exists. CSRF in middleware. AuditLog for sign_up events. |
-| Accessibility | PASS | Keyboard navigable inputs/toggles. Semantic HTML. |
+| Principle                                    | Status | Notes                                                                                |
+| -------------------------------------------- | ------ | ------------------------------------------------------------------------------------ |
+| I. Clean Code (NON-NEGOTIABLE)               | PASS   | Existing patterns followed. No dead code. `@/lib/db/*` barrel for DB access.         |
+| II. Simple UX, Clear UI                      | PASS   | Form follows sign-in page patterns. POST to same page. Spanish UI.                   |
+| III. Design by Constitution (NON-NEGOTIABLE) | PASS   | `LandingLayout`, semantic tokens, flat-by-default, same structure as sign-in.        |
+| IV. TypeScript Strictness + Type Safety      | PASS   | `additionalFields` types inferred from auth config. Prisma types as source of truth. |
+| V. Technology Lock-in                        | PASS   | No new frameworks. Astro + Tailwind + Prisma + Better Auth only.                     |
+| Security & Data                              | PASS   | Rate limiting exists. CSRF in middleware. AuditLog for sign_up events.               |
+| Accessibility                                | PASS   | Keyboard navigable inputs/toggles. Semantic HTML.                                    |
 
 ## Project Structure
 

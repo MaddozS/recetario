@@ -1,1 +1,254 @@
-{"nodes": [{"id": "users_maddozs_personal_projects_recetario_src_components_productioningredientstable_astro", "label": "ProductionIngredientsTable.astro", "file_type": "code", "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro", "source_location": "L1"}, {"id": "components_productioningredientstable_formatquantity", "label": "formatQuantity()", "file_type": "code", "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro", "source_location": "L12"}, {"id": "components_productioningredientstable_smartquantity", "label": "smartQuantity()", "file_type": "code", "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro", "source_location": "L18"}, {"id": "components_productioningredientstable_table", "label": "table", "file_type": "code", "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro", "source_location": "L113"}, {"id": "components_productioningredientstable_tbody", "label": "tbody", "file_type": "code", "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro", "source_location": "L118"}, {"id": "components_productioningredientstable_iconspan", "label": "iconSpan", "file_type": "code", "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro", "source_location": "L125"}, {"id": "components_productioningredientstable_icon", "label": "icon", "file_type": "code", "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro", "source_location": "L135"}, {"id": "components_productioningredientstable_rows", "label": "rows", "file_type": "code", "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro", "source_location": "L142"}, {"id": "users_maddozs_personal_projects_recetario_src_lib_production_types", "label": "@/lib/production-types", "file_type": "code", "source_file": "/Users/maddozs/personal-projects/recetario/src/lib/production-types", "confidence": "EXTRACTED"}, {"id": "users_maddozs_personal_projects_recetario_src_lib_formatters", "label": "@/lib/formatters", "file_type": "code", "source_file": "/Users/maddozs/personal-projects/recetario/src/lib/formatters", "confidence": "EXTRACTED"}, {"id": "users_maddozs_personal_projects_recetario_src_components_ui", "label": "@/components/ui", "file_type": "code", "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ui", "confidence": "EXTRACTED"}], "edges": [{"source": "users_maddozs_personal_projects_recetario_src_components_productioningredientstable_astro", "target": "users_maddozs_personal_projects_recetario_src_lib_formatters_ts", "relation": "imports_from", "context": "import", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro", "source_location": "L3", "weight": 1.0}, {"source": "users_maddozs_personal_projects_recetario_src_components_productioningredientstable_astro", "target": "lib_formatters_formatcurrency", "relation": "imports", "context": "import", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro", "source_location": "L3", "weight": 1.0}, {"source": "users_maddozs_personal_projects_recetario_src_components_productioningredientstable_astro", "target": "users_maddozs_personal_projects_recetario_src_components_ui_index_ts", "relation": "imports_from", "context": "import", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro", "source_location": "L4", "weight": 1.0}, {"source": "users_maddozs_personal_projects_recetario_src_components_productioningredientstable_astro", "target": "ui_index_card", "relation": "imports", "context": "import", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro", "source_location": "L4", "weight": 1.0}, {"source": "users_maddozs_personal_projects_recetario_src_components_productioningredientstable_astro", "target": "components_productioningredientstable_formatquantity", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro", "source_location": "L12", "weight": 1.0}, {"source": "users_maddozs_personal_projects_recetario_src_components_productioningredientstable_astro", "target": "components_productioningredientstable_smartquantity", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro", "source_location": "L18", "weight": 1.0}, {"source": "users_maddozs_personal_projects_recetario_src_components_productioningredientstable_astro", "target": "components_productioningredientstable_table", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro", "source_location": "L113", "weight": 1.0}, {"source": "users_maddozs_personal_projects_recetario_src_components_productioningredientstable_astro", "target": "components_productioningredientstable_tbody", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro", "source_location": "L118", "weight": 1.0}, {"source": "users_maddozs_personal_projects_recetario_src_components_productioningredientstable_astro", "target": "components_productioningredientstable_iconspan", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro", "source_location": "L125", "weight": 1.0}, {"source": "users_maddozs_personal_projects_recetario_src_components_productioningredientstable_astro", "target": "components_productioningredientstable_icon", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro", "source_location": "L135", "weight": 1.0}, {"source": "users_maddozs_personal_projects_recetario_src_components_productioningredientstable_astro", "target": "components_productioningredientstable_rows", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro", "source_location": "L142", "weight": 1.0}, {"source": "components_productioningredientstable_smartquantity", "target": "components_productioningredientstable_formatquantity", "relation": "calls", "context": "call", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro", "source_location": "L22", "weight": 1.0}, {"source": "users_maddozs_personal_projects_recetario_src_components_productioningredientstable_astro", "target": "users_maddozs_personal_projects_recetario_src_lib_production_types", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro"}, {"source": "users_maddozs_personal_projects_recetario_src_components_productioningredientstable_astro", "target": "users_maddozs_personal_projects_recetario_src_lib_formatters", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro"}, {"source": "users_maddozs_personal_projects_recetario_src_components_productioningredientstable_astro", "target": "users_maddozs_personal_projects_recetario_src_components_ui", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro"}], "raw_calls": [{"caller_nid": "components_productioningredientstable_formatquantity", "callee": "toFixed", "is_member_call": true, "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro", "source_location": "L13"}, {"caller_nid": "components_productioningredientstable_formatquantity", "callee": "isInteger", "is_member_call": true, "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro", "source_location": "L14"}, {"caller_nid": "components_productioningredientstable_formatquantity", "callee": "String", "is_member_call": false, "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro", "source_location": "L14"}, {"caller_nid": "components_productioningredientstable_formatquantity", "callee": "toFixed", "is_member_call": true, "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro", "source_location": "L15"}, {"caller_nid": "components_productioningredientstable_smartquantity", "callee": "toLowerCase", "is_member_call": true, "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro", "source_location": "L19"}]}
+{
+  "nodes": [
+    {
+      "id": "users_maddozs_personal_projects_recetario_src_components_productioningredientstable_astro",
+      "label": "ProductionIngredientsTable.astro",
+      "file_type": "code",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro",
+      "source_location": "L1"
+    },
+    {
+      "id": "components_productioningredientstable_formatquantity",
+      "label": "formatQuantity()",
+      "file_type": "code",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro",
+      "source_location": "L12"
+    },
+    {
+      "id": "components_productioningredientstable_smartquantity",
+      "label": "smartQuantity()",
+      "file_type": "code",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro",
+      "source_location": "L18"
+    },
+    {
+      "id": "components_productioningredientstable_table",
+      "label": "table",
+      "file_type": "code",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro",
+      "source_location": "L113"
+    },
+    {
+      "id": "components_productioningredientstable_tbody",
+      "label": "tbody",
+      "file_type": "code",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro",
+      "source_location": "L118"
+    },
+    {
+      "id": "components_productioningredientstable_iconspan",
+      "label": "iconSpan",
+      "file_type": "code",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro",
+      "source_location": "L125"
+    },
+    {
+      "id": "components_productioningredientstable_icon",
+      "label": "icon",
+      "file_type": "code",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro",
+      "source_location": "L135"
+    },
+    {
+      "id": "components_productioningredientstable_rows",
+      "label": "rows",
+      "file_type": "code",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro",
+      "source_location": "L142"
+    },
+    {
+      "id": "users_maddozs_personal_projects_recetario_src_lib_production_types",
+      "label": "@/lib/production-types",
+      "file_type": "code",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/lib/production-types",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "users_maddozs_personal_projects_recetario_src_lib_formatters",
+      "label": "@/lib/formatters",
+      "file_type": "code",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/lib/formatters",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "users_maddozs_personal_projects_recetario_src_components_ui",
+      "label": "@/components/ui",
+      "file_type": "code",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ui",
+      "confidence": "EXTRACTED"
+    }
+  ],
+  "edges": [
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_components_productioningredientstable_astro",
+      "target": "users_maddozs_personal_projects_recetario_src_lib_formatters_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_components_productioningredientstable_astro",
+      "target": "lib_formatters_formatcurrency",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_components_productioningredientstable_astro",
+      "target": "users_maddozs_personal_projects_recetario_src_components_ui_index_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_components_productioningredientstable_astro",
+      "target": "ui_index_card",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_components_productioningredientstable_astro",
+      "target": "components_productioningredientstable_formatquantity",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_components_productioningredientstable_astro",
+      "target": "components_productioningredientstable_smartquantity",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro",
+      "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_components_productioningredientstable_astro",
+      "target": "components_productioningredientstable_table",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro",
+      "source_location": "L113",
+      "weight": 1.0
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_components_productioningredientstable_astro",
+      "target": "components_productioningredientstable_tbody",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro",
+      "source_location": "L118",
+      "weight": 1.0
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_components_productioningredientstable_astro",
+      "target": "components_productioningredientstable_iconspan",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro",
+      "source_location": "L125",
+      "weight": 1.0
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_components_productioningredientstable_astro",
+      "target": "components_productioningredientstable_icon",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro",
+      "source_location": "L135",
+      "weight": 1.0
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_components_productioningredientstable_astro",
+      "target": "components_productioningredientstable_rows",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro",
+      "source_location": "L142",
+      "weight": 1.0
+    },
+    {
+      "source": "components_productioningredientstable_smartquantity",
+      "target": "components_productioningredientstable_formatquantity",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro",
+      "source_location": "L22",
+      "weight": 1.0
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_components_productioningredientstable_astro",
+      "target": "users_maddozs_personal_projects_recetario_src_lib_production_types",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro"
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_components_productioningredientstable_astro",
+      "target": "users_maddozs_personal_projects_recetario_src_lib_formatters",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro"
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_components_productioningredientstable_astro",
+      "target": "users_maddozs_personal_projects_recetario_src_components_ui",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro"
+    }
+  ],
+  "raw_calls": [
+    {
+      "caller_nid": "components_productioningredientstable_formatquantity",
+      "callee": "toFixed",
+      "is_member_call": true,
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro",
+      "source_location": "L13"
+    },
+    {
+      "caller_nid": "components_productioningredientstable_formatquantity",
+      "callee": "isInteger",
+      "is_member_call": true,
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro",
+      "source_location": "L14"
+    },
+    {
+      "caller_nid": "components_productioningredientstable_formatquantity",
+      "callee": "String",
+      "is_member_call": false,
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro",
+      "source_location": "L14"
+    },
+    {
+      "caller_nid": "components_productioningredientstable_formatquantity",
+      "callee": "toFixed",
+      "is_member_call": true,
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro",
+      "source_location": "L15"
+    },
+    {
+      "caller_nid": "components_productioningredientstable_smartquantity",
+      "callee": "toLowerCase",
+      "is_member_call": true,
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/components/ProductionIngredientsTable.astro",
+      "source_location": "L19"
+    }
+  ]
+}

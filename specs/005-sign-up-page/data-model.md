@@ -8,18 +8,18 @@
 
 **Table**: `user`
 
-| Field | Type | Change | Description |
-|-------|------|--------|-------------|
-| `id` | `String @id` | No change | UUID, auto-generated |
-| `name` | `String` | No change | Display name (computed: `firstName + " " + lastName`) |
-| `firstName` | `String` | **NEW** | User's first name (`@map("first_name")`) |
-| `lastName` | `String` | **NEW** | User's last name (`@map("last_name")`) |
-| `email` | `String @unique` | No change | Email address |
-| `emailVerified` | `Boolean` | No change | Email verification status |
-| `image` | `String?` | No change | Profile image URL |
-| `role` | `Role` | No change | User role (default `USER`) |
-| `createdAt` | `DateTime` | No change | Account creation timestamp |
-| `updatedAt` | `DateTime` | No change | Last update timestamp |
+| Field           | Type             | Change    | Description                                           |
+| --------------- | ---------------- | --------- | ----------------------------------------------------- |
+| `id`            | `String @id`     | No change | UUID, auto-generated                                  |
+| `name`          | `String`         | No change | Display name (computed: `firstName + " " + lastName`) |
+| `firstName`     | `String`         | **NEW**   | User's first name (`@map("first_name")`)              |
+| `lastName`      | `String`         | **NEW**   | User's last name (`@map("last_name")`)                |
+| `email`         | `String @unique` | No change | Email address                                         |
+| `emailVerified` | `Boolean`        | No change | Email verification status                             |
+| `image`         | `String?`        | No change | Profile image URL                                     |
+| `role`          | `Role`           | No change | User role (default `USER`)                            |
+| `createdAt`     | `DateTime`       | No change | Account creation timestamp                            |
+| `updatedAt`     | `DateTime`       | No change | Last update timestamp                                 |
 
 ### Prisma Schema Diff
 

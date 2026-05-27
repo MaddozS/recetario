@@ -1,7 +1,9 @@
 ---
 import { Icon } from "astro-icon/components";
-import { Button } from "@/components/ui";
+import { Button, PasswordInput } from "@/components/ui";
 import LandingLayout from "@/layouts/LandingLayout.astro";
+
+if (Astro.locals.session) return Astro.redirect("/recipes");
 ---
 
 <LandingLayout>
@@ -27,7 +29,7 @@ import LandingLayout from "@/layouts/LandingLayout.astro";
       </button>
     </div>
   </nav>
-  <div class="flex min-h-[80vh] items-center justify-center px-4 pt-20">
+  <div class="flex min-h-dvh items-center justify-center px-4 pt-16">
     <div
       class="bg-card shadow-accent-tint relative w-full max-w-sm rounded-2xl p-10 pt-12 shadow-lg"
     >
@@ -59,6 +61,38 @@ import LandingLayout from "@/layouts/LandingLayout.astro";
         <form id="sign-up-form" class="space-y-4">
           <div>
             <label
+              for="first_name"
+              class="text-muted-foreground mb-1.5 block text-xs font-bold tracking-wider uppercase"
+            >
+              Nombre
+            </label>
+            <input
+              id="first_name"
+              type="text"
+              required
+              class="border-border bg-background text-foreground placeholder:text-subtle-foreground focus:border-accent-300 focus:ring-accent-500/20 w-full rounded-xl border px-4 py-3 text-sm transition outline-none focus:ring-2"
+              placeholder="Tu nombre"
+              autocomplete="given-name"
+            />
+          </div>
+          <div>
+            <label
+              for="last_name"
+              class="text-muted-foreground mb-1.5 block text-xs font-bold tracking-wider uppercase"
+            >
+              Apellido
+            </label>
+            <input
+              id="last_name"
+              type="text"
+              required
+              class="border-border bg-background text-foreground placeholder:text-subtle-foreground focus:border-accent-300 focus:ring-accent-500/20 w-full rounded-xl border px-4 py-3 text-sm transition outline-none focus:ring-2"
+              placeholder="Tu apellido"
+              autocomplete="family-name"
+            />
+          </div>
+          <div>
+            <label
               for="email"
               class="text-muted-foreground mb-1.5 block text-xs font-bold tracking-wider uppercase"
             >
@@ -73,124 +107,8 @@ import LandingLayout from "@/layouts/LandingLayout.astro";
               autocomplete="email"
             />
           </div>
-          <div>
-            <label
-              for="password"
-              class="text-muted-foreground mb-1.5 block text-xs font-bold tracking-wider uppercase"
-            >
-              Contraseña
-            </label>
-            <div class="relative">
-              <input
-                id="password"
-                type="password"
-                required
-                minlength={6}
-                class="border-border bg-background text-foreground placeholder:text-subtle-foreground focus:border-accent-300 focus:ring-accent-500/20 w-full rounded-xl border px-4 py-3 pr-11 text-sm transition outline-none focus:ring-2"
-                placeholder="Mínimo 6 caracteres"
-                autocomplete="new-password"
-              />
-              <button
-                type="button"
-                data-password-toggle="#password"
-                class="text-muted-foreground hover:text-foreground hover:bg-hover-muted absolute top-1/2 right-2 inline-flex min-h-11 min-w-11 -translate-y-1/2 items-center justify-center rounded-lg transition-colors"
-                aria-label="Mostrar contraseña"
-              >
-                <svg
-                  data-eye-open
-                  class="h-4 w-4"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  ><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"
-                  ></path><circle cx="12" cy="12" r="3"></circle></svg
-                >
-                <svg
-                  data-eye-closed
-                  class="hidden h-4 w-4"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  ><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"></path><path
-                    d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"
-                  ></path><path
-                    d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"
-                  ></path><line x1="2" x2="22" y1="2" y2="22"></line></svg
-                >
-              </button>
-            </div>
-          </div>
-          <div>
-            <label
-              for="confirm-password"
-              class="text-muted-foreground mb-1.5 block text-xs font-bold tracking-wider uppercase"
-            >
-              Confirmar contraseña
-            </label>
-            <div class="relative">
-              <input
-                id="confirm-password"
-                type="password"
-                required
-                minlength={6}
-                class="border-border bg-background text-foreground placeholder:text-subtle-foreground focus:border-accent-300 focus:ring-accent-500/20 w-full rounded-xl border px-4 py-3 pr-11 text-sm transition outline-none focus:ring-2"
-                placeholder="Repite tu contraseña"
-                autocomplete="new-password"
-              />
-              <button
-                type="button"
-                data-password-toggle="#confirm-password"
-                class="text-muted-foreground hover:text-foreground hover:bg-hover-muted absolute top-1/2 right-2 inline-flex min-h-11 min-w-11 -translate-y-1/2 items-center justify-center rounded-lg transition-colors"
-                aria-label="Mostrar contraseña"
-              >
-                <svg
-                  data-eye-open
-                  class="h-4 w-4"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  ><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"
-                  ></path><circle cx="12" cy="12" r="3"></circle></svg
-                >
-                <svg
-                  data-eye-closed
-                  class="hidden h-4 w-4"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  ><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"></path><path
-                    d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"
-                  ></path><path
-                    d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"
-                  ></path><line x1="2" x2="22" y1="2" y2="22"></line></svg
-                >
-              </button>
-            </div>
-          </div>
+          <PasswordInput id="password" label="Contraseña" placeholder="Mínimo 6 caracteres" autocomplete="new-password" required minlength={6} />
+          <PasswordInput id="confirm-password" label="Confirmar contraseña" placeholder="Repite tu contraseña" autocomplete="new-password" required minlength={6} />
           <Button
             variant="primary"
             type="submit"
@@ -284,10 +202,17 @@ import LandingLayout from "@/layouts/LandingLayout.astro";
 </LandingLayout>
 
 <script>
-  import { signUpWithEmail, signInWithGoogle } from "@/lib/sign-in";
+  import {
+    signUpWithEmail,
+    signInWithGoogle,
+    getSafeRedirect,
+  } from "@/lib/sign-in";
+  import { setupPasswordToggles } from "@/lib/password-toggle";
 
   function setupSignUp() {
     const form = document.getElementById("sign-up-form");
+    const firstNameInput = document.getElementById("first_name");
+    const lastNameInput = document.getElementById("last_name");
     const emailInput = document.getElementById("email");
     const passwordInput = document.getElementById("password");
     const confirmPasswordInput = document.getElementById("confirm-password");
@@ -310,6 +235,8 @@ import LandingLayout from "@/layouts/LandingLayout.astro";
 
     if (
       form &&
+      firstNameInput &&
+      lastNameInput &&
       emailInput &&
       passwordInput &&
       confirmPasswordInput &&
@@ -322,10 +249,24 @@ import LandingLayout from "@/layouts/LandingLayout.astro";
         e.preventDefault();
         hideError();
 
+        const firstName = (firstNameInput as HTMLInputElement).value.trim();
+        const lastName = (lastNameInput as HTMLInputElement).value.trim();
         const email = (emailInput as HTMLInputElement).value.trim();
         const password = (passwordInput as HTMLInputElement).value;
         const confirmPassword = (confirmPasswordInput as HTMLInputElement)
           .value;
+
+        if (!firstName) {
+          showError("El nombre no puede estar vacío.");
+          (firstNameInput as HTMLInputElement).focus();
+          return;
+        }
+
+        if (!lastName) {
+          showError("El apellido no puede estar vacío.");
+          (lastNameInput as HTMLInputElement).focus();
+          return;
+        }
 
         if (password.length < 6) {
           showError("La contraseña debe tener al menos 6 caracteres.");
@@ -351,7 +292,7 @@ import LandingLayout from "@/layouts/LandingLayout.astro";
         document.body.appendChild(overlay);
 
         try {
-          await signUpWithEmail(email, password);
+          await signUpWithEmail(email, password, firstName, lastName);
           overlay.remove();
           sessionStorage.setItem("kitchcalc:signup_email", email);
           showVerificationView(email);
@@ -390,7 +331,8 @@ import LandingLayout from "@/layouts/LandingLayout.astro";
         document.body.appendChild(overlay);
 
         try {
-          await signInWithGoogle();
+          const redirect = getSafeRedirect();
+          await signInWithGoogle(redirect);
         } catch (err: unknown) {
           overlay.remove();
           btn.disabled = false;
@@ -409,13 +351,16 @@ import LandingLayout from "@/layouts/LandingLayout.astro";
   document.addEventListener("astro:page-load", () => {
     setupSignUp();
     checkPendingVerification();
+    setupPasswordToggles();
   });
   document.addEventListener("astro:after-swap", () => {
     setupSignUp();
     checkPendingVerification();
+    setupPasswordToggles();
   });
   setupSignUp();
   checkPendingVerification();
+  setupPasswordToggles();
 
   function showVerificationView(email: string) {
     const content = document.getElementById("sign-up-content");
@@ -472,28 +417,4 @@ import LandingLayout from "@/layouts/LandingLayout.astro";
       setupResend();
     }
   }
-
-  checkPendingVerification();
-
-  document.querySelectorAll("[data-password-toggle]").forEach((btn) => {
-    if (!(btn instanceof HTMLButtonElement)) return;
-    if (btn.dataset.pwBound === "1") return;
-    btn.dataset.pwBound = "1";
-    btn.addEventListener("click", () => {
-      const input = document.querySelector(btn.dataset.passwordToggle!);
-      if (!(input instanceof HTMLInputElement)) return;
-      const isPassword = input.type === "password";
-      input.type = isPassword ? "text" : "password";
-      btn
-        .querySelector("[data-eye-open]")
-        ?.classList.toggle("hidden", isPassword);
-      btn
-        .querySelector("[data-eye-closed]")
-        ?.classList.toggle("hidden", !isPassword);
-      btn.setAttribute(
-        "aria-label",
-        input.type === "password" ? "Mostrar contraseña" : "Ocultar contraseña",
-      );
-    });
-  });
 </script>

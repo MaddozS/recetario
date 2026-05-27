@@ -1,1 +1,303 @@
-{"nodes": [{"id": "users_maddozs_personal_projects_recetario_docs_planes_produccion_11_costos_fijos_avanzados_md", "label": "11-costos-fijos-avanzados.md", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md", "source_location": "L1"}, {"id": "produccion_11_costos_fijos_avanzados_f11_integraci\u00f3n_con_costos_fijos_avanzados", "label": "F11: Integraci\u00f3n con costos fijos avanzados", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md", "source_location": "L1"}, {"id": "produccion_11_costos_fijos_avanzados_objetivo", "label": "Objetivo", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md", "source_location": "L12"}, {"id": "produccion_11_costos_fijos_avanzados_1_requisitos_previos", "label": "1. Requisitos previos", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md", "source_location": "L18"}, {"id": "produccion_11_costos_fijos_avanzados_1_1_modelo_esperado", "label": "1.1 Modelo esperado", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md", "source_location": "L22"}, {"id": "produccion_11_costos_fijos_avanzados_codeblock_1", "label": "code:prisma (model FixedCostLine {)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md", "source_location": "L24"}, {"id": "produccion_11_costos_fijos_avanzados_1_2_tipo_en_recipewithingredients", "label": "1.2 Tipo en `RecipeWithIngredients`", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md", "source_location": "L40"}, {"id": "produccion_11_costos_fijos_avanzados_codeblock_2", "label": "code:ts (export type RecipeWithIngredients = {)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md", "source_location": "L42"}, {"id": "produccion_11_costos_fijos_avanzados_2_c\u00e1lculo_de_costos_fijos_por_receta", "label": "2. C\u00e1lculo de costos fijos por receta", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md", "source_location": "L60"}, {"id": "produccion_11_costos_fijos_avanzados_2_1_funci\u00f3n_helper", "label": "2.1 Funci\u00f3n helper", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md", "source_location": "L62"}, {"id": "produccion_11_costos_fijos_avanzados_codeblock_3", "label": "code:ts (// src/lib/production-calculator.ts)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md", "source_location": "L64"}, {"id": "produccion_11_costos_fijos_avanzados_2_2_reemplazo_en_calculateproduction", "label": "2.2 Reemplazo en `calculateProduction()`", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md", "source_location": "L91"}, {"id": "produccion_11_costos_fijos_avanzados_codeblock_4", "label": "code:diff (- const recipeOperationalCost =)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md", "source_location": "L93"}, {"id": "produccion_11_costos_fijos_avanzados_3_desglose_de_costos_fijos_en_el_breakdown", "label": "3. Desglose de costos fijos en el breakdown", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md", "source_location": "L106"}, {"id": "produccion_11_costos_fijos_avanzados_3_1_productionrecipebreakdown_astro", "label": "3.1 `ProductionRecipeBreakdown.astro`", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md", "source_location": "L108"}, {"id": "produccion_11_costos_fijos_avanzados_codeblock_5", "label": "code:astro ({recipe.fixedCostLines && recipe.fixedCostLines.length > 0 ?)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md", "source_location": "L112"}, {"id": "produccion_11_costos_fijos_avanzados_codeblock_6", "label": "code:ts (function formatCostType(line: FixedCostLine): string {)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md", "source_location": "L164"}, {"id": "produccion_11_costos_fijos_avanzados_4_archivos_involucrados", "label": "4. Archivos involucrados", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md", "source_location": "L178"}, {"id": "produccion_11_costos_fijos_avanzados_5_verificaci\u00f3n", "label": "5. Verificaci\u00f3n", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md", "source_location": "L189"}], "edges": [{"source": "users_maddozs_personal_projects_recetario_docs_planes_produccion_11_costos_fijos_avanzados_md", "target": "produccion_11_costos_fijos_avanzados_f11_integraci\u00f3n_con_costos_fijos_avanzados", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md", "source_location": "L1", "weight": 1.0}, {"source": "produccion_11_costos_fijos_avanzados_f11_integraci\u00f3n_con_costos_fijos_avanzados", "target": "produccion_11_costos_fijos_avanzados_objetivo", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md", "source_location": "L12", "weight": 1.0}, {"source": "produccion_11_costos_fijos_avanzados_f11_integraci\u00f3n_con_costos_fijos_avanzados", "target": "produccion_11_costos_fijos_avanzados_1_requisitos_previos", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md", "source_location": "L18", "weight": 1.0}, {"source": "produccion_11_costos_fijos_avanzados_1_requisitos_previos", "target": "produccion_11_costos_fijos_avanzados_1_1_modelo_esperado", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md", "source_location": "L22", "weight": 1.0}, {"source": "produccion_11_costos_fijos_avanzados_1_1_modelo_esperado", "target": "produccion_11_costos_fijos_avanzados_codeblock_1", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md", "source_location": "L24", "weight": 1.0}, {"source": "produccion_11_costos_fijos_avanzados_1_requisitos_previos", "target": "produccion_11_costos_fijos_avanzados_1_2_tipo_en_recipewithingredients", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md", "source_location": "L40", "weight": 1.0}, {"source": "produccion_11_costos_fijos_avanzados_1_2_tipo_en_recipewithingredients", "target": "produccion_11_costos_fijos_avanzados_codeblock_2", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md", "source_location": "L42", "weight": 1.0}, {"source": "produccion_11_costos_fijos_avanzados_f11_integraci\u00f3n_con_costos_fijos_avanzados", "target": "produccion_11_costos_fijos_avanzados_2_c\u00e1lculo_de_costos_fijos_por_receta", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md", "source_location": "L60", "weight": 1.0}, {"source": "produccion_11_costos_fijos_avanzados_2_c\u00e1lculo_de_costos_fijos_por_receta", "target": "produccion_11_costos_fijos_avanzados_2_1_funci\u00f3n_helper", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md", "source_location": "L62", "weight": 1.0}, {"source": "produccion_11_costos_fijos_avanzados_2_1_funci\u00f3n_helper", "target": "produccion_11_costos_fijos_avanzados_codeblock_3", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md", "source_location": "L64", "weight": 1.0}, {"source": "produccion_11_costos_fijos_avanzados_2_c\u00e1lculo_de_costos_fijos_por_receta", "target": "produccion_11_costos_fijos_avanzados_2_2_reemplazo_en_calculateproduction", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md", "source_location": "L91", "weight": 1.0}, {"source": "produccion_11_costos_fijos_avanzados_2_2_reemplazo_en_calculateproduction", "target": "produccion_11_costos_fijos_avanzados_codeblock_4", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md", "source_location": "L93", "weight": 1.0}, {"source": "produccion_11_costos_fijos_avanzados_f11_integraci\u00f3n_con_costos_fijos_avanzados", "target": "produccion_11_costos_fijos_avanzados_3_desglose_de_costos_fijos_en_el_breakdown", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md", "source_location": "L106", "weight": 1.0}, {"source": "produccion_11_costos_fijos_avanzados_3_desglose_de_costos_fijos_en_el_breakdown", "target": "produccion_11_costos_fijos_avanzados_3_1_productionrecipebreakdown_astro", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md", "source_location": "L108", "weight": 1.0}, {"source": "produccion_11_costos_fijos_avanzados_3_1_productionrecipebreakdown_astro", "target": "produccion_11_costos_fijos_avanzados_codeblock_5", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md", "source_location": "L112", "weight": 1.0}, {"source": "produccion_11_costos_fijos_avanzados_3_1_productionrecipebreakdown_astro", "target": "produccion_11_costos_fijos_avanzados_codeblock_6", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md", "source_location": "L164", "weight": 1.0}, {"source": "produccion_11_costos_fijos_avanzados_f11_integraci\u00f3n_con_costos_fijos_avanzados", "target": "produccion_11_costos_fijos_avanzados_4_archivos_involucrados", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md", "source_location": "L178", "weight": 1.0}, {"source": "produccion_11_costos_fijos_avanzados_f11_integraci\u00f3n_con_costos_fijos_avanzados", "target": "produccion_11_costos_fijos_avanzados_5_verificaci\u00f3n", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md", "source_location": "L189", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "users_maddozs_personal_projects_recetario_docs_planes_produccion_11_costos_fijos_avanzados_md",
+      "label": "11-costos-fijos-avanzados.md",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "produccion_11_costos_fijos_avanzados_f11_integraci\u00f3n_con_costos_fijos_avanzados",
+      "label": "F11: Integraci\u00f3n con costos fijos avanzados",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "produccion_11_costos_fijos_avanzados_objetivo",
+      "label": "Objetivo",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md",
+      "source_location": "L12"
+    },
+    {
+      "id": "produccion_11_costos_fijos_avanzados_1_requisitos_previos",
+      "label": "1. Requisitos previos",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md",
+      "source_location": "L18"
+    },
+    {
+      "id": "produccion_11_costos_fijos_avanzados_1_1_modelo_esperado",
+      "label": "1.1 Modelo esperado",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md",
+      "source_location": "L22"
+    },
+    {
+      "id": "produccion_11_costos_fijos_avanzados_codeblock_1",
+      "label": "code:prisma (model FixedCostLine {)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md",
+      "source_location": "L24"
+    },
+    {
+      "id": "produccion_11_costos_fijos_avanzados_1_2_tipo_en_recipewithingredients",
+      "label": "1.2 Tipo en `RecipeWithIngredients`",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md",
+      "source_location": "L40"
+    },
+    {
+      "id": "produccion_11_costos_fijos_avanzados_codeblock_2",
+      "label": "code:ts (export type RecipeWithIngredients = {)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md",
+      "source_location": "L42"
+    },
+    {
+      "id": "produccion_11_costos_fijos_avanzados_2_c\u00e1lculo_de_costos_fijos_por_receta",
+      "label": "2. C\u00e1lculo de costos fijos por receta",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md",
+      "source_location": "L60"
+    },
+    {
+      "id": "produccion_11_costos_fijos_avanzados_2_1_funci\u00f3n_helper",
+      "label": "2.1 Funci\u00f3n helper",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md",
+      "source_location": "L62"
+    },
+    {
+      "id": "produccion_11_costos_fijos_avanzados_codeblock_3",
+      "label": "code:ts (// src/lib/production-calculator.ts)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md",
+      "source_location": "L64"
+    },
+    {
+      "id": "produccion_11_costos_fijos_avanzados_2_2_reemplazo_en_calculateproduction",
+      "label": "2.2 Reemplazo en `calculateProduction()`",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md",
+      "source_location": "L91"
+    },
+    {
+      "id": "produccion_11_costos_fijos_avanzados_codeblock_4",
+      "label": "code:diff (- const recipeOperationalCost =)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md",
+      "source_location": "L93"
+    },
+    {
+      "id": "produccion_11_costos_fijos_avanzados_3_desglose_de_costos_fijos_en_el_breakdown",
+      "label": "3. Desglose de costos fijos en el breakdown",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md",
+      "source_location": "L106"
+    },
+    {
+      "id": "produccion_11_costos_fijos_avanzados_3_1_productionrecipebreakdown_astro",
+      "label": "3.1 `ProductionRecipeBreakdown.astro`",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md",
+      "source_location": "L108"
+    },
+    {
+      "id": "produccion_11_costos_fijos_avanzados_codeblock_5",
+      "label": "code:astro ({recipe.fixedCostLines && recipe.fixedCostLines.length > 0 ?)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md",
+      "source_location": "L112"
+    },
+    {
+      "id": "produccion_11_costos_fijos_avanzados_codeblock_6",
+      "label": "code:ts (function formatCostType(line: FixedCostLine): string {)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md",
+      "source_location": "L164"
+    },
+    {
+      "id": "produccion_11_costos_fijos_avanzados_4_archivos_involucrados",
+      "label": "4. Archivos involucrados",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md",
+      "source_location": "L178"
+    },
+    {
+      "id": "produccion_11_costos_fijos_avanzados_5_verificaci\u00f3n",
+      "label": "5. Verificaci\u00f3n",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md",
+      "source_location": "L189"
+    }
+  ],
+  "edges": [
+    {
+      "source": "users_maddozs_personal_projects_recetario_docs_planes_produccion_11_costos_fijos_avanzados_md",
+      "target": "produccion_11_costos_fijos_avanzados_f11_integraci\u00f3n_con_costos_fijos_avanzados",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_11_costos_fijos_avanzados_f11_integraci\u00f3n_con_costos_fijos_avanzados",
+      "target": "produccion_11_costos_fijos_avanzados_objetivo",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_11_costos_fijos_avanzados_f11_integraci\u00f3n_con_costos_fijos_avanzados",
+      "target": "produccion_11_costos_fijos_avanzados_1_requisitos_previos",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md",
+      "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_11_costos_fijos_avanzados_1_requisitos_previos",
+      "target": "produccion_11_costos_fijos_avanzados_1_1_modelo_esperado",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md",
+      "source_location": "L22",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_11_costos_fijos_avanzados_1_1_modelo_esperado",
+      "target": "produccion_11_costos_fijos_avanzados_codeblock_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_11_costos_fijos_avanzados_1_requisitos_previos",
+      "target": "produccion_11_costos_fijos_avanzados_1_2_tipo_en_recipewithingredients",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md",
+      "source_location": "L40",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_11_costos_fijos_avanzados_1_2_tipo_en_recipewithingredients",
+      "target": "produccion_11_costos_fijos_avanzados_codeblock_2",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md",
+      "source_location": "L42",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_11_costos_fijos_avanzados_f11_integraci\u00f3n_con_costos_fijos_avanzados",
+      "target": "produccion_11_costos_fijos_avanzados_2_c\u00e1lculo_de_costos_fijos_por_receta",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md",
+      "source_location": "L60",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_11_costos_fijos_avanzados_2_c\u00e1lculo_de_costos_fijos_por_receta",
+      "target": "produccion_11_costos_fijos_avanzados_2_1_funci\u00f3n_helper",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md",
+      "source_location": "L62",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_11_costos_fijos_avanzados_2_1_funci\u00f3n_helper",
+      "target": "produccion_11_costos_fijos_avanzados_codeblock_3",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md",
+      "source_location": "L64",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_11_costos_fijos_avanzados_2_c\u00e1lculo_de_costos_fijos_por_receta",
+      "target": "produccion_11_costos_fijos_avanzados_2_2_reemplazo_en_calculateproduction",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md",
+      "source_location": "L91",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_11_costos_fijos_avanzados_2_2_reemplazo_en_calculateproduction",
+      "target": "produccion_11_costos_fijos_avanzados_codeblock_4",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md",
+      "source_location": "L93",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_11_costos_fijos_avanzados_f11_integraci\u00f3n_con_costos_fijos_avanzados",
+      "target": "produccion_11_costos_fijos_avanzados_3_desglose_de_costos_fijos_en_el_breakdown",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md",
+      "source_location": "L106",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_11_costos_fijos_avanzados_3_desglose_de_costos_fijos_en_el_breakdown",
+      "target": "produccion_11_costos_fijos_avanzados_3_1_productionrecipebreakdown_astro",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md",
+      "source_location": "L108",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_11_costos_fijos_avanzados_3_1_productionrecipebreakdown_astro",
+      "target": "produccion_11_costos_fijos_avanzados_codeblock_5",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md",
+      "source_location": "L112",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_11_costos_fijos_avanzados_3_1_productionrecipebreakdown_astro",
+      "target": "produccion_11_costos_fijos_avanzados_codeblock_6",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md",
+      "source_location": "L164",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_11_costos_fijos_avanzados_f11_integraci\u00f3n_con_costos_fijos_avanzados",
+      "target": "produccion_11_costos_fijos_avanzados_4_archivos_involucrados",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md",
+      "source_location": "L178",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_11_costos_fijos_avanzados_f11_integraci\u00f3n_con_costos_fijos_avanzados",
+      "target": "produccion_11_costos_fijos_avanzados_5_verificaci\u00f3n",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/11-costos-fijos-avanzados.md",
+      "source_location": "L189",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

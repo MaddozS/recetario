@@ -32,6 +32,7 @@ npx prisma generate
 ### 3. Update Auth Config
 
 In `src/lib/auth.ts`:
+
 - Add `user.additionalFields` with `firstName` and `lastName`
 - Change `disableSignUp: false` for Google provider
 - Add `mapProfileToUser` for Google
@@ -61,6 +62,7 @@ export async function signUpWithEmail(
 ### 5. Update Sign-Up Page
 
 In `src/pages/sign-up.astro`:
+
 - Add `first_name` and `last_name` input fields (before `email`)
 - Update form submit handler to read new fields and pass to `signUpWithEmail`
 - The Google button works as-is (uses existing `signInWithGoogle`)
@@ -68,6 +70,7 @@ In `src/pages/sign-up.astro`:
 ### 6. Update Sign-In Page (minor)
 
 In `src/pages/sign-in.astro`:
+
 - Remove the `signup_disabled` error handler (since `disableSignUp` is now `false`, this error code will never occur)
 
 ### 7. Verify

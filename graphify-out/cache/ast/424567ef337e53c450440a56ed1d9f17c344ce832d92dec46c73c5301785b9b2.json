@@ -1,1 +1,287 @@
-{"nodes": [{"id": "users_maddozs_personal_projects_recetario_docs_planes_roadmap_md", "label": "roadmap.md", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md", "source_location": "L1"}, {"id": "planes_roadmap_roadmap_de_funcionalidades_kitchcalc", "label": "Roadmap de Funcionalidades \u2014 KitchCalc", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md", "source_location": "L1"}, {"id": "planes_roadmap_prioridades", "label": "Prioridades", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md", "source_location": "L9"}, {"id": "planes_roadmap_1_categor\u00edas_de_recetas", "label": "1. Categor\u00edas de recetas \u2705", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md", "source_location": "L21"}, {"id": "planes_roadmap_2_instrucciones_pasos_de_preparaci\u00f3n", "label": "2. Instrucciones / Pasos de preparaci\u00f3n \u2705", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md", "source_location": "L37"}, {"id": "planes_roadmap_3_duplicar_receta", "label": "3. Duplicar receta \u2705", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md", "source_location": "L52"}, {"id": "planes_roadmap_4_planificador_de_producci\u00f3n_en_curso", "label": "4. Planificador de producci\u00f3n \ud83d\udfe0 \u2192 \ud83d\udd34 (en curso)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md", "source_location": "L68"}, {"id": "planes_roadmap_5_exportaci\u00f3n_a_pdf_vista_de_impresi\u00f3n", "label": "5. Exportaci\u00f3n a PDF / Vista de impresi\u00f3n \ud83d\udfe0", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md", "source_location": "L96"}, {"id": "planes_roadmap_6_fotos_de_recetas", "label": "6. Fotos de recetas \ud83d\udfe1", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md", "source_location": "L111"}, {"id": "planes_roadmap_7_gesti\u00f3n_de_stock_de_ingredientes", "label": "7. Gesti\u00f3n de stock de ingredientes \ud83d\udfe1", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md", "source_location": "L126"}, {"id": "planes_roadmap_8_historial_de_cambios_auditor\u00eda", "label": "8. Historial de cambios / Auditor\u00eda \ud83d\udfe1", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md", "source_location": "L141"}, {"id": "planes_roadmap_9_costos_fijos_m\u00e1s_sofisticados", "label": "9. Costos fijos m\u00e1s sofisticados \ud83d\udfe1", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md", "source_location": "L156"}, {"id": "planes_roadmap_10_informaci\u00f3n_nutricional", "label": "10. Informaci\u00f3n nutricional \ud83d\udfe2", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md", "source_location": "L172"}, {"id": "planes_roadmap_11_importar_exportar_datos", "label": "11. Importar/Exportar datos \ud83d\udfe2", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md", "source_location": "L187"}, {"id": "planes_roadmap_12_internacionalizaci\u00f3n_ingl\u00e9s", "label": "12. Internacionalizaci\u00f3n (ingl\u00e9s) \ud83d\udfe2", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md", "source_location": "L202"}, {"id": "planes_roadmap_13_colaboraci\u00f3n_equipos", "label": "13. Colaboraci\u00f3n / Equipos \u26aa", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md", "source_location": "L217"}, {"id": "planes_roadmap_14_api_p\u00fablica_webhooks", "label": "14. API p\u00fablica / Webhooks \u26aa", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md", "source_location": "L232"}, {"id": "planes_roadmap_estado_actual_del_proyecto", "label": "Estado actual del proyecto", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md", "source_location": "L247"}], "edges": [{"source": "users_maddozs_personal_projects_recetario_docs_planes_roadmap_md", "target": "planes_roadmap_roadmap_de_funcionalidades_kitchcalc", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md", "source_location": "L1", "weight": 1.0}, {"source": "planes_roadmap_roadmap_de_funcionalidades_kitchcalc", "target": "planes_roadmap_prioridades", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md", "source_location": "L9", "weight": 1.0}, {"source": "planes_roadmap_roadmap_de_funcionalidades_kitchcalc", "target": "planes_roadmap_1_categor\u00edas_de_recetas", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md", "source_location": "L21", "weight": 1.0}, {"source": "planes_roadmap_roadmap_de_funcionalidades_kitchcalc", "target": "planes_roadmap_2_instrucciones_pasos_de_preparaci\u00f3n", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md", "source_location": "L37", "weight": 1.0}, {"source": "planes_roadmap_roadmap_de_funcionalidades_kitchcalc", "target": "planes_roadmap_3_duplicar_receta", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md", "source_location": "L52", "weight": 1.0}, {"source": "planes_roadmap_roadmap_de_funcionalidades_kitchcalc", "target": "planes_roadmap_4_planificador_de_producci\u00f3n_en_curso", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md", "source_location": "L68", "weight": 1.0}, {"source": "planes_roadmap_roadmap_de_funcionalidades_kitchcalc", "target": "planes_roadmap_5_exportaci\u00f3n_a_pdf_vista_de_impresi\u00f3n", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md", "source_location": "L96", "weight": 1.0}, {"source": "planes_roadmap_roadmap_de_funcionalidades_kitchcalc", "target": "planes_roadmap_6_fotos_de_recetas", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md", "source_location": "L111", "weight": 1.0}, {"source": "planes_roadmap_roadmap_de_funcionalidades_kitchcalc", "target": "planes_roadmap_7_gesti\u00f3n_de_stock_de_ingredientes", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md", "source_location": "L126", "weight": 1.0}, {"source": "planes_roadmap_roadmap_de_funcionalidades_kitchcalc", "target": "planes_roadmap_8_historial_de_cambios_auditor\u00eda", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md", "source_location": "L141", "weight": 1.0}, {"source": "planes_roadmap_roadmap_de_funcionalidades_kitchcalc", "target": "planes_roadmap_9_costos_fijos_m\u00e1s_sofisticados", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md", "source_location": "L156", "weight": 1.0}, {"source": "planes_roadmap_roadmap_de_funcionalidades_kitchcalc", "target": "planes_roadmap_10_informaci\u00f3n_nutricional", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md", "source_location": "L172", "weight": 1.0}, {"source": "planes_roadmap_roadmap_de_funcionalidades_kitchcalc", "target": "planes_roadmap_11_importar_exportar_datos", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md", "source_location": "L187", "weight": 1.0}, {"source": "planes_roadmap_roadmap_de_funcionalidades_kitchcalc", "target": "planes_roadmap_12_internacionalizaci\u00f3n_ingl\u00e9s", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md", "source_location": "L202", "weight": 1.0}, {"source": "planes_roadmap_roadmap_de_funcionalidades_kitchcalc", "target": "planes_roadmap_13_colaboraci\u00f3n_equipos", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md", "source_location": "L217", "weight": 1.0}, {"source": "planes_roadmap_roadmap_de_funcionalidades_kitchcalc", "target": "planes_roadmap_14_api_p\u00fablica_webhooks", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md", "source_location": "L232", "weight": 1.0}, {"source": "planes_roadmap_roadmap_de_funcionalidades_kitchcalc", "target": "planes_roadmap_estado_actual_del_proyecto", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md", "source_location": "L247", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "users_maddozs_personal_projects_recetario_docs_planes_roadmap_md",
+      "label": "roadmap.md",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "planes_roadmap_roadmap_de_funcionalidades_kitchcalc",
+      "label": "Roadmap de Funcionalidades \u2014 KitchCalc",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "planes_roadmap_prioridades",
+      "label": "Prioridades",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md",
+      "source_location": "L9"
+    },
+    {
+      "id": "planes_roadmap_1_categor\u00edas_de_recetas",
+      "label": "1. Categor\u00edas de recetas \u2705",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md",
+      "source_location": "L21"
+    },
+    {
+      "id": "planes_roadmap_2_instrucciones_pasos_de_preparaci\u00f3n",
+      "label": "2. Instrucciones / Pasos de preparaci\u00f3n \u2705",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md",
+      "source_location": "L37"
+    },
+    {
+      "id": "planes_roadmap_3_duplicar_receta",
+      "label": "3. Duplicar receta \u2705",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md",
+      "source_location": "L52"
+    },
+    {
+      "id": "planes_roadmap_4_planificador_de_producci\u00f3n_en_curso",
+      "label": "4. Planificador de producci\u00f3n \ud83d\udfe0 \u2192 \ud83d\udd34 (en curso)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md",
+      "source_location": "L68"
+    },
+    {
+      "id": "planes_roadmap_5_exportaci\u00f3n_a_pdf_vista_de_impresi\u00f3n",
+      "label": "5. Exportaci\u00f3n a PDF / Vista de impresi\u00f3n \ud83d\udfe0",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md",
+      "source_location": "L96"
+    },
+    {
+      "id": "planes_roadmap_6_fotos_de_recetas",
+      "label": "6. Fotos de recetas \ud83d\udfe1",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md",
+      "source_location": "L111"
+    },
+    {
+      "id": "planes_roadmap_7_gesti\u00f3n_de_stock_de_ingredientes",
+      "label": "7. Gesti\u00f3n de stock de ingredientes \ud83d\udfe1",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md",
+      "source_location": "L126"
+    },
+    {
+      "id": "planes_roadmap_8_historial_de_cambios_auditor\u00eda",
+      "label": "8. Historial de cambios / Auditor\u00eda \ud83d\udfe1",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md",
+      "source_location": "L141"
+    },
+    {
+      "id": "planes_roadmap_9_costos_fijos_m\u00e1s_sofisticados",
+      "label": "9. Costos fijos m\u00e1s sofisticados \ud83d\udfe1",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md",
+      "source_location": "L156"
+    },
+    {
+      "id": "planes_roadmap_10_informaci\u00f3n_nutricional",
+      "label": "10. Informaci\u00f3n nutricional \ud83d\udfe2",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md",
+      "source_location": "L172"
+    },
+    {
+      "id": "planes_roadmap_11_importar_exportar_datos",
+      "label": "11. Importar/Exportar datos \ud83d\udfe2",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md",
+      "source_location": "L187"
+    },
+    {
+      "id": "planes_roadmap_12_internacionalizaci\u00f3n_ingl\u00e9s",
+      "label": "12. Internacionalizaci\u00f3n (ingl\u00e9s) \ud83d\udfe2",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md",
+      "source_location": "L202"
+    },
+    {
+      "id": "planes_roadmap_13_colaboraci\u00f3n_equipos",
+      "label": "13. Colaboraci\u00f3n / Equipos \u26aa",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md",
+      "source_location": "L217"
+    },
+    {
+      "id": "planes_roadmap_14_api_p\u00fablica_webhooks",
+      "label": "14. API p\u00fablica / Webhooks \u26aa",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md",
+      "source_location": "L232"
+    },
+    {
+      "id": "planes_roadmap_estado_actual_del_proyecto",
+      "label": "Estado actual del proyecto",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md",
+      "source_location": "L247"
+    }
+  ],
+  "edges": [
+    {
+      "source": "users_maddozs_personal_projects_recetario_docs_planes_roadmap_md",
+      "target": "planes_roadmap_roadmap_de_funcionalidades_kitchcalc",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_roadmap_roadmap_de_funcionalidades_kitchcalc",
+      "target": "planes_roadmap_prioridades",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_roadmap_roadmap_de_funcionalidades_kitchcalc",
+      "target": "planes_roadmap_1_categor\u00edas_de_recetas",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md",
+      "source_location": "L21",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_roadmap_roadmap_de_funcionalidades_kitchcalc",
+      "target": "planes_roadmap_2_instrucciones_pasos_de_preparaci\u00f3n",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md",
+      "source_location": "L37",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_roadmap_roadmap_de_funcionalidades_kitchcalc",
+      "target": "planes_roadmap_3_duplicar_receta",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md",
+      "source_location": "L52",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_roadmap_roadmap_de_funcionalidades_kitchcalc",
+      "target": "planes_roadmap_4_planificador_de_producci\u00f3n_en_curso",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md",
+      "source_location": "L68",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_roadmap_roadmap_de_funcionalidades_kitchcalc",
+      "target": "planes_roadmap_5_exportaci\u00f3n_a_pdf_vista_de_impresi\u00f3n",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md",
+      "source_location": "L96",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_roadmap_roadmap_de_funcionalidades_kitchcalc",
+      "target": "planes_roadmap_6_fotos_de_recetas",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md",
+      "source_location": "L111",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_roadmap_roadmap_de_funcionalidades_kitchcalc",
+      "target": "planes_roadmap_7_gesti\u00f3n_de_stock_de_ingredientes",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md",
+      "source_location": "L126",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_roadmap_roadmap_de_funcionalidades_kitchcalc",
+      "target": "planes_roadmap_8_historial_de_cambios_auditor\u00eda",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md",
+      "source_location": "L141",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_roadmap_roadmap_de_funcionalidades_kitchcalc",
+      "target": "planes_roadmap_9_costos_fijos_m\u00e1s_sofisticados",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md",
+      "source_location": "L156",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_roadmap_roadmap_de_funcionalidades_kitchcalc",
+      "target": "planes_roadmap_10_informaci\u00f3n_nutricional",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md",
+      "source_location": "L172",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_roadmap_roadmap_de_funcionalidades_kitchcalc",
+      "target": "planes_roadmap_11_importar_exportar_datos",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md",
+      "source_location": "L187",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_roadmap_roadmap_de_funcionalidades_kitchcalc",
+      "target": "planes_roadmap_12_internacionalizaci\u00f3n_ingl\u00e9s",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md",
+      "source_location": "L202",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_roadmap_roadmap_de_funcionalidades_kitchcalc",
+      "target": "planes_roadmap_13_colaboraci\u00f3n_equipos",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md",
+      "source_location": "L217",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_roadmap_roadmap_de_funcionalidades_kitchcalc",
+      "target": "planes_roadmap_14_api_p\u00fablica_webhooks",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md",
+      "source_location": "L232",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_roadmap_roadmap_de_funcionalidades_kitchcalc",
+      "target": "planes_roadmap_estado_actual_del_proyecto",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/roadmap.md",
+      "source_location": "L247",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

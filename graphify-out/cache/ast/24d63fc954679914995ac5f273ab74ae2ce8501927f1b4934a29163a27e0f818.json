@@ -1,1 +1,160 @@
-{"nodes": [{"id": "users_maddozs_personal_projects_recetario_src_components_landing_featuressection_astro", "label": "FeaturesSection.astro", "file_type": "code", "source_file": "/Users/maddozs/personal-projects/recetario/src/components/landing/FeaturesSection.astro", "source_location": "L1"}, {"id": "landing_featuressection_features", "label": "features", "file_type": "code", "source_file": "/Users/maddozs/personal-projects/recetario/src/components/landing/FeaturesSection.astro", "source_location": "L4"}, {"id": "landing_featuressection_closelightbox", "label": "closeLightbox()", "file_type": "code", "source_file": "/Users/maddozs/personal-projects/recetario/src/components/landing/FeaturesSection.astro", "source_location": "L213"}, {"id": "landing_featuressection_openlightbox", "label": "openLightbox()", "file_type": "code", "source_file": "/Users/maddozs/personal-projects/recetario/src/components/landing/FeaturesSection.astro", "source_location": "L222"}, {"id": "landing_featuressection_isdark", "label": "isDark", "file_type": "code", "source_file": "/Users/maddozs/personal-projects/recetario/src/components/landing/FeaturesSection.astro", "source_location": "L233"}, {"id": "landing_featuressection_imgel", "label": "imgEl", "file_type": "code", "source_file": "/Users/maddozs/personal-projects/recetario/src/components/landing/FeaturesSection.astro", "source_location": "L237"}, {"id": "landing_featuressection_setupfeaturethemeimages", "label": "setupFeatureThemeImages()", "file_type": "code", "source_file": "/Users/maddozs/personal-projects/recetario/src/components/landing/FeaturesSection.astro", "source_location": "L250"}, {"id": "components", "label": "astro-icon/components", "file_type": "code", "source_file": "astro-icon/components", "confidence": "EXTRACTED"}], "edges": [{"source": "users_maddozs_personal_projects_recetario_src_components_landing_featuressection_astro", "target": "landing_featuressection_features", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/components/landing/FeaturesSection.astro", "source_location": "L4", "weight": 1.0}, {"source": "users_maddozs_personal_projects_recetario_src_components_landing_featuressection_astro", "target": "landing_featuressection_closelightbox", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/components/landing/FeaturesSection.astro", "source_location": "L213", "weight": 1.0}, {"source": "users_maddozs_personal_projects_recetario_src_components_landing_featuressection_astro", "target": "landing_featuressection_openlightbox", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/components/landing/FeaturesSection.astro", "source_location": "L222", "weight": 1.0}, {"source": "users_maddozs_personal_projects_recetario_src_components_landing_featuressection_astro", "target": "landing_featuressection_isdark", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/components/landing/FeaturesSection.astro", "source_location": "L233", "weight": 1.0}, {"source": "users_maddozs_personal_projects_recetario_src_components_landing_featuressection_astro", "target": "landing_featuressection_imgel", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/components/landing/FeaturesSection.astro", "source_location": "L237", "weight": 1.0}, {"source": "users_maddozs_personal_projects_recetario_src_components_landing_featuressection_astro", "target": "landing_featuressection_setupfeaturethemeimages", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/components/landing/FeaturesSection.astro", "source_location": "L250", "weight": 1.0}, {"source": "users_maddozs_personal_projects_recetario_src_components_landing_featuressection_astro", "target": "components", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/src/components/landing/FeaturesSection.astro"}], "raw_calls": [{"caller_nid": "landing_featuressection_closelightbox", "callee": "add", "is_member_call": true, "source_file": "/Users/maddozs/personal-projects/recetario/src/components/landing/FeaturesSection.astro", "source_location": "L215"}, {"caller_nid": "landing_featuressection_closelightbox", "callee": "setTimeout", "is_member_call": false, "source_file": "/Users/maddozs/personal-projects/recetario/src/components/landing/FeaturesSection.astro", "source_location": "L216"}, {"caller_nid": "landing_featuressection_openlightbox", "callee": "showModal", "is_member_call": true, "source_file": "/Users/maddozs/personal-projects/recetario/src/components/landing/FeaturesSection.astro", "source_location": "L225"}, {"caller_nid": "landing_featuressection_setupfeaturethemeimages", "callee": "updateImages", "is_member_call": false, "source_file": "/Users/maddozs/personal-projects/recetario/src/components/landing/FeaturesSection.astro", "source_location": "L264"}, {"caller_nid": "landing_featuressection_setupfeaturethemeimages", "callee": "observe", "is_member_call": true, "source_file": "/Users/maddozs/personal-projects/recetario/src/components/landing/FeaturesSection.astro", "source_location": "L267"}]}
+{
+  "nodes": [
+    {
+      "id": "users_maddozs_personal_projects_recetario_src_components_landing_featuressection_astro",
+      "label": "FeaturesSection.astro",
+      "file_type": "code",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/components/landing/FeaturesSection.astro",
+      "source_location": "L1"
+    },
+    {
+      "id": "landing_featuressection_features",
+      "label": "features",
+      "file_type": "code",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/components/landing/FeaturesSection.astro",
+      "source_location": "L4"
+    },
+    {
+      "id": "landing_featuressection_closelightbox",
+      "label": "closeLightbox()",
+      "file_type": "code",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/components/landing/FeaturesSection.astro",
+      "source_location": "L213"
+    },
+    {
+      "id": "landing_featuressection_openlightbox",
+      "label": "openLightbox()",
+      "file_type": "code",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/components/landing/FeaturesSection.astro",
+      "source_location": "L222"
+    },
+    {
+      "id": "landing_featuressection_isdark",
+      "label": "isDark",
+      "file_type": "code",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/components/landing/FeaturesSection.astro",
+      "source_location": "L233"
+    },
+    {
+      "id": "landing_featuressection_imgel",
+      "label": "imgEl",
+      "file_type": "code",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/components/landing/FeaturesSection.astro",
+      "source_location": "L237"
+    },
+    {
+      "id": "landing_featuressection_setupfeaturethemeimages",
+      "label": "setupFeatureThemeImages()",
+      "file_type": "code",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/components/landing/FeaturesSection.astro",
+      "source_location": "L250"
+    },
+    {
+      "id": "components",
+      "label": "astro-icon/components",
+      "file_type": "code",
+      "source_file": "astro-icon/components",
+      "confidence": "EXTRACTED"
+    }
+  ],
+  "edges": [
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_components_landing_featuressection_astro",
+      "target": "landing_featuressection_features",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/components/landing/FeaturesSection.astro",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_components_landing_featuressection_astro",
+      "target": "landing_featuressection_closelightbox",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/components/landing/FeaturesSection.astro",
+      "source_location": "L213",
+      "weight": 1.0
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_components_landing_featuressection_astro",
+      "target": "landing_featuressection_openlightbox",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/components/landing/FeaturesSection.astro",
+      "source_location": "L222",
+      "weight": 1.0
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_components_landing_featuressection_astro",
+      "target": "landing_featuressection_isdark",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/components/landing/FeaturesSection.astro",
+      "source_location": "L233",
+      "weight": 1.0
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_components_landing_featuressection_astro",
+      "target": "landing_featuressection_imgel",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/components/landing/FeaturesSection.astro",
+      "source_location": "L237",
+      "weight": 1.0
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_components_landing_featuressection_astro",
+      "target": "landing_featuressection_setupfeaturethemeimages",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/components/landing/FeaturesSection.astro",
+      "source_location": "L250",
+      "weight": 1.0
+    },
+    {
+      "source": "users_maddozs_personal_projects_recetario_src_components_landing_featuressection_astro",
+      "target": "components",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/components/landing/FeaturesSection.astro"
+    }
+  ],
+  "raw_calls": [
+    {
+      "caller_nid": "landing_featuressection_closelightbox",
+      "callee": "add",
+      "is_member_call": true,
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/components/landing/FeaturesSection.astro",
+      "source_location": "L215"
+    },
+    {
+      "caller_nid": "landing_featuressection_closelightbox",
+      "callee": "setTimeout",
+      "is_member_call": false,
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/components/landing/FeaturesSection.astro",
+      "source_location": "L216"
+    },
+    {
+      "caller_nid": "landing_featuressection_openlightbox",
+      "callee": "showModal",
+      "is_member_call": true,
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/components/landing/FeaturesSection.astro",
+      "source_location": "L225"
+    },
+    {
+      "caller_nid": "landing_featuressection_setupfeaturethemeimages",
+      "callee": "updateImages",
+      "is_member_call": false,
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/components/landing/FeaturesSection.astro",
+      "source_location": "L264"
+    },
+    {
+      "caller_nid": "landing_featuressection_setupfeaturethemeimages",
+      "callee": "observe",
+      "is_member_call": true,
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/components/landing/FeaturesSection.astro",
+      "source_location": "L267"
+    }
+  ]
+}

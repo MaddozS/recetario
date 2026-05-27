@@ -1,1 +1,495 @@
-{"nodes": [{"id": "users_maddozs_personal_projects_recetario_docs_planes_produccion_04_guardar_cargar_planes_md", "label": "04-guardar-cargar-planes.md", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L1"}, {"id": "produccion_04_guardar_cargar_planes_f5_guardar_y_cargar_planes_de_producci\u00f3n", "label": "F5: Guardar y cargar planes de producci\u00f3n", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L1"}, {"id": "produccion_04_guardar_cargar_planes_objetivo", "label": "Objetivo", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L11"}, {"id": "produccion_04_guardar_cargar_planes_1_modelo_de_datos", "label": "1. Modelo de datos", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L17"}, {"id": "produccion_04_guardar_cargar_planes_1_1_nueva_tabla_production_plans", "label": "1.1 Nueva tabla: `production_plans`", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L19"}, {"id": "produccion_04_guardar_cargar_planes_codeblock_1", "label": "code:prisma (model ProductionPlan {)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L21"}, {"id": "produccion_04_guardar_cargar_planes_1_2_migraci\u00f3n", "label": "1.2 Migraci\u00f3n", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L39"}, {"id": "produccion_04_guardar_cargar_planes_codeblock_2", "label": "code:bash (npx prisma migrate dev --name add_production_plans)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L41"}, {"id": "produccion_04_guardar_cargar_planes_2_crud_de_planes", "label": "2. CRUD de planes", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L48"}, {"id": "produccion_04_guardar_cargar_planes_2_1_src_lib_db_production_plans_ts", "label": "2.1 `src/lib/db/production-plans.ts`", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L50"}, {"id": "produccion_04_guardar_cargar_planes_codeblock_3", "label": "code:ts (import { prisma } from \"../prisma\";)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L52"}, {"id": "produccion_04_guardar_cargar_planes_2_2_tipos", "label": "2.2 Tipos", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L164"}, {"id": "produccion_04_guardar_cargar_planes_codeblock_4", "label": "code:ts (export type CreateProductionPlanInput = {)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L168"}, {"id": "produccion_04_guardar_cargar_planes_3_componente_productionsavedplans_astro", "label": "3. Componente: `ProductionSavedPlans.astro`", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L177"}, {"id": "produccion_04_guardar_cargar_planes_3_1_props", "label": "3.1 Props", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L179"}, {"id": "produccion_04_guardar_cargar_planes_codeblock_5", "label": "code:ts (interface Props {)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L181"}, {"id": "produccion_04_guardar_cargar_planes_3_2_template", "label": "3.2 Template", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L187"}, {"id": "produccion_04_guardar_cargar_planes_codeblock_6", "label": "code:astro (---)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L189"}, {"id": "produccion_04_guardar_cargar_planes_4_integraci\u00f3n_en_produccion_astro", "label": "4. Integraci\u00f3n en `produccion.astro`", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L244"}, {"id": "produccion_04_guardar_cargar_planes_4_1_frontmatter", "label": "4.1 Frontmatter", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L246"}, {"id": "produccion_04_guardar_cargar_planes_codeblock_7", "label": "code:astro (---)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L248"}, {"id": "produccion_04_guardar_cargar_planes_4_2_template_secci\u00f3n_de_guardado", "label": "4.2 Template \u2014 Secci\u00f3n de guardado", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L290"}, {"id": "produccion_04_guardar_cargar_planes_codeblock_8", "label": "code:astro ({canSave && selections.length > 0 && ()", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L292"}, {"id": "produccion_04_guardar_cargar_planes_4_3_template_planes_guardados", "label": "4.3 Template \u2014 Planes guardados", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L328"}, {"id": "produccion_04_guardar_cargar_planes_codeblock_9", "label": "code:astro ({canSave && savedPlans.length > 0 && ()", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L332"}, {"id": "produccion_04_guardar_cargar_planes_5_l\u00edmite_de_planes_guardados", "label": "5. L\u00edmite de planes guardados", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L340"}, {"id": "produccion_04_guardar_cargar_planes_codeblock_10", "label": "code:ts (const MAX_SAVED_PLANS = 20;)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L344"}, {"id": "produccion_04_guardar_cargar_planes_6_arquitectura_de_flujo", "label": "6. Arquitectura de flujo", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L358"}, {"id": "produccion_04_guardar_cargar_planes_codeblock_11", "label": "code:block11 (Usuario configura producci\u00f3n)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L360"}, {"id": "produccion_04_guardar_cargar_planes_7_archivos_involucrados", "label": "7. Archivos involucrados", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L381"}, {"id": "produccion_04_guardar_cargar_planes_8_verificaci\u00f3n", "label": "8. Verificaci\u00f3n", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L396"}], "edges": [{"source": "users_maddozs_personal_projects_recetario_docs_planes_produccion_04_guardar_cargar_planes_md", "target": "produccion_04_guardar_cargar_planes_f5_guardar_y_cargar_planes_de_producci\u00f3n", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L1", "weight": 1.0}, {"source": "produccion_04_guardar_cargar_planes_f5_guardar_y_cargar_planes_de_producci\u00f3n", "target": "produccion_04_guardar_cargar_planes_objetivo", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L11", "weight": 1.0}, {"source": "produccion_04_guardar_cargar_planes_f5_guardar_y_cargar_planes_de_producci\u00f3n", "target": "produccion_04_guardar_cargar_planes_1_modelo_de_datos", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L17", "weight": 1.0}, {"source": "produccion_04_guardar_cargar_planes_1_modelo_de_datos", "target": "produccion_04_guardar_cargar_planes_1_1_nueva_tabla_production_plans", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L19", "weight": 1.0}, {"source": "produccion_04_guardar_cargar_planes_1_1_nueva_tabla_production_plans", "target": "produccion_04_guardar_cargar_planes_codeblock_1", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L21", "weight": 1.0}, {"source": "produccion_04_guardar_cargar_planes_1_modelo_de_datos", "target": "produccion_04_guardar_cargar_planes_1_2_migraci\u00f3n", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L39", "weight": 1.0}, {"source": "produccion_04_guardar_cargar_planes_1_2_migraci\u00f3n", "target": "produccion_04_guardar_cargar_planes_codeblock_2", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L41", "weight": 1.0}, {"source": "produccion_04_guardar_cargar_planes_f5_guardar_y_cargar_planes_de_producci\u00f3n", "target": "produccion_04_guardar_cargar_planes_2_crud_de_planes", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L48", "weight": 1.0}, {"source": "produccion_04_guardar_cargar_planes_2_crud_de_planes", "target": "produccion_04_guardar_cargar_planes_2_1_src_lib_db_production_plans_ts", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L50", "weight": 1.0}, {"source": "produccion_04_guardar_cargar_planes_2_1_src_lib_db_production_plans_ts", "target": "produccion_04_guardar_cargar_planes_codeblock_3", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L52", "weight": 1.0}, {"source": "produccion_04_guardar_cargar_planes_2_crud_de_planes", "target": "produccion_04_guardar_cargar_planes_2_2_tipos", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L164", "weight": 1.0}, {"source": "produccion_04_guardar_cargar_planes_2_2_tipos", "target": "produccion_04_guardar_cargar_planes_codeblock_4", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L168", "weight": 1.0}, {"source": "produccion_04_guardar_cargar_planes_f5_guardar_y_cargar_planes_de_producci\u00f3n", "target": "produccion_04_guardar_cargar_planes_3_componente_productionsavedplans_astro", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L177", "weight": 1.0}, {"source": "produccion_04_guardar_cargar_planes_3_componente_productionsavedplans_astro", "target": "produccion_04_guardar_cargar_planes_3_1_props", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L179", "weight": 1.0}, {"source": "produccion_04_guardar_cargar_planes_3_1_props", "target": "produccion_04_guardar_cargar_planes_codeblock_5", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L181", "weight": 1.0}, {"source": "produccion_04_guardar_cargar_planes_3_componente_productionsavedplans_astro", "target": "produccion_04_guardar_cargar_planes_3_2_template", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L187", "weight": 1.0}, {"source": "produccion_04_guardar_cargar_planes_3_2_template", "target": "produccion_04_guardar_cargar_planes_codeblock_6", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L189", "weight": 1.0}, {"source": "produccion_04_guardar_cargar_planes_f5_guardar_y_cargar_planes_de_producci\u00f3n", "target": "produccion_04_guardar_cargar_planes_4_integraci\u00f3n_en_produccion_astro", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L244", "weight": 1.0}, {"source": "produccion_04_guardar_cargar_planes_4_integraci\u00f3n_en_produccion_astro", "target": "produccion_04_guardar_cargar_planes_4_1_frontmatter", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L246", "weight": 1.0}, {"source": "produccion_04_guardar_cargar_planes_4_1_frontmatter", "target": "produccion_04_guardar_cargar_planes_codeblock_7", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L248", "weight": 1.0}, {"source": "produccion_04_guardar_cargar_planes_4_integraci\u00f3n_en_produccion_astro", "target": "produccion_04_guardar_cargar_planes_4_2_template_secci\u00f3n_de_guardado", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L290", "weight": 1.0}, {"source": "produccion_04_guardar_cargar_planes_4_2_template_secci\u00f3n_de_guardado", "target": "produccion_04_guardar_cargar_planes_codeblock_8", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L292", "weight": 1.0}, {"source": "produccion_04_guardar_cargar_planes_4_integraci\u00f3n_en_produccion_astro", "target": "produccion_04_guardar_cargar_planes_4_3_template_planes_guardados", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L328", "weight": 1.0}, {"source": "produccion_04_guardar_cargar_planes_4_3_template_planes_guardados", "target": "produccion_04_guardar_cargar_planes_codeblock_9", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L332", "weight": 1.0}, {"source": "produccion_04_guardar_cargar_planes_f5_guardar_y_cargar_planes_de_producci\u00f3n", "target": "produccion_04_guardar_cargar_planes_5_l\u00edmite_de_planes_guardados", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L340", "weight": 1.0}, {"source": "produccion_04_guardar_cargar_planes_5_l\u00edmite_de_planes_guardados", "target": "produccion_04_guardar_cargar_planes_codeblock_10", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L344", "weight": 1.0}, {"source": "produccion_04_guardar_cargar_planes_f5_guardar_y_cargar_planes_de_producci\u00f3n", "target": "produccion_04_guardar_cargar_planes_6_arquitectura_de_flujo", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L358", "weight": 1.0}, {"source": "produccion_04_guardar_cargar_planes_6_arquitectura_de_flujo", "target": "produccion_04_guardar_cargar_planes_codeblock_11", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L360", "weight": 1.0}, {"source": "produccion_04_guardar_cargar_planes_f5_guardar_y_cargar_planes_de_producci\u00f3n", "target": "produccion_04_guardar_cargar_planes_7_archivos_involucrados", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L381", "weight": 1.0}, {"source": "produccion_04_guardar_cargar_planes_f5_guardar_y_cargar_planes_de_producci\u00f3n", "target": "produccion_04_guardar_cargar_planes_8_verificaci\u00f3n", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md", "source_location": "L396", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "users_maddozs_personal_projects_recetario_docs_planes_produccion_04_guardar_cargar_planes_md",
+      "label": "04-guardar-cargar-planes.md",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "produccion_04_guardar_cargar_planes_f5_guardar_y_cargar_planes_de_producci\u00f3n",
+      "label": "F5: Guardar y cargar planes de producci\u00f3n",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "produccion_04_guardar_cargar_planes_objetivo",
+      "label": "Objetivo",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L11"
+    },
+    {
+      "id": "produccion_04_guardar_cargar_planes_1_modelo_de_datos",
+      "label": "1. Modelo de datos",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L17"
+    },
+    {
+      "id": "produccion_04_guardar_cargar_planes_1_1_nueva_tabla_production_plans",
+      "label": "1.1 Nueva tabla: `production_plans`",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L19"
+    },
+    {
+      "id": "produccion_04_guardar_cargar_planes_codeblock_1",
+      "label": "code:prisma (model ProductionPlan {)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L21"
+    },
+    {
+      "id": "produccion_04_guardar_cargar_planes_1_2_migraci\u00f3n",
+      "label": "1.2 Migraci\u00f3n",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L39"
+    },
+    {
+      "id": "produccion_04_guardar_cargar_planes_codeblock_2",
+      "label": "code:bash (npx prisma migrate dev --name add_production_plans)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L41"
+    },
+    {
+      "id": "produccion_04_guardar_cargar_planes_2_crud_de_planes",
+      "label": "2. CRUD de planes",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L48"
+    },
+    {
+      "id": "produccion_04_guardar_cargar_planes_2_1_src_lib_db_production_plans_ts",
+      "label": "2.1 `src/lib/db/production-plans.ts`",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L50"
+    },
+    {
+      "id": "produccion_04_guardar_cargar_planes_codeblock_3",
+      "label": "code:ts (import { prisma } from \"../prisma\";)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L52"
+    },
+    {
+      "id": "produccion_04_guardar_cargar_planes_2_2_tipos",
+      "label": "2.2 Tipos",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L164"
+    },
+    {
+      "id": "produccion_04_guardar_cargar_planes_codeblock_4",
+      "label": "code:ts (export type CreateProductionPlanInput = {)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L168"
+    },
+    {
+      "id": "produccion_04_guardar_cargar_planes_3_componente_productionsavedplans_astro",
+      "label": "3. Componente: `ProductionSavedPlans.astro`",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L177"
+    },
+    {
+      "id": "produccion_04_guardar_cargar_planes_3_1_props",
+      "label": "3.1 Props",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L179"
+    },
+    {
+      "id": "produccion_04_guardar_cargar_planes_codeblock_5",
+      "label": "code:ts (interface Props {)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L181"
+    },
+    {
+      "id": "produccion_04_guardar_cargar_planes_3_2_template",
+      "label": "3.2 Template",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L187"
+    },
+    {
+      "id": "produccion_04_guardar_cargar_planes_codeblock_6",
+      "label": "code:astro (---)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L189"
+    },
+    {
+      "id": "produccion_04_guardar_cargar_planes_4_integraci\u00f3n_en_produccion_astro",
+      "label": "4. Integraci\u00f3n en `produccion.astro`",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L244"
+    },
+    {
+      "id": "produccion_04_guardar_cargar_planes_4_1_frontmatter",
+      "label": "4.1 Frontmatter",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L246"
+    },
+    {
+      "id": "produccion_04_guardar_cargar_planes_codeblock_7",
+      "label": "code:astro (---)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L248"
+    },
+    {
+      "id": "produccion_04_guardar_cargar_planes_4_2_template_secci\u00f3n_de_guardado",
+      "label": "4.2 Template \u2014 Secci\u00f3n de guardado",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L290"
+    },
+    {
+      "id": "produccion_04_guardar_cargar_planes_codeblock_8",
+      "label": "code:astro ({canSave && selections.length > 0 && ()",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L292"
+    },
+    {
+      "id": "produccion_04_guardar_cargar_planes_4_3_template_planes_guardados",
+      "label": "4.3 Template \u2014 Planes guardados",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L328"
+    },
+    {
+      "id": "produccion_04_guardar_cargar_planes_codeblock_9",
+      "label": "code:astro ({canSave && savedPlans.length > 0 && ()",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L332"
+    },
+    {
+      "id": "produccion_04_guardar_cargar_planes_5_l\u00edmite_de_planes_guardados",
+      "label": "5. L\u00edmite de planes guardados",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L340"
+    },
+    {
+      "id": "produccion_04_guardar_cargar_planes_codeblock_10",
+      "label": "code:ts (const MAX_SAVED_PLANS = 20;)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L344"
+    },
+    {
+      "id": "produccion_04_guardar_cargar_planes_6_arquitectura_de_flujo",
+      "label": "6. Arquitectura de flujo",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L358"
+    },
+    {
+      "id": "produccion_04_guardar_cargar_planes_codeblock_11",
+      "label": "code:block11 (Usuario configura producci\u00f3n)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L360"
+    },
+    {
+      "id": "produccion_04_guardar_cargar_planes_7_archivos_involucrados",
+      "label": "7. Archivos involucrados",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L381"
+    },
+    {
+      "id": "produccion_04_guardar_cargar_planes_8_verificaci\u00f3n",
+      "label": "8. Verificaci\u00f3n",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L396"
+    }
+  ],
+  "edges": [
+    {
+      "source": "users_maddozs_personal_projects_recetario_docs_planes_produccion_04_guardar_cargar_planes_md",
+      "target": "produccion_04_guardar_cargar_planes_f5_guardar_y_cargar_planes_de_producci\u00f3n",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_04_guardar_cargar_planes_f5_guardar_y_cargar_planes_de_producci\u00f3n",
+      "target": "produccion_04_guardar_cargar_planes_objetivo",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_04_guardar_cargar_planes_f5_guardar_y_cargar_planes_de_producci\u00f3n",
+      "target": "produccion_04_guardar_cargar_planes_1_modelo_de_datos",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_04_guardar_cargar_planes_1_modelo_de_datos",
+      "target": "produccion_04_guardar_cargar_planes_1_1_nueva_tabla_production_plans",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L19",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_04_guardar_cargar_planes_1_1_nueva_tabla_production_plans",
+      "target": "produccion_04_guardar_cargar_planes_codeblock_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L21",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_04_guardar_cargar_planes_1_modelo_de_datos",
+      "target": "produccion_04_guardar_cargar_planes_1_2_migraci\u00f3n",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L39",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_04_guardar_cargar_planes_1_2_migraci\u00f3n",
+      "target": "produccion_04_guardar_cargar_planes_codeblock_2",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L41",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_04_guardar_cargar_planes_f5_guardar_y_cargar_planes_de_producci\u00f3n",
+      "target": "produccion_04_guardar_cargar_planes_2_crud_de_planes",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L48",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_04_guardar_cargar_planes_2_crud_de_planes",
+      "target": "produccion_04_guardar_cargar_planes_2_1_src_lib_db_production_plans_ts",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L50",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_04_guardar_cargar_planes_2_1_src_lib_db_production_plans_ts",
+      "target": "produccion_04_guardar_cargar_planes_codeblock_3",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L52",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_04_guardar_cargar_planes_2_crud_de_planes",
+      "target": "produccion_04_guardar_cargar_planes_2_2_tipos",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L164",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_04_guardar_cargar_planes_2_2_tipos",
+      "target": "produccion_04_guardar_cargar_planes_codeblock_4",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L168",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_04_guardar_cargar_planes_f5_guardar_y_cargar_planes_de_producci\u00f3n",
+      "target": "produccion_04_guardar_cargar_planes_3_componente_productionsavedplans_astro",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L177",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_04_guardar_cargar_planes_3_componente_productionsavedplans_astro",
+      "target": "produccion_04_guardar_cargar_planes_3_1_props",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L179",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_04_guardar_cargar_planes_3_1_props",
+      "target": "produccion_04_guardar_cargar_planes_codeblock_5",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L181",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_04_guardar_cargar_planes_3_componente_productionsavedplans_astro",
+      "target": "produccion_04_guardar_cargar_planes_3_2_template",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L187",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_04_guardar_cargar_planes_3_2_template",
+      "target": "produccion_04_guardar_cargar_planes_codeblock_6",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L189",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_04_guardar_cargar_planes_f5_guardar_y_cargar_planes_de_producci\u00f3n",
+      "target": "produccion_04_guardar_cargar_planes_4_integraci\u00f3n_en_produccion_astro",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L244",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_04_guardar_cargar_planes_4_integraci\u00f3n_en_produccion_astro",
+      "target": "produccion_04_guardar_cargar_planes_4_1_frontmatter",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L246",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_04_guardar_cargar_planes_4_1_frontmatter",
+      "target": "produccion_04_guardar_cargar_planes_codeblock_7",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L248",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_04_guardar_cargar_planes_4_integraci\u00f3n_en_produccion_astro",
+      "target": "produccion_04_guardar_cargar_planes_4_2_template_secci\u00f3n_de_guardado",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L290",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_04_guardar_cargar_planes_4_2_template_secci\u00f3n_de_guardado",
+      "target": "produccion_04_guardar_cargar_planes_codeblock_8",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L292",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_04_guardar_cargar_planes_4_integraci\u00f3n_en_produccion_astro",
+      "target": "produccion_04_guardar_cargar_planes_4_3_template_planes_guardados",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L328",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_04_guardar_cargar_planes_4_3_template_planes_guardados",
+      "target": "produccion_04_guardar_cargar_planes_codeblock_9",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L332",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_04_guardar_cargar_planes_f5_guardar_y_cargar_planes_de_producci\u00f3n",
+      "target": "produccion_04_guardar_cargar_planes_5_l\u00edmite_de_planes_guardados",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L340",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_04_guardar_cargar_planes_5_l\u00edmite_de_planes_guardados",
+      "target": "produccion_04_guardar_cargar_planes_codeblock_10",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L344",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_04_guardar_cargar_planes_f5_guardar_y_cargar_planes_de_producci\u00f3n",
+      "target": "produccion_04_guardar_cargar_planes_6_arquitectura_de_flujo",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L358",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_04_guardar_cargar_planes_6_arquitectura_de_flujo",
+      "target": "produccion_04_guardar_cargar_planes_codeblock_11",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L360",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_04_guardar_cargar_planes_f5_guardar_y_cargar_planes_de_producci\u00f3n",
+      "target": "produccion_04_guardar_cargar_planes_7_archivos_involucrados",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L381",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_04_guardar_cargar_planes_f5_guardar_y_cargar_planes_de_producci\u00f3n",
+      "target": "produccion_04_guardar_cargar_planes_8_verificaci\u00f3n",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/04-guardar-cargar-planes.md",
+      "source_location": "L396",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

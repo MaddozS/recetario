@@ -1,1 +1,12 @@
-{"nodes": [{"id": "users_maddozs_personal_projects_recetario_data_ingredients_json", "label": "ingredients.json", "file_type": "code", "source_file": "/Users/maddozs/personal-projects/recetario/data/ingredients.json", "source_location": "L1"}], "edges": []}
+{
+  "nodes": [
+    {
+      "id": "users_maddozs_personal_projects_recetario_data_ingredients_json",
+      "label": "ingredients.json",
+      "file_type": "code",
+      "source_file": "/Users/maddozs/personal-projects/recetario/data/ingredients.json",
+      "source_location": "L1"
+    }
+  ],
+  "edges": []
+}

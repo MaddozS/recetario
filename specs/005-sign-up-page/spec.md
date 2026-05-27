@@ -145,7 +145,7 @@ La página de registro debe seguir los mismos lineamientos de diseño que la pá
 ## Assumptions
 
 - El sistema de autenticación Better Auth ya está configurado y funcionando con proveedor Google OAuth y verificación de email.
-- La configuración `disableSignUp: true` actual en el proveedor Google deberá ajustarse para permitir la creación de cuentas desde la página de registro, mientras se mantiene el comportamiento de solo-inicio-de-sesión en la página `/sign-in` a través de lógica de aplicación.
+- La configuración `disableSignUp: true` actual en el proveedor Google se cambiará a `false` para permitir la creación de cuentas mediante Google en todas las páginas (patrón estándar en aplicaciones SaaS donde el mismo botón de Google maneja tanto registro como inicio de sesión).
 - Los campos `firstName` y `lastName` serán agregados al modelo de usuario de Better Auth (el sistema ya soporta el campo `name` pero no distingue nombre/apellido).
 - El perfil de Google proporciona `given_name` y `family_name` que se usarán para nombre y apellido respectivamente durante el registro con Google.
 - La página de inicio de sesión (`/sign-in`) ya existe y contiene el enlace a `/sign-up`. La página de registro (`/sign-up`) ya existe como estructura base y será modificada para agregar los campos de nombre y apellido.

@@ -1,1 +1,463 @@
-{"nodes": [{"id": "users_maddozs_personal_projects_recetario_specs_001_landing_page_spec_tasks_md", "label": "tasks.md", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L1"}, {"id": "001_landing_page_spec_tasks_tasks_kitchcalc_landing_page_audit_improve", "label": "Tasks: KitchCalc Landing Page \u2014 Audit & Improve", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L1"}, {"id": "001_landing_page_spec_tasks_format_id_p_story_description", "label": "Format: `[ID] [P?] [Story] Description`", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L11"}, {"id": "001_landing_page_spec_tasks_path_conventions", "label": "Path Conventions", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L17"}, {"id": "001_landing_page_spec_tasks_phase_1_setup_shared_infrastructure", "label": "Phase 1: Setup (Shared Infrastructure)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L24"}, {"id": "001_landing_page_spec_tasks_phase_2_foundational_blocking_prerequisites", "label": "Phase 2: Foundational (Blocking Prerequisites)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L32"}, {"id": "001_landing_page_spec_tasks_phase_3_user_story_1_visitante_descubre_el_software_priority_p1_mvp", "label": "Phase 3: User Story 1 \u2014 Visitante descubre el software (Priority: P1) \ud83c\udfaf MVP", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L46"}, {"id": "001_landing_page_spec_tasks_implementation_for_user_story_1", "label": "Implementation for User Story 1", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L52"}, {"id": "001_landing_page_spec_tasks_phase_4_user_story_2_visitante_explora_funcionalidades_priority_p1", "label": "Phase 4: User Story 2 \u2014 Visitante explora funcionalidades (Priority: P1)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L61"}, {"id": "001_landing_page_spec_tasks_implementation_for_user_story_2", "label": "Implementation for User Story 2", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L67"}, {"id": "001_landing_page_spec_tasks_phase_5_user_story_3_visitante_entiende_el_flujo_de_trabajo_priority_p2", "label": "Phase 5: User Story 3 \u2014 Visitante entiende el flujo de trabajo (Priority: P2)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L77"}, {"id": "001_landing_page_spec_tasks_implementation_for_user_story_3", "label": "Implementation for User Story 3", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L83"}, {"id": "001_landing_page_spec_tasks_phase_6_user_story_4_visitante_compara_planes_de_precios_priority_p2", "label": "Phase 6: User Story 4 \u2014 Visitante compara planes de precios (Priority: P2)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L91"}, {"id": "001_landing_page_spec_tasks_implementation_for_user_story_4", "label": "Implementation for User Story 4", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L97"}, {"id": "001_landing_page_spec_tasks_phase_7_user_story_5_visitante_se_registra_desde_la_landing_priority_p3", "label": "Phase 7: User Story 5 \u2014 Visitante se registra desde la landing (Priority: P3)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L107"}, {"id": "001_landing_page_spec_tasks_implementation_for_user_story_5", "label": "Implementation for User Story 5", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L113"}, {"id": "001_landing_page_spec_tasks_phase_8_polish_cross_cutting_concerns", "label": "Phase 8: Polish & Cross-Cutting Concerns", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L122"}, {"id": "001_landing_page_spec_tasks_dependencies_execution_order", "label": "Dependencies & Execution Order", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L132"}, {"id": "001_landing_page_spec_tasks_phase_dependencies", "label": "Phase Dependencies", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L134"}, {"id": "001_landing_page_spec_tasks_user_story_dependencies", "label": "User Story Dependencies", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L143"}, {"id": "001_landing_page_spec_tasks_within_each_user_story", "label": "Within Each User Story", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L151"}, {"id": "001_landing_page_spec_tasks_parallel_opportunities", "label": "Parallel Opportunities", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L156"}, {"id": "001_landing_page_spec_tasks_parallel_example_user_story_1_user_story_2", "label": "Parallel Example: User Story 1 + User Story 2", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L165"}, {"id": "001_landing_page_spec_tasks_codeblock_1", "label": "code:bash (# Phase 2 (parallel):)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L167"}, {"id": "001_landing_page_spec_tasks_implementation_strategy", "label": "Implementation Strategy", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L183"}, {"id": "001_landing_page_spec_tasks_mvp_first_user_story_1_only", "label": "MVP First (User Story 1 Only)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L185"}, {"id": "001_landing_page_spec_tasks_incremental_delivery", "label": "Incremental Delivery", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L193"}, {"id": "001_landing_page_spec_tasks_parallel_team_strategy", "label": "Parallel Team Strategy", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L203"}, {"id": "001_landing_page_spec_tasks_notes", "label": "Notes", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L214"}], "edges": [{"source": "users_maddozs_personal_projects_recetario_specs_001_landing_page_spec_tasks_md", "target": "001_landing_page_spec_tasks_tasks_kitchcalc_landing_page_audit_improve", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L1", "weight": 1.0}, {"source": "001_landing_page_spec_tasks_tasks_kitchcalc_landing_page_audit_improve", "target": "001_landing_page_spec_tasks_format_id_p_story_description", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L11", "weight": 1.0}, {"source": "001_landing_page_spec_tasks_tasks_kitchcalc_landing_page_audit_improve", "target": "001_landing_page_spec_tasks_path_conventions", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L17", "weight": 1.0}, {"source": "001_landing_page_spec_tasks_tasks_kitchcalc_landing_page_audit_improve", "target": "001_landing_page_spec_tasks_phase_1_setup_shared_infrastructure", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L24", "weight": 1.0}, {"source": "001_landing_page_spec_tasks_tasks_kitchcalc_landing_page_audit_improve", "target": "001_landing_page_spec_tasks_phase_2_foundational_blocking_prerequisites", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L32", "weight": 1.0}, {"source": "001_landing_page_spec_tasks_tasks_kitchcalc_landing_page_audit_improve", "target": "001_landing_page_spec_tasks_phase_3_user_story_1_visitante_descubre_el_software_priority_p1_mvp", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L46", "weight": 1.0}, {"source": "001_landing_page_spec_tasks_phase_3_user_story_1_visitante_descubre_el_software_priority_p1_mvp", "target": "001_landing_page_spec_tasks_implementation_for_user_story_1", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L52", "weight": 1.0}, {"source": "001_landing_page_spec_tasks_tasks_kitchcalc_landing_page_audit_improve", "target": "001_landing_page_spec_tasks_phase_4_user_story_2_visitante_explora_funcionalidades_priority_p1", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L61", "weight": 1.0}, {"source": "001_landing_page_spec_tasks_phase_4_user_story_2_visitante_explora_funcionalidades_priority_p1", "target": "001_landing_page_spec_tasks_implementation_for_user_story_2", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L67", "weight": 1.0}, {"source": "001_landing_page_spec_tasks_tasks_kitchcalc_landing_page_audit_improve", "target": "001_landing_page_spec_tasks_phase_5_user_story_3_visitante_entiende_el_flujo_de_trabajo_priority_p2", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L77", "weight": 1.0}, {"source": "001_landing_page_spec_tasks_phase_5_user_story_3_visitante_entiende_el_flujo_de_trabajo_priority_p2", "target": "001_landing_page_spec_tasks_implementation_for_user_story_3", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L83", "weight": 1.0}, {"source": "001_landing_page_spec_tasks_tasks_kitchcalc_landing_page_audit_improve", "target": "001_landing_page_spec_tasks_phase_6_user_story_4_visitante_compara_planes_de_precios_priority_p2", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L91", "weight": 1.0}, {"source": "001_landing_page_spec_tasks_phase_6_user_story_4_visitante_compara_planes_de_precios_priority_p2", "target": "001_landing_page_spec_tasks_implementation_for_user_story_4", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L97", "weight": 1.0}, {"source": "001_landing_page_spec_tasks_tasks_kitchcalc_landing_page_audit_improve", "target": "001_landing_page_spec_tasks_phase_7_user_story_5_visitante_se_registra_desde_la_landing_priority_p3", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L107", "weight": 1.0}, {"source": "001_landing_page_spec_tasks_phase_7_user_story_5_visitante_se_registra_desde_la_landing_priority_p3", "target": "001_landing_page_spec_tasks_implementation_for_user_story_5", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L113", "weight": 1.0}, {"source": "001_landing_page_spec_tasks_tasks_kitchcalc_landing_page_audit_improve", "target": "001_landing_page_spec_tasks_phase_8_polish_cross_cutting_concerns", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L122", "weight": 1.0}, {"source": "001_landing_page_spec_tasks_tasks_kitchcalc_landing_page_audit_improve", "target": "001_landing_page_spec_tasks_dependencies_execution_order", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L132", "weight": 1.0}, {"source": "001_landing_page_spec_tasks_dependencies_execution_order", "target": "001_landing_page_spec_tasks_phase_dependencies", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L134", "weight": 1.0}, {"source": "001_landing_page_spec_tasks_dependencies_execution_order", "target": "001_landing_page_spec_tasks_user_story_dependencies", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L143", "weight": 1.0}, {"source": "001_landing_page_spec_tasks_dependencies_execution_order", "target": "001_landing_page_spec_tasks_within_each_user_story", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L151", "weight": 1.0}, {"source": "001_landing_page_spec_tasks_dependencies_execution_order", "target": "001_landing_page_spec_tasks_parallel_opportunities", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L156", "weight": 1.0}, {"source": "001_landing_page_spec_tasks_tasks_kitchcalc_landing_page_audit_improve", "target": "001_landing_page_spec_tasks_parallel_example_user_story_1_user_story_2", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L165", "weight": 1.0}, {"source": "001_landing_page_spec_tasks_parallel_example_user_story_1_user_story_2", "target": "001_landing_page_spec_tasks_codeblock_1", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L167", "weight": 1.0}, {"source": "001_landing_page_spec_tasks_tasks_kitchcalc_landing_page_audit_improve", "target": "001_landing_page_spec_tasks_implementation_strategy", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L183", "weight": 1.0}, {"source": "001_landing_page_spec_tasks_implementation_strategy", "target": "001_landing_page_spec_tasks_mvp_first_user_story_1_only", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L185", "weight": 1.0}, {"source": "001_landing_page_spec_tasks_implementation_strategy", "target": "001_landing_page_spec_tasks_incremental_delivery", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L193", "weight": 1.0}, {"source": "001_landing_page_spec_tasks_implementation_strategy", "target": "001_landing_page_spec_tasks_parallel_team_strategy", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L203", "weight": 1.0}, {"source": "001_landing_page_spec_tasks_tasks_kitchcalc_landing_page_audit_improve", "target": "001_landing_page_spec_tasks_notes", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md", "source_location": "L214", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "users_maddozs_personal_projects_recetario_specs_001_landing_page_spec_tasks_md",
+      "label": "tasks.md",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "001_landing_page_spec_tasks_tasks_kitchcalc_landing_page_audit_improve",
+      "label": "Tasks: KitchCalc Landing Page \u2014 Audit & Improve",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "001_landing_page_spec_tasks_format_id_p_story_description",
+      "label": "Format: `[ID] [P?] [Story] Description`",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L11"
+    },
+    {
+      "id": "001_landing_page_spec_tasks_path_conventions",
+      "label": "Path Conventions",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L17"
+    },
+    {
+      "id": "001_landing_page_spec_tasks_phase_1_setup_shared_infrastructure",
+      "label": "Phase 1: Setup (Shared Infrastructure)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L24"
+    },
+    {
+      "id": "001_landing_page_spec_tasks_phase_2_foundational_blocking_prerequisites",
+      "label": "Phase 2: Foundational (Blocking Prerequisites)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L32"
+    },
+    {
+      "id": "001_landing_page_spec_tasks_phase_3_user_story_1_visitante_descubre_el_software_priority_p1_mvp",
+      "label": "Phase 3: User Story 1 \u2014 Visitante descubre el software (Priority: P1) \ud83c\udfaf MVP",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L46"
+    },
+    {
+      "id": "001_landing_page_spec_tasks_implementation_for_user_story_1",
+      "label": "Implementation for User Story 1",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L52"
+    },
+    {
+      "id": "001_landing_page_spec_tasks_phase_4_user_story_2_visitante_explora_funcionalidades_priority_p1",
+      "label": "Phase 4: User Story 2 \u2014 Visitante explora funcionalidades (Priority: P1)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L61"
+    },
+    {
+      "id": "001_landing_page_spec_tasks_implementation_for_user_story_2",
+      "label": "Implementation for User Story 2",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L67"
+    },
+    {
+      "id": "001_landing_page_spec_tasks_phase_5_user_story_3_visitante_entiende_el_flujo_de_trabajo_priority_p2",
+      "label": "Phase 5: User Story 3 \u2014 Visitante entiende el flujo de trabajo (Priority: P2)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L77"
+    },
+    {
+      "id": "001_landing_page_spec_tasks_implementation_for_user_story_3",
+      "label": "Implementation for User Story 3",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L83"
+    },
+    {
+      "id": "001_landing_page_spec_tasks_phase_6_user_story_4_visitante_compara_planes_de_precios_priority_p2",
+      "label": "Phase 6: User Story 4 \u2014 Visitante compara planes de precios (Priority: P2)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L91"
+    },
+    {
+      "id": "001_landing_page_spec_tasks_implementation_for_user_story_4",
+      "label": "Implementation for User Story 4",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L97"
+    },
+    {
+      "id": "001_landing_page_spec_tasks_phase_7_user_story_5_visitante_se_registra_desde_la_landing_priority_p3",
+      "label": "Phase 7: User Story 5 \u2014 Visitante se registra desde la landing (Priority: P3)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L107"
+    },
+    {
+      "id": "001_landing_page_spec_tasks_implementation_for_user_story_5",
+      "label": "Implementation for User Story 5",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L113"
+    },
+    {
+      "id": "001_landing_page_spec_tasks_phase_8_polish_cross_cutting_concerns",
+      "label": "Phase 8: Polish & Cross-Cutting Concerns",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L122"
+    },
+    {
+      "id": "001_landing_page_spec_tasks_dependencies_execution_order",
+      "label": "Dependencies & Execution Order",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L132"
+    },
+    {
+      "id": "001_landing_page_spec_tasks_phase_dependencies",
+      "label": "Phase Dependencies",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L134"
+    },
+    {
+      "id": "001_landing_page_spec_tasks_user_story_dependencies",
+      "label": "User Story Dependencies",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L143"
+    },
+    {
+      "id": "001_landing_page_spec_tasks_within_each_user_story",
+      "label": "Within Each User Story",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L151"
+    },
+    {
+      "id": "001_landing_page_spec_tasks_parallel_opportunities",
+      "label": "Parallel Opportunities",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L156"
+    },
+    {
+      "id": "001_landing_page_spec_tasks_parallel_example_user_story_1_user_story_2",
+      "label": "Parallel Example: User Story 1 + User Story 2",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L165"
+    },
+    {
+      "id": "001_landing_page_spec_tasks_codeblock_1",
+      "label": "code:bash (# Phase 2 (parallel):)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L167"
+    },
+    {
+      "id": "001_landing_page_spec_tasks_implementation_strategy",
+      "label": "Implementation Strategy",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L183"
+    },
+    {
+      "id": "001_landing_page_spec_tasks_mvp_first_user_story_1_only",
+      "label": "MVP First (User Story 1 Only)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L185"
+    },
+    {
+      "id": "001_landing_page_spec_tasks_incremental_delivery",
+      "label": "Incremental Delivery",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L193"
+    },
+    {
+      "id": "001_landing_page_spec_tasks_parallel_team_strategy",
+      "label": "Parallel Team Strategy",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L203"
+    },
+    {
+      "id": "001_landing_page_spec_tasks_notes",
+      "label": "Notes",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L214"
+    }
+  ],
+  "edges": [
+    {
+      "source": "users_maddozs_personal_projects_recetario_specs_001_landing_page_spec_tasks_md",
+      "target": "001_landing_page_spec_tasks_tasks_kitchcalc_landing_page_audit_improve",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "001_landing_page_spec_tasks_tasks_kitchcalc_landing_page_audit_improve",
+      "target": "001_landing_page_spec_tasks_format_id_p_story_description",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "001_landing_page_spec_tasks_tasks_kitchcalc_landing_page_audit_improve",
+      "target": "001_landing_page_spec_tasks_path_conventions",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "001_landing_page_spec_tasks_tasks_kitchcalc_landing_page_audit_improve",
+      "target": "001_landing_page_spec_tasks_phase_1_setup_shared_infrastructure",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "001_landing_page_spec_tasks_tasks_kitchcalc_landing_page_audit_improve",
+      "target": "001_landing_page_spec_tasks_phase_2_foundational_blocking_prerequisites",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L32",
+      "weight": 1.0
+    },
+    {
+      "source": "001_landing_page_spec_tasks_tasks_kitchcalc_landing_page_audit_improve",
+      "target": "001_landing_page_spec_tasks_phase_3_user_story_1_visitante_descubre_el_software_priority_p1_mvp",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L46",
+      "weight": 1.0
+    },
+    {
+      "source": "001_landing_page_spec_tasks_phase_3_user_story_1_visitante_descubre_el_software_priority_p1_mvp",
+      "target": "001_landing_page_spec_tasks_implementation_for_user_story_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L52",
+      "weight": 1.0
+    },
+    {
+      "source": "001_landing_page_spec_tasks_tasks_kitchcalc_landing_page_audit_improve",
+      "target": "001_landing_page_spec_tasks_phase_4_user_story_2_visitante_explora_funcionalidades_priority_p1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L61",
+      "weight": 1.0
+    },
+    {
+      "source": "001_landing_page_spec_tasks_phase_4_user_story_2_visitante_explora_funcionalidades_priority_p1",
+      "target": "001_landing_page_spec_tasks_implementation_for_user_story_2",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L67",
+      "weight": 1.0
+    },
+    {
+      "source": "001_landing_page_spec_tasks_tasks_kitchcalc_landing_page_audit_improve",
+      "target": "001_landing_page_spec_tasks_phase_5_user_story_3_visitante_entiende_el_flujo_de_trabajo_priority_p2",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L77",
+      "weight": 1.0
+    },
+    {
+      "source": "001_landing_page_spec_tasks_phase_5_user_story_3_visitante_entiende_el_flujo_de_trabajo_priority_p2",
+      "target": "001_landing_page_spec_tasks_implementation_for_user_story_3",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L83",
+      "weight": 1.0
+    },
+    {
+      "source": "001_landing_page_spec_tasks_tasks_kitchcalc_landing_page_audit_improve",
+      "target": "001_landing_page_spec_tasks_phase_6_user_story_4_visitante_compara_planes_de_precios_priority_p2",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L91",
+      "weight": 1.0
+    },
+    {
+      "source": "001_landing_page_spec_tasks_phase_6_user_story_4_visitante_compara_planes_de_precios_priority_p2",
+      "target": "001_landing_page_spec_tasks_implementation_for_user_story_4",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L97",
+      "weight": 1.0
+    },
+    {
+      "source": "001_landing_page_spec_tasks_tasks_kitchcalc_landing_page_audit_improve",
+      "target": "001_landing_page_spec_tasks_phase_7_user_story_5_visitante_se_registra_desde_la_landing_priority_p3",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L107",
+      "weight": 1.0
+    },
+    {
+      "source": "001_landing_page_spec_tasks_phase_7_user_story_5_visitante_se_registra_desde_la_landing_priority_p3",
+      "target": "001_landing_page_spec_tasks_implementation_for_user_story_5",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L113",
+      "weight": 1.0
+    },
+    {
+      "source": "001_landing_page_spec_tasks_tasks_kitchcalc_landing_page_audit_improve",
+      "target": "001_landing_page_spec_tasks_phase_8_polish_cross_cutting_concerns",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L122",
+      "weight": 1.0
+    },
+    {
+      "source": "001_landing_page_spec_tasks_tasks_kitchcalc_landing_page_audit_improve",
+      "target": "001_landing_page_spec_tasks_dependencies_execution_order",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L132",
+      "weight": 1.0
+    },
+    {
+      "source": "001_landing_page_spec_tasks_dependencies_execution_order",
+      "target": "001_landing_page_spec_tasks_phase_dependencies",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L134",
+      "weight": 1.0
+    },
+    {
+      "source": "001_landing_page_spec_tasks_dependencies_execution_order",
+      "target": "001_landing_page_spec_tasks_user_story_dependencies",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L143",
+      "weight": 1.0
+    },
+    {
+      "source": "001_landing_page_spec_tasks_dependencies_execution_order",
+      "target": "001_landing_page_spec_tasks_within_each_user_story",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L151",
+      "weight": 1.0
+    },
+    {
+      "source": "001_landing_page_spec_tasks_dependencies_execution_order",
+      "target": "001_landing_page_spec_tasks_parallel_opportunities",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L156",
+      "weight": 1.0
+    },
+    {
+      "source": "001_landing_page_spec_tasks_tasks_kitchcalc_landing_page_audit_improve",
+      "target": "001_landing_page_spec_tasks_parallel_example_user_story_1_user_story_2",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L165",
+      "weight": 1.0
+    },
+    {
+      "source": "001_landing_page_spec_tasks_parallel_example_user_story_1_user_story_2",
+      "target": "001_landing_page_spec_tasks_codeblock_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L167",
+      "weight": 1.0
+    },
+    {
+      "source": "001_landing_page_spec_tasks_tasks_kitchcalc_landing_page_audit_improve",
+      "target": "001_landing_page_spec_tasks_implementation_strategy",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L183",
+      "weight": 1.0
+    },
+    {
+      "source": "001_landing_page_spec_tasks_implementation_strategy",
+      "target": "001_landing_page_spec_tasks_mvp_first_user_story_1_only",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L185",
+      "weight": 1.0
+    },
+    {
+      "source": "001_landing_page_spec_tasks_implementation_strategy",
+      "target": "001_landing_page_spec_tasks_incremental_delivery",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L193",
+      "weight": 1.0
+    },
+    {
+      "source": "001_landing_page_spec_tasks_implementation_strategy",
+      "target": "001_landing_page_spec_tasks_parallel_team_strategy",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L203",
+      "weight": 1.0
+    },
+    {
+      "source": "001_landing_page_spec_tasks_tasks_kitchcalc_landing_page_audit_improve",
+      "target": "001_landing_page_spec_tasks_notes",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/tasks.md",
+      "source_location": "L214",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}
