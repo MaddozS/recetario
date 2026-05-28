@@ -120,7 +120,7 @@ if (feedback) {
         href="/settings"
         data-tab="profile"
         class:list={[
-          "-mb-[1px] inline-flex items-center gap-1.5 border-b-2 px-4 py-2.5 text-sm font-semibold transition-colors",
+          "-mb-px inline-flex items-center gap-1.5 border-b-2 px-4 py-2.5 text-sm font-semibold transition-colors",
           activeTab === "profile"
             ? "border-accent-600 text-accent-600"
             : "text-muted-foreground hover:text-secondary-foreground hover:border-muted-foreground/30 border-transparent",
@@ -133,7 +133,7 @@ if (feedback) {
         href="/settings?tab=preferences"
         data-tab="preferences"
         class:list={[
-          "-mb-[1px] inline-flex items-center gap-1.5 border-b-2 px-4 py-2.5 text-sm font-semibold transition-colors",
+          "-mb-px inline-flex items-center gap-1.5 border-b-2 px-4 py-2.5 text-sm font-semibold transition-colors",
           activeTab === "preferences"
             ? "border-accent-600 text-accent-600"
             : "text-muted-foreground hover:text-secondary-foreground hover:border-muted-foreground/30 border-transparent",
@@ -146,7 +146,7 @@ if (feedback) {
         href="/settings?tab=billing"
         data-tab="billing"
         class:list={[
-          "-mb-[1px] inline-flex items-center gap-1.5 border-b-2 px-4 py-2.5 text-sm font-semibold transition-colors",
+          "-mb-px inline-flex items-center gap-1.5 border-b-2 px-4 py-2.5 text-sm font-semibold transition-colors",
           activeTab === "billing"
             ? "border-accent-600 text-accent-600"
             : "text-muted-foreground hover:text-secondary-foreground hover:border-muted-foreground/30 border-transparent",
@@ -229,7 +229,12 @@ if (feedback) {
               autocomplete="email"
             />
           </div>
-          <PasswordInput id="email-current-password" label="Contraseña actual" autocomplete="current-password" required />
+          <PasswordInput
+            id="email-current-password"
+            label="Contraseña actual"
+            autocomplete="current-password"
+            required
+          />
           <Button
             variant="primary"
             type="submit"
@@ -253,9 +258,28 @@ if (feedback) {
         >
         </div>
         <form id="change-password-form" class="mt-4 max-w-sm space-y-4">
-          <PasswordInput id="current-password" label="Contraseña actual" autocomplete="current-password" required />
-          <PasswordInput id="new-password" label="Nueva contraseña" placeholder="Mínimo 6 caracteres" autocomplete="new-password" required minlength={6} />
-          <PasswordInput id="confirm-new-password" label="Confirmar contraseña" placeholder="Repite tu contraseña" autocomplete="new-password" required minlength={6} />
+          <PasswordInput
+            id="current-password"
+            label="Contraseña actual"
+            autocomplete="current-password"
+            required
+          />
+          <PasswordInput
+            id="new-password"
+            label="Nueva contraseña"
+            placeholder="Mínimo 6 caracteres"
+            autocomplete="new-password"
+            required
+            minlength={6}
+          />
+          <PasswordInput
+            id="confirm-new-password"
+            label="Confirmar contraseña"
+            placeholder="Repite tu contraseña"
+            autocomplete="new-password"
+            required
+            minlength={6}
+          />
           <Button
             variant="primary"
             type="submit"

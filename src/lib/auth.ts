@@ -3,6 +3,8 @@ import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prisma } from "@/lib/prisma";
 import { sendEmail } from "@/lib/email";
+import { createAuthMiddleware, APIError } from "better-auth/api";
+import { validatePassword } from "@/lib/password-validation";
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
@@ -55,6 +57,19 @@ export const auth = betterAuth({
         lastName: profile.family_name,
       }),
     },
+  },
+  hooks: {
+    before: createAuthMiddleware(async (ctx) => {
+      if (ctx.path === "/sign-up/email") {
+        const password = ctx.body?.password as string | undefined;
+        if (!password || !validatePassword(password).valid) {
+          throw new APIError("BAD_REQUEST", {
+            message:
+              "La contraseña debe tener al menos 8 caracteres, incluir mayúsculas, minúsculas, números y un carácter especial.",
+          });
+        }
+      }
+    }),
   },
   onAPIError: {
     errorURL: "/sign-in",

@@ -38,25 +38,28 @@ if (Astro.locals.session) return Astro.redirect("/recipes");
         class="bg-accent-500 absolute top-0 right-8 left-8 h-1 rounded-full"
       >
       </div>
-      <div class="mb-8 text-center">
-        <div
-          class="bg-accent-50 mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl"
-        >
-          <Icon name="lucide:chef-hat" size={28} class="text-accent-600" />
-        </div>
-        <h1 class="text-foreground text-2xl font-black">Crear cuenta</h1>
-        <p class="text-muted-foreground mt-1 text-sm">
-          Regístrate para empezar a costear
-        </p>
-      </div>
-
       <!-- Sign-up content (form + google + divider + footer) -->
       <div id="sign-up-content">
+        <div class="mb-8 text-center">
+          <div
+            class="bg-accent-50 mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl"
+          >
+            <Icon name="lucide:chef-hat" size={28} class="text-accent-600" />
+          </div>
+          <h1 class="text-foreground text-2xl font-black">Crear cuenta</h1>
+          <p class="text-muted-foreground mt-1 text-sm">
+            Regístrate para empezar a costear
+          </p>
+        </div>
         <div
           id="sign-up-error"
           class="border-danger-border bg-danger-bg text-danger mb-4 hidden rounded-xl border px-4 py-3 text-sm font-semibold"
         >
         </div>
+
+        <p class="text-muted-foreground mb-4 text-xs">
+          <span class="text-danger font-bold">*</span> Campos obligatorios
+        </p>
 
         <form id="sign-up-form" class="space-y-4">
           <div>
@@ -64,7 +67,7 @@ if (Astro.locals.session) return Astro.redirect("/recipes");
               for="first_name"
               class="text-muted-foreground mb-1.5 block text-xs font-bold tracking-wider uppercase"
             >
-              Nombre
+              Nombre <span class="text-danger">*</span>
             </label>
             <input
               id="first_name"
@@ -80,7 +83,7 @@ if (Astro.locals.session) return Astro.redirect("/recipes");
               for="last_name"
               class="text-muted-foreground mb-1.5 block text-xs font-bold tracking-wider uppercase"
             >
-              Apellido
+              Apellido <span class="text-danger">*</span>
             </label>
             <input
               id="last_name"
@@ -96,7 +99,7 @@ if (Astro.locals.session) return Astro.redirect("/recipes");
               for="email"
               class="text-muted-foreground mb-1.5 block text-xs font-bold tracking-wider uppercase"
             >
-              Email
+              Email <span class="text-danger">*</span>
             </label>
             <input
               id="email"
@@ -107,8 +110,16 @@ if (Astro.locals.session) return Astro.redirect("/recipes");
               autocomplete="email"
             />
           </div>
-          <PasswordInput id="password" label="Contraseña" placeholder="Mínimo 6 caracteres" autocomplete="new-password" required minlength={6} />
-          <PasswordInput id="confirm-password" label="Confirmar contraseña" placeholder="Repite tu contraseña" autocomplete="new-password" required minlength={6} />
+          <PasswordInput id="password" label="Contraseña" placeholder="Mínimo 8 caracteres" autocomplete="new-password" required minlength={8} />
+          <div id="password-rules" class="mt-1 space-y-0.5 hidden">
+            <div id="rule-min" class="text-xs flex items-center gap-1.5"><span class="rule-icon text-muted-foreground">○</span><span class="rule-text text-muted-foreground">Al menos 8 caracteres</span></div>
+            <div id="rule-upper" class="text-xs flex items-center gap-1.5"><span class="rule-icon text-muted-foreground">○</span><span class="rule-text text-muted-foreground">Una letra mayúscula</span></div>
+            <div id="rule-lower" class="text-xs flex items-center gap-1.5"><span class="rule-icon text-muted-foreground">○</span><span class="rule-text text-muted-foreground">Una letra minúscula</span></div>
+            <div id="rule-digit" class="text-xs flex items-center gap-1.5"><span class="rule-icon text-muted-foreground">○</span><span class="rule-text text-muted-foreground">Un número</span></div>
+            <div id="rule-special" class="text-xs flex items-center gap-1.5"><span class="rule-icon text-muted-foreground">○</span><span class="rule-text text-muted-foreground">Un carácter especial</span></div>
+          </div>
+          <PasswordInput id="confirm-password" label="Confirmar contraseña" placeholder="Repite tu contraseña" autocomplete="new-password" required minlength={8} />
+          <div id="password-match-status" class="text-xs mt-1 hidden"></div>
           <Button
             variant="primary"
             type="submit"
@@ -208,6 +219,7 @@ if (Astro.locals.session) return Astro.redirect("/recipes");
     getSafeRedirect,
   } from "@/lib/sign-in";
   import { setupPasswordToggles } from "@/lib/password-toggle";
+  import { validatePassword, getRuleResults } from "@/lib/password-validation";
 
   function setupSignUp() {
     const form = document.getElementById("sign-up-form");
@@ -268,8 +280,9 @@ if (Astro.locals.session) return Astro.redirect("/recipes");
           return;
         }
 
-        if (password.length < 6) {
-          showError("La contraseña debe tener al menos 6 caracteres.");
+        const pwValidation = validatePassword(password);
+        if (!pwValidation.valid) {
+          showError("La contraseña no cumple los requisitos de seguridad.");
           return;
         }
 
@@ -307,6 +320,56 @@ if (Astro.locals.session) return Astro.redirect("/recipes");
           if (googleBtn) (googleBtn as HTMLButtonElement).disabled = false;
         }
       });
+
+      function updatePasswordRules() {
+        const pw = (passwordInput as HTMLInputElement).value;
+        const rulesEl = document.getElementById("password-rules");
+        if (pw.length > 0) {
+          rulesEl?.classList.remove("hidden");
+        } else {
+          rulesEl?.classList.add("hidden");
+        }
+        const results = getRuleResults(pw);
+        for (const r of results) {
+          const row = document.getElementById(`rule-${r.key}`);
+          if (!row) continue;
+          const icon = row.querySelector(".rule-icon");
+          const text = row.querySelector(".rule-text");
+          if (r.passed) {
+            icon!.textContent = "✓";
+            (icon as HTMLElement).style.color = "var(--color-success, #16a34a)";
+            text!.className = "rule-text text-success";
+          } else {
+            icon!.textContent = "○";
+            (icon as HTMLElement).style.color = "";
+            text!.className = "rule-text text-muted-foreground";
+          }
+        }
+      }
+
+      function updateMatchStatus() {
+        const pw = (passwordInput as HTMLInputElement).value;
+        const cpw = (confirmPasswordInput as HTMLInputElement).value;
+        const el = document.getElementById("password-match-status");
+        if (!el || cpw.length === 0) {
+          if (el) el.classList.add("hidden");
+          return;
+        }
+        el.classList.remove("hidden");
+        if (pw === cpw) {
+          el.textContent = "✓ Las contraseñas coinciden";
+          el.style.color = "var(--color-success, #16a34a)";
+        } else {
+          el.textContent = "✗ Las contraseñas no coinciden";
+          el.style.color = "var(--color-danger, #dc2626)";
+        }
+      }
+
+      (passwordInput as HTMLInputElement).addEventListener("input", () => {
+        updatePasswordRules();
+        updateMatchStatus();
+      });
+      (confirmPasswordInput as HTMLInputElement).addEventListener("input", updateMatchStatus);
     }
 
     if (googleBtn) {
