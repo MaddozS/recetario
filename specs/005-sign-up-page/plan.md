@@ -1,81 +1,114 @@
-# Implementation Plan: Página de Registro de Usuario
+# Implementation Plan: [FEATURE]
 
-**Branch**: `005-sign-up-page` | **Date**: 2026-05-27 | **Spec**: [spec.md](./spec.md)
+**Branch**: `[###-feature-name]` | **Date**: [DATE] | **Spec**: [link]
 
-**Input**: Feature specification from `/specs/005-sign-up-page/spec.md`
+**Input**: Feature specification from `/specs/[###-feature-name]/spec.md`
+
+**Note**: This template is filled in by the `/speckit.plan` command. See `.specify/templates/plan-template.md` for the execution workflow.
 
 ## Summary
 
-Add first-name and last-name fields to the sign-up form and to the User model (Better Auth `additionalFields`). Enable Google sign-up (account creation) on the sign-up page with profile field mapping. Update Prisma schema with migration for `firstName`/`lastName` columns. Maintain existing `LandingLayout` visual consistency with the sign-in page.
+[Extract from feature spec: primary requirement + technical approach from research]
 
 ## Technical Context
 
-**Language/Version**: TypeScript 5.x (strict), Astro 6 SSR
+<!--
+  ACTION REQUIRED: Replace the content in this section with the technical details
+  for the project. The structure here is presented in advisory capacity to guide
+  the iteration process.
+-->
 
-**Primary Dependencies**: Better Auth (server: `src/lib/auth.ts`, client: `src/lib/auth-client.ts`), Prisma ORM (`@prisma/adapter-pg`), Tailwind V4, astro-icon (lucide)
+**Language/Version**: [e.g., Python 3.11, Swift 5.9, Rust 1.75 or NEEDS CLARIFICATION]
 
-**Storage**: PostgreSQL via Prisma. User model in `user` table.
+**Primary Dependencies**: [e.g., FastAPI, UIKit, LLVM or NEEDS CLARIFICATION]
 
-**Testing**: No test infrastructure. Manual verification via `pnpm dev`.
+**Storage**: [if applicable, e.g., PostgreSQL, CoreData, files or N/A]
 
-**Target Platform**: Web (Vercel deployment via `@astrojs/vercel`)
+**Testing**: [e.g., pytest, XCTest, cargo test or NEEDS CLARIFICATION]
 
-**Project Type**: Web application — SSR Astro pages, no client-side framework
+**Target Platform**: [e.g., Linux server, iOS 15+, WASM or NEEDS CLARIFICATION]
 
-**Performance Goals**: Standard web app — sign-up form submission < 3s, page load < 2s
+**Project Type**: [e.g., library/cli/web-service/mobile-app/compiler/desktop-app or NEEDS CLARIFICATION]
 
-**Constraints**: TypeScript strict mode, no Astro Actions (POST to same page), semantic CSS tokens only (no `.dark` overrides), `LandingLayout` wrapper
+**Performance Goals**: [domain-specific, e.g., 1000 req/s, 10k lines/sec, 60 fps or NEEDS CLARIFICATION]
 
-**Scale/Scope**: Single page (`/sign-up`), 1 Prisma migration, 1 auth config change, 1 client-side function update
+**Constraints**: [domain-specific, e.g., <200ms p95, <100MB memory, offline-capable or NEEDS CLARIFICATION]
+
+**Scale/Scope**: [domain-specific, e.g., 10k users, 1M LOC, 50 screens or NEEDS CLARIFICATION]
 
 ## Constitution Check
 
 _GATE: Must pass before Phase 0 research. Re-check after Phase 1 design._
 
-| Principle                                    | Status | Notes                                                                                |
-| -------------------------------------------- | ------ | ------------------------------------------------------------------------------------ |
-| I. Clean Code (NON-NEGOTIABLE)               | PASS   | Existing patterns followed. No dead code. `@/lib/db/*` barrel for DB access.         |
-| II. Simple UX, Clear UI                      | PASS   | Form follows sign-in page patterns. POST to same page. Spanish UI.                   |
-| III. Design by Constitution (NON-NEGOTIABLE) | PASS   | `LandingLayout`, semantic tokens, flat-by-default, same structure as sign-in.        |
-| IV. TypeScript Strictness + Type Safety      | PASS   | `additionalFields` types inferred from auth config. Prisma types as source of truth. |
-| V. Technology Lock-in                        | PASS   | No new frameworks. Astro + Tailwind + Prisma + Better Auth only.                     |
-| Security & Data                              | PASS   | Rate limiting exists. CSRF in middleware. AuditLog for sign_up events.               |
-| Accessibility                                | PASS   | Keyboard navigable inputs/toggles. Semantic HTML.                                    |
+[Gates determined based on constitution file]
 
 ## Project Structure
 
 ### Documentation (this feature)
 
 ```text
-specs/005-sign-up-page/
-├── spec.md              # Feature specification
-├── plan.md              # This file
-├── research.md          # Phase 0 output
-├── data-model.md        # Phase 1 output
-├── quickstart.md        # Phase 1 output
-├── contracts/           # Phase 1 output (API contracts)
-└── tasks.md             # Phase 2 output (/speckit.tasks — NOT created here)
+specs/[###-feature]/
+├── plan.md              # This file (/speckit.plan command output)
+├── research.md          # Phase 0 output (/speckit.plan command)
+├── data-model.md        # Phase 1 output (/speckit.plan command)
+├── quickstart.md        # Phase 1 output (/speckit.plan command)
+├── contracts/           # Phase 1 output (/speckit.plan command)
+└── tasks.md             # Phase 2 output (/speckit.tasks command - NOT created by /speckit.plan)
 ```
 
 ### Source Code (repository root)
 
+<!--
+  ACTION REQUIRED: Replace the placeholder tree below with the concrete layout
+  for this feature. Delete unused options and expand the chosen structure with
+  real paths (e.g., apps/admin, packages/something). The delivered plan must
+  not include Option labels.
+-->
+
 ```text
+# [REMOVE IF UNUSED] Option 1: Single project (DEFAULT)
 src/
-├── pages/
-│   └── sign-up.astro          # Main page — add firstName/lastName fields
-├── lib/
-│   ├── auth.ts                # Better Auth config — add additionalFields, mapProfileToUser
-│   ├── auth-client.ts         # Client auth (no changes needed)
-│   ├── sign-in.ts             # Update signUpWithEmail signature, add signUpWithGoogle
-│   └── db/
-│       └── audit.ts           # Audit log (no changes — sign_up already handled)
-prisma/
-├── schema.prisma              # Add firstName/lastName to User model
-└── migrations/                # Migration for new columns
+├── models/
+├── services/
+├── cli/
+└── lib/
+
+tests/
+├── contract/
+├── integration/
+└── unit/
+
+# [REMOVE IF UNUSED] Option 2: Web application (when "frontend" + "backend" detected)
+backend/
+├── src/
+│   ├── models/
+│   ├── services/
+│   └── api/
+└── tests/
+
+frontend/
+├── src/
+│   ├── components/
+│   ├── pages/
+│   └── services/
+└── tests/
+
+# [REMOVE IF UNUSED] Option 3: Mobile + API (when "iOS/Android" detected)
+api/
+└── [same as backend above]
+
+ios/ or android/
+└── [platform-specific structure: feature modules, UI flows, platform tests]
 ```
 
-**Structure Decision**: Single Astro web app. Changes scoped to auth config, single page, Prisma schema, and sign-up helper. Existing patterns and layouts reused.
+**Structure Decision**: [Document the selected structure and reference the real
+directories captured above]
 
 ## Complexity Tracking
 
-> No violations to justify. All gates pass.
+> **Fill ONLY if Constitution Check has violations that must be justified**
+
+| Violation                  | Why Needed         | Simpler Alternative Rejected Because |
+| -------------------------- | ------------------ | ------------------------------------ |
+| [e.g., 4th project]        | [current need]     | [why 3 projects insufficient]        |
+| [e.g., Repository pattern] | [specific problem] | [why direct DB access insufficient]  |
