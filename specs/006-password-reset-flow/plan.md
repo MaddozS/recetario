@@ -17,22 +17,24 @@
 - `src/lib/email.ts` - Resend integration with fallback stub
 - `src/lib/password-validation.ts` - Password rules (8+ chars, upper, lower, digit, special)
 - `src/lib/rate-limiter.ts` - Database-backed rate limiting
-- `src/pages/forgot-password.astro` - Basic forgot password page (no backend)
-- `src/pages/reset-password.astro` - Basic reset page (Better Auth handles reset)
+- `src/lib/db/audit.ts` - `logAuditEvent()` function for audit logging
+- `src/pages/forgot-password.astro` - Uses `authClient.forgetPassword()` (Better Auth)
+- `src/pages/reset-password.astro` - Uses `authClient.resetPassword()` (Better Auth)
+- `src/pages/api/auth/[...all].ts` - Better Auth handler with rate limiting
 
 ### Better Auth Password Reset (Current)
 - Built-in: `forgetPassword()` and `resetPassword()` methods via Better Auth
-- Default expiry: 1 hour (configurable via `emailAndPassword.resetPasswordExpiresIn`)
+- Default expiry: 1 hour
 - Token storage: `Verification` model (identifier = "reset-password", value = token)
-- Current limitation: No countdown timer on reset page
+- Rate limiting: 3 per hour per IP (already exists in `[...all].ts`)
+- Current limitation: No countdown timer on reset page, plain text email
 
 ### Gaps Identified
 1. **No countdown timer** on reset password page (per spec requirement)
 2. **Email template** is plain text, no branding (per Resend best practices)
 3. **Token expiry** is 1 hour, spec requires 10 minutes
 4. **No invalidation** of old tokens when new reset is requested
-5. **No rate limiting** on forgot-password endpoint (auth routes have rate limiting)
-6. **No auto-logout** after password change (security best practice)
+5. **Old tokens** in `Verification` table (from Better Auth) should stop working
 
 ---
 
@@ -61,26 +63,30 @@
 3. Countdown timer on reset page
 4. Old token invalidation on new request
 
-**Rationale**: Better Auth's built-in `forgetPassword` creates a token in `Verification` table with 1hr default. We need 10-minute expiry and a better UX.
+**Approach**: Use Better Auth's default paths (`/auth/forget-password`, `/auth/reset-password`) following existing patterns in the codebase. Override `sendResetPassword` hook in `emailAndPassword` config with custom template.
+
+**Rationale**: Better Auth's built-in `forgetPassword` creates a token in `Verification` table with 1hr default. We need 10-minute expiry and a better UX. Custom API routes would add unnecessary complexity.
 
 **Alternatives considered**:
-- Use Better Auth's hooks to customize expiry and template (chosen - minimal override)
-- Create completely custom flow bypassing Better Auth (rejected - unnecessary complexity)
+- Create custom `/api/auth/...` routes bypassing Better Auth (rejected - unnecessary complexity, follows existing patterns)
+- Disable Better Auth's `sendResetPassword` and use completely custom flow (rejected - keep things simple)
 
 ---
 
 ## Phase 1: Data Model & Contracts
 
-### PasswordResetToken Model
+### PasswordResetToken Model (Already in Schema - Migration Applied)
+
+The model was added to `prisma/schema.prisma` and migration applied:
 
 ```prisma
 model PasswordResetToken {
-  id        String   @id @default(uuid())
-  userId    String   @map("user_id")
-  token     String   @unique
-  expiresAt DateTime @map("expires_at") @db.Timestamptz()
+  id        String    @id @default(uuid())
+  userId    String    @map("user_id")
+  token     String    @unique
+  expiresAt DateTime  @map("expires_at") @db.Timestamptz()
   usedAt    DateTime? @map("used_at") @db.Timestamptz()
-  createdAt DateTime @default(now()) @map("created_at")
+  createdAt DateTime  @default(now()) @map("created_at")
 
   @@index([userId])
   @@index([token])
@@ -88,35 +94,18 @@ model PasswordResetToken {
 }
 ```
 
+**Migration**: ✅ Already applied (`20260529012757_add_password-reset-token`)
+
+**Migration**: Already applied (`20260529012757_add_password_reset_token`)
+
 ### API Contracts
 
-#### `POST /api/auth/forgot-password`
-Request:
-```json
-{ "email": "user@example.com" }
-```
-Response (success):
-```json
-{ "success": true, "message": "Si el email existe, recibirás un enlace" }
-```
-Response (rate limited):
-```json
-{ "error": "Demasiadas solicitudes", "code": "RATE_LIMITED" }
-```
+Better Auth handles the endpoints. We customize the behavior through config.
 
-#### `POST /api/auth/reset-password`
-Request:
-```json
-{ "token": "abc123...", "password": "NewPass123!" }
-```
-Response (success):
-```json
-{ "success": true }
-```
-Response (expired):
-```json
-{ "error": "El enlace ha expirado", "code": "TOKEN_EXPIRED" }
-```
+#### Email Template Variables
+- `{{resetLink}}` - Full URL with token for password reset
+- `{{userName}}` - User's first name for personalization
+- `{{expiryMinutes}}` - Number of minutes until expiry (10)
 
 ---
 
@@ -124,14 +113,31 @@ Response (expired):
 
 ### Tasks
 
-1. **Database Migration**: Add `PasswordResetToken` model
-2. **API Route**: Create `/api/auth/forgot-password` with rate limiting
-3. **API Route**: Create `/api/auth/reset-password` with token validation
-4. **Email Template**: Create branded HTML template for reset email
-5. **Frontend**: Update `/forgot-password` to use new API
-6. **Frontend**: Update `/reset-password` with countdown timer
-7. **Audit Logging**: Log `password_reset` action in AuditLog
-8. **Security**: Add rate limiting (5 requests per 15 min per IP)
+1. **Disable Better Auth Default Reset**: Modify `emailAndPassword` config to disable built-in reset since we're using custom tokens
+
+2. **Update `sendResetPassword` Hook**: Replace plain text with branded HTML template using Resend styling
+
+3. **Create Custom Token Logic**: In `auth.ts`, add logic to generate tokens in `PasswordResetToken` table with 10-min expiry on forget password request
+
+4. **Update Frontend - Forgot Password**: Modify to use custom flow (TBD via Better Auth hooks)
+
+5. **Update Frontend - Reset Page**: Add countdown timer with MM:SS format
+
+6. **Audit Logging**: Use existing `logAuditEvent()` from `@/lib/db/audit` to log `password_reset` action
+
+7. **Invalidate Old Tokens**: When new reset is requested, delete any existing `PasswordResetToken` records for that user
+
+### Implementation Details
+
+#### Rate Limiting (Already Exists)
+- Location: `src/pages/api/auth/[...all].ts`
+- Current: 3 per hour per IP for `/forget-password`
+- Decision: Keep existing 3/hour (more restrictive than "5 per 15 min")
+
+#### Old Tokens (Verification Table)
+- Decision: Old Better Auth tokens in `Verification` table should NOT work after this change
+- Migration: N/A - the new flow simply won't use `Verification` table for password reset
+- The existing `Verification` tokens from Better Auth will effectively be orphaned (no new requests will use them)
 
 ---
 
@@ -147,8 +153,14 @@ RESEND_API_KEY=re_xxxxx
 SENDER_EMAIL=noreply@kitchcalc.com
 ```
 
-### Migration
+### Migration Status
 ```bash
+# Already applied - no action needed
 npx prisma migrate dev --name add-password-reset-token
 npx prisma generate
 ```
+
+### Implementation Order
+1. Update `src/lib/auth.ts` with custom `sendResetPassword` hook and token generation
+2. Update `src/pages/reset-password.astro` with countdown timer
+3. Add audit logging in token reset handler
