@@ -22,7 +22,7 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true,
-    sendResetPassword: async ({ user, url }) => {
+    sendResetPassword: async ({ user, url, token }) => {
       try {
         const dbUser = await prisma.user.findUnique({
           where: { id: user.id },
@@ -30,9 +30,22 @@ export const auth = betterAuth({
         });
         const userName = dbUser?.firstName || dbUser?.name || "usuario";
 
-        const { createPasswordResetToken } = await import("@/lib/password-reset");
-        const token = await createPasswordResetToken(user.id, RESET_TOKEN_EXPIRY_MINUTES);
-        const resetLink = `${url.split("?")[0]}?token=${token}`;
+        const resetToken = crypto.randomUUID();
+        const expiresAt = new Date(Date.now() + RESET_TOKEN_EXPIRY_MINUTES * 60 * 1000);
+
+        await prisma.passwordResetToken.deleteMany({
+          where: { userId: user.id },
+        });
+
+        await prisma.passwordResetToken.create({
+          data: {
+            userId: user.id,
+            token: resetToken,
+            expiresAt,
+          },
+        });
+
+        const resetLink = `${url.split("?")[0]}?token=${resetToken}`;
         const html = getResetPasswordEmailHtml({
           resetLink,
           userName,
