@@ -30,16 +30,16 @@ Replace native `alert()` calls on the settings page with design system-compliant
 
 ## Constitution Check
 
-*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
+_GATE: Must pass before Phase 0 research. Re-check after Phase 1 design._
 
-| Gate | Status | Notes |
-|------|--------|-------|
-| **I. Clean Code** | ✅ PASS | No new duplicate patterns; follows existing optimistic update pattern |
-| **II. Simple UX, Clear UI** | ✅ PASS | Inline validation, sensible defaults, Spanish copy preserved |
+| Gate                            | Status  | Notes                                                                                                                                              |
+| ------------------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **I. Clean Code**               | ✅ PASS | No new duplicate patterns; follows existing optimistic update pattern                                                                              |
+| **II. Simple UX, Clear UI**     | ✅ PASS | Inline validation, sensible defaults, Spanish copy preserved                                                                                       |
 | **III. Design by Constitution** | ✅ PASS | The One Voice Rule (accent on primary only), The Token Bridge Rule (all semantic tokens), The Theme Triad Rule, The Independence Rule — all upheld |
-| **IV. TypeScript Strictness** | ✅ PASS | No new data types needed; Prisma types unchanged |
-| **V. Technology Lock-in** | ✅ PASS | No new dependencies; uses existing `Button` and `FeedbackAlert` components |
-| **Accessibility** | ✅ PASS | WCAG 2.1 AA: focus management added to FeedbackAlert; disabled states meet contrast requirements |
+| **IV. TypeScript Strictness**   | ✅ PASS | No new data types needed; Prisma types unchanged                                                                                                   |
+| **V. Technology Lock-in**       | ✅ PASS | No new dependencies; uses existing `Button` and `FeedbackAlert` components                                                                         |
+| **Accessibility**               | ✅ PASS | WCAG 2.1 AA: focus management added to FeedbackAlert; disabled states meet contrast requirements                                                   |
 
 **Constitution Findings**: All gates pass. Feature aligns with existing patterns (optimistic updates, POST-to-page forms, semantic tokens). No Complexity Tracking entries needed.
 
@@ -69,4 +69,4 @@ src/
 
 ## Complexity Tracking
 
-*Not applicable — all Constitution gates pass with no violations.*
+_Not applicable — all Constitution gates pass with no violations._

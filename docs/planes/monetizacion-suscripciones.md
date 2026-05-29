@@ -22,23 +22,23 @@ Este documento define el modelo de negocio por suscripciones para KitchCalc, una
 
 ### Tabla Comparativa
 
-| Feature                        | Free      | Basic ($5/mes)    | Pro ($10/mes)     |
-| ------------------------------ | --------- | ----------------- | ----------------- |
-| **Recetas**                    | 10        | 75                | Ilimitadas        |
-| **Ingredientes**               | 30        | Ilimitados        | Ilimitados        |
-| **Costeo básico**              | Sí        | Sí                | Sí                |
-| **Categorías**                 | Sí        | Sí                | Sí                |
-| **Instrucciones (Markdown)**   | Sí        | Sí                | Sí                |
-| **Duplicar receta**            | No        | Sí                | Sí                |
-| **Fotos de recetas**           | No        | Sí (1 por receta) | Sí + galería      |
-| **Stock de ingredientes**      | No        | Sí                | Sí                |
-| **Planificador de producción** | No        | Sí (máx 3 recetas)| **Sí (ilimitado)**|
-| **Exportar PDF / Imprimir**    | No        | No                | **Sí**            |
-| **Costos fijos avanzados**     | No        | No                | Sí                |
-| **Historial de cambios**       | No        | No                | Sí                |
-| **Importar/Exportar datos**    | No        | No                | Sí                |
-| **Información nutricional**    | No        | No                | Sí                |
-| **Soporte**                    | Comunidad | Email prioritario | Email prioritario |
+| Feature                        | Free      | Basic ($5/mes)     | Pro ($10/mes)      |
+| ------------------------------ | --------- | ------------------ | ------------------ |
+| **Recetas**                    | 10        | 75                 | Ilimitadas         |
+| **Ingredientes**               | 30        | Ilimitados         | Ilimitados         |
+| **Costeo básico**              | Sí        | Sí                 | Sí                 |
+| **Categorías**                 | Sí        | Sí                 | Sí                 |
+| **Instrucciones (Markdown)**   | Sí        | Sí                 | Sí                 |
+| **Duplicar receta**            | No        | Sí                 | Sí                 |
+| **Fotos de recetas**           | No        | Sí (1 por receta)  | Sí + galería       |
+| **Stock de ingredientes**      | No        | Sí                 | Sí                 |
+| **Planificador de producción** | No        | Sí (máx 3 recetas) | **Sí (ilimitado)** |
+| **Exportar PDF / Imprimir**    | No        | No                 | **Sí**             |
+| **Costos fijos avanzados**     | No        | No                 | Sí                 |
+| **Historial de cambios**       | No        | No                 | Sí                 |
+| **Importar/Exportar datos**    | No        | No                 | Sí                 |
+| **Información nutricional**    | No        | No                 | Sí                 |
+| **Soporte**                    | Comunidad | Email prioritario  | Email prioritario  |
 
 ### Precios Sugeridos
 
@@ -57,24 +57,24 @@ Con solo Free/Pro saltamos de $0 a $10. Muchos usuarios caseros se sienten cómo
 
 ## 3. Mapeo de Features vs Planes
 
-| Feature                     | Estado Actual | Plan Mínimo       |
-| --------------------------- | ------------- | ----------------- |
-| CRUD Ingredientes + Recetas | ✅ Completo   | Free              |
-| Cálculo de costos básico    | ✅ Completo   | Free              |
-| Presentaciones + Escalado   | ✅ Completo   | Free              |
-| Categorías                  | ✅ Completo   | Free              |
-| Instrucciones               | ✅ Completo   | Free              |
-| Duplicar receta             | ✅ Completo   | Basic             |
-| Costos fijos avanzados      | 🔜 Pendiente  | **Pro**           |
+| Feature                     | Estado Actual | Plan Mínimo                          |
+| --------------------------- | ------------- | ------------------------------------ |
+| CRUD Ingredientes + Recetas | ✅ Completo   | Free                                 |
+| Cálculo de costos básico    | ✅ Completo   | Free                                 |
+| Presentaciones + Escalado   | ✅ Completo   | Free                                 |
+| Categorías                  | ✅ Completo   | Free                                 |
+| Instrucciones               | ✅ Completo   | Free                                 |
+| Duplicar receta             | ✅ Completo   | Basic                                |
+| Costos fijos avanzados      | 🔜 Pendiente  | **Pro**                              |
 | Planificador de producción  | 🚧 Fase 1 OK  | **Basic+** (3 rec) / Pro (ilimitado) |
-| Fotos de recetas            | 🔜 Pendiente  | Basic             |
-| Stock de ingredientes       | 🔜 Pendiente  | Basic             |
-| Exportar PDF                | 🔜 Pendiente  | **Pro**           |
-| Historial de cambios        | 🔜 Pendiente  | **Pro**           |
-| Importar/Exportar datos     | 🔜 Pendiente  | **Pro**           |
-| Información nutricional     | 🔜 Pendiente  | **Pro**           |
-| Colaboración / Equipos      | 🔮 Futuro     | Futuro (Business) |
-| API Pública                 | 🔮 Futuro     | Futuro (Business) |
+| Fotos de recetas            | 🔜 Pendiente  | Basic                                |
+| Stock de ingredientes       | 🔜 Pendiente  | Basic                                |
+| Exportar PDF                | 🔜 Pendiente  | **Pro**                              |
+| Historial de cambios        | 🔜 Pendiente  | **Pro**                              |
+| Importar/Exportar datos     | 🔜 Pendiente  | **Pro**                              |
+| Información nutricional     | 🔜 Pendiente  | **Pro**                              |
+| Colaboración / Equipos      | 🔮 Futuro     | Futuro (Business)                    |
+| API Pública                 | 🔮 Futuro     | Futuro (Business)                    |
 
 > **Nota:** El Planificador de producción y Exportar PDF son los diferenciadores clave. Deben estar exclusivamente en Pro para justificar el precio.
 > **Nota 2:** El `fixedCostsPercentage` (porcentaje de overhead por receta) actualmente es parte del costeo básico (Free). "Costos fijos avanzados" implica un sistema más completo (múltiples categorías, asignación entre recetas) que aún no está implementado.

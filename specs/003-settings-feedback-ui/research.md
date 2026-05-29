@@ -8,7 +8,7 @@
 
 - **Decision**: Use existing `FeedbackAlert` component
 - **Rationale**: Already exists, uses correct semantic tokens (`success-bg`, `success-border`, `text-success`, `danger-bg`, `danger-border`, `text-danger`), supports `aria-live` and `role="alert"` for accessibility. Replacing native `alert()` requires no new component, just wiring the existing component into the optimistic save error path.
-- **Alternatives considered**: 
+- **Alternatives considered**:
   - Native `alert()` — violates design system, no styling, no accessibility
   - Custom toast — unnecessary complexity, `FeedbackAlert` already serves this purpose
 
@@ -16,7 +16,7 @@
 
 - **Decision**: Use the existing `loading` prop on `Button` component
 - **Rationale**: Button component already supports `loading` prop that renders a spinner SVG, disables the button, and sets `aria-busy="true"`. No changes needed to `Button.astro`.
-- **Alternatives considered**: 
+- **Alternatives considered**:
   - Manual spinner element — duplicates existing functionality
   - Disable only without spinner — insufficient feedback for slow connections
 

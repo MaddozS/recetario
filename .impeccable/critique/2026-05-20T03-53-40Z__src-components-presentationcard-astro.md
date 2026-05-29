@@ -6,23 +6,24 @@ p1_count: 2
 timestamp: 2026-05-20T03-53-40Z
 slug: src-components-presentationcard-astro
 ---
+
 ## Design Critique: PresentationCard.astro
 
 ### Design Health Score
 
-| # | Heuristic | Score | Key Issue |
-|---|-----------|-------|-----------|
-| 1 | Visibility of System Status | 3 | Save/delete show disabled state, but no spinner or "Guardando..." text during async operations |
-| 2 | Match Between System and Real World | 4 | Kitchen-domain vocabulary in Spanish. Numbers are front and center. |
-| 3 | User Control and Freedom | 3 | Cancel edit reverts values; delete has confirmation. No undo after save, no Esc to exit edit. |
-| 4 | Consistency and Standards | 3 | Follows project design system well. Font sizes deviate from DESIGN.md spec (title, labels). |
-| 5 | Error Prevention | 3 | Delete confirmation present. No client-side validation; server-only catches bad values. |
-| 6 | Recognition Rather Than Recall | 3 | Icons have aria-labels, titles, and hints. "Sugerido:" price contextualizes the input. |
-| 7 | Flexibility and Efficiency | 2 | Inline edit + autofocus is efficient. No keyboard shortcuts, no bulk edit across presentations. |
-| 8 | Aesthetic and Minimalist Design | 3 | Every element serves a purpose. Content density is high (5 visual sections per card). |
-| 9 | Error Recovery | 3 | Inline error messages in Spanish. But auto-hide at 6s, missing accents, and no retry hint. |
-| 10 | Help and Documentation | 1 | No tooltips, no contextual help. Multiplier concept and margin calculation unexplained. |
-| **Total** | | **28/40** | **Good** |
+| #         | Heuristic                           | Score     | Key Issue                                                                                       |
+| --------- | ----------------------------------- | --------- | ----------------------------------------------------------------------------------------------- |
+| 1         | Visibility of System Status         | 3         | Save/delete show disabled state, but no spinner or "Guardando..." text during async operations  |
+| 2         | Match Between System and Real World | 4         | Kitchen-domain vocabulary in Spanish. Numbers are front and center.                             |
+| 3         | User Control and Freedom            | 3         | Cancel edit reverts values; delete has confirmation. No undo after save, no Esc to exit edit.   |
+| 4         | Consistency and Standards           | 3         | Follows project design system well. Font sizes deviate from DESIGN.md spec (title, labels).     |
+| 5         | Error Prevention                    | 3         | Delete confirmation present. No client-side validation; server-only catches bad values.         |
+| 6         | Recognition Rather Than Recall      | 3         | Icons have aria-labels, titles, and hints. "Sugerido:" price contextualizes the input.          |
+| 7         | Flexibility and Efficiency          | 2         | Inline edit + autofocus is efficient. No keyboard shortcuts, no bulk edit across presentations. |
+| 8         | Aesthetic and Minimalist Design     | 3         | Every element serves a purpose. Content density is high (5 visual sections per card).           |
+| 9         | Error Recovery                      | 3         | Inline error messages in Spanish. But auto-hide at 6s, missing accents, and no retry hint.      |
+| 10        | Help and Documentation              | 1         | No tooltips, no contextual help. Multiplier concept and margin calculation unexplained.         |
+| **Total** |                                     | **28/40** | **Good**                                                                                        |
 
 ### Anti-Patterns Verdict
 

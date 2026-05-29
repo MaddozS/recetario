@@ -47,7 +47,10 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
   const appOrigin = new URL(request.url).origin;
 
-  function safeRedirectUrl(input: string | undefined, fallback: string): string {
+  function safeRedirectUrl(
+    input: string | undefined,
+    fallback: string,
+  ): string {
     if (!input) return fallback;
     if (input.startsWith("/") && !input.startsWith("//")) return input;
     try {
@@ -83,7 +86,10 @@ export const POST: APIRoute = async ({ request, locals }) => {
     subscription_data: {
       trial_period_days: 14,
     },
-    success_url: safeRedirectUrl(successUrl, `${appOrigin}/settings/billing?success=1`),
+    success_url: safeRedirectUrl(
+      successUrl,
+      `${appOrigin}/settings/billing?success=1`,
+    ),
     cancel_url: safeRedirectUrl(cancelUrl, `${appOrigin}/pricing?canceled=1`),
     metadata: {
       userId,

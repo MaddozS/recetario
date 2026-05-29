@@ -59,7 +59,13 @@ const isCanceled = Astro.url.searchParams.get("canceled") === "1";
       )
     }
 
-    <Button variant="secondary" icon="arrow-left" href="/settings/billing" size="sm" class="mb-6">
+    <Button
+      variant="secondary"
+      icon="arrow-left"
+      href="/settings/billing"
+      size="sm"
+      class="mb-6"
+    >
       Volver a Facturación
     </Button>
 
@@ -151,7 +157,8 @@ const isCanceled = Astro.url.searchParams.get("canceled") === "1";
                           </span>
                         </p>
                         <p class="text-subtle-foreground mt-0.5 text-xs">
-                          {plan.currency} {plan.yearlyDisplay} facturados anualmente
+                          {plan.currency} {plan.yearlyDisplay} facturados
+                          anualmente
                         </p>
                       </>
                     ) : (
@@ -199,18 +206,10 @@ const isCanceled = Astro.url.searchParams.get("canceled") === "1";
                       ? "text-secondary-foreground"
                       : "text-subtle-foreground";
                   return (
-                  <div class="flex items-center gap-2 text-sm">
-                    <Icon
-                      name={icon}
-                      size={16}
-                      class:list={[iconClass]}
-                    />
-                    <span
-                      class:list={[textClass]}
-                    >
-                      {feature.text}
-                    </span>
-                  </div>
+                    <div class="flex items-center gap-2 text-sm">
+                      <Icon name={icon} size={16} class:list={[iconClass]} />
+                      <span class:list={[textClass]}>{feature.text}</span>
+                    </div>
                   );
                 })}
               </div>

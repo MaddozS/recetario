@@ -483,29 +483,51 @@ A single-card layout for financial metrics — replaces the old 4-card icon-circ
 ```astro
 <FinancialSummary
   rows={[
-    { label: "Costo Insumos", value: "$120.50", subtitle: "Costo base de materiales" },
-    { label: "Gastos Operativos", value: "25%", subtitle: "Servicios, labor, etc.", secondaryValue: "+$66.80" },
-    { label: "Costo Total Real", value: "$187.30", subtitle: "Insumos + Operativos" },
-    { label: "Margen Utilidad", value: "35%", subtitle: "Objetivo de ganancia" },
+    {
+      label: "Costo Insumos",
+      value: "$120.50",
+      subtitle: "Costo base de materiales",
+    },
+    {
+      label: "Gastos Operativos",
+      value: "25%",
+      subtitle: "Servicios, labor, etc.",
+      secondaryValue: "+$66.80",
+    },
+    {
+      label: "Costo Total Real",
+      value: "$187.30",
+      subtitle: "Insumos + Operativos",
+    },
+    {
+      label: "Margen Utilidad",
+      value: "35%",
+      subtitle: "Objetivo de ganancia",
+    },
   ]}
   highlightRow={2}
   isEditMode
   editFormId="recipe-edit-form"
   editFields={[
-    { rowIndex: 1, name: "fixedCostsPercentage", currentValue: "25", suffix: "%" },
+    {
+      rowIndex: 1,
+      name: "fixedCostsPercentage",
+      currentValue: "25",
+      suffix: "%",
+    },
     { rowIndex: 3, name: "desiredMargin", currentValue: "35", suffix: "%" },
   ]}
 />
 ```
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `rows` | `FinancialRow[]` | — | Array of `{ label, value, subtitle?, secondaryValue? }` — 4 rows recommended |
-| `highlightRow` | `number` | — | Index of row to accent-highlight (accent-500/600 text) |
-| `isEditMode` | `boolean` | `false` | Enable inline edit inputs on specified rows |
-| `editFormId` | `string` | — | Form id for edit inputs to attach to |
-| `editFields` | `EditField[]` | `[]` | `{ rowIndex, name, currentValue, suffix? }` — which rows to make editable |
-| `class` | `string` | — | Additional classes |
+| Prop           | Type             | Default | Description                                                                  |
+| -------------- | ---------------- | ------- | ---------------------------------------------------------------------------- |
+| `rows`         | `FinancialRow[]` | —       | Array of `{ label, value, subtitle?, secondaryValue? }` — 4 rows recommended |
+| `highlightRow` | `number`         | —       | Index of row to accent-highlight (accent-500/600 text)                       |
+| `isEditMode`   | `boolean`        | `false` | Enable inline edit inputs on specified rows                                  |
+| `editFormId`   | `string`         | —       | Form id for edit inputs to attach to                                         |
+| `editFields`   | `EditField[]`    | `[]`    | `{ rowIndex, name, currentValue, suffix? }` — which rows to make editable    |
+| `class`        | `string`         | —       | Additional classes                                                           |
 
 ### SectionHeading
 
@@ -583,16 +605,16 @@ Reusable billing/susbcription display used in both `settings.astro` billing tab 
 />
 ```
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `subscription` | `UserSubscriptionInfo` | — | Current user subscription data |
-| `recipeCount` | `number` | — | Current recipe count |
-| `ingredientCount` | `number` | — | Current ingredient count |
-| `remainingRecipes` | `number \| null` | — | Remaining recipes before limit |
-| `remainingIngredients` | `number \| null` | — | Remaining ingredients before limit |
-| `showBackButton` | `boolean` | `false` | Show back-to-settings button (true on dedicated billing page) |
-| `isSuccess` | `boolean` | `false` | Show success banner (from Stripe return) |
-| `isCanceled` | `boolean` | `false` | Show canceled banner (from Stripe return) |
+| Prop                   | Type                   | Default | Description                                                   |
+| ---------------------- | ---------------------- | ------- | ------------------------------------------------------------- |
+| `subscription`         | `UserSubscriptionInfo` | —       | Current user subscription data                                |
+| `recipeCount`          | `number`               | —       | Current recipe count                                          |
+| `ingredientCount`      | `number`               | —       | Current ingredient count                                      |
+| `remainingRecipes`     | `number \| null`       | —       | Remaining recipes before limit                                |
+| `remainingIngredients` | `number \| null`       | —       | Remaining ingredients before limit                            |
+| `showBackButton`       | `boolean`              | `false` | Show back-to-settings button (true on dedicated billing page) |
+| `isSuccess`            | `boolean`              | `false` | Show success banner (from Stripe return)                      |
+| `isCanceled`           | `boolean`              | `false` | Show canceled banner (from Stripe return)                     |
 
 Includes client-side JS for Stripe Customer Portal management via `#manage-subscription-btn`.
 
@@ -601,10 +623,12 @@ Includes client-side JS for Stripe Customer Portal management via `#manage-subsc
 The following tokens are defined in `src/styles/global.css` via `@theme`:
 
 ### Danger
+
 - `--color-danger` / `--color-danger-bg` / `--color-danger-border`
 - `--color-danger-solid` / `--color-danger-hover`
 
 ### Overlay
+
 - `--color-backdrop`: rgba(15, 23, 42, 0.5) light, rgba(0, 0, 0, 0.6) dark
 
 Use `backdrop:bg-backdrop/50` on dialog backdrops instead of hardcoded `backdrop:bg-slate-900/50`.
@@ -614,5 +638,6 @@ All components are server-rendered Astro components with zero client JS (except 
 ### Hardcoded color bans
 
 The following hardcoded values have been eliminated from all app pages:
+
 - `backdrop:bg-slate-900/50` — replaced with `backdrop:bg-backdrop/50` (10 instances across ingredients.astro, recipes/index.astro, recipes/[recipe].astro)
 - `dark:md:border-gray-950` — removed from recipes/[recipe].astro template (token system handles dark borders automatically)

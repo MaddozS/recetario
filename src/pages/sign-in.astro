@@ -2,6 +2,30 @@
 import { Icon } from "astro-icon/components";
 import { Button } from "@/components/ui";
 import LandingLayout from "@/layouts/LandingLayout.astro";
+
+if (Astro.locals.session) return Astro.redirect("/recipes");
+
+const AUTH_ERROR_MESSAGES: Record<string, string> = {
+  signup_disabled:
+    "No se pudo iniciar sesi\u00f3n con Google. La cuenta no est\u00e1 vinculada.",
+  account_not_linked:
+    "No se pudo iniciar sesi\u00f3n con Google. La cuenta no est\u00e1 vinculada.",
+  oauth_provider_not_found: "Proveedor de autenticaci\u00f3n no configurado.",
+  state_mismatch: "Error de seguridad. Intenta de nuevo.",
+  state_not_found: "Error de seguridad. Intenta de nuevo.",
+  please_restart_the_process:
+    "El proceso de autenticaci\u00f3n expir\u00f3. Intenta de nuevo.",
+  invalid_callback_request: "Error de autenticaci\u00f3n. Intenta de nuevo.",
+  internal_server_error: "Error interno. Intenta de nuevo m\u00e1s tarde.",
+  unable_to_create_session: "Error al crear sesi\u00f3n. Intenta de nuevo.",
+  email_not_found: "Error de autenticaci\u00f3n. Intenta de nuevo.",
+};
+
+const errorCode = Astro.url.searchParams.get("error");
+const errorMessage = errorCode
+  ? (AUTH_ERROR_MESSAGES[errorCode] ??
+    "Error de autenticaci\u00f3n. Intenta de nuevo.")
+  : "";
 ---
 
 <LandingLayout>
@@ -27,9 +51,9 @@ import LandingLayout from "@/layouts/LandingLayout.astro";
       </button>
     </div>
   </nav>
-  <div class="flex min-h-[80vh] items-center justify-center px-4 pt-20">
+  <div class="flex min-h-dvh items-center justify-center px-4 py-20">
     <div
-      class="bg-card shadow-accent-tint relative w-full max-w-sm rounded-2xl p-10 pt-12 shadow-lg"
+      class="bg-card shadow-accent-tint relative w-full max-w-sm rounded-2xl p-6 pt-8 shadow-lg sm:p-10 sm:pt-12"
     >
       <div
         aria-hidden="true"
@@ -48,11 +72,17 @@ import LandingLayout from "@/layouts/LandingLayout.astro";
 
       <div
         id="sign-in-error"
-        class="border-danger-border bg-danger-bg text-danger mb-4 hidden rounded-xl border px-4 py-3 text-sm font-semibold"
+        role="alert"
+        class:list={{
+          hidden: !errorMessage,
+          "border-danger-border bg-danger-bg text-danger mb-4 rounded-xl border px-4 py-3 text-sm font-semibold": true,
+        }}
       >
+        {errorMessage}
       </div>
       <div
         id="sign-in-verify-error"
+        role="alert"
         class="border-warning-border bg-warning-bg text-warning mb-4 hidden rounded-xl border px-4 py-3 text-sm font-semibold"
       >
       </div>
@@ -190,6 +220,20 @@ import LandingLayout from "@/layouts/LandingLayout.astro";
 <script>
   import { signInWithEmail, signInWithGoogle } from "@/lib/sign-in";
 
+  function getSafeRedirect(): string {
+    const params = new URLSearchParams(window.location.search);
+    const redirect = params.get("redirect");
+    if (
+      redirect &&
+      redirect.startsWith("/") &&
+      !redirect.includes("//") &&
+      !redirect.includes(":")
+    ) {
+      return redirect;
+    }
+    return "/recipes";
+  }
+
   function setupSignIn() {
     const form = document.getElementById("sign-in-form");
     const emailInput = document.getElementById("email");
@@ -230,7 +274,7 @@ import LandingLayout from "@/layouts/LandingLayout.astro";
         overlay.style.cssText =
           "position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.2);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(2px)";
         overlay.innerHTML = `<div style="background:var(--color-card,#fff);border-radius:1rem;padding:2rem 2.5rem;display:flex;flex-direction:column;align-items:center;gap:0.75rem;box-shadow:0 20px 60px rgba(0,0,0,0.15)">
-          <svg style="animation:sp 0.7s linear infinite;width:28px;height:28px;color:var(--color-accent-600,#4f46e5)" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+          <svg aria-hidden="true" style="animation:sp 0.7s linear infinite;width:28px;height:28px;color:var(--color-accent-600,#4f46e5)" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
           <span style="font-size:0.875rem;font-weight:600;color:var(--color-foreground,#0f172a)">Iniciando sesi\u00f3n\u2026</span>
           </div>`;
         document.body.appendChild(overlay);
@@ -238,7 +282,7 @@ import LandingLayout from "@/layouts/LandingLayout.astro";
         try {
           await signInWithEmail(email, password);
           sessionStorage.removeItem("kitchcalc:signup_email");
-          window.location.href = "/recipes";
+          window.location.href = getSafeRedirect();
         } catch (err: unknown) {
           overlay.remove();
           submitBtn.disabled = false;
@@ -254,27 +298,29 @@ import LandingLayout from "@/layouts/LandingLayout.astro";
                 `Debes verificar tu email antes de iniciar sesi\u00f3n. Revisa tu bandeja. ` +
                 `<button id="resend-verify-signin" class="underline font-bold hover:opacity-80">Reenviar correo</button>`;
               verifyEl.classList.remove("hidden");
-              document.getElementById("resend-verify-signin")?.addEventListener("click", async (ev) => {
-                const btn = ev.currentTarget as HTMLButtonElement;
-                btn.textContent = "Enviando...";
-                btn.setAttribute("disabled", "true");
-                try {
-                  const { authClient } = await import("@/lib/auth-client");
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  await (authClient as any).sendVerificationEmail({
-                    email,
-                    callbackURL: `${window.location.origin}/sign-in`,
-                  });
-                  btn.textContent = "Reenviado. Revisa tu correo!";
-                  btn.classList.add("pointer-events-none");
-                } catch {
-                  btn.textContent = "Error. Reintentar";
-                  btn.removeAttribute("disabled");
-                }
-              });
+              document
+                .getElementById("resend-verify-signin")
+                ?.addEventListener("click", async (ev) => {
+                  const btn = ev.currentTarget as HTMLButtonElement;
+                  btn.textContent = "Enviando...";
+                  btn.setAttribute("disabled", "true");
+                  try {
+                    const { authClient } = await import("@/lib/auth-client");
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    await (authClient as any).sendVerificationEmail({
+                      email,
+                      callbackURL: `${window.location.origin}/sign-in`,
+                    });
+                    btn.textContent = "Reenviado. Revisa tu correo!";
+                    btn.classList.add("pointer-events-none");
+                  } catch {
+                    btn.textContent = "Error. Reintentar";
+                    btn.removeAttribute("disabled");
+                  }
+                });
             }
           } else {
-            showError(e.message || "Credenciales inv\u00e1lidas.");
+            showError("Credenciales inv\u00e1lidas.");
           }
         }
       });
@@ -296,20 +342,20 @@ import LandingLayout from "@/layouts/LandingLayout.astro";
         overlay.style.cssText =
           "position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.2);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(2px)";
         overlay.innerHTML = `<div style="background:var(--color-card,#fff);border-radius:1rem;padding:2rem 2.5rem;display:flex;flex-direction:column;align-items:center;gap:0.75rem;box-shadow:0 20px 60px rgba(0,0,0,0.15)">
-          <svg style="animation:sp 0.7s linear infinite;width:28px;height:28px;color:var(--color-accent-600,#4f46e5)" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+          <svg aria-hidden="true" style="animation:sp 0.7s linear infinite;width:28px;height:28px;color:var(--color-accent-600,#4f46e5)" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
           <span style="font-size:0.875rem;font-weight:600;color:var(--color-foreground,#0f172a)">Iniciando sesi\u00f3n\u2026</span>
           </div>`;
         document.body.appendChild(overlay);
 
         try {
-          await signInWithGoogle();
-        } catch (err: unknown) {
+          await signInWithGoogle(getSafeRedirect());
+        } catch {
           overlay.remove();
           btn.disabled = false;
           btn.classList.remove("opacity-60", "pointer-events-none");
           if (label) label.textContent = "Continuar con Google";
           if (submitBtn) submitBtn.disabled = false;
-          showError((err as { message?: string })?.message || "Error al iniciar sesión con Google.");
+          showError("No se pudo iniciar sesi\u00f3n con Google.");
         }
       });
     }

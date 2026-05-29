@@ -39,18 +39,18 @@ theme system and are unaffected.
 
 ## Constitution Check
 
-*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
+_GATE: Must pass before Phase 0 research. Re-check after Phase 1 design._
 
-| Gate | Rule | Status | Notes |
-|------|------|--------|-------|
-| G1 | Token Bridge Rule — no `.dark` CSS overrides | ✅ PASS | `applyTheme()` uses `html.dataset.theme` + semantic tokens |
-| G2 | Theme Triad Rule — three modes, reactive OS tracking | ✅ PASS | Spec aligns with FR-001, FR-008 |
-| G3 | Independence Rule — theme/accent decoupled | ✅ PASS | Accent explicitly out of scope per spec Assumptions |
-| G4 | WCAG 2.1 AA — keyboard, screen reader, contrast | ✅ PASS | FR-010 requires this |
-| G5 | Optimistic updates — apply immediately, revert on failure | ✅ PASS | FR-009 matches constitution pattern |
-| G6 | CSRF protection — POST forms must verify token | ✅ PASS | Reuse existing `Astro.locals.csrfToken` + `validateCsrfToken()` in Settings POST handler |
-| G7 | Flash prevention — server-render correct theme when known | ✅ PASS | Use inline blocking `<script is:inline>` in Layout.astro to read `matchMedia` before paint — same pattern as LandingLayout |
-| G8 | TypeScript strict — no `any`, Prisma types as source of truth | ✅ PASS | No new types needed beyond `UserPreferences.theme` union extension |
+| Gate | Rule                                                          | Status  | Notes                                                                                                                      |
+| ---- | ------------------------------------------------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------- |
+| G1   | Token Bridge Rule — no `.dark` CSS overrides                  | ✅ PASS | `applyTheme()` uses `html.dataset.theme` + semantic tokens                                                                 |
+| G2   | Theme Triad Rule — three modes, reactive OS tracking          | ✅ PASS | Spec aligns with FR-001, FR-008                                                                                            |
+| G3   | Independence Rule — theme/accent decoupled                    | ✅ PASS | Accent explicitly out of scope per spec Assumptions                                                                        |
+| G4   | WCAG 2.1 AA — keyboard, screen reader, contrast               | ✅ PASS | FR-010 requires this                                                                                                       |
+| G5   | Optimistic updates — apply immediately, revert on failure     | ✅ PASS | FR-009 matches constitution pattern                                                                                        |
+| G6   | CSRF protection — POST forms must verify token                | ✅ PASS | Reuse existing `Astro.locals.csrfToken` + `validateCsrfToken()` in Settings POST handler                                   |
+| G7   | Flash prevention — server-render correct theme when known     | ✅ PASS | Use inline blocking `<script is:inline>` in Layout.astro to read `matchMedia` before paint — same pattern as LandingLayout |
+| G8   | TypeScript strict — no `any`, Prisma types as source of truth | ✅ PASS | No new types needed beyond `UserPreferences.theme` union extension                                                         |
 
 ## Project Structure
 
@@ -89,7 +89,7 @@ src/
 
 > **Fill ONLY if Constitution Check has violations that must be justified**
 
-| Violation | Why Needed | Simpler Alternative Rejected Because |
-|-----------|------------|-------------------------------------|
-| [e.g., 4th project] | [current need] | [why 3 projects insufficient] |
-| [e.g., Repository pattern] | [specific problem] | [why direct DB access insufficient] |
+| Violation                  | Why Needed         | Simpler Alternative Rejected Because |
+| -------------------------- | ------------------ | ------------------------------------ |
+| [e.g., 4th project]        | [current need]     | [why 3 projects insufficient]        |
+| [e.g., Repository pattern] | [specific problem] | [why direct DB access insufficient]  |

@@ -39,35 +39,41 @@ const currencyLabel = subscription.currency?.toUpperCase() ?? "";
 ---
 
 <section class="mx-auto max-w-3xl space-y-6">
-  {showBackButton && (
-    <Button variant="secondary" icon="arrow-left" href="/settings" size="sm">
-      Volver a Configuración
-    </Button>
-  )}
+  {
+    showBackButton && (
+      <Button variant="secondary" icon="arrow-left" href="/settings" size="sm">
+        Volver a Configuración
+      </Button>
+    )
+  }
 
-  {isSuccess && (
-    <div class="border-success-border bg-success-bg rounded-2xl border p-4">
-      <div class="flex items-center gap-3">
-        <Icon name="lucide:check-circle" size={20} class="text-success" />
-        <div>
-          <p class="text-success font-semibold">Pago exitoso</p>
-          <p class="text-success text-sm">Tu suscripcion ha sido activada.</p>
+  {
+    isSuccess && (
+      <div class="border-success-border bg-success-bg rounded-2xl border p-4">
+        <div class="flex items-center gap-3">
+          <Icon name="lucide:check-circle" size={20} class="text-success" />
+          <div>
+            <p class="text-success font-semibold">Pago exitoso</p>
+            <p class="text-success text-sm">Tu suscripcion ha sido activada.</p>
+          </div>
         </div>
       </div>
-    </div>
-  )}
+    )
+  }
 
-  {isCanceled && (
-    <div class="border-warning-border bg-warning-bg rounded-2xl border p-4">
-      <div class="flex items-center gap-3">
-        <Icon name="lucide:alert-triangle" size={20} class="text-warning" />
-        <div>
-          <p class="text-warning font-semibold">Pago cancelado</p>
-          <p class="text-warning text-sm">No se realizo ningun cargo.</p>
+  {
+    isCanceled && (
+      <div class="border-warning-border bg-warning-bg rounded-2xl border p-4">
+        <div class="flex items-center gap-3">
+          <Icon name="lucide:alert-triangle" size={20} class="text-warning" />
+          <div>
+            <p class="text-warning font-semibold">Pago cancelado</p>
+            <p class="text-warning text-sm">No se realizo ningun cargo.</p>
+          </div>
         </div>
       </div>
-    </div>
-  )}
+    )
+  }
 
   {
     subscription.isTrial && subscription.currentPeriodEnd && (
@@ -75,7 +81,9 @@ const currencyLabel = subscription.currency?.toUpperCase() ?? "";
         <div class="flex items-center gap-3">
           <Icon name="lucide:clock" size={20} class="text-accent-600" />
           <div>
-            <p class="text-accent-700 font-semibold">Periodo de prueba activo</p>
+            <p class="text-accent-700 font-semibold">
+              Periodo de prueba activo
+            </p>
             <p class="text-accent-600 text-sm">
               {subscription.currentPeriodEnd.getFullYear() >= 2024
                 ? `Tu prueba termina el ${subscription.currentPeriodEnd.toLocaleDateString("es-MX")}.`
@@ -107,31 +115,55 @@ const currencyLabel = subscription.currency?.toUpperCase() ?? "";
   <Card padding="lg">
     <div class="flex items-start justify-between">
       <div>
-        <p class="text-muted-foreground text-xs font-bold tracking-[0.18em] uppercase">Plan actual</p>
+        <p
+          class="text-muted-foreground text-xs font-bold tracking-[0.18em] uppercase"
+        >
+          Plan actual
+        </p>
         <h2 class="text-foreground mt-1 text-2xl font-black">
-          KitchCalc {subscription.tier === "free" ? "Free" : subscription.tier === "basic" ? "Basic" : "Pro"}
+          KitchCalc {
+            subscription.tier === "free"
+              ? "Free"
+              : subscription.tier === "basic"
+                ? "Basic"
+                : "Pro"
+          }
         </h2>
         <p class="text-muted-foreground mt-1 text-sm">
-          {subscription.tier === "free"
-            ? "Gratis para siempre"
-            : subscription.isTrial
-              ? "En periodo de prueba de 14 dias"
-              : "Renovacion recurrente"}
+          {
+            subscription.tier === "free"
+              ? "Gratis para siempre"
+              : subscription.isTrial
+                ? "En periodo de prueba de 14 dias"
+                : "Renovacion recurrente"
+          }
         </p>
       </div>
       <div class="text-right">
-        {subscription.tier !== "free" && priceDisplay && (
-          <p class="text-foreground text-2xl font-black whitespace-nowrap">
-            {currencyLabel} {priceDisplay}
-            <span class="text-subtle-foreground text-sm font-semibold">/mes</span>
-          </p>
-        )}
-        {subscription.cancelAtPeriodEnd && (
-          <Badge variant="status" color="warning" class="mt-1">Cancelado</Badge>
-        )}
-        {subscription.status === "trialing" && (
-          <Badge variant="status" color="accent" class="mt-1">Trial</Badge>
-        )}
+        {
+          subscription.tier !== "free" && priceDisplay && (
+            <p class="text-foreground text-2xl font-black whitespace-nowrap">
+              {currencyLabel} {priceDisplay}
+              <span class="text-subtle-foreground text-sm font-semibold">
+                /mes
+              </span>
+            </p>
+          )
+        }
+        {
+          subscription.cancelAtPeriodEnd && (
+            <Badge variant="status" color="warning" class="mt-1">
+              Cancelado
+            </Badge>
+          )
+        }
+        {
+          subscription.status === "trialing" && (
+            <Badge variant="status" color="accent" class="mt-1">
+              Trial
+            </Badge>
+          )
+        }
       </div>
     </div>
 
@@ -144,16 +176,28 @@ const currencyLabel = subscription.currency?.toUpperCase() ?? "";
     </div>
 
     <div class="mt-6 flex flex-wrap gap-3">
-      {subscription.tier !== "pro" && (
-        <Button variant="primary" icon="arrow-up-circle" data-open-pricing-modal>
-          {subscription.tier === "free" ? "Suscribirse" : "Actualizar a Pro"}
-        </Button>
-      )}
-      {isPaid(subscription) && !subscription.cancelAtPeriodEnd && (
-        <Button variant="secondary" icon="credit-card" id="manage-subscription-btn">
-          Gestionar suscripcion
-        </Button>
-      )}
+      {
+        subscription.tier !== "pro" && (
+          <Button
+            variant="primary"
+            icon="arrow-up-circle"
+            data-open-pricing-modal
+          >
+            {subscription.tier === "free" ? "Suscribirse" : "Actualizar a Pro"}
+          </Button>
+        )
+      }
+      {
+        isPaid(subscription) && !subscription.cancelAtPeriodEnd && (
+          <Button
+            variant="secondary"
+            icon="credit-card"
+            id="manage-subscription-btn"
+          >
+            Gestionar suscripcion
+          </Button>
+        )
+      }
     </div>
   </Card>
 
@@ -162,72 +206,92 @@ const currencyLabel = subscription.currency?.toUpperCase() ?? "";
       <div class="mb-4 flex items-center justify-between">
         <p class="text-secondary-foreground text-sm font-bold">Recetas</p>
         <span class="text-subtle-foreground text-xs font-bold"
-          >{recipeCount} / {remainingRecipes === null ? "∞" : subscription.recipesLimit}</span
+          >{recipeCount} / {
+            remainingRecipes === null ? "∞" : subscription.recipesLimit
+          }</span
         >
       </div>
       <div class="bg-muted h-2 overflow-hidden rounded-full">
         <div
           class="bg-accent-500 h-full rounded-full transition-all"
           style={`width: ${remainingRecipes === null ? 0 : Math.min(100, (recipeCount / (subscription.recipesLimit ?? 1)) * 100)}%`}
-        ></div>
+        >
+        </div>
       </div>
-      {remainingRecipes !== null && !(remainingRecipes > 3) && (
-        <p class="text-warning mt-2 text-xs font-semibold">
-          Te quedan {remainingRecipes} recetas. <a href="/pricing" class="underline">Actualizar plan</a>
-        </p>
-      )}
+      {
+        remainingRecipes !== null && !(remainingRecipes > 3) && (
+          <p class="text-warning mt-2 text-xs font-semibold">
+            Te quedan {remainingRecipes} recetas.{" "}
+            <a href="/pricing" class="underline">
+              Actualizar plan
+            </a>
+          </p>
+        )
+      }
     </Card>
 
     <Card padding="lg">
       <div class="mb-4 flex items-center justify-between">
         <p class="text-secondary-foreground text-sm font-bold">Ingredientes</p>
         <span class="text-subtle-foreground text-xs font-bold"
-          >{ingredientCount} / {remainingIngredients === null ? "∞" : subscription.ingredientsLimit}</span
+          >{ingredientCount} / {
+            remainingIngredients === null ? "∞" : subscription.ingredientsLimit
+          }</span
         >
       </div>
       <div class="bg-muted h-2 overflow-hidden rounded-full">
         <div
           class="bg-accent-500 h-full rounded-full transition-all"
           style={`width: ${remainingIngredients === null ? 0 : Math.min(100, (ingredientCount / (subscription.ingredientsLimit ?? 1)) * 100)}%`}
-        ></div>
+        >
+        </div>
       </div>
-      {remainingIngredients !== null && !(remainingIngredients > 5) && (
-        <p class="text-warning mt-2 text-xs font-semibold">
-          Te quedan {remainingIngredients} ingredientes. <a href="/pricing" class="underline">Actualizar plan</a>
-        </p>
-      )}
+      {
+        remainingIngredients !== null && !(remainingIngredients > 5) && (
+          <p class="text-warning mt-2 text-xs font-semibold">
+            Te quedan {remainingIngredients} ingredientes.{" "}
+            <a href="/pricing" class="underline">
+              Actualizar plan
+            </a>
+          </p>
+        )
+      }
     </Card>
   </div>
 
   <Card padding="lg">
-    <h3 class="text-secondary-foreground mb-4 text-sm font-bold">Funciones incluidas</h3>
+    <h3 class="text-secondary-foreground mb-4 text-sm font-bold">
+      Funciones incluidas
+    </h3>
     <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
       {
-        ([
-          { key: "recipe_duplicate", label: "Duplicar recetas" },
-          { key: "recipe_photos", label: "Fotos de recetas" },
-          { key: "stock_tracking", label: "Stock de ingredientes" },
-          { key: "production_planner", label: "Planificador de produccion" },
-          { key: "pdf_export", label: "Exportar a PDF" },
-          { key: "advanced_costs", label: "Costos fijos avanzados" },
-          { key: "change_history", label: "Historial de cambios" },
-          { key: "data_import_export", label: "Importar/Exportar datos" },
-        ] as const
-      ).map((feature) => {
-        const hasIt = subscription.features[feature.key] === true;
-        return (
-          <div
-            class={`flex items-center gap-2 text-sm ${hasIt ? "text-secondary-foreground" : "text-subtle-foreground"}`}
-          >
-            <Icon
-              name={hasIt ? "lucide:check" : "lucide:x"}
-              size={16}
-              class={hasIt ? "text-success" : "text-subtle-foreground"}
-            />
-            {feature.label}
-          </div>
-        );
-      })}
+        (
+          [
+            { key: "recipe_duplicate", label: "Duplicar recetas" },
+            { key: "recipe_photos", label: "Fotos de recetas" },
+            { key: "stock_tracking", label: "Stock de ingredientes" },
+            { key: "production_planner", label: "Planificador de produccion" },
+            { key: "pdf_export", label: "Exportar a PDF" },
+            { key: "advanced_costs", label: "Costos fijos avanzados" },
+            { key: "change_history", label: "Historial de cambios" },
+            { key: "data_import_export", label: "Importar/Exportar datos" },
+          ] as const
+        ).map((feature) => {
+          const hasIt = subscription.features[feature.key] === true;
+          return (
+            <div
+              class={`flex items-center gap-2 text-sm ${hasIt ? "text-secondary-foreground" : "text-subtle-foreground"}`}
+            >
+              <Icon
+                name={hasIt ? "lucide:check" : "lucide:x"}
+                size={16}
+                class={hasIt ? "text-success" : "text-subtle-foreground"}
+              />
+              {feature.label}
+            </div>
+          );
+        })
+      }
     </div>
   </Card>
 </section>
@@ -256,7 +320,10 @@ const currencyLabel = subscription.currency?.toUpperCase() ?? "";
         const headers: Record<string, string> = {};
         if (csrfToken) headers["x-csrf-token"] = csrfToken;
 
-        const res = await fetch("/api/stripe/portal", { method: "POST", headers });
+        const res = await fetch("/api/stripe/portal", {
+          method: "POST",
+          headers,
+        });
         const data = await res.json();
 
         if (data.url) {

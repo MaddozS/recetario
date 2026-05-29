@@ -27,6 +27,7 @@ Auditar y mejorar la landing page existente de KitchCalc: corregir violaciones a
 **Performance Goals**: Lighthouse >80 mobile, >90 desktop. Carga <3s en 4G simulado. CLS <0.1. Sin layout shifts.
 
 **Constraints**:
+
 - Token Bridge Rule: 0 hardcoded colors — solo tokens semánticos (`bg-card`, `text-foreground`, `border-border`, `accent-*`)
 - WCAG 2.1 AA mínimo: contraste 4.5:1 texto normal, 3:1 texto grande
 - `prefers-reduced-motion: reduce` completamente soportado
@@ -37,9 +38,10 @@ Auditar y mejorar la landing page existente de KitchCalc: corregir violaciones a
 
 ## Constitution Check
 
-*GATE: Debe pasar antes de Phase 0. Re-check después de Phase 1.*
+_GATE: Debe pasar antes de Phase 0. Re-check después de Phase 1._
 
 ### Gate 1 — Token Bridge Rule (NON-NEGOTIABLE)
+
 - **Violación**: `backdrop:bg-black/70` en FeaturesSection.astro lightbox — viola DESIGN.md que exige `backdrop:bg-backdrop/50`
 - **Violación**: `bg-white` / `text-white` / `border-white/30` en CTASection.astro — hardcodeado, debe ser token semántico
 - **Violación**: `bg-accent-600 text-white` en HowItWorksSection.astro step circle — `text-white` debe ser `text-text-on-accent`
@@ -47,14 +49,17 @@ Auditar y mejorar la landing page existente de KitchCalc: corregir violaciones a
 - **Justificación**: Correcciones directas, 1:1, sin cambio de diseño. Reemplazar hardcoded values por tokens existentes.
 
 ### Gate 2 — Clean Code (NON-NEGOTIABLE)
+
 - **Violación**: Dual `<img>` por feature (light + dark) en FeaturesSection — ambas imágenes en DOM, duplica payload
 - **Justificación**: Requiere refactor a `<picture>` con `<source media="(prefers-color-scheme: dark)">` o swap via JS. Reduce payload ~50% en sección.
 
 ### Gate 3 — Simple UX, Clear UI
+
 - **Violación**: Contraste `text-subtle-foreground` en light mode ~2.6:1 (falla WCAG AA 4.5:1)
 - **Justificación**: Ajustar token o reemplazar usos con `text-muted-foreground` (~4.1:1, borderline) o `text-secondary-foreground` (~9.5:1)
 
 ### Gate 4 — Accessibility (WCAG 2.1 AA)
+
 - **Violación**: Count-up animation en HeroSection no respeta `prefers-reduced-motion`
 - **Justificación**: Agregar guard `matchMedia("(prefers-reduced-motion: reduce)")` antes de iniciar animación
 
@@ -97,7 +102,7 @@ src/
 
 ## Complexity Tracking
 
-| Violación | Why Needed | Simpler Alternative Rejected |
-|-----------|------------|-------------------------------|
-| Dual `<img>` refactor | Eliminar duplicación de imágenes, reducir payload ~50% en FeaturesSection. Approach final: single `<img>` + `MutationObserver` sobre clase `.dark` (no `<picture>` — app usa toggle manual, no OS-level) | Dejar ambas imágenes — aceptable pero subóptimo (las dos se descargan) |
-| Token replacement en 4 componentes | Cumplir Token Bridge Rule NON-NEGOTIABLE | Ignorar violación — bloquea merge según Constitution |
+| Violación                          | Why Needed                                                                                                                                                                                               | Simpler Alternative Rejected                                           |
+| ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| Dual `<img>` refactor              | Eliminar duplicación de imágenes, reducir payload ~50% en FeaturesSection. Approach final: single `<img>` + `MutationObserver` sobre clase `.dark` (no `<picture>` — app usa toggle manual, no OS-level) | Dejar ambas imágenes — aceptable pero subóptimo (las dos se descargan) |
+| Token replacement en 4 componentes | Cumplir Token Bridge Rule NON-NEGOTIABLE                                                                                                                                                                 | Ignorar violación — bloquea merge según Constitution                   |

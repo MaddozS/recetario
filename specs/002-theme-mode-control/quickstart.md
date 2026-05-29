@@ -2,32 +2,38 @@
 
 ## Files to modify
 
-| File | Change |
-|------|--------|
-| `src/lib/db/types.ts` | Add `"system"` to `theme` union type |
-| `src/lib/db/preferences.ts` | Add validation for `"system"` in `upsertUserPreferences()` |
-| `src/layouts/Layout.astro` | Update `applyTheme()` with OS detection + listener; add inline flash prevention script |
-| `src/pages/settings.astro` | Add Preferences tab HTML content (theme selector + accent picker) |
+| File                        | Change                                                                                 |
+| --------------------------- | -------------------------------------------------------------------------------------- |
+| `src/lib/db/types.ts`       | Add `"system"` to `theme` union type                                                   |
+| `src/lib/db/preferences.ts` | Add validation for `"system"` in `upsertUserPreferences()`                             |
+| `src/layouts/Layout.astro`  | Update `applyTheme()` with OS detection + listener; add inline flash prevention script |
+| `src/pages/settings.astro`  | Add Preferences tab HTML content (theme selector + accent picker)                      |
 
 ## Quick reference
 
 ### Theme type
+
 ```typescript
 type Theme = "system" | "light" | "dark";
 ```
 
 ### applyTheme() logic
+
 ```javascript
 function applyTheme() {
   const theme = html.dataset.appTheme || "system";
-  const effective = theme === "system"
-    ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
-    : theme;
+  const effective =
+    theme === "system"
+      ? window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light"
+      : theme;
   html.classList.toggle("dark", effective === "dark");
 }
 ```
 
 ### OS listener
+
 ```javascript
 const mq = window.matchMedia("(prefers-color-scheme: dark)");
 mq.addEventListener("change", () => {

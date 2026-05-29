@@ -1,9 +1,9 @@
 import { authClient } from "@/lib/auth-client";
 
-export async function signInWithGoogle() {
+export async function signInWithGoogle(redirectUrl?: string) {
   await authClient.signIn.social({
     provider: "google",
-    callbackURL: `${window.location.origin}/recipes`,
+    callbackURL: `${window.location.origin}${redirectUrl || "/recipes"}`,
   });
 }
 
