@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { sendEmail } from "@/lib/email";
 import { createAuthMiddleware, APIError } from "better-auth/api";
 import { validatePassword } from "@/lib/password-validation";
-import { getResetPasswordEmailHtml, createPasswordResetToken } from "@/lib/password-reset";
+import { getResetPasswordEmailHtml } from "@/lib/password-reset";
 
 const RESET_TOKEN_EXPIRY_MINUTES = 10;
 
@@ -29,6 +29,8 @@ export const auth = betterAuth({
           select: { firstName: true, name: true },
         });
         const userName = dbUser?.firstName || dbUser?.name || "usuario";
+
+        const { createPasswordResetToken } = await import("@/lib/password-reset");
         const token = await createPasswordResetToken(user.id, RESET_TOKEN_EXPIRY_MINUTES);
         const resetLink = `${url.split("?")[0]}?token=${token}`;
         const html = getResetPasswordEmailHtml({
