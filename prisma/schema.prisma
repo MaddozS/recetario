@@ -199,6 +199,7 @@ enum AuditAction {
   sign_in
   sign_up
   password_change
+  password_reset
   email_change
   account_delete
   session_revoke
@@ -214,4 +215,17 @@ model AuditLog {
 
   @@index([userId, createdAt])
   @@map("audit_logs")
+}
+
+model PasswordResetToken {
+  id        String    @id @default(uuid())
+  userId    String    @map("user_id")
+  token     String    @unique
+  expiresAt DateTime  @map("expires_at") @db.Timestamptz()
+  usedAt    DateTime? @map("used_at") @db.Timestamptz()
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@index([token])
+  @@map("password_reset_tokens")
 }

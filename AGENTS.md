@@ -111,7 +111,7 @@ pnpm dev
 
 <!-- SPECKIT START -->
 
-**Active Plan**: `specs/005-sign-up-page/plan.md` — User Registration Page (firstName/lastName fields, email+password sign-up, Google sign-up with profile mapping, Prisma migration for new User columns).
+**Active Plan**: `specs/006-password-reset-flow/plan.md` — Password Reset Flow (10-min expiry, branded Resend email templates, countdown timer, rate limiting).
 
 <!-- SPECKIT END -->
 

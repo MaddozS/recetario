@@ -5,6 +5,9 @@ import { prisma } from "@/lib/prisma";
 import { sendEmail } from "@/lib/email";
 import { createAuthMiddleware, APIError } from "better-auth/api";
 import { validatePassword } from "@/lib/password-validation";
+import { getResetPasswordEmailHtml } from "@/lib/password-reset";
+
+const RESET_TOKEN_EXPIRY_MINUTES = 10;
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
@@ -19,12 +22,39 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true,
-    sendResetPassword: async ({ user, url }) => {
+    sendResetPassword: async ({ user, url, token }) => {
       try {
+        const dbUser = await prisma.user.findUnique({
+          where: { id: user.id },
+          select: { firstName: true, name: true },
+        });
+        const userName = dbUser?.firstName || dbUser?.name || "usuario";
+
+        const resetToken = crypto.randomUUID();
+        const expiresAt = new Date(Date.now() + RESET_TOKEN_EXPIRY_MINUTES * 60 * 1000);
+
+        await prisma.passwordResetToken.deleteMany({
+          where: { userId: user.id },
+        });
+
+        await prisma.passwordResetToken.create({
+          data: {
+            userId: user.id,
+            token: resetToken,
+            expiresAt,
+          },
+        });
+
+        const resetLink = `${url.split("?")[0]}?token=${resetToken}`;
+        const html = getResetPasswordEmailHtml({
+          resetLink,
+          userName,
+          expiryMinutes: RESET_TOKEN_EXPIRY_MINUTES,
+        });
         await sendEmail({
           to: user.email,
           subject: "Restablece tu contraseña - KitchCalc",
-          html: `<p>Haz clic en el enlace para restablecer tu contraseña:</p><p><a href="${url}">${url}</a></p><p>Este enlace expira en 1 hora.</p>`,
+          html,
         });
       } catch (e) {
         console.error("[AUTH] sendResetPassword failed:", e);
