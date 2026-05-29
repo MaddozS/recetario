@@ -85,6 +85,13 @@ export const onRequest = defineMiddleware(async (context, next) => {
         sub = resolveSubscription(null);
       }
       await cacheSet(subCacheKey, sub, 300);
+    } else {
+      if (sub.currentPeriodEnd) {
+        sub.currentPeriodEnd = new Date(sub.currentPeriodEnd);
+      }
+      if (sub.trialEnd) {
+        sub.trialEnd = new Date(sub.trialEnd);
+      }
     }
     context.locals.subscription = sub;
 

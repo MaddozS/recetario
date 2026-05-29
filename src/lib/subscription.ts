@@ -28,6 +28,7 @@ export type UserSubscriptionInfo = {
   currentPeriodEnd: Date | null;
   cancelAtPeriodEnd: boolean;
   isTrial: boolean;
+  trialEnd: Date | null;
 };
 
 const FREE_FEATURES: Record<string, boolean> = {
@@ -58,6 +59,7 @@ export function getDefaultSubscription(): UserSubscriptionInfo {
     currentPeriodEnd: null,
     cancelAtPeriodEnd: false,
     isTrial: false,
+    trialEnd: null,
   };
 }
 
@@ -80,9 +82,12 @@ export function resolveSubscription(
     currency: sub.currency ?? null,
     billingInterval:
       (sub.billingInterval as "monthly" | "yearly" | null) ?? null,
-    currentPeriodEnd: sub.currentPeriodEnd,
+    currentPeriodEnd: sub.currentPeriodEnd
+      ? new Date(sub.currentPeriodEnd)
+      : null,
     cancelAtPeriodEnd: sub.cancelAtPeriodEnd,
     isTrial: sub.status === "trialing",
+    trialEnd: sub.trialEnd ? new Date(sub.trialEnd) : null,
   };
 }
 

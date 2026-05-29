@@ -36,6 +36,9 @@ const priceDisplay =
     ? formatCurrency(subscription.priceCents / 100)
     : null;
 const currencyLabel = subscription.currency?.toUpperCase() ?? "";
+
+const trialEndDate = subscription.trialEnd ?? subscription.currentPeriodEnd;
+const isTrialEndValid = trialEndDate && trialEndDate.getFullYear() >= 2025;
 ---
 
 <section class="mx-auto max-w-3xl space-y-6">
@@ -76,7 +79,7 @@ const currencyLabel = subscription.currency?.toUpperCase() ?? "";
   }
 
   {
-    subscription.isTrial && subscription.currentPeriodEnd && (
+    subscription.isTrial && isTrialEndValid && (
       <div class="border-accent-200 bg-accent-50 rounded-2xl border p-4">
         <div class="flex items-center gap-3">
           <Icon name="lucide:clock" size={20} class="text-accent-600" />
@@ -85,9 +88,8 @@ const currencyLabel = subscription.currency?.toUpperCase() ?? "";
               Periodo de prueba activo
             </p>
             <p class="text-accent-600 text-sm">
-              {subscription.currentPeriodEnd.getFullYear() >= 2024
-                ? `Tu prueba termina el ${subscription.currentPeriodEnd.toLocaleDateString("es-MX")}.`
-                : null}
+              Tu prueba termina el{" "}
+              {trialEndDate!.toLocaleDateString("es-MX")}.
             </p>
           </div>
         </div>
@@ -145,7 +147,7 @@ const currencyLabel = subscription.currency?.toUpperCase() ?? "";
             <p class="text-foreground text-2xl font-black whitespace-nowrap">
               {currencyLabel} {priceDisplay}
               <span class="text-subtle-foreground text-sm font-semibold">
-                /mes
+                /{subscription.billingInterval === "yearly" ? "año" : "mes"}
               </span>
             </p>
           )

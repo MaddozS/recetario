@@ -1,12 +1,12 @@
 import { prisma } from "@/lib/prisma";
-import { cacheSet } from "@/lib/cache";
+import { cacheDelete } from "@/lib/cache";
 import { stripe } from "@/lib/stripe";
 import { TIER_CONFIG } from "@/lib/plans-config";
 import { formatCurrency } from "@/lib/formatters";
 import type Stripe from "stripe";
 
 function invalidateSubCache(userId: string) {
-  cacheSet(`sub:${userId}`, undefined, 0);
+  cacheDelete(`sub:${userId}`);
 }
 
 const BASIC_FEATURES: Record<string, boolean> = {
