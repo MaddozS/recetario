@@ -18,9 +18,9 @@
 
 **Purpose**: Verify existing infrastructure is ready for implementation
 
-- [ ] T001 Verify `PasswordResetToken` migration was applied in `prisma/migrations/20260529012757_add_password_reset_token/migration.sql`
-- [ ] T002 Verify `password_reset` exists in `AuditAction` enum in `prisma/schema.prisma`
-- [ ] T003 Verify rate limiting exists for `/forget-password` in `src/pages/api/auth/[...all].ts`
+- [x] T001 Verify `PasswordResetToken` migration was applied in `prisma/migrations/20260529012757_add_password_reset_token/migration.sql`
+- [x] T002 Verify `password_reset` exists in `AuditAction` enum in `prisma/schema.prisma`
+- [x] T003 Verify rate limiting exists for `/forget-password` in `src/pages/api/auth/[...all].ts`
 
 ---
 
@@ -30,9 +30,9 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T004 [P] Create branded HTML email template function in `src/lib/email-templates.ts` for password reset (Resend-compatible styling)
-- [ ] T005 [P] Create token generation and validation helpers in `src/lib/password-reset.ts` (10-min expiry, token invalidation logic)
-- [ ] T006 Update `sendResetPassword` hook in `src/lib/auth.ts` to use branded email template and custom token flow (depends on T004, T005)
+- [x] T004 [P] Create branded HTML email template function in `src/lib/email-templates.ts` for password reset (Resend-compatible styling)
+- [x] T005 [P] Create token generation and validation helpers in `src/lib/password-reset.ts` (10-min expiry, token invalidation logic)
+- [x] T006 Update `sendResetPassword` hook in `src/lib/auth.ts` to use branded email template and custom token flow (depends on T004, T005)
 
 **Checkpoint**: Foundational ready - user story implementation can now begin
 
@@ -46,10 +46,10 @@
 
 ### Implementation for User Story 1
 
-- [ ] T007 [US1] Update `src/lib/auth.ts` to generate `PasswordResetToken` records with 10-minute expiry when forget password is requested
-- [ ] T008 [US1] Modify `sendResetPassword` to use branded HTML template from `src/lib/email-templates.ts` and include `{{resetLink}}` with token
-- [ ] T009 [US1] Update `src/pages/forgot-password.astro` to handle success/error states (verify existing implementation works with new flow)
-- [ ] T010 [US1] Verify old tokens (in `Verification` table) are not used by new flow (orphaned - intentional per spec)
+- [x] T007 [US1] Update `src/lib/auth.ts` to generate `PasswordResetToken` records with 10-minute expiry when forget password is requested
+- [x] T008 [US1] Modify `sendResetPassword` to use branded HTML template from `src/lib/email-templates.ts` and include `{{resetLink}}` with token
+- [x] T009 [US1] Update `src/pages/forgot-password.astro` to handle success/error states (verify existing implementation works with new flow)
+- [x] T010 [US1] Verify old tokens (in `Verification` table) are not used by new flow (orphaned - intentional per spec)
 
 **Checkpoint**: User Story 1 complete - email flow works with branded template
 
@@ -63,13 +63,13 @@
 
 ### Implementation for User Story 2
 
-- [ ] T011 [P] [US2] Create password reset validation service in `src/lib/password-reset.ts` to validate tokens and update passwords
-- [ ] T012 [P] [US2] Create `/api/auth/reset-password.ts` endpoint to handle token validation and password update (depends on T011)
-- [ ] T013 [US2] Update `src/pages/reset-password.astro` to call new endpoint instead of `authClient.resetPassword()` (depends on T012)
-- [ ] T014 [US2] Apply same password validation rules from `src/lib/password-validation.ts` (8+ chars, upper, lower, digit, special)
-- [ ] T015 [US2] Add `password_reset` audit event via `logAuditEvent()` from `@/lib/db/audit` when password is changed
-- [ ] T016 [US2] Mark token as used (set `usedAt`) after successful password change
-- [ ] T017 [US2] Show success screen with "Volver al inicio de sesión" link after password change
+- [x] T011 [P] [US2] Create password reset validation service in `src/lib/password-reset.ts` to validate tokens and update passwords
+- [x] T012 [P] [US2] Create `/api/auth/reset-password.ts` endpoint to handle token validation and password update (depends on T011)
+- [x] T013 [US2] Update `src/pages/reset-password.astro` to call new endpoint instead of `authClient.resetPassword()` (depends on T012)
+- [x] T014 [US2] Apply same password validation rules from `src/lib/password-validation.ts` (8+ chars, upper, lower, digit, special)
+- [x] T015 [US2] Add `password_reset` audit event via `logAuditEvent()` from `@/lib/db/audit` when password is changed
+- [x] T016 [US2] Mark token as used (set `usedAt`) after successful password change
+- [x] T017 [US2] Show success screen with "Volver al inicio de sesión" link after password change
 
 **Checkpoint**: User Story 2 complete - password reset flow works end-to-end
 
@@ -83,9 +83,9 @@
 
 ### Implementation for User Story 3
 
-- [ ] T018 [US3] Update token validation in `src/lib/password-reset.ts` to return expired status when `expiresAt < now()`
-- [ ] T019 [US3] Update `src/pages/reset-password.astro` to display "Enlace expirado" message with "Solicitar nuevo enlace" button when token expired
-- [ ] T020 [US3] Pre-fill email field on expired page if user came from forgot-password with email (via URL param or localStorage)
+- [x] T018 [US3] Update token validation in `src/lib/password-reset.ts` to return expired status when `expiresAt < now()`
+- [x] T019 [US3] Update `src/pages/reset-password.astro` to display "Enlace expirado" message with "Solicitar nuevo enlace" button when token expired
+- [x] T020 [US3] Pre-fill email field on expired page if user came from forgot-password with email (via URL param or localStorage)
 
 **Checkpoint**: User Story 3 complete - expired links handled gracefully
 
@@ -99,11 +99,11 @@
 
 ### Implementation for User Story 4
 
-- [ ] T021 [P] [US4] Calculate remaining time from token's `expiresAt` and pass to frontend in `src/pages/reset-password.astro`
-- [ ] T022 [P] [US4] Add countdown timer component in `src/pages/reset-password.astro` showing MM:SS format (e.g., "09:45")
-- [ ] T023 [US4] Update timer every second using `setInterval`
-- [ ] T024 [US4] When timer reaches 0, trigger expired link flow (show error, hide form)
-- [ ] T025 [US4] Ensure timer works correctly across page loads (calculate from server-side `expiresAt`, not localStorage)
+- [x] T021 [P] [US4] Calculate remaining time from token's `expiresAt` and pass to frontend in `src/pages/reset-password.astro`
+- [x] T022 [P] [US4] Add countdown timer component in `src/pages/reset-password.astro` showing MM:SS format (e.g., "09:45")
+- [x] T023 [US4] Update timer every second using `setInterval`
+- [x] T024 [US4] When timer reaches 0, trigger expired link flow (show error, hide form)
+- [x] T025 [US4] Ensure timer works correctly across page loads (calculate from server-side `expiresAt`, not localStorage)
 
 **Checkpoint**: User Story 4 complete - countdown timer visible and functional
 
@@ -113,11 +113,11 @@
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T026 [P] Run `pnpm astro check` to verify TypeScript types are correct
-- [ ] T027 [P] Run `pnpm eslint .` to verify no linting errors
-- [ ] T028 Verify all 18 functional requirements from spec.md are addressed
-- [ ] T029 Update `src/lib/email-templates.ts` if any adjustments needed based on testing
-- [ ] T030 Test full flow: forgot password → email received → reset page → new password → sign in works
+- [x] T026 [P] Run `pnpm astro check` to verify TypeScript types are correct
+- [x] T027 [P] Run `pnpm eslint .` to verify no linting errors
+- [x] T028 Verify all 18 functional requirements from spec.md are addressed
+- [x] T029 Update `src/lib/email-templates.ts` if any adjustments needed based on testing
+- [x] T030 Test full flow: forgot password → email received → reset page → new password → sign in works
 
 ---
 
