@@ -8,3 +8,4 @@ export { default as Badge } from "./Badge.astro";
 export { default as Dialog } from "./Dialog.astro";
 export { default as FinancialSummary } from "./FinancialSummary.astro";
 export { default as SectionHeading } from "./SectionHeading.astro";
+export { default as PasswordInput } from "./PasswordInput.astro";

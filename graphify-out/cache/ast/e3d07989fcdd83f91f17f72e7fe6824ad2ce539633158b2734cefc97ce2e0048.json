@@ -1,1 +1,607 @@
-{"nodes": [{"id": "users_maddozs_personal_projects_recetario_agents_skills_prisma_client_api_references_filters_md", "label": "filters.md", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L1"}, {"id": "references_filters_filter_conditions_and_operators", "label": "Filter Conditions and Operators", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L1"}, {"id": "references_filters_equality", "label": "Equality", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L5"}, {"id": "references_filters_codeblock_1", "label": "code:typescript (// Exact match (implicit))", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L7"}, {"id": "references_filters_comparison", "label": "Comparison", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L28"}, {"id": "references_filters_codeblock_2", "label": "code:typescript (// Greater than)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L30"}, {"id": "references_filters_lists", "label": "Lists", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L47"}, {"id": "references_filters_codeblock_3", "label": "code:typescript (// In array)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L49"}, {"id": "references_filters_string_filters", "label": "String Filters", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L57"}, {"id": "references_filters_codeblock_4", "label": "code:typescript (// Contains)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L59"}, {"id": "references_filters_null_checks", "label": "Null Checks", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L78"}, {"id": "references_filters_codeblock_5", "label": "code:typescript (// Is null)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L80"}, {"id": "references_filters_logical_operators", "label": "Logical Operators", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L101"}, {"id": "references_filters_and_implicit", "label": "AND (implicit)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L103"}, {"id": "references_filters_codeblock_6", "label": "code:typescript (// Multiple conditions = AND)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L105"}, {"id": "references_filters_and_explicit", "label": "AND (explicit)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L113"}, {"id": "references_filters_codeblock_7", "label": "code:typescript (where: {)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L115"}, {"id": "references_filters_or", "label": "OR", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L121"}, {"id": "references_filters_codeblock_8", "label": "code:typescript (where: {)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L123"}, {"id": "references_filters_not", "label": "NOT", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L132"}, {"id": "references_filters_codeblock_9", "label": "code:typescript (where: {)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L134"}, {"id": "references_filters_combined", "label": "Combined", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L147"}, {"id": "references_filters_codeblock_10", "label": "code:typescript (where: {)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L149"}, {"id": "references_filters_relation_filters", "label": "Relation Filters", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L164"}, {"id": "references_filters_some", "label": "some", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L166"}, {"id": "references_filters_codeblock_11", "label": "code:typescript (// Users with at least one published post)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L170"}, {"id": "references_filters_every", "label": "every", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L181"}, {"id": "references_filters_codeblock_12", "label": "code:typescript (// Users where all posts are published)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L185"}, {"id": "references_filters_none", "label": "none", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L196"}, {"id": "references_filters_codeblock_13", "label": "code:typescript (// Users with no published posts)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L200"}, {"id": "references_filters_is_isnot_1_to_1", "label": "is / isNot (1-to-1)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L211"}, {"id": "references_filters_codeblock_14", "label": "code:typescript (// Users with profile in specific country)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L213"}, {"id": "references_filters_array_field_filters", "label": "Array Field Filters", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L231"}, {"id": "references_filters_codeblock_15", "label": "code:typescript (// Has element)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L235"}, {"id": "references_filters_json_filters", "label": "JSON Filters", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L265"}, {"id": "references_filters_codeblock_16", "label": "code:typescript (// Path-based filter)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L267"}, {"id": "references_filters_full_text_search", "label": "Full-Text Search", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L285"}, {"id": "references_filters_codeblock_17", "label": "code:typescript (// Requires @@fulltext index)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L287"}], "edges": [{"source": "users_maddozs_personal_projects_recetario_agents_skills_prisma_client_api_references_filters_md", "target": "references_filters_filter_conditions_and_operators", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L1", "weight": 1.0}, {"source": "references_filters_filter_conditions_and_operators", "target": "references_filters_equality", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L5", "weight": 1.0}, {"source": "references_filters_equality", "target": "references_filters_codeblock_1", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L7", "weight": 1.0}, {"source": "references_filters_filter_conditions_and_operators", "target": "references_filters_comparison", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L28", "weight": 1.0}, {"source": "references_filters_comparison", "target": "references_filters_codeblock_2", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L30", "weight": 1.0}, {"source": "references_filters_filter_conditions_and_operators", "target": "references_filters_lists", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L47", "weight": 1.0}, {"source": "references_filters_lists", "target": "references_filters_codeblock_3", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L49", "weight": 1.0}, {"source": "references_filters_filter_conditions_and_operators", "target": "references_filters_string_filters", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L57", "weight": 1.0}, {"source": "references_filters_string_filters", "target": "references_filters_codeblock_4", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L59", "weight": 1.0}, {"source": "references_filters_filter_conditions_and_operators", "target": "references_filters_null_checks", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L78", "weight": 1.0}, {"source": "references_filters_null_checks", "target": "references_filters_codeblock_5", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L80", "weight": 1.0}, {"source": "references_filters_filter_conditions_and_operators", "target": "references_filters_logical_operators", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L101", "weight": 1.0}, {"source": "references_filters_logical_operators", "target": "references_filters_and_implicit", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L103", "weight": 1.0}, {"source": "references_filters_and_implicit", "target": "references_filters_codeblock_6", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L105", "weight": 1.0}, {"source": "references_filters_logical_operators", "target": "references_filters_and_explicit", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L113", "weight": 1.0}, {"source": "references_filters_and_explicit", "target": "references_filters_codeblock_7", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L115", "weight": 1.0}, {"source": "references_filters_logical_operators", "target": "references_filters_or", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L121", "weight": 1.0}, {"source": "references_filters_or", "target": "references_filters_codeblock_8", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L123", "weight": 1.0}, {"source": "references_filters_logical_operators", "target": "references_filters_not", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L132", "weight": 1.0}, {"source": "references_filters_not", "target": "references_filters_codeblock_9", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L134", "weight": 1.0}, {"source": "references_filters_logical_operators", "target": "references_filters_combined", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L147", "weight": 1.0}, {"source": "references_filters_combined", "target": "references_filters_codeblock_10", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L149", "weight": 1.0}, {"source": "references_filters_filter_conditions_and_operators", "target": "references_filters_relation_filters", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L164", "weight": 1.0}, {"source": "references_filters_relation_filters", "target": "references_filters_some", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L166", "weight": 1.0}, {"source": "references_filters_some", "target": "references_filters_codeblock_11", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L170", "weight": 1.0}, {"source": "references_filters_relation_filters", "target": "references_filters_every", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L181", "weight": 1.0}, {"source": "references_filters_every", "target": "references_filters_codeblock_12", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L185", "weight": 1.0}, {"source": "references_filters_relation_filters", "target": "references_filters_none", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L196", "weight": 1.0}, {"source": "references_filters_none", "target": "references_filters_codeblock_13", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L200", "weight": 1.0}, {"source": "references_filters_relation_filters", "target": "references_filters_is_isnot_1_to_1", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L211", "weight": 1.0}, {"source": "references_filters_is_isnot_1_to_1", "target": "references_filters_codeblock_14", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L213", "weight": 1.0}, {"source": "references_filters_filter_conditions_and_operators", "target": "references_filters_array_field_filters", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L231", "weight": 1.0}, {"source": "references_filters_array_field_filters", "target": "references_filters_codeblock_15", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L235", "weight": 1.0}, {"source": "references_filters_filter_conditions_and_operators", "target": "references_filters_json_filters", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L265", "weight": 1.0}, {"source": "references_filters_json_filters", "target": "references_filters_codeblock_16", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L267", "weight": 1.0}, {"source": "references_filters_filter_conditions_and_operators", "target": "references_filters_full_text_search", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L285", "weight": 1.0}, {"source": "references_filters_full_text_search", "target": "references_filters_codeblock_17", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md", "source_location": "L287", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "users_maddozs_personal_projects_recetario_agents_skills_prisma_client_api_references_filters_md",
+      "label": "filters.md",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "references_filters_filter_conditions_and_operators",
+      "label": "Filter Conditions and Operators",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "references_filters_equality",
+      "label": "Equality",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L5"
+    },
+    {
+      "id": "references_filters_codeblock_1",
+      "label": "code:typescript (// Exact match (implicit))",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L7"
+    },
+    {
+      "id": "references_filters_comparison",
+      "label": "Comparison",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L28"
+    },
+    {
+      "id": "references_filters_codeblock_2",
+      "label": "code:typescript (// Greater than)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L30"
+    },
+    {
+      "id": "references_filters_lists",
+      "label": "Lists",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L47"
+    },
+    {
+      "id": "references_filters_codeblock_3",
+      "label": "code:typescript (// In array)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L49"
+    },
+    {
+      "id": "references_filters_string_filters",
+      "label": "String Filters",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L57"
+    },
+    {
+      "id": "references_filters_codeblock_4",
+      "label": "code:typescript (// Contains)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L59"
+    },
+    {
+      "id": "references_filters_null_checks",
+      "label": "Null Checks",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L78"
+    },
+    {
+      "id": "references_filters_codeblock_5",
+      "label": "code:typescript (// Is null)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L80"
+    },
+    {
+      "id": "references_filters_logical_operators",
+      "label": "Logical Operators",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L101"
+    },
+    {
+      "id": "references_filters_and_implicit",
+      "label": "AND (implicit)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L103"
+    },
+    {
+      "id": "references_filters_codeblock_6",
+      "label": "code:typescript (// Multiple conditions = AND)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L105"
+    },
+    {
+      "id": "references_filters_and_explicit",
+      "label": "AND (explicit)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L113"
+    },
+    {
+      "id": "references_filters_codeblock_7",
+      "label": "code:typescript (where: {)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L115"
+    },
+    {
+      "id": "references_filters_or",
+      "label": "OR",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L121"
+    },
+    {
+      "id": "references_filters_codeblock_8",
+      "label": "code:typescript (where: {)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L123"
+    },
+    {
+      "id": "references_filters_not",
+      "label": "NOT",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L132"
+    },
+    {
+      "id": "references_filters_codeblock_9",
+      "label": "code:typescript (where: {)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L134"
+    },
+    {
+      "id": "references_filters_combined",
+      "label": "Combined",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L147"
+    },
+    {
+      "id": "references_filters_codeblock_10",
+      "label": "code:typescript (where: {)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L149"
+    },
+    {
+      "id": "references_filters_relation_filters",
+      "label": "Relation Filters",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L164"
+    },
+    {
+      "id": "references_filters_some",
+      "label": "some",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L166"
+    },
+    {
+      "id": "references_filters_codeblock_11",
+      "label": "code:typescript (// Users with at least one published post)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L170"
+    },
+    {
+      "id": "references_filters_every",
+      "label": "every",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L181"
+    },
+    {
+      "id": "references_filters_codeblock_12",
+      "label": "code:typescript (// Users where all posts are published)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L185"
+    },
+    {
+      "id": "references_filters_none",
+      "label": "none",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L196"
+    },
+    {
+      "id": "references_filters_codeblock_13",
+      "label": "code:typescript (// Users with no published posts)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L200"
+    },
+    {
+      "id": "references_filters_is_isnot_1_to_1",
+      "label": "is / isNot (1-to-1)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L211"
+    },
+    {
+      "id": "references_filters_codeblock_14",
+      "label": "code:typescript (// Users with profile in specific country)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L213"
+    },
+    {
+      "id": "references_filters_array_field_filters",
+      "label": "Array Field Filters",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L231"
+    },
+    {
+      "id": "references_filters_codeblock_15",
+      "label": "code:typescript (// Has element)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L235"
+    },
+    {
+      "id": "references_filters_json_filters",
+      "label": "JSON Filters",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L265"
+    },
+    {
+      "id": "references_filters_codeblock_16",
+      "label": "code:typescript (// Path-based filter)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L267"
+    },
+    {
+      "id": "references_filters_full_text_search",
+      "label": "Full-Text Search",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L285"
+    },
+    {
+      "id": "references_filters_codeblock_17",
+      "label": "code:typescript (// Requires @@fulltext index)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L287"
+    }
+  ],
+  "edges": [
+    {
+      "source": "users_maddozs_personal_projects_recetario_agents_skills_prisma_client_api_references_filters_md",
+      "target": "references_filters_filter_conditions_and_operators",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "references_filters_filter_conditions_and_operators",
+      "target": "references_filters_equality",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "references_filters_equality",
+      "target": "references_filters_codeblock_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "references_filters_filter_conditions_and_operators",
+      "target": "references_filters_comparison",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L28",
+      "weight": 1.0
+    },
+    {
+      "source": "references_filters_comparison",
+      "target": "references_filters_codeblock_2",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L30",
+      "weight": 1.0
+    },
+    {
+      "source": "references_filters_filter_conditions_and_operators",
+      "target": "references_filters_lists",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L47",
+      "weight": 1.0
+    },
+    {
+      "source": "references_filters_lists",
+      "target": "references_filters_codeblock_3",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L49",
+      "weight": 1.0
+    },
+    {
+      "source": "references_filters_filter_conditions_and_operators",
+      "target": "references_filters_string_filters",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L57",
+      "weight": 1.0
+    },
+    {
+      "source": "references_filters_string_filters",
+      "target": "references_filters_codeblock_4",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L59",
+      "weight": 1.0
+    },
+    {
+      "source": "references_filters_filter_conditions_and_operators",
+      "target": "references_filters_null_checks",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L78",
+      "weight": 1.0
+    },
+    {
+      "source": "references_filters_null_checks",
+      "target": "references_filters_codeblock_5",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L80",
+      "weight": 1.0
+    },
+    {
+      "source": "references_filters_filter_conditions_and_operators",
+      "target": "references_filters_logical_operators",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L101",
+      "weight": 1.0
+    },
+    {
+      "source": "references_filters_logical_operators",
+      "target": "references_filters_and_implicit",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L103",
+      "weight": 1.0
+    },
+    {
+      "source": "references_filters_and_implicit",
+      "target": "references_filters_codeblock_6",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L105",
+      "weight": 1.0
+    },
+    {
+      "source": "references_filters_logical_operators",
+      "target": "references_filters_and_explicit",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L113",
+      "weight": 1.0
+    },
+    {
+      "source": "references_filters_and_explicit",
+      "target": "references_filters_codeblock_7",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L115",
+      "weight": 1.0
+    },
+    {
+      "source": "references_filters_logical_operators",
+      "target": "references_filters_or",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L121",
+      "weight": 1.0
+    },
+    {
+      "source": "references_filters_or",
+      "target": "references_filters_codeblock_8",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L123",
+      "weight": 1.0
+    },
+    {
+      "source": "references_filters_logical_operators",
+      "target": "references_filters_not",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L132",
+      "weight": 1.0
+    },
+    {
+      "source": "references_filters_not",
+      "target": "references_filters_codeblock_9",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L134",
+      "weight": 1.0
+    },
+    {
+      "source": "references_filters_logical_operators",
+      "target": "references_filters_combined",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L147",
+      "weight": 1.0
+    },
+    {
+      "source": "references_filters_combined",
+      "target": "references_filters_codeblock_10",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L149",
+      "weight": 1.0
+    },
+    {
+      "source": "references_filters_filter_conditions_and_operators",
+      "target": "references_filters_relation_filters",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L164",
+      "weight": 1.0
+    },
+    {
+      "source": "references_filters_relation_filters",
+      "target": "references_filters_some",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L166",
+      "weight": 1.0
+    },
+    {
+      "source": "references_filters_some",
+      "target": "references_filters_codeblock_11",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L170",
+      "weight": 1.0
+    },
+    {
+      "source": "references_filters_relation_filters",
+      "target": "references_filters_every",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L181",
+      "weight": 1.0
+    },
+    {
+      "source": "references_filters_every",
+      "target": "references_filters_codeblock_12",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L185",
+      "weight": 1.0
+    },
+    {
+      "source": "references_filters_relation_filters",
+      "target": "references_filters_none",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L196",
+      "weight": 1.0
+    },
+    {
+      "source": "references_filters_none",
+      "target": "references_filters_codeblock_13",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L200",
+      "weight": 1.0
+    },
+    {
+      "source": "references_filters_relation_filters",
+      "target": "references_filters_is_isnot_1_to_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L211",
+      "weight": 1.0
+    },
+    {
+      "source": "references_filters_is_isnot_1_to_1",
+      "target": "references_filters_codeblock_14",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L213",
+      "weight": 1.0
+    },
+    {
+      "source": "references_filters_filter_conditions_and_operators",
+      "target": "references_filters_array_field_filters",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L231",
+      "weight": 1.0
+    },
+    {
+      "source": "references_filters_array_field_filters",
+      "target": "references_filters_codeblock_15",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L235",
+      "weight": 1.0
+    },
+    {
+      "source": "references_filters_filter_conditions_and_operators",
+      "target": "references_filters_json_filters",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L265",
+      "weight": 1.0
+    },
+    {
+      "source": "references_filters_json_filters",
+      "target": "references_filters_codeblock_16",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L267",
+      "weight": 1.0
+    },
+    {
+      "source": "references_filters_filter_conditions_and_operators",
+      "target": "references_filters_full_text_search",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L285",
+      "weight": 1.0
+    },
+    {
+      "source": "references_filters_full_text_search",
+      "target": "references_filters_codeblock_17",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/prisma-client-api/references/filters.md",
+      "source_location": "L287",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

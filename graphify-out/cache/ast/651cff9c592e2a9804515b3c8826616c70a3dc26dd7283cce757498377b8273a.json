@@ -1,1 +1,623 @@
-{"nodes": [{"id": "users_maddozs_personal_projects_recetario_docs_planes_planificador_produccion_md", "label": "planificador-produccion.md", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L1"}, {"id": "planes_planificador_produccion_plan_planificador_de_producci\u00f3n", "label": "Plan: Planificador de Producci\u00f3n", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L1"}, {"id": "planes_planificador_produccion_objetivo", "label": "Objetivo", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L11"}, {"id": "planes_planificador_produccion_1_arquitectura_sin_nuevas_tablas", "label": "1. Arquitectura (sin nuevas tablas)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L22"}, {"id": "planes_planificador_produccion_2_ruta_y_protecci\u00f3n", "label": "2. Ruta y protecci\u00f3n", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L36"}, {"id": "planes_planificador_produccion_2_1_nueva_p\u00e1gina_src_pages_produccion_astro", "label": "2.1 Nueva p\u00e1gina: `src/pages/produccion.astro`", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L38"}, {"id": "planes_planificador_produccion_2_2_navegaci\u00f3n", "label": "2.2 Navegaci\u00f3n", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L44"}, {"id": "planes_planificador_produccion_codeblock_1", "label": "code:astro ({)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L50"}, {"id": "planes_planificador_produccion_codeblock_2", "label": "code:astro (<a)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L62"}, {"id": "planes_planificador_produccion_3_tipos_src_lib_production_types_ts", "label": "3. Tipos (`src/lib/production-types.ts`)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L79"}, {"id": "planes_planificador_produccion_codeblock_3", "label": "code:ts (export type ProductionRecipeSelection = {)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L81"}, {"id": "planes_planificador_produccion_4_l\u00f3gica_de_c\u00e1lculo_src_lib_production_calculator_ts", "label": "4. L\u00f3gica de c\u00e1lculo (`src/lib/production-calculator.ts`)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L129"}, {"id": "planes_planificador_produccion_codeblock_4", "label": "code:ts (export function calculateProduction()", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L133"}, {"id": "planes_planificador_produccion_4_1_algoritmo", "label": "4.1 Algoritmo", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L143"}, {"id": "planes_planificador_produccion_4_2_c\u00e1lculo_de_unitcost_por_ingrediente", "label": "4.2 C\u00e1lculo de unitCost por ingrediente", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L155"}, {"id": "planes_planificador_produccion_codeblock_5", "label": "code:ts (function unitCost(ingredient: Ingredient): number {)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L157"}, {"id": "planes_planificador_produccion_4_3_formateo_de_cantidades", "label": "4.3 Formateo de cantidades", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L163"}, {"id": "planes_planificador_produccion_5_p\u00e1gina_produccion_srp_server_render_pattern", "label": "5. P\u00e1gina `/produccion` (SRP \u2014 Server Render Pattern)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L169"}, {"id": "planes_planificador_produccion_5_1_frontmatter", "label": "5.1 Frontmatter", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L171"}, {"id": "planes_planificador_produccion_codeblock_6", "label": "code:astro (---)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L173"}, {"id": "planes_planificador_produccion_5_2_template", "label": "5.2 Template", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L231"}, {"id": "planes_planificador_produccion_codeblock_7", "label": "code:astro (<Layout title=\"Planificador de Producci\u00f3n\" currentPage={curr)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L233"}, {"id": "planes_planificador_produccion_6_componentes", "label": "6. Componentes", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L273"}, {"id": "planes_planificador_produccion_6_1_productionrecipeselector_astro", "label": "6.1 `ProductionRecipeSelector.astro`", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L275"}, {"id": "planes_planificador_produccion_6_2_productioningredientstable_astro", "label": "6.2 `ProductionIngredientsTable.astro`", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L291"}, {"id": "planes_planificador_produccion_6_3_productionfinancialsummary_astro", "label": "6.3 `ProductionFinancialSummary.astro`", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L308"}, {"id": "planes_planificador_produccion_codeblock_8", "label": "code:block8 (\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L312"}, {"id": "planes_planificador_produccion_6_4_productionrecipebreakdown_astro", "label": "6.4 `ProductionRecipeBreakdown.astro`", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L331"}, {"id": "planes_planificador_produccion_7_hoja_de_producci\u00f3n_print_friendly", "label": "7. Hoja de producci\u00f3n (print-friendly)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L348"}, {"id": "planes_planificador_produccion_codeblock_9", "label": "code:html (<button onclick=\"window.print()\" class=\"...\">)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L352"}, {"id": "planes_planificador_produccion_7_1_estilos_media_print_en_global_css", "label": "7.1 Estilos `@media print` en `global.css`", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L359"}, {"id": "planes_planificador_produccion_codeblock_10", "label": "code:css (@media print {)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L361"}, {"id": "planes_planificador_produccion_8_interacciones_y_ux", "label": "8. Interacciones y UX", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L416"}, {"id": "planes_planificador_produccion_8_1_query_params_para_bookmarking", "label": "8.1 Query params para bookmarking", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L418"}, {"id": "planes_planificador_produccion_codeblock_11", "label": "code:block11 (/produccion?recipes=101,102&batches=2,1)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L422"}, {"id": "planes_planificador_produccion_8_2_manejo_de_errores", "label": "8.2 Manejo de errores", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L429"}, {"id": "planes_planificador_produccion_8_3_loading_state", "label": "8.3 Loading state", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L439"}, {"id": "planes_planificador_produccion_9_archivos_involucrados", "label": "9. Archivos involucrados", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L445"}, {"id": "planes_planificador_produccion_10_verificaci\u00f3n", "label": "10. Verificaci\u00f3n", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L461"}], "edges": [{"source": "users_maddozs_personal_projects_recetario_docs_planes_planificador_produccion_md", "target": "planes_planificador_produccion_plan_planificador_de_producci\u00f3n", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L1", "weight": 1.0}, {"source": "planes_planificador_produccion_plan_planificador_de_producci\u00f3n", "target": "planes_planificador_produccion_objetivo", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L11", "weight": 1.0}, {"source": "planes_planificador_produccion_plan_planificador_de_producci\u00f3n", "target": "planes_planificador_produccion_1_arquitectura_sin_nuevas_tablas", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L22", "weight": 1.0}, {"source": "planes_planificador_produccion_plan_planificador_de_producci\u00f3n", "target": "planes_planificador_produccion_2_ruta_y_protecci\u00f3n", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L36", "weight": 1.0}, {"source": "planes_planificador_produccion_2_ruta_y_protecci\u00f3n", "target": "planes_planificador_produccion_2_1_nueva_p\u00e1gina_src_pages_produccion_astro", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L38", "weight": 1.0}, {"source": "planes_planificador_produccion_2_ruta_y_protecci\u00f3n", "target": "planes_planificador_produccion_2_2_navegaci\u00f3n", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L44", "weight": 1.0}, {"source": "planes_planificador_produccion_2_2_navegaci\u00f3n", "target": "planes_planificador_produccion_codeblock_1", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L50", "weight": 1.0}, {"source": "planes_planificador_produccion_2_2_navegaci\u00f3n", "target": "planes_planificador_produccion_codeblock_2", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L62", "weight": 1.0}, {"source": "planes_planificador_produccion_plan_planificador_de_producci\u00f3n", "target": "planes_planificador_produccion_3_tipos_src_lib_production_types_ts", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L79", "weight": 1.0}, {"source": "planes_planificador_produccion_3_tipos_src_lib_production_types_ts", "target": "planes_planificador_produccion_codeblock_3", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L81", "weight": 1.0}, {"source": "planes_planificador_produccion_plan_planificador_de_producci\u00f3n", "target": "planes_planificador_produccion_4_l\u00f3gica_de_c\u00e1lculo_src_lib_production_calculator_ts", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L129", "weight": 1.0}, {"source": "planes_planificador_produccion_4_l\u00f3gica_de_c\u00e1lculo_src_lib_production_calculator_ts", "target": "planes_planificador_produccion_codeblock_4", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L133", "weight": 1.0}, {"source": "planes_planificador_produccion_4_l\u00f3gica_de_c\u00e1lculo_src_lib_production_calculator_ts", "target": "planes_planificador_produccion_4_1_algoritmo", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L143", "weight": 1.0}, {"source": "planes_planificador_produccion_4_l\u00f3gica_de_c\u00e1lculo_src_lib_production_calculator_ts", "target": "planes_planificador_produccion_4_2_c\u00e1lculo_de_unitcost_por_ingrediente", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L155", "weight": 1.0}, {"source": "planes_planificador_produccion_4_2_c\u00e1lculo_de_unitcost_por_ingrediente", "target": "planes_planificador_produccion_codeblock_5", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L157", "weight": 1.0}, {"source": "planes_planificador_produccion_4_l\u00f3gica_de_c\u00e1lculo_src_lib_production_calculator_ts", "target": "planes_planificador_produccion_4_3_formateo_de_cantidades", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L163", "weight": 1.0}, {"source": "planes_planificador_produccion_plan_planificador_de_producci\u00f3n", "target": "planes_planificador_produccion_5_p\u00e1gina_produccion_srp_server_render_pattern", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L169", "weight": 1.0}, {"source": "planes_planificador_produccion_5_p\u00e1gina_produccion_srp_server_render_pattern", "target": "planes_planificador_produccion_5_1_frontmatter", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L171", "weight": 1.0}, {"source": "planes_planificador_produccion_5_1_frontmatter", "target": "planes_planificador_produccion_codeblock_6", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L173", "weight": 1.0}, {"source": "planes_planificador_produccion_5_p\u00e1gina_produccion_srp_server_render_pattern", "target": "planes_planificador_produccion_5_2_template", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L231", "weight": 1.0}, {"source": "planes_planificador_produccion_5_2_template", "target": "planes_planificador_produccion_codeblock_7", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L233", "weight": 1.0}, {"source": "planes_planificador_produccion_plan_planificador_de_producci\u00f3n", "target": "planes_planificador_produccion_6_componentes", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L273", "weight": 1.0}, {"source": "planes_planificador_produccion_6_componentes", "target": "planes_planificador_produccion_6_1_productionrecipeselector_astro", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L275", "weight": 1.0}, {"source": "planes_planificador_produccion_6_componentes", "target": "planes_planificador_produccion_6_2_productioningredientstable_astro", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L291", "weight": 1.0}, {"source": "planes_planificador_produccion_6_componentes", "target": "planes_planificador_produccion_6_3_productionfinancialsummary_astro", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L308", "weight": 1.0}, {"source": "planes_planificador_produccion_6_3_productionfinancialsummary_astro", "target": "planes_planificador_produccion_codeblock_8", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L312", "weight": 1.0}, {"source": "planes_planificador_produccion_6_componentes", "target": "planes_planificador_produccion_6_4_productionrecipebreakdown_astro", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L331", "weight": 1.0}, {"source": "planes_planificador_produccion_plan_planificador_de_producci\u00f3n", "target": "planes_planificador_produccion_7_hoja_de_producci\u00f3n_print_friendly", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L348", "weight": 1.0}, {"source": "planes_planificador_produccion_7_hoja_de_producci\u00f3n_print_friendly", "target": "planes_planificador_produccion_codeblock_9", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L352", "weight": 1.0}, {"source": "planes_planificador_produccion_7_hoja_de_producci\u00f3n_print_friendly", "target": "planes_planificador_produccion_7_1_estilos_media_print_en_global_css", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L359", "weight": 1.0}, {"source": "planes_planificador_produccion_7_1_estilos_media_print_en_global_css", "target": "planes_planificador_produccion_codeblock_10", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L361", "weight": 1.0}, {"source": "planes_planificador_produccion_plan_planificador_de_producci\u00f3n", "target": "planes_planificador_produccion_8_interacciones_y_ux", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L416", "weight": 1.0}, {"source": "planes_planificador_produccion_8_interacciones_y_ux", "target": "planes_planificador_produccion_8_1_query_params_para_bookmarking", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L418", "weight": 1.0}, {"source": "planes_planificador_produccion_8_1_query_params_para_bookmarking", "target": "planes_planificador_produccion_codeblock_11", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L422", "weight": 1.0}, {"source": "planes_planificador_produccion_8_interacciones_y_ux", "target": "planes_planificador_produccion_8_2_manejo_de_errores", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L429", "weight": 1.0}, {"source": "planes_planificador_produccion_8_interacciones_y_ux", "target": "planes_planificador_produccion_8_3_loading_state", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L439", "weight": 1.0}, {"source": "planes_planificador_produccion_plan_planificador_de_producci\u00f3n", "target": "planes_planificador_produccion_9_archivos_involucrados", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L445", "weight": 1.0}, {"source": "planes_planificador_produccion_plan_planificador_de_producci\u00f3n", "target": "planes_planificador_produccion_10_verificaci\u00f3n", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md", "source_location": "L461", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "users_maddozs_personal_projects_recetario_docs_planes_planificador_produccion_md",
+      "label": "planificador-produccion.md",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "planes_planificador_produccion_plan_planificador_de_producci\u00f3n",
+      "label": "Plan: Planificador de Producci\u00f3n",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "planes_planificador_produccion_objetivo",
+      "label": "Objetivo",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L11"
+    },
+    {
+      "id": "planes_planificador_produccion_1_arquitectura_sin_nuevas_tablas",
+      "label": "1. Arquitectura (sin nuevas tablas)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L22"
+    },
+    {
+      "id": "planes_planificador_produccion_2_ruta_y_protecci\u00f3n",
+      "label": "2. Ruta y protecci\u00f3n",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L36"
+    },
+    {
+      "id": "planes_planificador_produccion_2_1_nueva_p\u00e1gina_src_pages_produccion_astro",
+      "label": "2.1 Nueva p\u00e1gina: `src/pages/produccion.astro`",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L38"
+    },
+    {
+      "id": "planes_planificador_produccion_2_2_navegaci\u00f3n",
+      "label": "2.2 Navegaci\u00f3n",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L44"
+    },
+    {
+      "id": "planes_planificador_produccion_codeblock_1",
+      "label": "code:astro ({)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L50"
+    },
+    {
+      "id": "planes_planificador_produccion_codeblock_2",
+      "label": "code:astro (<a)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L62"
+    },
+    {
+      "id": "planes_planificador_produccion_3_tipos_src_lib_production_types_ts",
+      "label": "3. Tipos (`src/lib/production-types.ts`)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L79"
+    },
+    {
+      "id": "planes_planificador_produccion_codeblock_3",
+      "label": "code:ts (export type ProductionRecipeSelection = {)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L81"
+    },
+    {
+      "id": "planes_planificador_produccion_4_l\u00f3gica_de_c\u00e1lculo_src_lib_production_calculator_ts",
+      "label": "4. L\u00f3gica de c\u00e1lculo (`src/lib/production-calculator.ts`)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L129"
+    },
+    {
+      "id": "planes_planificador_produccion_codeblock_4",
+      "label": "code:ts (export function calculateProduction()",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L133"
+    },
+    {
+      "id": "planes_planificador_produccion_4_1_algoritmo",
+      "label": "4.1 Algoritmo",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L143"
+    },
+    {
+      "id": "planes_planificador_produccion_4_2_c\u00e1lculo_de_unitcost_por_ingrediente",
+      "label": "4.2 C\u00e1lculo de unitCost por ingrediente",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L155"
+    },
+    {
+      "id": "planes_planificador_produccion_codeblock_5",
+      "label": "code:ts (function unitCost(ingredient: Ingredient): number {)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L157"
+    },
+    {
+      "id": "planes_planificador_produccion_4_3_formateo_de_cantidades",
+      "label": "4.3 Formateo de cantidades",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L163"
+    },
+    {
+      "id": "planes_planificador_produccion_5_p\u00e1gina_produccion_srp_server_render_pattern",
+      "label": "5. P\u00e1gina `/produccion` (SRP \u2014 Server Render Pattern)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L169"
+    },
+    {
+      "id": "planes_planificador_produccion_5_1_frontmatter",
+      "label": "5.1 Frontmatter",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L171"
+    },
+    {
+      "id": "planes_planificador_produccion_codeblock_6",
+      "label": "code:astro (---)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L173"
+    },
+    {
+      "id": "planes_planificador_produccion_5_2_template",
+      "label": "5.2 Template",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L231"
+    },
+    {
+      "id": "planes_planificador_produccion_codeblock_7",
+      "label": "code:astro (<Layout title=\"Planificador de Producci\u00f3n\" currentPage={curr)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L233"
+    },
+    {
+      "id": "planes_planificador_produccion_6_componentes",
+      "label": "6. Componentes",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L273"
+    },
+    {
+      "id": "planes_planificador_produccion_6_1_productionrecipeselector_astro",
+      "label": "6.1 `ProductionRecipeSelector.astro`",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L275"
+    },
+    {
+      "id": "planes_planificador_produccion_6_2_productioningredientstable_astro",
+      "label": "6.2 `ProductionIngredientsTable.astro`",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L291"
+    },
+    {
+      "id": "planes_planificador_produccion_6_3_productionfinancialsummary_astro",
+      "label": "6.3 `ProductionFinancialSummary.astro`",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L308"
+    },
+    {
+      "id": "planes_planificador_produccion_codeblock_8",
+      "label": "code:block8 (\u250c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u252c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L312"
+    },
+    {
+      "id": "planes_planificador_produccion_6_4_productionrecipebreakdown_astro",
+      "label": "6.4 `ProductionRecipeBreakdown.astro`",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L331"
+    },
+    {
+      "id": "planes_planificador_produccion_7_hoja_de_producci\u00f3n_print_friendly",
+      "label": "7. Hoja de producci\u00f3n (print-friendly)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L348"
+    },
+    {
+      "id": "planes_planificador_produccion_codeblock_9",
+      "label": "code:html (<button onclick=\"window.print()\" class=\"...\">)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L352"
+    },
+    {
+      "id": "planes_planificador_produccion_7_1_estilos_media_print_en_global_css",
+      "label": "7.1 Estilos `@media print` en `global.css`",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L359"
+    },
+    {
+      "id": "planes_planificador_produccion_codeblock_10",
+      "label": "code:css (@media print {)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L361"
+    },
+    {
+      "id": "planes_planificador_produccion_8_interacciones_y_ux",
+      "label": "8. Interacciones y UX",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L416"
+    },
+    {
+      "id": "planes_planificador_produccion_8_1_query_params_para_bookmarking",
+      "label": "8.1 Query params para bookmarking",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L418"
+    },
+    {
+      "id": "planes_planificador_produccion_codeblock_11",
+      "label": "code:block11 (/produccion?recipes=101,102&batches=2,1)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L422"
+    },
+    {
+      "id": "planes_planificador_produccion_8_2_manejo_de_errores",
+      "label": "8.2 Manejo de errores",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L429"
+    },
+    {
+      "id": "planes_planificador_produccion_8_3_loading_state",
+      "label": "8.3 Loading state",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L439"
+    },
+    {
+      "id": "planes_planificador_produccion_9_archivos_involucrados",
+      "label": "9. Archivos involucrados",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L445"
+    },
+    {
+      "id": "planes_planificador_produccion_10_verificaci\u00f3n",
+      "label": "10. Verificaci\u00f3n",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L461"
+    }
+  ],
+  "edges": [
+    {
+      "source": "users_maddozs_personal_projects_recetario_docs_planes_planificador_produccion_md",
+      "target": "planes_planificador_produccion_plan_planificador_de_producci\u00f3n",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_planificador_produccion_plan_planificador_de_producci\u00f3n",
+      "target": "planes_planificador_produccion_objetivo",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_planificador_produccion_plan_planificador_de_producci\u00f3n",
+      "target": "planes_planificador_produccion_1_arquitectura_sin_nuevas_tablas",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L22",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_planificador_produccion_plan_planificador_de_producci\u00f3n",
+      "target": "planes_planificador_produccion_2_ruta_y_protecci\u00f3n",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L36",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_planificador_produccion_2_ruta_y_protecci\u00f3n",
+      "target": "planes_planificador_produccion_2_1_nueva_p\u00e1gina_src_pages_produccion_astro",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L38",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_planificador_produccion_2_ruta_y_protecci\u00f3n",
+      "target": "planes_planificador_produccion_2_2_navegaci\u00f3n",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L44",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_planificador_produccion_2_2_navegaci\u00f3n",
+      "target": "planes_planificador_produccion_codeblock_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L50",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_planificador_produccion_2_2_navegaci\u00f3n",
+      "target": "planes_planificador_produccion_codeblock_2",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L62",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_planificador_produccion_plan_planificador_de_producci\u00f3n",
+      "target": "planes_planificador_produccion_3_tipos_src_lib_production_types_ts",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L79",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_planificador_produccion_3_tipos_src_lib_production_types_ts",
+      "target": "planes_planificador_produccion_codeblock_3",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L81",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_planificador_produccion_plan_planificador_de_producci\u00f3n",
+      "target": "planes_planificador_produccion_4_l\u00f3gica_de_c\u00e1lculo_src_lib_production_calculator_ts",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L129",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_planificador_produccion_4_l\u00f3gica_de_c\u00e1lculo_src_lib_production_calculator_ts",
+      "target": "planes_planificador_produccion_codeblock_4",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L133",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_planificador_produccion_4_l\u00f3gica_de_c\u00e1lculo_src_lib_production_calculator_ts",
+      "target": "planes_planificador_produccion_4_1_algoritmo",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L143",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_planificador_produccion_4_l\u00f3gica_de_c\u00e1lculo_src_lib_production_calculator_ts",
+      "target": "planes_planificador_produccion_4_2_c\u00e1lculo_de_unitcost_por_ingrediente",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L155",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_planificador_produccion_4_2_c\u00e1lculo_de_unitcost_por_ingrediente",
+      "target": "planes_planificador_produccion_codeblock_5",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L157",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_planificador_produccion_4_l\u00f3gica_de_c\u00e1lculo_src_lib_production_calculator_ts",
+      "target": "planes_planificador_produccion_4_3_formateo_de_cantidades",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L163",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_planificador_produccion_plan_planificador_de_producci\u00f3n",
+      "target": "planes_planificador_produccion_5_p\u00e1gina_produccion_srp_server_render_pattern",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L169",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_planificador_produccion_5_p\u00e1gina_produccion_srp_server_render_pattern",
+      "target": "planes_planificador_produccion_5_1_frontmatter",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L171",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_planificador_produccion_5_1_frontmatter",
+      "target": "planes_planificador_produccion_codeblock_6",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L173",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_planificador_produccion_5_p\u00e1gina_produccion_srp_server_render_pattern",
+      "target": "planes_planificador_produccion_5_2_template",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L231",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_planificador_produccion_5_2_template",
+      "target": "planes_planificador_produccion_codeblock_7",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L233",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_planificador_produccion_plan_planificador_de_producci\u00f3n",
+      "target": "planes_planificador_produccion_6_componentes",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L273",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_planificador_produccion_6_componentes",
+      "target": "planes_planificador_produccion_6_1_productionrecipeselector_astro",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L275",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_planificador_produccion_6_componentes",
+      "target": "planes_planificador_produccion_6_2_productioningredientstable_astro",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L291",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_planificador_produccion_6_componentes",
+      "target": "planes_planificador_produccion_6_3_productionfinancialsummary_astro",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L308",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_planificador_produccion_6_3_productionfinancialsummary_astro",
+      "target": "planes_planificador_produccion_codeblock_8",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L312",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_planificador_produccion_6_componentes",
+      "target": "planes_planificador_produccion_6_4_productionrecipebreakdown_astro",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L331",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_planificador_produccion_plan_planificador_de_producci\u00f3n",
+      "target": "planes_planificador_produccion_7_hoja_de_producci\u00f3n_print_friendly",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L348",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_planificador_produccion_7_hoja_de_producci\u00f3n_print_friendly",
+      "target": "planes_planificador_produccion_codeblock_9",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L352",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_planificador_produccion_7_hoja_de_producci\u00f3n_print_friendly",
+      "target": "planes_planificador_produccion_7_1_estilos_media_print_en_global_css",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L359",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_planificador_produccion_7_1_estilos_media_print_en_global_css",
+      "target": "planes_planificador_produccion_codeblock_10",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L361",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_planificador_produccion_plan_planificador_de_producci\u00f3n",
+      "target": "planes_planificador_produccion_8_interacciones_y_ux",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L416",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_planificador_produccion_8_interacciones_y_ux",
+      "target": "planes_planificador_produccion_8_1_query_params_para_bookmarking",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L418",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_planificador_produccion_8_1_query_params_para_bookmarking",
+      "target": "planes_planificador_produccion_codeblock_11",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L422",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_planificador_produccion_8_interacciones_y_ux",
+      "target": "planes_planificador_produccion_8_2_manejo_de_errores",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L429",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_planificador_produccion_8_interacciones_y_ux",
+      "target": "planes_planificador_produccion_8_3_loading_state",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L439",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_planificador_produccion_plan_planificador_de_producci\u00f3n",
+      "target": "planes_planificador_produccion_9_archivos_involucrados",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L445",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_planificador_produccion_plan_planificador_de_producci\u00f3n",
+      "target": "planes_planificador_produccion_10_verificaci\u00f3n",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/planificador-produccion.md",
+      "source_location": "L461",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

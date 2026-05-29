@@ -3,11 +3,19 @@ import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prisma } from "@/lib/prisma";
 import { sendEmail } from "@/lib/email";
+import { createAuthMiddleware, APIError } from "better-auth/api";
+import { validatePassword } from "@/lib/password-validation";
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
+  user: {
+    additionalFields: {
+      firstName: { type: "string", required: true },
+      lastName: { type: "string", required: true },
+    },
+  },
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true,
@@ -43,8 +51,25 @@ export const auth = betterAuth({
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      disableSignUp: true,
+      disableSignUp: false,
+      mapProfileToUser: (profile) => ({
+        firstName: profile.given_name,
+        lastName: profile.family_name,
+      }),
     },
+  },
+  hooks: {
+    before: createAuthMiddleware(async (ctx) => {
+      if (ctx.path === "/sign-up/email") {
+        const password = ctx.body?.password as string | undefined;
+        if (!password || !validatePassword(password).valid) {
+          throw new APIError("BAD_REQUEST", {
+            message:
+              "La contraseña debe tener al menos 8 caracteres, incluir mayúsculas, minúsculas, números y un carácter especial.",
+          });
+        }
+      }
+    }),
   },
   onAPIError: {
     errorURL: "/sign-in",

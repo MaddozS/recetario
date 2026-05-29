@@ -1,1 +1,431 @@
-{"nodes": [{"id": "users_maddozs_personal_projects_recetario_docs_planes_monetizacion_suscripciones_md", "label": "monetizacion-suscripciones.md", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md", "source_location": "L1"}, {"id": "planes_monetizacion_suscripciones_plan_de_monetizaci\u00f3n_modelo_de_suscripciones", "label": "Plan de Monetizaci\u00f3n: Modelo de Suscripciones", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md", "source_location": "L1"}, {"id": "planes_monetizacion_suscripciones_1_resumen_ejecutivo", "label": "1. Resumen Ejecutivo", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md", "source_location": "L10"}, {"id": "planes_monetizacion_suscripciones_2_estructura_de_planes", "label": "2. Estructura de Planes", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md", "source_location": "L21"}, {"id": "planes_monetizacion_suscripciones_tabla_comparativa", "label": "Tabla Comparativa", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md", "source_location": "L23"}, {"id": "planes_monetizacion_suscripciones_precios_sugeridos", "label": "Precios Sugeridos", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md", "source_location": "L43"}, {"id": "planes_monetizacion_suscripciones_justificaci\u00f3n_del_modelo_de_3_planes", "label": "Justificaci\u00f3n del Modelo de 3 Planes", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md", "source_location": "L52"}, {"id": "planes_monetizacion_suscripciones_3_mapeo_de_features_vs_planes", "label": "3. Mapeo de Features vs Planes", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md", "source_location": "L58"}, {"id": "planes_monetizacion_suscripciones_4_stack_t\u00e9cnico_de_billing", "label": "4. Stack T\u00e9cnico de Billing", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md", "source_location": "L84"}, {"id": "planes_monetizacion_suscripciones_componentes", "label": "Componentes", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md", "source_location": "L86"}, {"id": "planes_monetizacion_suscripciones_variables_de_entorno", "label": "Variables de Entorno", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md", "source_location": "L97"}, {"id": "planes_monetizacion_suscripciones_codeblock_1", "label": "code:bash (STRIPE_SECRET_KEY=sk_live_...)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md", "source_location": "L99"}, {"id": "planes_monetizacion_suscripciones_esquema_de_base_de_datos", "label": "Esquema de Base de Datos", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md", "source_location": "L108"}, {"id": "planes_monetizacion_suscripciones_codeblock_2", "label": "code:sql (-- Planes disponibles)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md", "source_location": "L110"}, {"id": "planes_monetizacion_suscripciones_arquitectura_implementada", "label": "Arquitectura Implementada", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md", "source_location": "L141"}, {"id": "planes_monetizacion_suscripciones_5_flujo_de_usuario", "label": "5. Flujo de Usuario", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md", "source_location": "L150"}, {"id": "planes_monetizacion_suscripciones_codeblock_3", "label": "code:block3 (1. Usuario se registra (Google OAuth))", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md", "source_location": "L152"}, {"id": "planes_monetizacion_suscripciones_6_roadmap_de_implementaci\u00f3n", "label": "6. Roadmap de Implementaci\u00f3n", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md", "source_location": "L182"}, {"id": "planes_monetizacion_suscripciones_fase_1_fundamentos_de_billing_completada", "label": "Fase 1: Fundamentos de Billing \u2705 (Completada)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md", "source_location": "L184"}, {"id": "planes_monetizacion_suscripciones_fase_2_feature_gates_y_l\u00edmites_completada", "label": "Fase 2: Feature Gates y L\u00edmites \u2705 (Completada)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md", "source_location": "L194"}, {"id": "planes_monetizacion_suscripciones_fase_3_trial_y_optimizaci\u00f3n_completada", "label": "Fase 3: Trial y Optimizaci\u00f3n \u2705 (Completada)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md", "source_location": "L203"}, {"id": "planes_monetizacion_suscripciones_fase_4_power_features_progresivo_post_lanzamiento", "label": "Fase 4: Power Features (Progresivo, post-lanzamiento)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md", "source_location": "L210"}, {"id": "planes_monetizacion_suscripciones_7_m\u00e9tricas_de_\u00e9xito_kpis", "label": "7. M\u00e9tricas de \u00c9xito (KPIs)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md", "source_location": "L219"}, {"id": "planes_monetizacion_suscripciones_8_riesgos_y_mitigaciones", "label": "8. Riesgos y Mitigaciones", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md", "source_location": "L234"}, {"id": "planes_monetizacion_suscripciones_9_decisiones_tomadas", "label": "9. Decisiones Tomadas", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md", "source_location": "L248"}, {"id": "planes_monetizacion_suscripciones_decisiones_pendientes", "label": "Decisiones Pendientes", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md", "source_location": "L256"}, {"id": "planes_monetizacion_suscripciones_10_referencias_y_recursos", "label": "10. Referencias y Recursos", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md", "source_location": "L264"}], "edges": [{"source": "users_maddozs_personal_projects_recetario_docs_planes_monetizacion_suscripciones_md", "target": "planes_monetizacion_suscripciones_plan_de_monetizaci\u00f3n_modelo_de_suscripciones", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md", "source_location": "L1", "weight": 1.0}, {"source": "planes_monetizacion_suscripciones_plan_de_monetizaci\u00f3n_modelo_de_suscripciones", "target": "planes_monetizacion_suscripciones_1_resumen_ejecutivo", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md", "source_location": "L10", "weight": 1.0}, {"source": "planes_monetizacion_suscripciones_plan_de_monetizaci\u00f3n_modelo_de_suscripciones", "target": "planes_monetizacion_suscripciones_2_estructura_de_planes", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md", "source_location": "L21", "weight": 1.0}, {"source": "planes_monetizacion_suscripciones_2_estructura_de_planes", "target": "planes_monetizacion_suscripciones_tabla_comparativa", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md", "source_location": "L23", "weight": 1.0}, {"source": "planes_monetizacion_suscripciones_2_estructura_de_planes", "target": "planes_monetizacion_suscripciones_precios_sugeridos", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md", "source_location": "L43", "weight": 1.0}, {"source": "planes_monetizacion_suscripciones_2_estructura_de_planes", "target": "planes_monetizacion_suscripciones_justificaci\u00f3n_del_modelo_de_3_planes", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md", "source_location": "L52", "weight": 1.0}, {"source": "planes_monetizacion_suscripciones_plan_de_monetizaci\u00f3n_modelo_de_suscripciones", "target": "planes_monetizacion_suscripciones_3_mapeo_de_features_vs_planes", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md", "source_location": "L58", "weight": 1.0}, {"source": "planes_monetizacion_suscripciones_plan_de_monetizaci\u00f3n_modelo_de_suscripciones", "target": "planes_monetizacion_suscripciones_4_stack_t\u00e9cnico_de_billing", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md", "source_location": "L84", "weight": 1.0}, {"source": "planes_monetizacion_suscripciones_4_stack_t\u00e9cnico_de_billing", "target": "planes_monetizacion_suscripciones_componentes", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md", "source_location": "L86", "weight": 1.0}, {"source": "planes_monetizacion_suscripciones_4_stack_t\u00e9cnico_de_billing", "target": "planes_monetizacion_suscripciones_variables_de_entorno", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md", "source_location": "L97", "weight": 1.0}, {"source": "planes_monetizacion_suscripciones_variables_de_entorno", "target": "planes_monetizacion_suscripciones_codeblock_1", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md", "source_location": "L99", "weight": 1.0}, {"source": "planes_monetizacion_suscripciones_4_stack_t\u00e9cnico_de_billing", "target": "planes_monetizacion_suscripciones_esquema_de_base_de_datos", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md", "source_location": "L108", "weight": 1.0}, {"source": "planes_monetizacion_suscripciones_esquema_de_base_de_datos", "target": "planes_monetizacion_suscripciones_codeblock_2", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md", "source_location": "L110", "weight": 1.0}, {"source": "planes_monetizacion_suscripciones_4_stack_t\u00e9cnico_de_billing", "target": "planes_monetizacion_suscripciones_arquitectura_implementada", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md", "source_location": "L141", "weight": 1.0}, {"source": "planes_monetizacion_suscripciones_plan_de_monetizaci\u00f3n_modelo_de_suscripciones", "target": "planes_monetizacion_suscripciones_5_flujo_de_usuario", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md", "source_location": "L150", "weight": 1.0}, {"source": "planes_monetizacion_suscripciones_5_flujo_de_usuario", "target": "planes_monetizacion_suscripciones_codeblock_3", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md", "source_location": "L152", "weight": 1.0}, {"source": "planes_monetizacion_suscripciones_plan_de_monetizaci\u00f3n_modelo_de_suscripciones", "target": "planes_monetizacion_suscripciones_6_roadmap_de_implementaci\u00f3n", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md", "source_location": "L182", "weight": 1.0}, {"source": "planes_monetizacion_suscripciones_6_roadmap_de_implementaci\u00f3n", "target": "planes_monetizacion_suscripciones_fase_1_fundamentos_de_billing_completada", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md", "source_location": "L184", "weight": 1.0}, {"source": "planes_monetizacion_suscripciones_6_roadmap_de_implementaci\u00f3n", "target": "planes_monetizacion_suscripciones_fase_2_feature_gates_y_l\u00edmites_completada", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md", "source_location": "L194", "weight": 1.0}, {"source": "planes_monetizacion_suscripciones_6_roadmap_de_implementaci\u00f3n", "target": "planes_monetizacion_suscripciones_fase_3_trial_y_optimizaci\u00f3n_completada", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md", "source_location": "L203", "weight": 1.0}, {"source": "planes_monetizacion_suscripciones_6_roadmap_de_implementaci\u00f3n", "target": "planes_monetizacion_suscripciones_fase_4_power_features_progresivo_post_lanzamiento", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md", "source_location": "L210", "weight": 1.0}, {"source": "planes_monetizacion_suscripciones_plan_de_monetizaci\u00f3n_modelo_de_suscripciones", "target": "planes_monetizacion_suscripciones_7_m\u00e9tricas_de_\u00e9xito_kpis", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md", "source_location": "L219", "weight": 1.0}, {"source": "planes_monetizacion_suscripciones_plan_de_monetizaci\u00f3n_modelo_de_suscripciones", "target": "planes_monetizacion_suscripciones_8_riesgos_y_mitigaciones", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md", "source_location": "L234", "weight": 1.0}, {"source": "planes_monetizacion_suscripciones_plan_de_monetizaci\u00f3n_modelo_de_suscripciones", "target": "planes_monetizacion_suscripciones_9_decisiones_tomadas", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md", "source_location": "L248", "weight": 1.0}, {"source": "planes_monetizacion_suscripciones_9_decisiones_tomadas", "target": "planes_monetizacion_suscripciones_decisiones_pendientes", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md", "source_location": "L256", "weight": 1.0}, {"source": "planes_monetizacion_suscripciones_plan_de_monetizaci\u00f3n_modelo_de_suscripciones", "target": "planes_monetizacion_suscripciones_10_referencias_y_recursos", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md", "source_location": "L264", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "users_maddozs_personal_projects_recetario_docs_planes_monetizacion_suscripciones_md",
+      "label": "monetizacion-suscripciones.md",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "planes_monetizacion_suscripciones_plan_de_monetizaci\u00f3n_modelo_de_suscripciones",
+      "label": "Plan de Monetizaci\u00f3n: Modelo de Suscripciones",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "planes_monetizacion_suscripciones_1_resumen_ejecutivo",
+      "label": "1. Resumen Ejecutivo",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md",
+      "source_location": "L10"
+    },
+    {
+      "id": "planes_monetizacion_suscripciones_2_estructura_de_planes",
+      "label": "2. Estructura de Planes",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md",
+      "source_location": "L21"
+    },
+    {
+      "id": "planes_monetizacion_suscripciones_tabla_comparativa",
+      "label": "Tabla Comparativa",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md",
+      "source_location": "L23"
+    },
+    {
+      "id": "planes_monetizacion_suscripciones_precios_sugeridos",
+      "label": "Precios Sugeridos",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md",
+      "source_location": "L43"
+    },
+    {
+      "id": "planes_monetizacion_suscripciones_justificaci\u00f3n_del_modelo_de_3_planes",
+      "label": "Justificaci\u00f3n del Modelo de 3 Planes",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md",
+      "source_location": "L52"
+    },
+    {
+      "id": "planes_monetizacion_suscripciones_3_mapeo_de_features_vs_planes",
+      "label": "3. Mapeo de Features vs Planes",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md",
+      "source_location": "L58"
+    },
+    {
+      "id": "planes_monetizacion_suscripciones_4_stack_t\u00e9cnico_de_billing",
+      "label": "4. Stack T\u00e9cnico de Billing",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md",
+      "source_location": "L84"
+    },
+    {
+      "id": "planes_monetizacion_suscripciones_componentes",
+      "label": "Componentes",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md",
+      "source_location": "L86"
+    },
+    {
+      "id": "planes_monetizacion_suscripciones_variables_de_entorno",
+      "label": "Variables de Entorno",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md",
+      "source_location": "L97"
+    },
+    {
+      "id": "planes_monetizacion_suscripciones_codeblock_1",
+      "label": "code:bash (STRIPE_SECRET_KEY=sk_live_...)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md",
+      "source_location": "L99"
+    },
+    {
+      "id": "planes_monetizacion_suscripciones_esquema_de_base_de_datos",
+      "label": "Esquema de Base de Datos",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md",
+      "source_location": "L108"
+    },
+    {
+      "id": "planes_monetizacion_suscripciones_codeblock_2",
+      "label": "code:sql (-- Planes disponibles)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md",
+      "source_location": "L110"
+    },
+    {
+      "id": "planes_monetizacion_suscripciones_arquitectura_implementada",
+      "label": "Arquitectura Implementada",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md",
+      "source_location": "L141"
+    },
+    {
+      "id": "planes_monetizacion_suscripciones_5_flujo_de_usuario",
+      "label": "5. Flujo de Usuario",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md",
+      "source_location": "L150"
+    },
+    {
+      "id": "planes_monetizacion_suscripciones_codeblock_3",
+      "label": "code:block3 (1. Usuario se registra (Google OAuth))",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md",
+      "source_location": "L152"
+    },
+    {
+      "id": "planes_monetizacion_suscripciones_6_roadmap_de_implementaci\u00f3n",
+      "label": "6. Roadmap de Implementaci\u00f3n",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md",
+      "source_location": "L182"
+    },
+    {
+      "id": "planes_monetizacion_suscripciones_fase_1_fundamentos_de_billing_completada",
+      "label": "Fase 1: Fundamentos de Billing \u2705 (Completada)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md",
+      "source_location": "L184"
+    },
+    {
+      "id": "planes_monetizacion_suscripciones_fase_2_feature_gates_y_l\u00edmites_completada",
+      "label": "Fase 2: Feature Gates y L\u00edmites \u2705 (Completada)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md",
+      "source_location": "L194"
+    },
+    {
+      "id": "planes_monetizacion_suscripciones_fase_3_trial_y_optimizaci\u00f3n_completada",
+      "label": "Fase 3: Trial y Optimizaci\u00f3n \u2705 (Completada)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md",
+      "source_location": "L203"
+    },
+    {
+      "id": "planes_monetizacion_suscripciones_fase_4_power_features_progresivo_post_lanzamiento",
+      "label": "Fase 4: Power Features (Progresivo, post-lanzamiento)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md",
+      "source_location": "L210"
+    },
+    {
+      "id": "planes_monetizacion_suscripciones_7_m\u00e9tricas_de_\u00e9xito_kpis",
+      "label": "7. M\u00e9tricas de \u00c9xito (KPIs)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md",
+      "source_location": "L219"
+    },
+    {
+      "id": "planes_monetizacion_suscripciones_8_riesgos_y_mitigaciones",
+      "label": "8. Riesgos y Mitigaciones",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md",
+      "source_location": "L234"
+    },
+    {
+      "id": "planes_monetizacion_suscripciones_9_decisiones_tomadas",
+      "label": "9. Decisiones Tomadas",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md",
+      "source_location": "L248"
+    },
+    {
+      "id": "planes_monetizacion_suscripciones_decisiones_pendientes",
+      "label": "Decisiones Pendientes",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md",
+      "source_location": "L256"
+    },
+    {
+      "id": "planes_monetizacion_suscripciones_10_referencias_y_recursos",
+      "label": "10. Referencias y Recursos",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md",
+      "source_location": "L264"
+    }
+  ],
+  "edges": [
+    {
+      "source": "users_maddozs_personal_projects_recetario_docs_planes_monetizacion_suscripciones_md",
+      "target": "planes_monetizacion_suscripciones_plan_de_monetizaci\u00f3n_modelo_de_suscripciones",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_monetizacion_suscripciones_plan_de_monetizaci\u00f3n_modelo_de_suscripciones",
+      "target": "planes_monetizacion_suscripciones_1_resumen_ejecutivo",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_monetizacion_suscripciones_plan_de_monetizaci\u00f3n_modelo_de_suscripciones",
+      "target": "planes_monetizacion_suscripciones_2_estructura_de_planes",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md",
+      "source_location": "L21",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_monetizacion_suscripciones_2_estructura_de_planes",
+      "target": "planes_monetizacion_suscripciones_tabla_comparativa",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_monetizacion_suscripciones_2_estructura_de_planes",
+      "target": "planes_monetizacion_suscripciones_precios_sugeridos",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md",
+      "source_location": "L43",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_monetizacion_suscripciones_2_estructura_de_planes",
+      "target": "planes_monetizacion_suscripciones_justificaci\u00f3n_del_modelo_de_3_planes",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md",
+      "source_location": "L52",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_monetizacion_suscripciones_plan_de_monetizaci\u00f3n_modelo_de_suscripciones",
+      "target": "planes_monetizacion_suscripciones_3_mapeo_de_features_vs_planes",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md",
+      "source_location": "L58",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_monetizacion_suscripciones_plan_de_monetizaci\u00f3n_modelo_de_suscripciones",
+      "target": "planes_monetizacion_suscripciones_4_stack_t\u00e9cnico_de_billing",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md",
+      "source_location": "L84",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_monetizacion_suscripciones_4_stack_t\u00e9cnico_de_billing",
+      "target": "planes_monetizacion_suscripciones_componentes",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md",
+      "source_location": "L86",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_monetizacion_suscripciones_4_stack_t\u00e9cnico_de_billing",
+      "target": "planes_monetizacion_suscripciones_variables_de_entorno",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md",
+      "source_location": "L97",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_monetizacion_suscripciones_variables_de_entorno",
+      "target": "planes_monetizacion_suscripciones_codeblock_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md",
+      "source_location": "L99",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_monetizacion_suscripciones_4_stack_t\u00e9cnico_de_billing",
+      "target": "planes_monetizacion_suscripciones_esquema_de_base_de_datos",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md",
+      "source_location": "L108",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_monetizacion_suscripciones_esquema_de_base_de_datos",
+      "target": "planes_monetizacion_suscripciones_codeblock_2",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md",
+      "source_location": "L110",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_monetizacion_suscripciones_4_stack_t\u00e9cnico_de_billing",
+      "target": "planes_monetizacion_suscripciones_arquitectura_implementada",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md",
+      "source_location": "L141",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_monetizacion_suscripciones_plan_de_monetizaci\u00f3n_modelo_de_suscripciones",
+      "target": "planes_monetizacion_suscripciones_5_flujo_de_usuario",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md",
+      "source_location": "L150",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_monetizacion_suscripciones_5_flujo_de_usuario",
+      "target": "planes_monetizacion_suscripciones_codeblock_3",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md",
+      "source_location": "L152",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_monetizacion_suscripciones_plan_de_monetizaci\u00f3n_modelo_de_suscripciones",
+      "target": "planes_monetizacion_suscripciones_6_roadmap_de_implementaci\u00f3n",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md",
+      "source_location": "L182",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_monetizacion_suscripciones_6_roadmap_de_implementaci\u00f3n",
+      "target": "planes_monetizacion_suscripciones_fase_1_fundamentos_de_billing_completada",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md",
+      "source_location": "L184",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_monetizacion_suscripciones_6_roadmap_de_implementaci\u00f3n",
+      "target": "planes_monetizacion_suscripciones_fase_2_feature_gates_y_l\u00edmites_completada",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md",
+      "source_location": "L194",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_monetizacion_suscripciones_6_roadmap_de_implementaci\u00f3n",
+      "target": "planes_monetizacion_suscripciones_fase_3_trial_y_optimizaci\u00f3n_completada",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md",
+      "source_location": "L203",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_monetizacion_suscripciones_6_roadmap_de_implementaci\u00f3n",
+      "target": "planes_monetizacion_suscripciones_fase_4_power_features_progresivo_post_lanzamiento",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md",
+      "source_location": "L210",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_monetizacion_suscripciones_plan_de_monetizaci\u00f3n_modelo_de_suscripciones",
+      "target": "planes_monetizacion_suscripciones_7_m\u00e9tricas_de_\u00e9xito_kpis",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md",
+      "source_location": "L219",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_monetizacion_suscripciones_plan_de_monetizaci\u00f3n_modelo_de_suscripciones",
+      "target": "planes_monetizacion_suscripciones_8_riesgos_y_mitigaciones",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md",
+      "source_location": "L234",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_monetizacion_suscripciones_plan_de_monetizaci\u00f3n_modelo_de_suscripciones",
+      "target": "planes_monetizacion_suscripciones_9_decisiones_tomadas",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md",
+      "source_location": "L248",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_monetizacion_suscripciones_9_decisiones_tomadas",
+      "target": "planes_monetizacion_suscripciones_decisiones_pendientes",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md",
+      "source_location": "L256",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_monetizacion_suscripciones_plan_de_monetizaci\u00f3n_modelo_de_suscripciones",
+      "target": "planes_monetizacion_suscripciones_10_referencias_y_recursos",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/monetizacion-suscripciones.md",
+      "source_location": "L264",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

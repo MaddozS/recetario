@@ -1648,6 +1648,8 @@ export type SubscriptionPlanScalarFieldEnum =
 export const UserScalarFieldEnum = {
   id: "id",
   name: "name",
+  firstName: "firstName",
+  lastName: "lastName",
   email: "email",
   emailVerified: "emailVerified",
   image: "image",

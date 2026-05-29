@@ -1,1 +1,13 @@
-{"nodes": [{"id": "users_maddozs_personal_projects_recetario_src_components_skeleton_astro", "label": "Skeleton.astro", "file_type": "code", "source_file": "/Users/maddozs/personal-projects/recetario/src/components/Skeleton.astro", "source_location": "L1"}], "edges": [], "raw_calls": []}
+{
+  "nodes": [
+    {
+      "id": "users_maddozs_personal_projects_recetario_src_components_skeleton_astro",
+      "label": "Skeleton.astro",
+      "file_type": "code",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/components/Skeleton.astro",
+      "source_location": "L1"
+    }
+  ],
+  "edges": [],
+  "raw_calls": []
+}

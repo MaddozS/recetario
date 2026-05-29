@@ -1,1 +1,383 @@
-{"nodes": [{"id": "users_maddozs_personal_projects_recetario_docs_planes_produccion_01_migracion_basic_md", "label": "01-migracion-basic.md", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md", "source_location": "L1"}, {"id": "produccion_01_migracion_basic_f1_migraci\u00f3n_a_basic_l\u00edmite_de_recetas", "label": "F1: Migraci\u00f3n a Basic + L\u00edmite de recetas", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md", "source_location": "L1"}, {"id": "produccion_01_migracion_basic_objetivo", "label": "Objetivo", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md", "source_location": "L11"}, {"id": "produccion_01_migracion_basic_1_cambios_en_feature_gates", "label": "1. Cambios en feature gates", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md", "source_location": "L20"}, {"id": "produccion_01_migracion_basic_1_1_src_lib_db_billing_ts", "label": "1.1 `src/lib/db/billing.ts`", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md", "source_location": "L22"}, {"id": "produccion_01_migracion_basic_codeblock_1", "label": "code:diff (const BASIC_FEATURES: Record<string, boolean> = {)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md", "source_location": "L24"}, {"id": "produccion_01_migracion_basic_1_2_src_lib_subscription_ts", "label": "1.2 `src/lib/subscription.ts`", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md", "source_location": "L57"}, {"id": "produccion_01_migracion_basic_codeblock_2", "label": "code:diff (const FREE_FEATURES: Record<string, boolean> = {)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md", "source_location": "L59"}, {"id": "produccion_01_migracion_basic_1_3_migraci\u00f3n_de_base_de_datos", "label": "1.3 Migraci\u00f3n de base de datos", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md", "source_location": "L76"}, {"id": "produccion_01_migracion_basic_codeblock_3", "label": "code:sql (-- Agregar nuevos flags a featuresJson de planes existentes)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md", "source_location": "L80"}, {"id": "produccion_01_migracion_basic_2_l\u00edmite_de_recetas_en_produccion", "label": "2. L\u00edmite de recetas en `/produccion`", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md", "source_location": "L103"}, {"id": "produccion_01_migracion_basic_2_1_constante_de_l\u00edmite", "label": "2.1 Constante de l\u00edmite", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md", "source_location": "L105"}, {"id": "produccion_01_migracion_basic_codeblock_4", "label": "code:ts (// src/lib/constants.ts (agregar))", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md", "source_location": "L107"}, {"id": "produccion_01_migracion_basic_2_2_l\u00f3gica_en_produccion_astro", "label": "2.2 L\u00f3gica en `produccion.astro`", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md", "source_location": "L112"}, {"id": "produccion_01_migracion_basic_codeblock_5", "label": "code:astro (---)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md", "source_location": "L114"}, {"id": "produccion_01_migracion_basic_2_3_ui_en_el_selector", "label": "2.3 UI en el selector", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md", "source_location": "L132"}, {"id": "produccion_01_migracion_basic_codeblock_6", "label": "code:astro (---)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md", "source_location": "L136"}, {"id": "produccion_01_migracion_basic_2_4_upgrade_prompt_en_resultados", "label": "2.4 Upgrade prompt en resultados", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md", "source_location": "L170"}, {"id": "produccion_01_migracion_basic_codeblock_7", "label": "code:astro ({)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md", "source_location": "L174"}, {"id": "produccion_01_migracion_basic_3_actualizar_upgradeprompt_para_free", "label": "3. Actualizar UpgradePrompt para Free", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md", "source_location": "L190"}, {"id": "produccion_01_migracion_basic_codeblock_8", "label": "code:block8 (tier=\"pro\")", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md", "source_location": "L194"}, {"id": "produccion_01_migracion_basic_codeblock_9", "label": "code:block9 (tier=\"basic\")", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md", "source_location": "L201"}, {"id": "produccion_01_migracion_basic_4_archivos_involucrados", "label": "4. Archivos involucrados", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md", "source_location": "L209"}, {"id": "produccion_01_migracion_basic_5_verificaci\u00f3n", "label": "5. Verificaci\u00f3n", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md", "source_location": "L222"}], "edges": [{"source": "users_maddozs_personal_projects_recetario_docs_planes_produccion_01_migracion_basic_md", "target": "produccion_01_migracion_basic_f1_migraci\u00f3n_a_basic_l\u00edmite_de_recetas", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md", "source_location": "L1", "weight": 1.0}, {"source": "produccion_01_migracion_basic_f1_migraci\u00f3n_a_basic_l\u00edmite_de_recetas", "target": "produccion_01_migracion_basic_objetivo", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md", "source_location": "L11", "weight": 1.0}, {"source": "produccion_01_migracion_basic_f1_migraci\u00f3n_a_basic_l\u00edmite_de_recetas", "target": "produccion_01_migracion_basic_1_cambios_en_feature_gates", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md", "source_location": "L20", "weight": 1.0}, {"source": "produccion_01_migracion_basic_1_cambios_en_feature_gates", "target": "produccion_01_migracion_basic_1_1_src_lib_db_billing_ts", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md", "source_location": "L22", "weight": 1.0}, {"source": "produccion_01_migracion_basic_1_1_src_lib_db_billing_ts", "target": "produccion_01_migracion_basic_codeblock_1", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md", "source_location": "L24", "weight": 1.0}, {"source": "produccion_01_migracion_basic_1_cambios_en_feature_gates", "target": "produccion_01_migracion_basic_1_2_src_lib_subscription_ts", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md", "source_location": "L57", "weight": 1.0}, {"source": "produccion_01_migracion_basic_1_2_src_lib_subscription_ts", "target": "produccion_01_migracion_basic_codeblock_2", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md", "source_location": "L59", "weight": 1.0}, {"source": "produccion_01_migracion_basic_1_cambios_en_feature_gates", "target": "produccion_01_migracion_basic_1_3_migraci\u00f3n_de_base_de_datos", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md", "source_location": "L76", "weight": 1.0}, {"source": "produccion_01_migracion_basic_1_3_migraci\u00f3n_de_base_de_datos", "target": "produccion_01_migracion_basic_codeblock_3", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md", "source_location": "L80", "weight": 1.0}, {"source": "produccion_01_migracion_basic_f1_migraci\u00f3n_a_basic_l\u00edmite_de_recetas", "target": "produccion_01_migracion_basic_2_l\u00edmite_de_recetas_en_produccion", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md", "source_location": "L103", "weight": 1.0}, {"source": "produccion_01_migracion_basic_2_l\u00edmite_de_recetas_en_produccion", "target": "produccion_01_migracion_basic_2_1_constante_de_l\u00edmite", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md", "source_location": "L105", "weight": 1.0}, {"source": "produccion_01_migracion_basic_2_1_constante_de_l\u00edmite", "target": "produccion_01_migracion_basic_codeblock_4", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md", "source_location": "L107", "weight": 1.0}, {"source": "produccion_01_migracion_basic_2_l\u00edmite_de_recetas_en_produccion", "target": "produccion_01_migracion_basic_2_2_l\u00f3gica_en_produccion_astro", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md", "source_location": "L112", "weight": 1.0}, {"source": "produccion_01_migracion_basic_2_2_l\u00f3gica_en_produccion_astro", "target": "produccion_01_migracion_basic_codeblock_5", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md", "source_location": "L114", "weight": 1.0}, {"source": "produccion_01_migracion_basic_2_l\u00edmite_de_recetas_en_produccion", "target": "produccion_01_migracion_basic_2_3_ui_en_el_selector", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md", "source_location": "L132", "weight": 1.0}, {"source": "produccion_01_migracion_basic_2_3_ui_en_el_selector", "target": "produccion_01_migracion_basic_codeblock_6", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md", "source_location": "L136", "weight": 1.0}, {"source": "produccion_01_migracion_basic_2_l\u00edmite_de_recetas_en_produccion", "target": "produccion_01_migracion_basic_2_4_upgrade_prompt_en_resultados", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md", "source_location": "L170", "weight": 1.0}, {"source": "produccion_01_migracion_basic_2_4_upgrade_prompt_en_resultados", "target": "produccion_01_migracion_basic_codeblock_7", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md", "source_location": "L174", "weight": 1.0}, {"source": "produccion_01_migracion_basic_f1_migraci\u00f3n_a_basic_l\u00edmite_de_recetas", "target": "produccion_01_migracion_basic_3_actualizar_upgradeprompt_para_free", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md", "source_location": "L190", "weight": 1.0}, {"source": "produccion_01_migracion_basic_3_actualizar_upgradeprompt_para_free", "target": "produccion_01_migracion_basic_codeblock_8", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md", "source_location": "L194", "weight": 1.0}, {"source": "produccion_01_migracion_basic_3_actualizar_upgradeprompt_para_free", "target": "produccion_01_migracion_basic_codeblock_9", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md", "source_location": "L201", "weight": 1.0}, {"source": "produccion_01_migracion_basic_f1_migraci\u00f3n_a_basic_l\u00edmite_de_recetas", "target": "produccion_01_migracion_basic_4_archivos_involucrados", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md", "source_location": "L209", "weight": 1.0}, {"source": "produccion_01_migracion_basic_f1_migraci\u00f3n_a_basic_l\u00edmite_de_recetas", "target": "produccion_01_migracion_basic_5_verificaci\u00f3n", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md", "source_location": "L222", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "users_maddozs_personal_projects_recetario_docs_planes_produccion_01_migracion_basic_md",
+      "label": "01-migracion-basic.md",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "produccion_01_migracion_basic_f1_migraci\u00f3n_a_basic_l\u00edmite_de_recetas",
+      "label": "F1: Migraci\u00f3n a Basic + L\u00edmite de recetas",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "produccion_01_migracion_basic_objetivo",
+      "label": "Objetivo",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md",
+      "source_location": "L11"
+    },
+    {
+      "id": "produccion_01_migracion_basic_1_cambios_en_feature_gates",
+      "label": "1. Cambios en feature gates",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md",
+      "source_location": "L20"
+    },
+    {
+      "id": "produccion_01_migracion_basic_1_1_src_lib_db_billing_ts",
+      "label": "1.1 `src/lib/db/billing.ts`",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md",
+      "source_location": "L22"
+    },
+    {
+      "id": "produccion_01_migracion_basic_codeblock_1",
+      "label": "code:diff (const BASIC_FEATURES: Record<string, boolean> = {)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md",
+      "source_location": "L24"
+    },
+    {
+      "id": "produccion_01_migracion_basic_1_2_src_lib_subscription_ts",
+      "label": "1.2 `src/lib/subscription.ts`",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md",
+      "source_location": "L57"
+    },
+    {
+      "id": "produccion_01_migracion_basic_codeblock_2",
+      "label": "code:diff (const FREE_FEATURES: Record<string, boolean> = {)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md",
+      "source_location": "L59"
+    },
+    {
+      "id": "produccion_01_migracion_basic_1_3_migraci\u00f3n_de_base_de_datos",
+      "label": "1.3 Migraci\u00f3n de base de datos",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md",
+      "source_location": "L76"
+    },
+    {
+      "id": "produccion_01_migracion_basic_codeblock_3",
+      "label": "code:sql (-- Agregar nuevos flags a featuresJson de planes existentes)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md",
+      "source_location": "L80"
+    },
+    {
+      "id": "produccion_01_migracion_basic_2_l\u00edmite_de_recetas_en_produccion",
+      "label": "2. L\u00edmite de recetas en `/produccion`",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md",
+      "source_location": "L103"
+    },
+    {
+      "id": "produccion_01_migracion_basic_2_1_constante_de_l\u00edmite",
+      "label": "2.1 Constante de l\u00edmite",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md",
+      "source_location": "L105"
+    },
+    {
+      "id": "produccion_01_migracion_basic_codeblock_4",
+      "label": "code:ts (// src/lib/constants.ts (agregar))",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md",
+      "source_location": "L107"
+    },
+    {
+      "id": "produccion_01_migracion_basic_2_2_l\u00f3gica_en_produccion_astro",
+      "label": "2.2 L\u00f3gica en `produccion.astro`",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md",
+      "source_location": "L112"
+    },
+    {
+      "id": "produccion_01_migracion_basic_codeblock_5",
+      "label": "code:astro (---)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md",
+      "source_location": "L114"
+    },
+    {
+      "id": "produccion_01_migracion_basic_2_3_ui_en_el_selector",
+      "label": "2.3 UI en el selector",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md",
+      "source_location": "L132"
+    },
+    {
+      "id": "produccion_01_migracion_basic_codeblock_6",
+      "label": "code:astro (---)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md",
+      "source_location": "L136"
+    },
+    {
+      "id": "produccion_01_migracion_basic_2_4_upgrade_prompt_en_resultados",
+      "label": "2.4 Upgrade prompt en resultados",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md",
+      "source_location": "L170"
+    },
+    {
+      "id": "produccion_01_migracion_basic_codeblock_7",
+      "label": "code:astro ({)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md",
+      "source_location": "L174"
+    },
+    {
+      "id": "produccion_01_migracion_basic_3_actualizar_upgradeprompt_para_free",
+      "label": "3. Actualizar UpgradePrompt para Free",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md",
+      "source_location": "L190"
+    },
+    {
+      "id": "produccion_01_migracion_basic_codeblock_8",
+      "label": "code:block8 (tier=\"pro\")",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md",
+      "source_location": "L194"
+    },
+    {
+      "id": "produccion_01_migracion_basic_codeblock_9",
+      "label": "code:block9 (tier=\"basic\")",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md",
+      "source_location": "L201"
+    },
+    {
+      "id": "produccion_01_migracion_basic_4_archivos_involucrados",
+      "label": "4. Archivos involucrados",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md",
+      "source_location": "L209"
+    },
+    {
+      "id": "produccion_01_migracion_basic_5_verificaci\u00f3n",
+      "label": "5. Verificaci\u00f3n",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md",
+      "source_location": "L222"
+    }
+  ],
+  "edges": [
+    {
+      "source": "users_maddozs_personal_projects_recetario_docs_planes_produccion_01_migracion_basic_md",
+      "target": "produccion_01_migracion_basic_f1_migraci\u00f3n_a_basic_l\u00edmite_de_recetas",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_01_migracion_basic_f1_migraci\u00f3n_a_basic_l\u00edmite_de_recetas",
+      "target": "produccion_01_migracion_basic_objetivo",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_01_migracion_basic_f1_migraci\u00f3n_a_basic_l\u00edmite_de_recetas",
+      "target": "produccion_01_migracion_basic_1_cambios_en_feature_gates",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_01_migracion_basic_1_cambios_en_feature_gates",
+      "target": "produccion_01_migracion_basic_1_1_src_lib_db_billing_ts",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md",
+      "source_location": "L22",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_01_migracion_basic_1_1_src_lib_db_billing_ts",
+      "target": "produccion_01_migracion_basic_codeblock_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_01_migracion_basic_1_cambios_en_feature_gates",
+      "target": "produccion_01_migracion_basic_1_2_src_lib_subscription_ts",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md",
+      "source_location": "L57",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_01_migracion_basic_1_2_src_lib_subscription_ts",
+      "target": "produccion_01_migracion_basic_codeblock_2",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md",
+      "source_location": "L59",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_01_migracion_basic_1_cambios_en_feature_gates",
+      "target": "produccion_01_migracion_basic_1_3_migraci\u00f3n_de_base_de_datos",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md",
+      "source_location": "L76",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_01_migracion_basic_1_3_migraci\u00f3n_de_base_de_datos",
+      "target": "produccion_01_migracion_basic_codeblock_3",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md",
+      "source_location": "L80",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_01_migracion_basic_f1_migraci\u00f3n_a_basic_l\u00edmite_de_recetas",
+      "target": "produccion_01_migracion_basic_2_l\u00edmite_de_recetas_en_produccion",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md",
+      "source_location": "L103",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_01_migracion_basic_2_l\u00edmite_de_recetas_en_produccion",
+      "target": "produccion_01_migracion_basic_2_1_constante_de_l\u00edmite",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md",
+      "source_location": "L105",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_01_migracion_basic_2_1_constante_de_l\u00edmite",
+      "target": "produccion_01_migracion_basic_codeblock_4",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md",
+      "source_location": "L107",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_01_migracion_basic_2_l\u00edmite_de_recetas_en_produccion",
+      "target": "produccion_01_migracion_basic_2_2_l\u00f3gica_en_produccion_astro",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md",
+      "source_location": "L112",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_01_migracion_basic_2_2_l\u00f3gica_en_produccion_astro",
+      "target": "produccion_01_migracion_basic_codeblock_5",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md",
+      "source_location": "L114",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_01_migracion_basic_2_l\u00edmite_de_recetas_en_produccion",
+      "target": "produccion_01_migracion_basic_2_3_ui_en_el_selector",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md",
+      "source_location": "L132",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_01_migracion_basic_2_3_ui_en_el_selector",
+      "target": "produccion_01_migracion_basic_codeblock_6",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md",
+      "source_location": "L136",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_01_migracion_basic_2_l\u00edmite_de_recetas_en_produccion",
+      "target": "produccion_01_migracion_basic_2_4_upgrade_prompt_en_resultados",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md",
+      "source_location": "L170",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_01_migracion_basic_2_4_upgrade_prompt_en_resultados",
+      "target": "produccion_01_migracion_basic_codeblock_7",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md",
+      "source_location": "L174",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_01_migracion_basic_f1_migraci\u00f3n_a_basic_l\u00edmite_de_recetas",
+      "target": "produccion_01_migracion_basic_3_actualizar_upgradeprompt_para_free",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md",
+      "source_location": "L190",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_01_migracion_basic_3_actualizar_upgradeprompt_para_free",
+      "target": "produccion_01_migracion_basic_codeblock_8",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md",
+      "source_location": "L194",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_01_migracion_basic_3_actualizar_upgradeprompt_para_free",
+      "target": "produccion_01_migracion_basic_codeblock_9",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md",
+      "source_location": "L201",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_01_migracion_basic_f1_migraci\u00f3n_a_basic_l\u00edmite_de_recetas",
+      "target": "produccion_01_migracion_basic_4_archivos_involucrados",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md",
+      "source_location": "L209",
+      "weight": 1.0
+    },
+    {
+      "source": "produccion_01_migracion_basic_f1_migraci\u00f3n_a_basic_l\u00edmite_de_recetas",
+      "target": "produccion_01_migracion_basic_5_verificaci\u00f3n",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/produccion/01-migracion-basic.md",
+      "source_location": "L222",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

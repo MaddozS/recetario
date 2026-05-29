@@ -141,10 +141,18 @@ export interface PricingPlan {
 }
 
 export async function getPricingPlans(): Promise<PricingPlan[]> {
-  const plans = await prisma.subscriptionPlan.findMany({
+  let plans = await prisma.subscriptionPlan.findMany({
     where: { active: true, tier: { in: KNOWN_TIERS } },
     orderBy: { id: "asc" },
   });
+
+  if (plans.length === 0) {
+    await seedSubscriptionPlans();
+    plans = await prisma.subscriptionPlan.findMany({
+      where: { active: true, tier: { in: KNOWN_TIERS } },
+      orderBy: { id: "asc" },
+    });
+  }
 
   const priceMap: Record<
     string,
@@ -185,17 +193,15 @@ export async function getPricingPlans(): Promise<PricingPlan[]> {
     const monthly = priceMap[monthlyKey] ?? null;
     const yearly = priceMap[yearlyKey] ?? null;
 
-    if (!monthly && !yearly) continue;
-
     const monthlyDisplay = monthly
       ? formatCurrency(monthly.priceCents / 100)
-      : null;
+      : "—";
     const yearlyDisplay = yearly
       ? formatCurrency(yearly.priceCents / 100)
-      : null;
+      : "—";
     const yearlyPerMonthDisplay = yearly
       ? formatCurrency(yearly.priceCents / 12 / 100)
-      : null;
+      : "—";
 
     result.push({
       id: tier,
@@ -203,7 +209,7 @@ export async function getPricingPlans(): Promise<PricingPlan[]> {
       name: config.name,
       description: config.description,
       badge: config.badge,
-      currency: (monthly?.currency ?? yearly?.currency ?? "usd").toUpperCase(),
+      currency: (monthly?.currency ?? yearly?.currency ?? "MXN").toUpperCase(),
       monthlyPriceId: monthly?.priceId ?? null,
       monthlyDisplay,
       yearlyPriceId: yearly?.priceId ?? null,

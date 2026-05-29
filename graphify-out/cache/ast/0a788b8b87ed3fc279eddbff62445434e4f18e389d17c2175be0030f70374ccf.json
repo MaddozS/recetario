@@ -1,1 +1,479 @@
-{"nodes": [{"id": "users_maddozs_personal_projects_recetario_docs_planes_modulo_1_db_billing_md", "label": "modulo-1-db-billing.md", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L1"}, {"id": "planes_modulo_1_db_billing_modulo_1_db_billing_layer", "label": "Modulo 1: DB Billing Layer", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L1"}, {"id": "planes_modulo_1_db_billing_objetivo", "label": "Objetivo", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L3"}, {"id": "planes_modulo_1_db_billing_archivos_a_crear", "label": "Archivos a Crear", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L7"}, {"id": "planes_modulo_1_db_billing_1_src_lib_db_billing_ts", "label": "1. `src/lib/db/billing.ts`", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L9"}, {"id": "planes_modulo_1_db_billing_funciones_requeridas", "label": "Funciones Requeridas", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L13"}, {"id": "planes_modulo_1_db_billing_seedsubscriptionplans", "label": "`seedSubscriptionPlans()`", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L15"}, {"id": "planes_modulo_1_db_billing_codeblock_1", "label": "code:json ({)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L29"}, {"id": "planes_modulo_1_db_billing_codeblock_2", "label": "code:json ({)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L48"}, {"id": "planes_modulo_1_db_billing_getusersubscription_userid_string", "label": "`getUserSubscription(userId: string)`", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L62"}, {"id": "planes_modulo_1_db_billing_codeblock_3", "label": "code:sql (SELECT s.*, sp.tier, sp.recipes_limit, sp.ingredients_limit,)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L68"}, {"id": "planes_modulo_1_db_billing_codeblock_4", "label": "code:sql (SELECT s.*, sp.tier, sp.recipes_limit, sp.ingredients_limit,)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L80"}, {"id": "planes_modulo_1_db_billing_codeblock_5", "label": "code:typescript (type UserSubscription = {)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L92"}, {"id": "planes_modulo_1_db_billing_createorupdatesubscription_data", "label": "`createOrUpdateSubscription(data)`", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L120"}, {"id": "planes_modulo_1_db_billing_codeblock_6", "label": "code:typescript ({)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L126"}, {"id": "planes_modulo_1_db_billing_cancelsubscription_stripesubscriptionid_string", "label": "`cancelSubscription(stripeSubscriptionId: string)`", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L145"}, {"id": "planes_modulo_1_db_billing_codeblock_7", "label": "code:sql (UPDATE subscriptions)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L151"}, {"id": "planes_modulo_1_db_billing_countuserrecipes_ownerid_string", "label": "`countUserRecipes(ownerId: string)`", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L157"}, {"id": "planes_modulo_1_db_billing_codeblock_8", "label": "code:sql (SELECT COUNT(*) as count FROM recipes WHERE owner_id = $1)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L163"}, {"id": "planes_modulo_1_db_billing_countuseringredients_ownerid_string", "label": "`countUserIngredients(ownerId: string)`", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L169"}, {"id": "planes_modulo_1_db_billing_codeblock_9", "label": "code:sql (SELECT COUNT(*) as count FROM ingredients WHERE owner_id = $)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L175"}, {"id": "planes_modulo_1_db_billing_2_src_lib_db_index_ts_modificar", "label": "2. `src/lib/db/index.ts` (Modificar)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L181"}, {"id": "planes_modulo_1_db_billing_codeblock_10", "label": "code:typescript (export * from \"./billing\";)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L185"}, {"id": "planes_modulo_1_db_billing_esquema_de_datos_recordatorio", "label": "Esquema de Datos (Recordatorio)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L189"}, {"id": "planes_modulo_1_db_billing_consideraciones_de_backend_dual", "label": "Consideraciones de Backend Dual", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L220"}, {"id": "planes_modulo_1_db_billing_postgres", "label": "Postgres", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L222"}, {"id": "planes_modulo_1_db_billing_sqlite", "label": "SQLite", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L228"}, {"id": "planes_modulo_1_db_billing_testing_manual", "label": "Testing Manual", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L234"}, {"id": "planes_modulo_1_db_billing_dependencias", "label": "Dependencias", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L242"}, {"id": "planes_modulo_1_db_billing_archivos_de_salida", "label": "Archivos de Salida", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L248"}], "edges": [{"source": "users_maddozs_personal_projects_recetario_docs_planes_modulo_1_db_billing_md", "target": "planes_modulo_1_db_billing_modulo_1_db_billing_layer", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L1", "weight": 1.0}, {"source": "planes_modulo_1_db_billing_modulo_1_db_billing_layer", "target": "planes_modulo_1_db_billing_objetivo", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L3", "weight": 1.0}, {"source": "planes_modulo_1_db_billing_modulo_1_db_billing_layer", "target": "planes_modulo_1_db_billing_archivos_a_crear", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L7", "weight": 1.0}, {"source": "planes_modulo_1_db_billing_archivos_a_crear", "target": "planes_modulo_1_db_billing_1_src_lib_db_billing_ts", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L9", "weight": 1.0}, {"source": "planes_modulo_1_db_billing_1_src_lib_db_billing_ts", "target": "planes_modulo_1_db_billing_funciones_requeridas", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L13", "weight": 1.0}, {"source": "planes_modulo_1_db_billing_funciones_requeridas", "target": "planes_modulo_1_db_billing_seedsubscriptionplans", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L15", "weight": 1.0}, {"source": "planes_modulo_1_db_billing_seedsubscriptionplans", "target": "planes_modulo_1_db_billing_codeblock_1", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L29", "weight": 1.0}, {"source": "planes_modulo_1_db_billing_seedsubscriptionplans", "target": "planes_modulo_1_db_billing_codeblock_2", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L48", "weight": 1.0}, {"source": "planes_modulo_1_db_billing_funciones_requeridas", "target": "planes_modulo_1_db_billing_getusersubscription_userid_string", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L62", "weight": 1.0}, {"source": "planes_modulo_1_db_billing_getusersubscription_userid_string", "target": "planes_modulo_1_db_billing_codeblock_3", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L68", "weight": 1.0}, {"source": "planes_modulo_1_db_billing_getusersubscription_userid_string", "target": "planes_modulo_1_db_billing_codeblock_4", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L80", "weight": 1.0}, {"source": "planes_modulo_1_db_billing_getusersubscription_userid_string", "target": "planes_modulo_1_db_billing_codeblock_5", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L92", "weight": 1.0}, {"source": "planes_modulo_1_db_billing_funciones_requeridas", "target": "planes_modulo_1_db_billing_createorupdatesubscription_data", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L120", "weight": 1.0}, {"source": "planes_modulo_1_db_billing_createorupdatesubscription_data", "target": "planes_modulo_1_db_billing_codeblock_6", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L126", "weight": 1.0}, {"source": "planes_modulo_1_db_billing_funciones_requeridas", "target": "planes_modulo_1_db_billing_cancelsubscription_stripesubscriptionid_string", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L145", "weight": 1.0}, {"source": "planes_modulo_1_db_billing_cancelsubscription_stripesubscriptionid_string", "target": "planes_modulo_1_db_billing_codeblock_7", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L151", "weight": 1.0}, {"source": "planes_modulo_1_db_billing_funciones_requeridas", "target": "planes_modulo_1_db_billing_countuserrecipes_ownerid_string", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L157", "weight": 1.0}, {"source": "planes_modulo_1_db_billing_countuserrecipes_ownerid_string", "target": "planes_modulo_1_db_billing_codeblock_8", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L163", "weight": 1.0}, {"source": "planes_modulo_1_db_billing_funciones_requeridas", "target": "planes_modulo_1_db_billing_countuseringredients_ownerid_string", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L169", "weight": 1.0}, {"source": "planes_modulo_1_db_billing_countuseringredients_ownerid_string", "target": "planes_modulo_1_db_billing_codeblock_9", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L175", "weight": 1.0}, {"source": "planes_modulo_1_db_billing_archivos_a_crear", "target": "planes_modulo_1_db_billing_2_src_lib_db_index_ts_modificar", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L181", "weight": 1.0}, {"source": "planes_modulo_1_db_billing_2_src_lib_db_index_ts_modificar", "target": "planes_modulo_1_db_billing_codeblock_10", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L185", "weight": 1.0}, {"source": "planes_modulo_1_db_billing_modulo_1_db_billing_layer", "target": "planes_modulo_1_db_billing_esquema_de_datos_recordatorio", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L189", "weight": 1.0}, {"source": "planes_modulo_1_db_billing_modulo_1_db_billing_layer", "target": "planes_modulo_1_db_billing_consideraciones_de_backend_dual", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L220", "weight": 1.0}, {"source": "planes_modulo_1_db_billing_consideraciones_de_backend_dual", "target": "planes_modulo_1_db_billing_postgres", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L222", "weight": 1.0}, {"source": "planes_modulo_1_db_billing_consideraciones_de_backend_dual", "target": "planes_modulo_1_db_billing_sqlite", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L228", "weight": 1.0}, {"source": "planes_modulo_1_db_billing_modulo_1_db_billing_layer", "target": "planes_modulo_1_db_billing_testing_manual", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L234", "weight": 1.0}, {"source": "planes_modulo_1_db_billing_modulo_1_db_billing_layer", "target": "planes_modulo_1_db_billing_dependencias", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L242", "weight": 1.0}, {"source": "planes_modulo_1_db_billing_modulo_1_db_billing_layer", "target": "planes_modulo_1_db_billing_archivos_de_salida", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md", "source_location": "L248", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "users_maddozs_personal_projects_recetario_docs_planes_modulo_1_db_billing_md",
+      "label": "modulo-1-db-billing.md",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "planes_modulo_1_db_billing_modulo_1_db_billing_layer",
+      "label": "Modulo 1: DB Billing Layer",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "planes_modulo_1_db_billing_objetivo",
+      "label": "Objetivo",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L3"
+    },
+    {
+      "id": "planes_modulo_1_db_billing_archivos_a_crear",
+      "label": "Archivos a Crear",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L7"
+    },
+    {
+      "id": "planes_modulo_1_db_billing_1_src_lib_db_billing_ts",
+      "label": "1. `src/lib/db/billing.ts`",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L9"
+    },
+    {
+      "id": "planes_modulo_1_db_billing_funciones_requeridas",
+      "label": "Funciones Requeridas",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L13"
+    },
+    {
+      "id": "planes_modulo_1_db_billing_seedsubscriptionplans",
+      "label": "`seedSubscriptionPlans()`",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L15"
+    },
+    {
+      "id": "planes_modulo_1_db_billing_codeblock_1",
+      "label": "code:json ({)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L29"
+    },
+    {
+      "id": "planes_modulo_1_db_billing_codeblock_2",
+      "label": "code:json ({)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L48"
+    },
+    {
+      "id": "planes_modulo_1_db_billing_getusersubscription_userid_string",
+      "label": "`getUserSubscription(userId: string)`",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L62"
+    },
+    {
+      "id": "planes_modulo_1_db_billing_codeblock_3",
+      "label": "code:sql (SELECT s.*, sp.tier, sp.recipes_limit, sp.ingredients_limit,)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L68"
+    },
+    {
+      "id": "planes_modulo_1_db_billing_codeblock_4",
+      "label": "code:sql (SELECT s.*, sp.tier, sp.recipes_limit, sp.ingredients_limit,)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L80"
+    },
+    {
+      "id": "planes_modulo_1_db_billing_codeblock_5",
+      "label": "code:typescript (type UserSubscription = {)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L92"
+    },
+    {
+      "id": "planes_modulo_1_db_billing_createorupdatesubscription_data",
+      "label": "`createOrUpdateSubscription(data)`",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L120"
+    },
+    {
+      "id": "planes_modulo_1_db_billing_codeblock_6",
+      "label": "code:typescript ({)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L126"
+    },
+    {
+      "id": "planes_modulo_1_db_billing_cancelsubscription_stripesubscriptionid_string",
+      "label": "`cancelSubscription(stripeSubscriptionId: string)`",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L145"
+    },
+    {
+      "id": "planes_modulo_1_db_billing_codeblock_7",
+      "label": "code:sql (UPDATE subscriptions)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L151"
+    },
+    {
+      "id": "planes_modulo_1_db_billing_countuserrecipes_ownerid_string",
+      "label": "`countUserRecipes(ownerId: string)`",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L157"
+    },
+    {
+      "id": "planes_modulo_1_db_billing_codeblock_8",
+      "label": "code:sql (SELECT COUNT(*) as count FROM recipes WHERE owner_id = $1)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L163"
+    },
+    {
+      "id": "planes_modulo_1_db_billing_countuseringredients_ownerid_string",
+      "label": "`countUserIngredients(ownerId: string)`",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L169"
+    },
+    {
+      "id": "planes_modulo_1_db_billing_codeblock_9",
+      "label": "code:sql (SELECT COUNT(*) as count FROM ingredients WHERE owner_id = $)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L175"
+    },
+    {
+      "id": "planes_modulo_1_db_billing_2_src_lib_db_index_ts_modificar",
+      "label": "2. `src/lib/db/index.ts` (Modificar)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L181"
+    },
+    {
+      "id": "planes_modulo_1_db_billing_codeblock_10",
+      "label": "code:typescript (export * from \"./billing\";)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L185"
+    },
+    {
+      "id": "planes_modulo_1_db_billing_esquema_de_datos_recordatorio",
+      "label": "Esquema de Datos (Recordatorio)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L189"
+    },
+    {
+      "id": "planes_modulo_1_db_billing_consideraciones_de_backend_dual",
+      "label": "Consideraciones de Backend Dual",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L220"
+    },
+    {
+      "id": "planes_modulo_1_db_billing_postgres",
+      "label": "Postgres",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L222"
+    },
+    {
+      "id": "planes_modulo_1_db_billing_sqlite",
+      "label": "SQLite",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L228"
+    },
+    {
+      "id": "planes_modulo_1_db_billing_testing_manual",
+      "label": "Testing Manual",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L234"
+    },
+    {
+      "id": "planes_modulo_1_db_billing_dependencias",
+      "label": "Dependencias",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L242"
+    },
+    {
+      "id": "planes_modulo_1_db_billing_archivos_de_salida",
+      "label": "Archivos de Salida",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L248"
+    }
+  ],
+  "edges": [
+    {
+      "source": "users_maddozs_personal_projects_recetario_docs_planes_modulo_1_db_billing_md",
+      "target": "planes_modulo_1_db_billing_modulo_1_db_billing_layer",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_modulo_1_db_billing_modulo_1_db_billing_layer",
+      "target": "planes_modulo_1_db_billing_objetivo",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_modulo_1_db_billing_modulo_1_db_billing_layer",
+      "target": "planes_modulo_1_db_billing_archivos_a_crear",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_modulo_1_db_billing_archivos_a_crear",
+      "target": "planes_modulo_1_db_billing_1_src_lib_db_billing_ts",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_modulo_1_db_billing_1_src_lib_db_billing_ts",
+      "target": "planes_modulo_1_db_billing_funciones_requeridas",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_modulo_1_db_billing_funciones_requeridas",
+      "target": "planes_modulo_1_db_billing_seedsubscriptionplans",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_modulo_1_db_billing_seedsubscriptionplans",
+      "target": "planes_modulo_1_db_billing_codeblock_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L29",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_modulo_1_db_billing_seedsubscriptionplans",
+      "target": "planes_modulo_1_db_billing_codeblock_2",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L48",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_modulo_1_db_billing_funciones_requeridas",
+      "target": "planes_modulo_1_db_billing_getusersubscription_userid_string",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L62",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_modulo_1_db_billing_getusersubscription_userid_string",
+      "target": "planes_modulo_1_db_billing_codeblock_3",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L68",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_modulo_1_db_billing_getusersubscription_userid_string",
+      "target": "planes_modulo_1_db_billing_codeblock_4",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L80",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_modulo_1_db_billing_getusersubscription_userid_string",
+      "target": "planes_modulo_1_db_billing_codeblock_5",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L92",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_modulo_1_db_billing_funciones_requeridas",
+      "target": "planes_modulo_1_db_billing_createorupdatesubscription_data",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L120",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_modulo_1_db_billing_createorupdatesubscription_data",
+      "target": "planes_modulo_1_db_billing_codeblock_6",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L126",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_modulo_1_db_billing_funciones_requeridas",
+      "target": "planes_modulo_1_db_billing_cancelsubscription_stripesubscriptionid_string",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L145",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_modulo_1_db_billing_cancelsubscription_stripesubscriptionid_string",
+      "target": "planes_modulo_1_db_billing_codeblock_7",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L151",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_modulo_1_db_billing_funciones_requeridas",
+      "target": "planes_modulo_1_db_billing_countuserrecipes_ownerid_string",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L157",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_modulo_1_db_billing_countuserrecipes_ownerid_string",
+      "target": "planes_modulo_1_db_billing_codeblock_8",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L163",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_modulo_1_db_billing_funciones_requeridas",
+      "target": "planes_modulo_1_db_billing_countuseringredients_ownerid_string",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L169",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_modulo_1_db_billing_countuseringredients_ownerid_string",
+      "target": "planes_modulo_1_db_billing_codeblock_9",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L175",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_modulo_1_db_billing_archivos_a_crear",
+      "target": "planes_modulo_1_db_billing_2_src_lib_db_index_ts_modificar",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L181",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_modulo_1_db_billing_2_src_lib_db_index_ts_modificar",
+      "target": "planes_modulo_1_db_billing_codeblock_10",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L185",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_modulo_1_db_billing_modulo_1_db_billing_layer",
+      "target": "planes_modulo_1_db_billing_esquema_de_datos_recordatorio",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L189",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_modulo_1_db_billing_modulo_1_db_billing_layer",
+      "target": "planes_modulo_1_db_billing_consideraciones_de_backend_dual",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L220",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_modulo_1_db_billing_consideraciones_de_backend_dual",
+      "target": "planes_modulo_1_db_billing_postgres",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L222",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_modulo_1_db_billing_consideraciones_de_backend_dual",
+      "target": "planes_modulo_1_db_billing_sqlite",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L228",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_modulo_1_db_billing_modulo_1_db_billing_layer",
+      "target": "planes_modulo_1_db_billing_testing_manual",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L234",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_modulo_1_db_billing_modulo_1_db_billing_layer",
+      "target": "planes_modulo_1_db_billing_dependencias",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L242",
+      "weight": 1.0
+    },
+    {
+      "source": "planes_modulo_1_db_billing_modulo_1_db_billing_layer",
+      "target": "planes_modulo_1_db_billing_archivos_de_salida",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/docs/planes/modulo-1-db-billing.md",
+      "source_location": "L248",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

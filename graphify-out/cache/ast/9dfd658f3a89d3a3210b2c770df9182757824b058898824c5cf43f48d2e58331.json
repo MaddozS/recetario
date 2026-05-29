@@ -1,1 +1,351 @@
-{"nodes": [{"id": "users_maddozs_personal_projects_recetario_impeccable_critique_2026_05_19t21_18_31z_src_pages_index_astro_md", "label": "2026-05-19T21-18-31Z__src-pages-index-astro.md", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md", "source_location": "L1"}, {"id": "critique_2026_05_19t21_18_31z_src_pages_index_astro_critique_kitchcalc_landing_page_src_pages_index_astro", "label": "Critique: KitchCalc Landing Page (`src/pages/index.astro`)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md", "source_location": "L10"}, {"id": "critique_2026_05_19t21_18_31z_src_pages_index_astro_design_health_score", "label": "Design Health Score", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md", "source_location": "L12"}, {"id": "critique_2026_05_19t21_18_31z_src_pages_index_astro_anti_patterns_verdict", "label": "Anti-Patterns Verdict", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md", "source_location": "L28"}, {"id": "critique_2026_05_19t21_18_31z_src_pages_index_astro_overall_impression", "label": "Overall Impression", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md", "source_location": "L43"}, {"id": "critique_2026_05_19t21_18_31z_src_pages_index_astro_what_s_working", "label": "What's Working", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md", "source_location": "L47"}, {"id": "critique_2026_05_19t21_18_31z_src_pages_index_astro_grain_texture_overlay_landinglayout_astro_60_73", "label": "Grain texture overlay (LandingLayout.astro:60-73)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md", "source_location": "L49"}, {"id": "critique_2026_05_19t21_18_31z_src_pages_index_astro_coral_as_anti_reflexive_accent_choice", "label": "Coral as anti-reflexive accent choice", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md", "source_location": "L53"}, {"id": "critique_2026_05_19t21_18_31z_src_pages_index_astro_spanish_microcopy_tone", "label": "Spanish microcopy tone", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md", "source_location": "L57"}, {"id": "critique_2026_05_19t21_18_31z_src_pages_index_astro_priority_issues", "label": "Priority Issues", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md", "source_location": "L61"}, {"id": "critique_2026_05_19t21_18_31z_src_pages_index_astro_p0_gradient_text_in_hero_headline", "label": "[P0] Gradient text in hero headline", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md", "source_location": "L63"}, {"id": "critique_2026_05_19t21_18_31z_src_pages_index_astro_p1_cta_button_invisible_on_its_own_section_background", "label": "[P1] CTA button invisible on its own section background", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md", "source_location": "L70"}, {"id": "critique_2026_05_19t21_18_31z_src_pages_index_astro_p2_zero_numeric_data_on_a_costing_product_s_landing", "label": "[P2] Zero numeric data on a costing product's landing", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md", "source_location": "L77"}, {"id": "critique_2026_05_19t21_18_31z_src_pages_index_astro_p3_bounce_elastic_easing_on_card_transitions", "label": "[P3] Bounce/elastic easing on card transitions", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md", "source_location": "L84"}, {"id": "critique_2026_05_19t21_18_31z_src_pages_index_astro_p4_no_scroll_spy_active_section_indicator_in_nav", "label": "[P4] No scroll-spy / active-section indicator in nav", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md", "source_location": "L91"}, {"id": "critique_2026_05_19t21_18_31z_src_pages_index_astro_persona_red_flags", "label": "Persona Red Flags", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md", "source_location": "L98"}, {"id": "critique_2026_05_19t21_18_31z_src_pages_index_astro_jordan_confused_first_timer", "label": "Jordan (Confused First-Timer)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md", "source_location": "L100"}, {"id": "critique_2026_05_19t21_18_31z_src_pages_index_astro_riley_deliberate_stress_tester", "label": "Riley (Deliberate Stress Tester)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md", "source_location": "L105"}, {"id": "critique_2026_05_19t21_18_31z_src_pages_index_astro_casey_distracted_mobile_user", "label": "Casey (Distracted Mobile User)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md", "source_location": "L110"}, {"id": "critique_2026_05_19t21_18_31z_src_pages_index_astro_project_specific_cristina_small_batch_baker", "label": "Project-Specific: Cristina (Small-Batch Baker)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md", "source_location": "L115"}, {"id": "critique_2026_05_19t21_18_31z_src_pages_index_astro_minor_observations", "label": "Minor Observations", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md", "source_location": "L121"}, {"id": "critique_2026_05_19t21_18_31z_src_pages_index_astro_questions_to_consider", "label": "Questions to Consider", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md", "source_location": "L129"}], "edges": [{"source": "users_maddozs_personal_projects_recetario_impeccable_critique_2026_05_19t21_18_31z_src_pages_index_astro_md", "target": "critique_2026_05_19t21_18_31z_src_pages_index_astro_critique_kitchcalc_landing_page_src_pages_index_astro", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md", "source_location": "L10", "weight": 1.0}, {"source": "critique_2026_05_19t21_18_31z_src_pages_index_astro_critique_kitchcalc_landing_page_src_pages_index_astro", "target": "critique_2026_05_19t21_18_31z_src_pages_index_astro_design_health_score", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md", "source_location": "L12", "weight": 1.0}, {"source": "critique_2026_05_19t21_18_31z_src_pages_index_astro_critique_kitchcalc_landing_page_src_pages_index_astro", "target": "critique_2026_05_19t21_18_31z_src_pages_index_astro_anti_patterns_verdict", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md", "source_location": "L28", "weight": 1.0}, {"source": "critique_2026_05_19t21_18_31z_src_pages_index_astro_critique_kitchcalc_landing_page_src_pages_index_astro", "target": "critique_2026_05_19t21_18_31z_src_pages_index_astro_overall_impression", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md", "source_location": "L43", "weight": 1.0}, {"source": "critique_2026_05_19t21_18_31z_src_pages_index_astro_critique_kitchcalc_landing_page_src_pages_index_astro", "target": "critique_2026_05_19t21_18_31z_src_pages_index_astro_what_s_working", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md", "source_location": "L47", "weight": 1.0}, {"source": "critique_2026_05_19t21_18_31z_src_pages_index_astro_what_s_working", "target": "critique_2026_05_19t21_18_31z_src_pages_index_astro_grain_texture_overlay_landinglayout_astro_60_73", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md", "source_location": "L49", "weight": 1.0}, {"source": "critique_2026_05_19t21_18_31z_src_pages_index_astro_what_s_working", "target": "critique_2026_05_19t21_18_31z_src_pages_index_astro_coral_as_anti_reflexive_accent_choice", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md", "source_location": "L53", "weight": 1.0}, {"source": "critique_2026_05_19t21_18_31z_src_pages_index_astro_what_s_working", "target": "critique_2026_05_19t21_18_31z_src_pages_index_astro_spanish_microcopy_tone", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md", "source_location": "L57", "weight": 1.0}, {"source": "critique_2026_05_19t21_18_31z_src_pages_index_astro_critique_kitchcalc_landing_page_src_pages_index_astro", "target": "critique_2026_05_19t21_18_31z_src_pages_index_astro_priority_issues", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md", "source_location": "L61", "weight": 1.0}, {"source": "critique_2026_05_19t21_18_31z_src_pages_index_astro_priority_issues", "target": "critique_2026_05_19t21_18_31z_src_pages_index_astro_p0_gradient_text_in_hero_headline", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md", "source_location": "L63", "weight": 1.0}, {"source": "critique_2026_05_19t21_18_31z_src_pages_index_astro_priority_issues", "target": "critique_2026_05_19t21_18_31z_src_pages_index_astro_p1_cta_button_invisible_on_its_own_section_background", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md", "source_location": "L70", "weight": 1.0}, {"source": "critique_2026_05_19t21_18_31z_src_pages_index_astro_priority_issues", "target": "critique_2026_05_19t21_18_31z_src_pages_index_astro_p2_zero_numeric_data_on_a_costing_product_s_landing", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md", "source_location": "L77", "weight": 1.0}, {"source": "critique_2026_05_19t21_18_31z_src_pages_index_astro_priority_issues", "target": "critique_2026_05_19t21_18_31z_src_pages_index_astro_p3_bounce_elastic_easing_on_card_transitions", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md", "source_location": "L84", "weight": 1.0}, {"source": "critique_2026_05_19t21_18_31z_src_pages_index_astro_priority_issues", "target": "critique_2026_05_19t21_18_31z_src_pages_index_astro_p4_no_scroll_spy_active_section_indicator_in_nav", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md", "source_location": "L91", "weight": 1.0}, {"source": "critique_2026_05_19t21_18_31z_src_pages_index_astro_critique_kitchcalc_landing_page_src_pages_index_astro", "target": "critique_2026_05_19t21_18_31z_src_pages_index_astro_persona_red_flags", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md", "source_location": "L98", "weight": 1.0}, {"source": "critique_2026_05_19t21_18_31z_src_pages_index_astro_persona_red_flags", "target": "critique_2026_05_19t21_18_31z_src_pages_index_astro_jordan_confused_first_timer", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md", "source_location": "L100", "weight": 1.0}, {"source": "critique_2026_05_19t21_18_31z_src_pages_index_astro_persona_red_flags", "target": "critique_2026_05_19t21_18_31z_src_pages_index_astro_riley_deliberate_stress_tester", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md", "source_location": "L105", "weight": 1.0}, {"source": "critique_2026_05_19t21_18_31z_src_pages_index_astro_persona_red_flags", "target": "critique_2026_05_19t21_18_31z_src_pages_index_astro_casey_distracted_mobile_user", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md", "source_location": "L110", "weight": 1.0}, {"source": "critique_2026_05_19t21_18_31z_src_pages_index_astro_persona_red_flags", "target": "critique_2026_05_19t21_18_31z_src_pages_index_astro_project_specific_cristina_small_batch_baker", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md", "source_location": "L115", "weight": 1.0}, {"source": "critique_2026_05_19t21_18_31z_src_pages_index_astro_critique_kitchcalc_landing_page_src_pages_index_astro", "target": "critique_2026_05_19t21_18_31z_src_pages_index_astro_minor_observations", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md", "source_location": "L121", "weight": 1.0}, {"source": "critique_2026_05_19t21_18_31z_src_pages_index_astro_critique_kitchcalc_landing_page_src_pages_index_astro", "target": "critique_2026_05_19t21_18_31z_src_pages_index_astro_questions_to_consider", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md", "source_location": "L129", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "users_maddozs_personal_projects_recetario_impeccable_critique_2026_05_19t21_18_31z_src_pages_index_astro_md",
+      "label": "2026-05-19T21-18-31Z__src-pages-index-astro.md",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "critique_2026_05_19t21_18_31z_src_pages_index_astro_critique_kitchcalc_landing_page_src_pages_index_astro",
+      "label": "Critique: KitchCalc Landing Page (`src/pages/index.astro`)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md",
+      "source_location": "L10"
+    },
+    {
+      "id": "critique_2026_05_19t21_18_31z_src_pages_index_astro_design_health_score",
+      "label": "Design Health Score",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md",
+      "source_location": "L12"
+    },
+    {
+      "id": "critique_2026_05_19t21_18_31z_src_pages_index_astro_anti_patterns_verdict",
+      "label": "Anti-Patterns Verdict",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md",
+      "source_location": "L28"
+    },
+    {
+      "id": "critique_2026_05_19t21_18_31z_src_pages_index_astro_overall_impression",
+      "label": "Overall Impression",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md",
+      "source_location": "L43"
+    },
+    {
+      "id": "critique_2026_05_19t21_18_31z_src_pages_index_astro_what_s_working",
+      "label": "What's Working",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md",
+      "source_location": "L47"
+    },
+    {
+      "id": "critique_2026_05_19t21_18_31z_src_pages_index_astro_grain_texture_overlay_landinglayout_astro_60_73",
+      "label": "Grain texture overlay (LandingLayout.astro:60-73)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md",
+      "source_location": "L49"
+    },
+    {
+      "id": "critique_2026_05_19t21_18_31z_src_pages_index_astro_coral_as_anti_reflexive_accent_choice",
+      "label": "Coral as anti-reflexive accent choice",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md",
+      "source_location": "L53"
+    },
+    {
+      "id": "critique_2026_05_19t21_18_31z_src_pages_index_astro_spanish_microcopy_tone",
+      "label": "Spanish microcopy tone",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md",
+      "source_location": "L57"
+    },
+    {
+      "id": "critique_2026_05_19t21_18_31z_src_pages_index_astro_priority_issues",
+      "label": "Priority Issues",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md",
+      "source_location": "L61"
+    },
+    {
+      "id": "critique_2026_05_19t21_18_31z_src_pages_index_astro_p0_gradient_text_in_hero_headline",
+      "label": "[P0] Gradient text in hero headline",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md",
+      "source_location": "L63"
+    },
+    {
+      "id": "critique_2026_05_19t21_18_31z_src_pages_index_astro_p1_cta_button_invisible_on_its_own_section_background",
+      "label": "[P1] CTA button invisible on its own section background",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md",
+      "source_location": "L70"
+    },
+    {
+      "id": "critique_2026_05_19t21_18_31z_src_pages_index_astro_p2_zero_numeric_data_on_a_costing_product_s_landing",
+      "label": "[P2] Zero numeric data on a costing product's landing",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md",
+      "source_location": "L77"
+    },
+    {
+      "id": "critique_2026_05_19t21_18_31z_src_pages_index_astro_p3_bounce_elastic_easing_on_card_transitions",
+      "label": "[P3] Bounce/elastic easing on card transitions",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md",
+      "source_location": "L84"
+    },
+    {
+      "id": "critique_2026_05_19t21_18_31z_src_pages_index_astro_p4_no_scroll_spy_active_section_indicator_in_nav",
+      "label": "[P4] No scroll-spy / active-section indicator in nav",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md",
+      "source_location": "L91"
+    },
+    {
+      "id": "critique_2026_05_19t21_18_31z_src_pages_index_astro_persona_red_flags",
+      "label": "Persona Red Flags",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md",
+      "source_location": "L98"
+    },
+    {
+      "id": "critique_2026_05_19t21_18_31z_src_pages_index_astro_jordan_confused_first_timer",
+      "label": "Jordan (Confused First-Timer)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md",
+      "source_location": "L100"
+    },
+    {
+      "id": "critique_2026_05_19t21_18_31z_src_pages_index_astro_riley_deliberate_stress_tester",
+      "label": "Riley (Deliberate Stress Tester)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md",
+      "source_location": "L105"
+    },
+    {
+      "id": "critique_2026_05_19t21_18_31z_src_pages_index_astro_casey_distracted_mobile_user",
+      "label": "Casey (Distracted Mobile User)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md",
+      "source_location": "L110"
+    },
+    {
+      "id": "critique_2026_05_19t21_18_31z_src_pages_index_astro_project_specific_cristina_small_batch_baker",
+      "label": "Project-Specific: Cristina (Small-Batch Baker)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md",
+      "source_location": "L115"
+    },
+    {
+      "id": "critique_2026_05_19t21_18_31z_src_pages_index_astro_minor_observations",
+      "label": "Minor Observations",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md",
+      "source_location": "L121"
+    },
+    {
+      "id": "critique_2026_05_19t21_18_31z_src_pages_index_astro_questions_to_consider",
+      "label": "Questions to Consider",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md",
+      "source_location": "L129"
+    }
+  ],
+  "edges": [
+    {
+      "source": "users_maddozs_personal_projects_recetario_impeccable_critique_2026_05_19t21_18_31z_src_pages_index_astro_md",
+      "target": "critique_2026_05_19t21_18_31z_src_pages_index_astro_critique_kitchcalc_landing_page_src_pages_index_astro",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "critique_2026_05_19t21_18_31z_src_pages_index_astro_critique_kitchcalc_landing_page_src_pages_index_astro",
+      "target": "critique_2026_05_19t21_18_31z_src_pages_index_astro_design_health_score",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "critique_2026_05_19t21_18_31z_src_pages_index_astro_critique_kitchcalc_landing_page_src_pages_index_astro",
+      "target": "critique_2026_05_19t21_18_31z_src_pages_index_astro_anti_patterns_verdict",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md",
+      "source_location": "L28",
+      "weight": 1.0
+    },
+    {
+      "source": "critique_2026_05_19t21_18_31z_src_pages_index_astro_critique_kitchcalc_landing_page_src_pages_index_astro",
+      "target": "critique_2026_05_19t21_18_31z_src_pages_index_astro_overall_impression",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md",
+      "source_location": "L43",
+      "weight": 1.0
+    },
+    {
+      "source": "critique_2026_05_19t21_18_31z_src_pages_index_astro_critique_kitchcalc_landing_page_src_pages_index_astro",
+      "target": "critique_2026_05_19t21_18_31z_src_pages_index_astro_what_s_working",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md",
+      "source_location": "L47",
+      "weight": 1.0
+    },
+    {
+      "source": "critique_2026_05_19t21_18_31z_src_pages_index_astro_what_s_working",
+      "target": "critique_2026_05_19t21_18_31z_src_pages_index_astro_grain_texture_overlay_landinglayout_astro_60_73",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md",
+      "source_location": "L49",
+      "weight": 1.0
+    },
+    {
+      "source": "critique_2026_05_19t21_18_31z_src_pages_index_astro_what_s_working",
+      "target": "critique_2026_05_19t21_18_31z_src_pages_index_astro_coral_as_anti_reflexive_accent_choice",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md",
+      "source_location": "L53",
+      "weight": 1.0
+    },
+    {
+      "source": "critique_2026_05_19t21_18_31z_src_pages_index_astro_what_s_working",
+      "target": "critique_2026_05_19t21_18_31z_src_pages_index_astro_spanish_microcopy_tone",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md",
+      "source_location": "L57",
+      "weight": 1.0
+    },
+    {
+      "source": "critique_2026_05_19t21_18_31z_src_pages_index_astro_critique_kitchcalc_landing_page_src_pages_index_astro",
+      "target": "critique_2026_05_19t21_18_31z_src_pages_index_astro_priority_issues",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md",
+      "source_location": "L61",
+      "weight": 1.0
+    },
+    {
+      "source": "critique_2026_05_19t21_18_31z_src_pages_index_astro_priority_issues",
+      "target": "critique_2026_05_19t21_18_31z_src_pages_index_astro_p0_gradient_text_in_hero_headline",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md",
+      "source_location": "L63",
+      "weight": 1.0
+    },
+    {
+      "source": "critique_2026_05_19t21_18_31z_src_pages_index_astro_priority_issues",
+      "target": "critique_2026_05_19t21_18_31z_src_pages_index_astro_p1_cta_button_invisible_on_its_own_section_background",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md",
+      "source_location": "L70",
+      "weight": 1.0
+    },
+    {
+      "source": "critique_2026_05_19t21_18_31z_src_pages_index_astro_priority_issues",
+      "target": "critique_2026_05_19t21_18_31z_src_pages_index_astro_p2_zero_numeric_data_on_a_costing_product_s_landing",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md",
+      "source_location": "L77",
+      "weight": 1.0
+    },
+    {
+      "source": "critique_2026_05_19t21_18_31z_src_pages_index_astro_priority_issues",
+      "target": "critique_2026_05_19t21_18_31z_src_pages_index_astro_p3_bounce_elastic_easing_on_card_transitions",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md",
+      "source_location": "L84",
+      "weight": 1.0
+    },
+    {
+      "source": "critique_2026_05_19t21_18_31z_src_pages_index_astro_priority_issues",
+      "target": "critique_2026_05_19t21_18_31z_src_pages_index_astro_p4_no_scroll_spy_active_section_indicator_in_nav",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md",
+      "source_location": "L91",
+      "weight": 1.0
+    },
+    {
+      "source": "critique_2026_05_19t21_18_31z_src_pages_index_astro_critique_kitchcalc_landing_page_src_pages_index_astro",
+      "target": "critique_2026_05_19t21_18_31z_src_pages_index_astro_persona_red_flags",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md",
+      "source_location": "L98",
+      "weight": 1.0
+    },
+    {
+      "source": "critique_2026_05_19t21_18_31z_src_pages_index_astro_persona_red_flags",
+      "target": "critique_2026_05_19t21_18_31z_src_pages_index_astro_jordan_confused_first_timer",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md",
+      "source_location": "L100",
+      "weight": 1.0
+    },
+    {
+      "source": "critique_2026_05_19t21_18_31z_src_pages_index_astro_persona_red_flags",
+      "target": "critique_2026_05_19t21_18_31z_src_pages_index_astro_riley_deliberate_stress_tester",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md",
+      "source_location": "L105",
+      "weight": 1.0
+    },
+    {
+      "source": "critique_2026_05_19t21_18_31z_src_pages_index_astro_persona_red_flags",
+      "target": "critique_2026_05_19t21_18_31z_src_pages_index_astro_casey_distracted_mobile_user",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md",
+      "source_location": "L110",
+      "weight": 1.0
+    },
+    {
+      "source": "critique_2026_05_19t21_18_31z_src_pages_index_astro_persona_red_flags",
+      "target": "critique_2026_05_19t21_18_31z_src_pages_index_astro_project_specific_cristina_small_batch_baker",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md",
+      "source_location": "L115",
+      "weight": 1.0
+    },
+    {
+      "source": "critique_2026_05_19t21_18_31z_src_pages_index_astro_critique_kitchcalc_landing_page_src_pages_index_astro",
+      "target": "critique_2026_05_19t21_18_31z_src_pages_index_astro_minor_observations",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md",
+      "source_location": "L121",
+      "weight": 1.0
+    },
+    {
+      "source": "critique_2026_05_19t21_18_31z_src_pages_index_astro_critique_kitchcalc_landing_page_src_pages_index_astro",
+      "target": "critique_2026_05_19t21_18_31z_src_pages_index_astro_questions_to_consider",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.impeccable/critique/2026-05-19T21-18-31Z__src-pages-index-astro.md",
+      "source_location": "L129",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

@@ -1,1 +1,13 @@
-{"nodes": [{"id": "users_maddozs_personal_projects_recetario_src_components_recipeminicard_astro", "label": "RecipeMiniCard.astro", "file_type": "code", "source_file": "/Users/maddozs/personal-projects/recetario/src/components/RecipeMiniCard.astro", "source_location": "L1"}], "edges": [], "raw_calls": []}
+{
+  "nodes": [
+    {
+      "id": "users_maddozs_personal_projects_recetario_src_components_recipeminicard_astro",
+      "label": "RecipeMiniCard.astro",
+      "file_type": "code",
+      "source_file": "/Users/maddozs/personal-projects/recetario/src/components/RecipeMiniCard.astro",
+      "source_location": "L1"
+    }
+  ],
+  "edges": [],
+  "raw_calls": []
+}

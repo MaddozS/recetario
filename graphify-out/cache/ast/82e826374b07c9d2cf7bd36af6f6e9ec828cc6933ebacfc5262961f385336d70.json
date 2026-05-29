@@ -1,1 +1,95 @@
-{"nodes": [{"id": "users_maddozs_personal_projects_recetario_specs_001_landing_page_spec_data_model_md", "label": "data-model.md", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/data-model.md", "source_location": "L1"}, {"id": "001_landing_page_spec_data_model_data_model_landing_page", "label": "Data Model: Landing Page", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/data-model.md", "source_location": "L1"}, {"id": "001_landing_page_spec_data_model_overview", "label": "Overview", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/data-model.md", "source_location": "L6"}, {"id": "001_landing_page_spec_data_model_pricingplan_desde_stripe_sync", "label": "PricingPlan (desde Stripe sync)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/data-model.md", "source_location": "L10"}, {"id": "001_landing_page_spec_data_model_featureflag", "label": "FeatureFlag", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/data-model.md", "source_location": "L23"}, {"id": "001_landing_page_spec_data_model_notas", "label": "Notas", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/data-model.md", "source_location": "L32"}], "edges": [{"source": "users_maddozs_personal_projects_recetario_specs_001_landing_page_spec_data_model_md", "target": "001_landing_page_spec_data_model_data_model_landing_page", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/data-model.md", "source_location": "L1", "weight": 1.0}, {"source": "001_landing_page_spec_data_model_data_model_landing_page", "target": "001_landing_page_spec_data_model_overview", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/data-model.md", "source_location": "L6", "weight": 1.0}, {"source": "001_landing_page_spec_data_model_overview", "target": "001_landing_page_spec_data_model_pricingplan_desde_stripe_sync", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/data-model.md", "source_location": "L10", "weight": 1.0}, {"source": "001_landing_page_spec_data_model_overview", "target": "001_landing_page_spec_data_model_featureflag", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/data-model.md", "source_location": "L23", "weight": 1.0}, {"source": "001_landing_page_spec_data_model_data_model_landing_page", "target": "001_landing_page_spec_data_model_notas", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/data-model.md", "source_location": "L32", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "users_maddozs_personal_projects_recetario_specs_001_landing_page_spec_data_model_md",
+      "label": "data-model.md",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/data-model.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "001_landing_page_spec_data_model_data_model_landing_page",
+      "label": "Data Model: Landing Page",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/data-model.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "001_landing_page_spec_data_model_overview",
+      "label": "Overview",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/data-model.md",
+      "source_location": "L6"
+    },
+    {
+      "id": "001_landing_page_spec_data_model_pricingplan_desde_stripe_sync",
+      "label": "PricingPlan (desde Stripe sync)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/data-model.md",
+      "source_location": "L10"
+    },
+    {
+      "id": "001_landing_page_spec_data_model_featureflag",
+      "label": "FeatureFlag",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/data-model.md",
+      "source_location": "L23"
+    },
+    {
+      "id": "001_landing_page_spec_data_model_notas",
+      "label": "Notas",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/data-model.md",
+      "source_location": "L32"
+    }
+  ],
+  "edges": [
+    {
+      "source": "users_maddozs_personal_projects_recetario_specs_001_landing_page_spec_data_model_md",
+      "target": "001_landing_page_spec_data_model_data_model_landing_page",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/data-model.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "001_landing_page_spec_data_model_data_model_landing_page",
+      "target": "001_landing_page_spec_data_model_overview",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/data-model.md",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "001_landing_page_spec_data_model_overview",
+      "target": "001_landing_page_spec_data_model_pricingplan_desde_stripe_sync",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/data-model.md",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "001_landing_page_spec_data_model_overview",
+      "target": "001_landing_page_spec_data_model_featureflag",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/data-model.md",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
+      "source": "001_landing_page_spec_data_model_data_model_landing_page",
+      "target": "001_landing_page_spec_data_model_notas",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/001-landing-page-spec/data-model.md",
+      "source_location": "L32",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

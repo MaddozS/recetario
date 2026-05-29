@@ -1,1 +1,271 @@
-{"nodes": [{"id": "users_maddozs_personal_projects_recetario_landing_audit_actions_md", "label": "landing-audit-actions.md", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md", "source_location": "L1"}, {"id": "recetario_landing_audit_actions_landing_page_audit_action_items", "label": "Landing Page Audit \u2014 Action Items", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md", "source_location": "L1"}, {"id": "recetario_landing_audit_actions_p1_before_release", "label": "P1 \u2014 Before release", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md", "source_location": "L8"}, {"id": "recetario_landing_audit_actions_1_pricing_toggle_add_aria_roles", "label": "1. Pricing toggle: add ARIA roles", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md", "source_location": "L10"}, {"id": "recetario_landing_audit_actions_2_conocer_m\u00e1s_touch_target_bump_to_44px", "label": "2. \"Conocer m\u00e1s\" touch target: bump to 44px", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md", "source_location": "L17"}, {"id": "recetario_landing_audit_actions_3_decorative_icons_add_aria_hidden", "label": "3. Decorative icons: add aria-hidden", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md", "source_location": "L24"}, {"id": "recetario_landing_audit_actions_4_desktop_nav_links_add_focus_indicators", "label": "4. Desktop nav links: add focus indicators", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md", "source_location": "L31"}, {"id": "recetario_landing_audit_actions_p2_next_pass", "label": "P2 \u2014 Next pass", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md", "source_location": "L40"}, {"id": "recetario_landing_audit_actions_5_hero_metric_cards_replace_pattern", "label": "5. Hero-metric cards: replace pattern", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md", "source_location": "L42"}, {"id": "recetario_landing_audit_actions_6_features_section_remove_icon_heading_template", "label": "6. Features section: remove icon + heading template", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md", "source_location": "L49"}, {"id": "recetario_landing_audit_actions_7_plan_cta_buttons_bump_to_44px", "label": "7. Plan CTA buttons: bump to 44px", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md", "source_location": "L56"}, {"id": "recetario_landing_audit_actions_8_pricing_toggle_buttons_bump_to_44px", "label": "8. Pricing toggle buttons: bump to 44px", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md", "source_location": "L63"}, {"id": "recetario_landing_audit_actions_9_reveal_items_single_intersectionobserver", "label": "9. Reveal items: single IntersectionObserver", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md", "source_location": "L70"}, {"id": "recetario_landing_audit_actions_p3_polish", "label": "P3 \u2014 Polish", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md", "source_location": "L79"}, {"id": "recetario_landing_audit_actions_10_cta_section_semantic_text_on_accent_token", "label": "10. CTA section: semantic text-on-accent token", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md", "source_location": "L81"}, {"id": "recetario_landing_audit_actions_running_order", "label": "Running order", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md", "source_location": "L89"}, {"id": "recetario_landing_audit_actions_codeblock_1", "label": "code:block1 (impeccable harden    # P1: ARIA + focus indicators + touch t)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md", "source_location": "L91"}], "edges": [{"source": "users_maddozs_personal_projects_recetario_landing_audit_actions_md", "target": "recetario_landing_audit_actions_landing_page_audit_action_items", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md", "source_location": "L1", "weight": 1.0}, {"source": "recetario_landing_audit_actions_landing_page_audit_action_items", "target": "recetario_landing_audit_actions_p1_before_release", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md", "source_location": "L8", "weight": 1.0}, {"source": "recetario_landing_audit_actions_p1_before_release", "target": "recetario_landing_audit_actions_1_pricing_toggle_add_aria_roles", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md", "source_location": "L10", "weight": 1.0}, {"source": "recetario_landing_audit_actions_p1_before_release", "target": "recetario_landing_audit_actions_2_conocer_m\u00e1s_touch_target_bump_to_44px", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md", "source_location": "L17", "weight": 1.0}, {"source": "recetario_landing_audit_actions_p1_before_release", "target": "recetario_landing_audit_actions_3_decorative_icons_add_aria_hidden", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md", "source_location": "L24", "weight": 1.0}, {"source": "recetario_landing_audit_actions_p1_before_release", "target": "recetario_landing_audit_actions_4_desktop_nav_links_add_focus_indicators", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md", "source_location": "L31", "weight": 1.0}, {"source": "recetario_landing_audit_actions_landing_page_audit_action_items", "target": "recetario_landing_audit_actions_p2_next_pass", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md", "source_location": "L40", "weight": 1.0}, {"source": "recetario_landing_audit_actions_p2_next_pass", "target": "recetario_landing_audit_actions_5_hero_metric_cards_replace_pattern", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md", "source_location": "L42", "weight": 1.0}, {"source": "recetario_landing_audit_actions_p2_next_pass", "target": "recetario_landing_audit_actions_6_features_section_remove_icon_heading_template", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md", "source_location": "L49", "weight": 1.0}, {"source": "recetario_landing_audit_actions_p2_next_pass", "target": "recetario_landing_audit_actions_7_plan_cta_buttons_bump_to_44px", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md", "source_location": "L56", "weight": 1.0}, {"source": "recetario_landing_audit_actions_p2_next_pass", "target": "recetario_landing_audit_actions_8_pricing_toggle_buttons_bump_to_44px", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md", "source_location": "L63", "weight": 1.0}, {"source": "recetario_landing_audit_actions_p2_next_pass", "target": "recetario_landing_audit_actions_9_reveal_items_single_intersectionobserver", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md", "source_location": "L70", "weight": 1.0}, {"source": "recetario_landing_audit_actions_landing_page_audit_action_items", "target": "recetario_landing_audit_actions_p3_polish", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md", "source_location": "L79", "weight": 1.0}, {"source": "recetario_landing_audit_actions_p3_polish", "target": "recetario_landing_audit_actions_10_cta_section_semantic_text_on_accent_token", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md", "source_location": "L81", "weight": 1.0}, {"source": "recetario_landing_audit_actions_landing_page_audit_action_items", "target": "recetario_landing_audit_actions_running_order", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md", "source_location": "L89", "weight": 1.0}, {"source": "recetario_landing_audit_actions_running_order", "target": "recetario_landing_audit_actions_codeblock_1", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md", "source_location": "L91", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "users_maddozs_personal_projects_recetario_landing_audit_actions_md",
+      "label": "landing-audit-actions.md",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "recetario_landing_audit_actions_landing_page_audit_action_items",
+      "label": "Landing Page Audit \u2014 Action Items",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "recetario_landing_audit_actions_p1_before_release",
+      "label": "P1 \u2014 Before release",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md",
+      "source_location": "L8"
+    },
+    {
+      "id": "recetario_landing_audit_actions_1_pricing_toggle_add_aria_roles",
+      "label": "1. Pricing toggle: add ARIA roles",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md",
+      "source_location": "L10"
+    },
+    {
+      "id": "recetario_landing_audit_actions_2_conocer_m\u00e1s_touch_target_bump_to_44px",
+      "label": "2. \"Conocer m\u00e1s\" touch target: bump to 44px",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md",
+      "source_location": "L17"
+    },
+    {
+      "id": "recetario_landing_audit_actions_3_decorative_icons_add_aria_hidden",
+      "label": "3. Decorative icons: add aria-hidden",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md",
+      "source_location": "L24"
+    },
+    {
+      "id": "recetario_landing_audit_actions_4_desktop_nav_links_add_focus_indicators",
+      "label": "4. Desktop nav links: add focus indicators",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md",
+      "source_location": "L31"
+    },
+    {
+      "id": "recetario_landing_audit_actions_p2_next_pass",
+      "label": "P2 \u2014 Next pass",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md",
+      "source_location": "L40"
+    },
+    {
+      "id": "recetario_landing_audit_actions_5_hero_metric_cards_replace_pattern",
+      "label": "5. Hero-metric cards: replace pattern",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md",
+      "source_location": "L42"
+    },
+    {
+      "id": "recetario_landing_audit_actions_6_features_section_remove_icon_heading_template",
+      "label": "6. Features section: remove icon + heading template",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md",
+      "source_location": "L49"
+    },
+    {
+      "id": "recetario_landing_audit_actions_7_plan_cta_buttons_bump_to_44px",
+      "label": "7. Plan CTA buttons: bump to 44px",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md",
+      "source_location": "L56"
+    },
+    {
+      "id": "recetario_landing_audit_actions_8_pricing_toggle_buttons_bump_to_44px",
+      "label": "8. Pricing toggle buttons: bump to 44px",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md",
+      "source_location": "L63"
+    },
+    {
+      "id": "recetario_landing_audit_actions_9_reveal_items_single_intersectionobserver",
+      "label": "9. Reveal items: single IntersectionObserver",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md",
+      "source_location": "L70"
+    },
+    {
+      "id": "recetario_landing_audit_actions_p3_polish",
+      "label": "P3 \u2014 Polish",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md",
+      "source_location": "L79"
+    },
+    {
+      "id": "recetario_landing_audit_actions_10_cta_section_semantic_text_on_accent_token",
+      "label": "10. CTA section: semantic text-on-accent token",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md",
+      "source_location": "L81"
+    },
+    {
+      "id": "recetario_landing_audit_actions_running_order",
+      "label": "Running order",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md",
+      "source_location": "L89"
+    },
+    {
+      "id": "recetario_landing_audit_actions_codeblock_1",
+      "label": "code:block1 (impeccable harden    # P1: ARIA + focus indicators + touch t)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md",
+      "source_location": "L91"
+    }
+  ],
+  "edges": [
+    {
+      "source": "users_maddozs_personal_projects_recetario_landing_audit_actions_md",
+      "target": "recetario_landing_audit_actions_landing_page_audit_action_items",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "recetario_landing_audit_actions_landing_page_audit_action_items",
+      "target": "recetario_landing_audit_actions_p1_before_release",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "recetario_landing_audit_actions_p1_before_release",
+      "target": "recetario_landing_audit_actions_1_pricing_toggle_add_aria_roles",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "recetario_landing_audit_actions_p1_before_release",
+      "target": "recetario_landing_audit_actions_2_conocer_m\u00e1s_touch_target_bump_to_44px",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "recetario_landing_audit_actions_p1_before_release",
+      "target": "recetario_landing_audit_actions_3_decorative_icons_add_aria_hidden",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "recetario_landing_audit_actions_p1_before_release",
+      "target": "recetario_landing_audit_actions_4_desktop_nav_links_add_focus_indicators",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md",
+      "source_location": "L31",
+      "weight": 1.0
+    },
+    {
+      "source": "recetario_landing_audit_actions_landing_page_audit_action_items",
+      "target": "recetario_landing_audit_actions_p2_next_pass",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md",
+      "source_location": "L40",
+      "weight": 1.0
+    },
+    {
+      "source": "recetario_landing_audit_actions_p2_next_pass",
+      "target": "recetario_landing_audit_actions_5_hero_metric_cards_replace_pattern",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md",
+      "source_location": "L42",
+      "weight": 1.0
+    },
+    {
+      "source": "recetario_landing_audit_actions_p2_next_pass",
+      "target": "recetario_landing_audit_actions_6_features_section_remove_icon_heading_template",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md",
+      "source_location": "L49",
+      "weight": 1.0
+    },
+    {
+      "source": "recetario_landing_audit_actions_p2_next_pass",
+      "target": "recetario_landing_audit_actions_7_plan_cta_buttons_bump_to_44px",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md",
+      "source_location": "L56",
+      "weight": 1.0
+    },
+    {
+      "source": "recetario_landing_audit_actions_p2_next_pass",
+      "target": "recetario_landing_audit_actions_8_pricing_toggle_buttons_bump_to_44px",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md",
+      "source_location": "L63",
+      "weight": 1.0
+    },
+    {
+      "source": "recetario_landing_audit_actions_p2_next_pass",
+      "target": "recetario_landing_audit_actions_9_reveal_items_single_intersectionobserver",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md",
+      "source_location": "L70",
+      "weight": 1.0
+    },
+    {
+      "source": "recetario_landing_audit_actions_landing_page_audit_action_items",
+      "target": "recetario_landing_audit_actions_p3_polish",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md",
+      "source_location": "L79",
+      "weight": 1.0
+    },
+    {
+      "source": "recetario_landing_audit_actions_p3_polish",
+      "target": "recetario_landing_audit_actions_10_cta_section_semantic_text_on_accent_token",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md",
+      "source_location": "L81",
+      "weight": 1.0
+    },
+    {
+      "source": "recetario_landing_audit_actions_landing_page_audit_action_items",
+      "target": "recetario_landing_audit_actions_running_order",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md",
+      "source_location": "L89",
+      "weight": 1.0
+    },
+    {
+      "source": "recetario_landing_audit_actions_running_order",
+      "target": "recetario_landing_audit_actions_codeblock_1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/landing-audit-actions.md",
+      "source_location": "L91",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

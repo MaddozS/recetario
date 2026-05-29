@@ -1,1 +1,799 @@
-{"nodes": [{"id": "users_maddozs_personal_projects_recetario_agents_skills_business_analyst_templates_research_report_template_md", "label": "research-report.template.md", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L1"}, {"id": "templates_research_report_template_research_report_research_topic", "label": "Research Report: {{RESEARCH_TOPIC}}", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L1"}, {"id": "templates_research_report_template_executive_summary", "label": "Executive Summary", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L10"}, {"id": "templates_research_report_template_1_research_objectives", "label": "1. Research Objectives", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L24"}, {"id": "templates_research_report_template_primary_objectives", "label": "Primary Objectives", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L26"}, {"id": "templates_research_report_template_scope", "label": "Scope", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L37"}, {"id": "templates_research_report_template_2_research_methodology", "label": "2. Research Methodology", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L52"}, {"id": "templates_research_report_template_approach", "label": "Approach", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L54"}, {"id": "templates_research_report_template_data_sources", "label": "Data Sources", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L64"}, {"id": "templates_research_report_template_limitations", "label": "Limitations", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L78"}, {"id": "templates_research_report_template_3_market_analysis", "label": "3. Market Analysis", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L84"}, {"id": "templates_research_report_template_market_overview", "label": "Market Overview", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L86"}, {"id": "templates_research_report_template_target_market_segments", "label": "Target Market Segments", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L106"}, {"id": "templates_research_report_template_segment_1_segment_1_name", "label": "Segment 1: {{SEGMENT_1_NAME}}", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L108"}, {"id": "templates_research_report_template_segment_2_segment_2_name", "label": "Segment 2: {{SEGMENT_2_NAME}}", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L115"}, {"id": "templates_research_report_template_segment_3_segment_3_name", "label": "Segment 3: {{SEGMENT_3_NAME}}", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L122"}, {"id": "templates_research_report_template_4_competitive_analysis", "label": "4. Competitive Analysis", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L131"}, {"id": "templates_research_report_template_competitive_landscape_overview", "label": "Competitive Landscape Overview", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L133"}, {"id": "templates_research_report_template_detailed_competitor_analysis", "label": "Detailed Competitor Analysis", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L143"}, {"id": "templates_research_report_template_competitor_1_competitor_1_name", "label": "Competitor 1: {{COMPETITOR_1_NAME}}", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L145"}, {"id": "templates_research_report_template_competitor_2_competitor_2_name", "label": "Competitor 2: {{COMPETITOR_2_NAME}}", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L186"}, {"id": "templates_research_report_template_competitor_3_competitor_3_name", "label": "Competitor 3: {{COMPETITOR_3_NAME}}", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L227"}, {"id": "templates_research_report_template_feature_comparison_matrix", "label": "Feature Comparison Matrix", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L268"}, {"id": "templates_research_report_template_pricing_comparison", "label": "Pricing Comparison", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L278"}, {"id": "templates_research_report_template_5_user_research_findings", "label": "5. User Research Findings", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L291"}, {"id": "templates_research_report_template_user_needs_analysis", "label": "User Needs Analysis", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L293"}, {"id": "templates_research_report_template_pain_points", "label": "Pain Points", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L312"}, {"id": "templates_research_report_template_user_preferences", "label": "User Preferences", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L323"}, {"id": "templates_research_report_template_6_gap_analysis", "label": "6. Gap Analysis", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L335"}, {"id": "templates_research_report_template_market_gaps_identified", "label": "Market Gaps Identified", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L337"}, {"id": "templates_research_report_template_unmet_needs", "label": "Unmet Needs", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L360"}, {"id": "templates_research_report_template_underserved_segments", "label": "Underserved Segments", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L364"}, {"id": "templates_research_report_template_7_opportunities_recommendations", "label": "7. Opportunities & Recommendations", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L370"}, {"id": "templates_research_report_template_strategic_opportunities", "label": "Strategic Opportunities", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L372"}, {"id": "templates_research_report_template_recommendations", "label": "Recommendations", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L398"}, {"id": "templates_research_report_template_8_risk_assessment", "label": "8. Risk Assessment", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L423"}, {"id": "templates_research_report_template_market_risks", "label": "Market Risks", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L425"}, {"id": "templates_research_report_template_competitive_risks", "label": "Competitive Risks", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L439"}, {"id": "templates_research_report_template_9_key_insights_summary", "label": "9. Key Insights Summary", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L455"}, {"id": "templates_research_report_template_top_insights", "label": "Top Insights", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L457"}, {"id": "templates_research_report_template_implications_for_strategy", "label": "Implications for Strategy", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L474"}, {"id": "templates_research_report_template_10_next_steps", "label": "10. Next Steps", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L480"}, {"id": "templates_research_report_template_immediate_actions", "label": "Immediate Actions", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L482"}, {"id": "templates_research_report_template_follow_up_research_needed", "label": "Follow-Up Research Needed", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L488"}, {"id": "templates_research_report_template_recommended_timeline", "label": "Recommended Timeline", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L494"}, {"id": "templates_research_report_template_appendix", "label": "Appendix", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L500"}, {"id": "templates_research_report_template_data_sources_502", "label": "Data Sources", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L502"}, {"id": "templates_research_report_template_methodology_details", "label": "Methodology Details", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L516"}, {"id": "templates_research_report_template_raw_data", "label": "Raw Data", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L520"}, {"id": "templates_research_report_template_additional_notes", "label": "Additional Notes", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L524"}], "edges": [{"source": "users_maddozs_personal_projects_recetario_agents_skills_business_analyst_templates_research_report_template_md", "target": "templates_research_report_template_research_report_research_topic", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L1", "weight": 1.0}, {"source": "templates_research_report_template_research_report_research_topic", "target": "templates_research_report_template_executive_summary", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L10", "weight": 1.0}, {"source": "templates_research_report_template_research_report_research_topic", "target": "templates_research_report_template_1_research_objectives", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L24", "weight": 1.0}, {"source": "templates_research_report_template_1_research_objectives", "target": "templates_research_report_template_primary_objectives", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L26", "weight": 1.0}, {"source": "templates_research_report_template_1_research_objectives", "target": "templates_research_report_template_scope", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L37", "weight": 1.0}, {"source": "templates_research_report_template_research_report_research_topic", "target": "templates_research_report_template_2_research_methodology", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L52", "weight": 1.0}, {"source": "templates_research_report_template_2_research_methodology", "target": "templates_research_report_template_approach", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L54", "weight": 1.0}, {"source": "templates_research_report_template_2_research_methodology", "target": "templates_research_report_template_data_sources", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L64", "weight": 1.0}, {"source": "templates_research_report_template_2_research_methodology", "target": "templates_research_report_template_limitations", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L78", "weight": 1.0}, {"source": "templates_research_report_template_research_report_research_topic", "target": "templates_research_report_template_3_market_analysis", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L84", "weight": 1.0}, {"source": "templates_research_report_template_3_market_analysis", "target": "templates_research_report_template_market_overview", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L86", "weight": 1.0}, {"source": "templates_research_report_template_3_market_analysis", "target": "templates_research_report_template_target_market_segments", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L106", "weight": 1.0}, {"source": "templates_research_report_template_target_market_segments", "target": "templates_research_report_template_segment_1_segment_1_name", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L108", "weight": 1.0}, {"source": "templates_research_report_template_target_market_segments", "target": "templates_research_report_template_segment_2_segment_2_name", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L115", "weight": 1.0}, {"source": "templates_research_report_template_target_market_segments", "target": "templates_research_report_template_segment_3_segment_3_name", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L122", "weight": 1.0}, {"source": "templates_research_report_template_research_report_research_topic", "target": "templates_research_report_template_4_competitive_analysis", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L131", "weight": 1.0}, {"source": "templates_research_report_template_4_competitive_analysis", "target": "templates_research_report_template_competitive_landscape_overview", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L133", "weight": 1.0}, {"source": "templates_research_report_template_4_competitive_analysis", "target": "templates_research_report_template_detailed_competitor_analysis", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L143", "weight": 1.0}, {"source": "templates_research_report_template_detailed_competitor_analysis", "target": "templates_research_report_template_competitor_1_competitor_1_name", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L145", "weight": 1.0}, {"source": "templates_research_report_template_detailed_competitor_analysis", "target": "templates_research_report_template_competitor_2_competitor_2_name", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L186", "weight": 1.0}, {"source": "templates_research_report_template_detailed_competitor_analysis", "target": "templates_research_report_template_competitor_3_competitor_3_name", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L227", "weight": 1.0}, {"source": "templates_research_report_template_4_competitive_analysis", "target": "templates_research_report_template_feature_comparison_matrix", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L268", "weight": 1.0}, {"source": "templates_research_report_template_4_competitive_analysis", "target": "templates_research_report_template_pricing_comparison", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L278", "weight": 1.0}, {"source": "templates_research_report_template_research_report_research_topic", "target": "templates_research_report_template_5_user_research_findings", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L291", "weight": 1.0}, {"source": "templates_research_report_template_5_user_research_findings", "target": "templates_research_report_template_user_needs_analysis", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L293", "weight": 1.0}, {"source": "templates_research_report_template_5_user_research_findings", "target": "templates_research_report_template_pain_points", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L312", "weight": 1.0}, {"source": "templates_research_report_template_5_user_research_findings", "target": "templates_research_report_template_user_preferences", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L323", "weight": 1.0}, {"source": "templates_research_report_template_research_report_research_topic", "target": "templates_research_report_template_6_gap_analysis", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L335", "weight": 1.0}, {"source": "templates_research_report_template_6_gap_analysis", "target": "templates_research_report_template_market_gaps_identified", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L337", "weight": 1.0}, {"source": "templates_research_report_template_6_gap_analysis", "target": "templates_research_report_template_unmet_needs", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L360", "weight": 1.0}, {"source": "templates_research_report_template_6_gap_analysis", "target": "templates_research_report_template_underserved_segments", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L364", "weight": 1.0}, {"source": "templates_research_report_template_research_report_research_topic", "target": "templates_research_report_template_7_opportunities_recommendations", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L370", "weight": 1.0}, {"source": "templates_research_report_template_7_opportunities_recommendations", "target": "templates_research_report_template_strategic_opportunities", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L372", "weight": 1.0}, {"source": "templates_research_report_template_7_opportunities_recommendations", "target": "templates_research_report_template_recommendations", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L398", "weight": 1.0}, {"source": "templates_research_report_template_research_report_research_topic", "target": "templates_research_report_template_8_risk_assessment", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L423", "weight": 1.0}, {"source": "templates_research_report_template_8_risk_assessment", "target": "templates_research_report_template_market_risks", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L425", "weight": 1.0}, {"source": "templates_research_report_template_8_risk_assessment", "target": "templates_research_report_template_competitive_risks", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L439", "weight": 1.0}, {"source": "templates_research_report_template_research_report_research_topic", "target": "templates_research_report_template_9_key_insights_summary", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L455", "weight": 1.0}, {"source": "templates_research_report_template_9_key_insights_summary", "target": "templates_research_report_template_top_insights", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L457", "weight": 1.0}, {"source": "templates_research_report_template_9_key_insights_summary", "target": "templates_research_report_template_implications_for_strategy", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L474", "weight": 1.0}, {"source": "templates_research_report_template_research_report_research_topic", "target": "templates_research_report_template_10_next_steps", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L480", "weight": 1.0}, {"source": "templates_research_report_template_10_next_steps", "target": "templates_research_report_template_immediate_actions", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L482", "weight": 1.0}, {"source": "templates_research_report_template_10_next_steps", "target": "templates_research_report_template_follow_up_research_needed", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L488", "weight": 1.0}, {"source": "templates_research_report_template_10_next_steps", "target": "templates_research_report_template_recommended_timeline", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L494", "weight": 1.0}, {"source": "templates_research_report_template_research_report_research_topic", "target": "templates_research_report_template_appendix", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L500", "weight": 1.0}, {"source": "templates_research_report_template_appendix", "target": "templates_research_report_template_data_sources_502", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L502", "weight": 1.0}, {"source": "templates_research_report_template_appendix", "target": "templates_research_report_template_methodology_details", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L516", "weight": 1.0}, {"source": "templates_research_report_template_appendix", "target": "templates_research_report_template_raw_data", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L520", "weight": 1.0}, {"source": "templates_research_report_template_appendix", "target": "templates_research_report_template_additional_notes", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md", "source_location": "L524", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "users_maddozs_personal_projects_recetario_agents_skills_business_analyst_templates_research_report_template_md",
+      "label": "research-report.template.md",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "templates_research_report_template_research_report_research_topic",
+      "label": "Research Report: {{RESEARCH_TOPIC}}",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "templates_research_report_template_executive_summary",
+      "label": "Executive Summary",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L10"
+    },
+    {
+      "id": "templates_research_report_template_1_research_objectives",
+      "label": "1. Research Objectives",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L24"
+    },
+    {
+      "id": "templates_research_report_template_primary_objectives",
+      "label": "Primary Objectives",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L26"
+    },
+    {
+      "id": "templates_research_report_template_scope",
+      "label": "Scope",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L37"
+    },
+    {
+      "id": "templates_research_report_template_2_research_methodology",
+      "label": "2. Research Methodology",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L52"
+    },
+    {
+      "id": "templates_research_report_template_approach",
+      "label": "Approach",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L54"
+    },
+    {
+      "id": "templates_research_report_template_data_sources",
+      "label": "Data Sources",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L64"
+    },
+    {
+      "id": "templates_research_report_template_limitations",
+      "label": "Limitations",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L78"
+    },
+    {
+      "id": "templates_research_report_template_3_market_analysis",
+      "label": "3. Market Analysis",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L84"
+    },
+    {
+      "id": "templates_research_report_template_market_overview",
+      "label": "Market Overview",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L86"
+    },
+    {
+      "id": "templates_research_report_template_target_market_segments",
+      "label": "Target Market Segments",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L106"
+    },
+    {
+      "id": "templates_research_report_template_segment_1_segment_1_name",
+      "label": "Segment 1: {{SEGMENT_1_NAME}}",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L108"
+    },
+    {
+      "id": "templates_research_report_template_segment_2_segment_2_name",
+      "label": "Segment 2: {{SEGMENT_2_NAME}}",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L115"
+    },
+    {
+      "id": "templates_research_report_template_segment_3_segment_3_name",
+      "label": "Segment 3: {{SEGMENT_3_NAME}}",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L122"
+    },
+    {
+      "id": "templates_research_report_template_4_competitive_analysis",
+      "label": "4. Competitive Analysis",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L131"
+    },
+    {
+      "id": "templates_research_report_template_competitive_landscape_overview",
+      "label": "Competitive Landscape Overview",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L133"
+    },
+    {
+      "id": "templates_research_report_template_detailed_competitor_analysis",
+      "label": "Detailed Competitor Analysis",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L143"
+    },
+    {
+      "id": "templates_research_report_template_competitor_1_competitor_1_name",
+      "label": "Competitor 1: {{COMPETITOR_1_NAME}}",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L145"
+    },
+    {
+      "id": "templates_research_report_template_competitor_2_competitor_2_name",
+      "label": "Competitor 2: {{COMPETITOR_2_NAME}}",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L186"
+    },
+    {
+      "id": "templates_research_report_template_competitor_3_competitor_3_name",
+      "label": "Competitor 3: {{COMPETITOR_3_NAME}}",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L227"
+    },
+    {
+      "id": "templates_research_report_template_feature_comparison_matrix",
+      "label": "Feature Comparison Matrix",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L268"
+    },
+    {
+      "id": "templates_research_report_template_pricing_comparison",
+      "label": "Pricing Comparison",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L278"
+    },
+    {
+      "id": "templates_research_report_template_5_user_research_findings",
+      "label": "5. User Research Findings",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L291"
+    },
+    {
+      "id": "templates_research_report_template_user_needs_analysis",
+      "label": "User Needs Analysis",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L293"
+    },
+    {
+      "id": "templates_research_report_template_pain_points",
+      "label": "Pain Points",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L312"
+    },
+    {
+      "id": "templates_research_report_template_user_preferences",
+      "label": "User Preferences",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L323"
+    },
+    {
+      "id": "templates_research_report_template_6_gap_analysis",
+      "label": "6. Gap Analysis",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L335"
+    },
+    {
+      "id": "templates_research_report_template_market_gaps_identified",
+      "label": "Market Gaps Identified",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L337"
+    },
+    {
+      "id": "templates_research_report_template_unmet_needs",
+      "label": "Unmet Needs",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L360"
+    },
+    {
+      "id": "templates_research_report_template_underserved_segments",
+      "label": "Underserved Segments",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L364"
+    },
+    {
+      "id": "templates_research_report_template_7_opportunities_recommendations",
+      "label": "7. Opportunities & Recommendations",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L370"
+    },
+    {
+      "id": "templates_research_report_template_strategic_opportunities",
+      "label": "Strategic Opportunities",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L372"
+    },
+    {
+      "id": "templates_research_report_template_recommendations",
+      "label": "Recommendations",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L398"
+    },
+    {
+      "id": "templates_research_report_template_8_risk_assessment",
+      "label": "8. Risk Assessment",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L423"
+    },
+    {
+      "id": "templates_research_report_template_market_risks",
+      "label": "Market Risks",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L425"
+    },
+    {
+      "id": "templates_research_report_template_competitive_risks",
+      "label": "Competitive Risks",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L439"
+    },
+    {
+      "id": "templates_research_report_template_9_key_insights_summary",
+      "label": "9. Key Insights Summary",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L455"
+    },
+    {
+      "id": "templates_research_report_template_top_insights",
+      "label": "Top Insights",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L457"
+    },
+    {
+      "id": "templates_research_report_template_implications_for_strategy",
+      "label": "Implications for Strategy",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L474"
+    },
+    {
+      "id": "templates_research_report_template_10_next_steps",
+      "label": "10. Next Steps",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L480"
+    },
+    {
+      "id": "templates_research_report_template_immediate_actions",
+      "label": "Immediate Actions",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L482"
+    },
+    {
+      "id": "templates_research_report_template_follow_up_research_needed",
+      "label": "Follow-Up Research Needed",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L488"
+    },
+    {
+      "id": "templates_research_report_template_recommended_timeline",
+      "label": "Recommended Timeline",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L494"
+    },
+    {
+      "id": "templates_research_report_template_appendix",
+      "label": "Appendix",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L500"
+    },
+    {
+      "id": "templates_research_report_template_data_sources_502",
+      "label": "Data Sources",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L502"
+    },
+    {
+      "id": "templates_research_report_template_methodology_details",
+      "label": "Methodology Details",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L516"
+    },
+    {
+      "id": "templates_research_report_template_raw_data",
+      "label": "Raw Data",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L520"
+    },
+    {
+      "id": "templates_research_report_template_additional_notes",
+      "label": "Additional Notes",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L524"
+    }
+  ],
+  "edges": [
+    {
+      "source": "users_maddozs_personal_projects_recetario_agents_skills_business_analyst_templates_research_report_template_md",
+      "target": "templates_research_report_template_research_report_research_topic",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "templates_research_report_template_research_report_research_topic",
+      "target": "templates_research_report_template_executive_summary",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "templates_research_report_template_research_report_research_topic",
+      "target": "templates_research_report_template_1_research_objectives",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "templates_research_report_template_1_research_objectives",
+      "target": "templates_research_report_template_primary_objectives",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L26",
+      "weight": 1.0
+    },
+    {
+      "source": "templates_research_report_template_1_research_objectives",
+      "target": "templates_research_report_template_scope",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L37",
+      "weight": 1.0
+    },
+    {
+      "source": "templates_research_report_template_research_report_research_topic",
+      "target": "templates_research_report_template_2_research_methodology",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L52",
+      "weight": 1.0
+    },
+    {
+      "source": "templates_research_report_template_2_research_methodology",
+      "target": "templates_research_report_template_approach",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L54",
+      "weight": 1.0
+    },
+    {
+      "source": "templates_research_report_template_2_research_methodology",
+      "target": "templates_research_report_template_data_sources",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L64",
+      "weight": 1.0
+    },
+    {
+      "source": "templates_research_report_template_2_research_methodology",
+      "target": "templates_research_report_template_limitations",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L78",
+      "weight": 1.0
+    },
+    {
+      "source": "templates_research_report_template_research_report_research_topic",
+      "target": "templates_research_report_template_3_market_analysis",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L84",
+      "weight": 1.0
+    },
+    {
+      "source": "templates_research_report_template_3_market_analysis",
+      "target": "templates_research_report_template_market_overview",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L86",
+      "weight": 1.0
+    },
+    {
+      "source": "templates_research_report_template_3_market_analysis",
+      "target": "templates_research_report_template_target_market_segments",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L106",
+      "weight": 1.0
+    },
+    {
+      "source": "templates_research_report_template_target_market_segments",
+      "target": "templates_research_report_template_segment_1_segment_1_name",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L108",
+      "weight": 1.0
+    },
+    {
+      "source": "templates_research_report_template_target_market_segments",
+      "target": "templates_research_report_template_segment_2_segment_2_name",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L115",
+      "weight": 1.0
+    },
+    {
+      "source": "templates_research_report_template_target_market_segments",
+      "target": "templates_research_report_template_segment_3_segment_3_name",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L122",
+      "weight": 1.0
+    },
+    {
+      "source": "templates_research_report_template_research_report_research_topic",
+      "target": "templates_research_report_template_4_competitive_analysis",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L131",
+      "weight": 1.0
+    },
+    {
+      "source": "templates_research_report_template_4_competitive_analysis",
+      "target": "templates_research_report_template_competitive_landscape_overview",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L133",
+      "weight": 1.0
+    },
+    {
+      "source": "templates_research_report_template_4_competitive_analysis",
+      "target": "templates_research_report_template_detailed_competitor_analysis",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L143",
+      "weight": 1.0
+    },
+    {
+      "source": "templates_research_report_template_detailed_competitor_analysis",
+      "target": "templates_research_report_template_competitor_1_competitor_1_name",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L145",
+      "weight": 1.0
+    },
+    {
+      "source": "templates_research_report_template_detailed_competitor_analysis",
+      "target": "templates_research_report_template_competitor_2_competitor_2_name",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L186",
+      "weight": 1.0
+    },
+    {
+      "source": "templates_research_report_template_detailed_competitor_analysis",
+      "target": "templates_research_report_template_competitor_3_competitor_3_name",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L227",
+      "weight": 1.0
+    },
+    {
+      "source": "templates_research_report_template_4_competitive_analysis",
+      "target": "templates_research_report_template_feature_comparison_matrix",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L268",
+      "weight": 1.0
+    },
+    {
+      "source": "templates_research_report_template_4_competitive_analysis",
+      "target": "templates_research_report_template_pricing_comparison",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L278",
+      "weight": 1.0
+    },
+    {
+      "source": "templates_research_report_template_research_report_research_topic",
+      "target": "templates_research_report_template_5_user_research_findings",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L291",
+      "weight": 1.0
+    },
+    {
+      "source": "templates_research_report_template_5_user_research_findings",
+      "target": "templates_research_report_template_user_needs_analysis",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L293",
+      "weight": 1.0
+    },
+    {
+      "source": "templates_research_report_template_5_user_research_findings",
+      "target": "templates_research_report_template_pain_points",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L312",
+      "weight": 1.0
+    },
+    {
+      "source": "templates_research_report_template_5_user_research_findings",
+      "target": "templates_research_report_template_user_preferences",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L323",
+      "weight": 1.0
+    },
+    {
+      "source": "templates_research_report_template_research_report_research_topic",
+      "target": "templates_research_report_template_6_gap_analysis",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L335",
+      "weight": 1.0
+    },
+    {
+      "source": "templates_research_report_template_6_gap_analysis",
+      "target": "templates_research_report_template_market_gaps_identified",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L337",
+      "weight": 1.0
+    },
+    {
+      "source": "templates_research_report_template_6_gap_analysis",
+      "target": "templates_research_report_template_unmet_needs",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L360",
+      "weight": 1.0
+    },
+    {
+      "source": "templates_research_report_template_6_gap_analysis",
+      "target": "templates_research_report_template_underserved_segments",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L364",
+      "weight": 1.0
+    },
+    {
+      "source": "templates_research_report_template_research_report_research_topic",
+      "target": "templates_research_report_template_7_opportunities_recommendations",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L370",
+      "weight": 1.0
+    },
+    {
+      "source": "templates_research_report_template_7_opportunities_recommendations",
+      "target": "templates_research_report_template_strategic_opportunities",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L372",
+      "weight": 1.0
+    },
+    {
+      "source": "templates_research_report_template_7_opportunities_recommendations",
+      "target": "templates_research_report_template_recommendations",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L398",
+      "weight": 1.0
+    },
+    {
+      "source": "templates_research_report_template_research_report_research_topic",
+      "target": "templates_research_report_template_8_risk_assessment",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L423",
+      "weight": 1.0
+    },
+    {
+      "source": "templates_research_report_template_8_risk_assessment",
+      "target": "templates_research_report_template_market_risks",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L425",
+      "weight": 1.0
+    },
+    {
+      "source": "templates_research_report_template_8_risk_assessment",
+      "target": "templates_research_report_template_competitive_risks",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L439",
+      "weight": 1.0
+    },
+    {
+      "source": "templates_research_report_template_research_report_research_topic",
+      "target": "templates_research_report_template_9_key_insights_summary",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L455",
+      "weight": 1.0
+    },
+    {
+      "source": "templates_research_report_template_9_key_insights_summary",
+      "target": "templates_research_report_template_top_insights",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L457",
+      "weight": 1.0
+    },
+    {
+      "source": "templates_research_report_template_9_key_insights_summary",
+      "target": "templates_research_report_template_implications_for_strategy",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L474",
+      "weight": 1.0
+    },
+    {
+      "source": "templates_research_report_template_research_report_research_topic",
+      "target": "templates_research_report_template_10_next_steps",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L480",
+      "weight": 1.0
+    },
+    {
+      "source": "templates_research_report_template_10_next_steps",
+      "target": "templates_research_report_template_immediate_actions",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L482",
+      "weight": 1.0
+    },
+    {
+      "source": "templates_research_report_template_10_next_steps",
+      "target": "templates_research_report_template_follow_up_research_needed",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L488",
+      "weight": 1.0
+    },
+    {
+      "source": "templates_research_report_template_10_next_steps",
+      "target": "templates_research_report_template_recommended_timeline",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L494",
+      "weight": 1.0
+    },
+    {
+      "source": "templates_research_report_template_research_report_research_topic",
+      "target": "templates_research_report_template_appendix",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L500",
+      "weight": 1.0
+    },
+    {
+      "source": "templates_research_report_template_appendix",
+      "target": "templates_research_report_template_data_sources_502",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L502",
+      "weight": 1.0
+    },
+    {
+      "source": "templates_research_report_template_appendix",
+      "target": "templates_research_report_template_methodology_details",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L516",
+      "weight": 1.0
+    },
+    {
+      "source": "templates_research_report_template_appendix",
+      "target": "templates_research_report_template_raw_data",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L520",
+      "weight": 1.0
+    },
+    {
+      "source": "templates_research_report_template_appendix",
+      "target": "templates_research_report_template_additional_notes",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/.agents/skills/business-analyst/templates/research-report.template.md",
+      "source_location": "L524",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

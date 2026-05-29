@@ -1,16 +1,16 @@
-# Graph Report - recetario  (2026-05-27)
+# Graph Report - recetario  (2026-05-28)
 
 ## Corpus Check
-- 407 files · ~567,569 words
+- 418 files · ~576,353 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 7761 nodes · 8766 edges · 432 communities (414 shown, 18 thin omitted)
+- 7928 nodes · 8927 edges · 444 communities (426 shown, 18 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 62 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `13c47266`
+- Built from commit: `9e668a11`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -436,6 +436,18 @@
 - [[_COMMUNITY_Community 423|Community 423]]
 - [[_COMMUNITY_Community 424|Community 424]]
 - [[_COMMUNITY_Community 426|Community 426]]
+- [[_COMMUNITY_Community 432|Community 432]]
+- [[_COMMUNITY_Community 433|Community 433]]
+- [[_COMMUNITY_Community 434|Community 434]]
+- [[_COMMUNITY_Community 435|Community 435]]
+- [[_COMMUNITY_Community 436|Community 436]]
+- [[_COMMUNITY_Community 437|Community 437]]
+- [[_COMMUNITY_Community 438|Community 438]]
+- [[_COMMUNITY_Community 439|Community 439]]
+- [[_COMMUNITY_Community 440|Community 440]]
+- [[_COMMUNITY_Community 441|Community 441]]
+- [[_COMMUNITY_Community 442|Community 442]]
+- [[_COMMUNITY_Community 443|Community 443]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `4) Rules (generation + audit)` - 31 edges
@@ -461,7 +473,7 @@
 - `_generate_intelligent_overrides()` --calls--> `search()`  [INFERRED]
   .agents/skills/ui-ux-pro-max/scripts/design_system.py → .agents/skills/ui-ux-pro-max/scripts/core.py
 
-## Communities (432 total, 18 thin omitted)
+## Communities (444 total, 18 thin omitted)
 
 ### Community 0 - "Community 0"
 Cohesion: 0.02
@@ -516,8 +528,8 @@ Cohesion: 0.02
 Nodes (80): AggregateSubscriptionPlan, GetSubscriptionPlanAggregateType, GetSubscriptionPlanGroupByPayload, NullableIntFieldUpdateOperationsInput, Prisma__SubscriptionPlanClient, SubscriptionPlan$subscriptionsArgs, SubscriptionPlanAggregateArgs, SubscriptionPlanAvgAggregateInputType (+72 more)
 
 ### Community 13 - "Community 13"
-Cohesion: 0.03
-Nodes (65): getUserPreferences(), isValidAccentColor(), isValidTheme(), upsertUserPreferences(), validAccentColors, validThemes, UserPreferences, accentCssVars (+57 more)
+Cohesion: 0.06
+Nodes (32): getUserPreferences(), isValidAccentColor(), isValidTheme(), upsertUserPreferences(), validAccentColors, validThemes, UserPreferences, ACCENT_FAMILIES (+24 more)
 
 ### Community 14 - "Community 14"
 Cohesion: 0.03
@@ -553,11 +565,11 @@ Nodes (68): C, $(), ae(), at(), be(), bt(), ce(), ct() (+60 more)
 
 ### Community 22 - "Community 22"
 Cohesion: 0.04
-Nodes (46): astro-icon/components, isOpen, menu, trigger, authClient, buttonLabel, monthlyBtn, string (+38 more)
+Nodes (39): astro-icon/components, isOpen, menu, trigger, features, imgEl, isDark, ms (+31 more)
 
 ### Community 23 - "Community 23"
-Cohesion: 0.03
-Nodes (57): formData, message, nextWidth, parsedPrice, action, aplicarRedondeoUnidadPequena(), buildPresentationSectionUrl, calcularSubtotalIngrediente() (+49 more)
+Cohesion: 0.02
+Nodes (84): formData, message, nextWidth, parsedPrice, UNIT_OPTIONS, parseNumberInput(), action, blockedRecipes (+76 more)
 
 ### Community 24 - "Community 24"
 Cohesion: 0.03
@@ -569,11 +581,11 @@ Nodes (60): AggregateCacheEntry, CacheEntryAggregateArgs, CacheEntryAvgAggregate
 
 ### Community 26 - "Community 26"
 Cohesion: 0.05
-Nodes (53): formatQuantity(), icon, iconSpan, rows, smartQuantity(), table, tbody, [] (+45 more)
+Nodes (51): formatQuantity(), icon, iconSpan, rows, smartQuantity(), table, tbody, [] (+43 more)
 
 ### Community 27 - "Community 27"
 Cohesion: 0.10
-Nodes (51): normalizeCategory(), normalizeDesiredMargin(), normalizeFixedCostsPercentage(), normalizeOptionalText(), normalizePresentationName(), normalizePresentationSalePrice(), normalizePresentationUnits(), normalizeRecipeComment() (+43 more)
+Nodes (50): normalizeCategory(), normalizeDesiredMargin(), normalizeFixedCostsPercentage(), normalizeOptionalText(), normalizePresentationName(), normalizePresentationSalePrice(), normalizePresentationUnits(), normalizeRecipeComment() (+42 more)
 
 ### Community 28 - "Community 28"
 Cohesion: 0.04
@@ -700,8 +712,8 @@ Cohesion: 0.08
 Nodes (27): acknowledgePendingEvent(), annotRoot, args, child, childArgs, CONTEXT_DIR, { detectScript, sessionPath, livePath }, __dirname (+19 more)
 
 ### Community 59 - "Community 59"
-Cohesion: 0.09
-Nodes (20): POST(), ALL(), clientIp(), logAuditEvent(), auth, extractCookie(), generateToken(), getCsrfCookie() (+12 more)
+Cohesion: 0.12
+Nodes (16): POST(), ALL(), clientIp(), logAuditEvent(), auth, EmailPayload, sendEmail(), adapter (+8 more)
 
 ### Community 60 - "Community 60"
 Cohesion: 0.16
@@ -728,12 +740,12 @@ Cohesion: 0.07
 Nodes (29): 1. `src/lib/db/billing.ts`, 2. `src/lib/db/index.ts` (Modificar), Archivos a Crear, Archivos de Salida, `cancelSubscription(stripeSubscriptionId: string)`, code:json ({), code:typescript (export * from "./billing";), code:json ({) (+21 more)
 
 ### Community 66 - "Community 66"
-Cohesion: 0.07
-Nodes (26): UNIT_OPTIONS, parseNumberInput(), action, blockedRecipes, errorEl, feedbackMessage, feedbackTypeParam, ingredientId (+18 more)
+Cohesion: 0.06
+Nodes (33): accentCssVars, accentCssVars, isAuthenticated, getAccentCssVars(), timeAgo(), hasFeature(), a, action (+25 more)
 
 ### Community 67 - "Community 67"
-Cohesion: 0.14
-Nodes (24): BASIC_FEATURES, cancelSubscription(), createOrUpdateSubscription(), CreateSubscriptionInput, FEATURE_FLAGS, getPlanByStripePriceId(), getStripeCustomerId(), getUserSubscription() (+16 more)
+Cohesion: 0.10
+Nodes (29): BASIC_FEATURES, cancelSubscription(), createOrUpdateSubscription(), CreateSubscriptionInput, FEATURE_FLAGS, getPlanByStripePriceId(), getPricingPlans(), getStripeCustomerId() (+21 more)
 
 ### Community 68 - "Community 68"
 Cohesion: 0.07
@@ -772,8 +784,8 @@ Cohesion: 0.15
 Nodes (27): actionLabel(), barPaletteForTheme(), buildConfigureRow(), buildConfirmedRow(), buildCyclingRow(), buildDots(), buildGeneratingRow(), buildParamsPanel() (+19 more)
 
 ### Community 77 - "Community 77"
-Cohesion: 0.14
-Nodes (21): getLegacyLiveSessionsDir(), readLiveServerInfo(), completeCli(), completeThroughServer(), parseArgs(), readServerInfo(), parseArgs(), resumeCli() (+13 more)
+Cohesion: 0.25
+Nodes (12): getLegacyLiveSessionsDir(), readLiveServerInfo(), completeCli(), completeThroughServer(), parseArgs(), readServerInfo(), parseArgs(), resumeCli() (+4 more)
 
 ### Community 78 - "Community 78"
 Cohesion: 0.07
@@ -848,8 +860,8 @@ Cohesion: 0.08
 Nodes (23): All or nothing, Best Practices, code:typescript (const [user, post] = await prisma.$transaction([), code:typescript (// Default is fine for most cases), code:typescript (try {), code:typescript (await prisma.$transaction(async (tx) => {), code:typescript (// This is automatically a transaction), code:typescript (await prisma.$transaction(async (tx) => {) (+15 more)
 
 ### Community 96 - "Community 96"
-Cohesion: 0.15
-Nodes (24): bool, ansi_ljust(), _detect_page_type(), format_ascii_box(), format_markdown(), format_master_md(), format_page_override_md(), generate_design_system() (+16 more)
+Cohesion: 0.16
+Nodes (17): bool, ansi_ljust(), format_ascii_box(), format_markdown(), format_master_md(), generate_design_system(), hex_to_ansi(), persist_design_system() (+9 more)
 
 ### Community 97 - "Community 97"
 Cohesion: 0.08
@@ -944,8 +956,8 @@ Cohesion: 0.10
 Nodes (19): Better Auth Integration Guide, CLI Commands, Client, code:block1 (import { twoFactor } from "better-auth/plugins/two-factor"), Common Gotchas, Core Config Options, Database, Email Flows (+11 more)
 
 ### Community 120 - "Community 120"
-Cohesion: 0.10
-Nodes (16): config, LogOptions, PrismaClient, PrismaClientConstructor, Account, Ingredient, PrismaClient, Recipe (+8 more)
+Cohesion: 0.15
+Nodes (12): Account, Ingredient, PrismaClient, Recipe, RecipeIngredient, RecipePresentation, Session, Subscription (+4 more)
 
 ### Community 121 - "Community 121"
 Cohesion: 0.10
@@ -992,8 +1004,8 @@ Cohesion: 0.19
 Nodes (17): firstExisting(), getDesignSidecarCandidates(), getDesignSidecarPath(), getImpeccableDir(), getLegacyLiveConfigPath(), getLegacyLiveServerPath(), getLiveAnnotationsDir(), getLiveConfigPath() (+9 more)
 
 ### Community 132 - "Community 132"
-Cohesion: 0.11
-Nodes (18): Accessibility, Additional Constraints, Client-side Patterns, Core Principles, Data Layer, Development Workflow, Governance, I. Clean Code (NON-NEGOTIABLE) (+10 more)
+Cohesion: 0.07
+Nodes (27): Accessibility, Additional Constraints, Applying the Constitution: Decision Framework, Client-side Patterns, Core Principles, Data Layer, Development Workflow, Governance (+19 more)
 
 ### Community 133 - "Community 133"
 Cohesion: 0.11
@@ -1036,8 +1048,8 @@ Cohesion: 0.11
 Nodes (17): 1. Schema Configuration, 2. Config Configuration, 3. Environment Variable, "Authentication failed", "Can't reach database server", code:prisma (datasource db {), code:typescript (import { defineConfig, env } from "prisma/config";), code:env (DATABASE_URL="postgresql://user:password@localhost:5432/mydb) (+9 more)
 
 ### Community 143 - "Community 143"
-Cohesion: 0.12
-Nodes (12): features, imgEl, isDark, ms, links, isAuthenticated, @/components/landing/CTASection.astro, @/components/landing/FeaturesSection.astro (+4 more)
+Cohesion: 0.06
+Nodes (30): authClient, email, errorCode, input, label, overlay, string, verifyEl (+22 more)
 
 ### Community 144 - "Community 144"
 Cohesion: 0.12
@@ -1056,8 +1068,8 @@ Cohesion: 0.12
 Nodes (16): 1. Schema Configuration, 2. Config Configuration, 3. Environment Variable, CockroachDB Setup, code:prisma (datasource db {), code:typescript (import { defineConfig, env } from "prisma/config";), code:env (DATABASE_URL="postgresql://user:password@host:26257/db?sslmo), code:bash (npm install @prisma/adapter-pg pg) (+8 more)
 
 ### Community 148 - "Community 148"
-Cohesion: 0.12
-Nodes (15): Account, AuditLog, CacheEntry, Ingredient, RateLimitEntry, Recipe, RecipeIngredient, RecipePresentation (+7 more)
+Cohesion: 0.11
+Nodes (16): Account, AuditLog, CacheEntry, Ingredient, RateLimitEntry, Recipe, RecipeIngredient, RecipePresentation (+8 more)
 
 ### Community 149 - "Community 149"
 Cohesion: 0.12
@@ -1084,8 +1096,8 @@ Cohesion: 0.12
 Nodes (16): 1. Schema Configuration, 2. Config Configuration, 3. Environment Variable, code:prisma (datasource db {), code:typescript (import { defineConfig, env } from "prisma/config";), code:env (DATABASE_URL="sqlserver://localhost:1433;database=mydb;user=), code:block4 (sqlserver://HOST:PORT;database=DB;user=USER;password=PASS;en), code:bash (npm install @prisma/adapter-mssql mssql) (+8 more)
 
 ### Community 155 - "Community 155"
-Cohesion: 0.16
-Nodes (9): DesignSystemGenerator, Select best matching result based on priority keywords., Extract results list from search result dict., Generate complete design system recommendation., Generates design system recommendations from aggregated searches., Load reasoning rules from CSV., Execute searches across multiple domains., Find matching reasoning rule for a category. (+1 more)
+Cohesion: 0.18
+Nodes (10): DesignSystemGenerator, Select best matching result based on priority keywords., Extract results list from search result dict., Generate complete design system recommendation., Generates design system recommendations from aggregated searches., Load reasoning rules from CSV., Execute searches across multiple domains., Find matching reasoning rule for a category. (+2 more)
 
 ### Community 156 - "Community 156"
 Cohesion: 0.12
@@ -1532,8 +1544,8 @@ Cohesion: 0.29
 Nodes (4): config, LogOptions, PrismaClient, PrismaClientConstructor
 
 ### Community 267 - "Community 267"
-Cohesion: 0.29
-Nodes (6): skills, stripe-best-practices, computedHash, source, sourceType, version
+Cohesion: 0.50
+Nodes (4): stripe-best-practices, computedHash, source, sourceType
 
 ### Community 268 - "Community 268"
 Cohesion: 0.29
@@ -1880,7 +1892,7 @@ Cohesion: 0.50
 Nodes (3): code:block1 (https://github.com/supabase/agent-skills/issues/new), Skill Feedback, Steps
 
 ### Community 359 - "Community 359"
-Cohesion: 0.50
+Cohesion: 0.67
 Nodes (3): animate, argumentHint, description
 
 ### Community 360 - "Community 360"
@@ -1896,8 +1908,8 @@ Cohesion: 0.50
 Nodes (4): stripe-projects, computedHash, source, sourceType
 
 ### Community 363 - "Community 363"
-Cohesion: 0.50
-Nodes (4): upgrade-stripe, computedHash, source, sourceType
+Cohesion: 0.29
+Nodes (6): skills, upgrade-stripe, computedHash, source, sourceType, version
 
 ### Community 364 - "Community 364"
 Cohesion: 0.50
@@ -1964,8 +1976,8 @@ Cohesion: 0.67
 Nodes (3): code:bash (python3 -m graphify.serve graphify-out/graph.json), code:json ({), Step 7d - MCP server (only if --mcp flag)
 
 ### Community 381 - "Community 381"
-Cohesion: 0.67
-Nodes (3): displayName, purpose, headline
+Cohesion: 0.05
+Nodes (37): 1. Better Auth Custom User Fields (`firstName`, `lastName`), 2. Google Sign-Up (Account Creation via Social Provider), 3. Google Profile Field Mapping, 4. Prisma Schema Migration, 5. Client-Side Sign-Up Function Update, 6. Google Sign-Up Client Function, 7. Middleware Session Guard, 8. Audit Logging (+29 more)
 
 ### Community 382 - "Community 382"
 Cohesion: 0.67
@@ -1976,7 +1988,7 @@ Cohesion: 0.67
 Nodes (3): 4. Elevation, Named Rules, Shadow Vocabulary
 
 ### Community 384 - "Community 384"
-Cohesion: 0.67
+Cohesion: 0.50
 Nodes (3): adapt, argumentHint, description
 
 ### Community 385 - "Community 385"
@@ -2075,8 +2087,56 @@ Nodes (3): 9. Key Insights Summary, Implications for Strategy, Top Insights
 Cohesion: 0.67
 Nodes (3): 8. Risk Assessment, Competitive Risks, Market Risks
 
+### Community 432 - "Community 432"
+Cohesion: 0.07
+Nodes (27): code:bash (# Launch field additions together:), Dependencies & Execution Order, Format: `[ID] [P?] [Story] Description`, Implementation for User Story 1, Implementation for User Story 2, Implementation for User Story 3, Implementation for User Story 4, Implementation for User Story 5 (+19 more)
+
+### Community 433 - "Community 433"
+Cohesion: 0.13
+Nodes (13): 1. Update Prisma Schema, 2. Run Migration, 3. Update Auth Config, 4. Update Client Sign-Up Function, 5. Update Sign-Up Page, 6. Update Sign-In Page (minor), 7. Verify, code:prisma (model User {) (+5 more)
+
+### Community 434 - "Community 434"
+Cohesion: 0.13
+Nodes (14): Assumptions, Edge Cases, Feature Specification: Página de Registro de Usuario, Functional Requirements, Key Entities _(include if feature involves data)_, Measurable Outcomes, Requirements _(mandatory)_, Success Criteria _(mandatory)_ (+6 more)
+
+### Community 435 - "Community 435"
+Cohesion: 0.17
+Nodes (11): code:diff (model User {), code:block2 (User fills form (firstName, lastName, email, password)), code:block3 (User clicks "Continuar con Google"), Data Flow — Email Registration, Data Flow — Google Registration, Data Model: Página de Registro de Usuario, Entity Changes, No other entity changes (+3 more)
+
+### Community 436 - "Community 436"
+Cohesion: 0.26
+Nodes (9): applyEvent(), baseSnapshot(), COMPLETED_PHASES, getJournalPath(), getSnapshotPath(), rebuildSnapshotFromJournal(), safeSessionId(), toPendingEvent() (+1 more)
+
+### Community 437 - "Community 437"
+Cohesion: 0.18
+Nodes (10): code:text (specs/005-sign-up-page/), code:text (src/), Complexity Tracking, Constitution Check, Documentation (this feature), Implementation Plan: Página de Registro de Usuario, Project Structure, Source Code (repository root) (+2 more)
+
+### Community 438 - "Community 438"
+Cohesion: 0.20
+Nodes (9): Auth API Contract: Sign-Up, Client Functions, code:typescript (// Signature (updated)), code:typescript (export async function signInWithGoogle(redirectUrl?: string)), code:typescript (// ADD: user.additionalFields), Server Auth Config Changes, `signInWithGoogle(redirectUrl?)` (unchanged function, reused), `signUpWithEmail(email, password, firstName, lastName)` (+1 more)
+
+### Community 439 - "Community 439"
+Cohesion: 0.20
+Nodes (9): code:block1 (┌─────────────────────────────────────┐), Error Messages, Form Fields, Interaction Rules, Page: `/sign-up`, Route, States, UI Contract: Página de Registro de Usuario (+1 more)
+
+### Community 440 - "Community 440"
+Cohesion: 0.29
+Nodes (4): config, LogOptions, PrismaClient, PrismaClientConstructor
+
+### Community 441 - "Community 441"
+Cohesion: 0.33
+Nodes (5): Specification Quality Checklist: Página de Registro de Usuario, Content Quality, Feature Readiness, Notes, Requirement Completeness
+
+### Community 442 - "Community 442"
+Cohesion: 0.33
+Nodes (6): _detect_page_type(), format_page_override_md(), _generate_intelligent_overrides(), Detect page type from context and search results., Format a page-specific override file with intelligent AI-generated content., Generate intelligent overrides based on page type using layered search.
+
+### Community 443 - "Community 443"
+Cohesion: 0.67
+Nodes (3): displayName, purpose, label
+
 ## Knowledge Gaps
-- **5364 isolated node(s):** `version`, `source`, `sourceType`, `skillPath`, `computedHash` (+5359 more)
+- **5465 isolated node(s):** `version`, `source`, `sourceType`, `skillPath`, `computedHash` (+5460 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **18 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
@@ -2086,11 +2146,11 @@ _Questions this graph is uniquely positioned to answer:_
 - **Why does `../../components/RecipeInstructions.astro` connect `Community 33` to `Community 22`, `Community 23`?**
   _High betweenness centrality (0.003) - this node is a cross-community bridge._
 - **Why does `../../components/PresentationCard.astro` connect `Community 23` to `Community 22`?**
-  _High betweenness centrality (0.003) - this node is a cross-community bridge._
-- **Why does `@/components/Header.astro` connect `Community 22` to `Community 13`?**
+  _High betweenness centrality (0.002) - this node is a cross-community bridge._
+- **Why does `@/components/Header.astro` connect `Community 22` to `Community 66`?**
   _High betweenness centrality (0.002) - this node is a cross-community bridge._
 - **What connects `version`, `source`, `sourceType` to the rest of the system?**
-  _5395 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _5496 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 0` be split into smaller, more focused modules?**
   _Cohesion score 0.01652892561983471 - nodes in this community are weakly interconnected._
 - **Should `Community 1` be split into smaller, more focused modules?**

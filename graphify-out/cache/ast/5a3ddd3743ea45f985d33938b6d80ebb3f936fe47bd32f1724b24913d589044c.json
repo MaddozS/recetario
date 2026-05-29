@@ -1,1 +1,239 @@
-{"nodes": [{"id": "users_maddozs_personal_projects_recetario_specs_003_settings_feedback_ui_spec_md", "label": "spec.md", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md", "source_location": "L1"}, {"id": "003_settings_feedback_ui_spec_feature_specification_settings_feedback_ui", "label": "Feature Specification: Settings Feedback UI", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md", "source_location": "L1"}, {"id": "003_settings_feedback_ui_spec_clarifications", "label": "Clarifications", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md", "source_location": "L11"}, {"id": "003_settings_feedback_ui_spec_session_2026_05_26", "label": "Session 2026-05-26", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md", "source_location": "L13"}, {"id": "003_settings_feedback_ui_spec_user_scenarios_testing", "label": "User Scenarios & Testing", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md", "source_location": "L19"}, {"id": "003_settings_feedback_ui_spec_user_story_1_save_theme_accent_preferences_with_proper_feedback_priority_p1", "label": "User Story 1 - Save Theme/Accent Preferences with Proper Feedback (Priority: P1)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md", "source_location": "L21"}, {"id": "003_settings_feedback_ui_spec_user_story_2_disabled_button_state_for_empty_account_forms_priority_p1", "label": "User Story 2 - Disabled Button State for Empty Account Forms (Priority: P1)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md", "source_location": "L36"}, {"id": "003_settings_feedback_ui_spec_user_story_3_inline_feedback_for_account_forms_priority_p2", "label": "User Story 3 - Inline Feedback for Account Forms (Priority: P2)", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md", "source_location": "L52"}, {"id": "003_settings_feedback_ui_spec_edge_cases", "label": "Edge Cases", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md", "source_location": "L68"}, {"id": "003_settings_feedback_ui_spec_requirements", "label": "Requirements", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md", "source_location": "L77"}, {"id": "003_settings_feedback_ui_spec_functional_requirements", "label": "Functional Requirements", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md", "source_location": "L79"}, {"id": "003_settings_feedback_ui_spec_key_entities", "label": "Key Entities", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md", "source_location": "L90"}, {"id": "003_settings_feedback_ui_spec_success_criteria", "label": "Success Criteria", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md", "source_location": "L96"}, {"id": "003_settings_feedback_ui_spec_measurable_outcomes", "label": "Measurable Outcomes", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md", "source_location": "L98"}, {"id": "003_settings_feedback_ui_spec_assumptions", "label": "Assumptions", "file_type": "document", "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md", "source_location": "L105"}], "edges": [{"source": "users_maddozs_personal_projects_recetario_specs_003_settings_feedback_ui_spec_md", "target": "003_settings_feedback_ui_spec_feature_specification_settings_feedback_ui", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md", "source_location": "L1", "weight": 1.0}, {"source": "003_settings_feedback_ui_spec_feature_specification_settings_feedback_ui", "target": "003_settings_feedback_ui_spec_clarifications", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md", "source_location": "L11", "weight": 1.0}, {"source": "003_settings_feedback_ui_spec_clarifications", "target": "003_settings_feedback_ui_spec_session_2026_05_26", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md", "source_location": "L13", "weight": 1.0}, {"source": "003_settings_feedback_ui_spec_feature_specification_settings_feedback_ui", "target": "003_settings_feedback_ui_spec_user_scenarios_testing", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md", "source_location": "L19", "weight": 1.0}, {"source": "003_settings_feedback_ui_spec_user_scenarios_testing", "target": "003_settings_feedback_ui_spec_user_story_1_save_theme_accent_preferences_with_proper_feedback_priority_p1", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md", "source_location": "L21", "weight": 1.0}, {"source": "003_settings_feedback_ui_spec_user_scenarios_testing", "target": "003_settings_feedback_ui_spec_user_story_2_disabled_button_state_for_empty_account_forms_priority_p1", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md", "source_location": "L36", "weight": 1.0}, {"source": "003_settings_feedback_ui_spec_user_scenarios_testing", "target": "003_settings_feedback_ui_spec_user_story_3_inline_feedback_for_account_forms_priority_p2", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md", "source_location": "L52", "weight": 1.0}, {"source": "003_settings_feedback_ui_spec_user_scenarios_testing", "target": "003_settings_feedback_ui_spec_edge_cases", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md", "source_location": "L68", "weight": 1.0}, {"source": "003_settings_feedback_ui_spec_feature_specification_settings_feedback_ui", "target": "003_settings_feedback_ui_spec_requirements", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md", "source_location": "L77", "weight": 1.0}, {"source": "003_settings_feedback_ui_spec_requirements", "target": "003_settings_feedback_ui_spec_functional_requirements", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md", "source_location": "L79", "weight": 1.0}, {"source": "003_settings_feedback_ui_spec_requirements", "target": "003_settings_feedback_ui_spec_key_entities", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md", "source_location": "L90", "weight": 1.0}, {"source": "003_settings_feedback_ui_spec_feature_specification_settings_feedback_ui", "target": "003_settings_feedback_ui_spec_success_criteria", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md", "source_location": "L96", "weight": 1.0}, {"source": "003_settings_feedback_ui_spec_success_criteria", "target": "003_settings_feedback_ui_spec_measurable_outcomes", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md", "source_location": "L98", "weight": 1.0}, {"source": "003_settings_feedback_ui_spec_feature_specification_settings_feedback_ui", "target": "003_settings_feedback_ui_spec_assumptions", "relation": "contains", "confidence": "EXTRACTED", "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md", "source_location": "L105", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "users_maddozs_personal_projects_recetario_specs_003_settings_feedback_ui_spec_md",
+      "label": "spec.md",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "003_settings_feedback_ui_spec_feature_specification_settings_feedback_ui",
+      "label": "Feature Specification: Settings Feedback UI",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "003_settings_feedback_ui_spec_clarifications",
+      "label": "Clarifications",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md",
+      "source_location": "L11"
+    },
+    {
+      "id": "003_settings_feedback_ui_spec_session_2026_05_26",
+      "label": "Session 2026-05-26",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md",
+      "source_location": "L13"
+    },
+    {
+      "id": "003_settings_feedback_ui_spec_user_scenarios_testing",
+      "label": "User Scenarios & Testing",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md",
+      "source_location": "L19"
+    },
+    {
+      "id": "003_settings_feedback_ui_spec_user_story_1_save_theme_accent_preferences_with_proper_feedback_priority_p1",
+      "label": "User Story 1 - Save Theme/Accent Preferences with Proper Feedback (Priority: P1)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md",
+      "source_location": "L21"
+    },
+    {
+      "id": "003_settings_feedback_ui_spec_user_story_2_disabled_button_state_for_empty_account_forms_priority_p1",
+      "label": "User Story 2 - Disabled Button State for Empty Account Forms (Priority: P1)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md",
+      "source_location": "L36"
+    },
+    {
+      "id": "003_settings_feedback_ui_spec_user_story_3_inline_feedback_for_account_forms_priority_p2",
+      "label": "User Story 3 - Inline Feedback for Account Forms (Priority: P2)",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md",
+      "source_location": "L52"
+    },
+    {
+      "id": "003_settings_feedback_ui_spec_edge_cases",
+      "label": "Edge Cases",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md",
+      "source_location": "L68"
+    },
+    {
+      "id": "003_settings_feedback_ui_spec_requirements",
+      "label": "Requirements",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md",
+      "source_location": "L77"
+    },
+    {
+      "id": "003_settings_feedback_ui_spec_functional_requirements",
+      "label": "Functional Requirements",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md",
+      "source_location": "L79"
+    },
+    {
+      "id": "003_settings_feedback_ui_spec_key_entities",
+      "label": "Key Entities",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md",
+      "source_location": "L90"
+    },
+    {
+      "id": "003_settings_feedback_ui_spec_success_criteria",
+      "label": "Success Criteria",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md",
+      "source_location": "L96"
+    },
+    {
+      "id": "003_settings_feedback_ui_spec_measurable_outcomes",
+      "label": "Measurable Outcomes",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md",
+      "source_location": "L98"
+    },
+    {
+      "id": "003_settings_feedback_ui_spec_assumptions",
+      "label": "Assumptions",
+      "file_type": "document",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md",
+      "source_location": "L105"
+    }
+  ],
+  "edges": [
+    {
+      "source": "users_maddozs_personal_projects_recetario_specs_003_settings_feedback_ui_spec_md",
+      "target": "003_settings_feedback_ui_spec_feature_specification_settings_feedback_ui",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "003_settings_feedback_ui_spec_feature_specification_settings_feedback_ui",
+      "target": "003_settings_feedback_ui_spec_clarifications",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "003_settings_feedback_ui_spec_clarifications",
+      "target": "003_settings_feedback_ui_spec_session_2026_05_26",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "003_settings_feedback_ui_spec_feature_specification_settings_feedback_ui",
+      "target": "003_settings_feedback_ui_spec_user_scenarios_testing",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md",
+      "source_location": "L19",
+      "weight": 1.0
+    },
+    {
+      "source": "003_settings_feedback_ui_spec_user_scenarios_testing",
+      "target": "003_settings_feedback_ui_spec_user_story_1_save_theme_accent_preferences_with_proper_feedback_priority_p1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md",
+      "source_location": "L21",
+      "weight": 1.0
+    },
+    {
+      "source": "003_settings_feedback_ui_spec_user_scenarios_testing",
+      "target": "003_settings_feedback_ui_spec_user_story_2_disabled_button_state_for_empty_account_forms_priority_p1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md",
+      "source_location": "L36",
+      "weight": 1.0
+    },
+    {
+      "source": "003_settings_feedback_ui_spec_user_scenarios_testing",
+      "target": "003_settings_feedback_ui_spec_user_story_3_inline_feedback_for_account_forms_priority_p2",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md",
+      "source_location": "L52",
+      "weight": 1.0
+    },
+    {
+      "source": "003_settings_feedback_ui_spec_user_scenarios_testing",
+      "target": "003_settings_feedback_ui_spec_edge_cases",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md",
+      "source_location": "L68",
+      "weight": 1.0
+    },
+    {
+      "source": "003_settings_feedback_ui_spec_feature_specification_settings_feedback_ui",
+      "target": "003_settings_feedback_ui_spec_requirements",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md",
+      "source_location": "L77",
+      "weight": 1.0
+    },
+    {
+      "source": "003_settings_feedback_ui_spec_requirements",
+      "target": "003_settings_feedback_ui_spec_functional_requirements",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md",
+      "source_location": "L79",
+      "weight": 1.0
+    },
+    {
+      "source": "003_settings_feedback_ui_spec_requirements",
+      "target": "003_settings_feedback_ui_spec_key_entities",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md",
+      "source_location": "L90",
+      "weight": 1.0
+    },
+    {
+      "source": "003_settings_feedback_ui_spec_feature_specification_settings_feedback_ui",
+      "target": "003_settings_feedback_ui_spec_success_criteria",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md",
+      "source_location": "L96",
+      "weight": 1.0
+    },
+    {
+      "source": "003_settings_feedback_ui_spec_success_criteria",
+      "target": "003_settings_feedback_ui_spec_measurable_outcomes",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md",
+      "source_location": "L98",
+      "weight": 1.0
+    },
+    {
+      "source": "003_settings_feedback_ui_spec_feature_specification_settings_feedback_ui",
+      "target": "003_settings_feedback_ui_spec_assumptions",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "/Users/maddozs/personal-projects/recetario/specs/003-settings-feedback-ui/spec.md",
+      "source_location": "L105",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}
