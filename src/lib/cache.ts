@@ -28,8 +28,8 @@ export async function cacheSet(
         expiresAt: BigInt(Date.now() + ttlSeconds * 1000),
       },
     });
-  } catch {
-    // Non-critical
+  } catch (err) {
+    console.error(`[cacheSet] Failed to set key "${key}":`, err);
   }
 }
 
@@ -37,6 +37,6 @@ export async function cacheDelete(key: string): Promise<void> {
   try {
     await prisma.cacheEntry.delete({ where: { key } });
   } catch {
-    // Non-critical
+    // Non-critical (key may not exist)
   }
 }

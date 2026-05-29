@@ -109,6 +109,6 @@ pnpm dev
 
 <!-- SPECKIT START -->
 
-**Active Plan**: `specs/002-theme-mode-control/plan.md` — Theme Mode Control (system-aware light/dark toggle).
+**Active Plan**: `specs/003-settings-feedback-ui/plan.md` — Settings Feedback UI (confirmation messages, error feedback, disabled buttons, loading spinners).
 
 <!-- SPECKIT END -->

@@ -1,6 +1,5 @@
 import { prisma } from "@/lib/prisma";
 import type { UserPreferences } from "@/lib/db/types";
-import { cacheGet, cacheSet } from "@/lib/cache";
 
 const validThemes = ["system", "light", "dark"] as const;
 const validAccentColors = [
@@ -26,15 +25,11 @@ function isValidAccentColor(
 export async function getUserPreferences(
   userId: string,
 ): Promise<UserPreferences | null> {
-  const cacheKey = `prefs:${userId}`;
-  const cached = await cacheGet<UserPreferences | null>(cacheKey);
-  if (cached !== undefined) return cached;
-
   const data = await prisma.userPreferences.findUnique({
     where: { userId },
   });
 
-  const result: UserPreferences | null = data
+  return data
     ? {
         userId: data.userId,
         theme: (["system", "light", "dark"].includes(data.theme)
@@ -45,16 +40,15 @@ export async function getUserPreferences(
           : "coral",
       }
     : null;
-
-  await cacheSet(cacheKey, result, 60);
-  return result;
 }
 
 export async function upsertUserPreferences(
   userId: string,
   prefs: { theme?: string; accentColor?: string },
 ): Promise<UserPreferences> {
-  const existing = await getUserPreferences(userId);
+  const existing = await prisma.userPreferences.findUnique({
+    where: { userId },
+  });
 
   const theme = isValidTheme(prefs.theme ?? "")
     ? (prefs.theme as UserPreferences["theme"])
@@ -78,7 +72,9 @@ export async function upsertUserPreferences(
     },
   });
 
-  const result = { userId: data.userId, theme, accentColor };
-  await cacheSet(`prefs:${userId}`, result, 60);
-  return result;
+  return {
+    userId: data.userId,
+    theme: theme as UserPreferences["theme"],
+    accentColor: accentColor as UserPreferences["accentColor"],
+  };
 }

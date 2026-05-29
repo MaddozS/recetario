@@ -251,7 +251,35 @@ const sidebarCollapsed = Astro.cookies.get("kitchcalc-sidebar-collapsed")?.value
   applyTheme();
   setupOsListener();
 
+  document.addEventListener('astro:before-swap', (event) => {
+    const currentHtml = document.documentElement;
+    const newHtml = event.newDocument.documentElement;
+    const currentStored = currentHtml.dataset.appTheme || 'system';
+    const newStored = newHtml.dataset.appTheme || 'system';
+
+    // If current page has an explicit (non-system) theme but the incoming
+    // page says "system", a save is likely in-flight (auto-save on click).
+    // Trust the current value until the cache/DB catches up.
+    const stored = currentStored !== 'system' && newStored === 'system'
+      ? currentStored
+      : newStored;
+    const accent = newHtml.dataset.appAccent || currentHtml.dataset.appAccent || 'coral';
+    const effective = getEffectiveTheme(stored);
+
+    if (effective === 'dark') {
+      newHtml.classList.add('dark');
+    } else {
+      newHtml.classList.remove('dark');
+    }
+    newHtml.dataset.theme = effective;
+
+    if (typeof getAccentCssVars === 'function') {
+      newHtml.style.cssText = getAccentCssVars(accent as string, effective);
+    }
+  });
+
   document.addEventListener('astro:after-swap', applyTheme);
+  document.addEventListener('astro:page-load', applyTheme);
 
   function setupSidebar() {
     const menuBtn = document.getElementById('mobile-menu-btn');
