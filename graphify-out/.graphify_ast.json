@@ -1,0 +1,2770 @@
+{
+  "nodes": [
+    {
+      "id": "prisma_fix_sequences",
+      "label": "fix-sequences.ts",
+      "file_type": "code",
+      "source_file": "prisma/fix-sequences.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "prisma_fix_sequences_adapter",
+      "label": "adapter",
+      "file_type": "code",
+      "source_file": "prisma/fix-sequences.ts",
+      "source_location": "L10"
+    },
+    {
+      "id": "prisma_fix_sequences_prisma",
+      "label": "prisma",
+      "file_type": "code",
+      "source_file": "prisma/fix-sequences.ts",
+      "source_location": "L11"
+    },
+    {
+      "id": "prisma_fix_sequences_fixsequences",
+      "label": "fixSequences()",
+      "file_type": "code",
+      "source_file": "prisma/fix-sequences.ts",
+      "source_location": "L13"
+    },
+    {
+      "id": "prisma_seed",
+      "label": "seed.ts",
+      "file_type": "code",
+      "source_file": "prisma/seed.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "prisma_seed_dirname",
+      "label": "__dirname",
+      "file_type": "code",
+      "source_file": "prisma/seed.ts",
+      "source_location": "L8"
+    },
+    {
+      "id": "prisma_seed_adapter",
+      "label": "adapter",
+      "file_type": "code",
+      "source_file": "prisma/seed.ts",
+      "source_location": "L15"
+    },
+    {
+      "id": "prisma_seed_prisma",
+      "label": "prisma",
+      "file_type": "code",
+      "source_file": "prisma/seed.ts",
+      "source_location": "L16"
+    },
+    {
+      "id": "prisma_seed_ingredientinput",
+      "label": "IngredientInput",
+      "file_type": "code",
+      "source_file": "prisma/seed.ts",
+      "source_location": "L20"
+    },
+    {
+      "id": "prisma_seed_recipeinput",
+      "label": "RecipeInput",
+      "file_type": "code",
+      "source_file": "prisma/seed.ts",
+      "source_location": "L30"
+    },
+    {
+      "id": "prisma_seed_seed",
+      "label": "seed()",
+      "file_type": "code",
+      "source_file": "prisma/seed.ts",
+      "source_location": "L46"
+    },
+    {
+      "id": "layouts_layout",
+      "label": "Layout.astro",
+      "file_type": "code",
+      "source_file": "src/layouts/Layout.astro",
+      "source_location": "L1"
+    },
+    {
+      "id": "layouts_layout_if",
+      "label": "if()",
+      "file_type": "code",
+      "source_file": "src/layouts/Layout.astro",
+      "source_location": "L218"
+    },
+    {
+      "id": "users_maddozs_personal_projects_recetario_src_styles_global_css",
+      "label": "@/styles/global.css",
+      "file_type": "code",
+      "source_file": "src/styles/global.css",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "astro_transitions",
+      "label": "astro:transitions",
+      "file_type": "code",
+      "source_file": "astro:transitions",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "components",
+      "label": "astro-icon/components",
+      "file_type": "code",
+      "source_file": "astro-icon/components",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "users_maddozs_personal_projects_recetario_src_lib_db_preferences",
+      "label": "@/lib/db/preferences",
+      "file_type": "code",
+      "source_file": "src/lib/db/preferences",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "users_maddozs_personal_projects_recetario_src_lib_subscription",
+      "label": "@/lib/subscription",
+      "file_type": "code",
+      "source_file": "src/lib/subscription",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "users_maddozs_personal_projects_recetario_src_lib_accent_colors",
+      "label": "@/lib/accent-colors",
+      "file_type": "code",
+      "source_file": "src/lib/accent-colors",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "users_maddozs_personal_projects_recetario_src_components_header_astro",
+      "label": "@/components/Header.astro",
+      "file_type": "code",
+      "source_file": "src/components/Header.astro",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "users_maddozs_personal_projects_recetario_src_components_recipessidebar_astro",
+      "label": "@/components/RecipesSidebar.astro",
+      "file_type": "code",
+      "source_file": "src/components/RecipesSidebar.astro",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "lib_accent_colors",
+      "label": "accent-colors.ts",
+      "file_type": "code",
+      "source_file": "src/lib/accent-colors.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "lib_accent_colors_accent_families",
+      "label": "ACCENT_FAMILIES",
+      "file_type": "code",
+      "source_file": "src/lib/accent-colors.ts",
+      "source_location": "L9"
+    },
+    {
+      "id": "lib_accent_colors_accentfamily",
+      "label": "AccentFamily",
+      "file_type": "code",
+      "source_file": "src/lib/accent-colors.ts",
+      "source_location": "L19"
+    },
+    {
+      "id": "lib_accent_colors_accent_shades",
+      "label": "ACCENT_SHADES",
+      "file_type": "code",
+      "source_file": "src/lib/accent-colors.ts",
+      "source_location": "L21"
+    },
+    {
+      "id": "lib_accent_colors_accentshade",
+      "label": "AccentShade",
+      "file_type": "code",
+      "source_file": "src/lib/accent-colors.ts",
+      "source_location": "L32"
+    },
+    {
+      "id": "lib_accent_colors_accentbasecolors",
+      "label": "accentBaseColors",
+      "file_type": "code",
+      "source_file": "src/lib/accent-colors.ts",
+      "source_location": "L35"
+    },
+    {
+      "id": "lib_accent_colors_darkshademap",
+      "label": "darkShadeMap",
+      "file_type": "code",
+      "source_file": "src/lib/accent-colors.ts",
+      "source_location": "L144"
+    },
+    {
+      "id": "lib_accent_colors_getaccentcssvars",
+      "label": "getAccentCssVars()",
+      "file_type": "code",
+      "source_file": "src/lib/accent-colors.ts",
+      "source_location": "L159"
+    },
+    {
+      "id": "lib_accent_colors_getaccentpreviewcolor",
+      "label": "getAccentPreviewColor()",
+      "file_type": "code",
+      "source_file": "src/lib/accent-colors.ts",
+      "source_location": "L175"
+    },
+    {
+      "id": "lib_accent_colors_accent_labels",
+      "label": "ACCENT_LABELS",
+      "file_type": "code",
+      "source_file": "src/lib/accent-colors.ts",
+      "source_location": "L182"
+    },
+    {
+      "id": "db_billing",
+      "label": "billing.ts",
+      "file_type": "code",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "db_billing_invalidatesubcache",
+      "label": "invalidateSubCache()",
+      "file_type": "code",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L8"
+    },
+    {
+      "id": "db_billing_basic_features",
+      "label": "BASIC_FEATURES",
+      "file_type": "code",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L12"
+    },
+    {
+      "id": "db_billing_pro_features",
+      "label": "PRO_FEATURES",
+      "file_type": "code",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L27"
+    },
+    {
+      "id": "db_billing_feature_flags",
+      "label": "FEATURE_FLAGS",
+      "file_type": "code",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L42"
+    },
+    {
+      "id": "db_billing_known_tiers",
+      "label": "KNOWN_TIERS",
+      "file_type": "code",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L47"
+    },
+    {
+      "id": "db_billing_syncplansfromstripe",
+      "label": "syncPlansFromStripe()",
+      "file_type": "code",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L49"
+    },
+    {
+      "id": "db_billing_seedsubscriptionplans",
+      "label": "seedSubscriptionPlans()",
+      "file_type": "code",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L120"
+    },
+    {
+      "id": "db_billing_pricingplan",
+      "label": "PricingPlan",
+      "file_type": "code",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L128"
+    },
+    {
+      "id": "db_billing_getpricingplans",
+      "label": "getPricingPlans()",
+      "file_type": "code",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L143"
+    },
+    {
+      "id": "db_billing_usersubscription",
+      "label": "UserSubscription",
+      "file_type": "code",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L225"
+    },
+    {
+      "id": "db_billing_createsubscriptioninput",
+      "label": "CreateSubscriptionInput",
+      "file_type": "code",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L246"
+    },
+    {
+      "id": "db_billing_getusersubscription",
+      "label": "getUserSubscription()",
+      "file_type": "code",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L258"
+    },
+    {
+      "id": "db_billing_createorupdatesubscription",
+      "label": "createOrUpdateSubscription()",
+      "file_type": "code",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L296"
+    },
+    {
+      "id": "db_billing_cancelsubscription",
+      "label": "cancelSubscription()",
+      "file_type": "code",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L348"
+    },
+    {
+      "id": "db_billing_marksubscriptionpastdue",
+      "label": "markSubscriptionPastDue()",
+      "file_type": "code",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L363"
+    },
+    {
+      "id": "db_billing_getplanbystripepriceid",
+      "label": "getPlanByStripePriceId()",
+      "file_type": "code",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L378"
+    },
+    {
+      "id": "db_billing_getstripecustomerid",
+      "label": "getStripeCustomerId()",
+      "file_type": "code",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L396"
+    },
+    {
+      "id": "db_billing_countuserrecipes",
+      "label": "countUserRecipes()",
+      "file_type": "code",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L407"
+    },
+    {
+      "id": "db_billing_countuseringredients",
+      "label": "countUserIngredients()",
+      "file_type": "code",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L411"
+    },
+    {
+      "id": "db_billing_parsefeaturesjson",
+      "label": "parseFeaturesJson()",
+      "file_type": "code",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L415"
+    },
+    {
+      "id": "db_ingredients",
+      "label": "ingredients.ts",
+      "file_type": "code",
+      "source_file": "src/lib/db/ingredients.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "db_ingredients_invalidateingredientcache",
+      "label": "invalidateIngredientCache()",
+      "file_type": "code",
+      "source_file": "src/lib/db/ingredients.ts",
+      "source_location": "L12"
+    },
+    {
+      "id": "db_ingredients_listingredients",
+      "label": "listIngredients()",
+      "file_type": "code",
+      "source_file": "src/lib/db/ingredients.ts",
+      "source_location": "L17"
+    },
+    {
+      "id": "db_ingredients_listingredientusage",
+      "label": "listIngredientUsage()",
+      "file_type": "code",
+      "source_file": "src/lib/db/ingredients.ts",
+      "source_location": "L41"
+    },
+    {
+      "id": "db_ingredients_createingredient",
+      "label": "createIngredient()",
+      "file_type": "code",
+      "source_file": "src/lib/db/ingredients.ts",
+      "source_location": "L69"
+    },
+    {
+      "id": "db_ingredients_updateingredient",
+      "label": "updateIngredient()",
+      "file_type": "code",
+      "source_file": "src/lib/db/ingredients.ts",
+      "source_location": "L116"
+    },
+    {
+      "id": "db_ingredients_getingredientbyid",
+      "label": "getIngredientById()",
+      "file_type": "code",
+      "source_file": "src/lib/db/ingredients.ts",
+      "source_location": "L178"
+    },
+    {
+      "id": "db_ingredients_deleteingredient",
+      "label": "deleteIngredient()",
+      "file_type": "code",
+      "source_file": "src/lib/db/ingredients.ts",
+      "source_location": "L200"
+    },
+    {
+      "id": "db_presentations",
+      "label": "presentations.ts",
+      "file_type": "code",
+      "source_file": "src/lib/db/presentations.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "db_presentations_invalidateparentrecipecache",
+      "label": "invalidateParentRecipeCache()",
+      "file_type": "code",
+      "source_file": "src/lib/db/presentations.ts",
+      "source_location": "L15"
+    },
+    {
+      "id": "db_presentations_touchrecipeupdatedat",
+      "label": "touchRecipeUpdatedAt()",
+      "file_type": "code",
+      "source_file": "src/lib/db/presentations.ts",
+      "source_location": "L20"
+    },
+    {
+      "id": "db_presentations_createpresentation",
+      "label": "createPresentation()",
+      "file_type": "code",
+      "source_file": "src/lib/db/presentations.ts",
+      "source_location": "L27"
+    },
+    {
+      "id": "db_presentations_updatepresentation",
+      "label": "updatePresentation()",
+      "file_type": "code",
+      "source_file": "src/lib/db/presentations.ts",
+      "source_location": "L67"
+    },
+    {
+      "id": "db_presentations_getpresentationbyid",
+      "label": "getPresentationById()",
+      "file_type": "code",
+      "source_file": "src/lib/db/presentations.ts",
+      "source_location": "L127"
+    },
+    {
+      "id": "db_presentations_deletepresentation",
+      "label": "deletePresentation()",
+      "file_type": "code",
+      "source_file": "src/lib/db/presentations.ts",
+      "source_location": "L145"
+    },
+    {
+      "id": "db_recipes",
+      "label": "recipes.ts",
+      "file_type": "code",
+      "source_file": "src/lib/db/recipes.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "db_recipes_invalidaterecipecache",
+      "label": "invalidateRecipeCache()",
+      "file_type": "code",
+      "source_file": "src/lib/db/recipes.ts",
+      "source_location": "L21"
+    },
+    {
+      "id": "db_recipes_listrecipesummaries",
+      "label": "listRecipeSummaries()",
+      "file_type": "code",
+      "source_file": "src/lib/db/recipes.ts",
+      "source_location": "L26"
+    },
+    {
+      "id": "db_recipes_getrecipebyid",
+      "label": "getRecipeById()",
+      "file_type": "code",
+      "source_file": "src/lib/db/recipes.ts",
+      "source_location": "L57"
+    },
+    {
+      "id": "db_recipes_getrecipesbyids",
+      "label": "getRecipesByIds()",
+      "file_type": "code",
+      "source_file": "src/lib/db/recipes.ts",
+      "source_location": "L90"
+    },
+    {
+      "id": "db_recipes_recipewithincludes",
+      "label": "RecipeWithIncludes",
+      "file_type": "code",
+      "source_file": "src/lib/db/recipes.ts",
+      "source_location": "L117"
+    },
+    {
+      "id": "db_recipes_normalizereciperow",
+      "label": "normalizeRecipeRow()",
+      "file_type": "code",
+      "source_file": "src/lib/db/recipes.ts",
+      "source_location": "L128"
+    },
+    {
+      "id": "db_recipes_createrecipe",
+      "label": "createRecipe()",
+      "file_type": "code",
+      "source_file": "src/lib/db/recipes.ts",
+      "source_location": "L163"
+    },
+    {
+      "id": "db_recipes_deleterecipe",
+      "label": "deleteRecipe()",
+      "file_type": "code",
+      "source_file": "src/lib/db/recipes.ts",
+      "source_location": "L189"
+    },
+    {
+      "id": "db_recipes_updaterecipe",
+      "label": "updateRecipe()",
+      "file_type": "code",
+      "source_file": "src/lib/db/recipes.ts",
+      "source_location": "L208"
+    },
+    {
+      "id": "db_recipes_duplicaterecipe",
+      "label": "duplicateRecipe()",
+      "file_type": "code",
+      "source_file": "src/lib/db/recipes.ts",
+      "source_location": "L252"
+    },
+    {
+      "id": "pages_ingredients",
+      "label": "ingredients.astro",
+      "file_type": "code",
+      "source_file": "src/pages/ingredients.astro",
+      "source_location": "L1"
+    },
+    {
+      "id": "components",
+      "label": "astro-icon/components",
+      "file_type": "code",
+      "source_file": "astro-icon/components",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "layouts_layout",
+      "label": "@/layouts/Layout.astro",
+      "file_type": "code",
+      "source_file": "src/layouts/Layout.astro",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "users_maddozs_personal_projects_recetario_src_components_ui",
+      "label": "@/components/ui",
+      "file_type": "code",
+      "source_file": "src/components/ui",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "users_maddozs_personal_projects_recetario_src_lib_db_ingredients",
+      "label": "@/lib/db/ingredients",
+      "file_type": "code",
+      "source_file": "src/lib/db/ingredients",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "users_maddozs_personal_projects_recetario_src_lib_db_billing",
+      "label": "@/lib/db/billing",
+      "file_type": "code",
+      "source_file": "src/lib/db/billing",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "users_maddozs_personal_projects_recetario_src_lib_subscription",
+      "label": "@/lib/subscription",
+      "file_type": "code",
+      "source_file": "src/lib/subscription",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "users_maddozs_personal_projects_recetario_src_lib_form_utils",
+      "label": "@/lib/form-utils",
+      "file_type": "code",
+      "source_file": "src/lib/form-utils",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "users_maddozs_personal_projects_recetario_src_lib_constants",
+      "label": "@/lib/constants",
+      "file_type": "code",
+      "source_file": "src/lib/constants",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "users_maddozs_personal_projects_recetario_src_lib_csrf",
+      "label": "@/lib/csrf",
+      "file_type": "code",
+      "source_file": "src/lib/csrf",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "users_maddozs_personal_projects_recetario_src_components_feedbackalert_astro",
+      "label": "@/components/FeedbackAlert.astro",
+      "file_type": "code",
+      "source_file": "src/components/FeedbackAlert.astro",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "users_maddozs_personal_projects_recetario_src_components_unitcostdisplay_astro",
+      "label": "@/components/UnitCostDisplay.astro",
+      "file_type": "code",
+      "source_file": "src/components/UnitCostDisplay.astro",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "users_maddozs_personal_projects_recetario_src_components_ingredientformfields_astro",
+      "label": "@/components/IngredientFormFields.astro",
+      "file_type": "code",
+      "source_file": "src/components/IngredientFormFields.astro",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "users_maddozs_personal_projects_recetario_src_components_emptystate_astro",
+      "label": "@/components/EmptyState.astro",
+      "file_type": "code",
+      "source_file": "src/components/EmptyState.astro",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "users_maddozs_personal_projects_recetario_src_lib_formatters",
+      "label": "@/lib/formatters",
+      "file_type": "code",
+      "source_file": "src/lib/formatters",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "id": "users_maddozs_personal_projects_recetario_src_lib_dialog",
+      "label": "@/lib/dialog",
+      "file_type": "code",
+      "source_file": "src/lib/dialog",
+      "confidence": "EXTRACTED"
+    }
+  ],
+  "edges": [
+    {
+      "source": "prisma_fix_sequences",
+      "target": "config",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "prisma/fix-sequences.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "prisma_fix_sequences",
+      "target": "users_maddozs_personal_projects_recetario_generated_prisma_client_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "prisma/fix-sequences.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "prisma_fix_sequences",
+      "target": "prisma_client_prismaclient",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "prisma/fix-sequences.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "prisma_fix_sequences",
+      "target": "adapter_pg",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "prisma/fix-sequences.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "prisma_fix_sequences",
+      "target": "prisma_fix_sequences_adapter",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "prisma/fix-sequences.ts",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "prisma_fix_sequences",
+      "target": "prisma_fix_sequences_prisma",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "prisma/fix-sequences.ts",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "prisma_fix_sequences",
+      "target": "prisma_fix_sequences_fixsequences",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "prisma/fix-sequences.ts",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "prisma_seed",
+      "target": "config",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "prisma/seed.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "prisma_seed",
+      "target": "users_maddozs_personal_projects_recetario_generated_prisma_client_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "prisma/seed.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "prisma_seed",
+      "target": "prisma_client_prismaclient",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "prisma/seed.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "prisma_seed",
+      "target": "adapter_pg",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "prisma/seed.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "prisma_seed",
+      "target": "node_fs",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "prisma/seed.ts",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "prisma_seed",
+      "target": "node_path",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "prisma/seed.ts",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "prisma_seed",
+      "target": "node_url",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "prisma/seed.ts",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "prisma_seed",
+      "target": "prisma_seed_dirname",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "prisma/seed.ts",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "prisma_seed",
+      "target": "prisma_seed_adapter",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "prisma/seed.ts",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "prisma_seed",
+      "target": "prisma_seed_prisma",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "prisma/seed.ts",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "prisma_seed",
+      "target": "prisma_seed_ingredientinput",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "prisma/seed.ts",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "prisma_seed",
+      "target": "prisma_seed_recipeinput",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "prisma/seed.ts",
+      "source_location": "L30",
+      "weight": 1.0
+    },
+    {
+      "source": "prisma_seed",
+      "target": "prisma_seed_seed",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "prisma/seed.ts",
+      "source_location": "L46",
+      "weight": 1.0
+    },
+    {
+      "source": "layouts_layout",
+      "target": "astro_transitions",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/layouts/Layout.astro",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "layouts_layout",
+      "target": "components",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/layouts/Layout.astro",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "layouts_layout",
+      "target": "users_maddozs_personal_projects_recetario_src_lib_db_preferences_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/layouts/Layout.astro",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "layouts_layout",
+      "target": "db_preferences_getuserpreferences",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/layouts/Layout.astro",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "layouts_layout",
+      "target": "users_maddozs_personal_projects_recetario_src_lib_subscription_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/layouts/Layout.astro",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "layouts_layout",
+      "target": "lib_subscription_hasfeature",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/layouts/Layout.astro",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "layouts_layout",
+      "target": "lib_accent_colors",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/layouts/Layout.astro",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "layouts_layout",
+      "target": "lib_accent_colors_getaccentcssvars",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/layouts/Layout.astro",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "layouts_layout",
+      "target": "lib_accent_colors",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/layouts/Layout.astro",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "layouts_layout",
+      "target": "lib_accent_colors_accentfamily",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/layouts/Layout.astro",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "layouts_layout",
+      "target": "users_maddozs_personal_projects_recetario_src_components_header_astro",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/layouts/Layout.astro",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "layouts_layout",
+      "target": "users_maddozs_personal_projects_recetario_src_components_recipessidebar_astro",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/layouts/Layout.astro",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "layouts_layout",
+      "target": "layouts_layout_if",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/layouts/Layout.astro",
+      "source_location": "L218",
+      "weight": 1.0
+    },
+    {
+      "source": "layouts_layout",
+      "target": "users_maddozs_personal_projects_recetario_src_styles_global_css",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src/layouts/Layout.astro"
+    },
+    {
+      "source": "layouts_layout",
+      "target": "astro_transitions",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src/layouts/Layout.astro"
+    },
+    {
+      "source": "layouts_layout",
+      "target": "components",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src/layouts/Layout.astro"
+    },
+    {
+      "source": "layouts_layout",
+      "target": "users_maddozs_personal_projects_recetario_src_lib_db_preferences",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src/layouts/Layout.astro"
+    },
+    {
+      "source": "layouts_layout",
+      "target": "users_maddozs_personal_projects_recetario_src_lib_subscription",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src/layouts/Layout.astro"
+    },
+    {
+      "source": "layouts_layout",
+      "target": "users_maddozs_personal_projects_recetario_src_lib_accent_colors",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src/layouts/Layout.astro"
+    },
+    {
+      "source": "layouts_layout",
+      "target": "users_maddozs_personal_projects_recetario_src_lib_accent_colors",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src/layouts/Layout.astro"
+    },
+    {
+      "source": "layouts_layout",
+      "target": "users_maddozs_personal_projects_recetario_src_components_header_astro",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src/layouts/Layout.astro"
+    },
+    {
+      "source": "layouts_layout",
+      "target": "users_maddozs_personal_projects_recetario_src_components_recipessidebar_astro",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src/layouts/Layout.astro"
+    },
+    {
+      "source": "layouts_layout",
+      "target": "users_maddozs_personal_projects_recetario_src_lib_accent_colors",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src/layouts/Layout.astro"
+    },
+    {
+      "source": "lib_accent_colors",
+      "target": "lib_accent_colors_accent_families",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/accent-colors.ts",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "lib_accent_colors",
+      "target": "lib_accent_colors_accentfamily",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/accent-colors.ts",
+      "source_location": "L19",
+      "weight": 1.0
+    },
+    {
+      "source": "lib_accent_colors",
+      "target": "lib_accent_colors_accent_shades",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/accent-colors.ts",
+      "source_location": "L21",
+      "weight": 1.0
+    },
+    {
+      "source": "lib_accent_colors",
+      "target": "lib_accent_colors_accentshade",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/accent-colors.ts",
+      "source_location": "L32",
+      "weight": 1.0
+    },
+    {
+      "source": "lib_accent_colors",
+      "target": "lib_accent_colors_accentbasecolors",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/accent-colors.ts",
+      "source_location": "L35",
+      "weight": 1.0
+    },
+    {
+      "source": "lib_accent_colors",
+      "target": "lib_accent_colors_darkshademap",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/accent-colors.ts",
+      "source_location": "L144",
+      "weight": 1.0
+    },
+    {
+      "source": "lib_accent_colors",
+      "target": "lib_accent_colors_getaccentcssvars",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/accent-colors.ts",
+      "source_location": "L159",
+      "weight": 1.0
+    },
+    {
+      "source": "lib_accent_colors",
+      "target": "lib_accent_colors_getaccentpreviewcolor",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/accent-colors.ts",
+      "source_location": "L175",
+      "weight": 1.0
+    },
+    {
+      "source": "lib_accent_colors",
+      "target": "lib_accent_colors_accent_labels",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/accent-colors.ts",
+      "source_location": "L182",
+      "weight": 1.0
+    },
+    {
+      "source": "db_billing",
+      "target": "users_maddozs_personal_projects_recetario_src_lib_prisma_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "db_billing",
+      "target": "lib_prisma_prisma",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "db_billing",
+      "target": "users_maddozs_personal_projects_recetario_src_lib_cache_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "db_billing",
+      "target": "lib_cache_cachedelete",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "db_billing",
+      "target": "users_maddozs_personal_projects_recetario_src_lib_stripe_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "db_billing",
+      "target": "lib_stripe_stripe",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "db_billing",
+      "target": "users_maddozs_personal_projects_recetario_src_lib_plans_config_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "db_billing",
+      "target": "lib_plans_config_tier_config",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "db_billing",
+      "target": "users_maddozs_personal_projects_recetario_src_lib_formatters_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "db_billing",
+      "target": "lib_formatters_formatcurrency",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "db_billing",
+      "target": "stripe",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "db_billing",
+      "target": "db_billing_invalidatesubcache",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "db_billing",
+      "target": "db_billing_basic_features",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "db_billing",
+      "target": "db_billing_pro_features",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L27",
+      "weight": 1.0
+    },
+    {
+      "source": "db_billing",
+      "target": "db_billing_feature_flags",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L42",
+      "weight": 1.0
+    },
+    {
+      "source": "db_billing",
+      "target": "db_billing_known_tiers",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L47",
+      "weight": 1.0
+    },
+    {
+      "source": "db_billing",
+      "target": "db_billing_syncplansfromstripe",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L49",
+      "weight": 1.0
+    },
+    {
+      "source": "db_billing",
+      "target": "db_billing_seedsubscriptionplans",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L120",
+      "weight": 1.0
+    },
+    {
+      "source": "db_billing",
+      "target": "db_billing_pricingplan",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L128",
+      "weight": 1.0
+    },
+    {
+      "source": "db_billing",
+      "target": "db_billing_getpricingplans",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L143",
+      "weight": 1.0
+    },
+    {
+      "source": "db_billing",
+      "target": "db_billing_usersubscription",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L225",
+      "weight": 1.0
+    },
+    {
+      "source": "db_billing",
+      "target": "db_billing_createsubscriptioninput",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L246",
+      "weight": 1.0
+    },
+    {
+      "source": "db_billing",
+      "target": "db_billing_getusersubscription",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L258",
+      "weight": 1.0
+    },
+    {
+      "source": "db_billing",
+      "target": "db_billing_createorupdatesubscription",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L296",
+      "weight": 1.0
+    },
+    {
+      "source": "db_billing",
+      "target": "db_billing_cancelsubscription",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L348",
+      "weight": 1.0
+    },
+    {
+      "source": "db_billing",
+      "target": "db_billing_marksubscriptionpastdue",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L363",
+      "weight": 1.0
+    },
+    {
+      "source": "db_billing",
+      "target": "db_billing_getplanbystripepriceid",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L378",
+      "weight": 1.0
+    },
+    {
+      "source": "db_billing",
+      "target": "db_billing_getstripecustomerid",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L396",
+      "weight": 1.0
+    },
+    {
+      "source": "db_billing",
+      "target": "db_billing_countuserrecipes",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L407",
+      "weight": 1.0
+    },
+    {
+      "source": "db_billing",
+      "target": "db_billing_countuseringredients",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L411",
+      "weight": 1.0
+    },
+    {
+      "source": "db_billing",
+      "target": "db_billing_parsefeaturesjson",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L415",
+      "weight": 1.0
+    },
+    {
+      "source": "db_billing_seedsubscriptionplans",
+      "target": "db_billing_syncplansfromstripe",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L122",
+      "weight": 1.0
+    },
+    {
+      "source": "db_billing_getpricingplans",
+      "target": "db_billing_seedsubscriptionplans",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L150",
+      "weight": 1.0
+    },
+    {
+      "source": "db_billing_getusersubscription",
+      "target": "db_billing_parsefeaturesjson",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L284",
+      "weight": 1.0
+    },
+    {
+      "source": "db_billing_createorupdatesubscription",
+      "target": "db_billing_invalidatesubcache",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L345",
+      "weight": 1.0
+    },
+    {
+      "source": "db_billing_cancelsubscription",
+      "target": "db_billing_invalidatesubcache",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L360",
+      "weight": 1.0
+    },
+    {
+      "source": "db_billing_marksubscriptionpastdue",
+      "target": "db_billing_invalidatesubcache",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/billing.ts",
+      "source_location": "L375",
+      "weight": 1.0
+    },
+    {
+      "source": "db_ingredients",
+      "target": "users_maddozs_personal_projects_recetario_src_lib_prisma_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/ingredients.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "db_ingredients",
+      "target": "lib_prisma_prisma",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/ingredients.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "db_ingredients",
+      "target": "users_maddozs_personal_projects_recetario_generated_prisma_client_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/ingredients.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "db_ingredients",
+      "target": "prisma_client_prisma",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/ingredients.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "db_ingredients",
+      "target": "users_maddozs_personal_projects_recetario_src_lib_db_types_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/ingredients.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "db_ingredients",
+      "target": "db_types_ingredient",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/ingredients.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "db_ingredients",
+      "target": "db_types_createingredientinput",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/ingredients.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "db_ingredients",
+      "target": "db_types_updateingredientinput",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/ingredients.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "db_ingredients",
+      "target": "db_types_deleteingredientresult",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/ingredients.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "db_ingredients",
+      "target": "users_maddozs_personal_projects_recetario_src_lib_db_helpers_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/ingredients.ts",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "db_ingredients",
+      "target": "db_helpers_normalizeoptionaltext",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/ingredients.ts",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "db_ingredients",
+      "target": "db_helpers_tonumber",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/ingredients.ts",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "db_ingredients",
+      "target": "users_maddozs_personal_projects_recetario_src_lib_cache_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/ingredients.ts",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "db_ingredients",
+      "target": "lib_cache_cacheget",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/ingredients.ts",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "db_ingredients",
+      "target": "lib_cache_cacheset",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/ingredients.ts",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "db_ingredients",
+      "target": "lib_cache_cachedelete",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/ingredients.ts",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "db_ingredients",
+      "target": "db_ingredients_invalidateingredientcache",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/ingredients.ts",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "db_ingredients",
+      "target": "db_ingredients_listingredients",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/ingredients.ts",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "db_ingredients",
+      "target": "db_ingredients_listingredientusage",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/ingredients.ts",
+      "source_location": "L41",
+      "weight": 1.0
+    },
+    {
+      "source": "db_ingredients",
+      "target": "db_ingredients_createingredient",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/ingredients.ts",
+      "source_location": "L69",
+      "weight": 1.0
+    },
+    {
+      "source": "db_ingredients",
+      "target": "db_ingredients_updateingredient",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/ingredients.ts",
+      "source_location": "L116",
+      "weight": 1.0
+    },
+    {
+      "source": "db_ingredients",
+      "target": "db_ingredients_getingredientbyid",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/ingredients.ts",
+      "source_location": "L178",
+      "weight": 1.0
+    },
+    {
+      "source": "db_ingredients",
+      "target": "db_ingredients_deleteingredient",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/ingredients.ts",
+      "source_location": "L200",
+      "weight": 1.0
+    },
+    {
+      "source": "db_ingredients_createingredient",
+      "target": "db_ingredients_invalidateingredientcache",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/ingredients.ts",
+      "source_location": "L103",
+      "weight": 1.0
+    },
+    {
+      "source": "db_ingredients_updateingredient",
+      "target": "db_ingredients_getingredientbyid",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/ingredients.ts",
+      "source_location": "L153",
+      "weight": 1.0
+    },
+    {
+      "source": "db_ingredients_updateingredient",
+      "target": "db_ingredients_invalidateingredientcache",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/ingredients.ts",
+      "source_location": "L162",
+      "weight": 1.0
+    },
+    {
+      "source": "db_ingredients_deleteingredient",
+      "target": "db_ingredients_invalidateingredientcache",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/ingredients.ts",
+      "source_location": "L230",
+      "weight": 1.0
+    },
+    {
+      "source": "db_presentations",
+      "target": "users_maddozs_personal_projects_recetario_src_lib_prisma_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/presentations.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "db_presentations",
+      "target": "lib_prisma_prisma",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/presentations.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "db_presentations",
+      "target": "users_maddozs_personal_projects_recetario_generated_prisma_client_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/presentations.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "db_presentations",
+      "target": "prisma_client_prisma",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/presentations.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "db_presentations",
+      "target": "users_maddozs_personal_projects_recetario_src_lib_db_types_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/presentations.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "db_presentations",
+      "target": "db_types_recipepresentation",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/presentations.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "db_presentations",
+      "target": "db_types_createpresentationinput",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/presentations.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "db_presentations",
+      "target": "db_types_deletepresentationresult",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/presentations.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "db_presentations",
+      "target": "users_maddozs_personal_projects_recetario_src_lib_db_helpers_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/presentations.ts",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "db_presentations",
+      "target": "db_helpers_normalizepresentationname",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/presentations.ts",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "db_presentations",
+      "target": "db_helpers_normalizepresentationunits",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/presentations.ts",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "db_presentations",
+      "target": "db_helpers_normalizepresentationsaleprice",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/presentations.ts",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "db_presentations",
+      "target": "users_maddozs_personal_projects_recetario_src_lib_cache_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/presentations.ts",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "db_presentations",
+      "target": "lib_cache_cachedelete",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/presentations.ts",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "db_presentations",
+      "target": "db_presentations_invalidateparentrecipecache",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/presentations.ts",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "db_presentations",
+      "target": "db_presentations_touchrecipeupdatedat",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/presentations.ts",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "db_presentations",
+      "target": "db_presentations_createpresentation",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/presentations.ts",
+      "source_location": "L27",
+      "weight": 1.0
+    },
+    {
+      "source": "db_presentations",
+      "target": "db_presentations_updatepresentation",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/presentations.ts",
+      "source_location": "L67",
+      "weight": 1.0
+    },
+    {
+      "source": "db_presentations",
+      "target": "db_presentations_getpresentationbyid",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/presentations.ts",
+      "source_location": "L127",
+      "weight": 1.0
+    },
+    {
+      "source": "db_presentations",
+      "target": "db_presentations_deletepresentation",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/presentations.ts",
+      "source_location": "L145",
+      "weight": 1.0
+    },
+    {
+      "source": "db_presentations_createpresentation",
+      "target": "db_presentations_touchrecipeupdatedat",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/presentations.ts",
+      "source_location": "L56",
+      "weight": 1.0
+    },
+    {
+      "source": "db_presentations_createpresentation",
+      "target": "db_presentations_invalidateparentrecipecache",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/presentations.ts",
+      "source_location": "L57",
+      "weight": 1.0
+    },
+    {
+      "source": "db_presentations_updatepresentation",
+      "target": "db_presentations_getpresentationbyid",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/presentations.ts",
+      "source_location": "L98",
+      "weight": 1.0
+    },
+    {
+      "source": "db_presentations_updatepresentation",
+      "target": "db_presentations_touchrecipeupdatedat",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/presentations.ts",
+      "source_location": "L113",
+      "weight": 1.0
+    },
+    {
+      "source": "db_presentations_updatepresentation",
+      "target": "db_presentations_invalidateparentrecipecache",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/presentations.ts",
+      "source_location": "L114",
+      "weight": 1.0
+    },
+    {
+      "source": "db_presentations_deletepresentation",
+      "target": "db_presentations_touchrecipeupdatedat",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/presentations.ts",
+      "source_location": "L168",
+      "weight": 1.0
+    },
+    {
+      "source": "db_presentations_deletepresentation",
+      "target": "db_presentations_invalidateparentrecipecache",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/presentations.ts",
+      "source_location": "L169",
+      "weight": 1.0
+    },
+    {
+      "source": "db_recipes",
+      "target": "users_maddozs_personal_projects_recetario_src_lib_prisma_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/recipes.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "db_recipes",
+      "target": "lib_prisma_prisma",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/recipes.ts",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "db_recipes",
+      "target": "users_maddozs_personal_projects_recetario_generated_prisma_client_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/recipes.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "db_recipes",
+      "target": "prisma_client_prisma",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/recipes.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "db_recipes",
+      "target": "users_maddozs_personal_projects_recetario_src_lib_db_types_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/recipes.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "db_recipes",
+      "target": "db_types_recipesummary",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/recipes.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "db_recipes",
+      "target": "db_types_recipewithingredients",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/recipes.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "db_recipes",
+      "target": "db_types_createrecipeinput",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/recipes.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "db_recipes",
+      "target": "db_types_deletereciperesult",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/recipes.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "db_recipes",
+      "target": "db_types_updaterecipeinput",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/recipes.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "db_recipes",
+      "target": "db_presentations",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/recipes.ts",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "db_recipes",
+      "target": "db_presentations_createpresentation",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/recipes.ts",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "db_recipes",
+      "target": "users_maddozs_personal_projects_recetario_src_lib_db_helpers_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/recipes.ts",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "db_recipes",
+      "target": "db_helpers_normalizeoptionaltext",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/recipes.ts",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "db_recipes",
+      "target": "db_helpers_tonumber",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/recipes.ts",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "db_recipes",
+      "target": "db_helpers_normalizedesiredmargin",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/recipes.ts",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "db_recipes",
+      "target": "db_helpers_normalizefixedcostspercentage",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/recipes.ts",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "db_recipes",
+      "target": "db_helpers_normalizerecipecomment",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/recipes.ts",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "db_recipes",
+      "target": "db_helpers_normalizecategory",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/recipes.ts",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "db_recipes",
+      "target": "users_maddozs_personal_projects_recetario_src_lib_cache_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/recipes.ts",
+      "source_location": "L19",
+      "weight": 1.0
+    },
+    {
+      "source": "db_recipes",
+      "target": "lib_cache_cacheget",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/recipes.ts",
+      "source_location": "L19",
+      "weight": 1.0
+    },
+    {
+      "source": "db_recipes",
+      "target": "lib_cache_cacheset",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/recipes.ts",
+      "source_location": "L19",
+      "weight": 1.0
+    },
+    {
+      "source": "db_recipes",
+      "target": "lib_cache_cachedelete",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/recipes.ts",
+      "source_location": "L19",
+      "weight": 1.0
+    },
+    {
+      "source": "db_recipes",
+      "target": "db_recipes_invalidaterecipecache",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/recipes.ts",
+      "source_location": "L21",
+      "weight": 1.0
+    },
+    {
+      "source": "db_recipes",
+      "target": "db_recipes_listrecipesummaries",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/recipes.ts",
+      "source_location": "L26",
+      "weight": 1.0
+    },
+    {
+      "source": "db_recipes",
+      "target": "db_recipes_getrecipebyid",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/recipes.ts",
+      "source_location": "L57",
+      "weight": 1.0
+    },
+    {
+      "source": "db_recipes",
+      "target": "db_recipes_getrecipesbyids",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/recipes.ts",
+      "source_location": "L90",
+      "weight": 1.0
+    },
+    {
+      "source": "db_recipes",
+      "target": "db_recipes_recipewithincludes",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/recipes.ts",
+      "source_location": "L117",
+      "weight": 1.0
+    },
+    {
+      "source": "db_recipes",
+      "target": "db_recipes_normalizereciperow",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/recipes.ts",
+      "source_location": "L128",
+      "weight": 1.0
+    },
+    {
+      "source": "db_recipes",
+      "target": "db_recipes_createrecipe",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/recipes.ts",
+      "source_location": "L163",
+      "weight": 1.0
+    },
+    {
+      "source": "db_recipes",
+      "target": "db_recipes_deleterecipe",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/recipes.ts",
+      "source_location": "L189",
+      "weight": 1.0
+    },
+    {
+      "source": "db_recipes",
+      "target": "db_recipes_updaterecipe",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/recipes.ts",
+      "source_location": "L208",
+      "weight": 1.0
+    },
+    {
+      "source": "db_recipes",
+      "target": "db_recipes_duplicaterecipe",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/recipes.ts",
+      "source_location": "L252",
+      "weight": 1.0
+    },
+    {
+      "source": "db_recipes_getrecipebyid",
+      "target": "db_recipes_normalizereciperow",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/recipes.ts",
+      "source_location": "L85",
+      "weight": 1.0
+    },
+    {
+      "source": "db_recipes_createrecipe",
+      "target": "db_recipes_invalidaterecipecache",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/recipes.ts",
+      "source_location": "L185",
+      "weight": 1.0
+    },
+    {
+      "source": "db_recipes_deleterecipe",
+      "target": "db_recipes_invalidaterecipecache",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/recipes.ts",
+      "source_location": "L201",
+      "weight": 1.0
+    },
+    {
+      "source": "db_recipes_updaterecipe",
+      "target": "db_recipes_invalidaterecipecache",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/recipes.ts",
+      "source_location": "L249",
+      "weight": 1.0
+    },
+    {
+      "source": "db_recipes_duplicaterecipe",
+      "target": "db_recipes_getrecipebyid",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/recipes.ts",
+      "source_location": "L256",
+      "weight": 1.0
+    },
+    {
+      "source": "db_recipes_duplicaterecipe",
+      "target": "db_recipes_createrecipe",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/recipes.ts",
+      "source_location": "L268",
+      "weight": 1.0
+    },
+    {
+      "source": "db_recipes_duplicaterecipe",
+      "target": "db_recipes_updaterecipe",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/db/recipes.ts",
+      "source_location": "L276",
+      "weight": 1.0
+    },
+    {
+      "source": "pages_ingredients",
+      "target": "layouts_layout",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ingredients.astro",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "pages_ingredients",
+      "target": "users_maddozs_personal_projects_recetario_src_components_ui_index_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ingredients.astro",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "pages_ingredients",
+      "target": "ui_index_button",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ingredients.astro",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "pages_ingredients",
+      "target": "ui_index_card",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ingredients.astro",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "pages_ingredients",
+      "target": "db_ingredients",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ingredients.astro",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "pages_ingredients",
+      "target": "db_ingredients_createingredient",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ingredients.astro",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "pages_ingredients",
+      "target": "db_ingredients_deleteingredient",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ingredients.astro",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "pages_ingredients",
+      "target": "db_ingredients_listingredients",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ingredients.astro",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "pages_ingredients",
+      "target": "db_ingredients_listingredientusage",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ingredients.astro",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "pages_ingredients",
+      "target": "db_ingredients_updateingredient",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ingredients.astro",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "pages_ingredients",
+      "target": "db_billing",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ingredients.astro",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "pages_ingredients",
+      "target": "db_billing_countuseringredients",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ingredients.astro",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "pages_ingredients",
+      "target": "users_maddozs_personal_projects_recetario_src_lib_subscription_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ingredients.astro",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "pages_ingredients",
+      "target": "lib_subscription_cancreateingredient",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ingredients.astro",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "pages_ingredients",
+      "target": "users_maddozs_personal_projects_recetario_src_lib_form_utils_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ingredients.astro",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "pages_ingredients",
+      "target": "lib_form_utils_parsenumberinput",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ingredients.astro",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "pages_ingredients",
+      "target": "users_maddozs_personal_projects_recetario_src_lib_constants_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ingredients.astro",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "pages_ingredients",
+      "target": "lib_constants_unit_options",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ingredients.astro",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "pages_ingredients",
+      "target": "lib_constants_default_unit",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ingredients.astro",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "pages_ingredients",
+      "target": "users_maddozs_personal_projects_recetario_src_lib_csrf_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ingredients.astro",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "pages_ingredients",
+      "target": "lib_csrf_validatecsrf",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ingredients.astro",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "pages_ingredients",
+      "target": "users_maddozs_personal_projects_recetario_src_components_feedbackalert_astro",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ingredients.astro",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "pages_ingredients",
+      "target": "users_maddozs_personal_projects_recetario_src_components_unitcostdisplay_astro",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ingredients.astro",
+      "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "pages_ingredients",
+      "target": "users_maddozs_personal_projects_recetario_src_components_ingredientformfields_astro",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ingredients.astro",
+      "source_location": "L19",
+      "weight": 1.0
+    },
+    {
+      "source": "pages_ingredients",
+      "target": "users_maddozs_personal_projects_recetario_src_components_emptystate_astro",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ingredients.astro",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "pages_ingredients",
+      "target": "components",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ingredients.astro"
+    },
+    {
+      "source": "pages_ingredients",
+      "target": "layouts_layout",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ingredients.astro"
+    },
+    {
+      "source": "pages_ingredients",
+      "target": "users_maddozs_personal_projects_recetario_src_components_ui",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ingredients.astro"
+    },
+    {
+      "source": "pages_ingredients",
+      "target": "users_maddozs_personal_projects_recetario_src_lib_db_ingredients",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ingredients.astro"
+    },
+    {
+      "source": "pages_ingredients",
+      "target": "users_maddozs_personal_projects_recetario_src_lib_db_billing",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ingredients.astro"
+    },
+    {
+      "source": "pages_ingredients",
+      "target": "users_maddozs_personal_projects_recetario_src_lib_subscription",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ingredients.astro"
+    },
+    {
+      "source": "pages_ingredients",
+      "target": "users_maddozs_personal_projects_recetario_src_lib_form_utils",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ingredients.astro"
+    },
+    {
+      "source": "pages_ingredients",
+      "target": "users_maddozs_personal_projects_recetario_src_lib_constants",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ingredients.astro"
+    },
+    {
+      "source": "pages_ingredients",
+      "target": "users_maddozs_personal_projects_recetario_src_lib_csrf",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ingredients.astro"
+    },
+    {
+      "source": "pages_ingredients",
+      "target": "users_maddozs_personal_projects_recetario_src_components_feedbackalert_astro",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ingredients.astro"
+    },
+    {
+      "source": "pages_ingredients",
+      "target": "users_maddozs_personal_projects_recetario_src_components_unitcostdisplay_astro",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ingredients.astro"
+    },
+    {
+      "source": "pages_ingredients",
+      "target": "users_maddozs_personal_projects_recetario_src_components_ingredientformfields_astro",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ingredients.astro"
+    },
+    {
+      "source": "pages_ingredients",
+      "target": "users_maddozs_personal_projects_recetario_src_components_emptystate_astro",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ingredients.astro"
+    },
+    {
+      "source": "pages_ingredients",
+      "target": "users_maddozs_personal_projects_recetario_src_lib_formatters",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ingredients.astro"
+    },
+    {
+      "source": "pages_ingredients",
+      "target": "users_maddozs_personal_projects_recetario_src_lib_dialog",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "src/pages/ingredients.astro"
+    },
+    {
+      "source": "db_recipes_duplicaterecipe",
+      "target": "db_presentations_createpresentation",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/lib/db/recipes.ts",
+      "source_location": "L296",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}
