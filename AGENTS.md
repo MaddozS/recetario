@@ -7,23 +7,27 @@ No `.env.local` — use `.env`.
 
 ## Commands
 
-| Command                           | Purpose                        |
-| --------------------------------- | ------------------------------ |
-| `pnpm dev`                        | Dev server at `localhost:4321` |
-| `pnpm build`                      | Production build               |
-| `pnpm preview`                    | Preview build locally          |
-| `pnpm format`                     | Prettier whole project         |
-| `pnpm astro check`                | Type-check `.astro` + `.ts`    |
-| `pnpm eslint .`                   | Lint JS/TS/Astro               |
-| `npx prisma migrate dev --name X` | Create migration               |
-| `npx prisma generate`             | Regenerate client              |
-| `npx prisma studio`               | Open Prisma Studio             |
-| `npx tsx prisma/seed.ts`          | Run seed manually              |
+**For manual terminal/tool invocations, always use `pnpm exec` or `pnpm dlx`** to respect pinned pnpm/Node version. Do not introduce other package runners in new instructions, docs, or one-off commands.
 
-**postinstall** runs `npx prisma generate` automatically.
-**vercel-build**: `npx prisma generate && npx prisma migrate deploy && astro build`.
+| Command                                 | Purpose                        |
+| --------------------------------------- | ------------------------------ |
+| `pnpm dev`                              | Dev server at `localhost:4321` |
+| `pnpm build`                            | Production build               |
+| `pnpm preview`                          | Preview build locally          |
+| `pnpm format`                           | Prettier whole project         |
+| `pnpm astro check`                      | Type-check `.astro` + `.ts`    |
+| `pnpm eslint .`                         | Lint JS/TS/Astro               |
+| `pnpm exec prisma migrate dev --name X` | Create migration               |
+| `pnpm exec prisma generate`             | Regenerate client              |
+| `pnpm exec prisma studio`               | Open Prisma Studio             |
+| `pnpm exec tsx prisma/seed.ts`          | Run seed manually              |
 
-No test infrastructure exists.
+**Schema changes**: When modifying `prisma/schema.prisma`, always create a new migration with `pnpm exec prisma migrate dev --name <descriptive>`. Never edit existing migration files.
+**postinstall** generates the Prisma client automatically; if you need to run the same step manually, use `pnpm exec prisma generate`.
+**vercel-build** runs Prisma generate, `prisma/fix-failed-migration.ts`, migrate deploy, and Astro build; if you need to reproduce it manually, use `pnpm exec prisma generate && pnpm exec tsx prisma/fix-failed-migration.ts && pnpm exec prisma migrate deploy && pnpm exec astro build`.
+
+No app test infrastructure is established.
+If tests are requested, propose `Vitest + @testing-library` and confirm with the user before scaffolding. Do not silently add a test framework.
 
 ## Architecture
 
@@ -34,8 +38,10 @@ Better Auth via `src/lib/auth.ts` (server singleton) + `src/lib/auth-client.ts` 
 ### Pages & routing
 
 - **Protected** (`Astro.locals.session` required): `/recipes`, `/recipes/[recipe]`, `/ingredients`, `/settings`, `/settings/billing`, `/produccion`
+- On protected pages, if `Astro.locals.session` is null, return `Astro.redirect("/sign-in")` at the top of the frontmatter.
 - **Public**: `/sign-in`, `/sign-up`, `/pricing`
 - `/produccion` also gated behind `production_planner` feature flag
+- If the `production_planner` flag is false, redirect to `/settings/billing` with an upgrade prompt.
 - Layout: `Layout` (app shell + sidebar) or `LandingLayout` (marketing). `currentPage` prop: `recipes | ingredients | settings | production`.
 
 ### Data layer
@@ -45,22 +51,30 @@ Better Auth via `src/lib/auth.ts` (server singleton) + `src/lib/auth-client.ts` 
 - Output: `generated/prisma/` (non-standard — set in `schema.prisma:7`)
 - Import via `@/lib/db/*` barrel (`index.ts`). Direct `@/lib/prisma` only for raw access.
 - Multi-tenant: every record has `ownerId`. Scoped by `RECIPES_STATIC_OWNER_ID`/`EMAIL` env vars for seed users.
+- CRITICAL: Every Prisma query over tenant data (`findMany`, `findFirst`, `update`, `delete`, `upsert`, `count`) MUST include `where: { ownerId: Astro.locals.user.id }` plus any additional filters, or it is a security bug. Reject PRs that omit this. New tenant records must set `ownerId` on create. Seed/bootstrap flows are the only exception.
 - Seed data: `data/ingredients.json`, `data/recipes.json`. Loaded on first run via `seedIfNeeded()`.
 
 ### Key gotchas
 
-| Gotcha                  | Detail                                                                                                                                   |
-| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | --- |
-| **Import paths**        | `@/lib/db/ingredients`, `@/lib/db/recipes`, `@/lib/db/billing`, etc.                                                                     |     |
-| **Forms**               | No Astro Actions. POST to same page, read `Astro.request.formData()`, redirect. Spanish locale: `parseNumberInput()` converts comma→dot. |
-| **Recipe update**       | Destructive: `$transaction` deletes all `RecipeIngredient` rows then re-creates.                                                         |
-| **Ingredient delete**   | Blocked if referenced by any recipe (returns `{ status: "blocked", recipes: [...] }`).                                                   |
-| **RecipeIngredient**    | Composite PK `@@id([recipeId, ingredientId])`.                                                                                           |
-| **Feature flags**       | 12 keys in `FREE_FEATURES` (all false). Basic enables 5; Pro enables all 12.                                                             |
-| **Tsconfig exclude**    | `["dist, .agent/**, .astro/**, node_modules/**, .vercel/**"]` — single comma string, likely buggy.                                       |
-| **Subscription cache**  | Middleware caches subscription for 60s via `src/lib/cache.ts`.                                                                           |
-| **pnpm allowed builds** | Only `esbuild`, `sharp`, `@prisma/engines`, `prisma` (`pnpm-workspace.yaml`).                                                            |
-| **Vercel ephemeral**    | Always set `DATABASE_URL` for persistence.                                                                                               |
+#### Data invariants
+
+- **MUST NOT VIOLATE** Recipe updates are destructive: the `$transaction` deletes all `RecipeIngredient` rows, then re-creates them.
+- **MUST NOT VIOLATE** Ingredient deletes are blocked when the ingredient is referenced by any recipe (returns `{ status: "blocked", recipes: [...] }`).
+- **MUST NOT VIOLATE** `RecipeIngredient` uses the composite PK `@@id([recipeId, ingredientId])`.
+- **Feature flags**: 12 keys live in `FREE_FEATURES` (all false). Basic enables 5; Pro enables all 12.
+
+#### Operational gotchas
+
+- **Import paths**: use `@/lib/db/ingredients`, `@/lib/db/recipes`, `@/lib/db/billing`, etc.
+- **Forms**: no Astro Actions. POST to the same page, read `Astro.request.formData()`, then redirect. Spanish locale: `parseNumberInput()` converts comma to dot.
+- **Subscription cache**: middleware caches subscription state for 60s via `src/lib/cache.ts`.
+- **pnpm allowed builds**: only `esbuild`, `sharp`, `@prisma/engines`, `prisma` are allowed in `pnpm-workspace.yaml`.
+- **Vercel ephemeral**: always set `DATABASE_URL` for persistence.
+- **Feedback + reload**: `showFeedback()` is client-side DOM; `window.location.reload()` after it erases feedback, so prefer DOM updates for in-page state.
+
+#### Known bugs
+
+- **Tsconfig exclude**: this is a known bug. Do NOT modify it unless explicitly asked. If asked, split it into separate array entries: `["dist", ".agent/**", ".astro/**", "node_modules/**", ".vercel/**"]`.
 
 ### Modules you might miss
 
@@ -78,7 +92,7 @@ Better Auth via `src/lib/auth.ts` (server singleton) + `src/lib/auth-client.ts` 
 
 - `checkout` (POST, auth) — creates Checkout Session, returns `{ url }`
 - `portal` (POST, auth) — creates Customer Portal session
-- `webhook` (POST, no auth\*) — handles `checkout.session.completed`, `invoice.paid`, `invoice.payment_failed`, `customer.subscription.deleted`, `customer.subscription.updated`
+- `webhook` (POST, no session auth — verified via Stripe signature header using `STRIPE_WEBHOOK_SECRET`) — handles `checkout.session.completed`, `invoice.paid`, `invoice.payment_failed`, `customer.subscription.deleted`, `customer.subscription.updated`
 
 API version: `2026-04-22.dahlia`.
 
@@ -122,7 +136,6 @@ This project has a knowledge graph at graphify-out/ with god nodes, community st
 When the user types `/graphify`, invoke the `skill` tool with `skill: "graphify"` before doing anything else.
 
 Rules:
-
 - For codebase questions, first run `graphify query "<question>"` when graphify-out/graph.json exists. Use `graphify path "<A>" "<B>"` for relationships and `graphify explain "<concept>"` for focused concepts. These return a scoped subgraph, usually much smaller than GRAPH_REPORT.md or raw grep output.
 - Dirty graphify-out/ files are expected after hooks or incremental updates; dirty graph files are not a reason to skip graphify. Only skip graphify if the task is about stale or incorrect graph output, or the user explicitly says not to use it.
 - If graphify-out/wiki/index.md exists, use it for broad navigation instead of raw source browsing.
