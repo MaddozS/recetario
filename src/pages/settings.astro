@@ -30,10 +30,12 @@ if (!Astro.locals.session || !Astro.locals.user) {
 }
 
 const user = Astro.locals.user;
+const userFirstName = user.firstName || "";
+const userLastName = user.lastName || "";
 const userName = user.name || "Usuario";
 const userEmail = user.email || "";
 const userImage = user.image || null;
-const userInitial = userName.charAt(0).toUpperCase();
+const userInitial = (userFirstName || userName).charAt(0).toUpperCase();
 
 const subscription = Astro.locals.subscription;
 const ownerId = user.id;
@@ -185,10 +187,10 @@ if (feedback) {
             <p
               class="text-muted-foreground text-xs font-bold tracking-[0.16em] uppercase"
             >
-              Sesion de Google
+              {user.hasPasswordAuth ? "Cuenta de email" : "Sesion de Google"}
             </p>
             <h2 class="text-foreground mt-1 truncate text-xl font-bold">
-              {userName}
+              {userFirstName} {userLastName}
             </h2>
             {
               userEmail && (
@@ -201,95 +203,156 @@ if (feedback) {
         </div>
       </Card>
 
-      {/* Change Email */}
+      {/* Change Name */}
       <Card padding="lg">
-        <h2 class="text-foreground text-lg font-bold">Cambiar email</h2>
+        <h2 class="text-foreground text-lg font-bold">Nombre</h2>
         <p class="text-muted-foreground mt-1 text-sm">
-          Actualiza la dirección de correo electrónico asociada a tu cuenta.
+          Actualiza tu nombre y apellido.
         </p>
         <div
-          id="change-email-feedback"
+          id="change-name-feedback"
           class="mt-4 hidden rounded-xl border px-4 py-3 text-sm font-semibold"
         >
         </div>
-        <form id="change-email-form" class="mt-4 max-w-sm space-y-4">
+        <form id="change-name-form" class="mt-4 max-w-sm space-y-4">
           <div>
             <label
-              for="new-email"
-              class="text-muted-foreground mb-2 block text-xs font-bold tracking-wider uppercase"
+              for="first-name"
+              class="text-muted-foreground mb-1.5 block text-[11px] font-bold tracking-[0.18em] uppercase"
             >
-              Nuevo email
+              Nombre <span class="text-danger">*</span>
             </label>
             <input
-              id="new-email"
-              type="email"
+              id="first-name"
+              name="firstName"
+              type="text"
               required
+              value={userFirstName}
+              autocomplete="given-name"
               class="border-border bg-background text-foreground placeholder:text-subtle-foreground focus:border-accent-300 focus:ring-accent-500/20 w-full rounded-xl border px-4 py-3 text-sm transition outline-none focus:ring-2"
-              placeholder="nuevo@email.com"
-              autocomplete="email"
             />
           </div>
-          <PasswordInput
-            id="email-current-password"
-            label="Contraseña actual"
-            autocomplete="current-password"
-            required
-          />
+          <div>
+            <label
+              for="last-name"
+              class="text-muted-foreground mb-1.5 block text-[11px] font-bold tracking-[0.18em] uppercase"
+            >
+              Apellido <span class="text-danger">*</span>
+            </label>
+            <input
+              id="last-name"
+              name="lastName"
+              type="text"
+              required
+              value={userLastName}
+              autocomplete="family-name"
+              class="border-border bg-background text-foreground placeholder:text-subtle-foreground focus:border-accent-300 focus:ring-accent-500/20 w-full rounded-xl border px-4 py-3 text-sm transition outline-none focus:ring-2"
+            />
+          </div>
           <Button
             variant="primary"
             type="submit"
-            icon="mail"
-            id="change-email-btn"
+            icon="user"
+            id="change-name-btn"
           >
-            Cambiar email
+            Guardar nombre
           </Button>
         </form>
       </Card>
 
-      {/* Change Password */}
-      <Card padding="lg">
-        <h2 class="text-foreground text-lg font-bold">Cambiar contraseña</h2>
-        <p class="text-muted-foreground mt-1 text-sm">
-          Usa al menos 6 caracteres para tu nueva contraseña.
-        </p>
-        <div
-          id="change-password-feedback"
-          class="mt-4 hidden rounded-xl border px-4 py-3 text-sm font-semibold"
-        >
-        </div>
-        <form id="change-password-form" class="mt-4 max-w-sm space-y-4">
-          <PasswordInput
-            id="current-password"
-            label="Contraseña actual"
-            autocomplete="current-password"
-            required
-          />
-          <PasswordInput
-            id="new-password"
-            label="Nueva contraseña"
-            placeholder="Mínimo 6 caracteres"
-            autocomplete="new-password"
-            required
-            minlength={6}
-          />
-          <PasswordInput
-            id="confirm-new-password"
-            label="Confirmar contraseña"
-            placeholder="Repite tu contraseña"
-            autocomplete="new-password"
-            required
-            minlength={6}
-          />
-          <Button
-            variant="primary"
-            type="submit"
-            icon="lock"
-            id="change-password-btn"
-          >
-            Cambiar contraseña
-          </Button>
-        </form>
-      </Card>
+      {user.hasPasswordAuth && (
+        <>
+          {/* Change Email */}
+          <Card padding="lg">
+            <h2 class="text-foreground text-lg font-bold">Cambiar email</h2>
+            <p class="text-muted-foreground mt-1 text-sm">
+              Actualiza la dirección de correo electrónico asociada a tu cuenta.
+            </p>
+            <div
+              id="change-email-feedback"
+              class="mt-4 hidden rounded-xl border px-4 py-3 text-sm font-semibold"
+            >
+            </div>
+            <form id="change-email-form" class="mt-4 max-w-sm space-y-4">
+              <div>
+                <label
+                  for="new-email"
+                  class="text-muted-foreground mb-2 block text-xs font-bold tracking-wider uppercase"
+                >
+                  Nuevo email
+                </label>
+                <input
+                  id="new-email"
+                  type="email"
+                  required
+                  class="border-border bg-background text-foreground placeholder:text-subtle-foreground focus:border-accent-300 focus:ring-accent-500/20 w-full rounded-xl border px-4 py-3 text-sm transition outline-none focus:ring-2"
+                  placeholder="nuevo@email.com"
+                  autocomplete="email"
+                />
+              </div>
+              <PasswordInput
+                id="email-current-password"
+                label="Contraseña actual"
+                autocomplete="current-password"
+                required
+              />
+              <Button
+                variant="primary"
+                type="submit"
+                icon="mail"
+                id="change-email-btn"
+              >
+                Cambiar email
+              </Button>
+            </form>
+          </Card>
+
+          {/* Change Password */}
+          <Card padding="lg">
+            <h2 class="text-foreground text-lg font-bold">Cambiar contraseña</h2>
+            <p class="text-muted-foreground mt-1 text-sm">
+              Usa al menos 6 caracteres para tu nueva contraseña.
+            </p>
+            <div
+              id="change-password-feedback"
+              class="mt-4 hidden rounded-xl border px-4 py-3 text-sm font-semibold"
+            >
+            </div>
+            <form id="change-password-form" class="mt-4 max-w-sm space-y-4">
+              <PasswordInput
+                id="current-password"
+                label="Contraseña actual"
+                autocomplete="current-password"
+                required
+              />
+              <PasswordInput
+                id="new-password"
+                label="Nueva contraseña"
+                placeholder="Mínimo 6 caracteres"
+                autocomplete="new-password"
+                required
+                minlength={6}
+              />
+              <PasswordInput
+                id="confirm-new-password"
+                label="Confirmar contraseña"
+                placeholder="Repite tu contraseña"
+                autocomplete="new-password"
+                required
+                minlength={6}
+              />
+              <Button
+                variant="primary"
+                type="submit"
+                icon="lock"
+                id="change-password-btn"
+              >
+                Cambiar contraseña
+              </Button>
+            </form>
+          </Card>
+        </>
+      )}
     </div>
 
     {/* Preferences Tab */}
@@ -892,6 +955,89 @@ if (feedback) {
         if (err.includes("too many requests") || err.includes("rate limit"))
           return "Demasiados intentos. Intenta de nuevo más tarde.";
         return text || fallback;
+      }
+
+      function updateNameBtnState() {
+        const btn = document.getElementById(
+          "change-name-btn",
+        ) as HTMLButtonElement | null;
+        const firstName = (
+          document.getElementById("first-name") as HTMLInputElement
+        )?.value.trim();
+        const lastName = (
+          document.getElementById("last-name") as HTMLInputElement
+        )?.value.trim();
+        if (btn) btn.disabled = !firstName || !lastName;
+      }
+
+      const nameForm = document.getElementById(
+        "change-name-form",
+      ) as HTMLFormElement | null;
+      if (nameForm && !nameForm.dataset.bound) {
+        nameForm.dataset.bound = "1";
+        const firstNameInput = document.getElementById(
+          "first-name",
+        ) as HTMLInputElement | null;
+        const lastNameInput = document.getElementById(
+          "last-name",
+        ) as HTMLInputElement | null;
+        firstNameInput?.addEventListener("input", updateNameBtnState);
+        lastNameInput?.addEventListener("input", updateNameBtnState);
+        updateNameBtnState();
+
+        nameForm.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const firstName = firstNameInput?.value.trim() || "";
+          const lastName = lastNameInput?.value.trim() || "";
+          const fb = document.getElementById("change-name-feedback");
+          const btn = document.getElementById(
+            "change-name-btn",
+          ) as HTMLButtonElement | null;
+
+          if (!firstName || !lastName) {
+            showFeedback(fb, "error", "El nombre y apellido son requeridos.");
+            return;
+          }
+
+          setBtnLoading(btn, true);
+          try {
+            const res = await fetch("/api/account/update-name", {
+              method: "POST",
+              headers: { "Content-Type": "application/x-www-form-urlencoded" },
+              body: new URLSearchParams({ firstName, lastName }),
+            });
+            if (res.ok) {
+              showFeedback(fb, "success", "Nombre actualizado correctamente.");
+              const fullName = `${firstName} ${lastName}`;
+              const profileHeader = document
+                .querySelector('[data-tab-content="profile"]')
+                ?.querySelector("h2");
+              if (profileHeader) profileHeader.textContent = fullName;
+              const initialEl = document
+                .querySelector('[data-tab-content="profile"]')
+                ?.querySelector(".bg-accent-600");
+              if (initialEl && initialEl.textContent?.length === 1) {
+                initialEl.textContent = firstName.charAt(0).toUpperCase();
+              }
+            } else if (res.status === 401) {
+              showFeedback(
+                fb,
+                "error",
+                "Sesión expirada. Vuelve a iniciar sesión.",
+              );
+            } else {
+              showFeedback(
+                fb,
+                "error",
+                "Error al actualizar el nombre.",
+              );
+            }
+          } catch {
+            showFeedback(fb, "error", "Error de conexión.");
+          } finally {
+            setBtnLoading(btn, false);
+          }
+        });
       }
 
       function updateEmailBtnState() {

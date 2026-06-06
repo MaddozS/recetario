@@ -284,6 +284,7 @@ void redirectWithFeedback;
 
     <form method="post" class="mt-6" data-ingredient-form data-astro-reload>
       <input type="hidden" name="action" value="create" />
+      <input type="hidden" name="_csrf" value={Astro.locals.csrfToken || ""} />
 
       <div
         class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-[minmax(0,2.3fr)_minmax(0,1.5fr)_minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,1.5fr)]"
