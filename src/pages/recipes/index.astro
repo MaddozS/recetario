@@ -110,7 +110,7 @@ const feedbackMessage = Astro.url.searchParams.get("message");
 const showUpgradeModal = Astro.url.searchParams.get("upgrade") === "1";
 ---
 
-<Layout currentPage="recipes" showSideBar={true}>
+<Layout currentPage="recipes" showSideBar={true} breadcrumbs={[{ label: "Recetas" }]}>
   {
     feedbackType === "error" && feedbackMessage && (
       <div class="relative">
