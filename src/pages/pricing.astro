@@ -24,7 +24,7 @@ const isSuccess = Astro.url.searchParams.get("success") === "1";
 const isCanceled = Astro.url.searchParams.get("canceled") === "1";
 ---
 
-<Layout currentPage="pricing" showSideBar={true}>
+<Layout currentPage="pricing" showSideBar={true} breadcrumbs={[{ label: "Planes y Precios" }]}>
   <section class="mx-auto max-w-6xl">
     {
       isSuccess && (
