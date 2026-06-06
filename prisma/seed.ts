@@ -79,6 +79,17 @@ async function seed() {
   }
   console.log(`Seeded ${ingredientCount} ingredients`);
 
+  // Reset sequence after explicit-ID inserts
+  const maxIngredientId = await prisma.ingredient.aggregate({
+    _max: { id: true },
+  });
+  if (maxIngredientId._max.id) {
+    await prisma.$executeRawUnsafe(
+      `SELECT setval('ingredients_id_seq', $1, true)`,
+      maxIngredientId._max.id,
+    );
+  }
+
   let recipeCount = 0;
   for (const rec of recipes) {
     await prisma.recipe.upsert({
@@ -164,6 +175,27 @@ async function seed() {
     console.log(`  ${rec.name}`);
   }
   console.log(`Seeded ${recipeCount} recipes`);
+
+  // Reset sequences after explicit-ID recipe inserts
+  const maxRecipeId = await prisma.recipe.aggregate({
+    _max: { id: true },
+  });
+  if (maxRecipeId._max.id) {
+    await prisma.$executeRawUnsafe(
+      `SELECT setval('recipes_id_seq', $1, true)`,
+      maxRecipeId._max.id,
+    );
+  }
+
+  const maxPresId = await prisma.recipePresentation.aggregate({
+    _max: { id: true },
+  });
+  if (maxPresId._max.id) {
+    await prisma.$executeRawUnsafe(
+      `SELECT setval('recipe_presentations_id_seq', $1, true)`,
+      maxPresId._max.id,
+    );
+  }
 
   await prisma.$disconnect();
 }
