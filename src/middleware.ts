@@ -5,6 +5,7 @@ import { resolveSubscription } from "@/lib/subscription";
 import { cacheGet, cacheSet } from "@/lib/cache";
 import { generateToken, getCsrfCookie } from "@/lib/csrf";
 import { logAuditEvent } from "@/lib/db/audit";
+import { prisma } from "@/lib/prisma";
 
 const globals = globalThis as typeof globalThis & {
   __plansSeeded?: boolean;
@@ -54,13 +55,22 @@ export const onRequest = defineMiddleware(async (context, next) => {
     const userName =
       session.user.name || session.user.email?.split("@")[0] || "Usuario";
 
+    const credentialAccount = await prisma.account.findFirst({
+      where: { userId: session.user.id, providerId: "credential" },
+      select: { id: true },
+    });
+
+    const sessionExtra = session.user as Record<string, unknown>;
+
     const appUser: AppUser = {
       id: session.user.id,
       email: session.user.email ?? null,
       name: userName,
+      firstName: (sessionExtra.firstName as string) ?? null,
+      lastName: (sessionExtra.lastName as string) ?? null,
       image: session.user.image ?? null,
-      role:
-        ((session.user as Record<string, unknown>).role as string) ?? "USER",
+      role: (sessionExtra.role as string) ?? "USER",
+      hasPasswordAuth: credentialAccount !== null,
     };
 
     context.locals.user = appUser;

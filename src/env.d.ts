@@ -4,8 +4,11 @@ type AppUser = {
   id: string;
   email: string | null;
   name: string | null;
+  firstName: string | null;
+  lastName: string | null;
   image: string | null;
   role: string;
+  hasPasswordAuth: boolean;
 };
 
 declare namespace App {
