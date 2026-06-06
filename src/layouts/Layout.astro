@@ -9,7 +9,7 @@ import type { AccentFamily } from '@/lib/accent-colors'
 import Header from '@/components/Header.astro'
 import RecipesSidebar from '@/components/RecipesSidebar.astro'
 
-const { currentPage, title } = Astro.props;
+const { currentPage, title, breadcrumbs } = Astro.props;
 const { showSideBar, showHeader = true, removeContentWrapper = false } = Astro.props;
 const showMobileNav = currentPage === 'recipes' || currentPage === 'ingredients' || currentPage === 'settings' || currentPage === 'production';
 const isAuthenticated = Boolean(Astro.locals.user && Astro.locals.session);
@@ -73,6 +73,7 @@ const sidebarCollapsed = Astro.cookies.get("kitchcalc-sidebar-collapsed")?.value
         showMenuButton={showSideBar}
         isAuthenticated={isAuthenticated}
         subscription={subscription}
+        breadcrumbs={breadcrumbs}
       />
     )}
 
