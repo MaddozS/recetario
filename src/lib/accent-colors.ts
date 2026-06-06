@@ -165,7 +165,7 @@ export function getAccentCssVars(accent: string, theme: string): string {
   return ACCENT_SHADES.map((shade) => {
     const mappedShade = isDark ? darkShadeMap[shade] : shade;
     const value = colors[mappedShade] ?? colors[shade];
-    return `--aw-accent-${shade}:${value}`;
+    return `--aw-accent-${shade}:${value};--color-accent-${shade}:${value}`;
   }).join(";");
 }
 
