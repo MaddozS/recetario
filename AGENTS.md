@@ -109,6 +109,45 @@ API version: `2026-04-22.dahlia`.
 - **ALWAYS** use semantic tokens (`bg-card`, `text-foreground`, `border-border`, `accent-*`). Never hardcoded colors.
 - **Dialog backdrops**: use `backdrop:bg-backdrop/50`, never `backdrop:bg-slate-900/50`.
 
+### astro-icon whitelist
+
+`astro-icon` uses an **explicit allowlist** in `astro.config.mjs` → `integrations[].include.lucide` array. Icons NOT in this array will fail at build time with: `Unable to locate "lucide:<name>" icon!`
+
+**Before using any `lucide:*` icon:**
+
+1. Verify the icon name exists at https://lucide.dev/icons (names are exact — `chevrons-right` ≠ `chevron-right`)
+2. Check if the icon is already in `astro.config.mjs` → `include.lucide` array
+3. If missing, add it **alphabetically** to the array
+4. Report any new icon additions in your task output so the reviewer can verify
+
+Current whitelist location: `astro.config.mjs` lines 28-90.
+
+### Responsive state enumeration
+
+When a UI component behaves differently across breakpoints or page states, analysis reports and task files **must enumerate each discrete state** explicitly. Never describe responsive behavior as a single case.
+
+**Required format** (use in analysis reports and task files):
+
+| Condition | Mobile (< md) | Desktop (≥ md) |
+|-----------|---------------|-----------------|
+| [state 1] | [what renders] | [what renders] |
+| [state 2] | [what renders] | [what renders] |
+
+**Mobile/desktop parity rule**: Mobile and desktop must provide equivalent semantic information. Mobile may rearrange or compact, but must never omit information that desktop shows. Reviewers must verify parity by mentally rendering each state at each breakpoint.
+
+### Visual QA for UI changes
+
+Any task that modifies visible UI components requires visual verification before declaring completion:
+
+- **Implementer**: After code changes, run `pnpm dev` and visually inspect the result at both desktop (1280px) and mobile (375px) viewports. Note any visual issues in the report.
+- **Reviewer**: Include a "Visual QA" checklist section that verifies:
+  - Desktop rendering looks intentional and complete
+  - Mobile rendering matches expectations
+  - Mobile and desktop provide equivalent information (parity check)
+  - No broken icons, missing elements, or layout issues
+
+This goes beyond `pnpm astro check` — that only verifies types, not visual correctness.
+
 ## Troubleshooting
 
 ### `exports is not defined` at startup (cookie package)
