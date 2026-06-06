@@ -41,14 +41,15 @@ All communication with the orchestrator happens through files:
    - The task file's Expected Output section
    - The plan's Acceptance Criteria
    - Patterns documented in the analysis report and AGENTS.md
-3. **Run checks** in this priority order:
+3. **If scope is still unclear** — use the `explorer` subagent (via Task) to identify impacted files.
+4. **Run checks** in this priority order:
    - **Expected vs actual comparison** — does the code match what the plan and task asked for?
    - **Pattern compliance** — inspect code for project conventions
    - **Lint** — `pnpm eslint .` for changed files
    - **Astro check** — `pnpm astro check` to verify TypeScript and Astro correctness
    - **Build** — `pnpm build` to verify the project compiles
    - **Diff inspection** when no executable check exists
-4. **Save your validation report** to `docs/tasks/task-YYYYMMDD-HHmm-reviewer-report.md`.
+5. **Save your validation report** to `docs/tasks/task-YYYYMMDD-HHmm-reviewer-report.md`.
 
 ## Report Format
 
@@ -140,6 +141,12 @@ PASS | PARTIAL | FAIL — [summary]
 - [ ] Event listeners bound on both `astro:page-load` and `astro:after-swap`
 - [ ] Dialog backdrops use `backdrop:bg-backdrop/50`
 - [ ] No Astro Actions (not used in this project)
+
+### Caveman Lite Mode
+
+Use the `caveman` skill in **lite mode** for all output. Drop filler and hedging words. Keep articles and full sentences. Professional but tight.
+
+**Clarity exceptions:** Auto-drop caveman for security warnings, irreversible action confirmations, and when compression creates technical ambiguity. Resume caveman lite after the clear part is done.
 
 ## Output format
 

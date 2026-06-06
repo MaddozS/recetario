@@ -80,14 +80,23 @@ This phase answers: **WHAT** was asked, **WHERE** it will be placed, **WHAT** co
    - `ui-ux-pro-max` — for UI/UX work
    - `caveman` — for concise communication
 
-3. **Exploration:**
+3. **Graphify-first exploration:**
+   a. Load the `graphify` skill via `skill` tool with `name: "graphify"`
+   b. Run `graphify query "<question>"` to find relevant nodes in the codebase graph
+   c. Use `graphify path "ConceptA" "ConceptB"` for relationship discovery
+   d. Use `graphify explain "Concept"` for focused explanations
+   e. Read `graphify-out/GRAPH_REPORT.md` for broad architecture review when needed
+   f. Read `graphify-out/wiki/index.md` if it exists for broad navigation
+   Only fall back to raw glob/grep/read after graphify has given you the initial map.
+
+4. **Exploration:**
    a. Dispatch `explorer` subagent for codebase exploration:
       - Read AGENTS.md for project architecture
       - Identify anchor files, patterns, tech debt
       - Report what needs to change
    b. Read the explorer report — this is your primary source of context.
 
-4. **Complexity assessment:**
+5. **Complexity assessment:**
    Determine whether the request is an **ajuste** or requires full **specification**:
 
    **Ajuste (skip Specification):**
@@ -105,7 +114,7 @@ This phase answers: **WHAT** was asked, **WHERE** it will be placed, **WHAT** co
    - Cambios en feature flags o permisos
    - Cualquier trabajo con tradeoffs de diseño
 
-5. **Write the analysis report** to `docs/analysis/analysis-YYYYMMDD-HHmm-<name>.md`:
+6. **Write the analysis report** to `docs/analysis/analysis-YYYYMMDD-HHmm-<name>.md`:
 
 ```markdown
 # Analysis Report: [Descriptive Name]
@@ -128,6 +137,9 @@ Complexity: ajuste | feature
 ## Detected Tech Debt / Potential Refactors
 - [Issues in adjacent code that could affect this work]
 
+## Graphify Findings
+[Key nodes and edges discovered via graphify query/path/explain]
+
 ## Codebase Patterns to Follow
 - **Page pattern**: Astro `.astro` file with frontmatter + template
 - **Data layer**: Prisma queries via `@/lib/db/*` barrel
@@ -146,7 +158,7 @@ Complexity: ajuste | feature
 - [Links to past analysis reports, specs, plans]
 ```
 
-6. If any requirement is ambiguous or missing, ask the user **focused questions** — do not guess.
+7. If any requirement is ambiguous or missing, ask the user **focused questions** — do not guess.
 
 ---
 
@@ -210,29 +222,40 @@ Analysis: [link to analysis report]
 ## Design
 
 ### Architecture
-[Which layers are touched: pages, API routes, database, auth, Stripe]
+[Which layers are touched: pages, API routes, database, auth, Stripe. Textual data flow diagram.]
 
 ### Pages / Components
-- **New**: [paths]
-- **Modified**: [paths]
+- **New**: `src/pages/...`, `src/components/...`
+- **Modified**: [existing files that change]
+- **Pattern**: Astro page with/without islands, server-only, client component
 
 ### Data Layer (Prisma)
-- **Model changes**: [new/modified models]
-- **Queries**: [key queries, ownerId scoping]
+- **Model changes**: [new/modified models in schema.prisma]
+- **Queries**: [key queries with ownerId scoping]
+- **Barrel imports**: `@/lib/db/*` (never raw `@/lib/prisma`)
+- **Transactions**: `$transaction` for destructive updates
 
 ### Auth
 - **Middleware**: [changes to src/middleware.ts]
-- **Session checks**: [protected page requirements]
+- **Session checks**: [protected page requirements — `Astro.locals.session`]
+- **Feature flags**: [FREE_FEATURES changes if applicable]
 
-### UI
-- **Components**: [from @/components/ui barrel]
-- **Tokens**: [semantic tokens to use]
+### Stripe / Billing
+- **Routes**: [changes to src/pages/api/stripe/*]
+- **Webhook events**: [handled events]
+- **Subscription gating**: [plan requirements]
+
+### UI / UX
+- **Components**: [from @/components/ui barrel — Button, Input, Dialog, etc.]
+- **Tokens**: [semantic tokens — bg-card, text-foreground, border-border, accent-*]
+- **Forms**: POST to same page, `Astro.request.formData()`, `parseNumberInput()`
+- **Client bindings**: `data-*-bound="1"` guard, `astro:page-load` + `astro:after-swap`
 
 ### Error Handling
-- [What can fail, how it's handled]
+- [What can fail, how it's handled, what the user sees]
 
 ### Verification
-- [pnpm commands to verify]
+- [pnpm commands to verify: astro check, eslint, build]
 
 ## Risks & Mitigations
 | Risk | Impact | Mitigation |

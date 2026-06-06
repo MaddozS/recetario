@@ -110,6 +110,9 @@ Session Analysis: [link to analysis report]
 ### New Skills Suggested
 - **[skill-name]**: [purpose, which agent uses it]
 
+### New Agents Suggested
+- **[agent-name]**: [purpose, rationale, which gaps it fills]
+
 ### Process Improvements
 - [Change to orchestrator workflow]
 - [Change to task format]
@@ -118,6 +121,9 @@ Session Analysis: [link to analysis report]
 ## Patterns Detected (from historical analyses)
 - [Pattern X seen in N sessions]
 - [Recurring suggestion Y]
+
+## Commands Executed
+- [glob/grep/read commands and their purpose]
 
 ## Conclusion
 [Top 3 most impactful suggestions, ranked]

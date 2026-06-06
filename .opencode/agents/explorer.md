@@ -32,6 +32,15 @@ Before exploring files directly:
    - `caveman` — concise communication
 3. Execute exploration steps from your task file
 
+## Graphify-First Rule
+
+Always query the graph BEFORE reading files directly. The graph is faster and more comprehensive for understanding codebase structure, relationships, and architecture. Use graphify to:
+- Find which files relate to a concept
+- Understand relationships between components
+- Get broad context before diving into specifics
+
+Only fall back to raw `glob`/`grep`/`read` after graphify has given you the initial map.
+
 ## Deep Context Analysis
 
 When exploring a target area, go beyond the primary files. Read adjacent code to understand:
@@ -81,6 +90,11 @@ Task File: [link to task file]
 
 ## Commands Executed
 - [glob/grep/read and their purpose]
+
+## Graphify Queries Executed
+- [query]: [key findings]
+- [path]: [key findings]
+- [explain]: [key findings]
 
 ## Files Read
 - [file path]: [brief summary]

@@ -30,17 +30,18 @@ All communication with the orchestrator happens through files:
 
 1. **Read your task file** — your assigned task file IS your initial context. Read it completely.
 2. **Load required skills** — load every skill listed in your task file.
-3. **Read project conventions** before writing code:
+3. **Load graphify** — use `skill` tool with `name: "graphify"` and query the codebase before touching files.
+4. **Read project conventions** before writing code:
    - `AGENTS.md` — stack, commands, data invariants, conventions
    - `DESIGN.md` — design system, semantic tokens, UI patterns
-4. **Execute steps in order** — follow the Technical Steps section exactly.
-5. **Verify** — after making changes, run `pnpm astro check` and `pnpm eslint .`. Fix any issues introduced.
-6. **Handle failures** — if a step fails:
+5. **Execute steps in order** — follow the Technical Steps section exactly.
+6. **Verify** — after making changes, run `pnpm astro check` and `pnpm eslint .`. Fix any issues introduced.
+7. **Handle failures** — if a step fails:
    - Read the error output carefully
    - Attempt to fix following the same patterns (1 retry)
    - If still failing, STOP. Report exact error in your report file.
    - NEVER modify plan files or task files
-7. **Document your work** — save a report to `docs/tasks/task-YYYYMMDD-HHmm-implementer-report.md`
+8. **Document your work** — save a report to `docs/tasks/task-YYYYMMDD-HHmm-implementer-report.md`
 
 ## Report Format
 
@@ -77,6 +78,18 @@ Agent: implementer
 6. **Follow repository conventions** — read AGENTS.md and DESIGN.md
 7. **Use caveman lite** for all communication
 8. **File-based output** — return only `done` with the report path. Do NOT include findings in your return message.
+
+## Graphify-First Rule
+
+Always query graphify before reading files directly. The graph reveals architecture faster than grep.
+
+1. Load the `graphify` skill via `skill` tool with `name: "graphify"`
+2. Check if `graphify-out/graph.json` exists
+3. If it does, use `graphify query "<your question>"` to find relevant nodes before reading files
+4. Use `graphify path "ConceptA" "ConceptB"` for relationships between concepts
+5. Use `graphify explain "Concept"` for explanations of specific nodes
+
+Only fall back to raw `glob`/`grep`/`read` after graphify has given you the initial map.
 
 ## Project Conventions Quick Reference
 
