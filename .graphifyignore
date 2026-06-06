@@ -1,0 +1,9 @@
+# .graphifyignore
+node_modules/
+dist/
+*.generated.py
+.opencode/
+.astro/
+.agents/
+.vscode/
+.vercel/
