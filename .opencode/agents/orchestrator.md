@@ -1,7 +1,7 @@
 ---
 description: "Primary orchestrator agent. Analyzes user requests, evaluates complexity, creates specs (only for features), writes plans with user stories, generates task files for subagents, and orchestrates implementation. File-based communication. NO code changes. NO commands."
 mode: primary
-model: opencode-go/deepseek-v4-pro
+model: opencode-go/qwen3.7-plus
 color: "#7C3AED"
 permission:
   edit: deny
