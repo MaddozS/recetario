@@ -240,9 +240,9 @@
     "semantic_hash": "f537b5368548562f0be41b31e455e52b"
   },
   "/Users/maddozs/personal-projects/recetario/prisma/seed.ts": {
-    "mtime": 1779430248.301957,
-    "ast_hash": "5520d310e7ba748ef9271c50b2fd87c4",
-    "semantic_hash": "5520d310e7ba748ef9271c50b2fd87c4"
+    "mtime": 1780632238.5752134,
+    "ast_hash": "8c518f062afeedfa45467e449247f13a",
+    "semantic_hash": "8c518f062afeedfa45467e449247f13a"
   },
   "/Users/maddozs/personal-projects/recetario/prisma/migrations/20260522000000_add_currency_to_plan/migration.sql": {
     "mtime": 1779660768.6168382,
@@ -735,9 +735,9 @@
     "semantic_hash": "470616aa7d194004d00915179e294b06"
   },
   "/Users/maddozs/personal-projects/recetario/src/layouts/Layout.astro": {
-    "mtime": 1780024922.5761003,
-    "ast_hash": "b8179b86f639d43db5568ad143cf66f3",
-    "semantic_hash": "b8179b86f639d43db5568ad143cf66f3"
+    "mtime": 1780639547.979846,
+    "ast_hash": "1499b0faba6d347b6d6c490b3e5ebc05",
+    "semantic_hash": "1499b0faba6d347b6d6c490b3e5ebc05"
   },
   "/Users/maddozs/personal-projects/recetario/src/lib/prisma.ts": {
     "mtime": 1779430248.314889,
@@ -745,9 +745,9 @@
     "semantic_hash": "337ec73628097dc3d2f37931d613339d"
   },
   "/Users/maddozs/personal-projects/recetario/src/lib/accent-colors.ts": {
-    "mtime": 1779430248.312354,
-    "ast_hash": "c945d2875f1e2d80c10f7babadc4bffd",
-    "semantic_hash": "c945d2875f1e2d80c10f7babadc4bffd"
+    "mtime": 1780639923.856695,
+    "ast_hash": "0780f1ef4e797ce8dabad783b0250cf1",
+    "semantic_hash": "0780f1ef4e797ce8dabad783b0250cf1"
   },
   "/Users/maddozs/personal-projects/recetario/src/lib/plans-config.ts": {
     "mtime": 1780024922.5772452,
@@ -850,9 +850,9 @@
     "semantic_hash": "aafb15057f778cf755c1aa710691bb7f"
   },
   "/Users/maddozs/personal-projects/recetario/src/lib/db/ingredients.ts": {
-    "mtime": 1779676586.5464518,
-    "ast_hash": "5fdc97917abe7da07d12685480675dde",
-    "semantic_hash": "5fdc97917abe7da07d12685480675dde"
+    "mtime": 1780633251.074975,
+    "ast_hash": "01614fe9557f29e5a43e9101dec2287d",
+    "semantic_hash": "01614fe9557f29e5a43e9101dec2287d"
   },
   "/Users/maddozs/personal-projects/recetario/src/lib/db/helpers.ts": {
     "mtime": 1779430248.3130004,
@@ -860,9 +860,9 @@
     "semantic_hash": "8d19cc25c30c9279027108727c4cc34e"
   },
   "/Users/maddozs/personal-projects/recetario/src/lib/db/recipes.ts": {
-    "mtime": 1779676595.1176598,
-    "ast_hash": "f1675446a3d42b8ffce3aeb88ba24fe6",
-    "semantic_hash": "f1675446a3d42b8ffce3aeb88ba24fe6"
+    "mtime": 1780633207.6794593,
+    "ast_hash": "ecf6a5b42c5596db050f1891f3a42461",
+    "semantic_hash": "ecf6a5b42c5596db050f1891f3a42461"
   },
   "/Users/maddozs/personal-projects/recetario/src/lib/db/types.ts": {
     "mtime": 1779825281.4166718,
@@ -880,9 +880,9 @@
     "semantic_hash": "7a60e7321afc108cd75813ab43a06c41"
   },
   "/Users/maddozs/personal-projects/recetario/src/lib/db/billing.ts": {
-    "mtime": 1780025806.2109082,
-    "ast_hash": "a5c30bdeee63c081cc846429cc67e5f7",
-    "semantic_hash": "a5c30bdeee63c081cc846429cc67e5f7"
+    "mtime": 1780633228.9779158,
+    "ast_hash": "2ffaf875667e5b0dba00f36f856e97f5",
+    "semantic_hash": "2ffaf875667e5b0dba00f36f856e97f5"
   },
   "/Users/maddozs/personal-projects/recetario/src/lib/db/audit.ts": {
     "mtime": 1779676193.5790517,
@@ -890,9 +890,9 @@
     "semantic_hash": "b612ba6506f4c48fd04f9193a5bd6c01"
   },
   "/Users/maddozs/personal-projects/recetario/src/lib/db/presentations.ts": {
-    "mtime": 1779467970.5276043,
-    "ast_hash": "b3ca3fd79275087f34b6d08c5b60e6f8",
-    "semantic_hash": "b3ca3fd79275087f34b6d08c5b60e6f8"
+    "mtime": 1780633219.0195398,
+    "ast_hash": "191c2243d025528432a305b47c73652b",
+    "semantic_hash": "191c2243d025528432a305b47c73652b"
   },
   "/Users/maddozs/personal-projects/recetario/src/pages/produccion.astro": {
     "mtime": 1780024922.578855,
@@ -930,9 +930,9 @@
     "semantic_hash": "2c8491660312745c552d7fe1dbe47cf4"
   },
   "/Users/maddozs/personal-projects/recetario/src/pages/ingredients.astro": {
-    "mtime": 1780024922.5785406,
-    "ast_hash": "8121fcae0e458a13a7cbe63186ce1882",
-    "semantic_hash": "8121fcae0e458a13a7cbe63186ce1882"
+    "mtime": 1780631651.005696,
+    "ast_hash": "389039148d421e281246a3b353af634e",
+    "semantic_hash": "389039148d421e281246a3b353af634e"
   },
   "/Users/maddozs/personal-projects/recetario/src/pages/pricing.astro": {
     "mtime": 1780024922.5787218,
@@ -2282,27 +2282,27 @@
   "/Users/maddozs/personal-projects/recetario/.opencode/agents/explorer.md": {
     "mtime": 1780631263.6214738,
     "ast_hash": "50e74d22d45ce561d6180dc9d0b46613",
-    "semantic_hash": ""
+    "semantic_hash": "50e74d22d45ce561d6180dc9d0b46613"
   },
   "/Users/maddozs/personal-projects/recetario/.opencode/agents/implementer.md": {
     "mtime": 1780631250.8777003,
     "ast_hash": "139c81ea66db55908e2ea1e763b4ca0c",
-    "semantic_hash": ""
+    "semantic_hash": "139c81ea66db55908e2ea1e763b4ca0c"
   },
   "/Users/maddozs/personal-projects/recetario/.opencode/agents/orchestrator.md": {
     "mtime": 1780631235.917519,
     "ast_hash": "27c8d6c849216e9eeb5b227641157171",
-    "semantic_hash": ""
+    "semantic_hash": "27c8d6c849216e9eeb5b227641157171"
   },
   "/Users/maddozs/personal-projects/recetario/.opencode/agents/reviewer.md": {
     "mtime": 1780631280.3307362,
     "ast_hash": "96e25abda16b0c53ca567d95edca81b8",
-    "semantic_hash": ""
+    "semantic_hash": "96e25abda16b0c53ca567d95edca81b8"
   },
   "/Users/maddozs/personal-projects/recetario/.opencode/agents/synthesizer.md": {
     "mtime": 1780631297.9102235,
     "ast_hash": "c73febd907dc1a09b82aaa35b135b951",
-    "semantic_hash": ""
+    "semantic_hash": "c73febd907dc1a09b82aaa35b135b951"
   },
   "/Users/maddozs/personal-projects/recetario/.opencode/commands/speckit.analyze.md": {
     "mtime": 1779773266.6422172,
@@ -2467,6 +2467,101 @@
   "/Users/maddozs/personal-projects/recetario/.opencode/agents/analyst.md": {
     "mtime": 1780631312.8501723,
     "ast_hash": "778ec7427aecbafc4f3f8f9526fe1b06",
-    "semantic_hash": ""
+    "semantic_hash": "778ec7427aecbafc4f3f8f9526fe1b06"
+  },
+  "/Users/maddozs/personal-projects/recetario/prisma/fix-sequences.ts": {
+    "mtime": 1780632244.3656623,
+    "ast_hash": "cbc761fe3a8236678f9bcf301432e9f8",
+    "semantic_hash": "cbc761fe3a8236678f9bcf301432e9f8"
+  },
+  "/Users/maddozs/personal-projects/recetario/docs/analysis/analysis-20250605-Badge-dark-mode-flash.md": {
+    "mtime": 1780639927.1450675,
+    "ast_hash": "50ceea20ea01884add0df22ee16abbd4",
+    "semantic_hash": "50ceea20ea01884add0df22ee16abbd4"
+  },
+  "/Users/maddozs/personal-projects/recetario/docs/analysis/analysis-20260604-ingredient-id-sequence.md": {
+    "mtime": 1780632167.8789442,
+    "ast_hash": "5878bfe9849c7fdb8e85442d116d25df",
+    "semantic_hash": "5878bfe9849c7fdb8e85442d116d25df"
+  },
+  "/Users/maddozs/personal-projects/recetario/docs/analysis/analysis-20260604-table-not-updating.md": {
+    "mtime": 1780633122.403291,
+    "ast_hash": "47f18fad5b72e762e3a69f134bcc1d99",
+    "semantic_hash": "47f18fad5b72e762e3a69f134bcc1d99"
+  },
+  "/Users/maddozs/personal-projects/recetario/docs/plans/plan-20250605-Badge-dark-mode-flash.md": {
+    "mtime": 1780639930.344741,
+    "ast_hash": "4a1f9eab7dc6324f014f90b9d287c4bb",
+    "semantic_hash": "4a1f9eab7dc6324f014f90b9d287c4bb"
+  },
+  "/Users/maddozs/personal-projects/recetario/docs/tasks/task-20250605-analyst-Badge-dark-mode-flash-report.md": {
+    "mtime": 1780640293.6790528,
+    "ast_hash": "99c1a8ea68fd74746823af2eb26fd80a",
+    "semantic_hash": "99c1a8ea68fd74746823af2eb26fd80a"
+  },
+  "/Users/maddozs/personal-projects/recetario/docs/tasks/task-20250605-implementer-Badge-dark-mode-flash-report.md": {
+    "mtime": 1780639983.5737722,
+    "ast_hash": "63e7463499a8e02b2b069e1077682ec9",
+    "semantic_hash": "63e7463499a8e02b2b069e1077682ec9"
+  },
+  "/Users/maddozs/personal-projects/recetario/docs/tasks/task-20250605-implementer-Badge-dark-mode-flash.md": {
+    "mtime": 1780639936.9928367,
+    "ast_hash": "e5a97dd44a63e412066884303f09bf94",
+    "semantic_hash": "e5a97dd44a63e412066884303f09bf94"
+  },
+  "/Users/maddozs/personal-projects/recetario/docs/tasks/task-20250605-reviewer-Badge-dark-mode-flash-report.md": {
+    "mtime": 1780640082.8319914,
+    "ast_hash": "724bfd6cf3fe39654a06ee50990cd927",
+    "semantic_hash": "724bfd6cf3fe39654a06ee50990cd927"
+  },
+  "/Users/maddozs/personal-projects/recetario/docs/tasks/task-20250605-synthesizer-Badge-dark-mode-flash-report.md": {
+    "mtime": 1780640366.342268,
+    "ast_hash": "15efd2da53004a983c19f07e5e9b76e2",
+    "semantic_hash": "15efd2da53004a983c19f07e5e9b76e2"
+  },
+  "/Users/maddozs/personal-projects/recetario/docs/tasks/task-20260604-cache-invalidation-synthesis.md": {
+    "mtime": 1780633454.87298,
+    "ast_hash": "56ef5b0a03a5244839909eac23792220",
+    "semantic_hash": "56ef5b0a03a5244839909eac23792220"
+  },
+  "/Users/maddozs/personal-projects/recetario/docs/tasks/task-20260604-fix-cache-invalidation-report.md": {
+    "mtime": 1780633278.0874503,
+    "ast_hash": "170fba1ab1e5113fb4f83f3f2b76e8fb",
+    "semantic_hash": "170fba1ab1e5113fb4f83f3f2b76e8fb"
+  },
+  "/Users/maddozs/personal-projects/recetario/docs/tasks/task-20260604-fix-ingredient-csrf-report.md": {
+    "mtime": 1780631658.2120621,
+    "ast_hash": "09d16109c53ed2b476989deeed39c444",
+    "semantic_hash": "09d16109c53ed2b476989deeed39c444"
+  },
+  "/Users/maddozs/personal-projects/recetario/docs/tasks/task-20260604-fix-sequences-report.md": {
+    "mtime": 1780632268.9012191,
+    "ast_hash": "b12d607f7f76b07af8510b01198ccb25",
+    "semantic_hash": "b12d607f7f76b07af8510b01198ccb25"
+  },
+  "/Users/maddozs/personal-projects/recetario/docs/tasks/task-20260604-ingredient-csrf-synthesis.md": {
+    "mtime": 1780631770.0003588,
+    "ast_hash": "9acb5a59f7a90cc81cdb1630ad614f5d",
+    "semantic_hash": "9acb5a59f7a90cc81cdb1630ad614f5d"
+  },
+  "/Users/maddozs/personal-projects/recetario/docs/tasks/task-20260604-review-cache-invalidation-report.md": {
+    "mtime": 1780633381.0373185,
+    "ast_hash": "58563ff10b0351be07ce12cb62630423",
+    "semantic_hash": "58563ff10b0351be07ce12cb62630423"
+  },
+  "/Users/maddozs/personal-projects/recetario/docs/tasks/task-20260604-review-ingredient-csrf-report.md": {
+    "mtime": 1780631728.3578954,
+    "ast_hash": "98b492da0cc3268d6965a03db55828e3",
+    "semantic_hash": "98b492da0cc3268d6965a03db55828e3"
+  },
+  "/Users/maddozs/personal-projects/recetario/docs/tasks/task-20260604-review-sequences-report.md": {
+    "mtime": 1780632356.2357116,
+    "ast_hash": "c1072e276c228c6e39e45a57a24e87a2",
+    "semantic_hash": "c1072e276c228c6e39e45a57a24e87a2"
+  },
+  "/Users/maddozs/personal-projects/recetario/docs/tasks/task-20260604-sequence-fix-synthesis.md": {
+    "mtime": 1780632422.6346083,
+    "ast_hash": "4f164098c47cb4586f69aad48910d401",
+    "semantic_hash": "4f164098c47cb4586f69aad48910d401"
   }
 }
