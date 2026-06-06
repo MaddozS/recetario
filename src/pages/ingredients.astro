@@ -252,7 +252,7 @@ const ingredientUsage = await listIngredientUsage(ownerId);
 void redirectWithFeedback;
 ---
 
-<Layout currentPage="ingredients" showSideBar={true}>
+<Layout currentPage="ingredients" showSideBar={true} breadcrumbs={[{ label: "Ingredientes" }]}>
   {
     feedbackType && feedbackMessage && (
       <FeedbackAlert
