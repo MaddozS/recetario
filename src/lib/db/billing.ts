@@ -5,8 +5,8 @@ import { TIER_CONFIG } from "@/lib/plans-config";
 import { formatCurrency } from "@/lib/formatters";
 import type Stripe from "stripe";
 
-function invalidateSubCache(userId: string) {
-  cacheDelete(`sub:${userId}`);
+async function invalidateSubCache(userId: string) {
+  await cacheDelete(`sub:${userId}`);
 }
 
 const BASIC_FEATURES: Record<string, boolean> = {
@@ -342,7 +342,7 @@ export async function createOrUpdateSubscription(
     },
   });
 
-  invalidateSubCache(resolvedUserId);
+  await invalidateSubCache(resolvedUserId);
 }
 
 export async function cancelSubscription(
@@ -357,7 +357,7 @@ export async function cancelSubscription(
     where: { stripeSubscriptionId },
     data: { status: "canceled", cancelAtPeriodEnd: true },
   });
-  invalidateSubCache(sub.userId);
+  await invalidateSubCache(sub.userId);
 }
 
 export async function markSubscriptionPastDue(
@@ -372,7 +372,7 @@ export async function markSubscriptionPastDue(
     where: { stripeSubscriptionId },
     data: { status: "past_due" },
   });
-  invalidateSubCache(sub.userId);
+  await invalidateSubCache(sub.userId);
 }
 
 export async function getPlanByStripePriceId(stripePriceId: string): Promise<{

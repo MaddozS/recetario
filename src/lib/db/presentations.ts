@@ -12,9 +12,9 @@ import {
 } from "@/lib/db/helpers";
 import { cacheDelete } from "@/lib/cache";
 
-function invalidateParentRecipeCache(ownerId: string, recipeId: number) {
-  cacheDelete(`recipes:${ownerId}`);
-  cacheDelete(`recipe:${recipeId}`);
+async function invalidateParentRecipeCache(ownerId: string, recipeId: number) {
+  await cacheDelete(`recipes:${ownerId}`);
+  await cacheDelete(`recipe:${recipeId}`);
 }
 
 async function touchRecipeUpdatedAt(recipeId: number): Promise<void> {
@@ -54,7 +54,7 @@ export async function createPresentation(
   });
 
   await touchRecipeUpdatedAt(recipeId);
-  invalidateParentRecipeCache(ownerId, recipeId);
+  await invalidateParentRecipeCache(ownerId, recipeId);
 
   return {
     id: data.id,
@@ -111,7 +111,7 @@ export async function updatePresentation(
     });
 
     await touchRecipeUpdatedAt(recipeId);
-    invalidateParentRecipeCache(ownerId, recipeId);
+    await invalidateParentRecipeCache(ownerId, recipeId);
 
     return {
       id: data.id,
@@ -166,7 +166,7 @@ export async function deletePresentation(
   }
 
   await touchRecipeUpdatedAt(recipeId);
-  invalidateParentRecipeCache(ownerId, recipeId);
+  await invalidateParentRecipeCache(ownerId, recipeId);
 
   return { status: "deleted" };
 }

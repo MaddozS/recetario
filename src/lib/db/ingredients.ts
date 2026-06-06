@@ -7,11 +7,11 @@ import type {
   DeleteIngredientResult,
 } from "@/lib/db/types";
 import { normalizeOptionalText, toNumber } from "@/lib/db/helpers";
-import { cacheGet, cacheSet } from "@/lib/cache";
+import { cacheGet, cacheSet, cacheDelete } from "@/lib/cache";
 
-function invalidateIngredientCache(ownerId: string) {
-  cacheSet(`ingredients:${ownerId}`, undefined, 0);
-  cacheSet(`ingredient_usage:${ownerId}`, undefined, 0);
+async function invalidateIngredientCache(ownerId: string) {
+  await cacheDelete(`ingredients:${ownerId}`);
+  await cacheDelete(`ingredient_usage:${ownerId}`);
 }
 
 export async function listIngredients(ownerId: string): Promise<Ingredient[]> {
@@ -100,7 +100,7 @@ export async function createIngredient(
     },
   });
 
-  invalidateIngredientCache(ownerId);
+  await invalidateIngredientCache(ownerId);
 
   return {
     id: data.id,
@@ -159,7 +159,7 @@ export async function updateIngredient(
       data: updates as Prisma.IngredientUncheckedUpdateInput,
     });
 
-    invalidateIngredientCache(ownerId);
+    await invalidateIngredientCache(ownerId);
 
     return {
       id: data.id,
@@ -227,7 +227,7 @@ export async function deleteIngredient(
     where: { id: ingredientId, ownerId },
   });
 
-  invalidateIngredientCache(ownerId);
+  await invalidateIngredientCache(ownerId);
 
   return { status: "deleted" };
 }

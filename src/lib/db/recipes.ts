@@ -18,9 +18,9 @@ import {
 } from "@/lib/db/helpers";
 import { cacheGet, cacheSet, cacheDelete } from "@/lib/cache";
 
-function invalidateRecipeCache(ownerId: string, recipeId?: number) {
-  cacheDelete(`recipes:${ownerId}`);
-  if (recipeId) cacheDelete(`recipe:${recipeId}`);
+async function invalidateRecipeCache(ownerId: string, recipeId?: number) {
+  await cacheDelete(`recipes:${ownerId}`);
+  if (recipeId) await cacheDelete(`recipe:${recipeId}`);
 }
 
 export async function listRecipeSummaries(
@@ -182,7 +182,7 @@ export async function createRecipe(
     },
   });
 
-  invalidateRecipeCache(ownerId);
+  await invalidateRecipeCache(ownerId);
   return { id: data.id, name: data.name };
 }
 
@@ -198,7 +198,7 @@ export async function deleteRecipe(
     await prisma.recipe.delete({
       where: { id: recipeId, ownerId },
     });
-    invalidateRecipeCache(ownerId, recipeId);
+    await invalidateRecipeCache(ownerId, recipeId);
     return { status: "deleted" };
   } catch {
     return { status: "not-found" };
@@ -246,7 +246,7 @@ export async function updateRecipe(
       });
     }
   });
-  invalidateRecipeCache(ownerId, recipeId);
+  await invalidateRecipeCache(ownerId, recipeId);
 }
 
 export async function duplicateRecipe(
