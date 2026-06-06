@@ -102,7 +102,7 @@ if (feedback) {
 }
 ---
 
-<Layout currentPage="settings" showSideBar={true}>
+<Layout currentPage="settings" showSideBar={true} breadcrumbs={[{ label: "Configuración" }]}>
   <section class="mx-auto max-w-3xl">
     {
       Astro.url.searchParams.has("type") && (
