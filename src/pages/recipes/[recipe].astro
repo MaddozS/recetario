@@ -460,7 +460,7 @@ void getPresentationFormErrorMessage;
 
 ---
 
-<Layout currentRecipe={id} showSideBar={true} currentPage="recipes">
+<Layout currentRecipe={id} showSideBar={true} currentPage="recipes" breadcrumbs={[{ label: "Recetas", href: "/recipes" }, { label: name }]}>
   <div transition:animate="slide" class="w-full">
     <div class="px-1 sm:px-2 lg:px-8 py-4">
       {feedbackType && feedbackMessage && (
@@ -545,18 +545,8 @@ void getPresentationFormErrorMessage;
         </dialog>
       )}
 
-      <!-- Breadcrumb + Actions -->
+      <!-- Actions -->
       <div class="flex items-center justify-between gap-3 mb-2 px-1">
-        <nav aria-label="Breadcrumb" class="flex items-center gap-1.5 text-sm text-muted-foreground min-w-0">
-          <a href="/recipes" class="hover:text-secondary-foreground font-medium transition-colors flex items-center gap-1">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-subtle-foreground shrink-0 lg:hidden"><polyline points="15 18 9 12 15 6"/></svg>
-            <span class="hidden lg:inline">Recetas</span>
-            <span class="lg:hidden">Recetas</span>
-          </a>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-subtle-foreground shrink-0 hidden lg:block"><polyline points="9 18 15 12 9 6"/></svg>
-          <span class="text-foreground font-semibold truncate hidden lg:inline">{name}</span>
-        </nav>
-
         {!isEditMode && (
           <div class="flex items-center gap-2 shrink-0 overflow-x-auto">
             <form method="get" action={Astro.url.pathname} data-astro-reload class="contents">
