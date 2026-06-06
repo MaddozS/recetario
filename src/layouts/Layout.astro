@@ -66,7 +66,7 @@ const sidebarCollapsed = Astro.cookies.get("kitchcalc-sidebar-collapsed")?.value
     <ClientRouter />
 	</head>
 	<body class="bg-background flex flex-col min-h-dvh md:h-dvh md:overflow-hidden">
-    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:bg-accent-600 focus:text-white focus:rounded-xl focus:px-4 focus:py-2 focus:outline-none">Saltar al contenido</a>
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-100 focus:bg-accent-600 focus:text-white focus:rounded-xl focus:px-4 focus:py-2 focus:outline-none">Saltar al contenido</a>
     {showHeader && (
       <Header
         currentPage={currentPage}
@@ -75,16 +75,16 @@ const sidebarCollapsed = Astro.cookies.get("kitchcalc-sidebar-collapsed")?.value
         subscription={subscription}
       />
     )}
-    
+
     <div class="flex flex-1 flex-col md:flex-row overflow-hidden relative">
       {
         showSideBar && (
           <>
             <!-- Mobile Overlay -->
             <div id="mobile-sidebar-overlay" class="fixed inset-0 bg-backdrop/40 backdrop-blur-sm z-50 hidden md:hidden opacity-0"></div>
-            
+
             <!-- Sidebar -->
-            <aside id="app-sidebar" data-collapsed={sidebarCollapsed ? "1" : "0"} class="fixed inset-y-0 left-0 z-[60] w-[85%] max-w-[320px] -translate-x-full md:translate-x-0 md:static md:w-auto md:max-w-none md:flex-none md:border-r md:border-border md:bg-card md:flex md:flex-col shadow-2xl md:shadow-none" transition:animate="none">
+            <aside id="app-sidebar" data-collapsed={sidebarCollapsed ? "1" : "0"} class="fixed inset-y-0 left-0 z-60 w-[85%] max-w-[320px] -translate-x-full md:translate-x-0 md:static md:w-auto md:max-w-none md:flex-none md:border-r md:border-border md:bg-card md:flex md:flex-col shadow-2xl md:shadow-none" transition:animate="none">
               <RecipesSidebar
                 currentPage={currentPage}
                 isAuthenticated={isAuthenticated}
@@ -170,7 +170,7 @@ const sidebarCollapsed = Astro.cookies.get("kitchcalc-sidebar-collapsed")?.value
 	html,
 	body {
 		margin: 0;
-    padding: 0; 
+    padding: 0;
 		width: 100%;
 		height: 100%;
 	}
