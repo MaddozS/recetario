@@ -32,7 +32,7 @@ const isSuccess = Astro.url.searchParams.get("success") === "1";
 const isCanceled = Astro.url.searchParams.get("canceled") === "1";
 ---
 
-<Layout currentPage="settings" showSideBar={true}>
+<Layout currentPage="settings" showSideBar={true} breadcrumbs={[{ label: "Configuración", href: "/settings" }, { label: "Facturación" }]}>
   <section class="mx-auto max-w-3xl space-y-6">
     <BillingSection
       {subscription}
