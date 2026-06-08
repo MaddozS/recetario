@@ -359,10 +359,10 @@ if (updatedAt) {
   const d = new Date(updatedAt);
   const now = new Date();
   const isToday = d.getDate() === now.getDate() && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-  
+
   const timeOpts: Intl.DateTimeFormatOptions = { hour: 'numeric', minute: '2-digit', hour12: true };
   const timeStr = d.toLocaleTimeString('es-MX', timeOpts);
-  
+
   if (isToday) {
     lastUpdatedText = `Hoy, ${timeStr}`;
   } else {
@@ -418,7 +418,7 @@ const formatCantidad = (cantidad: number, unidad: string) => {
 };
 
 // --- Helpers de Cálculo ---
-  
+
 const getCostoBaseCompra = (insumo: Ingredient) => {
   if (insumo.purchaseQuantity === 0) return 0;
   return insumo.price / insumo.purchaseQuantity;
@@ -426,17 +426,17 @@ const getCostoBaseCompra = (insumo: Ingredient) => {
 
 const calcularSubtotalIngrediente = (ri: RecipeIngredient, insumo: Ingredient) => {
   if (!insumo) return 0;
-  
+
   let cantidadAjustada = aplicarRedondeoUnidadPequena(ri.quantity * multiplier, ri.unit);
   const unidadInsumo = insumo.unit.toLowerCase();
   const unidadReceta = ri.unit.toLowerCase();
 
   // Conversión inteligente: si el insumo es kg/lt y la receta usa g/ml
-  if ((unidadInsumo === 'kg' || unidadInsumo === 'lt') && 
+  if ((unidadInsumo === 'kg' || unidadInsumo === 'lt') &&
       (unidadReceta === 'g' || unidadReceta === 'ml')) {
     cantidadAjustada = cantidadAjustada / 1000;
   }
-  
+
   return getCostoBaseCompra(insumo) * cantidadAjustada;
 };
 
@@ -545,50 +545,17 @@ void getPresentationFormErrorMessage;
         </dialog>
       )}
 
-      <!-- Actions -->
-      <div class="flex items-center justify-between gap-3 mb-2 px-1">
-        {!isEditMode && (
-          <div class="flex items-center gap-2 shrink-0 overflow-x-auto">
-            <form method="get" action={Astro.url.pathname} data-astro-reload class="contents">
-              <input type="hidden" name="edit" value="true" />
-              <Button variant="primary" icon="pencil" size="sm" type="submit" class="px-3 lg:px-5 lg:text-sm shadow-sm">
-                Editar
-              </Button>
-            </form>
-            {hasFeature(subscription, "recipe_duplicate") && (
-              <Button variant="ghost" size="sm" icon="copy" data-open-recipe-duplicate-dialog={recipeDuplicateDialogId} class="px-0 lg:px-4">
-                <span class="hidden lg:inline">Duplicar</span>
-              </Button>
-            )}
-            <Button variant="ghost" size="sm" icon="trash-2" data-open-recipe-delete-dialog={recipeDeleteDialogId} class="text-danger hover:bg-danger-bg px-0 lg:px-4" ariaLabel="Eliminar receta">
-              <span class="hidden lg:inline">Eliminar</span>
-            </Button>
-          </div>
-        )}
-      </div>
-
-      <!-- Tag and Last Updated -->
-      <div class="flex items-center gap-3 text-sm font-medium text-muted-foreground px-1">
-        <Badge variant="category" color="accent" class="gap-1.5 px-3 py-1 tracking-wider uppercase font-black">
-          <Icon name="lucide:tag" size={12} /> {category || "Sin categoría"}
-        </Badge>
-        {lastUpdatedText && (
-          <span class="text-xs text-subtle-foreground font-semibold">
-            Actualizado {lastUpdatedText.toLowerCase().replace('hoy, ', 'hoy ')}
-          </span>
-        )}
-      </div>
-
-      <!-- Title and Actions Row -->
-      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 px-1">
+      <!-- Header: Row 1 - Title + Actions (desktop right side) -->
+      <div class="flex items-start justify-between gap-3 pb-3">
+        <!-- Title (left) -->
         <div class="flex-1">
           {isEditMode ? (
             <>
-              <input 
+              <input
                 id="recipe-name-input"
                 name="recipeName"
                 form={recipeEditFormId}
-                type="text" 
+                type="text"
                 class="w-full text-3xl sm:text-4xl leading-tight font-black bg-background border border-border rounded-xl p-2 text-foreground focus:ring-2 focus:ring-accent-500/20"
                 value={name}
               />
@@ -608,10 +575,12 @@ void getPresentationFormErrorMessage;
           )}
         </div>
 
-        <div class="flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center">
+        <!-- Right side: Mezclas (desktop) + Menu button -->
+        <div class="flex items-center gap-2">
+          <!-- Mezclas counter (hidden on mobile, shown on sm+) -->
           {!isEditMode && (
             <form method="get" data-astro-reload class:list={[
-              "flex w-full items-center justify-between gap-2 rounded-xl border px-2 py-1.5 shadow-sm sm:w-auto sm:justify-start transition-colors",
+              "hidden sm:flex w-full items-center justify-between gap-2 rounded-xl border px-2 py-1.5 shadow-sm sm:w-auto sm:justify-start transition-colors",
               showAdjustedQuantity ? "border-accent-200 bg-accent-50/30" : "border-border bg-card"
             ]}>
               <span class="text-[10px] font-black uppercase tracking-widest text-subtle-foreground px-2">Mezclas</span>
@@ -622,8 +591,82 @@ void getPresentationFormErrorMessage;
               </div>
             </form>
           )}
+
+          <!-- Menu button (always visible) -->
+          {!isEditMode && (
+            <div class="relative">
+              <button type="button" data-menu-toggle="recipe-actions"
+                class="w-10 h-10 flex items-center justify-center rounded-xl border border-border bg-card hover:bg-muted transition-colors"
+                aria-label="Opciones de receta">
+                <Icon name="lucide:ellipsis-vertical" size={18} />
+              </button>
+
+              <div data-menu-panel="recipe-actions" class="hidden absolute right-0 top-full mt-1 w-48 rounded-xl border border-border bg-card shadow-lg z-50 overflow-hidden">
+                <form method="get" action={Astro.url.pathname} data-astro-reload class="contents">
+                  <input type="hidden" name="edit" value="true" />
+                  <button type="submit" class="flex items-center gap-3 w-full px-3 py-2.5 text-sm text-foreground hover:bg-muted transition-colors text-left">
+                    <Icon name="lucide:pencil" size={16} /> Editar
+                  </button>
+                </form>
+                {hasFeature(subscription, "recipe_duplicate") && (
+                  <button type="button" data-open-recipe-duplicate-dialog={recipeDuplicateDialogId}
+                    class="flex items-center gap-3 w-full px-3 py-2.5 text-sm text-foreground hover:bg-muted transition-colors text-left">
+                    <Icon name="lucide:copy" size={16} /> Duplicar
+                  </button>
+                )}
+                <button type="button" data-open-recipe-delete-dialog={recipeDeleteDialogId}
+                  class="flex items-center gap-3 w-full px-3 py-2.5 text-sm text-danger hover:bg-danger-bg transition-colors text-left">
+                  <Icon name="lucide:trash-2" size={16} /> Eliminar
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
+
+      <!-- Header: Row 2 - Badge + Timestamp -->
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-4">
+        <!-- Badge + timestamp (left) -->
+        <div class="flex items-center gap-3 text-sm font-medium text-muted-foreground">
+          <Badge variant="category" color="accent" class="gap-1.5 px-3 py-1 tracking-wider uppercase font-black">
+            <Icon name="lucide:tag" size={12} /> {category || "Sin categoría"}
+          </Badge>
+          {lastUpdatedText && (
+            <span class="text-xs text-subtle-foreground font-semibold">
+              Actualizado {lastUpdatedText.toLowerCase().replace('hoy, ', 'hoy ')}
+            </span>
+          )}
+        </div>
+
+        <!-- Edit mode: Guardar/Cancelar -->
+        {isEditMode && (
+          <div class="flex items-center gap-2 self-end">
+            <Button variant="primary" icon="save" type="submit" form={recipeEditFormId} size="sm">
+              Guardar
+            </Button>
+            <form method="get" action={Astro.url.pathname} data-astro-reload class="contents">
+              <Button variant="ghost" icon="x" type="submit" size="sm">
+                Cancelar
+              </Button>
+            </form>
+          </div>
+        )}
+      </div>
+
+      <!-- Header: Row 1b - Mezclas counter (mobile only) -->
+      {!isEditMode && (
+        <form method="get" data-astro-reload class:list={[
+          "flex sm:hidden mb-4 w-full items-center justify-between gap-2 rounded-xl border px-2 py-1.5 shadow-sm transition-colors",
+          showAdjustedQuantity ? "border-accent-200 bg-accent-50/30" : "border-border bg-card"
+        ]}>
+          <span class="text-[10px] font-black uppercase tracking-widest text-subtle-foreground px-2">Mezclas</span>
+          <div class="flex items-center gap-1 bg-background rounded-full p-1 border border-border-light">
+            <a href={multiplierDownHref} data-astro-reload class="w-6 h-6 flex items-center justify-center rounded-full hover:bg-hover-muted text-muted-foreground font-bold transition-colors active:scale-95">-</a>
+            <input type="number" name="multiplier" value={multiplier} step="0.0001" min="0.0001" class="w-10 bg-transparent text-center font-mono font-semibold text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 p-0 border-none text-sm tabular-nums" onchange="this.form.submit()" aria-label="Multiplicador" />
+            <a href={multiplierUpHref} data-astro-reload class="w-6 h-6 flex items-center justify-center rounded-full hover:bg-hover-muted text-muted-foreground font-bold transition-colors active:scale-95">+</a>
+          </div>
+        </form>
+      )}
 
       <!-- Financial Summary -->
       <FinancialSummary
@@ -792,7 +835,7 @@ void getPresentationFormErrorMessage;
                         <div class="font-semibold text-secondary-foreground whitespace-nowrap inline-block">{ri.ingredient.name}</div>
                         {ri.comment ? (
                           <div class="mt-1 text-xs text-subtle-foreground ingredient-comment hidden max-w-[28ch] break-words">{ri.comment}</div>
-                        ) : null} 
+                        ) : null}
                       </td>
                       <td class="px-6 lg:px-8 py-4 border-r border-border-light w-auto">
                         <div class={`flex gap-2 ${showAdjustedQuantity ? 'min-w-[240px]' : 'min-w-[120px]'}`}>
@@ -855,7 +898,7 @@ void getPresentationFormErrorMessage;
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
       {presentations?.map(pres => (
-        <PresentationCard 
+        <PresentationCard
           id={pres.id}
           name={pres.name}
           unitsPerBatch={pres.unitsPerBatch}
@@ -1262,5 +1305,33 @@ void getPresentationFormErrorMessage;
     setupRecipeEditor();
   </script>
 )}
+
+<!-- Dropdown menu toggle (always available, not just edit mode) -->
+<script is:inline>
+  function setupDropdownMenus() {
+    if (document.documentElement.dataset.dropdownBound === '1') return;
+    document.documentElement.dataset.dropdownBound = '1';
+
+    document.addEventListener('click', (e) => {
+      const toggle = e.target.closest('[data-menu-toggle]');
+      if (toggle) {
+        e.stopPropagation();
+        const menuId = toggle.getAttribute('data-menu-toggle');
+        const panel = document.querySelector(`[data-menu-panel="${menuId}"]`);
+        if (panel) {
+          panel.classList.toggle('hidden');
+        }
+      } else {
+        document.querySelectorAll('[data-menu-panel]').forEach((panel) => {
+          panel.classList.add('hidden');
+        });
+      }
+    });
+  }
+
+  document.addEventListener('astro:page-load', setupDropdownMenus);
+  document.addEventListener('astro:after-swap', setupDropdownMenus);
+  setupDropdownMenus();
+</script>
 
 </Layout>
