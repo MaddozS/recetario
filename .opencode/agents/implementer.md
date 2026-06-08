@@ -68,6 +68,8 @@ Agent: implementer
 - `pnpm eslint .`: [result]
 ```
 
+**IMPORTANT**: The `Task File:` field must reference an ACTUAL file that exists. If no task file was provided by the orchestrator, write: `Task File: (ad-hoc request — no formal task file created)`. Never invent a task file path.
+
 ## Hard Constraints
 
 1. **Never modify orchestrator specs** (`docs/specs/*-design.md`)
@@ -78,6 +80,8 @@ Agent: implementer
 6. **Follow repository conventions** — read AGENTS.md and DESIGN.md
 7. **Use caveman lite** for all communication
 8. **File-based output** — return only `done` with the report path. Do NOT include findings in your return message.
+9. **Never reference task files that don't exist** — if you create a report, ensure the task file it references actually exists at the specified path. If no task file was provided, write "Task File: (ad-hoc request, no formal task file)" — do NOT invent a filename.
+10. **Always verify task file exists before referencing** — if your report will cite a task file, confirm it exists at that path. Broken references break the documentation chain.
 
 ## Graphify-First Rule
 

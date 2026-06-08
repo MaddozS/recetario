@@ -1,7 +1,7 @@
 ---
 description: "Validador read-only para Recetario. Ejecuta lint checks, astro check, verificación de convenciones Prisma/auth/UI, expected vs actual comparison. File-based: lee plan + builder report, escribe reporte con hallazgos. NO modifica código fuente."
 mode: subagent
-model: opencode-go/deepseek-v4-flash
+model: opencode-go/qwen3.7-plus
 color: "#F59E0B"
 permission:
   edit: deny
@@ -28,6 +28,7 @@ All communication with the orchestrator happens through files:
 - **Never modify source files**.
 - **Never propose speculative fixes** without evidence from code or command output.
 - **Never propose solutions** — report findings only.
+- **Review EVERY code change** — no change is "too small" to review. Even single-line CSS class changes need verification. If the orchestrator asks you to review, do it. If you notice a code change without a review request, flag it.
 - Prefer focused checks over full-suite execution when scope is known.
 
 ## Approach
@@ -50,6 +51,12 @@ All communication with the orchestrator happens through files:
    - **Build** — `pnpm build` to verify the project compiles
    - **Diff inspection** when no executable check exists
 5. **Save your validation report** to `docs/tasks/task-YYYYMMDD-HHmm-reviewer-report.md`.
+
+**No "quick reviews" or abbreviated checks.** Every review must include:
+- Expected vs actual comparison
+- At least `pnpm astro check` verification
+- Regressions check for modified files
+- Visual QA notes for UI changes (desktop + mobile parity)
 
 ## Report Format
 
