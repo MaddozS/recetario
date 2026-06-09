@@ -1,16 +1,16 @@
-# Graph Report - recetario  (2026-06-07)
+# Graph Report - recetario  (2026-06-08)
 
 ## Corpus Check
-- 318 files · ~400,685 words
+- 376 files · ~427,782 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 9011 nodes · 12554 edges · 521 communities (502 shown, 19 thin omitted)
+- 9642 nodes · 13137 edges · 582 communities (562 shown, 20 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 7 edges (avg confidence: 0.84)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `e914b335`
+- Built from commit: `2db6503c`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -517,13 +517,74 @@
 - [[_COMMUNITY_Community 499|Community 499]]
 - [[_COMMUNITY_Community 500|Community 500]]
 - [[_COMMUNITY_Community 501|Community 501]]
+- [[_COMMUNITY_Community 502|Community 502]]
+- [[_COMMUNITY_Community 503|Community 503]]
+- [[_COMMUNITY_Community 504|Community 504]]
+- [[_COMMUNITY_Community 505|Community 505]]
+- [[_COMMUNITY_Community 506|Community 506]]
+- [[_COMMUNITY_Community 507|Community 507]]
+- [[_COMMUNITY_Community 508|Community 508]]
+- [[_COMMUNITY_Community 509|Community 509]]
+- [[_COMMUNITY_Community 510|Community 510]]
+- [[_COMMUNITY_Community 511|Community 511]]
+- [[_COMMUNITY_Community 512|Community 512]]
 - [[_COMMUNITY_Community 513|Community 513]]
 - [[_COMMUNITY_Community 514|Community 514]]
 - [[_COMMUNITY_Community 515|Community 515]]
 - [[_COMMUNITY_Community 516|Community 516]]
+- [[_COMMUNITY_Community 517|Community 517]]
 - [[_COMMUNITY_Community 518|Community 518]]
 - [[_COMMUNITY_Community 519|Community 519]]
+- [[_COMMUNITY_Community 520|Community 520]]
 - [[_COMMUNITY_Community 522|Community 522]]
+- [[_COMMUNITY_Community 534|Community 534]]
+- [[_COMMUNITY_Community 535|Community 535]]
+- [[_COMMUNITY_Community 536|Community 536]]
+- [[_COMMUNITY_Community 537|Community 537]]
+- [[_COMMUNITY_Community 538|Community 538]]
+- [[_COMMUNITY_Community 539|Community 539]]
+- [[_COMMUNITY_Community 540|Community 540]]
+- [[_COMMUNITY_Community 541|Community 541]]
+- [[_COMMUNITY_Community 542|Community 542]]
+- [[_COMMUNITY_Community 543|Community 543]]
+- [[_COMMUNITY_Community 544|Community 544]]
+- [[_COMMUNITY_Community 545|Community 545]]
+- [[_COMMUNITY_Community 546|Community 546]]
+- [[_COMMUNITY_Community 547|Community 547]]
+- [[_COMMUNITY_Community 548|Community 548]]
+- [[_COMMUNITY_Community 549|Community 549]]
+- [[_COMMUNITY_Community 550|Community 550]]
+- [[_COMMUNITY_Community 551|Community 551]]
+- [[_COMMUNITY_Community 552|Community 552]]
+- [[_COMMUNITY_Community 553|Community 553]]
+- [[_COMMUNITY_Community 554|Community 554]]
+- [[_COMMUNITY_Community 555|Community 555]]
+- [[_COMMUNITY_Community 556|Community 556]]
+- [[_COMMUNITY_Community 557|Community 557]]
+- [[_COMMUNITY_Community 558|Community 558]]
+- [[_COMMUNITY_Community 559|Community 559]]
+- [[_COMMUNITY_Community 560|Community 560]]
+- [[_COMMUNITY_Community 561|Community 561]]
+- [[_COMMUNITY_Community 562|Community 562]]
+- [[_COMMUNITY_Community 563|Community 563]]
+- [[_COMMUNITY_Community 564|Community 564]]
+- [[_COMMUNITY_Community 565|Community 565]]
+- [[_COMMUNITY_Community 566|Community 566]]
+- [[_COMMUNITY_Community 567|Community 567]]
+- [[_COMMUNITY_Community 568|Community 568]]
+- [[_COMMUNITY_Community 569|Community 569]]
+- [[_COMMUNITY_Community 570|Community 570]]
+- [[_COMMUNITY_Community 571|Community 571]]
+- [[_COMMUNITY_Community 572|Community 572]]
+- [[_COMMUNITY_Community 573|Community 573]]
+- [[_COMMUNITY_Community 574|Community 574]]
+- [[_COMMUNITY_Community 575|Community 575]]
+- [[_COMMUNITY_Community 576|Community 576]]
+- [[_COMMUNITY_Community 577|Community 577]]
+- [[_COMMUNITY_Community 578|Community 578]]
+- [[_COMMUNITY_Community 579|Community 579]]
+- [[_COMMUNITY_Community 580|Community 580]]
+- [[_COMMUNITY_Community 581|Community 581]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `4) Rules (generation + audit)` - 31 edges
@@ -551,36 +612,36 @@
 
 ## Import Cycles
 - 3-file cycle: `generated/prisma/internal/prismaNamespace.ts -> generated/prisma/models.ts -> generated/prisma/models/RecipeIngredient.ts -> generated/prisma/internal/prismaNamespace.ts`
-- 3-file cycle: `generated/prisma/internal/prismaNamespace.ts -> generated/prisma/models.ts -> generated/prisma/models/Subscription.ts -> generated/prisma/internal/prismaNamespace.ts`
-- 3-file cycle: `generated/prisma/internal/prismaNamespace.ts -> generated/prisma/models.ts -> generated/prisma/models/UserPreferences.ts -> generated/prisma/internal/prismaNamespace.ts`
-- 3-file cycle: `generated/prisma/internal/prismaNamespace.ts -> generated/prisma/models.ts -> generated/prisma/models/Verification.ts -> generated/prisma/internal/prismaNamespace.ts`
+- 3-file cycle: `generated/prisma/internal/prismaNamespace.ts -> generated/prisma/models.ts -> generated/prisma/models/Session.ts -> generated/prisma/internal/prismaNamespace.ts`
+- 3-file cycle: `generated/prisma/internal/prismaNamespace.ts -> generated/prisma/models.ts -> generated/prisma/models/Recipe.ts -> generated/prisma/internal/prismaNamespace.ts`
+- 3-file cycle: `generated/prisma/internal/prismaNamespace.ts -> generated/prisma/models.ts -> generated/prisma/models/RateLimitEntry.ts -> generated/prisma/internal/prismaNamespace.ts`
+- 3-file cycle: `generated/prisma/internal/prismaNamespace.ts -> generated/prisma/models.ts -> generated/prisma/models/Ingredient.ts -> generated/prisma/internal/prismaNamespace.ts`
+- 3-file cycle: `generated/prisma/internal/prismaNamespace.ts -> generated/prisma/models.ts -> generated/prisma/models/User.ts -> generated/prisma/internal/prismaNamespace.ts`
+- 3-file cycle: `generated/prisma/commonInputTypes.ts -> generated/prisma/internal/prismaNamespace.ts -> generated/prisma/models.ts -> generated/prisma/commonInputTypes.ts`
 - 3-file cycle: `generated/prisma/internal/prismaNamespace.ts -> generated/prisma/models.ts -> generated/prisma/models/SubscriptionPlan.ts -> generated/prisma/internal/prismaNamespace.ts`
+- 3-file cycle: `generated/prisma/internal/prismaNamespace.ts -> generated/prisma/models.ts -> generated/prisma/models/UserPreferences.ts -> generated/prisma/internal/prismaNamespace.ts`
+- 3-file cycle: `generated/prisma/internal/prismaNamespace.ts -> generated/prisma/models.ts -> generated/prisma/models/RecipePresentation.ts -> generated/prisma/internal/prismaNamespace.ts`
+- 3-file cycle: `generated/prisma/internal/prismaNamespace.ts -> generated/prisma/models.ts -> generated/prisma/models/CacheEntry.ts -> generated/prisma/internal/prismaNamespace.ts`
+- 3-file cycle: `generated/prisma/internal/prismaNamespace.ts -> generated/prisma/models.ts -> generated/prisma/models/Verification.ts -> generated/prisma/internal/prismaNamespace.ts`
 - 3-file cycle: `generated/prisma/internal/prismaNamespace.ts -> generated/prisma/models.ts -> generated/prisma/models/AuditLog.ts -> generated/prisma/internal/prismaNamespace.ts`
 - 3-file cycle: `generated/prisma/internal/prismaNamespace.ts -> generated/prisma/models.ts -> generated/prisma/models/Account.ts -> generated/prisma/internal/prismaNamespace.ts`
-- 3-file cycle: `generated/prisma/internal/prismaNamespace.ts -> generated/prisma/models.ts -> generated/prisma/models/RateLimitEntry.ts -> generated/prisma/internal/prismaNamespace.ts`
-- 3-file cycle: `generated/prisma/internal/prismaNamespace.ts -> generated/prisma/models.ts -> generated/prisma/models/CacheEntry.ts -> generated/prisma/internal/prismaNamespace.ts`
-- 3-file cycle: `generated/prisma/internal/prismaNamespace.ts -> generated/prisma/models.ts -> generated/prisma/models/RecipePresentation.ts -> generated/prisma/internal/prismaNamespace.ts`
-- 3-file cycle: `generated/prisma/commonInputTypes.ts -> generated/prisma/internal/prismaNamespace.ts -> generated/prisma/models.ts -> generated/prisma/commonInputTypes.ts`
-- 3-file cycle: `generated/prisma/internal/prismaNamespace.ts -> generated/prisma/models.ts -> generated/prisma/models/Ingredient.ts -> generated/prisma/internal/prismaNamespace.ts`
-- 3-file cycle: `generated/prisma/internal/prismaNamespace.ts -> generated/prisma/models.ts -> generated/prisma/models/Recipe.ts -> generated/prisma/internal/prismaNamespace.ts`
-- 3-file cycle: `generated/prisma/internal/prismaNamespace.ts -> generated/prisma/models.ts -> generated/prisma/models/Session.ts -> generated/prisma/internal/prismaNamespace.ts`
-- 3-file cycle: `generated/prisma/internal/prismaNamespace.ts -> generated/prisma/models.ts -> generated/prisma/models/User.ts -> generated/prisma/internal/prismaNamespace.ts`
-- 3-file cycle: `generated/prisma-sqlite/commonInputTypes.ts -> generated/prisma-sqlite/internal/prismaNamespace.ts -> generated/prisma-sqlite/models.ts -> generated/prisma-sqlite/commonInputTypes.ts`
-- 3-file cycle: `generated/prisma-sqlite/internal/prismaNamespace.ts -> generated/prisma-sqlite/models.ts -> generated/prisma-sqlite/models/Account.ts -> generated/prisma-sqlite/internal/prismaNamespace.ts`
+- 3-file cycle: `generated/prisma/internal/prismaNamespace.ts -> generated/prisma/models.ts -> generated/prisma/models/Subscription.ts -> generated/prisma/internal/prismaNamespace.ts`
 - 3-file cycle: `generated/prisma-sqlite/internal/prismaNamespace.ts -> generated/prisma-sqlite/models.ts -> generated/prisma-sqlite/models/Ingredient.ts -> generated/prisma-sqlite/internal/prismaNamespace.ts`
-- 3-file cycle: `generated/prisma-sqlite/internal/prismaNamespace.ts -> generated/prisma-sqlite/models.ts -> generated/prisma-sqlite/models/Recipe.ts -> generated/prisma-sqlite/internal/prismaNamespace.ts`
-- 3-file cycle: `generated/prisma-sqlite/internal/prismaNamespace.ts -> generated/prisma-sqlite/models.ts -> generated/prisma-sqlite/models/RecipeIngredient.ts -> generated/prisma-sqlite/internal/prismaNamespace.ts`
+- 3-file cycle: `generated/prisma-sqlite/commonInputTypes.ts -> generated/prisma-sqlite/internal/prismaNamespace.ts -> generated/prisma-sqlite/models.ts -> generated/prisma-sqlite/commonInputTypes.ts`
+- 3-file cycle: `generated/prisma-sqlite/internal/prismaNamespace.ts -> generated/prisma-sqlite/models.ts -> generated/prisma-sqlite/models/Verification.ts -> generated/prisma-sqlite/internal/prismaNamespace.ts`
+- 3-file cycle: `generated/prisma-sqlite/internal/prismaNamespace.ts -> generated/prisma-sqlite/models.ts -> generated/prisma-sqlite/models/Session.ts -> generated/prisma-sqlite/internal/prismaNamespace.ts`
+- 3-file cycle: `generated/prisma-sqlite/internal/prismaNamespace.ts -> generated/prisma-sqlite/models.ts -> generated/prisma-sqlite/models/UserPreferences.ts -> generated/prisma-sqlite/internal/prismaNamespace.ts`
 
 ## Hyperedges (group relationships)
 - **KitchCalc Database CRUD Modules** — ingredient_db_module, recipe_db_module, presentation_db_module, billing_module [INFERRED 0.85]
 - **KitchCalc Agent Ecosystem** — orchestrator_agent, explorer_agent, implementer_agent, reviewer_agent, analyst_agent, synthesizer_agent [EXTRACTED 1.00]
 - **Systemic Bugs Discovered in Consecutive Analyses** — csrf_missing_field_bug, postgresql_sequence_bug, cache_invalidation_bug, css_variable_chain_vulnerability [INFERRED 0.75]
 
-## Communities (521 total, 19 thin omitted)
+## Communities (582 total, 20 thin omitted)
 
 ### Community 0 - "Community 0"
-Cohesion: 0.07
-Nodes (57): @/components/BillingSection.astro, errorEl, errorMsg, string, errorEl, errorMsg, monthlyBtn, string (+49 more)
+Cohesion: 0.10
+Nodes (28): @/components/EmptyState.astro, @/components/RecipeMiniCard.astro, @/components/RecipeStats.astro, a, action, card, clearBtn, closeButtons (+20 more)
 
 ### Community 1 - "Community 1"
 Cohesion: 0.04
@@ -631,8 +692,8 @@ Cohesion: 0.05
 Nodes (75): AggregateSubscription, GetSubscriptionAggregateType, GetSubscriptionGroupByPayload, Prisma__SubscriptionClient, SubscriptionAggregateArgs, SubscriptionCountAggregateInputType, SubscriptionCountAggregateOutputType, SubscriptionCountArgs (+67 more)
 
 ### Community 13 - "Community 13"
-Cohesion: 0.05
-Nodes (70): AccountScalarFieldEnum, IngredientScalarFieldEnum, ModelName, NullsOrder, NullTypes, RecipeIngredientScalarFieldEnum, RecipePresentationScalarFieldEnum, RecipeScalarFieldEnum (+62 more)
+Cohesion: 0.08
+Nodes (49): BigIntFilter, BigIntWithAggregatesFilter, BoolFilter, BoolWithAggregatesFilter, DateTimeFilter, DateTimeNullableFilter, DateTimeNullableWithAggregatesFilter, DateTimeWithAggregatesFilter (+41 more)
 
 ### Community 14 - "Community 14"
 Cohesion: 0.07
@@ -640,15 +701,15 @@ Nodes (29): Adjacent Patterns, Commands Executed, Current Responsive Breakpoints
 
 ### Community 15 - "Community 15"
 Cohesion: 0.06
-Nodes (65): ../../components/PresentationCard.astro, formData, if(), message, nextWidth, parsedPrice, action, aplicarRedondeoUnidadPequena() (+57 more)
+Nodes (66): ../../components/PresentationCard.astro, formData, if(), message, nextWidth, parsedPrice, action, aplicarRedondeoUnidadPequena() (+58 more)
 
 ### Community 16 - "Community 16"
-Cohesion: 0.08
-Nodes (61): @/components/ProductionFinancialSummary.astro, @/components/ProductionIngredientsTable.astro, formatQuantity(), icon, iconSpan, rows, smartQuantity(), table (+53 more)
+Cohesion: 0.09
+Nodes (56): @/components/ProductionFinancialSummary.astro, @/components/ProductionIngredientsTable.astro, formatQuantity(), icon, iconSpan, rows, smartQuantity(), table (+48 more)
 
 ### Community 17 - "Community 17"
-Cohesion: 0.13
-Nodes (49): normalizeCategory(), normalizeDesiredMargin(), normalizeFixedCostsPercentage(), normalizeOptionalText(), normalizePresentationName(), normalizePresentationSalePrice(), normalizePresentationUnits(), normalizeRecipeComment() (+41 more)
+Cohesion: 0.12
+Nodes (52): normalizeCategory(), normalizeDesiredMargin(), normalizeFixedCostsPercentage(), normalizeOptionalText(), normalizePresentationName(), normalizePresentationSalePrice(), normalizePresentationUnits(), normalizeRecipeComment() (+44 more)
 
 ### Community 18 - "Community 18"
 Cohesion: 0.06
@@ -656,19 +717,19 @@ Nodes (61): AggregateRateLimitEntry, BigIntFieldUpdateOperationsInput, GetRateLi
 
 ### Community 19 - "Community 19"
 Cohesion: 0.03
-Nodes (61): Args, At, AtStrict, BatchPayload, Boolean, BooleanFieldRefInput, Decimal, ErrorFormat (+53 more)
+Nodes (121): AccountScalarFieldEnum, Args, At, AtLeast, AtLoose, AtStrict, BatchPayload, Boolean (+113 more)
 
 ### Community 20 - "Community 20"
 Cohesion: 0.06
 Nodes (60): AggregateCacheEntry, CacheEntryAggregateArgs, CacheEntryAvgAggregateInputType, CacheEntryAvgAggregateOutputType, CacheEntryAvgOrderByAggregateInput, CacheEntryCountAggregateInputType, CacheEntryCountAggregateOutputType, CacheEntryCountArgs (+52 more)
 
 ### Community 21 - "Community 21"
-Cohesion: 0.07
-Nodes (48): @/components/FeedbackAlert.astro, getUserPreferences(), isValidAccentColor(), isValidTheme(), upsertUserPreferences(), validAccentColors, validThemes, UserPreferences (+40 more)
+Cohesion: 0.06
+Nodes (64): @/components/FeedbackAlert.astro, countUserIngredients(), countUserRecipes(), UserSubscription, getUserPreferences(), isValidAccentColor(), isValidTheme(), upsertUserPreferences() (+56 more)
 
 ### Community 22 - "Community 22"
-Cohesion: 0.03
-Nodes (60): AccountScalarFieldEnum, AtLeast, AtLoose, Bytes, CheckIsLogLevel, ComputeRaw, DateTimeFieldRefInput, DecimalJsLike (+52 more)
+Cohesion: 0.04
+Nodes (44): 10. Recommendations for Orchestrator, 1. Executive Summary, 2.1 `PresentationCard.astro` → Use `Button` + `Dialog`, 2.2 `UpgradePrompt.astro` → Use `Button` + `Card`, 2.3 `PricingModal.astro` dialog → Use `<Dialog>`, 2.4 `ProductionIngredientsTable.astro` header → Use `SectionHeading`, 2.5 `ProductionRecipeBreakdown.astro` mini stats → Consider `FinancialSummary`, 2.6 `PricingModal.astro` buttons → already mostly using `<Button>` (+36 more)
 
 ### Community 23 - "Community 23"
 Cohesion: 0.08
@@ -707,8 +768,8 @@ Cohesion: 0.04
 Nodes (47): aggregate, Aggregation Operations, Atomic operations, code:typescript (const user = await prisma.user.findUnique({), code:typescript (const users = await prisma.user.createManyAndReturn({), code:typescript (const user = await prisma.user.update({), code:typescript (const post = await prisma.post.update({), code:typescript (const result = await prisma.user.updateMany({) (+39 more)
 
 ### Community 32 - "Community 32"
-Cohesion: 0.13
-Nodes (32): BASIC_FEATURES, cancelSubscription(), countUserIngredients(), countUserRecipes(), createOrUpdateSubscription(), CreateSubscriptionInput, FEATURE_FLAGS, getPlanByStripePriceId() (+24 more)
+Cohesion: 0.16
+Nodes (25): BASIC_FEATURES, cancelSubscription(), createOrUpdateSubscription(), CreateSubscriptionInput, FEATURE_FLAGS, getPlanByStripePriceId(), getPricingPlans(), getStripeCustomerId() (+17 more)
 
 ### Community 33 - "Community 33"
 Cohesion: 0.04
@@ -732,7 +793,7 @@ Nodes (21): AGENTS.md — astro-icon whitelist (lines 112–123), AGENTS.md — 
 
 ### Community 38 - "Community 38"
 Cohesion: 0.10
-Nodes (26): POST(), POST(), ALL(), clientIp(), getUserAuditLog(), logAuditEvent(), auth, extractCookie() (+18 more)
+Nodes (25): POST(), POST(), ALL(), clientIp(), getUserAuditLog(), logAuditEvent(), auth, extractCookie() (+17 more)
 
 ### Community 39 - "Community 39"
 Cohesion: 0.04
@@ -748,7 +809,7 @@ Nodes (42): code:typescript (const user = await prisma.user.findUnique({), code:
 
 ### Community 42 - "Community 42"
 Cohesion: 0.04
-Nodes (59): astro-icon/components, @/components/Header.astro, setupSignOut(), @/components/RecipeGridCard.astro, isOpen, menu, trigger, @/components/RecipeStats.astro (+51 more)
+Nodes (67): astro-icon/components, @/components/BillingSection.astro, errorEl, errorMsg, string, @/components/Header.astro, setupSignOut(), errorEl (+59 more)
 
 ### Community 43 - "Community 43"
 Cohesion: 0.05
@@ -772,11 +833,11 @@ Nodes (38): 1.1 Schema — Agregar columna `category` a `recipes`, 1.2 Migració
 
 ### Community 48 - "Community 48"
 Cohesion: 0.05
-Nodes (41): GetIngredientAggregateType, GetIngredientGroupByPayload, IngredientAggregateArgs, IngredientAvgAggregateInputType, IngredientAvgAggregateOutputType, IngredientCountAggregateInputType, IngredientCountArgs, IngredientCountOrderByAggregateInput (+33 more)
+Nodes (82): AggregateIngredient, FloatFieldUpdateOperationsInput, GetIngredientAggregateType, GetIngredientGroupByPayload, Ingredient$recipeIngredientsArgs, IngredientAggregateArgs, IngredientAvgAggregateInputType, IngredientAvgAggregateOutputType (+74 more)
 
 ### Community 49 - "Community 49"
-Cohesion: 0.05
-Nodes (41): AggregateIngredient, FloatFieldUpdateOperationsInput, Ingredient$recipeIngredientsArgs, IngredientAvgOrderByAggregateInput, IngredientCountAggregateOutputType, IngredientCountOutputTypeDefaultArgs, IngredientCountOutputTypeSelect, IngredientCreateArgs (+33 more)
+Cohesion: 0.12
+Nodes (28): email, errorCode, input, label, overlay, string, verifyEl, content (+20 more)
 
 ### Community 50 - "Community 50"
 Cohesion: 0.05
@@ -847,8 +908,8 @@ Cohesion: 0.05
 Nodes (35): 0) Safety, boundaries, and anti-abuse constraints (MUST FOLLOW), 1.1 Generation mode (default), 1.2 Passive review mode (always on while editing), 1.3 Active audit mode (explicit scan request), 1) Operating modes, 2.1 Untrusted input (treat as attacker-controlled unless proven otherwise), 2.2 State-changing action (frontend perspective), 2.3 Required audit finding format (+27 more)
 
 ### Community 67 - "Community 67"
-Cohesion: 0.08
-Nodes (35): @/components/EmptyState.astro, @/components/IngredientFormFields.astro, @/components/UnitCostDisplay.astro, UNIT_OPTIONS, parseNumberInput(), action, blockedRecipes, errorEl (+27 more)
+Cohesion: 0.09
+Nodes (35): @/components/IngredientFormFields.astro, @/components/UnitCostDisplay.astro, UNIT_OPTIONS, parseNumberInput(), action, blockedRecipes, errorEl, feedbackMessage (+27 more)
 
 ### Community 68 - "Community 68"
 Cohesion: 0.05
@@ -979,8 +1040,8 @@ Cohesion: 0.07
 Nodes (25): 10. Verificación, 1. Arquitectura, 2. Hacer `production-calculator.ts` ejecutable en cliente, 3.1 Estructura del script, 3.2 Hidratación de datos, 3.3 Re-renderizado del DOM, 3. Script client-side en `produccion.astro`, 4. Funciones del DOM a actualizar (+17 more)
 
 ### Community 100 - "Community 100"
-Cohesion: 0.11
-Nodes (21): @/components/landing/CTASection.astro, @/components/landing/FeaturesSection.astro, closeLightbox(), features, imgEl, isDark, openLightbox(), setupFeatureThemeImages() (+13 more)
+Cohesion: 0.43
+Nodes (8): @/components/landing/FeaturesSection.astro, closeLightbox(), features, imgEl, isDark, openLightbox(), setupFeatureThemeImages(), @/components/landing/FeaturesSection.astro
 
 ### Community 101 - "Community 101"
 Cohesion: 0.08
@@ -1168,15 +1229,15 @@ Nodes (18): 1.1 Modelo esperado, 1.2 Tipo en `RecipeWithIngredients`, 1. Requisi
 
 ### Community 147 - "Community 147"
 Cohesion: 0.17
-Nodes (16): Account, AuditLog, CacheEntry, Ingredient, PasswordResetToken, RateLimitEntry, Recipe, RecipeIngredient (+8 more)
+Nodes (17): Account, AuditLog, CacheEntry, Ingredient, PasswordResetToken, RateLimitEntry, Recipe, RecipeIngredient (+9 more)
 
 ### Community 148 - "Community 148"
 Cohesion: 0.18
 Nodes (16): AccountScalarFieldEnum, IngredientScalarFieldEnum, ModelName, NullsOrder, NullTypes, RecipeIngredientScalarFieldEnum, RecipePresentationScalarFieldEnum, RecipeScalarFieldEnum (+8 more)
 
 ### Community 149 - "Community 149"
-Cohesion: 0.09
-Nodes (21): AGENTS.md — KitchCalc (Recetario), Architecture, astro-icon whitelist, Auth, Client-side patterns, Commands, Data invariants, Data layer (+13 more)
+Cohesion: 0.08
+Nodes (25): Agent Report Template, AGENTS.md — KitchCalc (Recetario), Architecture, astro-icon whitelist, Auth, Client-side patterns, Commands, Data invariants (+17 more)
 
 ### Community 150 - "Community 150"
 Cohesion: 0.12
@@ -1291,8 +1352,8 @@ Cohesion: 0.12
 Nodes (17): 8. UI Component Library, Badge, Button, Card, code:astro (---), code:astro (---), code:astro (<Card padding="md" hover>), code:astro (<Input label="Nombre" name="name" required />) (+9 more)
 
 ### Community 178 - "Community 178"
-Cohesion: 0.06
-Nodes (56): Accent Color System, Badge Dark Mode Flash Fix, Billing/Subscription DB Module, Fire-and-forget Cache Invalidation Bug, Cache Module, CSRF Missing Field Bug, CSRF Protection System, CSS Variable Chain Vulnerability (+48 more)
+Cohesion: 0.21
+Nodes (15): Account, AuditLog, CacheEntry, Ingredient, PasswordResetToken, RateLimitEntry, Recipe, RecipeIngredient (+7 more)
 
 ### Community 179 - "Community 179"
 Cohesion: 0.12
@@ -1303,8 +1364,8 @@ Cohesion: 0.12
 Nodes (16): 10. CTA section: semantic text-on-accent token, 1. Pricing toggle: add ARIA roles, 2. "Conocer más" touch target: bump to 44px, 3. Decorative icons: add aria-hidden, 4. Desktop nav links: add focus indicators, 5. Hero-metric cards: replace pattern, 6. Features section: remove icon + heading template, 7. Plan CTA buttons: bump to 44px (+8 more)
 
 ### Community 181 - "Community 181"
-Cohesion: 0.22
-Nodes (8): engines, node, name, packageManager, pnpm, onlyBuiltDependencies, type, version
+Cohesion: 0.12
+Nodes (16): engines, node, name, packageManager, pnpm, onlyBuiltDependencies, scripts, astro (+8 more)
 
 ### Community 182 - "Community 182"
 Cohesion: 0.12
@@ -1911,8 +1972,8 @@ Cohesion: 0.29
 Nodes (6): Bug, Fix, Outcome: Settings Feedback Disappear Bug Fix, Pattern, Root cause, Verification
 
 ### Community 333 - "Community 333"
-Cohesion: 0.29
-Nodes (6): skills, stripe-best-practices, computedHash, source, sourceType, version
+Cohesion: 0.50
+Nodes (4): stripe-best-practices, computedHash, source, sourceType
 
 ### Community 334 - "Community 334"
 Cohesion: 0.29
@@ -2327,8 +2388,8 @@ Cohesion: 0.40
 Nodes (5): Common Rules for Professional UI, Icons & Visual Elements, Interaction (App), Layout & Spacing, Light/Dark Mode Contrast
 
 ### Community 440 - "Community 440"
-Cohesion: 0.36
-Nodes (8): buttonLabel, getButtonLabel(), monthlyBtn, string, syncPrices(), toggle, updateToggleUI(), yearlyBtn
+Cohesion: 0.06
+Nodes (31): A1. `MultiplierControl.astro`, A2. `RecipeHeader.astro`, A3. `RecipeActionsMenu.astro`, A4. `RecipeIngredientList.astro`, A5. `RecipeIngredientEditor.astro`, A6. Extract scripts to `src/lib/recipe-page.ts`, A. `[recipe].astro` (1337 lines → ~500), Acceptance Criteria (+23 more)
 
 ### Community 441 - "Community 441"
 Cohesion: 0.20
@@ -2363,8 +2424,8 @@ Cohesion: 0.50
 Nodes (4): stripe-projects, computedHash, source, sourceType
 
 ### Community 451 - "Community 451"
-Cohesion: 0.50
-Nodes (4): upgrade-stripe, computedHash, source, sourceType
+Cohesion: 0.29
+Nodes (6): skills, upgrade-stripe, computedHash, source, sourceType, version
 
 ### Community 452 - "Community 452"
 Cohesion: 0.50
@@ -2455,8 +2516,8 @@ Cohesion: 0.22
 Nodes (8): Context, Expected Output, Files Involved, Goal, Guardrails, Skills Required, Task: Implement Recipe Header Layout Redesign, Technical Steps
 
 ### Community 474 - "Community 474"
-Cohesion: 0.25
-Nodes (8): scripts, astro, build, dev, format, postinstall, preview, vercel-build
+Cohesion: 0.07
+Nodes (29): 1. Add an explicit "Rework Phase" to orchestrator spec (Highest Priority), 2. Enforce analyst/synthesizer ordering (Critical), 3. Implement "ajuste fast track" with mandatory minimums, 4. Fix phantom task file references (Immediate), 5. Fill the plan retrospective (Immediate), 6. Add "Rework Documentation" check to synthesizer spec, 7. Re-run analyst and synthesizer for this session, Analyst Report: Session Process & Documentation Gaps — Recipe Header Redesign Fix Iterations (+21 more)
 
 ### Community 475 - "Community 475"
 Cohesion: 0.25
@@ -2526,6 +2587,50 @@ Nodes (6): Commands Executed, Files Modified, Implementer Report: Recipe Header 
 Cohesion: 0.40
 Nodes (4): Files Modified, Implementer Report: Remove chevron-left icon from mobile breadcrumb, Steps Executed, Verification
 
+### Community 502 - "Community 502"
+Cohesion: 0.14
+Nodes (21): AccountScalarFieldEnum, IngredientScalarFieldEnum, ModelName, NullsOrder, NullTypes, RecipeIngredientScalarFieldEnum, RecipePresentationScalarFieldEnum, RecipeScalarFieldEnum (+13 more)
+
+### Community 503 - "Community 503"
+Cohesion: 0.10
+Nodes (20): Approach A: Single closer agent with two modes (selected), Approach B: Reduce synthesizer to a thin applier, Approach C: Single-pass closer (no gate), Approaches Considered, Architecture, Auth, Context (from Phase 1 Analysis), Data Layer (Prisma) (+12 more)
+
+### Community 504 - "Community 504"
+Cohesion: 0.11
+Nodes (17): 1. PresentationCard.astro (785 lines), 2. UpgradePrompt.astro (49 lines), 3. PricingModal.astro (359 lines), 4. pricing.astro (353 lines), 5. ProductionIngredientsTable.astro (168 lines), 6. IngredientFormFields.astro (133 lines), 7. BillingSection.astro (354 lines), 8. RecipeGridCard.astro (228 lines) (+9 more)
+
+### Community 505 - "Community 505"
+Cohesion: 0.11
+Nodes (17): Acceptance Criteria Checklist, Astro Check, Build, Checks Executed, Conclusion, Context Understood, Expected vs Actual, Findings (+9 more)
+
+### Community 506 - "Community 506"
+Cohesion: 0.12
+Nodes (16): 1. ConfirmDialog (`src/components/ui/ConfirmDialog.astro`), 2. StatusBanner (`src/components/ui/StatusBanner.astro`), 3. ProgressBar (`src/components/ui/ProgressBar.astro`), 4. SearchInput (`src/components/SearchInput.astro`), 5. BillingPeriodToggle (`src/components/BillingPeriodToggle.astro`), 6. PricingCard (`src/components/PricingCard.astro`), 7. Dialog Binding Utility (`src/lib/dialog-binding.ts`), Acceptance Criteria (+8 more)
+
+### Community 507 - "Community 507"
+Cohesion: 0.12
+Nodes (16): Acceptance Criteria, Analysis Summary, Component API, Design Decisions, Goal, JS Behavior, Menu Items, Plan: Extract Shared RecipeActionsMenu Component (+8 more)
+
+### Community 508 - "Community 508"
+Cohesion: 0.12
+Nodes (16): Astro Check, Checks Executed, Completeness Assessment: 9 Loop Vectors Coverage, Conclusion, Context Understood, Diff Inspection, Edit Verification (grep), ESLint (+8 more)
+
+### Community 509 - "Community 509"
+Cohesion: 0.12
+Nodes (16): Astro Check, Build, Checks Executed, Conclusion, Context Understood, Expected vs Actual, Findings, 🔵 Info (+8 more)
+
+### Community 510 - "Community 510"
+Cohesion: 0.12
+Nodes (16): 1. Load skills, 2. Create `RecipeActionsMenu.astro` (new file), 3. Refactor `[recipe].astro`, 4. Refactor `RecipeGridCard.astro`, 5. Verification, Card variant (`RecipeGridCard.astro`), Commands Executed, Dialogs (+8 more)
+
+### Community 511 - "Community 511"
+Cohesion: 0.12
+Nodes (15): Agent Improvements, Agent Performance, Code Quality, Commands Executed, Conclusion, New Skills Suggested, Observations, Overall Cycle Assessment (+7 more)
+
+### Community 512 - "Community 512"
+Cohesion: 0.13
+Nodes (14): `bindDialogBackdrop` API summary, Commands Executed, Dialog data attributes — complete inventory, Dialog ID usage — complete inventory, Explore Report: Menu Patterns and Consumers, Files Read, Key pattern differences between the two menus, Menu data attributes — complete usage inventory (+6 more)
+
 ### Community 514 - "Community 514"
 Cohesion: 0.67
 Nodes (3): 7. Opportunities & Recommendations, Recommendations, Strategic Opportunities
@@ -2538,10 +2643,206 @@ Nodes (3): 8. Risk Assessment, Competitive Risks, Market Risks
 Cohesion: 0.67
 Nodes (3): 9. Key Insights Summary, Implications for Strategy, Top Insights
 
+### Community 517 - "Community 517"
+Cohesion: 0.13
+Nodes (14): 1. Load skills, 2. Create `RecipeActionsMenu.astro`, 3. Refactor `[recipe].astro`, 4. Refactor `RecipeGridCard.astro`, 5. Verify, Context, Expected Output, Files Involved (+6 more)
+
+### Community 520 - "Community 520"
+Cohesion: 0.13
+Nodes (14): 1. Load skills, 2. Code Review, 3. Build Verification, 4. Visual QA, 5. Edge Cases, Context, Expected Output, Files Involved (+6 more)
+
+### Community 534 - "Community 534"
+Cohesion: 0.14
+Nodes (13): Build Verification, Change Scope, Checks Executed, Conclusion, Context Understood, Expected vs Actual, Findings, ❌ Issues (+5 more)
+
+### Community 535 - "Community 535"
+Cohesion: 0.15
+Nodes (12): Analysis Report: Orchestrator Anti-Loop Guardrails, Codebase Patterns to Follow, Complexity Assessment, Dependencies & Prerequisites, Detected Tech Debt / Potential Refactors, Graphify Findings, Identified Loop Vectors (from prior analysis), Past Related Work (+4 more)
+
+### Community 536 - "Community 536"
+Cohesion: 0.15
+Nodes (12): Analysis Report: Extract Shared RecipeActionsMenu Component, Codebase Patterns to Follow, Complexity Assessment, Current State — Two Different Menu Systems, Dependencies & Prerequisites, Detected Tech Debt / Potential Refactors, Dialogs, Key Differences (+4 more)
+
+### Community 537 - "Community 537"
+Cohesion: 0.15
+Nodes (12): Acceptance Criteria, Analysis Summary, Design Rationale, Goal, Plan: Merge analyst and synthesizer into closer agent, Retrospective, Risks & Mitigations, Task 1: Write closer spec + delete old agents + update orchestrator (+4 more)
+
+### Community 538 - "Community 538"
+Cohesion: 0.15
+Nodes (12): 1. orchestrator.md, 2. implementer.md, 3. reviewer.md, 4. analyst.md, 5. synthesizer.md, Agent Updates, Agent Updates Summary: Documentation Integrity Rules, Files Modified (+4 more)
+
+### Community 539 - "Community 539"
+Cohesion: 0.30
+Nodes (12): Billing/Subscription DB Module, Fire-and-forget Cache Invalidation Bug, Cache Module, fixSequences Script, Ingredient DB Module, OwnerId Multi-tenant Scoping Pattern, PostgreSQL Sequence Desync Bug, Presentation DB Module (+4 more)
+
+### Community 540 - "Community 540"
+Cohesion: 0.30
+Nodes (8): @/lib/auth-client, authClient, getSafeRedirect(), signInWithEmail(), signInWithGoogle(), signUpWithEmail(), signOut(), @/lib/auth-client
+
+### Community 541 - "Community 541"
+Cohesion: 0.25
+Nodes (11): Accent Color System, Badge Dark Mode Flash Fix, CSRF Missing Field Bug, CSRF Protection System, CSS Variable Chain Vulnerability, Feature Flag System (Free/Basic/Pro), Ingredients Astro Page, Layout.astro (App Shell) (+3 more)
+
+### Community 542 - "Community 542"
+Cohesion: 0.18
+Nodes (10): Analysis Report: Closer Agent Merge (analyst + synthesizer → closer), Codebase Patterns to Follow, Complexity Assessment, Dependencies & Prerequisites, Detected Tech Debt / Potential Refactors, Graphify Findings, Past Related Work, Request Summary (+2 more)
+
+### Community 543 - "Community 543"
+Cohesion: 0.18
+Nodes (10): 1. Hard Constraint #8 (line 33), 2. Phase 6b — Rework (lines 387-418), 3. Phase 7 checklist (lines 424-427), 4. Phase 8 output (line 447), 5. Indentation fix (line 383), Changes Applied, Files Modified, Implementer Report: Update orchestrator agent spec with rework phase and documentation rules (+2 more)
+
+### Community 544 - "Community 544"
+Cohesion: 0.27
+Nodes (6): PrismaClient, adapter, prisma, adapter, prisma, verify()
+
+### Community 545 - "Community 545"
+Cohesion: 0.20
+Nodes (9): Context, Expected Output, Files Involved, Files the Subagent May Create or Edit, Goal, Guardrails, Skills Required, Task: Post-Implementation Analysis — RecipeActionsMenu Refactor (+1 more)
+
+### Community 546 - "Community 546"
+Cohesion: 0.20
+Nodes (9): Context, Expected Output, Files Involved, Files the Subagent May Create or Edit, Goal, Guardrails, Skills Required, Task: Explore Menu Patterns and Consumers (+1 more)
+
+### Community 547 - "Community 547"
+Cohesion: 0.22
+Nodes (8): Commands Executed, Files Created, Files Deleted, Files Modified, Implementer Report: Closer Agent Merge (analyst + synthesizer → closer), Issues Encountered, Steps Executed, Verification
+
+### Community 548 - "Community 548"
+Cohesion: 0.43
+Nodes (6): config, decodeBase64AsWasm(), getPrismaClientClass(), LogOptions, PrismaClient, PrismaClientConstructor
+
+### Community 549 - "Community 549"
+Cohesion: 0.25
+Nodes (7): Acceptance Criteria, Goal, Plan: Phase 1 — Quick Wins (Anti-Pattern Fixes), Task 1: Fix backdrop + create loading overlay utility, Task 2: Deduplicate password validation in reset-password, Task 3: Verify all changes, Tasks
+
+### Community 550 - "Community 550"
+Cohesion: 0.43
+Nodes (6): adapter, __dirname, IngredientInput, prisma, RecipeInput, seed()
+
+### Community 551 - "Community 551"
+Cohesion: 0.25
+Nodes (7): Commands Executed, Files Created, Files Modified, Implementer Report: Orchestrator Anti-Loop Guardrails, Issues, Steps Executed, Verification
+
+### Community 552 - "Community 552"
+Cohesion: 0.25
+Nodes (7): Approved Subset Applied, Changes Made, Closer Application Report, Commands Executed, Conclusion, File Modified: `AGENTS.md`, Verification
+
+### Community 553 - "Community 553"
+Cohesion: 0.29
+Nodes (6): Analysis Report: Fix 1 — Dropdown Menu Not Opening, Files Affected, Request Summary, Root Cause, Target Location, Verification Criteria
+
+### Community 554 - "Community 554"
+Cohesion: 0.29
+Nodes (6): Analysis Report: Fix 2 — Reposition Menu Button & Reorder Mobile Mezclas, Files Affected, Request Summary, Root Cause, Target Location, Verification Criteria
+
+### Community 555 - "Community 555"
+Cohesion: 0.29
+Nodes (6): Analysis Report: Fix 3 — Mobile Row Layout (Title + Menu Same Row), Files Affected, Request Summary, Root Cause, Target Location, Verification Criteria
+
+### Community 556 - "Community 556"
+Cohesion: 0.29
+Nodes (6): Analysis Report: Fix 4 — Right-Align Edit Mode Buttons on Mobile, Files Affected, Request Summary, Root Cause, Target Location, Verification Criteria
+
+### Community 557 - "Community 557"
+Cohesion: 0.29
+Nodes (6): Commands Executed, Files Modified, Implementer Report: Create Phase 2 Plan File, Issues Encountered, Steps Executed, Verification
+
+### Community 558 - "Community 558"
+Cohesion: 0.29
+Nodes (6): Commands Executed, Files Modified, Implementer Report: Right-align edit buttons on mobile, Issues Encountered, Steps Executed, Verification
+
+### Community 559 - "Community 559"
+Cohesion: 0.29
+Nodes (6): Commands Executed, Files Modified, Implementer Report: Closer permission frontmatter fix, Issues, Steps Executed, Verification
+
+### Community 560 - "Community 560"
+Cohesion: 0.29
+Nodes (6): Commands Executed, Files Modified, Implementer Report: Fix mobile layout — title and menu button on same row, Issues Encountered, Steps Executed, Verification
+
+### Community 561 - "Community 561"
+Cohesion: 0.29
+Nodes (6): Commands Executed, Files Modified, Implementer Report: Reorder Mobile Mezclas Row, Issues Encountered, Steps Executed, Verification
+
+### Community 562 - "Community 562"
+Cohesion: 0.29
+Nodes (6): Commands Executed, Files Modified, Implementer Report: Update analyst agent spec with rework documentation verification, Issues Encountered, Steps Executed, Verification
+
+### Community 563 - "Community 563"
+Cohesion: 0.29
+Nodes (6): Commands Executed, Files Modified, Implementer Report: Update Implementer Agent Spec with Documentation Integrity Rules, Issues Encountered, Steps Executed, Verification
+
+### Community 564 - "Community 564"
+Cohesion: 0.29
+Nodes (6): Commands Executed, Files Modified, Implementer Report: Update reviewer agent spec, Issues Encountered, Steps Executed, Verification
+
+### Community 565 - "Community 565"
+Cohesion: 0.29
+Nodes (6): Commands Executed, Files Modified, Implementer Report: Loading Overlay Extraction & Backdrop Fix, Issues Encountered, Steps Executed, Verification
+
+### Community 566 - "Community 566"
+Cohesion: 0.33
+Nodes (5): Expected Output, Goal, Guardrails, Task: Fix Dropdown Menu Not Opening, Technical Steps
+
+### Community 567 - "Community 567"
+Cohesion: 0.33
+Nodes (5): Files Modified, Implementer Report: Fix 1 — Retroactive Documentation, Issues Encountered, Steps Executed, Verification
+
+### Community 568 - "Community 568"
+Cohesion: 0.33
+Nodes (5): Expected Output, Goal, Guardrails, Task: Reposition Menu Button & Reorder Mobile Mezclas, Technical Steps
+
+### Community 569 - "Community 569"
+Cohesion: 0.33
+Nodes (5): Expected Output, Goal, Guardrails, Task: Fix Mobile Row Layout — Title + Menu Same Row, Technical Steps
+
+### Community 570 - "Community 570"
+Cohesion: 0.33
+Nodes (5): Expected Output, Goal, Guardrails, Task: Right-Align Edit Mode Buttons on Mobile, Technical Steps
+
+### Community 571 - "Community 571"
+Cohesion: 0.33
+Nodes (5): Commands Executed, Files Modified, Implementer Report: Update synthesizer agent spec with rework documentation verification, Steps Executed, Verification
+
+### Community 572 - "Community 572"
+Cohesion: 0.40
+Nodes (4): Checks Executed, Conclusion, Expected vs Actual, Validation: Fix 1 — Dropdown Menu Not Opening
+
+### Community 573 - "Community 573"
+Cohesion: 0.40
+Nodes (4): Files Modified, Implementer Report: Fix 2 — Retroactive Documentation, Steps Executed, Verification
+
+### Community 574 - "Community 574"
+Cohesion: 0.40
+Nodes (4): Checks Executed, Conclusion, Expected vs Actual, Validation: Fix 2 — Reposition Menu Button & Reorder Mobile Mezclas
+
+### Community 575 - "Community 575"
+Cohesion: 0.40
+Nodes (4): Files Created, Notes, Retroactive Report: Fix 3 — Mobile Row Layout, Summary
+
+### Community 576 - "Community 576"
+Cohesion: 0.40
+Nodes (4): Checks Executed, Conclusion, Expected vs Actual, Validation: Fix 3 — Mobile Row Layout
+
+### Community 577 - "Community 577"
+Cohesion: 0.40
+Nodes (4): Files Created, Notes, Retroactive Report: Fix 4 — Right-Align Edit Mode Buttons on Mobile, Summary
+
+### Community 578 - "Community 578"
+Cohesion: 0.40
+Nodes (4): Checks Executed, Conclusion, Expected vs Actual, Validation: Fix 4 — Right-Align Edit Mode Buttons
+
+### Community 579 - "Community 579"
+Cohesion: 0.40
+Nodes (4): Files Created, Implementer Report: Agent Updates Summary Document, Steps Executed, Verification
+
+### Community 580 - "Community 580"
+Cohesion: 0.50
+Nodes (3): Quick Review: Dropdown Fix, Status, Verification
+
 ## Knowledge Gaps
-- **3691 isolated node(s):** `role`, `displayName`, `canonical`, `tonalRamp`, `role` (+3686 more)
+- **4161 isolated node(s):** `role`, `displayName`, `canonical`, `tonalRamp`, `role` (+4156 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **19 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **20 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
@@ -2550,13 +2851,13 @@ _Questions this graph is uniquely positioned to answer:_
   _High betweenness centrality (0.003) - this node is a cross-community bridge._
 - **Why does `dependencies` connect `Community 214` to `Community 181`?**
   _High betweenness centrality (0.003) - this node is a cross-community bridge._
-- **Why does `scripts` connect `Community 474` to `Community 181`?**
-  _High betweenness centrality (0.002) - this node is a cross-community bridge._
 - **What connects `role`, `displayName`, `canonical` to the rest of the system?**
-  _3691 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _4161 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 0` be split into smaller, more focused modules?**
-  _Cohesion score 0.06923076923076923 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.10483870967741936 - nodes in this community are weakly interconnected._
 - **Should `Community 1` be split into smaller, more focused modules?**
   _Cohesion score 0.036690896503980615 - nodes in this community are weakly interconnected._
 - **Should `Community 2` be split into smaller, more focused modules?**
+  _Cohesion score 0.039991754277468566 - nodes in this community are weakly interconnected._
+- **Should `Community 3` be split into smaller, more focused modules?**
   _Cohesion score 0.039991754277468566 - nodes in this community are weakly interconnected._
