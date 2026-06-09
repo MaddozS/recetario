@@ -53,6 +53,38 @@ When exploring a target area, go beyond the primary files. Read adjacent code to
 6. **Auth**: Middleware checks, session handling, subscription gating, feature flags
 7. **UI conventions**: Component usage from `@/components/ui`, semantic tokens, form patterns
 
+## Parallel Code Paths Identification
+
+When exploring a target area, identify ALL sibling functions, components, or routes that might need similar changes. The orchestrator must NOT write "all X entry points" — it must enumerate them explicitly.
+
+**What to look for:**
+
+1. **Multiple pages with similar structure**: If the feature touches `/recipes`, check if `/ingredients`, `/produccion`, or other pages need similar changes.
+2. **Server + client pairs**: If the feature touches `src/lib/auth.ts` (server), check if `src/lib/auth-client.ts` (client) needs updates.
+3. **Create + update + delete**: If the feature touches a create operation, check if update and delete operations need similar changes.
+4. **Desktop + mobile**: If the feature touches a desktop layout, check if mobile layout needs updates.
+5. **Multiple components using same pattern**: If the feature touches one `RecipeCard`, check if other card components need similar changes.
+
+**How to report:**
+
+In your report, list ALL sibling functions/components by name and file path. Example:
+
+```markdown
+## Parallel Code Paths Identified
+
+If the feature modifies ingredient cost calculation, the following entry points need updates:
+
+1. `src/pages/recipes/[id].astro` — recipe detail page (computes totalCost)
+2. `src/pages/recipes/index.astro` — recipe list page (shows cost per recipe)
+3. `src/components/RecipeCard.astro` — card component (shows cost preview)
+4. `src/lib/db/recipes.ts` — `getRecipeWithCost()` function
+5. `src/lib/db/ingredients.ts` — `getIngredientCost()` helper
+
+All 5 entry points must be updated to use the new cost calculation logic.
+```
+
+**Why this matters:** The orchestrator uses your report to write task files. If you say "update all pages that show cost", the orchestrator will copy that vague instruction. If you enumerate the 5 specific files, the orchestrator will list them explicitly in the task file, and the implementer will not miss any.
+
 ## Astro-Specific Exploration Playbook
 
 - **Page exploration**: locate route in `src/pages/`, identify layout used, middleware guards, data fetching (Prisma queries in frontmatter), auth checks (`Astro.locals.session`)
@@ -87,6 +119,11 @@ Task File: [link to task file]
 
 ## Tech Debt / Potential Refactors
 - [Issues in adjacent code]
+
+## Parallel Code Paths Identified
+- [Sibling function/component 1]: [file path + brief description]
+- [Sibling function/component 2]: [file path + brief description]
+- [Total count]: [N entry points that need similar changes]
 
 ## Commands Executed
 - [glob/grep/read and their purpose]

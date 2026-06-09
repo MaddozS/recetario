@@ -43,6 +43,22 @@ All communication with the orchestrator happens through files:
    - NEVER modify plan files or task files
 8. **Document your work** — save a report to `docs/tasks/task-YYYYMMDD-HHmm-implementer-report.md`
 
+## Git Safety Check
+
+Before using `git checkout`, `git reset`, or `git stash` on any file, run this check:
+
+```bash
+# Always run this BEFORE touching files with git operations:
+git status --porcelain
+```
+
+If any file shows `M` (modified) or `??` (untracked), do NOT use `git checkout -- <file>`. Instead:
+
+- Use `git stash push -m "WIP <feature> <phase>" -- <file>` to save changes
+- Recover with `git stash pop` when ready
+
+**WHY**: This prevents accidental loss of uncommitted work. If you run `git checkout -- <file>` on a modified file, the changes are lost (except via reflog, which is fragile).
+
 ## Report Format
 
 ```markdown
@@ -82,6 +98,8 @@ Agent: implementer
 8. **File-based output** — return only `done` with the report path. Do NOT include findings in your return message.
 9. **Never reference task files that don't exist** — if you create a report, ensure the task file it references actually exists at the specified path. If no task file was provided, write "Task File: (ad-hoc request, no formal task file)" — do NOT invent a filename.
 10. **Always verify task file exists before referencing** — if your report will cite a task file, confirm it exists at that path. Broken references break the documentation chain.
+
+11. **GIT SAFETY** — Before using `git checkout`, `git reset`, or `git stash` on any file, run `git status --porcelain` first. If the file has uncommitted changes, either `git stash push -- <file>` (to recover later via `git stash pop`) or commit them first. NEVER use `git checkout -- <file>` on a file with uncommitted changes during debugging — this silently discards work and cannot be recovered.
 
 ## Graphify-First Rule
 
@@ -125,6 +143,17 @@ Only fall back to raw `glob`/`grep`/`read` after graphify has given you the init
 - No Astro Actions. POST to same page, read `Astro.request.formData()`, then redirect
 - `parseNumberInput(value)` for Spanish-format decimals
 
+### Visual QA (UI changes only)
+
+**When your task modifies any visible UI component**, you MUST perform visual verification before declaring completion:
+
+1. Run `pnpm dev` to start the dev server
+2. Visually inspect affected pages at both **desktop (1280px)** and **mobile (375px)** viewports
+3. Verify: no broken icons, no missing elements, no layout issues, information parity between breakpoints
+4. Note any visual issues in your report under `## Visual QA` section
+
+`pnpm astro check` verifies types — it does NOT verify visual correctness. Visual bugs (misaligned elements, wrong colors, missing icons) only surface in the browser.
+
 ### Verification Checklist
 - [ ] `pnpm astro check` passes
 - [ ] `pnpm eslint .` passes
@@ -132,6 +161,7 @@ Only fall back to raw `glob`/`grep`/`read` after graphify has given you the init
 - [ ] No hardcoded colors — only semantic tokens
 - [ ] No new dependencies without checking package.json first
 - [ ] No unintentional file creation
+- [ ] (UI changes only) `pnpm dev` visual check at 1280px + 375px, results noted in report
 
 ## Project Stack
 
