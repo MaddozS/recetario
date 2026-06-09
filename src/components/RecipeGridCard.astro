@@ -1,5 +1,5 @@
 ---
-import { Icon } from "astro-icon/components";
+import RecipeActionsMenu from "./RecipeActionsMenu.astro";
 import { Badge } from "@/components/ui";
 
 interface Props {
@@ -17,7 +17,6 @@ const {
   ingredientCount,
   canDuplicate = false,
 } = Astro.props;
-const cardMenuId = `card-menu-${id}`;
 ---
 
 <div class="card-with-menu relative" data-card-id={id}>
@@ -50,86 +49,13 @@ const cardMenuId = `card-menu-${id}`;
     </div>
   </a>
 
-  <button
-    type="button"
-    data-card-menu-trigger={cardMenuId}
-    class="text-subtle-foreground hover:bg-muted hover:text-secondary-foreground focus-visible:ring-accent-500 absolute top-3 right-3 z-10 inline-flex min-h-11 min-w-11 cursor-pointer items-center justify-center rounded-lg transition-all focus:outline-none focus-visible:ring-2"
-    aria-label="Acciones"
-    aria-haspopup="true"
-    aria-expanded="false"
-  >
-    <Icon name="lucide:ellipsis-vertical" size={16} />
-  </button>
-
-  <div
-    id={cardMenuId}
-    data-card-menu
-    class="border-border bg-card absolute top-11 right-3 z-30 min-w-40 rounded-xl border p-1 shadow-lg"
-    role="menu"
-  >
-    <a
-      href={`/recipes/${id}?edit=true`}
-      class="text-muted-foreground hover:bg-accent-50 hover:text-accent-600 flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors"
-      role="menuitem"
-    >
-      <svg
-        width="14"
-        height="14"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        ><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"></path><path
-          d="m15 5 4 4"></path></svg
-      >
-      Editar
-    </a>
-    {
-      canDuplicate && (
-        <>
-          <form
-            method="POST"
-            id={`duplicate-form-${id}`}
-            data-astro-reload
-            class="hidden"
-          >
-            <input type="hidden" name="action" value="duplicate_recipe" />
-            <input type="hidden" name="recipeId" value={id} />
-            <input
-              type="hidden"
-              name="_csrf"
-              value={Astro.locals.csrfToken || ""}
-            />
-          </form>
-          <button
-            type="submit"
-            form={`duplicate-form-${id}`}
-            class="text-muted-foreground hover:bg-accent-50 hover:text-accent-600 flex w-full cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors"
-            role="menuitem"
-          >
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <>
-                <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-              </>
-            </svg>
-            Duplicar
-          </button>
-        </>
-      )
-    }
-  </div>
+  <RecipeActionsMenu
+    recipeId={id}
+    editHref={`/recipes/${id}?edit=true`}
+    canDuplicate={canDuplicate}
+    canDelete={false}
+    variant="card"
+  />
 </div>
 
 <style define:vars={{}}>
@@ -149,80 +75,5 @@ const cardMenuId = `card-menu-${id}`;
       animation-delay: calc(var(--stagger-index, 0) * 35ms);
     }
   }
-
-  [data-card-menu] {
-    opacity: 0;
-    transform: scale(0.95);
-    pointer-events: none;
-    transition:
-      opacity 150ms var(--ease-out),
-      transform 150ms var(--ease-out);
-  }
-
-  [data-card-menu].card-menu-open {
-    opacity: 1;
-    transform: scale(1);
-    pointer-events: auto;
-  }
 </style>
 
-<script>
-  function setupCardMenus() {
-    const triggers = document.querySelectorAll(
-      "[data-card-menu-trigger]",
-    ) as NodeListOf<HTMLElement>;
-
-    function closeAllMenus() {
-      (
-        document.querySelectorAll("[data-card-menu]") as NodeListOf<HTMLElement>
-      ).forEach((menu) => {
-        menu.classList.remove("card-menu-open");
-        const trigger = document.querySelector(
-          `[data-card-menu-trigger="${menu.id}"]`,
-        );
-        if (trigger) {
-          trigger.setAttribute("aria-expanded", "false");
-        }
-      });
-    }
-
-    triggers.forEach((trigger) => {
-      if (trigger.dataset.cardMenuBound === "1") return;
-      trigger.dataset.cardMenuBound = "1";
-
-      trigger.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-
-        const menuId = trigger.dataset.cardMenuTrigger;
-        if (!menuId) return;
-        const menu = document.getElementById(menuId);
-        if (!menu) return;
-
-        const isOpen = menu.classList.contains("card-menu-open");
-
-        closeAllMenus();
-
-        if (!isOpen) {
-          menu.classList.add("card-menu-open");
-          trigger.setAttribute("aria-expanded", "true");
-        }
-      });
-    });
-
-    document.addEventListener("click", (e) => {
-      const target = e.target;
-      if (
-        target instanceof HTMLElement &&
-        !target.closest("[data-card-menu-trigger]") &&
-        !target.closest("[data-card-menu]")
-      ) {
-        closeAllMenus();
-      }
-    });
-  }
-
-  document.addEventListener("astro:page-load", setupCardMenus);
-  document.addEventListener("astro:after-swap", setupCardMenus);
-  setupCardMenus();
-</script>

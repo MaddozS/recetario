@@ -1,5 +1,6 @@
 ---
 import { Icon } from "astro-icon/components";
+import { Button } from "@/components/ui";
 
 interface Props {
   id: number;
@@ -58,32 +59,23 @@ const unitProfit = defaultSalePrice - unitCost;
         readonly
       />
       <div class="flex shrink-0 items-center gap-1">
-        <button
-          type="button"
-          class="delete-btn text-danger hover:text-danger hover:bg-danger-bg hidden min-h-11 min-w-11 items-center justify-center rounded-full bg-transparent transition-colors"
-          aria-label="Eliminar presentación"
+        <Button
+          variant="iconDanger"
+          iconOnly
+          icon="trash-2"
+          class="delete-btn hidden"
+          ariaLabel="Eliminar presentación"
           title="Eliminar"
-        >
-          <Icon name="lucide:trash-2" size={16} />
-        </button>
-        <button
-          type="button"
-          class="edit-btn text-subtle-foreground hover:text-accent-600 hover:bg-accent-50 flex min-h-11 min-w-11 items-center justify-center rounded-full bg-transparent transition-colors"
-          aria-label="Editar presentación"
+        />
+        <Button
+          variant="iconAccent"
+          iconOnly
+          icon="pencil"
+          class="edit-btn"
+          ariaLabel="Editar presentación"
           aria-pressed="false"
           title="Editar"
-        >
-          <Icon
-            name="lucide:pencil"
-            size={16}
-            class="edit-icon edit-icon-pencil"
-          />
-          <Icon
-            name="lucide:x"
-            size={16}
-            class="edit-icon edit-icon-cancel hidden"
-          />
-        </button>
+        />
       </div>
     </div>
 
@@ -226,7 +218,7 @@ const unitProfit = defaultSalePrice - unitCost;
 
   <dialog
     data-animated
-    class="delete-dialog fixed inset-0 m-auto w-[calc(100vw-2rem)] max-w-md rounded-3xl p-0 backdrop:bg-slate-900/50"
+    class="delete-dialog fixed inset-0 m-auto w-[calc(100vw-2rem)] max-w-md rounded-3xl p-0 backdrop:bg-backdrop/50"
   >
     <div class="border-border bg-card rounded-3xl border p-6 shadow-2xl">
       <div class="flex items-start gap-3">
@@ -627,11 +619,6 @@ const unitProfit = defaultSalePrice - unitCost;
           this.btnEdit.setAttribute("title", "Cancelar");
           this.btnEdit.setAttribute("aria-label", "Cancelar edición");
           this.btnEdit.setAttribute("aria-pressed", "true");
-
-          const pencilIcon = this.btnEdit.querySelector(".edit-icon-pencil");
-          const cancelIcon = this.btnEdit.querySelector(".edit-icon-cancel");
-          pencilIcon?.classList.add("hidden");
-          cancelIcon?.classList.remove("hidden");
         }
 
         if (this.btnDelete) {
@@ -669,11 +656,6 @@ const unitProfit = defaultSalePrice - unitCost;
           this.btnEdit.setAttribute("title", "Editar");
           this.btnEdit.setAttribute("aria-label", "Editar presentación");
           this.btnEdit.setAttribute("aria-pressed", "false");
-
-          const pencilIcon = this.btnEdit.querySelector(".edit-icon-pencil");
-          const cancelIcon = this.btnEdit.querySelector(".edit-icon-cancel");
-          pencilIcon?.classList.remove("hidden");
-          cancelIcon?.classList.add("hidden");
         }
 
         if (this.btnDelete) {

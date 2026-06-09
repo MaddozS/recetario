@@ -2,8 +2,9 @@
 import { Icon } from "astro-icon/components";
 
 interface Props {
-  variant?: "primary" | "secondary" | "danger" | "ghost";
+  variant?: "primary" | "secondary" | "danger" | "ghost" | "iconAccent" | "iconDanger";
   size?: "sm" | "md" | "lg";
+  iconOnly?: boolean;
   href?: string;
   icon?: string;
   type?: "button" | "submit";
@@ -18,27 +19,62 @@ interface Props {
 const {
   variant = "primary",
   size = "md",
+  iconOnly = false,
   href,
   icon,
   type = "button",
   disabled = false,
   loading = false,
   id,
-  ariaLabel,
+  ariaLabel: rawAriaLabel,
   class: extraClass = "",
   ...attrs
 } = Astro.props;
 
+// Runtime validation: iconAccent/iconDanger require iconOnly
+let resolvedVariant = variant;
+if ((variant === "iconAccent" || variant === "iconDanger") && !iconOnly) {
+  console.warn(
+    `Button: variant "${variant}" requires iconOnly=true. Falling back to "ghost".`,
+  );
+  resolvedVariant = "ghost";
+}
+
 const base =
   "inline-flex items-center justify-center gap-2 font-bold transition-colors focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-70 cursor-pointer";
 
-const variantClasses: Record<string, string> = {
-  primary: "bg-accent-600 text-white hover:bg-accent-700 rounded-xl shadow-sm",
-  secondary:
-    "border border-border bg-card text-muted-foreground hover:bg-background rounded-xl",
-  danger: "bg-danger-solid text-white hover:bg-danger-hover rounded-xl",
-  ghost:
-    "text-muted-foreground hover:bg-muted hover:text-secondary-foreground rounded-xl",
+const variantClasses: Record<
+  string,
+  { solid: string; iconOnly: string }
+> = {
+  primary: {
+    solid: "bg-accent-600 text-white hover:bg-accent-700 rounded-xl shadow-sm",
+    iconOnly: "bg-accent-600 text-white hover:bg-accent-700 rounded-full",
+  },
+  secondary: {
+    solid:
+      "border border-border bg-card text-muted-foreground hover:bg-background rounded-xl",
+    iconOnly:
+      "border border-border bg-card text-muted-foreground hover:bg-background rounded-full",
+  },
+  danger: {
+    solid: "bg-danger-solid text-white hover:bg-danger-hover rounded-xl",
+    iconOnly: "bg-danger-solid text-white hover:bg-danger-hover rounded-full",
+  },
+  ghost: {
+    solid:
+      "text-muted-foreground hover:bg-muted hover:text-secondary-foreground rounded-xl",
+    iconOnly:
+      "text-muted-foreground hover:bg-muted hover:text-secondary-foreground rounded-full",
+  },
+  iconAccent: {
+    solid: "text-muted-foreground hover:bg-muted rounded-xl",
+    iconOnly: "text-accent-600 hover:bg-accent-50 rounded-full",
+  },
+  iconDanger: {
+    solid: "text-muted-foreground hover:bg-muted rounded-xl",
+    iconOnly: "text-danger hover:bg-danger-bg rounded-full",
+  },
 };
 
 const sizeClasses: Record<string, string> = {
@@ -47,7 +83,7 @@ const sizeClasses: Record<string, string> = {
   lg: "min-h-12 px-6 py-3.5 text-sm",
 };
 
-const paddingOnly = variant === "ghost" ? "px-2 py-2" : "";
+const iconSize = iconOnly ? 14 : size === "sm" ? 14 : size === "lg" ? 18 : 16;
 ---
 
 {
@@ -55,20 +91,20 @@ const paddingOnly = variant === "ghost" ? "px-2 py-2" : "";
     <a
       href={href}
       id={id}
-      aria-label={ariaLabel}
-      class={`${base} ${variantClasses[variant]} ${sizeClasses[size]} ${paddingOnly} ${extraClass}`}
+      aria-label={rawAriaLabel}
+      class={`${base} ${variantClasses[resolvedVariant][iconOnly ? "iconOnly" : "solid"]} ${iconOnly ? "min-h-10 min-w-10 p-2" : sizeClasses[size]} ${extraClass}`}
       {...attrs}
     >
-      {icon && <Icon name={`lucide:${icon}`} size={size === "sm" ? 14 : 16} />}
-      <slot />
+      {icon && <Icon name={`lucide:${icon}`} size={iconSize} />}
+      {!iconOnly && <slot />}
     </a>
   ) : (
     <button
       type={type}
       id={id}
-      aria-label={ariaLabel}
+      aria-label={rawAriaLabel}
       disabled={disabled || loading}
-      class={`${base} ${variantClasses[variant]} ${sizeClasses[size]} ${paddingOnly} ${extraClass}`}
+      class={`${base} ${variantClasses[resolvedVariant][iconOnly ? "iconOnly" : "solid"]} ${iconOnly ? "min-h-10 min-w-10 p-2" : sizeClasses[size]} ${extraClass}`}
       aria-busy={loading ? "true" : undefined}
       {...attrs}
     >
@@ -88,9 +124,9 @@ const paddingOnly = variant === "ghost" ? "px-2 py-2" : "";
           <path d="M21 12a9 9 0 1 1-6.219-8.56" />
         </svg>
       ) : icon ? (
-        <Icon name={`lucide:${icon}`} size={size === "sm" ? 14 : 16} />
+        <Icon name={`lucide:${icon}`} size={iconSize} />
       ) : null}
-      <slot />
+      {!iconOnly && <slot />}
     </button>
   )
 }
