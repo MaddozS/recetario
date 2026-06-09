@@ -448,26 +448,24 @@ void redirectWithFeedback;
                       <td class="px-6 py-5 text-right">
                         <div class="flex items-center justify-end gap-2">
                           <Button
-                            variant="ghost"
+                            variant="iconAccent"
+                            iconOnly
                             icon="pencil"
-                            size="sm"
-                            class="text-subtle-foreground hover:bg-accent-50 hover:text-accent-600 min-h-11 min-w-11 rounded-full"
                             data-edit-trigger
                             data-ingredient-payload={ingredientPayload}
-                            aria-label="Editar ingrediente"
+                            ariaLabel="Editar ingrediente"
                           />
 
                           <Button
-                            variant="ghost"
+                            variant="iconDanger"
+                            iconOnly
                             icon="trash-2"
-                            size="sm"
-                            class="text-danger hover:bg-danger-bg hover:text-danger min-h-11 min-w-11 rounded-full"
                             title={
                               usedRecipes.length > 0
                                 ? "Ingrediente en uso"
                                 : "Eliminar ingrediente"
                             }
-                            aria-label={
+                            ariaLabel={
                               usedRecipes.length > 0
                                 ? "Ingrediente en uso"
                                 : "Eliminar ingrediente"
@@ -798,6 +796,7 @@ void redirectWithFeedback;
 
     import { formatCurrency } from "@/lib/formatters";
     import { bindDialogBackdrop } from "@/lib/dialog";
+    import { showLoadingOverlay } from "@/lib/loading-overlay";
 
     const syncIngredientFormState = (form: HTMLElement) => {
       const nameInput = form.querySelector('[name="name"]');
@@ -1103,15 +1102,7 @@ void redirectWithFeedback;
         btn.disabled = true;
         btn.classList.add("opacity-60", "pointer-events-none");
 
-        const overlay = document.createElement("div");
-        overlay.style.cssText =
-          "position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.2);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(2px)";
-        overlay.innerHTML = `<div style="background:var(--color-card,#fff);border-radius:1rem;padding:2rem 2.5rem;display:flex;flex-direction:column;align-items:center;gap:0.75rem;box-shadow:0 20px 60px rgba(0,0,0,0.15)">
-          <svg style="animation:sp 0.7s linear infinite;width:28px;height:28px;color:var(--color-accent-600,#4f46e5)" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
-          <span style="font-size:0.875rem;font-weight:600;color:var(--color-foreground,#0f172a)">Guardando\u2026</span>
-          </div>`;
-        document.body.appendChild(overlay);
-        document.body.style.overflow = "hidden";
+        showLoadingOverlay("Guardando…");
       });
     });
 

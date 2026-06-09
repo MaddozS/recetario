@@ -219,6 +219,7 @@ if (Astro.locals.session) return Astro.redirect("/recipes");
     getSafeRedirect,
   } from "@/lib/sign-in";
   import { setupPasswordToggles } from "@/lib/password-toggle";
+  import { showLoadingOverlay } from "@/lib/loading-overlay";
   import { validatePassword, getRuleResults } from "@/lib/password-validation";
 
   function setupSignUp() {
@@ -295,22 +296,15 @@ if (Astro.locals.session) return Astro.redirect("/recipes");
         submitBtn.textContent = "Creando cuenta...";
         if (googleBtn) (googleBtn as HTMLButtonElement).disabled = true;
 
-        const overlay = document.createElement("div");
-        overlay.style.cssText =
-          "position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.2);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(2px)";
-        overlay.innerHTML = `<div style="background:var(--color-card,#fff);border-radius:1rem;padding:2rem 2.5rem;display:flex;flex-direction:column;align-items:center;gap:0.75rem;box-shadow:0 20px 60px rgba(0,0,0,0.15)">
-          <svg style="animation:sp 0.7s linear infinite;width:28px;height:28px;color:var(--color-accent-600,#4f46e5)" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
-          <span style="font-size:0.875rem;font-weight:600;color:var(--color-foreground,#0f172a)">Creando cuenta\u2026</span>
-          </div>`;
-        document.body.appendChild(overlay);
+        const removeOverlay = showLoadingOverlay("Creando cuenta…");
 
         try {
           await signUpWithEmail(email, password, firstName, lastName);
-          overlay.remove();
+          removeOverlay();
           sessionStorage.setItem("kitchcalc:signup_email", email);
           showVerificationView(email);
         } catch (err: unknown) {
-          overlay.remove();
+          removeOverlay();
           showError(
             (err as { message?: string })?.message ||
               "Error al crear la cuenta.",
@@ -384,20 +378,13 @@ if (Astro.locals.session) return Astro.redirect("/recipes");
         if (label) label.textContent = "Redirigiendo...";
         if (submitBtn) submitBtn.disabled = true;
 
-        const overlay = document.createElement("div");
-        overlay.style.cssText =
-          "position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.2);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(2px)";
-        overlay.innerHTML = `<div style="background:var(--color-card,#fff);border-radius:1rem;padding:2rem 2.5rem;display:flex;flex-direction:column;align-items:center;gap:0.75rem;box-shadow:0 20px 60px rgba(0,0,0,0.15)">
-          <svg style="animation:sp 0.7s linear infinite;width:28px;height:28px;color:var(--color-accent-600,#4f46e5)" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
-          <span style="font-size:0.875rem;font-weight:600;color:var(--color-foreground,#0f172a)">Creando cuenta\u2026</span>
-          </div>`;
-        document.body.appendChild(overlay);
+        const removeOverlay = showLoadingOverlay("Creando cuenta…");
 
         try {
           const redirect = getSafeRedirect();
           await signInWithGoogle(redirect);
         } catch (err: unknown) {
-          overlay.remove();
+          removeOverlay();
           btn.disabled = false;
           btn.classList.remove("opacity-60", "pointer-events-none");
           if (label) label.textContent = "Continuar con Google";
