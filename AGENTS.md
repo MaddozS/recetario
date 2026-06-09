@@ -148,6 +148,17 @@ Any task that modifies visible UI components requires visual verification before
 
 This goes beyond `pnpm astro check` — that only verifies types, not visual correctness.
 
+## Process Conventions
+
+### Task File Convention
+Plans reference task files — they don't embed them. Each subagent task gets its own file at `docs/tasks/task-YYYYMMDD-HHmm-<agent>.md`. The plan's Tasks section lists summaries; the task file has full technical steps.
+
+### Agent Report Template
+All agent reports (implementer, reviewer, explorer) must include a `## Skills Used` section listing which skills were loaded during execution, or `none` if no skills were used. This closes the feedback loop for skill effectiveness evaluation.
+
+### Parallel Execution Notes
+When a plan dispatches 2+ tasks in parallel, include a "Parallel Execution Notes" section listing any files touched by multiple tasks. State whether the overlap is expected conflict-free (different sections of the same file) or needs coordination.
+
 ## Troubleshooting
 
 ### `exports is not defined` at startup (cookie package)
