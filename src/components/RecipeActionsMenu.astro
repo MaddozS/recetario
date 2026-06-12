@@ -1,0 +1,366 @@
+---
+import { Icon } from "astro-icon/components";
+import { Button } from "@/components/ui";
+
+interface Props {
+  recipeId: number;
+  editHref: string;
+  canDuplicate?: boolean;
+  canDelete?: boolean;
+  variant?: "card" | "page";
+}
+
+const {
+  recipeId,
+  editHref,
+  canDuplicate = false,
+  canDelete = false,
+  variant = "page",
+} = Astro.props;
+
+const menuId = `ram-menu-${recipeId}`;
+const duplicateDialogId = `ram-dup-dialog-${recipeId}`;
+const deleteDialogId = `ram-del-dialog-${recipeId}`;
+const duplicateFormId = `ram-dup-form-${recipeId}`;
+const deleteFormId = `ram-del-form-${recipeId}`;
+---
+
+<!-- Hidden forms (outside positioning context) -->
+{canDuplicate && (
+  <form method="POST" id={duplicateFormId} data-astro-reload class="hidden">
+    <input type="hidden" name="action" value="duplicate_recipe" />
+    <input type="hidden" name="recipeId" value={recipeId} />
+    <input type="hidden" name="_csrf" value={Astro.locals.csrfToken || ""} />
+  </form>
+)}
+
+{canDelete && (
+  <form method="POST" id={deleteFormId} data-astro-reload class="hidden">
+    <input type="hidden" name="action" value="delete_recipe" />
+    <input type="hidden" name="recipeId" value={recipeId} />
+    <input type="hidden" name="_csrf" value={Astro.locals.csrfToken || ""} />
+  </form>
+)}
+
+<!-- Positioning wrapper -->
+<div class:list={[variant === "page" ? "relative" : ""]}>
+  <!-- Trigger -->
+  <button
+    type="button"
+    data-card-menu-trigger={menuId}
+    class:list={[
+      "inline-flex min-h-11 min-w-11 cursor-pointer items-center justify-center transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500",
+      variant === "card"
+        ? "absolute top-3 right-3 z-10 rounded-lg text-subtle-foreground hover:bg-muted hover:text-secondary-foreground"
+        : "rounded-xl border border-border bg-card hover:bg-muted",
+    ]}
+    aria-label={variant === "card" ? "Acciones" : "Opciones de receta"}
+    aria-haspopup="true"
+    aria-expanded="false"
+  >
+    <Icon
+      name="lucide:ellipsis-vertical"
+      size={variant === "card" ? 16 : 18}
+    />
+  </button>
+
+  <!-- Menu panel -->
+  <div
+    id={menuId}
+    data-card-menu
+    class:list={[
+      "border-border bg-card z-30 min-w-40 rounded-xl border p-1 shadow-lg",
+      variant === "card"
+        ? "absolute top-11 right-3"
+        : "absolute right-0 top-full mt-1",
+    ]}
+    role="menu"
+  >
+    <a
+      href={editHref}
+      class="text-muted-foreground hover:bg-accent-50 hover:text-accent-600 flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors"
+      role="menuitem"
+    >
+      <Icon name="lucide:pencil" size={16} /> Editar
+    </a>
+
+    {canDuplicate && (
+      <button
+        type="button"
+        data-open-duplicate-dialog={duplicateDialogId}
+        class="text-muted-foreground hover:bg-accent-50 hover:text-accent-600 flex w-full cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors"
+        role="menuitem"
+      >
+        <Icon name="lucide:copy" size={16} /> Duplicar
+      </button>
+    )}
+
+    {canDelete && (
+      <button
+        type="button"
+        data-open-delete-dialog={deleteDialogId}
+        class="text-danger hover:bg-danger-bg flex w-full cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors"
+        role="menuitem"
+      >
+        <Icon name="lucide:trash-2" size={16} /> Eliminar
+      </button>
+    )}
+  </div>
+</div>
+
+<!-- Dialogs -->
+{canDuplicate && (
+  <dialog
+    data-animated
+    id={duplicateDialogId}
+    class="fixed inset-0 m-auto w-[calc(100vw-2rem)] max-w-md rounded-3xl p-0 backdrop:bg-backdrop/50"
+  >
+    <div class="rounded-3xl border border-border bg-card p-6 shadow-2xl">
+      <div class="flex items-start gap-3">
+        <div
+          class="flex h-11 w-11 items-center justify-center rounded-2xl bg-accent-50 text-accent-600"
+        >
+          <Icon name="lucide:copy" size={18} />
+        </div>
+        <div>
+          <h2 class="text-lg font-bold text-foreground">Duplicar receta</h2>
+          <p class="mt-2 text-sm text-muted-foreground">
+            Se creará una copia de esta receta con todos sus ingredientes y
+            presentaciones.
+          </p>
+        </div>
+      </div>
+
+      <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+        <Button variant="secondary" data-close-duplicate-dialog>
+          Cancelar
+        </Button>
+        <Button
+          variant="primary"
+          icon="copy"
+          type="submit"
+          form={duplicateFormId}
+        >
+          Duplicar
+        </Button>
+      </div>
+    </div>
+  </dialog>
+)}
+
+{canDelete && (
+  <dialog
+    data-animated
+    id={deleteDialogId}
+    class="fixed inset-0 m-auto w-[calc(100vw-2rem)] max-w-md rounded-3xl p-0 backdrop:bg-backdrop/50"
+  >
+    <div class="rounded-3xl border border-border bg-card p-6 shadow-2xl">
+      <div class="flex items-start gap-3">
+        <div
+          class="flex h-11 w-11 items-center justify-center rounded-2xl bg-danger-bg text-danger"
+        >
+          <Icon name="lucide:trash-2" size={18} />
+        </div>
+        <div>
+          <h2 class="text-lg font-bold text-foreground">
+            Confirmar eliminación
+          </h2>
+          <p class="mt-2 text-sm text-muted-foreground">
+            ¿Eliminar esta receta? Esta acción no se puede deshacer.
+          </p>
+        </div>
+      </div>
+
+      <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+        <Button variant="secondary" data-close-delete-dialog>
+          Cancelar
+        </Button>
+        <Button
+          variant="danger"
+          icon="trash-2"
+          type="submit"
+          form={deleteFormId}
+        >
+          Eliminar
+        </Button>
+      </div>
+    </div>
+  </dialog>
+)}
+
+<style>
+  [data-card-menu] {
+    opacity: 0;
+    transform: scale(0.95);
+    pointer-events: none;
+    transition:
+      opacity 150ms var(--ease-out),
+      transform 150ms var(--ease-out);
+  }
+  [data-card-menu].card-menu-open {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+  }
+</style>
+
+<script>
+  import { bindDialogBackdrop } from "@/lib/dialog";
+
+  function setupRecipeActionsMenus() {
+    const triggers = document.querySelectorAll(
+      "[data-card-menu-trigger]",
+    ) as NodeListOf<HTMLElement>;
+
+    function closeAllMenus() {
+      (
+        document.querySelectorAll("[data-card-menu]") as NodeListOf<HTMLElement>
+      ).forEach((menu) => {
+        menu.classList.remove("card-menu-open");
+        const trigger = document.querySelector(
+          `[data-card-menu-trigger="${menu.id}"]`,
+        );
+        if (trigger) {
+          trigger.setAttribute("aria-expanded", "false");
+        }
+      });
+    }
+
+    triggers.forEach((trigger) => {
+      if (trigger.dataset.cardMenuBound === "1") return;
+      trigger.dataset.cardMenuBound = "1";
+
+      trigger.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const menuId = trigger.dataset.cardMenuTrigger;
+        if (!menuId) return;
+        const menu = document.getElementById(menuId);
+        if (!menu) return;
+
+        const isOpen = menu.classList.contains("card-menu-open");
+
+        closeAllMenus();
+
+        if (!isOpen) {
+          menu.classList.add("card-menu-open");
+          trigger.setAttribute("aria-expanded", "true");
+        }
+      });
+    });
+
+    if (document.documentElement.dataset.ramDocClickBound !== "1") {
+      document.documentElement.dataset.ramDocClickBound = "1";
+      document.addEventListener("click", (e) => {
+        const target = e.target;
+        if (
+          target instanceof HTMLElement &&
+          !target.closest("[data-card-menu-trigger]") &&
+          !target.closest("[data-card-menu]")
+        ) {
+          closeAllMenus();
+        }
+      });
+    }
+  }
+
+  function setupRecipeActionsDialogs() {
+    // Duplicate dialog
+    const dupTriggers = document.querySelectorAll(
+      "[data-open-duplicate-dialog]",
+    );
+    dupTriggers.forEach((dupTrigger) => {
+      if (!(dupTrigger instanceof HTMLElement)) return;
+      const dialogId = dupTrigger.dataset.openDuplicateDialog;
+      if (dialogId) {
+        const dialog = document.getElementById(
+          dialogId,
+        ) as HTMLDialogElement | null;
+        if (dialog) {
+          const openButtons = document.querySelectorAll(
+            `[data-open-duplicate-dialog="${dialogId}"]`,
+          );
+          const closeButtons =
+            dialog.querySelectorAll("[data-close-duplicate-dialog]");
+
+          openButtons.forEach((el) => {
+            const button = el as HTMLElement;
+            if (button.dataset.duplicateBound === "1") return;
+            button.dataset.duplicateBound = "1";
+            button.addEventListener("click", () => {
+              if (!dialog.open) dialog.showModal();
+            });
+          });
+
+          closeButtons.forEach((el) => {
+            const button = el as HTMLElement;
+            if (button.dataset.duplicateCloseBound === "1") return;
+            button.dataset.duplicateCloseBound = "1";
+            button.addEventListener("click", () => {
+              if (dialog.open) dialog.close();
+            });
+          });
+
+          if (dialog.dataset.duplicateBackdropBound !== "1") {
+            dialog.dataset.duplicateBackdropBound = "1";
+            bindDialogBackdrop(dialog);
+          }
+        }
+      }
+    });
+
+    // Delete dialog
+    const delTriggers = document.querySelectorAll(
+      "[data-open-delete-dialog]",
+    );
+    delTriggers.forEach((delTrigger) => {
+      if (!(delTrigger instanceof HTMLElement)) return;
+      const dialogId = delTrigger.dataset.openDeleteDialog;
+      if (dialogId) {
+        const dialog = document.getElementById(
+          dialogId,
+        ) as HTMLDialogElement | null;
+        if (dialog) {
+          const openButtons = document.querySelectorAll(
+            `[data-open-delete-dialog="${dialogId}"]`,
+          );
+          const closeButtons =
+            dialog.querySelectorAll("[data-close-delete-dialog]");
+
+          openButtons.forEach((el) => {
+            const button = el as HTMLElement;
+            if (button.dataset.deleteBound === "1") return;
+            button.dataset.deleteBound = "1";
+            button.addEventListener("click", () => {
+              if (!dialog.open) dialog.showModal();
+            });
+          });
+
+          closeButtons.forEach((el) => {
+            const button = el as HTMLElement;
+            if (button.dataset.deleteCloseBound === "1") return;
+            button.dataset.deleteCloseBound = "1";
+            button.addEventListener("click", () => {
+              if (dialog.open) dialog.close();
+            });
+          });
+
+          if (dialog.dataset.deleteBackdropBound !== "1") {
+            dialog.dataset.deleteBackdropBound = "1";
+            bindDialogBackdrop(dialog);
+          }
+        }
+      }
+    });
+  }
+
+  document.addEventListener("astro:page-load", () => {
+    setupRecipeActionsMenus();
+    setupRecipeActionsDialogs();
+  });
+  document.addEventListener("astro:after-swap", () => {
+    setupRecipeActionsMenus();
+    setupRecipeActionsDialogs();
+  });
+</script>
