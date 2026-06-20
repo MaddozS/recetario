@@ -1,7 +1,4 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "default_agent": "kitchcalc-orchestrator",
-  "plugin": [
-    ".opencode/plugins/graphify.js"
-  ]
+  "default_agent": "kitchcalc-orchestrator"
 }
