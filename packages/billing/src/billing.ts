@@ -45,7 +45,7 @@ const FEATURE_FLAGS: Record<string, Record<string, boolean>> = {
 
 const KNOWN_TIERS = Object.keys(TIER_CONFIG).filter((t) => t !== "free");
 
-async function syncPlansFromStripe(): Promise<void> {
+export async function syncPlansFromStripe(): Promise<void> {
   const prices = await stripe.prices.list({
     active: true,
     expand: ["data.product"],

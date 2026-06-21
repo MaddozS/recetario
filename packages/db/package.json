@@ -3,18 +3,17 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
+  "main": "./dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
   "exports": {
     ".": {
-      "types": "./src/index.ts",
-      "default": "./src/index.ts"
-    },
-    "./generated/prisma/client": "./generated/prisma/client.ts",
-    "./generated/prisma/client.js": "./generated/prisma/client.js"
+      "types": "./dist/src/index.d.ts",
+      "default": "./dist/src/index.js"
+    }
   },
-  "files": ["src", "prisma", "generated"],
+  "files": ["dist", "prisma", "generated"],
   "scripts": {
+    "build": "tsc --build tsconfig.build.json",
     "generate": "prisma generate",
     "migrate": "prisma migrate dev",
     "deploy": "prisma migrate deploy",
@@ -30,6 +29,9 @@
   },
   "devDependencies": {
     "prisma": "7.8.0",
-    "tsx": "4.22.0"
+    "tsx": "4.22.0",
+    "typescript": "^6.0.0",
+    "@recetario/config": "workspace:^",
+    "@types/pg": "8.20.0"
   }
 }
