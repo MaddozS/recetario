@@ -1,0 +1,114 @@
+import "dotenv/config";
+import { betterAuth } from "better-auth";
+import { prismaAdapter } from "better-auth/adapters/prisma";
+import { prisma } from "@recetario/db";
+import { sendEmail } from "./email";
+import { createAuthMiddleware, APIError } from "better-auth/api";
+import { validatePassword } from "./password-validation";
+import { getResetPasswordEmailHtml } from "./password-reset";
+
+const RESET_TOKEN_EXPIRY_MINUTES = 10;
+
+export const auth = betterAuth({
+  database: prismaAdapter(prisma, {
+    provider: "postgresql",
+  }),
+  user: {
+    additionalFields: {
+      firstName: { type: "string", required: true },
+      lastName: { type: "string", required: true },
+    },
+  },
+  emailAndPassword: {
+    enabled: true,
+    requireEmailVerification: true,
+    sendResetPassword: async ({ user, url, token }) => {
+      try {
+        const dbUser = await prisma.user.findUnique({
+          where: { id: user.id },
+          select: { firstName: true, name: true },
+        });
+        const userName = dbUser?.firstName || dbUser?.name || "usuario";
+
+        const resetToken = crypto.randomUUID();
+        const expiresAt = new Date(Date.now() + RESET_TOKEN_EXPIRY_MINUTES * 60 * 1000);
+
+        await prisma.passwordResetToken.deleteMany({
+          where: { userId: user.id },
+        });
+
+        await prisma.passwordResetToken.create({
+          data: {
+            userId: user.id,
+            token: resetToken,
+            expiresAt,
+          },
+        });
+
+        const resetLink = `${url.split("?")[0]}?token=${resetToken}`;
+        const html = getResetPasswordEmailHtml({
+          resetLink,
+          userName,
+          expiryMinutes: RESET_TOKEN_EXPIRY_MINUTES,
+        });
+        await sendEmail({
+          to: user.email,
+          subject: "Restablece tu contraseña - KitchCalc",
+          html,
+        });
+      } catch (e) {
+        console.error("[AUTH] sendResetPassword failed:", e);
+      }
+    },
+  },
+  emailVerification: {
+    sendVerificationEmail: async ({ user, url }) => {
+      try {
+        await sendEmail({
+          to: user.email,
+          subject: "Verifica tu email - KitchCalc",
+          html: `<p>Haz clic en el enlace para verificar tu email:</p><p><a href="${url}">${url}</a></p><p>Este enlace expira en 1 hora.</p>`,
+        });
+      } catch (e) {
+        console.error("[AUTH] sendVerificationEmail failed:", e);
+      }
+    },
+    sendOnSignUp: true,
+    sendOnSignIn: true,
+    expiresIn: 3600,
+  },
+  socialProviders: {
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      disableSignUp: false,
+      mapProfileToUser: (profile) => ({
+        firstName: profile.given_name,
+        lastName: profile.family_name,
+      }),
+    },
+  },
+  hooks: {
+    before: createAuthMiddleware(async (ctx) => {
+      if (ctx.path === "/sign-up/email") {
+        const password = ctx.body?.password as string | undefined;
+        if (!password || !validatePassword(password).valid) {
+          throw new APIError("BAD_REQUEST", {
+            message:
+              "La contraseña debe tener al menos 8 caracteres, incluir mayúsculas, minúsculas, números y un carácter especial.",
+          });
+        }
+      }
+    }),
+  },
+  onAPIError: {
+    errorURL: "/sign-in",
+  },
+  session: {
+    cookieCache: {
+      enabled: true,
+      maxAge: 5 * 60,
+    },
+  },
+  trustedOrigins: [process.env.BETTER_AUTH_URL ?? "http://localhost:4321"],
+});

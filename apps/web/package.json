@@ -1,0 +1,48 @@
+{
+  "name": "@recetario/web",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "format": "prettier --write .",
+    "type-check": "astro check",
+    "postinstall": "pnpm --filter @recetario/db exec prisma generate",
+    "vercel-build": "pnpm --filter @recetario/db exec prisma generate && pnpm --filter @recetario/db exec tsx prisma/fix-failed-migration.ts && pnpm --filter @recetario/db exec prisma migrate deploy && astro build"
+  },
+  "dependencies": {
+    "@recetario/auth": "workspace:^",
+    "@recetario/billing": "workspace:^",
+    "@recetario/db": "workspace:^",
+    "@recetario/ui": "workspace:^",
+    "@astrojs/vercel": "10.0.7",
+    "@iconify-json/lucide": "1.2.107",
+    "@tailwindcss/vite": "4.3.0",
+    "astro": "6.3.3",
+    "astro-icon": "1.1.5",
+    "dotenv": "17.4.2",
+    "sanitize-html": "^2.17.4",
+    "tailwindcss": "4.3.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.9",
+    "@astrojs/ts-plugin": "^1.10.8",
+    "@eslint/js": "10.0.1",
+    "@playwright/test": "^1.60.0",
+    "@types/node": "25.8.0",
+    "@types/pg": "8.20.0",
+    "@types/sanitize-html": "^2.16.1",
+    "@typescript-eslint/parser": "^8.59.3",
+    "eslint": "10.4.0",
+    "eslint-plugin-astro": "1.7.0",
+    "playwright": "^1.60.0",
+    "prettier": "3.8.3",
+    "prettier-plugin-astro": "0.14.1",
+    "prettier-plugin-tailwindcss": "^0.8.0",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.59.3"
+  }
+}

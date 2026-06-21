@@ -1,53 +1,19 @@
 {
   "name": "recetario",
-  "type": "module",
   "version": "1.0.0",
+  "private": true,
+  "type": "module",
   "engines": {
     "node": ">=22.12.0"
   },
   "scripts": {
-    "dev": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview",
-    "astro": "astro",
+    "dev": "turbo run dev --filter=@recetario/web",
+    "build": "turbo run build",
+    "preview": "turbo run preview --filter=@recetario/web",
+    "lint": "turbo run lint",
+    "type-check": "turbo run type-check",
     "format": "prettier --write .",
-    "postinstall": "npx prisma generate",
-    "vercel-build": "npx prisma generate && npx tsx prisma/fix-failed-migration.ts && npx prisma migrate deploy && astro build"
-  },
-  "dependencies": {
-    "@astrojs/vercel": "10.0.7",
-    "@iconify-json/lucide": "1.2.107",
-    "@prisma/adapter-pg": "7.8.0",
-    "@prisma/client": "7.8.0",
-    "@tailwindcss/vite": "4.3.0",
-    "astro": "6.3.3",
-    "astro-icon": "1.1.5",
-    "better-auth": "1.6.11",
-    "dotenv": "17.4.2",
-    "pg": "8.20.0",
-    "sanitize-html": "^2.17.4",
-    "stripe": "22.1.1",
-    "tailwindcss": "4.3.0"
-  },
-  "devDependencies": {
-    "@astrojs/check": "0.9.9",
-    "@astrojs/ts-plugin": "^1.10.8",
-    "@eslint/js": "10.0.1",
-    "@playwright/test": "^1.60.0",
-    "@types/node": "25.8.0",
-    "@types/pg": "8.20.0",
-    "@types/sanitize-html": "^2.16.1",
-    "@typescript-eslint/parser": "^8.59.3",
-    "eslint": "10.4.0",
-    "eslint-plugin-astro": "1.7.0",
-    "playwright": "^1.60.0",
-    "prettier": "3.8.3",
-    "prettier-plugin-astro": "0.14.1",
-    "prettier-plugin-tailwindcss": "^0.8.0",
-    "prisma": "7.8.0",
-    "tsx": "4.22.0",
-    "typescript": "6.0.3",
-    "typescript-eslint": "8.59.3"
+    "astro": "pnpm --filter @recetario/web astro"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
@@ -55,5 +21,10 @@
       "prisma"
     ]
   },
-  "packageManager": "pnpm@11.1.2+sha512.415a1cc25974731e75455c1468371be74c5aa5fb7621b50d4056d222451609f11412f23fd602e6169f1e060466641f798597e1be961a10688836a67b16569499"
+  "packageManager": "pnpm@11.1.2+sha512.415a1cc25974731e75455c1468371be74c5aa5fb7621b50d4056d222451609f11412f23fd602e6169f1e060466641f798597e1be961a10688836a67b16569499",
+  "devDependencies": {
+    "@astrojs/check": "0.9.9",
+    "turbo": "^2.9.18",
+    "typescript": "6.0.3"
+  }
 }

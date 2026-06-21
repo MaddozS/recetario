@@ -1,0 +1,22 @@
+{
+  "name": "@recetario/auth",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "files": ["src"],
+  "dependencies": {
+    "better-auth": "1.6.11",
+    "dotenv": "17.4.2"
+  },
+  "peerDependencies": {
+    "@recetario/db": "workspace:^"
+  }
+}

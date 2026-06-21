@@ -1,0 +1,25 @@
+{
+  "extends": "../../packages/config/tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@recetario/*": ["../../packages/*/src"]
+    },
+    "plugins": [
+      {
+        "name": "@astrojs/ts-plugin"
+      }
+    ]
+  },
+  "include": [".astro/types.d.ts", "**/*"],
+  "exclude": [
+    "dist",
+    ".agent/**",
+    ".astro/**",
+    "node_modules/**",
+    ".vercel/**",
+    "../../packages/**/node_modules",
+    "../../packages/**/dist"
+  ]
+}
