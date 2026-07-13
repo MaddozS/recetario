@@ -14,7 +14,7 @@
   "files": ["dist", "prisma", "generated"],
   "scripts": {
     "build": "tsc --build tsconfig.build.json",
-    "generate": "prisma generate",
+    "generate": "prisma generate && node scripts/patch-prisma-worker-client.mjs",
     "migrate": "prisma migrate dev",
     "deploy": "prisma migrate deploy",
     "studio": "prisma studio",

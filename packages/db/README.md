@@ -26,4 +26,7 @@ The Prisma client is generated to `packages/db/generated/prisma/`. It is **not**
 ## Peer dependencies
 
 - `@prisma/client`, `@prisma/adapter-pg`, `pg`
-- `dotenv` (loaded at import time via `import "dotenv/config"`)
+
+## Cloudflare Workers
+
+Workers must enable `nodejs_compat` and use a compatibility date on or after `2024-09-23` so Cloudflare enables the Node.js APIs used by Prisma and `pg`. Keep `DATABASE_URL` as a Worker secret, not a committed `vars` value.
