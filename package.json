@@ -7,24 +7,25 @@
     "node": ">=22.12.0"
   },
   "scripts": {
-    "dev": "turbo run dev --filter=@recetario/web",
+    "dev": "node scripts/sync-cloudflare-dev-vars.mjs && turbo run dev --filter=@recetario/web --filter=@recetario/api",
+    "dev:web": "node scripts/sync-cloudflare-dev-vars.mjs && turbo run dev --filter=@recetario/web",
+    "dev:api": "node scripts/sync-cloudflare-dev-vars.mjs && turbo run dev --filter=@recetario/api",
     "build": "turbo run build",
     "preview": "turbo run preview --filter=@recetario/web",
+    "deploy:web": "$npm_execpath --filter @recetario/web exec wrangler deploy",
+    "deploy:api": "$npm_execpath --filter @recetario/api exec wrangler deploy",
     "lint": "turbo run lint",
     "type-check": "turbo run type-check",
     "format": "prettier --write .",
     "astro": "pnpm --filter @recetario/web astro"
   },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "@prisma/engines",
-      "prisma"
-    ]
-  },
   "packageManager": "pnpm@11.1.2+sha512.415a1cc25974731e75455c1468371be74c5aa5fb7621b50d4056d222451609f11412f23fd602e6169f1e060466641f798597e1be961a10688836a67b16569499",
   "devDependencies": {
     "@astrojs/check": "0.9.9",
-    "turbo": "^2.9.18",
-    "typescript": "6.0.3"
+    "@cloudflare/workers-types": "^5.20260708.0",
+    "dotenv": "17.4.2",
+    "turbo": "^2.10.4",
+    "typescript": "6.0.3",
+    "wrangler": "^4.108.0"
   }
 }
