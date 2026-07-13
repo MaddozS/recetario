@@ -3,9 +3,14 @@ dist/
 
 # package compilation output
 packages/*/dist/
+*.tsbuildinfo
 
 # generated types
 .astro/
+
+# generated Prisma clients
+**/generated/prisma/
+**/generated/prisma-sqlite/
 
 # dependencies
 node_modules/
@@ -41,7 +46,9 @@ apps/*/.turbo/
 apps/*/.wrangler/
 
 
-# Graphify
-graphify-out/manifest.json
-graphify-out/cost.json
-graphify-out/cache/
+# local tool state
+.pnpm-store/
+.commandcode/settings.local.json
+
+# Graphify output
+graphify-out/
