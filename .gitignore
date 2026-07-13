@@ -19,6 +19,8 @@ pnpm-debug.log*
 # environment variables
 .env
 .env.production
+.dev.vars
+apps/*/.dev.vars
 
 # local databases
 data/dev.db
@@ -33,6 +35,10 @@ data/dev.db-wal
 
 .vercel/
 .vercel
+.turbo/
+.wrangler/
+apps/*/.turbo/
+apps/*/.wrangler/
 
 
 # Graphify
