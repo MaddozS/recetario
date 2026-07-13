@@ -1,0 +1,23 @@
+{
+  "name": "@recetario/api",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "type-check": "tsc --noEmit",
+    "build": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@recetario/auth": "workspace:^",
+    "@recetario/billing": "workspace:^",
+    "@recetario/db": "workspace:^",
+    "hono": "^4.10.8"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260708.0",
+    "typescript": "6.0.3",
+    "wrangler": "^4.108.0"
+  }
+}

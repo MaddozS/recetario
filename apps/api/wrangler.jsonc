@@ -1,0 +1,20 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "recetario-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-07-08",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": {
+    "enabled": true,
+  },
+  "dev": {
+    "port": 8787,
+    "local_protocol": "http",
+  },
+  "define": {
+    "import.meta.url": "\"file:///worker/index.js\"",
+  },
+  "vars": {
+    "NODE_ENV": "production",
+  },
+}
