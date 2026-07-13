@@ -153,6 +153,43 @@ This goes beyond `pnpm astro check` — that only verifies types, not visual cor
 ### Task File Convention
 Plans reference task files — they don't embed them. Each subagent task gets its own file at `docs/tasks/task-YYYYMMDD-HHmm-<agent>.md`. The plan's Tasks section lists summaries; the task file has full technical steps.
 
+### Task Dependency Convention
+Plans MUST include a `## Task Dependencies` table before the `## Tasks` section:
+
+```markdown
+## Task Dependencies
+| Task | Depends On | Parallel-Safe |
+|------|------------|---------------|
+| Task 1 | — | yes |
+| Task 2 | Task 1 | no |
+```
+
+Each task in the plan MUST specify:
+- **Scope**: `new` | `extends-existing` | `fix` — what type of work
+- **Pre-existing**: list components/files already implemented that this task builds on
+- **Dependencies**: which tasks must complete first
+
+This prevents task scope ambiguity where a builder discovers work already done.
+
+### Pre-Flight Checks
+Before dispatching builder tasks, the orchestrator should verify tool dependencies:
+
+```bash
+# Graphify dependencies
+$(cat graphify-out/.graphify_python 2>/dev/null || echo python3) -c "import networkx" 2>/dev/null && echo "graphify: ok" || echo "graphify: networkx MISSING"
+```
+
+If dependencies are missing, document the gap in the task file's guardrails so the builder knows to use the fallback procedure (grep/glob instead of graphify).
+
+### ESLint Cleanup
+Unused imports and variables should be cleaned before validation, not after. Options:
+
+1. **Pre-commit hook** (recommended): Add `pnpm eslint . --fix` to a pre-commit hook via `husky` + `lint-staged` to auto-remove unused imports on commit.
+2. **CI check**: Add `pnpm eslint .` as a required CI check that blocks merge on lint errors.
+3. **Builder self-check**: Builders already run `pnpm eslint .` as part of their verification checklist. Unused imports should be fixed in the same task, not deferred to a separate fix-ESLint task.
+
+The goal is to eliminate the need for a dedicated fix-ESLint task after validation.
+
 ### Agent Report Template
 All agent reports (kitchcalc-builder, kitchcalc-reviewer, kitchcalc-explore) must include a `## Skills Used` section listing which skills were loaded during execution, or `none` if no skills were used. This closes the feedback loop for skill effectiveness evaluation.
 
@@ -178,16 +215,3 @@ pnpm dev
 **Active Plan**: `specs/006-password-reset-flow/plan.md` — Password Reset Flow (10-min expiry, branded Resend email templates, countdown timer, rate limiting).
 
 <!-- SPECKIT END -->
-
-## graphify
-
-This project has a knowledge graph at graphify-out/ with god nodes, community structure, and cross-file relationships.
-
-When the user types `/graphify`, invoke the `skill` tool with `skill: "graphify"` before doing anything else.
-
-Rules:
-- For codebase questions, first run `graphify query "<question>"` when graphify-out/graph.json exists. Use `graphify path "<A>" "<B>"` for relationships and `graphify explain "<concept>"` for focused concepts. These return a scoped subgraph, usually much smaller than GRAPH_REPORT.md or raw grep output.
-- Dirty graphify-out/ files are expected after hooks or incremental updates; dirty graph files are not a reason to skip graphify. Only skip graphify if the task is about stale or incorrect graph output, or the user explicitly says not to use it.
-- If graphify-out/wiki/index.md exists, use it for broad navigation instead of raw source browsing.
-- Read graphify-out/GRAPH_REPORT.md only for broad architecture review or when query/path/explain do not surface enough context.
-- After modifying code, run `graphify update .` to keep the graph current (AST-only, no API cost).
