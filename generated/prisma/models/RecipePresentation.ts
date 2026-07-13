@@ -229,6 +229,7 @@ export type RecipePresentationWhereInput = {
   unitsPerBatch?: Prisma.FloatFilter<"RecipePresentation"> | number
   salePrice?: Prisma.FloatNullableFilter<"RecipePresentation"> | number | null
   recipe?: Prisma.XOR<Prisma.RecipeScalarRelationFilter, Prisma.RecipeWhereInput>
+  fixedCosts?: Prisma.PresentationFixedCostListRelationFilter
 }
 
 export type RecipePresentationOrderByWithRelationInput = {
@@ -238,6 +239,7 @@ export type RecipePresentationOrderByWithRelationInput = {
   unitsPerBatch?: Prisma.SortOrder
   salePrice?: Prisma.SortOrderInput | Prisma.SortOrder
   recipe?: Prisma.RecipeOrderByWithRelationInput
+  fixedCosts?: Prisma.PresentationFixedCostOrderByRelationAggregateInput
 }
 
 export type RecipePresentationWhereUniqueInput = Prisma.AtLeast<{
@@ -250,6 +252,7 @@ export type RecipePresentationWhereUniqueInput = Prisma.AtLeast<{
   unitsPerBatch?: Prisma.FloatFilter<"RecipePresentation"> | number
   salePrice?: Prisma.FloatNullableFilter<"RecipePresentation"> | number | null
   recipe?: Prisma.XOR<Prisma.RecipeScalarRelationFilter, Prisma.RecipeWhereInput>
+  fixedCosts?: Prisma.PresentationFixedCostListRelationFilter
 }, "id">
 
 export type RecipePresentationOrderByWithAggregationInput = {
@@ -281,6 +284,7 @@ export type RecipePresentationCreateInput = {
   unitsPerBatch: number
   salePrice?: number | null
   recipe: Prisma.RecipeCreateNestedOneWithoutPresentationsInput
+  fixedCosts?: Prisma.PresentationFixedCostCreateNestedManyWithoutPresentationInput
 }
 
 export type RecipePresentationUncheckedCreateInput = {
@@ -289,6 +293,7 @@ export type RecipePresentationUncheckedCreateInput = {
   name: string
   unitsPerBatch: number
   salePrice?: number | null
+  fixedCosts?: Prisma.PresentationFixedCostUncheckedCreateNestedManyWithoutPresentationInput
 }
 
 export type RecipePresentationUpdateInput = {
@@ -296,6 +301,7 @@ export type RecipePresentationUpdateInput = {
   unitsPerBatch?: Prisma.FloatFieldUpdateOperationsInput | number
   salePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   recipe?: Prisma.RecipeUpdateOneRequiredWithoutPresentationsNestedInput
+  fixedCosts?: Prisma.PresentationFixedCostUpdateManyWithoutPresentationNestedInput
 }
 
 export type RecipePresentationUncheckedUpdateInput = {
@@ -304,6 +310,7 @@ export type RecipePresentationUncheckedUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   unitsPerBatch?: Prisma.FloatFieldUpdateOperationsInput | number
   salePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  fixedCosts?: Prisma.PresentationFixedCostUncheckedUpdateManyWithoutPresentationNestedInput
 }
 
 export type RecipePresentationCreateManyInput = {
@@ -376,6 +383,11 @@ export type RecipePresentationSumOrderByAggregateInput = {
   salePrice?: Prisma.SortOrder
 }
 
+export type RecipePresentationScalarRelationFilter = {
+  is?: Prisma.RecipePresentationWhereInput
+  isNot?: Prisma.RecipePresentationWhereInput
+}
+
 export type RecipePresentationCreateNestedManyWithoutRecipeInput = {
   create?: Prisma.XOR<Prisma.RecipePresentationCreateWithoutRecipeInput, Prisma.RecipePresentationUncheckedCreateWithoutRecipeInput> | Prisma.RecipePresentationCreateWithoutRecipeInput[] | Prisma.RecipePresentationUncheckedCreateWithoutRecipeInput[]
   connectOrCreate?: Prisma.RecipePresentationCreateOrConnectWithoutRecipeInput | Prisma.RecipePresentationCreateOrConnectWithoutRecipeInput[]
@@ -426,10 +438,25 @@ export type NullableFloatFieldUpdateOperationsInput = {
   divide?: number
 }
 
+export type RecipePresentationCreateNestedOneWithoutFixedCostsInput = {
+  create?: Prisma.XOR<Prisma.RecipePresentationCreateWithoutFixedCostsInput, Prisma.RecipePresentationUncheckedCreateWithoutFixedCostsInput>
+  connectOrCreate?: Prisma.RecipePresentationCreateOrConnectWithoutFixedCostsInput
+  connect?: Prisma.RecipePresentationWhereUniqueInput
+}
+
+export type RecipePresentationUpdateOneRequiredWithoutFixedCostsNestedInput = {
+  create?: Prisma.XOR<Prisma.RecipePresentationCreateWithoutFixedCostsInput, Prisma.RecipePresentationUncheckedCreateWithoutFixedCostsInput>
+  connectOrCreate?: Prisma.RecipePresentationCreateOrConnectWithoutFixedCostsInput
+  upsert?: Prisma.RecipePresentationUpsertWithoutFixedCostsInput
+  connect?: Prisma.RecipePresentationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.RecipePresentationUpdateToOneWithWhereWithoutFixedCostsInput, Prisma.RecipePresentationUpdateWithoutFixedCostsInput>, Prisma.RecipePresentationUncheckedUpdateWithoutFixedCostsInput>
+}
+
 export type RecipePresentationCreateWithoutRecipeInput = {
   name: string
   unitsPerBatch: number
   salePrice?: number | null
+  fixedCosts?: Prisma.PresentationFixedCostCreateNestedManyWithoutPresentationInput
 }
 
 export type RecipePresentationUncheckedCreateWithoutRecipeInput = {
@@ -437,6 +464,7 @@ export type RecipePresentationUncheckedCreateWithoutRecipeInput = {
   name: string
   unitsPerBatch: number
   salePrice?: number | null
+  fixedCosts?: Prisma.PresentationFixedCostUncheckedCreateNestedManyWithoutPresentationInput
 }
 
 export type RecipePresentationCreateOrConnectWithoutRecipeInput = {
@@ -476,6 +504,52 @@ export type RecipePresentationScalarWhereInput = {
   salePrice?: Prisma.FloatNullableFilter<"RecipePresentation"> | number | null
 }
 
+export type RecipePresentationCreateWithoutFixedCostsInput = {
+  name: string
+  unitsPerBatch: number
+  salePrice?: number | null
+  recipe: Prisma.RecipeCreateNestedOneWithoutPresentationsInput
+}
+
+export type RecipePresentationUncheckedCreateWithoutFixedCostsInput = {
+  id?: number
+  recipeId: number
+  name: string
+  unitsPerBatch: number
+  salePrice?: number | null
+}
+
+export type RecipePresentationCreateOrConnectWithoutFixedCostsInput = {
+  where: Prisma.RecipePresentationWhereUniqueInput
+  create: Prisma.XOR<Prisma.RecipePresentationCreateWithoutFixedCostsInput, Prisma.RecipePresentationUncheckedCreateWithoutFixedCostsInput>
+}
+
+export type RecipePresentationUpsertWithoutFixedCostsInput = {
+  update: Prisma.XOR<Prisma.RecipePresentationUpdateWithoutFixedCostsInput, Prisma.RecipePresentationUncheckedUpdateWithoutFixedCostsInput>
+  create: Prisma.XOR<Prisma.RecipePresentationCreateWithoutFixedCostsInput, Prisma.RecipePresentationUncheckedCreateWithoutFixedCostsInput>
+  where?: Prisma.RecipePresentationWhereInput
+}
+
+export type RecipePresentationUpdateToOneWithWhereWithoutFixedCostsInput = {
+  where?: Prisma.RecipePresentationWhereInput
+  data: Prisma.XOR<Prisma.RecipePresentationUpdateWithoutFixedCostsInput, Prisma.RecipePresentationUncheckedUpdateWithoutFixedCostsInput>
+}
+
+export type RecipePresentationUpdateWithoutFixedCostsInput = {
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  unitsPerBatch?: Prisma.FloatFieldUpdateOperationsInput | number
+  salePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  recipe?: Prisma.RecipeUpdateOneRequiredWithoutPresentationsNestedInput
+}
+
+export type RecipePresentationUncheckedUpdateWithoutFixedCostsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  recipeId?: Prisma.IntFieldUpdateOperationsInput | number
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  unitsPerBatch?: Prisma.FloatFieldUpdateOperationsInput | number
+  salePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+}
+
 export type RecipePresentationCreateManyRecipeInput = {
   id?: number
   name: string
@@ -487,6 +561,7 @@ export type RecipePresentationUpdateWithoutRecipeInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   unitsPerBatch?: Prisma.FloatFieldUpdateOperationsInput | number
   salePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  fixedCosts?: Prisma.PresentationFixedCostUpdateManyWithoutPresentationNestedInput
 }
 
 export type RecipePresentationUncheckedUpdateWithoutRecipeInput = {
@@ -494,6 +569,7 @@ export type RecipePresentationUncheckedUpdateWithoutRecipeInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   unitsPerBatch?: Prisma.FloatFieldUpdateOperationsInput | number
   salePrice?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  fixedCosts?: Prisma.PresentationFixedCostUncheckedUpdateManyWithoutPresentationNestedInput
 }
 
 export type RecipePresentationUncheckedUpdateManyWithoutRecipeInput = {
@@ -504,6 +580,35 @@ export type RecipePresentationUncheckedUpdateManyWithoutRecipeInput = {
 }
 
 
+/**
+ * Count Type RecipePresentationCountOutputType
+ */
+
+export type RecipePresentationCountOutputType = {
+  fixedCosts: number
+}
+
+export type RecipePresentationCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  fixedCosts?: boolean | RecipePresentationCountOutputTypeCountFixedCostsArgs
+}
+
+/**
+ * RecipePresentationCountOutputType without action
+ */
+export type RecipePresentationCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RecipePresentationCountOutputType
+   */
+  select?: Prisma.RecipePresentationCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * RecipePresentationCountOutputType without action
+ */
+export type RecipePresentationCountOutputTypeCountFixedCostsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PresentationFixedCostWhereInput
+}
+
 
 export type RecipePresentationSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -512,6 +617,8 @@ export type RecipePresentationSelect<ExtArgs extends runtime.Types.Extensions.In
   unitsPerBatch?: boolean
   salePrice?: boolean
   recipe?: boolean | Prisma.RecipeDefaultArgs<ExtArgs>
+  fixedCosts?: boolean | Prisma.RecipePresentation$fixedCostsArgs<ExtArgs>
+  _count?: boolean | Prisma.RecipePresentationCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["recipePresentation"]>
 
 export type RecipePresentationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -543,6 +650,8 @@ export type RecipePresentationSelectScalar = {
 export type RecipePresentationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "recipeId" | "name" | "unitsPerBatch" | "salePrice", ExtArgs["result"]["recipePresentation"]>
 export type RecipePresentationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   recipe?: boolean | Prisma.RecipeDefaultArgs<ExtArgs>
+  fixedCosts?: boolean | Prisma.RecipePresentation$fixedCostsArgs<ExtArgs>
+  _count?: boolean | Prisma.RecipePresentationCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type RecipePresentationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   recipe?: boolean | Prisma.RecipeDefaultArgs<ExtArgs>
@@ -555,6 +664,7 @@ export type $RecipePresentationPayload<ExtArgs extends runtime.Types.Extensions.
   name: "RecipePresentation"
   objects: {
     recipe: Prisma.$RecipePayload<ExtArgs>
+    fixedCosts: Prisma.$PresentationFixedCostPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -957,6 +1067,7 @@ readonly fields: RecipePresentationFieldRefs;
 export interface Prisma__RecipePresentationClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   recipe<T extends Prisma.RecipeDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RecipeDefaultArgs<ExtArgs>>): Prisma.Prisma__RecipeClient<runtime.Types.Result.GetResult<Prisma.$RecipePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  fixedCosts<T extends Prisma.RecipePresentation$fixedCostsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RecipePresentation$fixedCostsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PresentationFixedCostPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1389,6 +1500,30 @@ export type RecipePresentationDeleteManyArgs<ExtArgs extends runtime.Types.Exten
    * Limit how many RecipePresentations to delete.
    */
   limit?: number
+}
+
+/**
+ * RecipePresentation.fixedCosts
+ */
+export type RecipePresentation$fixedCostsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PresentationFixedCost
+   */
+  select?: Prisma.PresentationFixedCostSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PresentationFixedCost
+   */
+  omit?: Prisma.PresentationFixedCostOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PresentationFixedCostInclude<ExtArgs> | null
+  where?: Prisma.PresentationFixedCostWhereInput
+  orderBy?: Prisma.PresentationFixedCostOrderByWithRelationInput | Prisma.PresentationFixedCostOrderByWithRelationInput[]
+  cursor?: Prisma.PresentationFixedCostWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PresentationFixedCostScalarFieldEnum | Prisma.PresentationFixedCostScalarFieldEnum[]
 }
 
 /**

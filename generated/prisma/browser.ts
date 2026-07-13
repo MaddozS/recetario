@@ -38,6 +38,16 @@ export type RecipeIngredient = Prisma.RecipeIngredientModel
  */
 export type RecipePresentation = Prisma.RecipePresentationModel
 /**
+ * Model RecipeFixedCost
+ * 
+ */
+export type RecipeFixedCost = Prisma.RecipeFixedCostModel
+/**
+ * Model PresentationFixedCost
+ * 
+ */
+export type PresentationFixedCost = Prisma.PresentationFixedCostModel
+/**
  * Model UserPreferences
  * 
  */

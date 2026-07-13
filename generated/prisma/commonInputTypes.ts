@@ -191,6 +191,40 @@ export type FloatNullableWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedFloatNullableFilter<$PrismaModel>
 }
 
+export type EnumFixedCostTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.FixedCostType | Prisma.EnumFixedCostTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.FixedCostType[] | Prisma.ListEnumFixedCostTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.FixedCostType[] | Prisma.ListEnumFixedCostTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumFixedCostTypeFilter<$PrismaModel> | $Enums.FixedCostType
+}
+
+export type EnumFixedCostBaseFilter<$PrismaModel = never> = {
+  equals?: $Enums.FixedCostBase | Prisma.EnumFixedCostBaseFieldRefInput<$PrismaModel>
+  in?: $Enums.FixedCostBase[] | Prisma.ListEnumFixedCostBaseFieldRefInput<$PrismaModel>
+  notIn?: $Enums.FixedCostBase[] | Prisma.ListEnumFixedCostBaseFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumFixedCostBaseFilter<$PrismaModel> | $Enums.FixedCostBase
+}
+
+export type EnumFixedCostTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.FixedCostType | Prisma.EnumFixedCostTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.FixedCostType[] | Prisma.ListEnumFixedCostTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.FixedCostType[] | Prisma.ListEnumFixedCostTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumFixedCostTypeWithAggregatesFilter<$PrismaModel> | $Enums.FixedCostType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumFixedCostTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumFixedCostTypeFilter<$PrismaModel>
+}
+
+export type EnumFixedCostBaseWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.FixedCostBase | Prisma.EnumFixedCostBaseFieldRefInput<$PrismaModel>
+  in?: $Enums.FixedCostBase[] | Prisma.ListEnumFixedCostBaseFieldRefInput<$PrismaModel>
+  notIn?: $Enums.FixedCostBase[] | Prisma.ListEnumFixedCostBaseFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumFixedCostBaseWithAggregatesFilter<$PrismaModel> | $Enums.FixedCostBase
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumFixedCostBaseFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumFixedCostBaseFilter<$PrismaModel>
+}
+
 export type IntNullableFilter<$PrismaModel = never> = {
   equals?: number | Prisma.IntFieldRefInput<$PrismaModel> | null
   in?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel> | null
@@ -494,6 +528,40 @@ export type NestedFloatNullableWithAggregatesFilter<$PrismaModel = never> = {
   _sum?: Prisma.NestedFloatNullableFilter<$PrismaModel>
   _min?: Prisma.NestedFloatNullableFilter<$PrismaModel>
   _max?: Prisma.NestedFloatNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumFixedCostTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.FixedCostType | Prisma.EnumFixedCostTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.FixedCostType[] | Prisma.ListEnumFixedCostTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.FixedCostType[] | Prisma.ListEnumFixedCostTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumFixedCostTypeFilter<$PrismaModel> | $Enums.FixedCostType
+}
+
+export type NestedEnumFixedCostBaseFilter<$PrismaModel = never> = {
+  equals?: $Enums.FixedCostBase | Prisma.EnumFixedCostBaseFieldRefInput<$PrismaModel>
+  in?: $Enums.FixedCostBase[] | Prisma.ListEnumFixedCostBaseFieldRefInput<$PrismaModel>
+  notIn?: $Enums.FixedCostBase[] | Prisma.ListEnumFixedCostBaseFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumFixedCostBaseFilter<$PrismaModel> | $Enums.FixedCostBase
+}
+
+export type NestedEnumFixedCostTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.FixedCostType | Prisma.EnumFixedCostTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.FixedCostType[] | Prisma.ListEnumFixedCostTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.FixedCostType[] | Prisma.ListEnumFixedCostTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumFixedCostTypeWithAggregatesFilter<$PrismaModel> | $Enums.FixedCostType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumFixedCostTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumFixedCostTypeFilter<$PrismaModel>
+}
+
+export type NestedEnumFixedCostBaseWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.FixedCostBase | Prisma.EnumFixedCostBaseFieldRefInput<$PrismaModel>
+  in?: $Enums.FixedCostBase[] | Prisma.ListEnumFixedCostBaseFieldRefInput<$PrismaModel>
+  notIn?: $Enums.FixedCostBase[] | Prisma.ListEnumFixedCostBaseFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumFixedCostBaseWithAggregatesFilter<$PrismaModel> | $Enums.FixedCostBase
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumFixedCostBaseFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumFixedCostBaseFilter<$PrismaModel>
 }
 
 export type NestedBoolFilter<$PrismaModel = never> = {

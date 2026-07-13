@@ -388,6 +388,8 @@ export const ModelName = {
   Recipe: 'Recipe',
   RecipeIngredient: 'RecipeIngredient',
   RecipePresentation: 'RecipePresentation',
+  RecipeFixedCost: 'RecipeFixedCost',
+  PresentationFixedCost: 'PresentationFixedCost',
   UserPreferences: 'UserPreferences',
   SubscriptionPlan: 'SubscriptionPlan',
   User: 'User',
@@ -414,7 +416,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "ingredient" | "recipe" | "recipeIngredient" | "recipePresentation" | "userPreferences" | "subscriptionPlan" | "user" | "session" | "account" | "verification" | "subscription" | "rateLimitEntry" | "cacheEntry" | "auditLog" | "passwordResetToken"
+    modelProps: "ingredient" | "recipe" | "recipeIngredient" | "recipePresentation" | "recipeFixedCost" | "presentationFixedCost" | "userPreferences" | "subscriptionPlan" | "user" | "session" | "account" | "verification" | "subscription" | "rateLimitEntry" | "cacheEntry" | "auditLog" | "passwordResetToken"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -711,6 +713,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.RecipePresentationCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.RecipePresentationCountAggregateOutputType> | number
+        }
+      }
+    }
+    RecipeFixedCost: {
+      payload: Prisma.$RecipeFixedCostPayload<ExtArgs>
+      fields: Prisma.RecipeFixedCostFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.RecipeFixedCostFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecipeFixedCostPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.RecipeFixedCostFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecipeFixedCostPayload>
+        }
+        findFirst: {
+          args: Prisma.RecipeFixedCostFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecipeFixedCostPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.RecipeFixedCostFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecipeFixedCostPayload>
+        }
+        findMany: {
+          args: Prisma.RecipeFixedCostFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecipeFixedCostPayload>[]
+        }
+        create: {
+          args: Prisma.RecipeFixedCostCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecipeFixedCostPayload>
+        }
+        createMany: {
+          args: Prisma.RecipeFixedCostCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.RecipeFixedCostCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecipeFixedCostPayload>[]
+        }
+        delete: {
+          args: Prisma.RecipeFixedCostDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecipeFixedCostPayload>
+        }
+        update: {
+          args: Prisma.RecipeFixedCostUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecipeFixedCostPayload>
+        }
+        deleteMany: {
+          args: Prisma.RecipeFixedCostDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.RecipeFixedCostUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.RecipeFixedCostUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecipeFixedCostPayload>[]
+        }
+        upsert: {
+          args: Prisma.RecipeFixedCostUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RecipeFixedCostPayload>
+        }
+        aggregate: {
+          args: Prisma.RecipeFixedCostAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateRecipeFixedCost>
+        }
+        groupBy: {
+          args: Prisma.RecipeFixedCostGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RecipeFixedCostGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.RecipeFixedCostCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RecipeFixedCostCountAggregateOutputType> | number
+        }
+      }
+    }
+    PresentationFixedCost: {
+      payload: Prisma.$PresentationFixedCostPayload<ExtArgs>
+      fields: Prisma.PresentationFixedCostFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PresentationFixedCostFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PresentationFixedCostPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PresentationFixedCostFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PresentationFixedCostPayload>
+        }
+        findFirst: {
+          args: Prisma.PresentationFixedCostFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PresentationFixedCostPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PresentationFixedCostFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PresentationFixedCostPayload>
+        }
+        findMany: {
+          args: Prisma.PresentationFixedCostFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PresentationFixedCostPayload>[]
+        }
+        create: {
+          args: Prisma.PresentationFixedCostCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PresentationFixedCostPayload>
+        }
+        createMany: {
+          args: Prisma.PresentationFixedCostCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PresentationFixedCostCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PresentationFixedCostPayload>[]
+        }
+        delete: {
+          args: Prisma.PresentationFixedCostDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PresentationFixedCostPayload>
+        }
+        update: {
+          args: Prisma.PresentationFixedCostUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PresentationFixedCostPayload>
+        }
+        deleteMany: {
+          args: Prisma.PresentationFixedCostDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PresentationFixedCostUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PresentationFixedCostUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PresentationFixedCostPayload>[]
+        }
+        upsert: {
+          args: Prisma.PresentationFixedCostUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PresentationFixedCostPayload>
+        }
+        aggregate: {
+          args: Prisma.PresentationFixedCostAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePresentationFixedCost>
+        }
+        groupBy: {
+          args: Prisma.PresentationFixedCostGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PresentationFixedCostGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PresentationFixedCostCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PresentationFixedCostCountAggregateOutputType> | number
         }
       }
     }
@@ -1617,6 +1767,31 @@ export const RecipePresentationScalarFieldEnum = {
 export type RecipePresentationScalarFieldEnum = (typeof RecipePresentationScalarFieldEnum)[keyof typeof RecipePresentationScalarFieldEnum]
 
 
+export const RecipeFixedCostScalarFieldEnum = {
+  id: 'id',
+  recipeId: 'recipeId',
+  name: 'name',
+  type: 'type',
+  base: 'base',
+  value: 'value',
+  hours: 'hours'
+} as const
+
+export type RecipeFixedCostScalarFieldEnum = (typeof RecipeFixedCostScalarFieldEnum)[keyof typeof RecipeFixedCostScalarFieldEnum]
+
+
+export const PresentationFixedCostScalarFieldEnum = {
+  id: 'id',
+  presentationId: 'presentationId',
+  name: 'name',
+  type: 'type',
+  base: 'base',
+  value: 'value'
+} as const
+
+export type PresentationFixedCostScalarFieldEnum = (typeof PresentationFixedCostScalarFieldEnum)[keyof typeof PresentationFixedCostScalarFieldEnum]
+
+
 export const UserPreferencesScalarFieldEnum = {
   userId: 'userId',
   theme: 'theme',
@@ -1856,6 +2031,34 @@ export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaM
 
 
 /**
+ * Reference to a field of type 'FixedCostType'
+ */
+export type EnumFixedCostTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FixedCostType'>
+    
+
+
+/**
+ * Reference to a field of type 'FixedCostType[]'
+ */
+export type ListEnumFixedCostTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FixedCostType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'FixedCostBase'
+ */
+export type EnumFixedCostBaseFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FixedCostBase'>
+    
+
+
+/**
+ * Reference to a field of type 'FixedCostBase[]'
+ */
+export type ListEnumFixedCostBaseFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'FixedCostBase[]'>
+    
+
+
+/**
  * Reference to a field of type 'Boolean'
  */
 export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
@@ -2017,6 +2220,8 @@ export type GlobalOmitConfig = {
   recipe?: Prisma.RecipeOmit
   recipeIngredient?: Prisma.RecipeIngredientOmit
   recipePresentation?: Prisma.RecipePresentationOmit
+  recipeFixedCost?: Prisma.RecipeFixedCostOmit
+  presentationFixedCost?: Prisma.PresentationFixedCostOmit
   userPreferences?: Prisma.UserPreferencesOmit
   subscriptionPlan?: Prisma.SubscriptionPlanOmit
   user?: Prisma.UserOmit

@@ -55,6 +55,8 @@ export const ModelName = {
   Recipe: 'Recipe',
   RecipeIngredient: 'RecipeIngredient',
   RecipePresentation: 'RecipePresentation',
+  RecipeFixedCost: 'RecipeFixedCost',
+  PresentationFixedCost: 'PresentationFixedCost',
   UserPreferences: 'UserPreferences',
   SubscriptionPlan: 'SubscriptionPlan',
   User: 'User',
@@ -132,6 +134,31 @@ export const RecipePresentationScalarFieldEnum = {
 } as const
 
 export type RecipePresentationScalarFieldEnum = (typeof RecipePresentationScalarFieldEnum)[keyof typeof RecipePresentationScalarFieldEnum]
+
+
+export const RecipeFixedCostScalarFieldEnum = {
+  id: 'id',
+  recipeId: 'recipeId',
+  name: 'name',
+  type: 'type',
+  base: 'base',
+  value: 'value',
+  hours: 'hours'
+} as const
+
+export type RecipeFixedCostScalarFieldEnum = (typeof RecipeFixedCostScalarFieldEnum)[keyof typeof RecipeFixedCostScalarFieldEnum]
+
+
+export const PresentationFixedCostScalarFieldEnum = {
+  id: 'id',
+  presentationId: 'presentationId',
+  name: 'name',
+  type: 'type',
+  base: 'base',
+  value: 'value'
+} as const
+
+export type PresentationFixedCostScalarFieldEnum = (typeof PresentationFixedCostScalarFieldEnum)[keyof typeof PresentationFixedCostScalarFieldEnum]
 
 
 export const UserPreferencesScalarFieldEnum = {

@@ -9,6 +9,23 @@
 * 🟢 You can import this file directly.
 */
 
+export const FixedCostType = {
+  PERCENTAGE: 'PERCENTAGE',
+  AMOUNT: 'AMOUNT'
+} as const
+
+export type FixedCostType = (typeof FixedCostType)[keyof typeof FixedCostType]
+
+
+export const FixedCostBase = {
+  PER_BATCH: 'PER_BATCH',
+  PER_UNIT: 'PER_UNIT',
+  PER_HOUR: 'PER_HOUR'
+} as const
+
+export type FixedCostBase = (typeof FixedCostBase)[keyof typeof FixedCostBase]
+
+
 export const Role = {
   USER: 'USER',
   ADMIN: 'ADMIN',

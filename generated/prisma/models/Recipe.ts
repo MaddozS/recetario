@@ -250,6 +250,7 @@ export type RecipeWhereInput = {
   updatedAt?: Prisma.DateTimeNullableFilter<"Recipe"> | Date | string | null
   recipeIngredients?: Prisma.RecipeIngredientListRelationFilter
   presentations?: Prisma.RecipePresentationListRelationFilter
+  recipeFixedCosts?: Prisma.RecipeFixedCostListRelationFilter
 }
 
 export type RecipeOrderByWithRelationInput = {
@@ -263,6 +264,7 @@ export type RecipeOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   recipeIngredients?: Prisma.RecipeIngredientOrderByRelationAggregateInput
   presentations?: Prisma.RecipePresentationOrderByRelationAggregateInput
+  recipeFixedCosts?: Prisma.RecipeFixedCostOrderByRelationAggregateInput
 }
 
 export type RecipeWhereUniqueInput = Prisma.AtLeast<{
@@ -279,6 +281,7 @@ export type RecipeWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeNullableFilter<"Recipe"> | Date | string | null
   recipeIngredients?: Prisma.RecipeIngredientListRelationFilter
   presentations?: Prisma.RecipePresentationListRelationFilter
+  recipeFixedCosts?: Prisma.RecipeFixedCostListRelationFilter
 }, "id">
 
 export type RecipeOrderByWithAggregationInput = {
@@ -321,6 +324,7 @@ export type RecipeCreateInput = {
   updatedAt?: Date | string | null
   recipeIngredients?: Prisma.RecipeIngredientCreateNestedManyWithoutRecipeInput
   presentations?: Prisma.RecipePresentationCreateNestedManyWithoutRecipeInput
+  recipeFixedCosts?: Prisma.RecipeFixedCostCreateNestedManyWithoutRecipeInput
 }
 
 export type RecipeUncheckedCreateInput = {
@@ -334,6 +338,7 @@ export type RecipeUncheckedCreateInput = {
   updatedAt?: Date | string | null
   recipeIngredients?: Prisma.RecipeIngredientUncheckedCreateNestedManyWithoutRecipeInput
   presentations?: Prisma.RecipePresentationUncheckedCreateNestedManyWithoutRecipeInput
+  recipeFixedCosts?: Prisma.RecipeFixedCostUncheckedCreateNestedManyWithoutRecipeInput
 }
 
 export type RecipeUpdateInput = {
@@ -346,6 +351,7 @@ export type RecipeUpdateInput = {
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   recipeIngredients?: Prisma.RecipeIngredientUpdateManyWithoutRecipeNestedInput
   presentations?: Prisma.RecipePresentationUpdateManyWithoutRecipeNestedInput
+  recipeFixedCosts?: Prisma.RecipeFixedCostUpdateManyWithoutRecipeNestedInput
 }
 
 export type RecipeUncheckedUpdateInput = {
@@ -359,6 +365,7 @@ export type RecipeUncheckedUpdateInput = {
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   recipeIngredients?: Prisma.RecipeIngredientUncheckedUpdateManyWithoutRecipeNestedInput
   presentations?: Prisma.RecipePresentationUncheckedUpdateManyWithoutRecipeNestedInput
+  recipeFixedCosts?: Prisma.RecipeFixedCostUncheckedUpdateManyWithoutRecipeNestedInput
 }
 
 export type RecipeCreateManyInput = {
@@ -475,6 +482,20 @@ export type RecipeUpdateOneRequiredWithoutPresentationsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.RecipeUpdateToOneWithWhereWithoutPresentationsInput, Prisma.RecipeUpdateWithoutPresentationsInput>, Prisma.RecipeUncheckedUpdateWithoutPresentationsInput>
 }
 
+export type RecipeCreateNestedOneWithoutRecipeFixedCostsInput = {
+  create?: Prisma.XOR<Prisma.RecipeCreateWithoutRecipeFixedCostsInput, Prisma.RecipeUncheckedCreateWithoutRecipeFixedCostsInput>
+  connectOrCreate?: Prisma.RecipeCreateOrConnectWithoutRecipeFixedCostsInput
+  connect?: Prisma.RecipeWhereUniqueInput
+}
+
+export type RecipeUpdateOneRequiredWithoutRecipeFixedCostsNestedInput = {
+  create?: Prisma.XOR<Prisma.RecipeCreateWithoutRecipeFixedCostsInput, Prisma.RecipeUncheckedCreateWithoutRecipeFixedCostsInput>
+  connectOrCreate?: Prisma.RecipeCreateOrConnectWithoutRecipeFixedCostsInput
+  upsert?: Prisma.RecipeUpsertWithoutRecipeFixedCostsInput
+  connect?: Prisma.RecipeWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.RecipeUpdateToOneWithWhereWithoutRecipeFixedCostsInput, Prisma.RecipeUpdateWithoutRecipeFixedCostsInput>, Prisma.RecipeUncheckedUpdateWithoutRecipeFixedCostsInput>
+}
+
 export type RecipeCreateWithoutRecipeIngredientsInput = {
   ownerId: string
   name: string
@@ -484,6 +505,7 @@ export type RecipeCreateWithoutRecipeIngredientsInput = {
   fixedCostsPercentage: number
   updatedAt?: Date | string | null
   presentations?: Prisma.RecipePresentationCreateNestedManyWithoutRecipeInput
+  recipeFixedCosts?: Prisma.RecipeFixedCostCreateNestedManyWithoutRecipeInput
 }
 
 export type RecipeUncheckedCreateWithoutRecipeIngredientsInput = {
@@ -496,6 +518,7 @@ export type RecipeUncheckedCreateWithoutRecipeIngredientsInput = {
   fixedCostsPercentage: number
   updatedAt?: Date | string | null
   presentations?: Prisma.RecipePresentationUncheckedCreateNestedManyWithoutRecipeInput
+  recipeFixedCosts?: Prisma.RecipeFixedCostUncheckedCreateNestedManyWithoutRecipeInput
 }
 
 export type RecipeCreateOrConnectWithoutRecipeIngredientsInput = {
@@ -523,6 +546,7 @@ export type RecipeUpdateWithoutRecipeIngredientsInput = {
   fixedCostsPercentage?: Prisma.FloatFieldUpdateOperationsInput | number
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   presentations?: Prisma.RecipePresentationUpdateManyWithoutRecipeNestedInput
+  recipeFixedCosts?: Prisma.RecipeFixedCostUpdateManyWithoutRecipeNestedInput
 }
 
 export type RecipeUncheckedUpdateWithoutRecipeIngredientsInput = {
@@ -535,6 +559,7 @@ export type RecipeUncheckedUpdateWithoutRecipeIngredientsInput = {
   fixedCostsPercentage?: Prisma.FloatFieldUpdateOperationsInput | number
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   presentations?: Prisma.RecipePresentationUncheckedUpdateManyWithoutRecipeNestedInput
+  recipeFixedCosts?: Prisma.RecipeFixedCostUncheckedUpdateManyWithoutRecipeNestedInput
 }
 
 export type RecipeCreateWithoutPresentationsInput = {
@@ -546,6 +571,7 @@ export type RecipeCreateWithoutPresentationsInput = {
   fixedCostsPercentage: number
   updatedAt?: Date | string | null
   recipeIngredients?: Prisma.RecipeIngredientCreateNestedManyWithoutRecipeInput
+  recipeFixedCosts?: Prisma.RecipeFixedCostCreateNestedManyWithoutRecipeInput
 }
 
 export type RecipeUncheckedCreateWithoutPresentationsInput = {
@@ -558,6 +584,7 @@ export type RecipeUncheckedCreateWithoutPresentationsInput = {
   fixedCostsPercentage: number
   updatedAt?: Date | string | null
   recipeIngredients?: Prisma.RecipeIngredientUncheckedCreateNestedManyWithoutRecipeInput
+  recipeFixedCosts?: Prisma.RecipeFixedCostUncheckedCreateNestedManyWithoutRecipeInput
 }
 
 export type RecipeCreateOrConnectWithoutPresentationsInput = {
@@ -585,6 +612,7 @@ export type RecipeUpdateWithoutPresentationsInput = {
   fixedCostsPercentage?: Prisma.FloatFieldUpdateOperationsInput | number
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   recipeIngredients?: Prisma.RecipeIngredientUpdateManyWithoutRecipeNestedInput
+  recipeFixedCosts?: Prisma.RecipeFixedCostUpdateManyWithoutRecipeNestedInput
 }
 
 export type RecipeUncheckedUpdateWithoutPresentationsInput = {
@@ -597,6 +625,73 @@ export type RecipeUncheckedUpdateWithoutPresentationsInput = {
   fixedCostsPercentage?: Prisma.FloatFieldUpdateOperationsInput | number
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   recipeIngredients?: Prisma.RecipeIngredientUncheckedUpdateManyWithoutRecipeNestedInput
+  recipeFixedCosts?: Prisma.RecipeFixedCostUncheckedUpdateManyWithoutRecipeNestedInput
+}
+
+export type RecipeCreateWithoutRecipeFixedCostsInput = {
+  ownerId: string
+  name: string
+  category?: string | null
+  instructions?: string | null
+  desiredMargin: number
+  fixedCostsPercentage: number
+  updatedAt?: Date | string | null
+  recipeIngredients?: Prisma.RecipeIngredientCreateNestedManyWithoutRecipeInput
+  presentations?: Prisma.RecipePresentationCreateNestedManyWithoutRecipeInput
+}
+
+export type RecipeUncheckedCreateWithoutRecipeFixedCostsInput = {
+  id?: number
+  ownerId: string
+  name: string
+  category?: string | null
+  instructions?: string | null
+  desiredMargin: number
+  fixedCostsPercentage: number
+  updatedAt?: Date | string | null
+  recipeIngredients?: Prisma.RecipeIngredientUncheckedCreateNestedManyWithoutRecipeInput
+  presentations?: Prisma.RecipePresentationUncheckedCreateNestedManyWithoutRecipeInput
+}
+
+export type RecipeCreateOrConnectWithoutRecipeFixedCostsInput = {
+  where: Prisma.RecipeWhereUniqueInput
+  create: Prisma.XOR<Prisma.RecipeCreateWithoutRecipeFixedCostsInput, Prisma.RecipeUncheckedCreateWithoutRecipeFixedCostsInput>
+}
+
+export type RecipeUpsertWithoutRecipeFixedCostsInput = {
+  update: Prisma.XOR<Prisma.RecipeUpdateWithoutRecipeFixedCostsInput, Prisma.RecipeUncheckedUpdateWithoutRecipeFixedCostsInput>
+  create: Prisma.XOR<Prisma.RecipeCreateWithoutRecipeFixedCostsInput, Prisma.RecipeUncheckedCreateWithoutRecipeFixedCostsInput>
+  where?: Prisma.RecipeWhereInput
+}
+
+export type RecipeUpdateToOneWithWhereWithoutRecipeFixedCostsInput = {
+  where?: Prisma.RecipeWhereInput
+  data: Prisma.XOR<Prisma.RecipeUpdateWithoutRecipeFixedCostsInput, Prisma.RecipeUncheckedUpdateWithoutRecipeFixedCostsInput>
+}
+
+export type RecipeUpdateWithoutRecipeFixedCostsInput = {
+  ownerId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  desiredMargin?: Prisma.FloatFieldUpdateOperationsInput | number
+  fixedCostsPercentage?: Prisma.FloatFieldUpdateOperationsInput | number
+  updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recipeIngredients?: Prisma.RecipeIngredientUpdateManyWithoutRecipeNestedInput
+  presentations?: Prisma.RecipePresentationUpdateManyWithoutRecipeNestedInput
+}
+
+export type RecipeUncheckedUpdateWithoutRecipeFixedCostsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  ownerId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  category?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  instructions?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  desiredMargin?: Prisma.FloatFieldUpdateOperationsInput | number
+  fixedCostsPercentage?: Prisma.FloatFieldUpdateOperationsInput | number
+  updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  recipeIngredients?: Prisma.RecipeIngredientUncheckedUpdateManyWithoutRecipeNestedInput
+  presentations?: Prisma.RecipePresentationUncheckedUpdateManyWithoutRecipeNestedInput
 }
 
 
@@ -607,11 +702,13 @@ export type RecipeUncheckedUpdateWithoutPresentationsInput = {
 export type RecipeCountOutputType = {
   recipeIngredients: number
   presentations: number
+  recipeFixedCosts: number
 }
 
 export type RecipeCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   recipeIngredients?: boolean | RecipeCountOutputTypeCountRecipeIngredientsArgs
   presentations?: boolean | RecipeCountOutputTypeCountPresentationsArgs
+  recipeFixedCosts?: boolean | RecipeCountOutputTypeCountRecipeFixedCostsArgs
 }
 
 /**
@@ -638,6 +735,13 @@ export type RecipeCountOutputTypeCountPresentationsArgs<ExtArgs extends runtime.
   where?: Prisma.RecipePresentationWhereInput
 }
 
+/**
+ * RecipeCountOutputType without action
+ */
+export type RecipeCountOutputTypeCountRecipeFixedCostsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RecipeFixedCostWhereInput
+}
+
 
 export type RecipeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -650,6 +754,7 @@ export type RecipeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   updatedAt?: boolean
   recipeIngredients?: boolean | Prisma.Recipe$recipeIngredientsArgs<ExtArgs>
   presentations?: boolean | Prisma.Recipe$presentationsArgs<ExtArgs>
+  recipeFixedCosts?: boolean | Prisma.Recipe$recipeFixedCostsArgs<ExtArgs>
   _count?: boolean | Prisma.RecipeCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["recipe"]>
 
@@ -690,6 +795,7 @@ export type RecipeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
 export type RecipeInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   recipeIngredients?: boolean | Prisma.Recipe$recipeIngredientsArgs<ExtArgs>
   presentations?: boolean | Prisma.Recipe$presentationsArgs<ExtArgs>
+  recipeFixedCosts?: boolean | Prisma.Recipe$recipeFixedCostsArgs<ExtArgs>
   _count?: boolean | Prisma.RecipeCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type RecipeIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -700,6 +806,7 @@ export type $RecipePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
   objects: {
     recipeIngredients: Prisma.$RecipeIngredientPayload<ExtArgs>[]
     presentations: Prisma.$RecipePresentationPayload<ExtArgs>[]
+    recipeFixedCosts: Prisma.$RecipeFixedCostPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -1106,6 +1213,7 @@ export interface Prisma__RecipeClient<T, Null = never, ExtArgs extends runtime.T
   readonly [Symbol.toStringTag]: "PrismaPromise"
   recipeIngredients<T extends Prisma.Recipe$recipeIngredientsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Recipe$recipeIngredientsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RecipeIngredientPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   presentations<T extends Prisma.Recipe$presentationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Recipe$presentationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RecipePresentationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  recipeFixedCosts<T extends Prisma.Recipe$recipeFixedCostsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Recipe$recipeFixedCostsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RecipeFixedCostPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1581,6 +1689,30 @@ export type Recipe$presentationsArgs<ExtArgs extends runtime.Types.Extensions.In
   take?: number
   skip?: number
   distinct?: Prisma.RecipePresentationScalarFieldEnum | Prisma.RecipePresentationScalarFieldEnum[]
+}
+
+/**
+ * Recipe.recipeFixedCosts
+ */
+export type Recipe$recipeFixedCostsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RecipeFixedCost
+   */
+  select?: Prisma.RecipeFixedCostSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RecipeFixedCost
+   */
+  omit?: Prisma.RecipeFixedCostOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RecipeFixedCostInclude<ExtArgs> | null
+  where?: Prisma.RecipeFixedCostWhereInput
+  orderBy?: Prisma.RecipeFixedCostOrderByWithRelationInput | Prisma.RecipeFixedCostOrderByWithRelationInput[]
+  cursor?: Prisma.RecipeFixedCostWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RecipeFixedCostScalarFieldEnum | Prisma.RecipeFixedCostScalarFieldEnum[]
 }
 
 /**
