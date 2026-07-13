@@ -1,12 +1,16 @@
 # .graphifyignore
-node_modules/
-dist/
+# Generated code
 *.generated.py
-.opencode/
-.astro/
+generated/
+
+# Agent, editor, and local tool configuration
 .agents/
+.commandcode/
+.impeccable/
+.opencode/
+.pnpm-store/
+.specify/
 .vscode/
-.vercel/
-.turbo/
-packages/
-packages.json
+
+# Historical task dispatches are not architecture documentation
+docs/tasks/
