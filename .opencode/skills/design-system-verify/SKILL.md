@@ -96,6 +96,41 @@ grep -rn 'lucide:' src/ --include='*.astro'
 # pencil ✓ (L:73), trash-2 ✓ (L:84) → PASS
 ```
 
+## 5. Visual QA Checklist
+
+When this skill is used for visual verification (UI changes), run through this checklist in addition to the automated checks above.
+
+### Desktop (1280px)
+- [ ] All icons render (check terminal for `Unable to locate "lucide:<name>"` errors)
+- [ ] No broken layout (overlapping elements, cut-off text, misaligned grids)
+- [ ] All interactive elements visible and properly sized
+- [ ] Forms display correctly (inputs, selects, buttons)
+- [ ] Dialogs/modals open and close properly
+- [ ] Semantic tokens applied correctly (no flash of unstyled/wrong colors)
+
+### Mobile (375px)
+- [ ] No horizontal scroll
+- [ ] Touch targets ≥ 44px (buttons, links, inputs)
+- [ ] Text readable without zoom
+- [ ] Forms usable on small screens
+- [ ] Dialogs/modals fit within viewport
+
+### Parity Check
+- [ ] Mobile and desktop show equivalent information
+- [ ] Navigation equivalent across breakpoints
+- [ ] All actions accessible on both viewports
+- [ ] Error/empty states render correctly on both viewports
+
+### How to Run
+```bash
+pnpm dev  # start dev server
+# Open browser at localhost:4321
+# Inspect at 1280px (desktop) and 375px (mobile)
+# Check browser console for errors
+```
+
+If no database environment is available, document the manual QA steps for the reviewer to follow locally.
+
 ## Project Context
 
 - **Astro 6** SSR with Tailwind CSS semantic tokens
