@@ -217,10 +217,10 @@ if (Astro.locals.session) return Astro.redirect("/recipes");
     signUpWithEmail,
     signInWithGoogle,
     getSafeRedirect,
-  } from "@recetario/auth";
+  } from "@recetario/auth/client";
   import { setupPasswordToggles } from "@recetario/ui/password-toggle";
   import { showLoadingOverlay } from "@recetario/ui/loading-overlay";
-  import { validatePassword, getRuleResults } from "@recetario/auth";
+  import { validatePassword, getRuleResults } from "@recetario/auth/client";
 
   function setupSignUp() {
     const form = document.getElementById("sign-up-form");
@@ -440,7 +440,7 @@ if (Astro.locals.session) return Astro.redirect("/recipes");
       statusEl.classList.add("hidden");
 
       try {
-        const { authClient } = await import("@recetario/auth");
+        const { authClient } = await import("@recetario/auth/client");
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         await (authClient as any).sendVerificationEmail({
           email,

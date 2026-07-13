@@ -2,11 +2,34 @@
 import { defineConfig } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
 import icon from "astro-icon";
-import vercel from "@astrojs/vercel";
+import vercel from "@astrojs/vercel/serverless";
 import path from "path";
 import { fileURLToPath } from "url";
+import dotenv from "dotenv";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// Load .env from the repo root before Astro/Vite evaluates SSR package code.
+dotenv.config({ path: path.resolve(__dirname, "../../.env") });
+
+/**
+ * Shim `cloudflare:workers` for local dev with Vercel adapter.
+ * The middleware imports `import { env } from "cloudflare:workers"`.
+ */
+function shimCloudflareWorkers() {
+  const VIRTUAL_ID = "cloudflare:workers";
+  return {
+    name: "shim-cloudflare-workers",
+    resolveId(id) {
+      if (id === VIRTUAL_ID) return "\0" + VIRTUAL_ID;
+    },
+    load(id) {
+      if (id === "\0" + VIRTUAL_ID) {
+        return `export const env = process.env;`;
+      }
+    },
+  };
+}
 
 // https://astro.build/config
 export default defineConfig({
@@ -19,7 +42,7 @@ export default defineConfig({
         "@/": path.resolve(__dirname, "./src"),
       },
     },
-    plugins: [tailwindcss()],
+    plugins: [shimCloudflareWorkers(), tailwindcss()],
   },
 
   integrations: [
@@ -46,7 +69,7 @@ export default defineConfig({
           "credit-card",
           "dollar-sign",
           "ellipsis-vertical",
-           "factory",
+          "factory",
           "folder-open",
           "file-text",
           "folders",

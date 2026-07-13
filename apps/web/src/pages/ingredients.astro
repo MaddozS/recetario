@@ -794,9 +794,10 @@ void redirectWithFeedback;
       return Number(normalized);
     };
 
-    import { formatCurrency } from "@recetario/billing";
     import { bindDialogBackdrop } from "@recetario/ui/dialog";
     import { showLoadingOverlay } from "@recetario/ui/loading-overlay";
+
+    const formatCurrency = (value: number) => `$${value.toFixed(2)}`;
 
     const syncIngredientFormState = (form: HTMLElement) => {
       const nameInput = form.querySelector('[name="name"]');
@@ -811,6 +812,7 @@ void redirectWithFeedback;
       if (!(priceInput instanceof HTMLInputElement)) return;
       if (!(quantityInput instanceof HTMLInputElement)) return;
       if (!(unitInput instanceof HTMLSelectElement)) return;
+      if (!(submitButton instanceof HTMLButtonElement)) return;
       if (!(costValue instanceof HTMLElement)) return;
       if (!(costUnit instanceof HTMLElement)) return;
 
@@ -1094,7 +1096,7 @@ void redirectWithFeedback;
 
     document.querySelectorAll("form").forEach((form) => {
       if (!(form instanceof HTMLFormElement)) return;
-      const btn = form.querySelector<HTMLButtonElement>("[data-submit-button]");
+      const btn = form.querySelector<HTMLButtonElement>('[type="submit"]');
       if (!btn) return;
       if (form.dataset.submitBound === "1") return;
       form.dataset.submitBound = "1";

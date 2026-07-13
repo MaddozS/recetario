@@ -221,7 +221,7 @@ export function extractTimersFromHtml(html: string): TimerInfo[] {
 
 export function parseHtmlSteps(html: string): string[] {
   const steps: string[] = [];
-  const blockRe = /<(div|h2|h3|p|ol|ul|li)[^>]*>[\s\S]*?<\/\1>/gi;
+  const blockRe = /<(div|h2|h3|p)[^>]*>[\s\S]*?<\/\1>/gi;
   let m: RegExpExecArray | null;
   while ((m = blockRe.exec(html)) !== null) {
     const block = m[0].trim();

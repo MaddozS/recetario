@@ -57,6 +57,7 @@ const ownerId = recipeId || presentationId;
 
 <fixed-cost-card
   class="bg-card border-border flex flex-col rounded-2xl border p-5 shadow-sm transition-all"
+  data-mode="display"
   data-id={id}
   data-type={type}
   data-base={base}
@@ -341,6 +342,7 @@ const ownerId = recipeId || presentationId;
 
     // State
     isEditing: boolean = false;
+    isCreateMode: boolean = false;
     originalName: string = "";
     originalType: string = "";
     originalBase: string = "";
@@ -381,8 +383,17 @@ const ownerId = recipeId || presentationId;
       this.form = this.querySelector<HTMLFormElement>("form");
       this.errorEl = this.querySelector<HTMLParagraphElement>(".fixed-cost-error");
 
-      // Edit toggle
-      this.btnEdit?.addEventListener("click", () => this.toggleEdit());
+      this.isCreateMode = this.dataset.mode === "create";
+
+      if (this.isCreateMode) {
+        // Start in edit mode
+        this.displayContent?.classList.add("hidden");
+        this.editContent?.classList.remove("hidden");
+        this.isEditing = true;
+      } else {
+        // Edit toggle - only for display mode
+        this.btnEdit?.addEventListener("click", () => this.toggleEdit());
+      }
       this.btnCancel?.addEventListener("click", () => this.toggleEdit(false));
       this.btnDelete?.addEventListener("click", () => this.openDeleteDialog());
       this.btnEditDelete?.addEventListener("click", () => this.openDeleteDialog());
@@ -452,8 +463,18 @@ const ownerId = recipeId || presentationId;
             throw new Error("La respuesta del servidor no fue válida.");
           }
 
+          if (this.isCreateMode) {
+            // Replace with server-rendered display card
+            if (payload.fixedCostCardHtml) {
+              this.outerHTML = payload.fixedCostCardHtml;
+            }
+            window.location.href = window.location.pathname + '?_fc=' + Date.now();
+            return;
+          }
+
           this.applyFixedCost(payload.fixedCost);
           this.toggleEdit(true);
+          window.location.href = window.location.pathname + '?_fc=' + Date.now();
         } catch (error) {
           console.error(error);
           const message =
@@ -473,6 +494,10 @@ const ownerId = recipeId || presentationId;
     }
 
     toggleEdit(save = false) {
+      if (this.isCreateMode && !save) {
+        this.remove();
+        return;
+      }
       this.isEditing = !this.isEditing;
 
       if (this.isEditing) {
@@ -684,6 +709,7 @@ const ownerId = recipeId || presentationId;
 
         this.closeDeleteDialog();
         this.remove();
+        window.location.href = window.location.pathname + '?_fc=' + Date.now();
       } catch (error) {
         console.error(error);
         const message =

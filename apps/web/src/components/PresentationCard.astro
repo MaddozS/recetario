@@ -56,19 +56,6 @@ const defaultSalePrice =
   typeof salePrice === "number" ? salePrice : unitPriceRecommended;
 const unitProfit = defaultSalePrice - unitCost;
 
-// Compute per-item display amounts
-const fcItemsWithAmount = presentationFixedCosts.map((fc) => {
-  let amount: number;
-  if (fc.type === "AMOUNT") {
-    if (fc.base === "PER_UNIT") amount = fc.value * unitsPerBatch * multiplier;
-    else amount = fc.value * multiplier;
-  } else {
-    amount = costoProduccionRealBatch * (fc.value / 100);
-  }
-  return { ...fc, totalAmount: amount };
-});
-
-const hasFixedCosts = presentationFixedCosts.length > 0;
 const fixedCostsJson = JSON.stringify(presentationFixedCosts);
 ---
 
@@ -203,42 +190,7 @@ const fixedCostsJson = JSON.stringify(presentationFixedCosts);
       </div>
     </div>
 
-    <!-- Presentation fixed costs breakdown -->
-    {
-      hasFixedCosts && (
-        <div class="presentation-fixed-costs mb-3 space-y-1">
-          <p
-            class="text-subtle-foreground text-[11px] font-bold tracking-[0.16em] uppercase"
-          >
-            Costos Fijos de Presentación
-          </p>
-          <div class="space-y-0.5">
-            {fcItemsWithAmount.map((fc) => (
-              <div
-                class="flex items-center justify-between text-xs"
-              >
-                <span class="text-muted-foreground">{fc.name}</span>
-                <span
-                  class="fc-line-amount font-mono font-semibold tabular-nums text-foreground"
-                >
-                  ${fc.totalAmount.toFixed(2)}
-                </span>
-              </div>
-            ))}
-          </div>
-          <div class="flex items-center justify-between border-border-light border-t pt-0.5 text-xs">
-            <span class="text-foreground font-semibold">Total C.F.</span>
-            <span
-              class="fc-total-display font-mono font-semibold tabular-nums text-foreground"
-            >
-              ${presentationFixedCostsTotal.toFixed(2)}
-            </span>
-          </div>
-        </div>
-      )
-    }
-
-    <hr class="border-border-light my-1 mb-5" />
+    <hr class="border-border-light my-1 mt-4 mb-5" />
 
     <div class="mt-auto flex items-end justify-between gap-4">
       <div class="space-y-0.5">

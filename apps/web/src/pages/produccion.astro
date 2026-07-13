@@ -171,7 +171,6 @@ const currentPage = "production";
 
 <script>
   import { calculateProduction } from "../lib/production-calculator";
-  import { formatCurrency } from "@recetario/billing";
   import type {
     ConsolidatedIngredient,
     ProductionSummary,
@@ -183,6 +182,7 @@ const currentPage = "production";
   let recipeData: RecipeWithIngredients[] = [];
   let debounceTimer: ReturnType<typeof setTimeout> | undefined;
   const BASIC_LIMIT = 3;
+  const formatCurrency = (value: number): string => `$${value.toFixed(2)}`;
 
   function formatQty(value: number): string {
     if (value < 1) return value.toFixed(3);

@@ -164,7 +164,7 @@ const errorMessage = errorCode
     signInWithEmail,
     signInWithGoogle,
     getSafeRedirect,
-  } from "@recetario/auth";
+  } from "@recetario/auth/client";
   import { setupPasswordToggles } from "@recetario/ui/password-toggle";
   import { showLoadingOverlay } from "@recetario/ui/loading-overlay";
 
@@ -232,7 +232,9 @@ const errorMessage = errorCode
                   btn.textContent = "Enviando...";
                   btn.setAttribute("disabled", "true");
                   try {
-                    const { authClient } = await import("@recetario/auth");
+                    const { authClient } = await import(
+                      "@recetario/auth/client"
+                    );
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     await (authClient as any).sendVerificationEmail({
                       email,

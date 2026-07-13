@@ -7,24 +7,25 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
+    "deploy": "wrangler deploy",
     "astro": "astro",
     "format": "prettier --write .",
+    "lint": "eslint .",
     "type-check": "astro check",
-    "postinstall": "pnpm --filter @recetario/db exec prisma generate",
-    "vercel-build": "pnpm --filter @recetario/db exec prisma generate && pnpm --filter @recetario/db exec tsx prisma/fix-failed-migration.ts && pnpm --filter @recetario/db exec prisma migrate deploy && astro build"
+    "postinstall": "$npm_execpath --filter @recetario/db exec prisma generate",
+    "cloudflare-build": "$npm_execpath --filter @recetario/db exec prisma generate && $npm_execpath --filter @recetario/db exec prisma migrate deploy && astro build"
   },
   "dependencies": {
     "@recetario/auth": "workspace:^",
     "@recetario/billing": "workspace:^",
     "@recetario/db": "workspace:^",
     "@recetario/ui": "workspace:^",
-    "@astrojs/vercel": "10.0.7",
+    "@astrojs/vercel": "^6.0.0",
     "@iconify-json/lucide": "1.2.107",
     "@tailwindcss/vite": "4.3.0",
     "astro": "6.3.3",
     "astro-icon": "1.1.5",
     "dotenv": "17.4.2",
-    "sanitize-html": "^2.17.4",
     "tailwindcss": "4.3.0"
   },
   "devDependencies": {
@@ -34,7 +35,6 @@
     "@playwright/test": "^1.60.0",
     "@types/node": "25.8.0",
     "@types/pg": "8.20.0",
-    "@types/sanitize-html": "^2.16.1",
     "@typescript-eslint/parser": "^8.59.3",
     "eslint": "10.4.0",
     "eslint-plugin-astro": "1.7.0",

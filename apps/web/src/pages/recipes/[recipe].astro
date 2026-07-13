@@ -22,6 +22,7 @@ import { validateCsrf } from '@recetario/auth';
 import { UNIT_OPTIONS } from '@/lib/constants';
 import FeedbackAlert from '../../components/FeedbackAlert.astro';
 import RecipeInstructions from '../../components/RecipeInstructions.astro';
+import InstructionsEditor from '../../components/InstructionsEditor.astro';
 import { Button, Badge, FinancialSummary, SectionHeading, Card } from "@recetario/ui";
 import RecipeActionsMenu from "../../components/RecipeActionsMenu.astro";
 import RecipeFixedCosts from "../../components/RecipeFixedCosts.astro";
@@ -765,21 +766,6 @@ const buildFinancialRows = () => {
       { label: "Costo Insumos", value: `$${costoDirectoTotal.toFixed(2)}`, subtitle: "Costo base de materiales", color: "danger" },
     ];
 
-    // One row per fixed cost
-    for (const fc of recipe.recipeFixedCosts ?? []) {
-      const amount = computeFixedCostAmount(fc);
-      const valDisplay = fc.type === 'PERCENTAGE'
-        ? `${fc.value}%`
-        : `$${Number(fc.value).toFixed(2)}`;
-      const suffix = fc.base === 'PER_HOUR' && fc.hours != null ? ` (${fc.hours}h)` : '';
-      baseRows.push({
-        label: fc.name,
-        value: `$${amount.toFixed(2)}`,
-        subtitle: `${valDisplay}${suffix}`,
-        color: "muted" as const,
-      });
-    }
-
     // Total fixed costs summary row
     baseRows.push({
       label: "Total Costos Fijos",
@@ -804,7 +790,7 @@ const buildFinancialRows = () => {
       color: "success" as const,
     });
 
-    return { rows: baseRows, highlightIndex: 3, editRowIndices: [4] };
+    return { rows: baseRows, highlightIndex: 2, editRowIndices: [3] };
   }
 
   // Legacy mode
@@ -824,7 +810,7 @@ const { rows: financialRows, highlightIndex: financialHighlightIndex } = buildFi
 
 const buildFinancialEditFields = () => {
   if (hasAdvancedCosts) {
-    return [{ rowIndex: 4, name: "desiredMargin", currentValue: desiredMarginValue.toString(), suffix: "%" }];
+    return [{ rowIndex: 3, name: "desiredMargin", currentValue: desiredMarginValue.toString(), suffix: "%" }];
   }
   return [
     { rowIndex: 1, name: "fixedCostsPercentage", currentValue: fixedCostsPercentageValue.toString(), suffix: "%" },
@@ -954,6 +940,17 @@ const financialEditFields = buildFinancialEditFields();
         </form>
       )}
 
+      <!-- Financial Summary -->
+      <div class="py-6 sm:py-8">
+        <FinancialSummary
+          rows={financialRows}
+          highlightRow={financialHighlightIndex}
+          isEditMode={isEditMode}
+          editFormId={recipeEditFormId}
+          editFields={financialEditFields}
+        />
+      </div>
+
       <!-- Tabs -->
       <div class="flex border-b border-border mb-6" role="tablist" id="recipe-tabs" aria-label="Secciones de la receta">
         <button
@@ -986,12 +983,15 @@ const financialEditFields = buildFinancialEditFields();
         >
           Presentaciones
         </button>
+        <button role="tab" id="tab-preparacion" class="tab-btn px-4 py-2.5 text-sm font-bold border-b-2 -mb-px transition-colors" aria-selected="false" aria-controls="panel-preparacion" data-tab="preparacion">
+          Preparación
+        </button>
       </div>
 
       <!-- Tab Panels -->
       <!-- Ingredientes -->
       <div id="panel-ingredientes" role="tabpanel" aria-labelledby="tab-ingredientes" class="tab-panel">
-        <Card class="!p-0 overflow-hidden">
+        <Card class="!p-0 overflow-visible">
           <div class="flex items-center justify-between px-5 sm:px-6 lg:px-8 py-5 border-b border-border-light bg-card">
             <h2 class="text-sm font-bold text-foreground">Lista de Ingredientes</h2>
             <label class="flex items-center gap-2 text-xs text-muted-foreground bg-background px-3 py-1.5 rounded-lg border border-border cursor-pointer hover:bg-muted transition-colors">
@@ -1014,11 +1014,32 @@ const financialEditFields = buildFinancialEditFields();
                    <div class="edit-ingredient-row grid grid-cols-1 gap-3 rounded-2xl border border-border bg-background/50 p-3 md:grid-cols-[minmax(0,2.4fr)_minmax(0,13rem)_minmax(0,1fr)_3rem] md:items-center md:bg-card md:p-0 md:border-0 md:rounded-none md:border-b md:border-border-light md:pb-3">
                     <div class="space-y-1 min-w-0">
                       <label class="text-[10px] uppercase font-bold text-subtle-foreground md:sr-only">Ingrediente</label>
-                       <select name="ingredientId" form={recipeEditFormId} class="ingredient-select w-full bg-card md:bg-background border border-border rounded-xl p-2 text-sm font-semibold text-secondary-foreground focus:ring-2 focus:ring-accent-500/20">
-                        {allIngredients.map(i => (
-                          <option value={i.id} data-unit={i.unit} selected={i.id === ri.ingredientId}>{i.name}</option>
-                        ))}
-                      </select>
+                      <div class="ingredient-picker relative" data-ingredient-picker>
+                        <select name="ingredientId" form={recipeEditFormId} class="hidden">
+                          {allIngredients.map(i => (
+                            <option value={i.id} data-unit={i.unit} selected={i.id === ri.ingredientId}>{i.name}</option>
+                          ))}
+                        </select>
+                        <div class="relative">
+                          <input type="text"
+                            class="ingredient-search-input w-full bg-card md:bg-background border border-border rounded-xl pl-9 pr-8 p-2 text-sm font-semibold text-secondary-foreground focus:ring-2 focus:ring-accent-500/20 placeholder:text-muted-foreground"
+                            placeholder="Buscar..."
+                            autocomplete="off"
+                            value={allIngredients.find(i => i.id === ri.ingredientId)?.name ?? ''}
+                          />
+                          <svg class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                          <button type="button" class="ingredient-picker-clear absolute right-2 top-1/2 -translate-y-1/2 hidden" aria-label="Limpiar">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-muted-foreground"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                          </button>
+                        </div>
+                        <div class="ingredient-dropdown hidden absolute z-50 left-0 right-0 mt-1 max-h-48 overflow-y-auto bg-card border border-border rounded-xl shadow-lg">
+                          {allIngredients.map(i => (
+                            <button type="button" class="ingredient-option w-full text-left px-3 py-2 text-sm text-secondary-foreground hover:bg-accent-50 hover:text-accent-600 transition-colors" data-value={i.id} data-unit={i.unit}>
+                              {i.name}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
                     </div>
 
                     <div class="space-y-1 min-w-0">
@@ -1158,17 +1179,6 @@ const financialEditFields = buildFinancialEditFields();
           )}
         </Card>
 
-        {
-          !isEditMode && instructions && (
-            <div class="mt-6">
-              <RecipeInstructions
-                instructions={instructions}
-                ingredients={ingredients}
-                isPro={hasCookingMode}
-              />
-            </div>
-          )
-        }
       </div>
 
       <!-- Costos Fijos -->
@@ -1209,11 +1219,14 @@ const financialEditFields = buildFinancialEditFields();
                   costoProduccionRealBatch={presBatchCost}
                   precioVentaSugeridoBatch={presPrecioVentaSugerido}
                 />
-                <PresentationFixedCosts
-                  presentationFixedCosts={pres.fixedCosts ?? []}
-                  presentationId={pres.id}
-                  isEditing={isEditMode}
-                />
+{/* PresentationFixedCosts hidden until presentation-level FC planning is complete */}
+                {false ? (
+                  <PresentationFixedCosts
+                    presentationFixedCosts={pres.fixedCosts ?? []}
+                    presentationId={pres.id}
+                    isEditing={isEditMode}
+                  />
+                ) : null}
               </div>
             );
           })}
@@ -1320,16 +1333,32 @@ const financialEditFields = buildFinancialEditFields();
           </form>
         </dialog>
       </div>
-
-      <!-- Financial Summary - always visible below tabs -->
-      <div class="pt-6">
-        <FinancialSummary
-          rows={financialRows}
-          highlightRow={financialHighlightIndex}
-          isEditMode={isEditMode}
-          editFormId={recipeEditFormId}
-          editFields={financialEditFields}
-        />
+      <!-- Preparación -->
+      <div id="panel-preparacion" role="tabpanel" aria-labelledby="tab-preparacion" class="tab-panel" hidden>
+        {isEditMode ? (
+          <InstructionsEditor
+            recipeEditFormId={recipeEditFormId}
+            instructions={instructions}
+            ingredients={ingredients}
+            recipeIngredientIds={recipeIngredients.map(ri => ri.ingredientId)}
+          />
+        ) : instructions ? (
+          <RecipeInstructions
+            instructions={instructions}
+            ingredients={ingredients}
+            isPro={hasCookingMode}
+          />
+        ) : (
+          <div class="bg-card border-border mx-1 mt-6 overflow-hidden rounded-2xl border shadow-sm sm:mx-2 lg:mx-8">
+            <div class="border-border-light flex items-center gap-3 border-b px-5 py-5 sm:px-6 lg:px-8">
+              <h2 class="text-foreground flex items-center gap-2 text-sm font-bold">Preparación</h2>
+            </div>
+            <div class="px-5 py-12 sm:px-6 lg:px-8 text-center">
+              <p class="text-muted-foreground text-sm">No hay instrucciones todavía.</p>
+              <p class="text-subtle-foreground mt-2 text-xs">Haz clic en <strong>Editar</strong> para agregar la preparación de esta receta.</p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   </div>
@@ -1461,10 +1490,12 @@ const financialEditFields = buildFinancialEditFields();
       if (window.location.hash !== `#${tabId}`) {
         history.replaceState(null, '', `#${tabId}`);
       }
+      // Persist tab across redirects
+      try { sessionStorage.setItem(`recipe-tab:${window.location.pathname}`, tabId); } catch {}
     };
 
     // Get initial tab from hash or default to ingredientes
-    const initialTab = window.location.hash?.replace('#', '') || 'ingredientes';
+    const initialTab = window.location.hash?.replace('#', '') || sessionStorage.getItem(`recipe-tab:${window.location.pathname}`) || 'ingredientes';
     activateTab(initialTab);
 
     // Tab click handlers
@@ -1486,7 +1517,7 @@ const financialEditFields = buildFinancialEditFields();
         const currentTab = document.activeElement as HTMLButtonElement;
         if (!currentTab?.classList.contains('tab-btn')) return;
 
-        const tabIds = ['ingredientes', 'costos-fijos', 'presentaciones'];
+        const tabIds = ['ingredientes', 'costos-fijos', 'presentaciones', 'preparacion'];
         const currentIndex = tabIds.indexOf(currentTab.dataset.tab || '');
         let nextIndex = -1;
 
@@ -1509,7 +1540,7 @@ const financialEditFields = buildFinancialEditFields();
     // Hash change listener
     const handleHashChange = () => {
       const hash = window.location.hash?.replace('#', '') || 'ingredientes';
-      if (['ingredientes', 'costos-fijos', 'presentaciones'].includes(hash)) {
+      if (['ingredientes', 'costos-fijos', 'presentaciones', 'preparacion'].includes(hash)) {
         activateTab(hash);
       }
     };
@@ -1534,11 +1565,32 @@ const financialEditFields = buildFinancialEditFields();
     <div class="edit-ingredient-row grid grid-cols-1 gap-3 rounded-2xl border border-border bg-background/50 p-3 md:grid-cols-[minmax(0,2.4fr)_minmax(0,13rem)_minmax(0,1fr)_3rem] md:items-center md:bg-card md:p-0 md:border-0 md:rounded-none md:border-b md:border-border-light md:pb-3">
       <div class="space-y-1 min-w-0">
         <label class="text-[10px] uppercase font-bold text-subtle-foreground md:hidden">Ingrediente</label>
-          <select name="ingredientId" form={recipeEditFormId} class="ingredient-select w-full bg-card md:bg-background border border-border rounded-xl p-2 text-sm font-semibold text-secondary-foreground focus:ring-2 focus:ring-accent-500/20">
-          {allIngredients.map(i => (
-            <option value={i.id} data-unit={i.unit}>{i.name}</option>
-          ))}
-        </select>
+        <div class="ingredient-picker relative" data-ingredient-picker>
+          <select name="ingredientId" form={recipeEditFormId} class="hidden">
+            {allIngredients.map(i => (
+              <option value={i.id} data-unit={i.unit}>{i.name}</option>
+            ))}
+          </select>
+          <div class="relative">
+            <input type="text"
+              class="ingredient-search-input w-full bg-card md:bg-background border border-border rounded-xl pl-9 pr-8 p-2 text-sm font-semibold text-secondary-foreground focus:ring-2 focus:ring-accent-500/20 placeholder:text-muted-foreground"
+              placeholder="Buscar..."
+              autocomplete="off"
+              value=""
+            />
+            <svg class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <button type="button" class="ingredient-picker-clear absolute right-2 top-1/2 -translate-y-1/2 hidden" aria-label="Limpiar">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-muted-foreground"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+          </div>
+          <div class="ingredient-dropdown hidden absolute z-50 left-0 right-0 mt-1 max-h-48 overflow-y-auto bg-card border border-border rounded-xl shadow-lg">
+            {allIngredients.map(i => (
+              <button type="button" class="ingredient-option w-full text-left px-3 py-2 text-sm text-secondary-foreground hover:bg-accent-50 hover:text-accent-600 transition-colors" data-value={i.id} data-unit={i.unit}>
+                {i.name}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
       <div class="space-y-1 min-w-0">
         <label class="text-[10px] uppercase font-bold text-subtle-foreground md:hidden">Cantidad</label>
@@ -1600,6 +1652,102 @@ const financialEditFields = buildFinancialEditFields();
           if (!hasAtLeastOneIngredient) {
             event.preventDefault();
             window.alert('Agrega al menos un ingrediente antes de guardar.');
+          }
+        });
+      }
+
+      // Ingredient picker — event delegation
+      if (tbody && tbody.dataset.pickerBound !== '1') {
+        tbody.dataset.pickerBound = '1';
+
+        const closeAllDropdowns = () => {
+          tbody.querySelectorAll('.ingredient-dropdown').forEach(d => d.classList.add('hidden'));
+        };
+
+        tbody.addEventListener('focusin', (e) => {
+          const input = e.target.closest('.ingredient-search-input');
+          if (input) {
+            closeAllDropdowns();
+            const picker = input.closest('.ingredient-picker');
+            const dropdown = picker?.querySelector('.ingredient-dropdown');
+            if (dropdown) dropdown.classList.remove('hidden');
+          }
+        });
+
+        tbody.addEventListener('input', (e) => {
+          const input = e.target.closest('.ingredient-search-input');
+          if (!input) return;
+          const picker = input.closest('.ingredient-picker');
+          if (!picker) return;
+          const dropdown = picker.querySelector('.ingredient-dropdown');
+          const clearBtn = picker.querySelector('.ingredient-picker-clear');
+          const query = input.value.toLowerCase().trim();
+
+          if (clearBtn) clearBtn.classList.toggle('hidden', !query);
+
+          const options = dropdown?.querySelectorAll('.ingredient-option');
+          if (!options) return;
+          let hasVisible = false;
+          options.forEach(opt => {
+            const text = (opt.textContent || '').toLowerCase();
+            const match = !query || text.includes(query);
+            opt.classList.toggle('hidden', !match);
+            if (match) hasVisible = true;
+          });
+          if (!hasVisible && dropdown) dropdown.classList.add('hidden');
+          else if (dropdown) dropdown.classList.remove('hidden');
+        });
+
+        tbody.addEventListener('click', (e) => {
+          const option = e.target.closest('.ingredient-option');
+          if (!option) return;
+          const picker = option.closest('.ingredient-picker');
+          if (!picker) return;
+          const select = picker.querySelector('select');
+          const input = picker.querySelector('.ingredient-search-input');
+          const dropdown = picker.querySelector('.ingredient-dropdown');
+          const clearBtn = picker.querySelector('.ingredient-picker-clear');
+
+          const val = option.dataset.value;
+          if (select && val) {
+            select.value = val;
+            select.dispatchEvent(new Event('change', { bubbles: true }));
+          }
+          if (input) input.value = option.textContent || '';
+          if (dropdown) dropdown.classList.add('hidden');
+          if (clearBtn) clearBtn.classList.remove('hidden');
+        });
+
+        tbody.addEventListener('click', (e) => {
+          const clearBtn = e.target.closest('.ingredient-picker-clear');
+          if (!clearBtn) return;
+          const picker = clearBtn.closest('.ingredient-picker');
+          if (!picker) return;
+          const select = picker.querySelector('select');
+          const input = picker.querySelector('.ingredient-search-input');
+          const dropdown = picker.querySelector('.ingredient-dropdown');
+          const options = dropdown?.querySelectorAll('.ingredient-option');
+          if (select) select.value = '';
+          if (input) input.value = '';
+          if (options) options.forEach(opt => opt.classList.remove('hidden'));
+          if (clearBtn) clearBtn.classList.add('hidden');
+          if (dropdown) dropdown.classList.add('hidden');
+        });
+
+        document.addEventListener('click', (e) => {
+          const picker = e.target.closest('.ingredient-picker');
+          if (!picker) closeAllDropdowns();
+        });
+      }
+
+      // Close dropdowns on Escape
+      if (document.body && document.body.dataset.escPickerBound !== '1') {
+        document.body.dataset.escPickerBound = '1';
+        document.body.addEventListener('keydown', (e) => {
+          if (e.key !== 'Escape') return;
+          const tbody = document.getElementById('edit-ingredients-tbody');
+          if (tbody) {
+            tbody.querySelectorAll('.ingredient-dropdown').forEach(d => d.classList.add('hidden'));
           }
         });
       }

@@ -1,4 +1,5 @@
 import { defineMiddleware } from "astro:middleware";
+import { env } from "cloudflare:workers";
 // ── Orchestration imports (thin delegation to @recetario/* packages) ──────────
 import { auth, generateToken, getCsrfCookie } from "@recetario/auth";
 import {
@@ -11,6 +12,30 @@ import { cacheGet, cacheSet, logAuditEvent, prisma } from "@recetario/db";
 const globals = globalThis as typeof globalThis & {
   __plansSeeded?: boolean;
 };
+
+const ENV_KEYS = [
+  "DATABASE_URL",
+  "BETTER_AUTH_SECRET",
+  "BETTER_AUTH_URL",
+  "GOOGLE_CLIENT_ID",
+  "GOOGLE_CLIENT_SECRET",
+  "PUBLIC_APP_URL",
+  "RECIPES_STATIC_OWNER_EMAIL",
+  "RECIPES_STATIC_OWNER_ID",
+  "RESEND_API_KEY",
+  "SENDER_EMAIL",
+  "STRIPE_SECRET_KEY",
+  "STRIPE_WEBHOOK_SECRET",
+] as const;
+
+function syncBindingsToProcessEnv(bindings: Record<string, unknown>): void {
+  for (const key of ENV_KEYS) {
+    const value = bindings[key];
+    if (typeof value === "string" && !process.env[key]) {
+      process.env[key] = value;
+    }
+  }
+}
 
 function setSecurityHeaders(response: Response): void {
   response.headers.set("X-Content-Type-Options", "nosniff");
@@ -48,6 +73,8 @@ async function detectSignInEvent(
 }
 
 export const onRequest = defineMiddleware(async (context, next) => {
+  syncBindingsToProcessEnv(env as Record<string, unknown>);
+
   // ── 1. Auth: resolve session from request headers ──────────────────────────
   const session = await auth.api.getSession({
     headers: context.request.headers,
