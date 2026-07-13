@@ -7,3 +7,6 @@ dist/
 .agents/
 .vscode/
 .vercel/
+.turbo/
+packages/
+packages.json
