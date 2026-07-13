@@ -1,0 +1,113 @@
+{
+  "task_id": "20260702-recipe-bugs",
+  "phase": "accepted",
+  "repo_scope": ["apps/web"],
+  "spec": "Fix 6 bugs on recipe detail page: (1) fixed cost add button always visible, (2) remove per-fixed-cost rows from financial summary, (3) desired margin always editable, (4) move FinancialSummary above tabs, (5) preserve tab state across redirects, (6) disable slide animation for edit-mode navigation",
+  "acceptance_criteria": [
+    "Fixed cost add button visible without entering edit mode",
+    "FinancialSummary shows 4 stable rows (Insumos, Total Costos Fijos, Costo Total Receta, Margen Deseado) in advanced mode",
+    "Desired margin field editable regardless of fixed cost count",
+    "FinancialSummary renders above tab bar",
+    "Tab state preserved after edit-mode redirects",
+    "Slide animation only plays on cross-recipe navigation, not edit mode toggle"
+  ],
+  "selected_skills": ["ponytail", "security-best-practices", "design-system-verify", "ponytail-review"],
+  "discarded_skills": ["ui-ux-pro-max", "stripe-best-practices", "prisma-client-api"],
+  "memory_context": {
+    "artifacts_read": [
+      "docs/analysis/analysis-20260612-143000-costos-fijos-avanzados.md",
+      "docs/analysis/analysis-20260702-recipe-page-bugs-explore.md"
+    ],
+    "facts_reused": [
+      "Recipe page has 3 tabs (ingredientes, costos-fijos, presentaciones)",
+      "FinancialSummary at lines 1345-1354, below tabs",
+      "buildFinancialRows() lines 762-808 for advanced mode",
+      "buildFinancialEditFields() line 827 has rowIndex: 4 for margin",
+      "RecipeFixedCosts.astro lines 30,67 have isEditing && guards",
+      "setupTabs at lines 1459-1542, reads hash for initial tab",
+      "transition:animate='slide' at line 839"
+    ],
+    "risks_reused": [
+      "SessionStorage could persist stale state across new tabs"
+    ],
+    "ignored_artifacts": [
+      "docs/analysis/analysis-20260608-* — unrelated UI fixes",
+      "docs/analysis/analysis-20260607-* — unrelated recipe header/button fixes"
+    ]
+  },
+  "agent_runs": [
+    {
+      "agent": "kitchcalc-explore",
+      "task": "Explore recipe page code",
+      "context": "Explore recipe page structure for bug fixing",
+      "artifacts": ["docs/analysis/analysis-20260702-recipe-page-bugs-explore.md"],
+      "outcome": "complete"
+    },
+    {
+      "agent": "kitchcalc-planner",
+      "task": "Plan recipe page bug fixes",
+      "context": "Explorer report + inline spec",
+      "artifacts": ["docs/plans/plan-20260702-recipe-bugs.md"],
+      "outcome": "ready"
+    },
+    {
+      "agent": "kitchcalc-builder",
+      "task": "Build recipe.astro fixes (bugs 2,3,4,5)",
+      "context": "Task file: task-20260702-recipe-bugs-builder-1.md",
+      "artifacts": ["docs/tasks/task-20260702-recipe-bugs-builder-1-report.md"],
+      "outcome": "pass"
+    },
+    {
+      "agent": "kitchcalc-builder",
+      "task": "Build fixed costs button fix (bug 1)",
+      "context": "Task file: task-20260702-recipe-bugs-builder-2.md",
+      "artifacts": ["docs/tasks/task-20260702-recipe-bugs-builder-2-report.md"],
+      "outcome": "pass"
+    },
+    {
+      "agent": "kitchcalc-builder",
+      "task": "Build animation fix (bug 6)",
+      "context": "Task file: task-20260702-recipe-bugs-builder-3.md",
+      "artifacts": ["docs/tasks/task-20260702-recipe-bugs-builder-3-report.md"],
+      "outcome": "pass"
+    },
+    {
+      "agent": "kitchcalc-validator",
+      "task": "Validate recipe bug fixes",
+      "context": "Task file: task-20260702-recipe-bugs-validator.md",
+      "artifacts": ["docs/tasks/task-20260702-recipe-bugs-validator-report.md"],
+      "outcome": "partial (pre-existing eslint/build issues, visual QA blocked by auth)"
+    },
+    {
+      "agent": "kitchcalc-reviewer",
+      "task": "Review recipe bug fixes",
+      "context": "Task file: task-20260702-recipe-bugs-reviewer.md",
+      "artifacts": ["docs/tasks/task-20260702-recipe-bugs-reviewer-report.md"],
+      "outcome": "accept"
+    }
+  ],
+  "files_changed": [
+    "apps/web/src/pages/recipes/[recipe].astro",
+    "apps/web/src/components/RecipeFixedCosts.astro",
+    "apps/web/src/components/RecipeActionsMenu.astro"
+  ],
+  "commands_run": ["pnpm astro check (0 errors)"],
+  "reviews": [
+    {
+      "reviewer": "kitchcalc-reviewer",
+      "verdict": "accept",
+      "notes": "Single non-blocking note: sessionStorage.getItem not wrapped in try/catch — returns null on failure, asymmetry with setItem is correct"
+    }
+  ],
+  "validation": [
+    {
+      "validator": "kitchcalc-validator",
+      "verdict": "partial",
+      "notes": "astro check passes. eslint and build fail on pre-existing monorepo issues. Visual QA blocked by auth."
+    }
+  ],
+  "accepted": true,
+  "rejected": false,
+  "human_approval_required": false,
+  "next_actions": ["Optional: fix pre-existing eslint config and billing build issue"]
+}
