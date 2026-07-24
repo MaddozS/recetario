@@ -1,6 +1,4 @@
-import type { EmailPayload } from "./email.js";
-
-type SendEmailFn = (payload: EmailPayload) => Promise<void>;
+import type { SendEmailFn } from "./email.js";
 
 export function createVerificationEmailCallback(sendEmail: SendEmailFn) {
   return async ({

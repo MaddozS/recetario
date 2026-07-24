@@ -1,6 +1,4 @@
-import type { EmailPayload } from "./email.js";
-
-type SendEmailFn = (payload: EmailPayload) => Promise<void>;
+import type { SendEmailFn } from "./email.js";
 
 type PrismaForReset = {
   user: {
@@ -45,6 +43,8 @@ export function createResetPasswordCallback(
         RESET_TOKEN_EXPIRY_MINUTES,
       );
 
+      // ponytail: strips Better Auth's query token and uses our own
+      // See ADR-0001: password-reset-token-authority
       const resetLink = `${url.split("?")[0]}?token=${resetToken}`;
       const html = getResetPasswordEmailHtml({
         resetLink,

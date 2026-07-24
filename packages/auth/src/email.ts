@@ -1,8 +1,10 @@
-type EmailPayload = {
+export type EmailPayload = {
   to: string;
   subject: string;
   html: string;
 };
+
+export type SendEmailFn = (payload: EmailPayload) => Promise<void>;
 
 export async function sendEmail(payload: EmailPayload): Promise<void> {
   const useResend = process.env.RESEND_API_KEY;
