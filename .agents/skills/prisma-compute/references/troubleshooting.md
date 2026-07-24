@@ -423,3 +423,13 @@ bunx @prisma/cli@latest build logs <build-id> --json
 Use `build logs` for build output keyed by a Build id from a GitHub check run, Console build page, or Management API build record. Use `app logs` for runtime logs keyed by the current app deployment or a deployment id.
 
 Summarize relevant errors. Do not paste secrets.
+
+## Report Unresolved CLI Issues
+
+When a CLI failure survives the checks above, or a command crashes with `UNEXPECTED_ERROR`, report it to the Prisma team:
+
+```bash
+bunx @prisma/cli@latest feedback "app deploy crashed: <first error line>"
+```
+
+Prefer the pre-filled command from a `--json` crash envelope's `nextActions` verbatim. Anonymous; never put secrets, connection URLs, or tokens in the message.
