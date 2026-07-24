@@ -18,6 +18,7 @@
   "dependencies": {
     "@recetario/auth": "workspace:^",
     "@recetario/billing": "workspace:^",
+    "@recetario/config": "workspace:^",
     "@recetario/db": "workspace:^",
     "@recetario/ui": "workspace:^",
     "@astrojs/vercel": "^6.0.0",
