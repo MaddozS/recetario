@@ -4,10 +4,13 @@ import { prisma } from "@recetario/db";
 import { sendEmail } from "./email.js";
 import { createAuthMiddleware, APIError } from "better-auth/api";
 import { validatePassword } from "./password-validation.js";
-import { getResetPasswordEmailHtml } from "./password-reset.js";
 import { lazyInit } from "@recetario/config/lazy";
-
-const RESET_TOKEN_EXPIRY_MINUTES = 10;
+import {
+  createPasswordResetToken,
+  getResetPasswordEmailHtml,
+} from "./password-reset.js";
+import { createResetPasswordCallback } from "./reset-password-callback.js";
+import { createVerificationEmailCallback } from "./verification-email-callback.js";
 
 // ponytail: lazy init — avoids reading process.env at import time
 // in Vite SSR where .env isn't loaded into process.env.
@@ -35,57 +38,15 @@ function initAuth(): any {
     emailAndPassword: {
       enabled: true,
       requireEmailVerification: true,
-      sendResetPassword: async ({ user, url, token }) => {
-        try {
-          const dbUser = await prisma.user.findUnique({
-            where: { id: user.id },
-            select: { firstName: true, name: true },
-          });
-          const userName = dbUser?.firstName || dbUser?.name || "usuario";
-
-          const resetToken = crypto.randomUUID();
-          const expiresAt = new Date(Date.now() + RESET_TOKEN_EXPIRY_MINUTES * 60 * 1000);
-
-          await prisma.passwordResetToken.deleteMany({
-            where: { userId: user.id },
-          });
-
-          await prisma.passwordResetToken.create({
-            data: {
-              userId: user.id,
-              token: resetToken,
-              expiresAt,
-            },
-          });
-
-          const resetLink = `${url.split("?")[0]}?token=${resetToken}`;
-          const html = getResetPasswordEmailHtml({
-            resetLink,
-            userName,
-            expiryMinutes: RESET_TOKEN_EXPIRY_MINUTES,
-          });
-          await sendEmail({
-            to: user.email,
-            subject: "Restablece tu contraseña - KitchCalc",
-            html,
-          });
-        } catch (e) {
-          console.error("[AUTH] sendResetPassword failed:", e);
-        }
-      },
+      sendResetPassword: createResetPasswordCallback(
+          prisma,
+          sendEmail,
+          createPasswordResetToken,
+          getResetPasswordEmailHtml,
+        ),
     },
     emailVerification: {
-      sendVerificationEmail: async ({ user, url }) => {
-        try {
-          await sendEmail({
-            to: user.email,
-            subject: "Verifica tu email - KitchCalc",
-            html: `<p>Haz clic en el enlace para verificar tu email:</p><p><a href="${url}">${url}</a></p><p>Este enlace expira en 1 hora.</p>`,
-          });
-        } catch (e) {
-          console.error("[AUTH] sendVerificationEmail failed:", e);
-        }
-      },
+      sendVerificationEmail: createVerificationEmailCallback(sendEmail),
       sendOnSignUp: true,
       sendOnSignIn: true,
       expiresIn: 3600,

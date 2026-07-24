@@ -21,7 +21,8 @@
   },
   "files": ["dist", "src"],
   "scripts": {
-    "build": "tsc --build tsconfig.build.json"
+    "build": "tsc --build tsconfig.build.json",
+    "test": "vitest run"
   },
   "dependencies": {
     "@recetario/config": "workspace:^",
@@ -33,6 +34,7 @@
   },
   "devDependencies": {
     "typescript": "^6.0.0",
-    "@types/node": "25.8.0"
+    "@types/node": "25.8.0",
+    "vitest": "^3.1.0"
   }
 }

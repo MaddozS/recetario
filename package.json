@@ -16,6 +16,7 @@
     "deploy:api": "$npm_execpath --filter @recetario/api exec wrangler deploy",
     "lint": "turbo run lint",
     "type-check": "turbo run type-check",
+    "test": "turbo run test",
     "format": "prettier --write .",
     "astro": "pnpm --filter @recetario/web astro"
   },

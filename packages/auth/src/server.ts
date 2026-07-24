@@ -28,3 +28,10 @@ export type {
   TokenValidationResult,
 } from "./password-reset.js";
 export { sendEmail } from "./email.js";
+export type { EmailPayload } from "./email.js";
+export {
+  createResetPasswordCallback,
+} from "./reset-password-callback.js";
+export {
+  createVerificationEmailCallback,
+} from "./verification-email-callback.js";
