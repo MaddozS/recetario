@@ -9,7 +9,8 @@ import {
   getRemainingSeconds,
   formatTime,
 } from "@recetario/auth/server";
-import { logAuditEvent, prisma } from "@recetario/db";
+import { logAuditEvent } from "@recetario/db";
+import { prisma } from "./lib/prisma";
 import {
   stripe,
   getPlanByStripePriceId,
@@ -234,7 +235,7 @@ app.post("/api/auth/reset-password", async (c) => {
       action: "password_reset",
       ipAddress: clientIp(c.req.raw),
       userAgent: c.req.header("user-agent") ?? null,
-    });
+    }, prisma);
 
     return c.json({
       success: true,
@@ -289,7 +290,15 @@ app.all("/api/auth/*", async (c) => {
     }
   }
 
-  return auth.handler(c.req.raw);
+  try {
+    return await auth.handler(c.req.raw);
+  } catch (error) {
+    console.error("[AUTH] handler error:", error);
+    return c.json(
+      { error: "Error interno del servidor", code: "INTERNAL_ERROR" },
+      500,
+    );
+  }
 });
 
 app.post("/api/account/update-name", async (c) => {
@@ -334,7 +343,7 @@ app.post("/api/account/change-email", async (c) => {
       action: "email_change",
       ipAddress: clientIp(c.req.raw),
       userAgent: c.req.header("user-agent") ?? null,
-    });
+    }, prisma);
     return c.body(null, 200);
   } catch (error) {
     return c.text(
@@ -371,7 +380,7 @@ app.post("/api/account/change-password", async (c) => {
       action: "password_change",
       ipAddress: clientIp(c.req.raw),
       userAgent: c.req.header("user-agent") ?? null,
-    });
+    }, prisma);
     return c.body(null, 200);
   } catch (error) {
     return c.text(
