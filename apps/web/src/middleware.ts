@@ -1,6 +1,8 @@
 import { defineMiddleware } from "astro:middleware";
 import { env } from "cloudflare:workers";
 // ── Orchestration imports (thin delegation to @recetario/* packages) ──────────
+import { syncEnvBindings } from "@recetario/config/env";
+import { clientIp, setSecurityHeaders } from "@recetario/config/request";
 import { auth, generateToken, getCsrfCookie } from "@recetario/auth";
 import {
   getUserSubscription,
@@ -13,49 +15,7 @@ const globals = globalThis as typeof globalThis & {
   __plansSeeded?: boolean;
 };
 
-const ENV_KEYS = [
-  "DATABASE_URL",
-  "BETTER_AUTH_SECRET",
-  "BETTER_AUTH_URL",
-  "GOOGLE_CLIENT_ID",
-  "GOOGLE_CLIENT_SECRET",
-  "PUBLIC_APP_URL",
-  "RECIPES_STATIC_OWNER_EMAIL",
-  "RECIPES_STATIC_OWNER_ID",
-  "RESEND_API_KEY",
-  "SENDER_EMAIL",
-  "STRIPE_SECRET_KEY",
-  "STRIPE_WEBHOOK_SECRET",
-] as const;
-
-function syncBindingsToProcessEnv(bindings: Record<string, unknown>): void {
-  for (const key of ENV_KEYS) {
-    const value = bindings[key];
-    if (typeof value === "string" && !process.env[key]) {
-      process.env[key] = value;
-    }
-  }
-}
-
-function setSecurityHeaders(response: Response): void {
-  response.headers.set("X-Content-Type-Options", "nosniff");
-  response.headers.set("X-Frame-Options", "DENY");
-  response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
-  response.headers.set(
-    "Content-Security-Policy",
-    "default-src 'self'; script-src 'self' 'unsafe-inline' https://accounts.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://api.stripe.com; frame-src https://js.stripe.com https://hooks.stripe.com https://accounts.google.com",
-  );
-}
-
 const SIGN_IN_PATHS = ["/sign-in/email", "/sign-in/social"];
-
-function clientIp(request: Request): string {
-  return (
-    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
-    request.headers.get("x-real-ip") ??
-    "unknown"
-  );
-}
 
 async function detectSignInEvent(
   path: string,
@@ -73,7 +33,7 @@ async function detectSignInEvent(
 }
 
 export const onRequest = defineMiddleware(async (context, next) => {
-  syncBindingsToProcessEnv(env as Record<string, unknown>);
+  syncEnvBindings(env as Record<string, unknown>);
 
   // ── 1. Auth: resolve session from request headers ──────────────────────────
   const session = await auth.api.getSession({

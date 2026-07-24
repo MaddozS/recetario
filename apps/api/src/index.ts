@@ -21,55 +21,10 @@ import {
   markSubscriptionPastDue,
   seedSubscriptionPlans,
 } from "@recetario/billing";
+import { syncEnvBindings } from "@recetario/config/env";
+import { clientIp, setSecurityHeaders } from "@recetario/config/request";
 
-type Bindings = {
-  DATABASE_URL?: string;
-  BETTER_AUTH_SECRET?: string;
-  BETTER_AUTH_URL?: string;
-  GOOGLE_CLIENT_ID?: string;
-  GOOGLE_CLIENT_SECRET?: string;
-  PUBLIC_APP_URL?: string;
-  RECIPES_STATIC_OWNER_EMAIL?: string;
-  RECIPES_STATIC_OWNER_ID?: string;
-  RESEND_API_KEY?: string;
-  SENDER_EMAIL?: string;
-  STRIPE_SECRET_KEY?: string;
-  STRIPE_WEBHOOK_SECRET?: string;
-};
-
-const app = new Hono<{ Bindings: Bindings }>();
-
-const ENV_KEYS = [
-  "DATABASE_URL",
-  "BETTER_AUTH_SECRET",
-  "BETTER_AUTH_URL",
-  "GOOGLE_CLIENT_ID",
-  "GOOGLE_CLIENT_SECRET",
-  "PUBLIC_APP_URL",
-  "RECIPES_STATIC_OWNER_EMAIL",
-  "RECIPES_STATIC_OWNER_ID",
-  "RESEND_API_KEY",
-  "SENDER_EMAIL",
-  "STRIPE_SECRET_KEY",
-  "STRIPE_WEBHOOK_SECRET",
-] as const;
-
-function syncBindingsToProcessEnv(bindings: Bindings): void {
-  for (const key of ENV_KEYS) {
-    const value = bindings[key];
-    if (typeof value === "string" && !process.env[key]) {
-      process.env[key] = value;
-    }
-  }
-}
-
-function clientIp(request: Request): string {
-  return (
-    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
-    request.headers.get("x-real-ip") ??
-    "unknown"
-  );
-}
+const app = new Hono();
 
 function getPeriod(obj: unknown, field: string): number {
   if (obj && typeof obj === "object" && field in obj) {
@@ -105,8 +60,9 @@ app.get("/health", (c) =>
 );
 
 app.use("*", async (c, next) => {
-  syncBindingsToProcessEnv(c.env);
+  syncEnvBindings(c.env as Record<string, unknown>);
   await next();
+  setSecurityHeaders(c.res);
 });
 
 app.post("/api/auth/forgot-password", async (c) => {
@@ -488,7 +444,7 @@ app.post("/api/stripe/webhook", async (c) => {
     event = stripe.webhooks.constructEvent(
       payload,
       signature,
-      c.env.STRIPE_WEBHOOK_SECRET ?? process.env.STRIPE_WEBHOOK_SECRET ?? "",
+      (c.env as Record<string, string | undefined>).STRIPE_WEBHOOK_SECRET ?? process.env.STRIPE_WEBHOOK_SECRET ?? "",
     );
   } catch {
     console.error("Webhook signature verification failed");
