@@ -20,11 +20,13 @@ interface Props {
 const { presentationFixedCosts, presentationId, isEditing } = Astro.props;
 ---
 
-<section class="space-y-3" data-presentation-fc-container data-presentation-id={presentationId}>
+<section
+  class="space-y-3"
+  data-presentation-fc-container
+  data-presentation-id={presentationId}
+>
   <div class="flex items-center justify-between gap-3">
-    <h3 class="text-foreground text-sm font-bold">
-      Costos Fijos
-    </h3>
+    <h3 class="text-foreground text-sm font-bold">Costos Fijos</h3>
     {
       isEditing && (
         <Button
@@ -40,24 +42,28 @@ const { presentationFixedCosts, presentationId, isEditing } = Astro.props;
   </div>
 
   <div class="flex flex-col gap-2" data-presentation-fc-list>
-    {presentationFixedCosts.length > 0 ? (
-      presentationFixedCosts.map((fc) => (
-        <FixedCostCard
-          id={fc.id}
-          name={fc.name}
-          type={fc.type}
-          base={fc.base}
-          value={fc.value}
-          hours={null}
-          isRecipeLevel={false}
-          presentationId={fc.presentationId}
-        />
-      ))
-    ) : (
-      <p class="text-muted-foreground py-4 text-center text-xs" data-presentation-fc-empty>
-        Sin costos fijos
-      </p>
-    )
+    {
+      presentationFixedCosts.length > 0 ? (
+        presentationFixedCosts.map((fc) => (
+          <FixedCostCard
+            id={fc.id}
+            name={fc.name}
+            type={fc.type}
+            base={fc.base}
+            value={fc.value}
+            hours={null}
+            isRecipeLevel={false}
+            presentationId={fc.presentationId}
+          />
+        ))
+      ) : (
+        <p
+          class="text-muted-foreground py-4 text-center text-xs"
+          data-presentation-fc-empty
+        >
+          Sin costos fijos
+        </p>
+      )
     }
   </div>
 </section>
@@ -65,7 +71,7 @@ const { presentationFixedCosts, presentationId, isEditing } = Astro.props;
 <script>
   const setupPresentationFcCreate = () => {
     const buttons = document.querySelectorAll<HTMLButtonElement>(
-      '[data-open-presentation-fc-create]',
+      "[data-open-presentation-fc-create]",
     );
 
     buttons.forEach((button) => {
@@ -78,19 +84,14 @@ const { presentationFixedCosts, presentationId, isEditing } = Astro.props;
         );
         if (!presentationId) return;
 
-        const container = button.closest(
-          "[data-presentation-fc-container]",
-        );
+        const container = button.closest("[data-presentation-fc-container]");
         if (!container) return;
 
-        const listEl = container.querySelector(
-          "[data-presentation-fc-list]",
-        );
+        const listEl = container.querySelector("[data-presentation-fc-list]");
 
         const csrfToken =
-          document.querySelector<HTMLInputElement>(
-            'input[name="_csrf"]',
-          )?.value || "";
+          document.querySelector<HTMLInputElement>('input[name="_csrf"]')
+            ?.value || "";
 
         const cardHtml = `<fixed-cost-card class="bg-card border-border flex flex-col rounded-2xl border p-5 shadow-sm transition-all" data-mode="create">
 <form method="post" class="flex flex-col">
@@ -130,9 +131,7 @@ const { presentationFixedCosts, presentationId, isEditing } = Astro.props;
         }
 
         // Remove empty state
-        const emptyEl = container.querySelector(
-          "[data-presentation-fc-empty]",
-        );
+        const emptyEl = container.querySelector("[data-presentation-fc-empty]");
         if (emptyEl) emptyEl.remove();
       });
     });

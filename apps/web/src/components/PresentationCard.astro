@@ -38,18 +38,23 @@ const hasUnits = totalUnits > 0;
 // Compute total from presentation fixed costs
 const presentationFixedCostsTotal = presentationFixedCosts.reduce((sum, fc) => {
   if (fc.type === "AMOUNT") {
-    if (fc.base === "PER_UNIT") return sum + fc.value * unitsPerBatch * multiplier;
+    if (fc.base === "PER_UNIT")
+      return sum + fc.value * unitsPerBatch * multiplier;
     return sum + fc.value * multiplier;
   }
   // PERCENTAGE
   return sum + costoProduccionRealBatch * (fc.value / 100);
 }, 0);
 
-const effectiveBatchCost = costoProduccionRealBatch + presentationFixedCostsTotal;
-const effectiveRecommendedBatchCost = precioVentaSugeridoBatch + presentationFixedCostsTotal;
+const effectiveBatchCost =
+  costoProduccionRealBatch + presentationFixedCostsTotal;
+const effectiveRecommendedBatchCost =
+  precioVentaSugeridoBatch + presentationFixedCostsTotal;
 
 const unitCost = hasUnits ? effectiveBatchCost / totalUnits : 0;
-const unitPriceRecommended = hasUnits ? effectiveRecommendedBatchCost / totalUnits : 0;
+const unitPriceRecommended = hasUnits
+  ? effectiveRecommendedBatchCost / totalUnits
+  : 0;
 
 // Default sale price to saved salePrice or recommended price
 const defaultSalePrice =
@@ -243,7 +248,7 @@ const fixedCostsJson = JSON.stringify(presentationFixedCosts);
 
   <dialog
     data-animated
-    class="delete-dialog fixed inset-0 m-auto w-[calc(100vw-2rem)] max-w-md rounded-3xl p-0 backdrop:bg-backdrop/50"
+    class="delete-dialog backdrop:bg-backdrop/50 fixed inset-0 m-auto w-[calc(100vw-2rem)] max-w-md rounded-3xl p-0"
   >
     <div class="border-border bg-card rounded-3xl border p-6 shadow-2xl">
       <div class="flex items-start gap-3">
@@ -489,7 +494,12 @@ const fixedCostsJson = JSON.stringify(presentationFixedCosts);
       }
     }
 
-    computeFixedCostsTotal(fcs: PresentationFixedCostLine[], uPerBatch: number, mult: number, batchCost: number): number {
+    computeFixedCostsTotal(
+      fcs: PresentationFixedCostLine[],
+      uPerBatch: number,
+      mult: number,
+      batchCost: number,
+    ): number {
       return fcs.reduce((sum, fc) => {
         if (fc.type === "AMOUNT") {
           if (fc.base === "PER_UNIT") return sum + fc.value * uPerBatch * mult;
@@ -780,7 +790,9 @@ const fixedCostsJson = JSON.stringify(presentationFixedCosts);
       const effectiveRecBatch = this.precioRecBatch + fcTotal;
 
       const unitCost = hasUnits ? effectiveBatchCost / totalUnits : 0;
-      const unitPriceRecommended = hasUnits ? effectiveRecBatch / totalUnits : 0;
+      const unitPriceRecommended = hasUnits
+        ? effectiveRecBatch / totalUnits
+        : 0;
 
       const parsedSalePrice = parseFloat(salePriceValue || "0");
       const salePrice =

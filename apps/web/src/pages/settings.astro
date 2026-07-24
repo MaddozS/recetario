@@ -3,10 +3,7 @@ import { Icon } from "astro-icon/components";
 import { Button, Card, PasswordInput } from "@recetario/ui";
 import BillingSection from "@/components/BillingSection.astro";
 import Layout from "@/layouts/Layout.astro";
-import {
-  getUserPreferences,
-  upsertUserPreferences,
-} from "@recetario/db";
+import { getUserPreferences, upsertUserPreferences } from "@recetario/db";
 import {
   ACCENT_FAMILIES,
   ACCENT_LABELS,
@@ -278,7 +275,7 @@ if (feedback) {
               <div
                 id="change-email-feedback"
                 class="mt-4 hidden rounded-xl border px-4 py-3 text-sm font-semibold"
-              ></div>
+              />
               <form id="change-email-form" class="mt-4 max-w-sm space-y-4">
                 <div>
                   <label
@@ -324,7 +321,7 @@ if (feedback) {
               <div
                 id="change-password-feedback"
                 class="mt-4 hidden rounded-xl border px-4 py-3 text-sm font-semibold"
-              ></div>
+              />
               <form id="change-password-form" class="mt-4 max-w-sm space-y-4">
                 <PasswordInput
                   id="current-password"

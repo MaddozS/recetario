@@ -110,16 +110,49 @@ if (Astro.locals.session) return Astro.redirect("/recipes");
               autocomplete="email"
             />
           </div>
-          <PasswordInput id="password" label="Contraseña" placeholder="Mínimo 8 caracteres" autocomplete="new-password" required minlength={8} />
-          <div id="password-rules" class="mt-1 space-y-0.5 hidden">
-            <div id="rule-min" class="text-xs flex items-center gap-1.5"><span class="rule-icon text-muted-foreground">○</span><span class="rule-text text-muted-foreground">Al menos 8 caracteres</span></div>
-            <div id="rule-upper" class="text-xs flex items-center gap-1.5"><span class="rule-icon text-muted-foreground">○</span><span class="rule-text text-muted-foreground">Una letra mayúscula</span></div>
-            <div id="rule-lower" class="text-xs flex items-center gap-1.5"><span class="rule-icon text-muted-foreground">○</span><span class="rule-text text-muted-foreground">Una letra minúscula</span></div>
-            <div id="rule-digit" class="text-xs flex items-center gap-1.5"><span class="rule-icon text-muted-foreground">○</span><span class="rule-text text-muted-foreground">Un número</span></div>
-            <div id="rule-special" class="text-xs flex items-center gap-1.5"><span class="rule-icon text-muted-foreground">○</span><span class="rule-text text-muted-foreground">Un carácter especial</span></div>
+          <PasswordInput
+            id="password"
+            label="Contraseña"
+            placeholder="Mínimo 8 caracteres"
+            autocomplete="new-password"
+            required
+            minlength={8}
+          />
+          <div id="password-rules" class="mt-1 hidden space-y-0.5">
+            <div id="rule-min" class="flex items-center gap-1.5 text-xs">
+              <span class="rule-icon text-muted-foreground">○</span><span
+                class="rule-text text-muted-foreground"
+                >Al menos 8 caracteres</span>
+            </div>
+            <div id="rule-upper" class="flex items-center gap-1.5 text-xs">
+              <span class="rule-icon text-muted-foreground">○</span><span
+                class="rule-text text-muted-foreground"
+                >Una letra mayúscula</span>
+            </div>
+            <div id="rule-lower" class="flex items-center gap-1.5 text-xs">
+              <span class="rule-icon text-muted-foreground">○</span><span
+                class="rule-text text-muted-foreground"
+                >Una letra minúscula</span>
+            </div>
+            <div id="rule-digit" class="flex items-center gap-1.5 text-xs">
+              <span class="rule-icon text-muted-foreground">○</span><span
+                class="rule-text text-muted-foreground">Un número</span>
+            </div>
+            <div id="rule-special" class="flex items-center gap-1.5 text-xs">
+              <span class="rule-icon text-muted-foreground">○</span><span
+                class="rule-text text-muted-foreground"
+                >Un carácter especial</span>
+            </div>
           </div>
-          <PasswordInput id="confirm-password" label="Confirmar contraseña" placeholder="Repite tu contraseña" autocomplete="new-password" required minlength={8} />
-          <div id="password-match-status" class="text-xs mt-1 hidden"></div>
+          <PasswordInput
+            id="confirm-password"
+            label="Confirmar contraseña"
+            placeholder="Repite tu contraseña"
+            autocomplete="new-password"
+            required
+            minlength={8}
+          />
+          <div id="password-match-status" class="mt-1 hidden text-xs"></div>
           <Button
             variant="primary"
             type="submit"
@@ -363,7 +396,10 @@ if (Astro.locals.session) return Astro.redirect("/recipes");
         updatePasswordRules();
         updateMatchStatus();
       });
-      (confirmPasswordInput as HTMLInputElement).addEventListener("input", updateMatchStatus);
+      (confirmPasswordInput as HTMLInputElement).addEventListener(
+        "input",
+        updateMatchStatus,
+      );
     }
 
     if (googleBtn) {

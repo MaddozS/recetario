@@ -12,17 +12,25 @@ type Props = {
   breadcrumbs?: BreadcrumbItem[];
 };
 
-const { showMenuButton, isAuthenticated = false, breadcrumbs = [] as BreadcrumbItem[] } = Astro.props as Props;
+const {
+  showMenuButton,
+  isAuthenticated = false,
+  breadcrumbs = [] as BreadcrumbItem[],
+} = Astro.props as Props;
 
 const showMobileBreadcrumb = breadcrumbs.length > 0;
 // Top-level page: single item with no href (e.g., [{ label: "Ingredientes" }])
 const isTopLevel = breadcrumbs.length === 1 && !breadcrumbs[0]?.href;
 // Current page label (last item in breadcrumbs)
-const currentLabel = breadcrumbs.length > 0 ? breadcrumbs[breadcrumbs.length - 1]?.label ?? '' : '';
+const currentLabel =
+  breadcrumbs.length > 0
+    ? (breadcrumbs[breadcrumbs.length - 1]?.label ?? "")
+    : "";
 // Parent for back-navigation (only on nested pages)
-const parentItem = breadcrumbs.length >= 2 ? breadcrumbs[breadcrumbs.length - 2] : null;
-const parentLabel = parentItem?.label ?? '';
-const parentHref = parentItem?.href ?? '';
+const parentItem =
+  breadcrumbs.length >= 2 ? breadcrumbs[breadcrumbs.length - 2] : null;
+const parentLabel = parentItem?.label ?? "";
+const parentHref = parentItem?.href ?? "";
 ---
 
 <header
@@ -42,25 +50,50 @@ const parentHref = parentItem?.href ?? '';
       )
     }
 
-    {showMobileBreadcrumb && !isTopLevel && (
-      <nav aria-label="Breadcrumb" class="flex items-center gap-1 min-w-0 md:hidden">
-        <a href={parentHref} class="flex items-center text-sm font-medium text-muted-foreground hover:text-secondary-foreground transition-colors min-h-11">
-          <span class="truncate">{parentLabel}</span>
-        </a>
-        <Icon name="lucide:chevron-right" size={14} class="text-accent-600 shrink-0" aria-hidden="true" />
-        <span class="text-foreground font-semibold text-sm truncate">{currentLabel}</span>
-      </nav>
-    )}
-    {showMobileBreadcrumb && isTopLevel && (
-      <nav aria-label="Breadcrumb" class="flex items-center min-w-0 md:hidden">
-        <span class="text-foreground font-semibold text-sm truncate min-h-11 flex items-center">{currentLabel}</span>
-      </nav>
-    )}
+    {
+      showMobileBreadcrumb && !isTopLevel && (
+        <nav
+          aria-label="Breadcrumb"
+          class="flex min-w-0 items-center gap-1 md:hidden"
+        >
+          <a
+            href={parentHref}
+            class="text-muted-foreground hover:text-secondary-foreground flex min-h-11 items-center text-sm font-medium transition-colors"
+          >
+            <span class="truncate">{parentLabel}</span>
+          </a>
+          <Icon
+            name="lucide:chevron-right"
+            size={14}
+            class="text-accent-600 shrink-0"
+            aria-hidden="true"
+          />
+          <span class="text-foreground truncate text-sm font-semibold">
+            {currentLabel}
+          </span>
+        </nav>
+      )
+    }
+    {
+      showMobileBreadcrumb && isTopLevel && (
+        <nav
+          aria-label="Breadcrumb"
+          class="flex min-w-0 items-center md:hidden"
+        >
+          <span class="text-foreground flex min-h-11 items-center truncate text-sm font-semibold">
+            {currentLabel}
+          </span>
+        </nav>
+      )
+    }
 
     <img
       src="/kitchcalc_logo.svg"
       alt="KitchCalc"
-      class:list={["shadow-accent-100 h-9 w-9 rounded-xl shadow-md sm:h-10 sm:w-10", showMobileBreadcrumb && "hidden md:block"]}
+      class:list={[
+        "shadow-accent-100 h-9 w-9 rounded-xl shadow-md sm:h-10 sm:w-10",
+        showMobileBreadcrumb && "hidden md:block",
+      ]}
     />
     <div class:list={[showMobileBreadcrumb && "hidden md:block"]}>
       <h1 class="text-foreground text-lg leading-tight font-bold sm:text-xl">
@@ -71,23 +104,45 @@ const parentHref = parentItem?.href ?? '';
       </p>
     </div>
 
-    {showMobileBreadcrumb && (
-      <div class="hidden md:block h-6 w-px bg-border" aria-hidden="true"></div>
-    )}
+    {
+      showMobileBreadcrumb && (
+        <div class="bg-border hidden h-6 w-px md:block" aria-hidden="true" />
+      )
+    }
 
     {
       showMobileBreadcrumb && (
-        <nav aria-label="Breadcrumb" class="hidden md:flex items-center gap-1.5 text-sm min-w-0">
-          <Icon name="lucide:folder-open" size={16} class="text-accent-600 shrink-0 opacity-70" aria-hidden="true" />
+        <nav
+          aria-label="Breadcrumb"
+          class="hidden min-w-0 items-center gap-1.5 text-sm md:flex"
+        >
+          <Icon
+            name="lucide:folder-open"
+            size={16}
+            class="text-accent-600 shrink-0 opacity-70"
+            aria-hidden="true"
+          />
           {breadcrumbs.map((item, i) => (
             <>
-              {i > 0 && <Icon name="lucide:chevron-right" size={16} class="text-accent-600 shrink-0" aria-hidden="true" />}
+              {i > 0 && (
+                <Icon
+                  name="lucide:chevron-right"
+                  size={16}
+                  class="text-accent-600 shrink-0"
+                  aria-hidden="true"
+                />
+              )}
               {item.href ? (
-                <a href={item.href} class="text-muted-foreground hover:text-secondary-foreground font-medium transition-colors whitespace-nowrap">
+                <a
+                  href={item.href}
+                  class="text-muted-foreground hover:text-secondary-foreground font-medium whitespace-nowrap transition-colors"
+                >
                   {item.label}
                 </a>
               ) : (
-                <span class="text-foreground font-semibold truncate max-w-[200px]">{item.label}</span>
+                <span class="text-foreground max-w-[200px] truncate font-semibold">
+                  {item.label}
+                </span>
               )}
             </>
           ))}

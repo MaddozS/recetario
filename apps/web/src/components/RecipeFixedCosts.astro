@@ -24,34 +24,34 @@ const { recipeFixedCosts, recipeId } = Astro.props;
 <section class="space-y-4" data-recipe-id={recipeId}>
   <div class="flex items-start justify-between gap-3">
     <SectionHeading title="Costos Fijos de la Receta" />
-    <Button
-      variant="primary"
-      icon="plus"
-      data-open-recipe-fixed-dialog="1"
-    >
+    <Button variant="primary" icon="plus" data-open-recipe-fixed-dialog="1">
       Agregar Costo Fijo
     </Button>
   </div>
 
   <div class="grid grid-cols-1 gap-3" data-recipe-fixed-costs-container="1">
-    {recipeFixedCosts.length > 0 ? (
-      recipeFixedCosts.map((fc) => (
-        <FixedCostCard
-          id={fc.id}
-          name={fc.name}
-          type={fc.type}
-          base={fc.base}
-          value={fc.value}
-          hours={fc.hours ?? null}
-          isRecipeLevel={true}
-          recipeId={fc.recipeId}
-        />
-      ))
-    ) : (
-      <p class="text-muted-foreground py-8 text-center text-sm" data-recipe-fixed-costs-empty="1">
-        No hay costos fijos definidos para esta receta.
-      </p>
-    )
+    {
+      recipeFixedCosts.length > 0 ? (
+        recipeFixedCosts.map((fc) => (
+          <FixedCostCard
+            id={fc.id}
+            name={fc.name}
+            type={fc.type}
+            base={fc.base}
+            value={fc.value}
+            hours={fc.hours ?? null}
+            isRecipeLevel={true}
+            recipeId={fc.recipeId}
+          />
+        ))
+      ) : (
+        <p
+          class="text-muted-foreground py-8 text-center text-sm"
+          data-recipe-fixed-costs-empty="1"
+        >
+          No hay costos fijos definidos para esta receta.
+        </p>
+      )
     }
   </div>
 </section>
@@ -59,7 +59,7 @@ const { recipeFixedCosts, recipeId } = Astro.props;
 <script>
   const setupAddFixedCostButton = () => {
     const buttons = document.querySelectorAll<HTMLButtonElement>(
-      '[data-open-recipe-fixed-dialog]',
+      "[data-open-recipe-fixed-dialog]",
     );
 
     buttons.forEach((button) => {
@@ -73,13 +73,12 @@ const { recipeFixedCosts, recipeId } = Astro.props;
         if (!container) return;
 
         const recipeId = container
-          .closest('[data-recipe-id]')
-          ?.getAttribute('data-recipe-id');
+          .closest("[data-recipe-id]")
+          ?.getAttribute("data-recipe-id");
 
         const csrfToken =
-          document.querySelector<HTMLInputElement>(
-            'input[name="_csrf"]',
-          )?.value || "";
+          document.querySelector<HTMLInputElement>('input[name="_csrf"]')
+            ?.value || "";
 
         const cardHtml = `<fixed-cost-card class="bg-card border-border flex flex-col rounded-2xl border p-5 shadow-sm transition-all" data-mode="create">
 <form method="post" class="flex flex-col">

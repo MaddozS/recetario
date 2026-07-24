@@ -118,7 +118,11 @@ function sanitizeAttrValue(attrName: string, value: string): string | null {
   }
 
   if (attrName === "contenteditable") {
-    if (!normalizedValue || normalizedValue === "true" || normalizedValue === "false") {
+    if (
+      !normalizedValue ||
+      normalizedValue === "true" ||
+      normalizedValue === "false"
+    ) {
       return normalizedValue;
     }
     return null;

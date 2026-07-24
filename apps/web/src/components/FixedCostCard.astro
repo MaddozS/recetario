@@ -75,7 +75,8 @@ const ownerId = recipeId || presentationId;
     <!-- Display Mode -->
     <div class="display-content flex flex-wrap items-center gap-3">
       <div class="flex min-w-0 flex-1 flex-wrap items-center gap-2">
-        <span class="fixed-cost-name text-foreground font-[family-name:var(--font-display)] text-base font-bold"
+        <span
+          class="fixed-cost-name text-foreground font-[family-name:var(--font-display)] text-base font-bold"
           >{name}</span
         >
 
@@ -101,13 +102,13 @@ const ownerId = recipeId || presentationId;
         </span>
 
         <!-- Hours (PER_HOUR only) -->
-        {base === "PER_HOUR" && hours != null && (
-          <span
-            class="fixed-cost-hours text-muted-foreground text-xs tabular-nums"
-          >
-            ({hours}h)
-          </span>
-        )}
+        {
+          base === "PER_HOUR" && hours != null && (
+            <span class="fixed-cost-hours text-muted-foreground text-xs tabular-nums">
+              ({hours}h)
+            </span>
+          )
+        }
       </div>
 
       <!-- Action Buttons -->
@@ -165,9 +166,7 @@ const ownerId = recipeId || presentationId;
             <option value="PERCENTAGE" selected={type === "PERCENTAGE"}>
               Porcentaje
             </option>
-            <option value="AMOUNT" selected={type === "AMOUNT"}>
-              Monto
-            </option>
+            <option value="AMOUNT" selected={type === "AMOUNT"}> Monto </option>
           </select>
         </div>
 
@@ -211,7 +210,7 @@ const ownerId = recipeId || presentationId;
             name="value"
             type="text"
             inputmode="decimal"
-            class="fixed-cost-value-input border-border bg-background text-foreground focus:ring-accent-500/20 font-mono rounded-xl border px-3 py-2 text-sm transition-all focus:ring-2 focus:outline-none"
+            class="fixed-cost-value-input border-border bg-background text-foreground focus:ring-accent-500/20 rounded-xl border px-3 py-2 font-mono text-sm transition-all focus:ring-2 focus:outline-none"
             value={value}
             required
           />
@@ -231,7 +230,7 @@ const ownerId = recipeId || presentationId;
             name="hours"
             type="text"
             inputmode="decimal"
-            class="fixed-cost-hours-input border-border bg-background text-foreground focus:ring-accent-500/20 font-mono rounded-xl border px-3 py-2 text-sm transition-all focus:ring-2 focus:outline-none"
+            class="fixed-cost-hours-input border-border bg-background text-foreground focus:ring-accent-500/20 rounded-xl border px-3 py-2 font-mono text-sm transition-all focus:ring-2 focus:outline-none"
             value={hours ?? 1}
           />
         </div>
@@ -241,16 +240,16 @@ const ownerId = recipeId || presentationId;
       </div>
 
       <!-- Action Buttons -->
-      <div class="flex flex-wrap items-center justify-between gap-3 border-t border-border-light pt-4">
+      <div
+        class="border-border-light flex flex-wrap items-center justify-between gap-3 border-t pt-4"
+      >
         <div class="flex items-center gap-2">
           <Button variant="danger" icon="trash-2" class="edit-delete-btn">
             Eliminar
           </Button>
         </div>
         <div class="flex items-center gap-2">
-          <Button variant="secondary" class="cancel-btn">
-            Cancelar
-          </Button>
+          <Button variant="secondary" class="cancel-btn"> Cancelar </Button>
           <Button variant="primary" icon="check" type="submit">
             Guardar
           </Button>
@@ -259,13 +258,14 @@ const ownerId = recipeId || presentationId;
     </div>
 
     <!-- Error Display -->
-    <p class="fixed-cost-error text-danger mt-2 hidden text-xs font-semibold"></p>
+    <p class="fixed-cost-error text-danger mt-2 hidden text-xs font-semibold">
+    </p>
   </form>
 
   <!-- Delete Confirmation Dialog -->
   <dialog
     data-animated
-    class="delete-dialog fixed inset-0 m-auto w-[calc(100vw-2rem)] max-w-md rounded-3xl p-0 backdrop:bg-backdrop/50"
+    class="delete-dialog backdrop:bg-backdrop/50 fixed inset-0 m-auto w-[calc(100vw-2rem)] max-w-md rounded-3xl p-0"
   >
     <div class="border-border bg-card rounded-3xl border p-6 shadow-2xl">
       <div class="flex items-start gap-3">
@@ -355,33 +355,53 @@ const ownerId = recipeId || presentationId;
       if (this.dataset.bound === "1") return;
       this.dataset.bound = "1";
 
-      this.displayContent = this.querySelector<HTMLDivElement>(".display-content");
+      this.displayContent =
+        this.querySelector<HTMLDivElement>(".display-content");
       this.editContent = this.querySelector<HTMLDivElement>(".edit-content");
 
       this.btnEdit = this.querySelector<HTMLButtonElement>(".edit-btn");
       this.btnDelete = this.querySelector<HTMLButtonElement>(".delete-btn");
-      this.btnEditDelete = this.querySelector<HTMLButtonElement>(".edit-delete-btn");
+      this.btnEditDelete =
+        this.querySelector<HTMLButtonElement>(".edit-delete-btn");
       this.btnCancel = this.querySelector<HTMLButtonElement>(".cancel-btn");
 
-      this.inputName = this.querySelector<HTMLInputElement>(".fixed-cost-name-input");
-      this.selectType = this.querySelector<HTMLSelectElement>(".fixed-cost-type-select");
-      this.selectBase = this.querySelector<HTMLSelectElement>(".fixed-cost-base-select");
-      this.inputValue = this.querySelector<HTMLInputElement>(".fixed-cost-value-input");
-      this.inputHours = this.querySelector<HTMLInputElement>(".fixed-cost-hours-input");
+      this.inputName = this.querySelector<HTMLInputElement>(
+        ".fixed-cost-name-input",
+      );
+      this.selectType = this.querySelector<HTMLSelectElement>(
+        ".fixed-cost-type-select",
+      );
+      this.selectBase = this.querySelector<HTMLSelectElement>(
+        ".fixed-cost-base-select",
+      );
+      this.inputValue = this.querySelector<HTMLInputElement>(
+        ".fixed-cost-value-input",
+      );
+      this.inputHours = this.querySelector<HTMLInputElement>(
+        ".fixed-cost-hours-input",
+      );
       this.hoursField = this.querySelector<HTMLDivElement>(".hours-field");
 
-      this.displayNameEl = this.querySelector<HTMLSpanElement>(".fixed-cost-name");
-      this.displayValueEl = this.querySelector<HTMLSpanElement>(".fixed-cost-value");
-      this.displayHoursEl = this.querySelector<HTMLSpanElement>(".fixed-cost-hours");
+      this.displayNameEl =
+        this.querySelector<HTMLSpanElement>(".fixed-cost-name");
+      this.displayValueEl =
+        this.querySelector<HTMLSpanElement>(".fixed-cost-value");
+      this.displayHoursEl =
+        this.querySelector<HTMLSpanElement>(".fixed-cost-hours");
       this.typeBadge = this.querySelector<HTMLSpanElement>(".type-badge");
       this.baseBadge = this.querySelector<HTMLSpanElement>(".base-badge");
 
-      this.deleteDialog = this.querySelector<HTMLDialogElement>(".delete-dialog");
-      this.btnDeleteCancel = this.querySelector<HTMLButtonElement>(".delete-cancel-btn");
-      this.btnDeleteConfirm = this.querySelector<HTMLButtonElement>(".delete-confirm-btn");
+      this.deleteDialog =
+        this.querySelector<HTMLDialogElement>(".delete-dialog");
+      this.btnDeleteCancel =
+        this.querySelector<HTMLButtonElement>(".delete-cancel-btn");
+      this.btnDeleteConfirm = this.querySelector<HTMLButtonElement>(
+        ".delete-confirm-btn",
+      );
 
       this.form = this.querySelector<HTMLFormElement>("form");
-      this.errorEl = this.querySelector<HTMLParagraphElement>(".fixed-cost-error");
+      this.errorEl =
+        this.querySelector<HTMLParagraphElement>(".fixed-cost-error");
 
       this.isCreateMode = this.dataset.mode === "create";
 
@@ -396,14 +416,22 @@ const ownerId = recipeId || presentationId;
       }
       this.btnCancel?.addEventListener("click", () => this.toggleEdit(false));
       this.btnDelete?.addEventListener("click", () => this.openDeleteDialog());
-      this.btnEditDelete?.addEventListener("click", () => this.openDeleteDialog());
+      this.btnEditDelete?.addEventListener("click", () =>
+        this.openDeleteDialog(),
+      );
 
       // Delete dialog
-      this.btnDeleteCancel?.addEventListener("click", () => this.closeDeleteDialog());
-      this.btnDeleteConfirm?.addEventListener("click", () => this.deleteFixedCost());
+      this.btnDeleteCancel?.addEventListener("click", () =>
+        this.closeDeleteDialog(),
+      );
+      this.btnDeleteConfirm?.addEventListener("click", () =>
+        this.deleteFixedCost(),
+      );
 
       // Base select change - toggle hours field visibility
-      this.selectBase?.addEventListener("change", () => this.toggleHoursField());
+      this.selectBase?.addEventListener("change", () =>
+        this.toggleHoursField(),
+      );
 
       // Escape key while editing
       this.escHandler = (e) => {
@@ -468,13 +496,15 @@ const ownerId = recipeId || presentationId;
             if (payload.fixedCostCardHtml) {
               this.outerHTML = payload.fixedCostCardHtml;
             }
-            window.location.href = window.location.pathname + '?_fc=' + Date.now();
+            window.location.href =
+              window.location.pathname + "?_fc=" + Date.now();
             return;
           }
 
           this.applyFixedCost(payload.fixedCost);
           this.toggleEdit(true);
-          window.location.href = window.location.pathname + '?_fc=' + Date.now();
+          window.location.href =
+            window.location.pathname + "?_fc=" + Date.now();
         } catch (error) {
           console.error(error);
           const message =
@@ -557,8 +587,7 @@ const ownerId = recipeId || presentationId;
     toggleHoursField() {
       const base = this.selectBase?.value || "";
       if (this.hoursField) {
-        this.hoursField.style.display =
-          base === "PER_HOUR" ? "flex" : "none";
+        this.hoursField.style.display = base === "PER_HOUR" ? "flex" : "none";
       }
     }
 
@@ -615,13 +644,15 @@ const ownerId = recipeId || presentationId;
         const val = Number(fixedCost.value);
         if (this.inputValue) this.inputValue.value = String(val);
         const type = this.selectType?.value || this.dataset.type || "AMOUNT";
-        const display = type === "PERCENTAGE" ? `${val}%` : `$${val.toFixed(2)}`;
+        const display =
+          type === "PERCENTAGE" ? `${val}%` : `$${val.toFixed(2)}`;
         if (this.displayValueEl) this.displayValueEl.textContent = display;
         this.dataset.value = String(val);
       }
       if (fixedCost.hours !== undefined) {
         const hrs = fixedCost.hours;
-        if (this.inputHours) this.inputHours.value = hrs != null ? String(hrs) : "";
+        if (this.inputHours)
+          this.inputHours.value = hrs != null ? String(hrs) : "";
         if (this.displayHoursEl) {
           if (hrs != null) {
             this.displayHoursEl.textContent = `(${hrs}h)`;
@@ -709,7 +740,7 @@ const ownerId = recipeId || presentationId;
 
         this.closeDeleteDialog();
         this.remove();
-        window.location.href = window.location.pathname + '?_fc=' + Date.now();
+        window.location.href = window.location.pathname + "?_fc=" + Date.now();
       } catch (error) {
         console.error(error);
         const message =
