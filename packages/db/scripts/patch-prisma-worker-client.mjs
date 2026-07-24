@@ -1,13 +1,12 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 
-const clientPath = resolve("generated/prisma/client.ts");
+const clientPath = resolve("../../apps/api/generated/prisma/client.ts");
 const source = readFileSync(clientPath, "utf8");
-const original =
-  "globalThis['__dirname'] = path.dirname(fileURLToPath(import.meta.url))";
+const original = "globalThis['__dirname'] = '/'";
 const replacement = [
   "const prismaClientDirname = typeof import.meta.url === 'string'",
-  "  ? path.dirname(fileURLToPath(import.meta.url))",
+  "  ? new URL('.', import.meta.url).pathname",
   "  : '/'",
   "globalThis['__dirname'] = prismaClientDirname",
 ].join("\n");
