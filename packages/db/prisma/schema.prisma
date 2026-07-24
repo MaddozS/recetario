@@ -7,6 +7,12 @@ generator client {
   output   = "../generated/prisma"
 }
 
+generator apiClient {
+  provider = "prisma-client"
+  output   = "../../../apps/api/generated/prisma"
+  runtime  = "workerd"
+}
+
 model Ingredient {
   id               Int                 @id @default(autoincrement())
   ownerId          String              @map("owner_id")
