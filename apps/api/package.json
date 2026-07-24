@@ -10,14 +10,17 @@
     "build": "tsc --noEmit"
   },
   "dependencies": {
+    "@prisma/adapter-pg": "7.8.0",
+    "@prisma/client": "7.8.0",
     "@recetario/auth": "workspace:^",
     "@recetario/billing": "workspace:^",
     "@recetario/db": "workspace:^",
-    "hono": "^4.10.8"
+    "hono": "^4.10.8",
+    "pg": "8.20.0"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^5.20260708.0",
     "typescript": "6.0.3",
-    "wrangler": "^4.108.0"
+    "wrangler": "^4.111.0"
   }
 }
