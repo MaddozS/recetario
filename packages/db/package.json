@@ -24,6 +24,7 @@
   "dependencies": {
     "@prisma/adapter-pg": "7.8.0",
     "@prisma/client": "7.8.0",
+    "@recetario/config": "workspace:^",
     "dotenv": "17.4.2",
     "pg": "8.20.0"
   },
@@ -31,7 +32,6 @@
     "prisma": "7.8.0",
     "tsx": "4.22.0",
     "typescript": "^6.0.0",
-    "@recetario/config": "workspace:^",
     "@types/pg": "8.20.0"
   }
 }

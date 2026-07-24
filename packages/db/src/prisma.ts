@@ -1,17 +1,14 @@
 import { PrismaClient } from "../generated/prisma/client.js";
 import { PrismaPg } from "@prisma/adapter-pg";
 import pg from "pg";
+import { lazyInit } from "@recetario/config/lazy";
 
 // ponytail: lazy init — avoids crashing at import time when DATABASE_URL
 // isn't in process.env yet (Vite SSR doesn't load .env into process.env).
 // The error still surfaces on first actual prisma usage, which is fine
 // because by then the runtime env should be set (Vercel) or dotenv has
 // been loaded by another entry point.
-let _prisma: PrismaClient | undefined;
-
 function initPrisma(): PrismaClient {
-  if (_prisma) return _prisma;
-
   const connectionString = process.env.DATABASE_URL;
   if (!connectionString) {
     throw new Error("DATABASE_URL environment variable is not set");
@@ -25,22 +22,13 @@ function initPrisma(): PrismaClient {
   });
 
   const adapter = new PrismaPg(pool);
-  _prisma = new PrismaClient({ adapter });
+  const client = new PrismaClient({ adapter });
 
   if (process.env.NODE_ENV !== "production") {
-    const g = globalThis as unknown as { prisma: PrismaClient | undefined };
-    g.prisma = _prisma;
+    (globalThis as unknown as { prisma: PrismaClient }).prisma = client;
   }
 
-  return _prisma;
+  return client;
 }
 
-// Proxy defers init until first property access.
-// prisma.$connect, prisma.recipe.findMany, etc. all route through getPrisma().
-export const prisma = new Proxy({} as PrismaClient, {
-  get(_target, key) {
-    const client = initPrisma();
-    const value = (client as unknown as Record<string | symbol, unknown>)[key];
-    return typeof value === "function" ? (value as Function).bind(client) : value;
-  },
-});
+export const prisma = lazyInit("prisma", initPrisma);

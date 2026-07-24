@@ -24,6 +24,7 @@
     "build": "tsc --build tsconfig.build.json"
   },
   "dependencies": {
+    "@recetario/config": "workspace:^",
     "better-auth": "1.6.11",
     "dotenv": "17.4.2"
   },
@@ -32,7 +33,6 @@
   },
   "devDependencies": {
     "typescript": "^6.0.0",
-    "@recetario/config": "workspace:^",
     "@types/node": "25.8.0"
   }
 }

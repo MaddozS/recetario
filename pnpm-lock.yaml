@@ -41,6 +41,9 @@ importers:
       '@recetario/billing':
         specifier: workspace:^
         version: link:../../packages/billing
+      '@recetario/config':
+        specifier: workspace:^
+        version: link:../../packages/config
       '@recetario/db':
         specifier: workspace:^
         version: link:../../packages/db
@@ -145,6 +148,9 @@ importers:
 
   packages/auth:
     dependencies:
+      '@recetario/config':
+        specifier: workspace:^
+        version: link:../config
       '@recetario/db':
         specifier: workspace:^
         version: link:../db
@@ -155,9 +161,6 @@ importers:
         specifier: 17.4.2
         version: 17.4.2
     devDependencies:
-      '@recetario/config':
-        specifier: workspace:^
-        version: link:../config
       '@types/node':
         specifier: 25.8.0
         version: 25.8.0
@@ -167,6 +170,9 @@ importers:
 
   packages/billing:
     dependencies:
+      '@recetario/config':
+        specifier: workspace:^
+        version: link:../config
       '@recetario/db':
         specifier: workspace:^
         version: link:../db
@@ -174,14 +180,15 @@ importers:
         specifier: 22.1.1
         version: 22.1.1(@types/node@25.8.0)
     devDependencies:
-      '@recetario/config':
-        specifier: workspace:^
-        version: link:../config
       typescript:
         specifier: ^6.0.0
         version: 6.0.3
 
-  packages/config: {}
+  packages/config:
+    devDependencies:
+      typescript:
+        specifier: ^6.0.0
+        version: 6.0.3
 
   packages/db:
     dependencies:
@@ -191,6 +198,9 @@ importers:
       '@prisma/client':
         specifier: 7.8.0
         version: 7.8.0(prisma@7.8.0(@types/react@19.2.14)(magicast@0.5.3)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(typescript@6.0.3))(typescript@6.0.3)
+      '@recetario/config':
+        specifier: workspace:^
+        version: link:../config
       dotenv:
         specifier: 17.4.2
         version: 17.4.2
@@ -198,9 +208,6 @@ importers:
         specifier: 8.20.0
         version: 8.20.0
     devDependencies:
-      '@recetario/config':
-        specifier: workspace:^
-        version: link:../config
       '@types/pg':
         specifier: 8.20.0
         version: 8.20.0

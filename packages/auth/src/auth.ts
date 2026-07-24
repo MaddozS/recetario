@@ -5,14 +5,13 @@ import { sendEmail } from "./email.js";
 import { createAuthMiddleware, APIError } from "better-auth/api";
 import { validatePassword } from "./password-validation.js";
 import { getResetPasswordEmailHtml } from "./password-reset.js";
+import { lazyInit } from "@recetario/config/lazy";
 
 const RESET_TOKEN_EXPIRY_MINUTES = 10;
 
 // ponytail: lazy init — avoids reading process.env at import time
 // in Vite SSR where .env isn't loaded into process.env.
-// ponytail: any type to avoid generic mismatch with inferred config
-let _auth: any;
-
+// ponytail: any type to bypass generic mismatch with inferred config
 function initAuth(): any {
   const googleClientId = process.env.GOOGLE_CLIENT_ID;
   if (!googleClientId) {
@@ -23,7 +22,7 @@ function initAuth(): any {
     throw new Error("GOOGLE_CLIENT_SECRET environment variable is not set");
   }
 
-  _auth = betterAuth({
+  return betterAuth({
     database: prismaAdapter(prisma, {
       provider: "postgresql",
     }),
@@ -126,16 +125,8 @@ function initAuth(): any {
     },
     trustedOrigins: [process.env.BETTER_AUTH_URL ?? "http://localhost:4321"],
   });
-
-  return _auth;
 }
 
 // ponytail: cast to bypass strict generic mismatch between
 // ReturnType<typeof betterAuth> and the actual inferred config type.
-export const auth = new Proxy({} as any, {
-  get(_target, key) {
-    const client = initAuth();
-    const value = (client as unknown as Record<string | symbol, unknown>)[key];
-    return typeof value === "function" ? (value as Function).bind(client) : value;
-  },
-}) as ReturnType<typeof betterAuth>;
+export const auth = lazyInit("auth", initAuth) as ReturnType<typeof betterAuth>;

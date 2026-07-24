@@ -6,11 +6,23 @@
   "files": [
     "tsconfig.base.json",
     "eslint.base.cjs",
-    "prettier.base.json"
+    "prettier.base.json",
+    "dist",
+    "src"
   ],
+  "scripts": {
+    "build": "tsc --build tsconfig.build.json"
+  },
   "exports": {
     "./tsconfig.base.json": "./tsconfig.base.json",
     "./eslint.base.cjs": "./eslint.base.cjs",
-    "./prettier.base.json": "./prettier.base.json"
+    "./prettier.base.json": "./prettier.base.json",
+    "./lazy": {
+      "types": "./dist/src/lazy.d.ts",
+      "default": "./dist/src/lazy.js"
+    }
+  },
+  "devDependencies": {
+    "typescript": "^6.0.0"
   }
 }
