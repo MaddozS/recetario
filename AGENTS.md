@@ -223,9 +223,3 @@ Default canonical labels: `needs-triage`, `needs-info`, `ready-for-agent`, `read
 ### Domain docs
 
 Single-context: `CONTEXT.md` + `docs/adr/` at the repo root. See `docs/agents/domain.md`.
-
-<!-- SPECKIT START -->
-
-**Active Plan**: `specs/006-password-reset-flow/plan.md` — Password Reset Flow (10-min expiry, branded Resend email templates, countdown timer, rate limiting).
-
-<!-- SPECKIT END -->
