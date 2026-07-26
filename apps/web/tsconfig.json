@@ -19,7 +19,6 @@
     ".agent/**",
     ".astro/**",
     "node_modules/**",
-    ".vercel/**",
     "../../packages/**/node_modules",
     "../../packages/**/dist"
   ]

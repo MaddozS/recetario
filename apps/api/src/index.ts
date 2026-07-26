@@ -9,8 +9,7 @@ import {
   getRemainingSeconds,
   formatTime,
 } from "@recetario/auth/server";
-import { logAuditEvent } from "@recetario/db";
-import { prisma } from "./lib/prisma";
+import { logAuditEvent, prisma } from "@recetario/db";
 import {
   stripe,
   getPlanByStripePriceId,

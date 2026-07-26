@@ -7,6 +7,6 @@ export default [
   ...tseslint.configs.recommended,
   ...pluginAstro.configs.recommended,
   {
-    ignores: ["dist/", ".vercel/", ".astro/", "node_modules/", "generated/"],
+    ignores: ["dist/", ".astro/", "node_modules/", "generated/"],
   },
 ];

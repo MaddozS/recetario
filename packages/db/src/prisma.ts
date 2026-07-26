@@ -5,9 +5,8 @@ import { lazyInit } from "@recetario/config/lazy";
 
 // ponytail: lazy init — avoids crashing at import time when DATABASE_URL
 // isn't in process.env yet (Vite SSR doesn't load .env into process.env).
-// The error still surfaces on first actual prisma usage, which is fine
-// because by then the runtime env should be set (Vercel) or dotenv has
-// been loaded by another entry point.
+// pg.Pool works on Cloudflare Pages because wrangler.jsonc enables
+// nodejs_compat (which provides net, tls, dns — what pg needs).
 function initPrisma(): PrismaClient {
   const connectionString = process.env.DATABASE_URL;
   if (!connectionString) {

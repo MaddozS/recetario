@@ -1,13 +1,33 @@
 {
   "$schema": "../../node_modules/wrangler/config-schema.json",
   "name": "recetario-web",
-  "main": "@astrojs/cloudflare/entrypoints/server",
-  "compatibility_date": "2026-07-08",
+  "compatibility_date": "2026-06-10",
   "compatibility_flags": ["nodejs_compat"],
   "observability": {
     "enabled": true,
   },
   "vars": {
     "NODE_ENV": "production",
+    "PUBLIC_APP_URL": "https://recetario-web.axel-ana25.workers.dev",
+    "BETTER_AUTH_USE_DB": "true",
   },
+  "kv_namespaces": [
+    {
+      "binding": "SESSION",
+      "id": "10323f891e024ef0ad89099b717c2c79"
+    }
+  ],
+  // Secrets (set via `wrangler pages secret put <KEY>` or Cloudflare dashboard):
+  //   DATABASE_URL              postgres://...  (Prisma connection — pg.Pool via nodejs_compat)
+  //   BETTER_AUTH_SECRET        Better Auth signing
+  //   BETTER_AUTH_URL           app origin (e.g. https://kitchcalc.com)
+  //   GOOGLE_CLIENT_ID          Google OAuth
+  //   GOOGLE_CLIENT_SECRET      Google OAuth
+  //   PUBLIC_APP_URL            public app origin
+  //   RECIPES_STATIC_OWNER_EMAIL seed owner
+  //   RECIPES_STATIC_OWNER_ID   seed owner
+  //   RESEND_API_KEY            email sender
+  //   SENDER_EMAIL              email sender
+  //   STRIPE_SECRET_KEY         Stripe API
+  //   STRIPE_WEBHOOK_SECRET     Stripe webhook signature
 }
