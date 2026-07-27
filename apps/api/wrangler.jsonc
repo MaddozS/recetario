@@ -16,11 +16,9 @@
   },
   "vars": {
     "NODE_ENV": "production",
+    // INTERNAL_API_HOST: required for the host allowlist (production tier
+    // of the API destination). Set per environment via `wrangler secret put`
+    // or the dashboard. Example: "api.recetario.app".
   },
-  "services": [
-    {
-      "binding": "SELF",
-      "service": "recetario-api",
-    },
-  ],
+  // INTERNAL_API_HOST: required env (see env). Use wrangler secret put to set.
 }

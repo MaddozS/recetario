@@ -58,6 +58,7 @@ app.get("/health", (c) =>
   }),
 );
 
+
 app.use("*", async (c, next) => {
   syncEnvBindings(c.env as Record<string, unknown>);
   await next();
