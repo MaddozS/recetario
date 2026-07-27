@@ -80,4 +80,13 @@ describe("authSessionHandler", () => {
     const body = (await res.json()) as null;
     expect(body).toBeNull();
   });
+
+  it("returns a 500 ApiErrorResponse when getSession throws", async () => {
+    mockGetSession.mockRejectedValueOnce(new Error("db down"));
+    const res = await buildApp().request("/api/auth/session");
+    expect(res.status).toBe(500);
+    const body = (await res.json()) as { error: { code: string; message: string } };
+    expect(body.error.code).toBe("INTERNAL");
+    expect(body.error.message).toBe("Internal server error");
+  });
 });

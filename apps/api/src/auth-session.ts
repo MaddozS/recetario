@@ -1,8 +1,10 @@
 import type { Handler } from "hono";
 import { auth } from "@recetario/auth/server";
 
-// Thin pass-through to `auth.api.getSession()`. No caching, no auth required
-// — invalid/expired cookies resolve to `null`, never to a 401.
+// Pass-through to `auth.api.getSession()`. Response shape is whatever
+// Better Auth returns (`{ user, session }` on hit, `null` on miss).
+// No caching; infrastructure errors (DB down, etc.) bubble up to the
+// global `errorHandler()` as a 500.
 export function authSessionHandler(): Handler {
   return async (c) => {
     const session = await auth.api.getSession({ headers: c.req.raw.headers });
