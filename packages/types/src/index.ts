@@ -1,3 +1,3 @@
-// Shared types live here.
-// Currently empty — populated incrementally as new features need cross-package types.
-export {};
+export * from "./types.js";
+export * from "./errors.js";
+export * from "./errors.zod.js";

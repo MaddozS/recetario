@@ -6,7 +6,7 @@ import type {
   CreateRecipeInput,
   DeleteRecipeResult,
   UpdateRecipeInput,
-} from "./types.js";
+} from "@recetario/types";
 import { createPresentation } from "./presentations.js";
 import {
   normalizeOptionalText,

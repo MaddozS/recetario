@@ -15,6 +15,9 @@
   "scripts": {
     "build": "tsc --build tsconfig.build.json"
   },
+  "dependencies": {
+    "zod": "^3.23.0"
+  },
   "devDependencies": {
     "typescript": "^6.0.0",
     "@recetario/config": "workspace:^"

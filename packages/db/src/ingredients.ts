@@ -5,7 +5,7 @@ import type {
   CreateIngredientInput,
   UpdateIngredientInput,
   DeleteIngredientResult,
-} from "./types.js";
+} from "@recetario/types";
 import { normalizeOptionalText, toNumber } from "./helpers.js";
 import { cacheGet, cacheSet, cacheDelete } from "./cache.js";
 

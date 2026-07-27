@@ -1,5 +1,5 @@
 import { prisma } from "./prisma.js";
-import type { UserPreferences } from "./types.js";
+import type { UserPreferences } from "@recetario/types";
 
 const validThemes = ["system", "light", "dark"] as const;
 const validAccentColors = [

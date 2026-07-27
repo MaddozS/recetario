@@ -17,6 +17,12 @@
       "id": "10323f891e024ef0ad89099b717c2c79"
     }
   ],
+  "services": [
+    {
+      "binding": "API",
+      "service": "recetario-api",
+    },
+  ],
   // Secrets (set via `wrangler pages secret put <KEY>` or Cloudflare dashboard):
   //   DATABASE_URL              postgres://...  (Prisma connection — pg.Pool via nodejs_compat)
   //   BETTER_AUTH_SECRET        Better Auth signing

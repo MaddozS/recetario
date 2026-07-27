@@ -1,5 +1,5 @@
 export { prisma } from "./prisma.js";
-export * from "./types.js";
+export * from "@recetario/types";
 export * from "./helpers.js";
 export * from "./ingredients.js";
 export * from "./recipes.js";

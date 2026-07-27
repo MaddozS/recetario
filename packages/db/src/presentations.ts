@@ -5,7 +5,7 @@ import type {
   CreatePresentationInput,
   DeletePresentationResult,
   PresentationFixedCost,
-} from "./types.js";
+} from "@recetario/types";
 import {
   normalizePresentationName,
   normalizePresentationUnits,

@@ -1,4 +1,4 @@
-import type { RecipePresentation, FixedCostType, FixedCostBase } from "./types.js";
+import type { RecipePresentation, FixedCostType, FixedCostBase } from "@recetario/types";
 
 export function normalizeOptionalText(value: unknown): string | undefined {
   if (typeof value !== "string") return undefined;
