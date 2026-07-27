@@ -12,6 +12,7 @@
     "format": "prettier --write .",
     "lint": "eslint .",
     "type-check": "astro check",
+    "test": "vitest run",
     "postinstall": "$npm_execpath --filter @recetario/db exec prisma generate",
     "cloudflare-build": "$npm_execpath --filter @recetario/db exec prisma generate && $npm_execpath --filter @recetario/db exec prisma migrate deploy && astro build"
   },
@@ -22,12 +23,14 @@
     "@recetario/billing": "workspace:^",
     "@recetario/config": "workspace:^",
     "@recetario/db": "workspace:^",
+    "@recetario/types": "workspace:^",
     "@recetario/ui": "workspace:^",
     "@tailwindcss/vite": "4.3.0",
     "astro": "7.1.3",
     "astro-icon": "1.1.5",
     "dotenv": "17.4.2",
-    "tailwindcss": "4.3.0"
+    "tailwindcss": "4.3.0",
+    "zod": "3.25.76"
   },
   "devDependencies": {
     "@astrojs/check": "0.9.9",
@@ -44,6 +47,7 @@
     "prettier-plugin-astro": "0.14.1",
     "prettier-plugin-tailwindcss": "^0.8.0",
     "typescript": "6.0.3",
-    "typescript-eslint": "8.59.3"
+    "typescript-eslint": "8.59.3",
+    "vitest": "^3.0.0"
   }
 }
