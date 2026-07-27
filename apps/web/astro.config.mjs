@@ -2,7 +2,7 @@
 import { defineConfig } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
 import icon from "astro-icon";
-import vercel from "@astrojs/vercel/serverless";
+import cloudflare from "@astrojs/cloudflare";
 import path from "path";
 import { fileURLToPath } from "url";
 import dotenv from "dotenv";
@@ -12,36 +12,19 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // Load .env from the repo root before Astro/Vite evaluates SSR package code.
 dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 
-/**
- * Shim `cloudflare:workers` for local dev with Vercel adapter.
- * The middleware imports `import { env } from "cloudflare:workers"`.
- */
-function shimCloudflareWorkers() {
-  const VIRTUAL_ID = "cloudflare:workers";
-  return {
-    name: "shim-cloudflare-workers",
-    resolveId(id) {
-      if (id === VIRTUAL_ID) return "\0" + VIRTUAL_ID;
-    },
-    load(id) {
-      if (id === "\0" + VIRTUAL_ID) {
-        return `export const env = process.env;`;
-      }
-    },
-  };
-}
 // https://astro.build/config
 export default defineConfig({
   output: "server",
-  adapter: vercel(),
+  adapter: cloudflare(),
 
   vite: {
     resolve: {
-      alias: {
-        "@/": path.resolve(__dirname, "./src"),
-      },
+      alias: [
+        { find: /^@prisma\/client\/runtime\/.*\.wasm-base64\.mjs$/, replacement: path.resolve(__dirname, "./src/lib/empty-wasm-base64.mjs") },
+        { find: "@/", replacement: path.resolve(__dirname, "./src") },
+      ],
     },
-    plugins: [shimCloudflareWorkers(), tailwindcss()],
+    plugins: [tailwindcss()],
   },
 
   integrations: [

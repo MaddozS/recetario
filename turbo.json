@@ -1,10 +1,10 @@
 {
-  "$schema": "https://v2-10-4.turborepo.dev/schema.json",
+  "$schema": "https://v2-10-7.turborepo.dev/schema.json",
   "ui": "stream",
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [".vercel/**", "dist/**", ".astro/**"]
+      "outputs": ["dist/**", ".astro/**"]
     },
     "dev": {
       "cache": false,

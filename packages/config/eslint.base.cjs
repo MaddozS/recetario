@@ -23,7 +23,6 @@ module.exports = {
   ignorePatterns: [
     'node_modules/',
     'dist/',
-    '.vercel/',
     '.astro/',
     'generated/',
     '*.config.js',

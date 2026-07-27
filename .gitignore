@@ -38,8 +38,6 @@ data/dev.db-wal
 # jetbrains setting folder
 .idea/
 
-.vercel/
-.vercel
 .turbo/
 .wrangler/
 apps/*/.turbo/

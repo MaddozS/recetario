@@ -2,7 +2,7 @@
 
 ## Stack
 
-**Astro 6** SSR via `@astrojs/vercel`. **pnpm 11.1.2** (package-manager locked). **Node >= 22.12.0**.
+**Astro 6** SSR via `@astrojs/cloudflare` (Cloudflare Pages). Two apps: `apps/web` (Astro Pages) + `apps/api` (Hono Worker). **pnpm 11.1.2** (package-manager locked). **Node >= 22.12.0**.
 No `.env.local` — use `.env`.
 
 ## Commands
@@ -24,7 +24,7 @@ No `.env.local` — use `.env`.
 
 **Schema changes**: When modifying `prisma/schema.prisma`, always create a new migration with `pnpm exec prisma migrate dev --name <descriptive>`. Never edit existing migration files.
 **postinstall** generates the Prisma client automatically; if you need to run the same step manually, use `pnpm exec prisma generate`.
-**vercel-build** runs Prisma generate, `prisma/fix-failed-migration.ts`, migrate deploy, and Astro build; if you need to reproduce it manually, use `pnpm exec prisma generate && pnpm exec tsx prisma/fix-failed-migration.ts && pnpm exec prisma migrate deploy && pnpm exec astro build`.
+**cloudflare-build** (apps/web) runs Prisma generate, migrate deploy, and Astro build; reproduce with `pnpm --filter @recetario/web cloudflare-build`. **api deploy** via `pnpm --filter @recetario/api deploy` (wrangler deploy). Set per-environment secrets via `wrangler pages secret put <KEY>` (web) / `wrangler secret put <KEY>` (api) or the Cloudflare dashboard.
 
 No app test infrastructure is established.
 If tests are requested, propose `Vitest + @testing-library` and confirm with the user before scaffolding. Do not silently add a test framework.
@@ -69,12 +69,12 @@ Better Auth via `src/lib/auth.ts` (server singleton) + `src/lib/auth-client.ts` 
 - **Forms**: no Astro Actions. POST to the same page, read `Astro.request.formData()`, then redirect. Spanish locale: `parseNumberInput()` converts comma to dot.
 - **Subscription cache**: middleware caches subscription state for 60s via `src/lib/cache.ts`.
 - **pnpm allowed builds**: only `esbuild`, `sharp`, `@prisma/engines`, `prisma` are allowed in `pnpm-workspace.yaml`.
-- **Vercel ephemeral**: always set `DATABASE_URL` for persistence.
+- **Cloudflare ephemeral**: `DATABASE_URL` is not auto-injected — set per-environment via `wrangler secret put` or the dashboard. Local dev: `pnpm dev` runs `scripts/sync-cloudflare-dev-vars.mjs` which copies root `.env` to `apps/web/.dev.vars` and `apps/api/.dev.vars`.
 - **Feedback + reload**: `showFeedback()` is client-side DOM; `window.location.reload()` after it erases feedback, so prefer DOM updates for in-page state.
 
 #### Known bugs
 
-- **Tsconfig exclude**: this is a known bug. Do NOT modify it unless explicitly asked. If asked, split it into separate array entries: `["dist", ".agent/**", ".astro/**", "node_modules/**", ".vercel/**"]`.
+- **Tsconfig exclude**: this is a known bug. Do NOT modify it unless explicitly asked. If asked, split it into separate array entries: `["dist", ".agent/**", ".astro/**", "node_modules/**"]`.
 
 ### Modules you might miss
 
