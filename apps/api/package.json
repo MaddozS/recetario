@@ -16,6 +16,7 @@
     "@recetario/auth": "workspace:^",
     "@recetario/billing": "workspace:^",
     "@recetario/config": "workspace:^",
+    "@recetario/types": "workspace:^",
     "@recetario/db": "workspace:^",
     "hono": "^4.10.8",
     "pg": "8.20.0"

@@ -50,6 +50,9 @@ importers:
       '@recetario/db':
         specifier: workspace:^
         version: link:../../packages/db
+      '@recetario/types':
+        specifier: workspace:^
+        version: link:../../packages/types
       hono:
         specifier: ^4.10.8
         version: 4.12.31

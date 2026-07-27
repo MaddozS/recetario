@@ -23,6 +23,11 @@ import {
 import { syncEnvBindings } from "@recetario/config/env";
 import { clientIp, setSecurityHeaders } from "@recetario/config/request";
 
+import { envelope } from "./envelope.js";
+import { errorHandler } from "./error-handler.js";
+import { hostAllowlist } from "./host-allowlist.js";
+import { rateLimit } from "./rate-limit.js";
+
 const app = new Hono();
 
 function getPeriod(obj: unknown, field: string): number {
@@ -51,19 +56,22 @@ function safeRedirectUrl(
   return fallback;
 }
 
+app.onError(errorHandler());
+app.use("*", envelope());
+app.use("*", hostAllowlist());
+app.use("*", rateLimit());
+app.use("*", async (c, next) => {
+  syncEnvBindings(c.env as Record<string, unknown>);
+  await next();
+  setSecurityHeaders(c.res);
+});
+
 app.get("/health", (c) =>
   c.json({
     ok: true,
     service: "recetario-api",
   }),
 );
-
-
-app.use("*", async (c, next) => {
-  syncEnvBindings(c.env as Record<string, unknown>);
-  await next();
-  setSecurityHeaders(c.res);
-});
 
 app.post("/api/auth/forgot-password", async (c) => {
   try {
