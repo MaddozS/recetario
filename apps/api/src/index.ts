@@ -27,6 +27,7 @@ import { envelope } from "./envelope.js";
 import { errorHandler } from "./error-handler.js";
 import { hostAllowlist } from "./host-allowlist.js";
 import { rateLimit } from "./rate-limit.js";
+import { authSessionHandler } from "./auth-session.js";
 
 const app = new Hono();
 
@@ -213,6 +214,8 @@ app.post("/api/auth/reset-password", async (c) => {
     );
   }
 });
+
+app.get("/api/auth/session", authSessionHandler());
 
 app.all("/api/auth/*", async (c) => {
   const path = new URL(c.req.url).pathname;
