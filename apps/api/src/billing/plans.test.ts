@@ -3,6 +3,7 @@ import { Hono } from "hono";
 import { envelope } from "../envelope.js";
 import { errorHandler } from "../error-handler.js";
 import { hostAllowlist } from "../host-allowlist.js";
+import { planSchema, plansListResponseSchema } from "@recetario/types";
 
 const { mockFindMany, mockPrisma, mockAuth } = vi.hoisted(() => {
   const mockFindMany = vi.fn();
@@ -51,7 +52,7 @@ const planFixture = [
     currency: "mxn",
     recipesLimit: 75,
     ingredientsLimit: null,
-    features: { recipe_duplicate: true },
+    featuresJson: JSON.stringify({ recipe_duplicate: true }),
     active: true,
   },
   {
@@ -64,7 +65,7 @@ const planFixture = [
     currency: "mxn",
     recipesLimit: null,
     ingredientsLimit: null,
-    features: { recipe_duplicate: true, pdf_export: true },
+    featuresJson: JSON.stringify({ recipe_duplicate: true, pdf_export: true }),
     active: true,
   },
 ];
@@ -95,6 +96,9 @@ describe("plansHandler", () => {
     expect(body[0]?.id).toBe("basic_monthly");
     expect(body[1]?.id).toBe("pro_monthly");
     expect(body[1]?.priceCents).toBe(1999);
+    expect(body[0]?.features).toEqual({ recipe_duplicate: true });
+    expect(body[1]?.features).toEqual({ recipe_duplicate: true, pdf_export: true });
+    expect((body[0] as Record<string, unknown>).featuresJson).toBeUndefined();
 
     expect(mockFindMany).toHaveBeenCalledTimes(1);
     const callArg = mockFindMany.mock.calls[0]?.[0] as {
@@ -144,5 +148,16 @@ describe("plansHandler", () => {
 
     const res = await buildApp().request("/api/billing/plans", {}, {});
     expect(res.status).toBe(200);
+  });
+
+  it("response body conforms to the consumer contract (z.array(planSchema))", async () => {
+    mockFindMany.mockResolvedValueOnce(planFixture);
+
+    const res = await buildApp().request("/api/billing/plans", {}, {});
+    expect(res.status).toBe(200);
+
+    const body = await res.json();
+    const parsed = plansListResponseSchema.safeParse(body);
+    expect(parsed.success).toBe(true);
   });
 });
