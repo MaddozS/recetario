@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { z } from "zod";
-import { ApiError, apiFetch, setApiBinding } from "./api-client.js";
+import { apiFetch, setApiBinding } from "./api-client.js";
 
 const ENV_KEY = "INTERNAL_API_URL";
 
@@ -28,6 +28,10 @@ function makeBinding(
   ) => Promise<Response>,
 ) {
   return { fetch: vi.fn(impl) };
+}
+
+function mockBinding(res: Response) {
+  return makeBinding(async () => res);
 }
 
 beforeEach(() => {
@@ -75,14 +79,25 @@ describe("apiFetch — 2xx", () => {
     const schema = z.object({ name: z.string() });
     await expect(
       apiFetch("/api/x", { schema }, makeRequest()),
-    ).rejects.toThrow();
+    ).rejects.toBeInstanceOf(z.ZodError);
+  });
+
+  it("throws ApiError INTERNAL when the 2xx body is not JSON", async () => {
+    setApiBinding(
+      makeBinding(async () => new Response("not-json", { status: 200 })),
+    );
+
+    await expect(apiFetch("/api/x", {}, makeRequest())).rejects.toMatchObject({
+      name: "ApiError",
+      code: "INTERNAL",
+    });
   });
 });
 
 describe("apiFetch — non-2xx", () => {
   it("throws ApiError with code UNAUTHENTICATED on 401", async () => {
     setApiBinding(
-      makeBinding(async () =>
+      mockBinding(
         jsonResponse(401, {
           error: { code: "UNAUTHENTICATED", message: "login" },
         }),
@@ -100,62 +115,52 @@ describe("apiFetch — non-2xx", () => {
   it("throws ApiError carrying Zod issues on 422", async () => {
     const issues = [{ path: ["name"], message: "Required" }];
     setApiBinding(
-      makeBinding(async () =>
+      mockBinding(
         jsonResponse(422, {
           error: { code: "VALIDATION_ERROR", message: "bad", issues },
         }),
       ),
     );
 
-    try {
-      await apiFetch("/api/x", {}, makeRequest());
-      throw new Error("should have thrown");
-    } catch (err) {
-      expect(err).toBeInstanceOf(ApiError);
-      const e = err as ApiError;
-      expect(e.code).toBe("VALIDATION_ERROR");
-      expect(e.issues).toEqual(issues);
-      expect(e.status).toBe(422);
-    }
+    await expect(apiFetch("/api/x", {}, makeRequest())).rejects.toMatchObject({
+      name: "ApiError",
+      code: "VALIDATION_ERROR",
+      issues,
+      status: 422,
+    });
   });
 
   it("throws ApiError INTERNAL with traceId when the envelope doesn't match", async () => {
-    setApiBinding(
-      makeBinding(async () => jsonResponse(500, { not: "an envelope" })),
-    );
+    setApiBinding(mockBinding(jsonResponse(500, { not: "an envelope" })));
 
-    try {
-      await apiFetch("/api/x", {}, makeRequest());
-      throw new Error("should have thrown");
-    } catch (err) {
-      expect(err).toBeInstanceOf(ApiError);
-      const e = err as ApiError;
-      expect(e.code).toBe("INTERNAL");
-      expect(e.status).toBe(500);
-      expect(e.traceId).toMatch(/^web-/);
-    }
+    await expect(apiFetch("/api/x", {}, makeRequest())).rejects.toMatchObject({
+      name: "ApiError",
+      code: "INTERNAL",
+      status: 500,
+    });
+    await expect(apiFetch("/api/x", {}, makeRequest())).rejects.toMatchObject({
+      traceId: expect.stringMatching(/^web-/),
+    });
   });
 
   it("uses the traceId from the envelope when present", async () => {
     setApiBinding(
-      makeBinding(async () =>
+      mockBinding(
         jsonResponse(500, {
           error: { code: "INTERNAL", message: "boom", traceId: "srv-xyz" },
         }),
       ),
     );
 
-    try {
-      await apiFetch("/api/x", {}, makeRequest());
-      throw new Error("should have thrown");
-    } catch (err) {
-      expect((err as ApiError).traceId).toBe("srv-xyz");
-    }
+    await expect(apiFetch("/api/x", {}, makeRequest())).rejects.toMatchObject({
+      name: "ApiError",
+      traceId: "srv-xyz",
+    });
   });
 
   it("includes DOMAIN_ERROR reason on the ApiError", async () => {
     setApiBinding(
-      makeBinding(async () =>
+      mockBinding(
         jsonResponse(409, {
           error: {
             code: "DOMAIN_ERROR",
@@ -166,12 +171,10 @@ describe("apiFetch — non-2xx", () => {
       ),
     );
 
-    try {
-      await apiFetch("/api/x", {}, makeRequest());
-      throw new Error("should have thrown");
-    } catch (err) {
-      expect((err as ApiError).reason).toBe("ingredient_in_use");
-    }
+    await expect(apiFetch("/api/x", {}, makeRequest())).rejects.toMatchObject({
+      name: "ApiError",
+      reason: "ingredient_in_use",
+    });
   });
 });
 

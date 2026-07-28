@@ -6,7 +6,11 @@ import { clientIp, setSecurityHeaders } from "@recetario/config/request";
 import { auth, generateToken, getCsrfCookie } from "@recetario/auth";
 import { resolveSubscription, seedSubscriptionPlans } from "@recetario/billing";
 import { logAuditEvent, prisma } from "@recetario/db";
-import { apiFetch, ApiError as ApiClientError } from "@/lib/api-client";
+import {
+  apiFetch,
+  ApiError as ApiClientError,
+  setApiBinding,
+} from "@/lib/api-client";
 import { subscriptionResponseSchema } from "@recetario/types";
 
 const globals = globalThis as typeof globalThis & {
@@ -32,6 +36,7 @@ async function detectSignInEvent(
 
 export const onRequest = defineMiddleware(async (context, next) => {
   syncEnvBindings(env as Record<string, unknown>);
+  setApiBinding(context.locals.runtime?.env?.API);
 
   // ── 1. Auth: resolve session from request headers ──────────────────────────
   const session = await auth.api.getSession({
@@ -82,7 +87,8 @@ export const onRequest = defineMiddleware(async (context, next) => {
       );
       context.locals.subscription = sub;
     } catch (err) {
-      if (!(err instanceof ApiClientError) || err.code !== "NOT_FOUND") throw err;
+      if (!(err instanceof ApiClientError) || err.code !== "NOT_FOUND")
+        throw err;
       context.locals.subscription = resolveSubscription(null);
     }
 

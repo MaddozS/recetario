@@ -1,5 +1,5 @@
 import type { ZodIssue, ZodType } from "zod";
-import type { ApiErrorCode } from "@recetario/types";
+import type { ApiErrorCode, ApiErrorParsed } from "@recetario/types";
 import { parseApiError } from "@recetario/types";
 
 export type ApiFetchMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -11,11 +11,10 @@ export type ApiFetchOptions<T> = {
   signal?: AbortSignal;
 };
 
+type ApiErrorExtras = Omit<ApiErrorParsed, "code" | "message" | "raw">;
+
 type ServiceBinding = {
-  fetch: (
-    input: string | URL | Request,
-    init?: RequestInit,
-  ) => Promise<Response>;
+  fetch: (input: string | URL, init?: RequestInit) => Promise<Response>;
 };
 
 const g = globalThis as typeof globalThis & {
@@ -33,13 +32,8 @@ export class ApiError extends Error {
   constructor(
     code: ApiErrorCode,
     message: string,
-    extras: {
-      issues?: ZodIssue[];
-      reason?: string;
-      traceId?: string;
-      retryAfterMs?: number;
-      status?: number;
-    } = {},
+    extras: ApiErrorExtras = {},
+    status: number = 500,
   ) {
     super(message);
     this.name = "ApiError";
@@ -48,7 +42,7 @@ export class ApiError extends Error {
     this.reason = extras.reason;
     this.traceId = extras.traceId;
     this.retryAfterMs = extras.retryAfterMs;
-    this.status = extras.status ?? 500;
+    this.status = status;
   }
 }
 
@@ -92,25 +86,34 @@ export async function apiFetch<T = unknown>(
   }
 
   if (res.ok) {
-    const data = (await res.json()) as T;
+    let data: T;
+    try {
+      data = (await res.json()) as T;
+    } catch {
+      throw new ApiError("INTERNAL", "Internal error", {
+        traceId: newTraceId(),
+      });
+    }
     return schema ? schema.parse(data) : data;
   }
 
-  const traceId = newTraceId();
-  let parsed: Awaited<ReturnType<typeof parseApiError>>;
+  let parsed: ApiErrorParsed;
   try {
     parsed = await parseApiError(res);
   } catch {
     throw new ApiError("INTERNAL", "Internal error", {
-      status: res.status,
-      traceId,
+      traceId: newTraceId(),
     });
   }
-  throw new ApiError(parsed.code, parsed.message, {
-    issues: parsed.issues,
-    reason: parsed.reason,
-    traceId: parsed.traceId ?? traceId,
-    retryAfterMs: parsed.retryAfterMs,
-    status: res.status,
-  });
+  throw new ApiError(
+    parsed.code,
+    parsed.message,
+    {
+      issues: parsed.issues,
+      reason: parsed.reason,
+      traceId: parsed.traceId ?? newTraceId(),
+      retryAfterMs: parsed.retryAfterMs,
+    },
+    res.status,
+  );
 }
