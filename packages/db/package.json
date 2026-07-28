@@ -25,6 +25,7 @@
     "@prisma/adapter-pg": "7.8.0",
     "@prisma/client": "7.8.0",
     "@recetario/config": "workspace:^",
+    "@recetario/types": "workspace:^",
     "dotenv": "17.4.2",
     "pg": "8.20.0"
   },

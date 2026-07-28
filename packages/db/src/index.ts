@@ -1,5 +1,6 @@
-export { prisma } from "./prisma.js";
-export * from "./types.js";
+export { prisma, createPrismaClient } from "./prisma.js";
+export type { PrismaClient } from "./prisma.js";
+export * from "@recetario/types";
 export * from "./helpers.js";
 export * from "./ingredients.js";
 export * from "./recipes.js";

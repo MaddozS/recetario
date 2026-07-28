@@ -1,5 +1,6 @@
 import { prisma } from "./prisma.js";
-import type { UserPreferences } from "./types.js";
+import type { PrismaClient } from "./prisma.js";
+import type { UserPreferences } from "@recetario/types";
 
 const validThemes = ["system", "light", "dark"] as const;
 const validAccentColors = [
@@ -22,10 +23,14 @@ function isValidAccentColor(
   return (validAccentColors as readonly string[]).includes(value);
 }
 
+// ponytail: every helper takes an optional `db` so the API worker
+// can pass a per-request client (see apps/api/src/fresh-db.ts and
+// memory #63). Web keeps using the singleton.
 export async function getUserPreferences(
   userId: string,
+  db: PrismaClient = prisma,
 ): Promise<UserPreferences | null> {
-  const data = await prisma.userPreferences.findUnique({
+  const data = await db.userPreferences.findUnique({
     where: { userId },
   });
 
@@ -45,8 +50,9 @@ export async function getUserPreferences(
 export async function upsertUserPreferences(
   userId: string,
   prefs: { theme?: string; accentColor?: string },
+  db: PrismaClient = prisma,
 ): Promise<UserPreferences> {
-  const existing = await prisma.userPreferences.findUnique({
+  const existing = await db.userPreferences.findUnique({
     where: { userId },
   });
 
@@ -57,7 +63,7 @@ export async function upsertUserPreferences(
     ? (prefs.accentColor as UserPreferences["accentColor"])
     : (existing?.accentColor ?? "coral");
 
-  const data = await prisma.userPreferences.upsert({
+  const data = await db.userPreferences.upsert({
     where: { userId },
     update: {
       theme,

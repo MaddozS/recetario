@@ -9,6 +9,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./server": {
+      "types": "./dist/server.d.ts",
+      "default": "./dist/server.js"
     }
   },
   "files": ["dist", "src"],
@@ -17,6 +21,7 @@
   },
   "dependencies": {
     "@recetario/config": "workspace:^",
+    "@recetario/types": "workspace:^",
     "stripe": "22.1.1"
   },
   "peerDependencies": {

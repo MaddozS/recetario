@@ -1,3 +1,11 @@
-// Shared types live here.
-// Currently empty — populated incrementally as new features need cross-package types.
-export {};
+export * from "./types.js";
+export * from "./api/errors.js";
+export * from "./api/errors.zod.js";
+export * from "./api/ingredients.js";
+export * from "./api/preferences.js";
+export * from "./api/reasons.js";
+export * from "./api/billing.js";
+export * from "./api/recipes.js";
+export * from "./api/auth.js";
+export * from "./api/audit.js";
+export * from "./api/usage.js";

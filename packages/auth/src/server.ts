@@ -1,4 +1,4 @@
-export { auth } from "./auth.js";
+export { auth, createAuth } from "./auth.js";
 export {
   generateToken,
   getCsrfCookie,

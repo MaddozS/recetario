@@ -7,7 +7,8 @@
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
     "type-check": "tsc --noEmit",
-    "build": "tsc --noEmit"
+    "build": "tsc --noEmit",
+    "test": "vitest run"
   },
   "dependencies": {
     "@prisma/adapter-pg": "7.8.0",
@@ -15,6 +16,7 @@
     "@recetario/auth": "workspace:^",
     "@recetario/billing": "workspace:^",
     "@recetario/config": "workspace:^",
+    "@recetario/types": "workspace:^",
     "@recetario/db": "workspace:^",
     "hono": "^4.10.8",
     "pg": "8.20.0"

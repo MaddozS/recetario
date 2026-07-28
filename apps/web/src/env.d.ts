@@ -17,6 +17,14 @@ declare namespace App {
     session: { user: AppUser } | null;
     subscription: import("./lib/subscription").UserSubscriptionInfo;
     csrfToken: string | null;
+    runtime: {
+      env: {
+        API?: {
+          fetch: (input: string | URL, init?: RequestInit) => Promise<Response>;
+        };
+        [key: string]: unknown;
+      };
+    };
   }
 
   interface ImportMetaEnv {
@@ -37,6 +45,7 @@ declare namespace App {
     readonly STRIPE_PRICE_ID_PRO_MONTHLY?: string;
     readonly STRIPE_PRICE_ID_PRO_YEARLY?: string;
     readonly PUBLIC_BETTER_AUTH_URL?: string;
+    readonly INTERNAL_API_URL?: string;
   }
 
   interface ImportMeta {

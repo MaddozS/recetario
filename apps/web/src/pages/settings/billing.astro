@@ -4,23 +4,38 @@ import {
   getRemainingRecipes,
   getRemainingIngredients,
 } from "@recetario/billing";
-import {
-  countUserRecipes,
-  countUserIngredients,
-  getPricingPlans,
-} from "@recetario/billing";
+import { buildPricingPlans } from "@recetario/billing";
+import { apiFetch } from "@/lib/api-client";
+import { z } from "zod";
+import { usageCountsResponseSchema } from "@recetario/types";
 import BillingSection from "@/components/BillingSection.astro";
 
 if (!Astro.locals.session || !Astro.locals.user) {
   return Astro.redirect("/sign-in");
 }
 
-const ownerId = Astro.locals.user!.id;
 const subscription = Astro.locals.subscription;
 
-const recipeCount = await countUserRecipes(ownerId);
-const ingredientCount = await countUserIngredients(ownerId);
-const plans = await getPricingPlans();
+const [counts, rawPlans] = await Promise.all([
+  apiFetch("/api/usage-counts", { schema: usageCountsResponseSchema }, Astro),
+  apiFetch(
+    "/api/billing/plans",
+    {
+      schema: z.array(
+        z.object({
+          id: z.string(),
+          stripePriceId: z.string(),
+          priceCents: z.number().int(),
+          currency: z.string(),
+        }),
+      ),
+    },
+    Astro,
+  ),
+]);
+const { recipes: recipeCount, ingredients: ingredientCount } = counts;
+
+const plans = buildPricingPlans(rawPlans);
 
 const remainingRecipes = getRemainingRecipes(subscription, recipeCount);
 const remainingIngredients = getRemainingIngredients(

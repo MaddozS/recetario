@@ -3,100 +3,139 @@ import { env } from "cloudflare:workers";
 // ── Orchestration imports (thin delegation to @recetario/* packages) ──────────
 import { syncEnvBindings } from "@recetario/config/env";
 import { clientIp, setSecurityHeaders } from "@recetario/config/request";
-import { auth, generateToken, getCsrfCookie } from "@recetario/auth";
+import { generateToken, getCsrfCookie } from "@recetario/auth";
+import { resolveSubscription } from "@recetario/billing";
 import {
-  getUserSubscription,
-  resolveSubscription,
-  seedSubscriptionPlans,
-} from "@recetario/billing";
-import { cacheGet, cacheSet, logAuditEvent, prisma } from "@recetario/db";
-
-const globals = globalThis as typeof globalThis & {
-  __plansSeeded?: boolean;
-};
+  apiFetch,
+  ApiError as ApiClientError,
+  setApiBinding,
+} from "@/lib/api-client";
+import {
+  credentialStatusResponseSchema,
+  sessionResponseSchema,
+  type SessionResponse,
+  subscriptionResponseSchema,
+} from "@recetario/types";
 
 const SIGN_IN_PATHS = ["/sign-in/email", "/sign-in/social"];
 
-async function detectSignInEvent(
+type ApiServiceBinding = {
+  fetch: (input: string | URL | Request, init?: RequestInit) => Promise<Response>;
+};
+
+function detectSignInEvent(
   path: string,
   userId: string,
-  request: Request,
-) {
-  if (SIGN_IN_PATHS.some((p) => path.includes(p))) {
-    await logAuditEvent({
-      userId,
-      action: "sign_in",
-      ipAddress: clientIp(request),
-      userAgent: request.headers.get("user-agent") ?? null,
-    });
-  }
+  context: { request: Request; locals?: { user?: { id?: string | null } | null } },
+): void {
+  if (!SIGN_IN_PATHS.some((p) => path.includes(p))) return;
+  // ponytail: best-effort; never block the request
+  apiFetch(
+    "/api/audit/log",
+    {
+      method: "POST",
+      body: {
+        action: "sign_in",
+        ipAddress: clientIp(context.request),
+        userAgent: context.request.headers.get("user-agent") ?? null,
+      },
+    },
+    context,
+  ).catch(() => {});
 }
 
 export const onRequest = defineMiddleware(async (context, next) => {
-  syncEnvBindings(env as Record<string, unknown>);
+  const bindings = env as Record<string, unknown>;
+  syncEnvBindings(bindings);
+  // ponytail: service binding is not wired to the API worker's wrangler dev
+  // process in dev (separate miniflare instances). Skip it and let apiFetch
+  // fall through to INTERNAL_API_URL (http://localhost:8787).
+  if (!import.meta.env.DEV) {
+    setApiBinding((bindings as { API?: ApiServiceBinding }).API);
+  }
 
-  // ── 1. Auth: resolve session from request headers ──────────────────────────
-  const session = await auth.api.getSession({
-    headers: context.request.headers,
-  });
+  // ── 0. Relay: /api/auth/* must reach the API worker (the web app does
+  //       not own the Better Auth instance). In production we forward via
+  //       the `API` service binding; in dev the Vite proxy in
+  //       `astro.config.mjs` handles this before the request ever hits
+  //       the middleware.
+  if (context.url.pathname.startsWith("/api/auth/")) {
+    const api = (env as { API?: ApiServiceBinding }).API;
+    if (api) {
+      return api.fetch(context.request);
+    }
+    return new Response("API service binding not configured", { status: 500 });
+  }
 
-  if (session?.user) {
+  // ── 1. Auth: resolve session from the API worker ─────────────────────────
+  let session: SessionResponse | null;
+  try {
+    session = await apiFetch(
+      "/api/auth/session",
+      { schema: sessionResponseSchema },
+      context,
+    );
+  } catch (err) {
+    if (
+      !(err instanceof ApiClientError) ||
+      (err.status !== 401 && err.code !== "UNAUTHENTICATED")
+    ) {
+      console.error("[/api/auth/session] unexpected error:", err);
+    }
+    session = null;
+  }
+
+  if (session) {
+    const { user: sessionUser } = session;
+
     // ── 2. User: build AppUser from session data + check credential account ───
     const userName =
-      session.user.name || session.user.email?.split("@")[0] || "Usuario";
+      sessionUser.name || sessionUser.email?.split("@")[0] || "Usuario";
 
-    const credentialAccount = await prisma.account.findFirst({
-      where: { userId: session.user.id, providerId: "credential" },
-      select: { id: true },
-    });
-
-    const sessionExtra = session.user as Record<string, unknown>;
+    let hasPasswordAuth = false;
+    try {
+      const credentialStatus = await apiFetch(
+        "/api/auth/credential-status",
+        { schema: credentialStatusResponseSchema },
+        context,
+      );
+      hasPasswordAuth = credentialStatus.hasPasswordAuth;
+    } catch (err) {
+      if (!(err instanceof ApiClientError) || err.status !== 401) {
+        console.error("[/api/auth/credential-status] error:", err);
+      }
+    }
 
     const appUser: AppUser = {
-      id: session.user.id,
-      email: session.user.email ?? null,
+      id: sessionUser.id,
+      email: sessionUser.email ?? null,
       name: userName,
-      firstName: (sessionExtra.firstName as string) ?? null,
-      lastName: (sessionExtra.lastName as string) ?? null,
-      image: session.user.image ?? null,
-      role: (sessionExtra.role as string) ?? "USER",
-      hasPasswordAuth: credentialAccount !== null,
+      firstName: sessionUser.firstName ?? null,
+      lastName: sessionUser.lastName ?? null,
+      image: sessionUser.image ?? null,
+      role: sessionUser.role ?? "USER",
+      hasPasswordAuth,
     };
 
     context.locals.user = appUser;
     context.locals.session = { user: appUser };
 
     // ── 3. Audit: log sign-in events ──────────────────────────────────────────
-    const url = new URL(context.request.url);
-    detectSignInEvent(url.pathname, session.user.id, context.request);
+    detectSignInEvent(context.url.pathname, sessionUser.id, context);
 
-    // ── 4. Billing: seed plans (once) + resolve subscription with cache ───────
-    if (!globals.__plansSeeded) {
-      globals.__plansSeeded = true;
-      seedSubscriptionPlans().catch(() => {});
+    // ── 4. Billing: resolve subscription with cache ──────────────────────
+    try {
+      const sub = await apiFetch(
+        "/api/billing/subscription",
+        { schema: subscriptionResponseSchema },
+        context,
+      );
+      context.locals.subscription = sub;
+    } catch (err) {
+      if (!(err instanceof ApiClientError) || err.code !== "NOT_FOUND")
+        throw err;
+      context.locals.subscription = resolveSubscription(null);
     }
-
-    const subCacheKey = `sub:${session.user.id}`;
-    let sub =
-      await cacheGet<ReturnType<typeof resolveSubscription>>(subCacheKey);
-    if (!sub) {
-      try {
-        const dbSub = await getUserSubscription(session.user.id);
-        sub = resolveSubscription(dbSub);
-      } catch {
-        sub = resolveSubscription(null);
-      }
-      await cacheSet(subCacheKey, sub, 300);
-    } else {
-      // Date deserialization: cache returns ISO strings, rehydrate to Date
-      if (sub.currentPeriodEnd) {
-        sub.currentPeriodEnd = new Date(sub.currentPeriodEnd);
-      }
-      if (sub.trialEnd) {
-        sub.trialEnd = new Date(sub.trialEnd);
-      }
-    }
-    context.locals.subscription = sub;
 
     // ── 5. CSRF: get-or-create per-session token ─────────────────────────────
     const existingToken = context.cookies.get(getCsrfCookie())?.value;

@@ -4,7 +4,7 @@ import type {
   ProductionSummary,
   ProductionRecipeResult,
 } from "@/lib/production-types";
-import type { RecipeWithIngredients } from "@recetario/db";
+import type { RecipeWithIngredients } from "@recetario/types";
 
 function roundHalfUp(value: number): number {
   return value >= 0 ? Math.floor(value + 0.5) : Math.ceil(value - 0.5);

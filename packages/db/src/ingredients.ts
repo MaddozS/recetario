@@ -1,25 +1,34 @@
 import { prisma } from "./prisma.js";
+import type { PrismaClient } from "./prisma.js";
 import type { Prisma } from "../generated/prisma/client.js";
 import type {
   Ingredient,
   CreateIngredientInput,
   UpdateIngredientInput,
   DeleteIngredientResult,
-} from "./types.js";
+} from "@recetario/types";
 import { normalizeOptionalText, toNumber } from "./helpers.js";
-import { cacheGet, cacheSet, cacheDelete } from "./cache.js";
+import { cacheGet, cacheSet } from "./cache.js";
 
-async function invalidateIngredientCache(ownerId: string) {
-  await cacheDelete(`ingredients:${ownerId}`);
-  await cacheDelete(`ingredient_usage:${ownerId}`);
-}
+// ponytail: every helper takes an optional `db` so the API worker
+// can pass a per-request client (see apps/api/src/fresh-db.ts and
+// memory #63). Web keeps using the singleton.
+// Cache management is the caller's responsibility — the read-side
+// helpers (listIngredients, listIngredientUsage) check + write the
+// cacheEntry table via the passed `db`, but write-side helpers do
+// NOT invalidate the cache; the API handler does that explicitly
+// with its per-request prisma so the cache layer never touches the
+// singleton.
 
-export async function listIngredients(ownerId: string): Promise<Ingredient[]> {
+export async function listIngredients(
+  ownerId: string,
+  db: PrismaClient = prisma,
+): Promise<Ingredient[]> {
   const cacheKey = `ingredients:${ownerId}`;
-  const cached = await cacheGet<Ingredient[]>(cacheKey);
+  const cached = await cacheGet<Ingredient[]>(cacheKey, db);
   if (cached) return cached;
 
-  const rows = await prisma.ingredient.findMany({
+  const rows = await db.ingredient.findMany({
     where: { ownerId },
     orderBy: { id: "asc" },
   });
@@ -34,18 +43,19 @@ export async function listIngredients(ownerId: string): Promise<Ingredient[]> {
     supplier: normalizeOptionalText(row.supplier),
   }));
 
-  await cacheSet(cacheKey, result, 60);
+  await cacheSet(cacheKey, result, 60, db);
   return result;
 }
 
 export async function listIngredientUsage(
   ownerId: string,
+  db: PrismaClient = prisma,
 ): Promise<Record<number, string[]>> {
   const cacheKey = `ingredient_usage:${ownerId}`;
-  const cached = await cacheGet<Record<number, string[]>>(cacheKey);
+  const cached = await cacheGet<Record<number, string[]>>(cacheKey, db);
   if (cached) return cached;
 
-  const rows = await prisma.recipeIngredient.findMany({
+  const rows = await db.recipeIngredient.findMany({
     where: { recipe: { ownerId } },
     select: {
       ingredientId: true,
@@ -62,13 +72,14 @@ export async function listIngredientUsage(
     usageByIngredient[row.ingredientId].push(row.recipe.name);
   }
 
-  await cacheSet(cacheKey, usageByIngredient, 60);
+  await cacheSet(cacheKey, usageByIngredient, 60, db);
   return usageByIngredient;
 }
 
 export async function createIngredient(
   input: CreateIngredientInput,
   ownerId: string,
+  db: PrismaClient = prisma,
 ): Promise<Ingredient> {
   const name = input.name.trim();
   const unit = input.unit.trim();
@@ -88,7 +99,7 @@ export async function createIngredient(
     throw new Error("Invalid ingredient input");
   }
 
-  const data = await prisma.ingredient.create({
+  const data = await db.ingredient.create({
     data: {
       ownerId,
       name,
@@ -99,8 +110,6 @@ export async function createIngredient(
       supplier: supplier ?? null,
     },
   });
-
-  await invalidateIngredientCache(ownerId);
 
   return {
     id: data.id,
@@ -117,6 +126,7 @@ export async function updateIngredient(
   ingredientId: number,
   input: UpdateIngredientInput,
   ownerId: string,
+  db: PrismaClient = prisma,
 ): Promise<Ingredient | null> {
   if (!Number.isFinite(ingredientId)) return null;
 
@@ -150,16 +160,14 @@ export async function updateIngredient(
     updates.supplier = normalizeOptionalText(input.supplier) ?? null;
 
   if (Object.keys(updates).length === 0) {
-    return getIngredientById(ingredientId);
+    return getIngredientById(ingredientId, db);
   }
 
   try {
-    const data = await prisma.ingredient.update({
+    const data = await db.ingredient.update({
       where: { id: ingredientId, ownerId },
       data: updates as Prisma.IngredientUncheckedUpdateInput,
     });
-
-    await invalidateIngredientCache(ownerId);
 
     return {
       id: data.id,
@@ -177,10 +185,11 @@ export async function updateIngredient(
 
 async function getIngredientById(
   ingredientId: number,
+  db: PrismaClient,
 ): Promise<Ingredient | null> {
   if (!Number.isFinite(ingredientId)) return null;
 
-  const data = await prisma.ingredient.findUnique({
+  const data = await db.ingredient.findUnique({
     where: { id: ingredientId },
   });
 
@@ -200,34 +209,44 @@ async function getIngredientById(
 export async function deleteIngredient(
   ingredientId: number,
   ownerId: string,
+  db: PrismaClient = prisma,
 ): Promise<DeleteIngredientResult> {
   if (!Number.isFinite(ingredientId)) {
     return { status: "not-found" };
   }
 
-  const usage = await prisma.recipeIngredient.findMany({
+  const usage = await db.recipeIngredient.findMany({
     where: { ingredientId, recipe: { ownerId } },
     select: {
-      recipe: { select: { id: true, name: true } },
+      recipe: { select: { id: true, name: true, salePrice: true } },
     },
   });
 
-  const recipeNames: Array<{ id: number; name: string }> = [];
+  const recipes: Array<{
+    id: number;
+    name: string;
+    salePrice: number | null;
+  }> = [];
   for (const row of usage) {
     if (row.recipe) {
-      recipeNames.push({ id: row.recipe.id, name: row.recipe.name });
+      recipes.push({
+        id: row.recipe.id,
+        name: row.recipe.name,
+        salePrice:
+          row.recipe.salePrice === null
+            ? null
+            : Number(row.recipe.salePrice),
+      });
     }
   }
 
-  if (recipeNames.length > 0) {
-    return { status: "blocked", recipes: recipeNames };
+  if (recipes.length > 0) {
+    return { status: "blocked", recipes };
   }
 
-  await prisma.ingredient.delete({
+  await db.ingredient.delete({
     where: { id: ingredientId, ownerId },
   });
-
-  await invalidateIngredientCache(ownerId);
 
   return { status: "deleted" };
 }

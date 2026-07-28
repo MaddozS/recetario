@@ -7,10 +7,18 @@ import HowItWorksSection from "@/components/landing/HowItWorksSection.astro";
 import PricingSection from "@/components/landing/PricingSection.astro";
 import CTASection from "@/components/landing/CTASection.astro";
 import LandingFooter from "@/components/landing/LandingFooter.astro";
-import { getPricingPlans } from "@recetario/billing";
+import { buildPricingPlans } from "@recetario/billing";
+import { apiFetch } from "@/lib/api-client";
+import { planSchema } from "@recetario/types";
+import { z } from "zod";
 
 const isAuthenticated = Boolean(Astro.locals.user && Astro.locals.session);
-const plans = await getPricingPlans();
+const rawPlans = await apiFetch(
+  "/api/billing/plans",
+  { schema: z.array(planSchema) },
+  Astro,
+).catch(() => []);
+const plans = buildPricingPlans(rawPlans);
 ---
 
 <LandingLayout>

@@ -1,4 +1,26 @@
-export * from "./server.js";
+// Public, stateless surface. Intentionally does NOT re-export from `./server.js`
+// (which loads `./auth.js` → `@recetario/db` → Prisma + WASM query compiler).
+// Apps that only need stateless helpers (CSRF, password rules, sign-in/up
+// helpers, client) can import from the main entry; only code that actually
+// owns a session (e.g. the API worker) imports from `@recetario/auth/server`.
+
+export {
+  generateToken,
+  getCsrfCookie,
+  getCsrfHeader,
+  getCsrfFormField,
+  setCsrfCookieHeader,
+  validateCsrf,
+} from "./csrf.js";
+
+export {
+  validatePassword,
+  getRuleResults,
+  PASSWORD_RULES,
+  PASSWORD_REGEX,
+} from "./password-validation.js";
+export type { PasswordRule, RuleResult } from "./password-validation.js";
+
 export { authClient } from "./auth-client.js";
 export { getCsrfToken } from "./csrf-client.js";
 export { signInWithGoogle, signInWithEmail, signUpWithEmail, getSafeRedirect } from "./sign-in.js";

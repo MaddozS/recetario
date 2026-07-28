@@ -1,11 +1,12 @@
 import { prisma } from "./prisma.js";
+import type { PrismaClient } from "./prisma.js";
 import type { Prisma } from "../generated/prisma/client.js";
 import type {
   RecipePresentation,
   CreatePresentationInput,
   DeletePresentationResult,
   PresentationFixedCost,
-} from "./types.js";
+} from "@recetario/types";
 import {
   normalizePresentationName,
   normalizePresentationUnits,
@@ -18,13 +19,24 @@ import {
 } from "./helpers.js";
 import { cacheDelete } from "./cache.js";
 
-async function invalidateParentRecipeCache(ownerId: string, recipeId: number) {
-  await cacheDelete(`recipes:${ownerId}`);
-  await cacheDelete(`recipe:${recipeId}`);
+// ponytail: every helper takes an optional `db` so the API worker
+// can pass a per-request client (see apps/api/src/fresh-db.ts and
+// memory #63). Web keeps using the singleton.
+
+async function invalidateParentRecipeCache(
+  ownerId: string,
+  recipeId: number,
+  db: PrismaClient,
+) {
+  await cacheDelete(`recipes:${ownerId}`, db);
+  await cacheDelete(`recipe:${recipeId}`, db);
 }
 
-async function touchRecipeUpdatedAt(recipeId: number): Promise<void> {
-  await prisma.recipe.update({
+async function touchRecipeUpdatedAt(
+  recipeId: number,
+  db: PrismaClient,
+): Promise<void> {
+  await db.recipe.update({
     where: { id: recipeId },
     data: { updatedAt: new Date() },
   });
@@ -34,6 +46,7 @@ export async function createPresentation(
   recipeId: number,
   input: CreatePresentationInput,
   ownerId: string,
+  db: PrismaClient = prisma,
 ): Promise<RecipePresentation> {
   const name = normalizePresentationName(input.name);
   const unitsPerBatch = normalizePresentationUnits(input.unitsPerBatch);
@@ -42,7 +55,7 @@ export async function createPresentation(
       ? normalizePresentationSalePrice(input.salePrice)
       : undefined;
 
-  const ownerRecipe = await prisma.recipe.findFirst({
+  const ownerRecipe = await db.recipe.findFirst({
     where: { id: recipeId, ownerId },
     select: { id: true },
   });
@@ -50,7 +63,7 @@ export async function createPresentation(
     throw new Error("Recipe not found");
   }
 
-  const data = await prisma.$transaction(async (tx) => {
+  const data = await db.$transaction(async (tx) => {
     const presentation = await tx.recipePresentation.create({
       data: {
         recipeId,
@@ -77,8 +90,8 @@ export async function createPresentation(
     return presentation;
   });
 
-  await touchRecipeUpdatedAt(recipeId);
-  await invalidateParentRecipeCache(ownerId, recipeId);
+  await touchRecipeUpdatedAt(recipeId, db);
+  await invalidateParentRecipeCache(ownerId, recipeId, db);
 
   return {
     id: data.id,
@@ -104,6 +117,7 @@ export async function updatePresentation(
     }>;
   },
   ownerId: string,
+  db: PrismaClient = prisma,
 ): Promise<RecipePresentation | null> {
   const name =
     input.name !== undefined
@@ -124,17 +138,17 @@ export async function updatePresentation(
   const hasFixedCostUpdates = input.fixedCosts !== undefined;
 
   if (!hasFieldUpdates && !hasFixedCostUpdates) {
-    return getPresentationById(recipeId, id);
+    return getPresentationById(recipeId, id, db);
   }
 
-  const ownerRecipe = await prisma.recipe.findFirst({
+  const ownerRecipe = await db.recipe.findFirst({
     where: { id: recipeId, ownerId },
     select: { id: true },
   });
   if (!ownerRecipe) return null;
 
   try {
-    await prisma.$transaction(async (tx) => {
+    await db.$transaction(async (tx) => {
       if (hasFieldUpdates) {
         const updateData: Record<string, unknown> = {};
         if (name !== undefined) updateData.name = name;
@@ -168,12 +182,12 @@ export async function updatePresentation(
       }
     });
 
-    await touchRecipeUpdatedAt(recipeId);
-    await invalidateParentRecipeCache(ownerId, recipeId);
+    await touchRecipeUpdatedAt(recipeId, db);
+    await invalidateParentRecipeCache(ownerId, recipeId, db);
 
-    const fixedCosts = await getPresentationFixedCosts(id);
+    const fixedCosts = await getPresentationFixedCosts(id, db);
 
-    const updated = await prisma.recipePresentation.findFirst({
+    const updated = await db.recipePresentation.findFirst({
       where: { id, recipeId },
     });
 
@@ -193,8 +207,9 @@ export async function updatePresentation(
 
 async function getPresentationFixedCosts(
   presentationId: number,
+  db: PrismaClient,
 ): Promise<PresentationFixedCost[]> {
-  const rows = await prisma.presentationFixedCost.findMany({
+  const rows = await db.presentationFixedCost.findMany({
     where: { presentationId },
   });
 
@@ -211,8 +226,9 @@ async function getPresentationFixedCosts(
 export async function getPresentationById(
   recipeId: number,
   id: number,
+  db: PrismaClient = prisma,
 ): Promise<RecipePresentation | null> {
-  const data = await prisma.recipePresentation.findFirst({
+  const data = await db.recipePresentation.findFirst({
     where: { id, recipeId },
     include: {
       fixedCosts: true,
@@ -241,27 +257,28 @@ export async function deletePresentation(
   recipeId: number,
   presentationId: number,
   ownerId: string,
+  db: PrismaClient = prisma,
 ): Promise<DeletePresentationResult> {
   if (!Number.isFinite(recipeId) || !Number.isFinite(presentationId)) {
     return { status: "not-found" };
   }
 
-  const ownerRecipe = await prisma.recipe.findFirst({
+  const ownerRecipe = await db.recipe.findFirst({
     where: { id: recipeId, ownerId },
     select: { id: true },
   });
   if (!ownerRecipe) return { status: "not-found" };
 
   try {
-    await prisma.recipePresentation.delete({
+    await db.recipePresentation.delete({
       where: { id: presentationId, recipeId },
     });
   } catch {
     return { status: "not-found" };
   }
 
-  await touchRecipeUpdatedAt(recipeId);
-  await invalidateParentRecipeCache(ownerId, recipeId);
+  await touchRecipeUpdatedAt(recipeId, db);
+  await invalidateParentRecipeCache(ownerId, recipeId, db);
 
   return { status: "deleted" };
 }

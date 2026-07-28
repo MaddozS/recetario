@@ -1,11 +1,17 @@
 import { prisma, cacheDelete } from "@recetario/db";
+import type { PrismaClient } from "@recetario/db";
 import { stripe } from "./stripe.js";
 import { TIER_CONFIG } from "./plans-config.js";
-import { formatCurrency } from "./formatters.js";
+import { buildPricingPlans } from "./pricing-plans.js";
+import type { PricingPlan } from "./pricing-plans.js";
 import type Stripe from "stripe";
 
-async function invalidateSubCache(userId: string) {
-  await cacheDelete(`sub:${userId}`);
+// ponytail: every function takes an optional `db` so the API worker
+// can pass a per-request client (see apps/api/src/fresh-db.ts and
+// memory #63). Web keeps using the singleton.
+
+async function invalidateSubCache(userId: string, db: PrismaClient) {
+  await cacheDelete(`sub:${userId}`, db);
 }
 
 const BASIC_FEATURES: Record<string, boolean> = {
@@ -45,7 +51,9 @@ const FEATURE_FLAGS: Record<string, Record<string, boolean>> = {
 
 const KNOWN_TIERS = Object.keys(TIER_CONFIG).filter((t) => t !== "free");
 
-export async function syncPlansFromStripe(): Promise<void> {
+export async function syncPlansFromStripe(
+  db: PrismaClient = prisma,
+): Promise<void> {
   const prices = await stripe.prices.list({
     active: true,
     expand: ["data.product"],
@@ -66,7 +74,7 @@ export async function syncPlansFromStripe(): Promise<void> {
     syncedIds.push(id);
     const featuresJson = JSON.stringify(FEATURE_FLAGS[tier] ?? {});
 
-    await prisma.subscriptionPlan.upsert({
+    await db.subscriptionPlan.upsert({
       where: { id },
       update: {
         stripePriceId: price.id,
@@ -105,7 +113,7 @@ export async function syncPlansFromStripe(): Promise<void> {
   }
 
   if (syncedIds.length > 0) {
-    await prisma.subscriptionPlan.updateMany({
+    await db.subscriptionPlan.updateMany({
       where: {
         id: { notIn: syncedIds },
         tier: { in: KNOWN_TIERS },
@@ -116,109 +124,35 @@ export async function syncPlansFromStripe(): Promise<void> {
   }
 }
 
-export async function seedSubscriptionPlans(): Promise<void> {
+export async function seedSubscriptionPlans(
+  db: PrismaClient = prisma,
+): Promise<void> {
   try {
-    await syncPlansFromStripe();
+    await syncPlansFromStripe(db);
   } catch (error) {
     console.error("Failed to sync plans from Stripe:", error);
   }
 }
 
-export interface PricingPlan {
-  id: string;
-  tier: string;
-  name: string;
-  description: string;
-  badge: { text: string; class: string } | null;
-  currency: string;
-  monthlyPriceId: string | null;
-  monthlyDisplay: string | null;
-  yearlyPriceId: string | null;
-  yearlyDisplay: string | null;
-  yearlyPerMonthDisplay: string | null;
-  features: { text: string; included: boolean; status?: "coming_soon" }[];
-}
+export type { PricingPlan };
 
-export async function getPricingPlans(): Promise<PricingPlan[]> {
-  let plans = await prisma.subscriptionPlan.findMany({
+export async function getPricingPlans(
+  db: PrismaClient = prisma,
+): Promise<PricingPlan[]> {
+  let plans = await db.subscriptionPlan.findMany({
     where: { active: true, tier: { in: KNOWN_TIERS } },
     orderBy: { id: "asc" },
   });
 
   if (plans.length === 0) {
-    await seedSubscriptionPlans();
-    plans = await prisma.subscriptionPlan.findMany({
+    await seedSubscriptionPlans(db);
+    plans = await db.subscriptionPlan.findMany({
       where: { active: true, tier: { in: KNOWN_TIERS } },
       orderBy: { id: "asc" },
     });
   }
 
-  const priceMap: Record<
-    string,
-    { priceId: string; priceCents: number; currency: string }
-  > = {};
-  for (const plan of plans) {
-    priceMap[plan.id] = {
-      priceId: plan.stripePriceId,
-      priceCents: plan.priceCents,
-      currency: plan.currency,
-    };
-  }
-
-  const result: PricingPlan[] = [];
-
-  for (const [tier, config] of Object.entries(TIER_CONFIG)) {
-    if (tier === "free") {
-      result.push({
-        id: "free",
-        tier: "free",
-        name: config.name,
-        description: config.description,
-        badge: config.badge,
-        currency: "USD",
-        monthlyPriceId: null,
-        monthlyDisplay: null,
-        yearlyPriceId: null,
-        yearlyDisplay: null,
-        yearlyPerMonthDisplay: null,
-        features: config.features,
-      });
-      continue;
-    }
-
-    const monthlyKey = `${tier}_monthly`;
-    const yearlyKey = `${tier}_yearly`;
-
-    const monthly = priceMap[monthlyKey] ?? null;
-    const yearly = priceMap[yearlyKey] ?? null;
-
-    const monthlyDisplay = monthly
-      ? formatCurrency(monthly.priceCents / 100)
-      : "—";
-    const yearlyDisplay = yearly
-      ? formatCurrency(yearly.priceCents / 100)
-      : "—";
-    const yearlyPerMonthDisplay = yearly
-      ? formatCurrency(yearly.priceCents / 12 / 100)
-      : "—";
-
-    result.push({
-      id: tier,
-      tier,
-      name: config.name,
-      description: config.description,
-      badge: config.badge,
-      currency: (monthly?.currency ?? yearly?.currency ?? "MXN").toUpperCase(),
-      monthlyPriceId: monthly?.priceId ?? null,
-      monthlyDisplay,
-      yearlyPriceId: yearly?.priceId ?? null,
-      yearlyDisplay,
-      yearlyPerMonthDisplay,
-      features: config.features,
-    });
-  }
-
-  return result;
+  return buildPricingPlans(plans);
 }
 
 export type UserSubscription = {
@@ -256,8 +190,9 @@ export type CreateSubscriptionInput = {
 
 export async function getUserSubscription(
   userId: string,
+  db: PrismaClient = prisma,
 ): Promise<UserSubscription | null> {
-  const data = await prisma.subscription.findFirst({
+  const data = await db.subscription.findFirst({
     where: {
       userId,
       status: { in: ["active", "trialing"] },
@@ -294,19 +229,20 @@ export async function getUserSubscription(
 
 export async function createOrUpdateSubscription(
   input: CreateSubscriptionInput,
+  db: PrismaClient = prisma,
 ): Promise<void> {
   let resolvedPlanId = input.planId;
   let resolvedUserId = input.userId;
 
   if (!resolvedPlanId) {
-    const plan = await prisma.subscriptionPlan.findFirst({
+    const plan = await db.subscriptionPlan.findFirst({
       where: { stripePriceId: input.stripeSubscriptionId },
     });
     if (plan) resolvedPlanId = plan.id;
   }
 
   if (!resolvedUserId) {
-    const sub = await prisma.subscription.findUnique({
+    const sub = await db.subscription.findUnique({
       where: { stripeSubscriptionId: input.stripeSubscriptionId },
     });
     if (sub) resolvedUserId = sub.userId;
@@ -314,7 +250,7 @@ export async function createOrUpdateSubscription(
 
   if (!resolvedPlanId || !resolvedUserId) return;
 
-  await prisma.subscription.upsert({
+  await db.subscription.upsert({
     where: { stripeSubscriptionId: input.stripeSubscriptionId },
     update: {
       id: input.stripeSubscriptionId,
@@ -341,46 +277,51 @@ export async function createOrUpdateSubscription(
     },
   });
 
-  await invalidateSubCache(resolvedUserId);
+  await invalidateSubCache(resolvedUserId, db);
 }
 
 export async function cancelSubscription(
   stripeSubscriptionId: string,
+  db: PrismaClient = prisma,
 ): Promise<void> {
-  const sub = await prisma.subscription.findUnique({
+  const sub = await db.subscription.findUnique({
     where: { stripeSubscriptionId },
     select: { userId: true },
   });
   if (!sub) return;
-  await prisma.subscription.update({
+  await db.subscription.update({
     where: { stripeSubscriptionId },
     data: { status: "canceled", cancelAtPeriodEnd: true },
   });
-  await invalidateSubCache(sub.userId);
+  await invalidateSubCache(sub.userId, db);
 }
 
 export async function markSubscriptionPastDue(
   stripeSubscriptionId: string,
+  db: PrismaClient = prisma,
 ): Promise<void> {
-  const sub = await prisma.subscription.findUnique({
+  const sub = await db.subscription.findUnique({
     where: { stripeSubscriptionId },
     select: { userId: true },
   });
   if (!sub) return;
-  await prisma.subscription.update({
+  await db.subscription.update({
     where: { stripeSubscriptionId },
     data: { status: "past_due" },
   });
-  await invalidateSubCache(sub.userId);
+  await invalidateSubCache(sub.userId, db);
 }
 
-export async function getPlanByStripePriceId(stripePriceId: string): Promise<{
+export async function getPlanByStripePriceId(
+  stripePriceId: string,
+  db: PrismaClient = prisma,
+): Promise<{
   id: string;
   tier: string;
   name: string;
   stripePriceId: string;
 } | null> {
-  const data = await prisma.subscriptionPlan.findFirst({
+  const data = await db.subscriptionPlan.findFirst({
     where: { stripePriceId },
   });
   if (!data) return null;
@@ -394,8 +335,9 @@ export async function getPlanByStripePriceId(stripePriceId: string): Promise<{
 
 export async function getStripeCustomerId(
   userId: string,
+  db: PrismaClient = prisma,
 ): Promise<string | null> {
-  const data = await prisma.subscription.findFirst({
+  const data = await db.subscription.findFirst({
     where: { userId, stripeCustomerId: { not: null } },
     select: { stripeCustomerId: true },
     orderBy: { createdAt: "desc" },
@@ -403,12 +345,18 @@ export async function getStripeCustomerId(
   return data?.stripeCustomerId ?? null;
 }
 
-export async function countUserRecipes(ownerId: string): Promise<number> {
-  return prisma.recipe.count({ where: { ownerId } });
+export async function countUserRecipes(
+  ownerId: string,
+  db: PrismaClient = prisma,
+): Promise<number> {
+  return db.recipe.count({ where: { ownerId } });
 }
 
-export async function countUserIngredients(ownerId: string): Promise<number> {
-  return prisma.ingredient.count({ where: { ownerId } });
+export async function countUserIngredients(
+  ownerId: string,
+  db: PrismaClient = prisma,
+): Promise<number> {
+  return db.ingredient.count({ where: { ownerId } });
 }
 
 function parseFeaturesJson(

@@ -1,13 +1,14 @@
 ---
 import { Icon } from "astro-icon/components";
 import Layout from "@/layouts/Layout.astro";
+import { apiFetch, ApiError } from "@/lib/api-client";
+import { z } from "zod";
 import {
-  createRecipe,
-  listRecipeSummaries,
-  duplicateRecipe,
-} from "@recetario/db";
-import { listIngredientUsage } from "@recetario/db";
-import { countUserRecipes } from "@recetario/billing";
+  recipeSummarySchema,
+  recipeCreateResponseSchema,
+  ingredientUsageMapSchema,
+  usageCountsResponseSchema,
+} from "@recetario/types";
 import { canCreateRecipe, hasFeature } from "@recetario/billing";
 import { timeAgo } from "@recetario/billing";
 import EmptyState from "@/components/EmptyState.astro";
@@ -19,12 +20,6 @@ import FeedbackAlert from "@/components/FeedbackAlert.astro";
 import { validateCsrf } from "@recetario/auth";
 
 if (!Astro.locals.session || !Astro.locals.user) {
-  Astro.redirect("/sign-in");
-}
-
-const ownerId = Astro.locals.user?.id;
-
-if (!ownerId) {
   return Astro.redirect("/sign-in");
 }
 
@@ -41,7 +36,11 @@ if (Astro.request.method === "POST") {
   let createdRecipeId: number | null = null;
 
   if (action === "create_recipe") {
-    const recipeCount = await countUserRecipes(ownerId as string);
+    const { recipes: recipeCount } = await apiFetch(
+      "/api/usage-counts",
+      { schema: usageCountsResponseSchema },
+      Astro,
+    );
     if (!canCreateRecipe(subscription, recipeCount)) {
       const errorUrl = new URL(Astro.url);
       errorUrl.searchParams.set("type", "error");
@@ -50,12 +49,27 @@ if (Astro.request.method === "POST") {
       return Astro.redirect(errorUrl.toString());
     }
 
-    createdRecipeId = (
-      await createRecipe(
-        ownerId,
-        { name: String(formData.get("recipeName") || "") },
-      )
-    ).id;
+    try {
+      const created = await apiFetch(
+        "/api/recipes",
+        {
+          method: "POST",
+          body: { name: String(formData.get("recipeName") || "") },
+          schema: recipeCreateResponseSchema,
+        },
+        Astro,
+      );
+      createdRecipeId = created.id;
+    } catch (error) {
+      const message =
+        error instanceof ApiError
+          ? error.message
+          : "No se pudo crear la receta.";
+      const errorUrl = new URL(Astro.url);
+      errorUrl.searchParams.set("type", "error");
+      errorUrl.searchParams.set("message", message);
+      return Astro.redirect(errorUrl.toString());
+    }
   }
 
   if (action === "duplicate_recipe") {
@@ -68,8 +82,24 @@ if (Astro.request.method === "POST") {
 
     const recipeIdToDuplicate = Number(formData.get("recipeId"));
     if (Number.isFinite(recipeIdToDuplicate)) {
-      const dupResult = await duplicateRecipe(recipeIdToDuplicate, ownerId);
-      return Astro.redirect(`/recipes/${dupResult.id}?edit=true`);
+      try {
+        const dupResult = await apiFetch(
+          `/api/recipes/${recipeIdToDuplicate}/duplicate`,
+          { method: "POST", schema: recipeCreateResponseSchema },
+          Astro,
+        );
+        void dupResult;
+        return Astro.redirect(`/recipes/${dupResult.id}?edit=true`);
+      } catch (error) {
+        const message =
+          error instanceof ApiError && error.status === 404
+            ? "No se encontró la receta original."
+            : "Error al duplicar la receta.";
+        const errorUrl = new URL(Astro.url);
+        errorUrl.searchParams.set("type", "error");
+        errorUrl.searchParams.set("message", message);
+        return Astro.redirect(errorUrl.toString());
+      }
     }
   }
 
@@ -78,9 +108,19 @@ if (Astro.request.method === "POST") {
   }
 }
 
-const recipes = await listRecipeSummaries(ownerId);
+const recipes = await apiFetch(
+  "/api/recipes",
+  { schema: z.array(recipeSummarySchema) },
+  Astro,
+);
 
-const ingredientUsage = recipes.length > 0 ? await listIngredientUsage(ownerId) : {};
+const ingredientUsage = recipes.length > 0
+  ? await apiFetch(
+      "/api/ingredients/usage",
+      { schema: ingredientUsageMapSchema },
+      Astro,
+    )
+  : {};
 const categoryCount = new Set(recipes.filter((r) => r.category).map((r) => r.category)).size;
 const usedIngredientCount = Object.keys(ingredientUsage).length;
 
@@ -215,7 +255,7 @@ const showUpgradeModal = Astro.url.searchParams.get("upgrade") === "1";
                       <RecipeMiniCard
                         id={r.id}
                         name={r.name}
-                        category={r.category}
+                        category={r.category ?? undefined}
                         timeAgo={r.timeAgo}
                       />
                     </div>
@@ -311,7 +351,7 @@ const showUpgradeModal = Astro.url.searchParams.get("upgrade") === "1";
                       <RecipeGridCard
                         id={r.id}
                         name={r.name}
-                        category={r.category}
+                        category={r.category ?? undefined}
                         ingredientCount={r.ingredientCount}
                         canDuplicate={hasFeature(subscription, "recipe_duplicate")}
                       />

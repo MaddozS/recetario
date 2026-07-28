@@ -10,12 +10,19 @@
     "NODE_ENV": "production",
     "PUBLIC_APP_URL": "https://recetario-web.axel-ana25.workers.dev",
     "BETTER_AUTH_USE_DB": "true",
+    "INTERNAL_API_URL": "http://localhost:8787",
   },
   "kv_namespaces": [
     {
       "binding": "SESSION",
       "id": "10323f891e024ef0ad89099b717c2c79"
     }
+  ],
+  "services": [
+    {
+      "binding": "API",
+      "service": "recetario-api",
+    },
   ],
   // Secrets (set via `wrangler pages secret put <KEY>` or Cloudflare dashboard):
   //   DATABASE_URL              postgres://...  (Prisma connection — pg.Pool via nodejs_compat)

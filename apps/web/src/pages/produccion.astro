@@ -1,7 +1,12 @@
 ---
 import { Button, SectionHeading } from "@recetario/ui";
 import Layout from "@/layouts/Layout.astro";
-import { listRecipeSummaries, getRecipesByIds } from "@recetario/db";
+import { apiFetch } from "@/lib/api-client";
+import { z } from "zod";
+import {
+  recipeSummarySchema,
+  recipeWithIngredientsSchema,
+} from "@recetario/types";
 import { hasFeature, isPro } from "@recetario/billing";
 import { PRODUCTION_BASIC_RECIPE_LIMIT } from "@/lib/constants";
 import { calculateProduction } from "@/lib/production-calculator";
@@ -20,7 +25,6 @@ if (!Astro.locals.session || !Astro.locals.user) {
   return Astro.redirect("/sign-in");
 }
 
-const ownerId = Astro.locals.user!.id;
 const subscription = Astro.locals.subscription;
 const canAccess = hasFeature(subscription, "production_planner");
 const isProUser = isPro(subscription);
@@ -53,7 +57,11 @@ if (canAccess && recipeIdsParam && batchesParam) {
 
   if (selections.length > 0) {
     const recipeIds = selections.map((s) => s.recipeId);
-    const allRecipesById = await getRecipesByIds(recipeIds, ownerId);
+    const allRecipesById = await apiFetch(
+      `/api/recipes/by-ids?ids=${recipeIds.join(",")}`,
+      { schema: z.array(recipeWithIngredientsSchema) },
+      Astro,
+    );
     const recipeMap = new Map(allRecipesById.map((r) => [r.id, r]));
     const validSelections = selections.filter((s) => recipeMap.has(s.recipeId));
     const validRecipes = validSelections.map((s) => recipeMap.get(s.recipeId)!);
@@ -75,13 +83,21 @@ if (canAccess && recipeIdsParam && batchesParam) {
   }
 }
 
-const allRecipes = canAccess ? await listRecipeSummaries(ownerId) : [];
-const allRecipeData = canAccess
-  ? await getRecipesByIds(
-      allRecipes.map((r) => r.id),
-      ownerId,
+const allRecipes = canAccess
+  ? await apiFetch(
+      "/api/recipes",
+      { schema: z.array(recipeSummarySchema) },
+      Astro,
     )
   : [];
+const allRecipeData =
+  canAccess && allRecipes.length > 0
+    ? await apiFetch(
+        `/api/recipes/by-ids?ids=${allRecipes.map((r) => r.id).join(",")}`,
+        { schema: z.array(recipeWithIngredientsSchema) },
+        Astro,
+      )
+    : [];
 
 for (const r of allRecipeData) {
   if (r && r.presentations.length > 0) {
@@ -177,7 +193,7 @@ const currentPage = "production";
     ProductionRecipeResult,
     ProductionRecipeSelection,
   } from "../lib/production-types";
-  import type { RecipeWithIngredients } from "@recetario/db";
+  import type { RecipeWithIngredients } from "@recetario/types";
 
   let recipeData: RecipeWithIngredients[] = [];
   let debounceTimer: ReturnType<typeof setTimeout> | undefined;

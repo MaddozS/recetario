@@ -2,18 +2,18 @@
 import { Icon } from "astro-icon/components";
 import Layout from "@/layouts/Layout.astro";
 import { Button, Card } from "@recetario/ui";
-import {
-  createIngredient,
-  deleteIngredient,
-  listIngredients,
-  listIngredientUsage,
-  updateIngredient,
-} from "@recetario/db";
-import { countUserIngredients } from "@recetario/billing";
 import { canCreateIngredient } from "@recetario/billing";
 import { parseNumberInput } from "@/lib/form-utils";
 import { UNIT_OPTIONS, DEFAULT_UNIT } from "@/lib/constants";
 import { validateCsrf } from "@recetario/auth";
+import { apiFetch, ApiError } from "@/lib/api-client";
+import { z } from "zod";
+import {
+  ingredientSchema,
+  ingredientUsageMapSchema,
+  ingredientUsageResponseSchema,
+  usageCountsResponseSchema,
+} from "@recetario/types";
 import FeedbackAlert from "@/components/FeedbackAlert.astro";
 import UnitCostDisplay from "@/components/UnitCostDisplay.astro";
 import IngredientFormFields from "@/components/IngredientFormFields.astro";
@@ -22,8 +22,6 @@ import EmptyState from "@/components/EmptyState.astro";
 if (!Astro.locals.session || !Astro.locals.user) {
   return Astro.redirect("/sign-in");
 }
-
-const ownerId = Astro.locals.user!.id;
 
 type IngredientFormInput = {
   name: string;
@@ -119,7 +117,11 @@ if (Astro.request.method === "POST") {
     }
 
     if (action === "create") {
-      const ingredientCount = await countUserIngredients(ownerId);
+      const { ingredients: ingredientCount } = await apiFetch(
+        "/api/usage-counts",
+        { schema: usageCountsResponseSchema },
+        Astro,
+      );
       if (!canCreateIngredient(Astro.locals.subscription, ingredientCount)) {
         return redirectWithFeedback({
           type: "error",
@@ -127,17 +129,30 @@ if (Astro.request.method === "POST") {
         });
       }
 
-      await createIngredient(
-        {
-          name: ingredientInput.name,
-          unit: ingredientInput.unit,
-          price: ingredientInput.price,
-          purchaseQuantity: ingredientInput.purchaseQuantity,
-          brand: ingredientInput.brand || undefined,
-          supplier: ingredientInput.supplier || undefined,
-        },
-        ownerId,
-      );
+      try {
+        await apiFetch(
+          "/api/ingredients",
+          {
+            method: "POST",
+            body: {
+              name: ingredientInput.name,
+              unit: ingredientInput.unit,
+              price: ingredientInput.price,
+              purchaseQuantity: ingredientInput.purchaseQuantity,
+              brand: ingredientInput.brand || undefined,
+              supplier: ingredientInput.supplier || undefined,
+            },
+          },
+          Astro,
+        );
+      } catch (error) {
+        const message =
+          error instanceof ApiError
+            ? error.message
+            : "No se pudo crear el ingrediente.";
+        void message;
+        return redirectWithFeedback({ type: "error", message });
+      }
 
       return redirectWithFeedback({
         type: "success",
@@ -154,32 +169,33 @@ if (Astro.request.method === "POST") {
     }
 
     try {
-      const updatedIngredient = await updateIngredient(
-        ingredientId,
+      await apiFetch(
+        `/api/ingredients/${ingredientId}`,
         {
-          name: ingredientInput.name,
-          unit: ingredientInput.unit,
-          price: ingredientInput.price,
-          purchaseQuantity: ingredientInput.purchaseQuantity,
-          brand: ingredientInput.brand,
-          supplier: ingredientInput.supplier,
+          method: "PATCH",
+          body: {
+            name: ingredientInput.name,
+            unit: ingredientInput.unit,
+            price: ingredientInput.price,
+            purchaseQuantity: ingredientInput.purchaseQuantity,
+            brand: ingredientInput.brand || undefined,
+            supplier: ingredientInput.supplier || undefined,
+          },
         },
-        ownerId,
+        Astro,
       );
-
-      if (!updatedIngredient) {
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 404) {
         return redirectWithFeedback({
           type: "error",
           message: "El ingrediente ya no existe.",
         });
       }
-    } catch (error) {
       const message =
-        error instanceof Error && error.message
+        error instanceof ApiError
           ? error.message
           : "No se pudo actualizar el ingrediente.";
       void message;
-
       return redirectWithFeedback({
         type: "error",
         message,
@@ -201,21 +217,42 @@ if (Astro.request.method === "POST") {
       });
     }
 
-    const result = await deleteIngredient(ingredientId, ownerId);
-
-    if (result.status === "not-found") {
-      return redirectWithFeedback({
-        type: "error",
-        message: "El ingrediente ya no existe.",
-      });
-    }
-
-    if (result.status === "blocked") {
-      return redirectWithFeedback({
-        type: "error",
-        message: "No se puede eliminar porque el ingrediente está en uso.",
-        recipes: result.recipes.map((recipe) => recipe.name),
-      });
+    try {
+      await apiFetch(
+        `/api/ingredients/${ingredientId}`,
+        { method: "DELETE" },
+        Astro,
+      );
+    } catch (error) {
+      if (
+        error instanceof ApiError &&
+        error.status === 409 &&
+        error.reason === "ingredient_in_use"
+      ) {
+        const usage = await apiFetch(
+          `/api/ingredients/${ingredientId}/usage`,
+          { schema: ingredientUsageResponseSchema },
+          Astro,
+        );
+        void usage;
+        return redirectWithFeedback({
+          type: "error",
+          message: "No se puede eliminar porque el ingrediente está en uso.",
+          recipes: usage.recipes.map((r) => r.name),
+        });
+      }
+      if (error instanceof ApiError && error.status === 404) {
+        return redirectWithFeedback({
+          type: "error",
+          message: "El ingrediente ya no existe.",
+        });
+      }
+      const message =
+        error instanceof ApiError
+          ? error.message
+          : "No se pudo eliminar el ingrediente.";
+      void message;
+      return redirectWithFeedback({ type: "error", message });
     }
 
     return redirectWithFeedback({
@@ -246,8 +283,16 @@ const blockedRecipes = (() => {
   }
 })();
 
-const ingredients = await listIngredients(ownerId);
-const ingredientUsage = await listIngredientUsage(ownerId);
+const ingredients = await apiFetch(
+  "/api/ingredients",
+  { schema: z.array(ingredientSchema) },
+  Astro,
+);
+const ingredientUsage = await apiFetch(
+  "/api/ingredients/usage",
+  { schema: ingredientUsageMapSchema },
+  Astro,
+);
 
 void redirectWithFeedback;
 ---
@@ -379,7 +424,7 @@ void redirectWithFeedback;
               </thead>
               <tbody class="divide-border-light divide-y">
                 {ingredients.map((ingredient) => {
-                  const usedRecipes = ingredientUsage[ingredient.id] || [];
+                  const usedRecipes = ingredientUsage[String(ingredient.id)] || [];
                   const usedRecipesPayload = encodeURIComponent(
                     JSON.stringify(usedRecipes),
                   );
