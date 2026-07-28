@@ -3,15 +3,15 @@
   "name": "recetario-web",
   "compatibility_date": "2026-06-10",
   "compatibility_flags": ["nodejs_compat"],
-  "pages_build_output_dir": "./dist",
   "observability": {
     "enabled": true,
   },
+  "assets": {
+    "binding": "ASSETS",
+    "directory": "dist/client",
+  },
   "vars": {
     "NODE_ENV": "production",
-    "PUBLIC_APP_URL": "https://recetario-web.axel-ana25.workers.dev",
-    "BETTER_AUTH_USE_DB": "true",
-    "INTERNAL_API_URL": "http://localhost:8787",
   },
   "kv_namespaces": [
     {
@@ -25,17 +25,50 @@
       "service": "recetario-api",
     },
   ],
-  // Secrets (set via `wrangler pages secret put <KEY>` or Cloudflare dashboard):
-  //   DATABASE_URL              postgres://...  (Prisma connection — pg.Pool via nodejs_compat)
-  //   BETTER_AUTH_SECRET        Better Auth signing
-  //   BETTER_AUTH_URL           app origin (e.g. https://kitchcalc.com)
-  //   GOOGLE_CLIENT_ID          Google OAuth
-  //   GOOGLE_CLIENT_SECRET      Google OAuth
-  //   PUBLIC_APP_URL            public app origin
-  //   RECIPES_STATIC_OWNER_EMAIL seed owner
-  //   RECIPES_STATIC_OWNER_ID   seed owner
-  //   RESEND_API_KEY            email sender
-  //   SENDER_EMAIL              email sender
-  //   STRIPE_SECRET_KEY         Stripe API
-  //   STRIPE_WEBHOOK_SECRET     Stripe webhook signature
+  "env": {
+    "staging": {
+      "name": "recetario-web-staging",
+      "main": "dist/server/entry.mjs",
+      "compatibility_date": "2026-06-10",
+      "compatibility_flags": ["nodejs_compat"],
+      "observability": {
+        "enabled": true
+      },
+      "assets": {
+        "binding": "ASSETS",
+        "directory": "dist/client",
+      },
+      "services": [
+        {
+          "binding": "API",
+          "service": "recetario-api-staging",
+        },
+      ],
+      "vars": {
+        "NODE_ENV": "staging"
+      }
+    },
+    "production": {
+      "name": "recetario-web-production",
+      "main": "dist/server/entry.mjs",
+      "compatibility_date": "2026-06-10",
+      "compatibility_flags": ["nodejs_compat"],
+      "observability": {
+        "enabled": true
+      },
+      "assets": {
+        "binding": "ASSETS",
+        "directory": "dist/client",
+      },
+      "services": [
+        {
+          "binding": "API",
+          "service": "recetario-api-production",
+        },
+      ],
+      "vars": {
+        "NODE_ENV": "production"
+      }
+    }
+  }
 }
