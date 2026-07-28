@@ -32,12 +32,16 @@ export default defineConfig({
     server: {
       proxy: {
         "/api/auth": {
+  // eslint-disable-next-line no-undef
           target: process.env.INTERNAL_API_URL ?? "http://localhost:8787",
           changeOrigin: true,
         },
       },
     },
     plugins: [tailwindcss()],
+    ssr: {
+      external: ["satteri", "@bruits/satteri-wasm32-wasi"],
+    },
   },
 
   integrations: [

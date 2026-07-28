@@ -110,7 +110,8 @@ function sanitizeAttrs(rawAttrs: string): string {
 }
 
 function sanitizeAttrValue(attrName: string, value: string): string | null {
-  const normalizedValue = value.replace(/[\u0000-\u001f\u007f]/g, "").trim();
+  // eslint-disable-next-line no-control-regex
+  const normalizedValue = value.replace(/[\x00-\x1f\x7f]/g, "").trim();
 
   if (attrName === "class") {
     const className = normalizedValue.replace(/[^a-zA-Z0-9_:\-\s]/g, " ");
