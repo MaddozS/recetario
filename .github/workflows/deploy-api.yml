@@ -9,34 +9,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  detect:
-    runs-on: ubuntu-latest
-    outputs:
-      changed: ${{ steps.filter.outputs.changed }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - id: filter
-        run: |
-          if [ "${{ github.event.before }}" = "0000000000000000000000000000000000000000" ]; then
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-          else
-            CHANGED=$(pnpm exec turbo run build \
-              --filter="@recetario/api...[${{ github.event.before }}]" \
-              --dry-run=json 2>/dev/null | jq -e '.packages | length > 0' >/dev/null && echo "true" || echo "false")
-            echo "changed=$CHANGED" >> "$GITHUB_OUTPUT"
-          fi
-
   deploy:
-    needs: detect
-    if: needs.detect.outputs.changed == 'true'
     environment:
       name: ${{ github.ref_name == 'master' && 'production' || 'staging' }}
     runs-on: ubuntu-latest
