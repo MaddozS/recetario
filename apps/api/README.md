@@ -58,7 +58,8 @@ Worked example: `GET /api/billing/subscription`.
    ```ts
    import type { Handler } from "hono";
    import { auth } from "@recetario/auth/server";
-   import { getUserSubscription, resolveSubscription } from "@recetario/billing";
+    import { getUserSubscription } from "@recetario/billing/server";
+    import { resolveSubscription } from "@recetario/billing";
    import { ApiError } from "../errors.js";
    import * as cache from "../cache.js";
 
