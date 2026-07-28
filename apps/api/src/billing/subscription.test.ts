@@ -4,20 +4,26 @@ import { envelope } from "../envelope.js";
 import { errorHandler } from "../error-handler.js";
 import { hostAllowlist } from "../host-allowlist.js";
 
-const { mockGetSession, mockAuth, mockGetUserSubscription } = vi.hoisted(() => {
+const { mockGetSession, mockAuth, mockGetUserSubscription, mockSeedSubscriptionPlans } = vi.hoisted(() => {
   const mockGetSession = vi.fn();
   const mockAuth = { api: { getSession: (...args: unknown[]) => mockGetSession(...args) } };
   const mockGetUserSubscription = vi.fn();
-  return { mockGetSession, mockAuth, mockGetUserSubscription };
+  const mockSeedSubscriptionPlans = vi.fn();
+  return { mockGetSession, mockAuth, mockGetUserSubscription, mockSeedSubscriptionPlans };
 });
 
 vi.mock("@recetario/auth/server", () => ({
   createAuth: () => mockAuth,
 }));
 
-vi.mock("@recetario/billing", () => ({
+vi.mock("@recetario/billing/server", () => ({
   getUserSubscription: (id: string, db: unknown) =>
     mockGetUserSubscription(id, db),
+  seedSubscriptionPlans: (db: unknown) =>
+    mockSeedSubscriptionPlans(db),
+}));
+
+vi.mock("@recetario/billing", () => ({
   resolveSubscription: (sub: unknown) => {
     if (!sub) {
       return {

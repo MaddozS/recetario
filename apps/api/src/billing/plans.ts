@@ -2,6 +2,7 @@ import type { Handler } from "hono";
 import * as cache from "../cache.js";
 import { ApiError } from "../errors.js";
 import { withFreshDb } from "../fresh-db.js";
+import { seedSubscriptionPlans } from "@recetario/billing/server";
 
 const CACHE_TTL_MS = 60_000;
 const CACHE_KEY = "plans:all";
@@ -13,6 +14,9 @@ export function plansHandler(): Handler {
       if (cached !== undefined) {
         return c.json(cached);
       }
+
+      // ponytail: lazy-seed plans on first request; idempotent
+      await seedSubscriptionPlans(prisma);
 
       const plans = await prisma.subscriptionPlan.findMany({
         where: { active: true },

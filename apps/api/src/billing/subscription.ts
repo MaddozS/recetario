@@ -1,5 +1,6 @@
 import type { Handler } from "hono";
-import { getUserSubscription, resolveSubscription } from "@recetario/billing";
+import { getUserSubscription, seedSubscriptionPlans } from "@recetario/billing/server";
+import { resolveSubscription } from "@recetario/billing";
 import { ApiError } from "../errors.js";
 import * as cache from "../cache.js";
 import { withFreshDb } from "../fresh-db.js";
@@ -19,6 +20,9 @@ export function subscriptionHandler(): Handler {
       if (cached !== undefined) {
         return c.json(cached);
       }
+
+      // ponytail: lazy-seed plans on first subscription request; idempotent
+      await seedSubscriptionPlans(prisma);
 
       const dbSub = await getUserSubscription(session.user.id, prisma);
       if (!dbSub) {

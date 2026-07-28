@@ -19,7 +19,7 @@ import {
   cancelSubscription,
   markSubscriptionPastDue,
   seedSubscriptionPlans,
-} from "@recetario/billing";
+} from "@recetario/billing/server";
 import { syncEnvBindings } from "@recetario/config/env";
 import { clientIp, setSecurityHeaders } from "@recetario/config/request";
 
@@ -549,7 +549,7 @@ app.post("/api/stripe/portal", async (c) => {
 
 app.post("/api/stripe/webhook", async (c) => {
   return withFreshDb(c, async (prisma) => {
-    await seedSubscriptionPlans();
+    await seedSubscriptionPlans(prisma);
 
     const payload = await c.req.text();
     const signature = c.req.header("stripe-signature");

@@ -4,7 +4,7 @@ import { env } from "cloudflare:workers";
 import { syncEnvBindings } from "@recetario/config/env";
 import { clientIp, setSecurityHeaders } from "@recetario/config/request";
 import { generateToken, getCsrfCookie } from "@recetario/auth";
-import { resolveSubscription, seedSubscriptionPlans } from "@recetario/billing";
+import { resolveSubscription } from "@recetario/billing";
 import {
   apiFetch,
   ApiError as ApiClientError,
@@ -16,10 +16,6 @@ import {
   type SessionResponse,
   subscriptionResponseSchema,
 } from "@recetario/types";
-
-const globals = globalThis as typeof globalThis & {
-  __plansSeeded?: boolean;
-};
 
 const SIGN_IN_PATHS = ["/sign-in/email", "/sign-in/social"];
 
@@ -127,12 +123,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
     // ── 3. Audit: log sign-in events ──────────────────────────────────────────
     detectSignInEvent(context.url.pathname, sessionUser.id, context);
 
-    // ── 4. Billing: seed plans (once) + resolve subscription with cache ───────
-    if (!globals.__plansSeeded) {
-      globals.__plansSeeded = true;
-      seedSubscriptionPlans().catch(() => {});
-    }
-
+    // ── 4. Billing: resolve subscription with cache ──────────────────────
     try {
       const sub = await apiFetch(
         "/api/billing/subscription",
