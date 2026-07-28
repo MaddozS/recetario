@@ -1,7 +1,6 @@
 {
   "$schema": "../../node_modules/wrangler/config-schema.json",
   "name": "recetario-web",
-  "main": "dist/server/entry.mjs",
   "compatibility_date": "2026-06-10",
   "compatibility_flags": ["nodejs_compat"],
   "observability": {
@@ -39,6 +38,12 @@
         "binding": "ASSETS",
         "directory": "dist/client",
       },
+      "services": [
+        {
+          "binding": "API",
+          "service": "recetario-api-staging",
+        },
+      ],
       "vars": {
         "NODE_ENV": "staging"
       }
@@ -55,6 +60,12 @@
         "binding": "ASSETS",
         "directory": "dist/client",
       },
+      "services": [
+        {
+          "binding": "API",
+          "service": "recetario-api-production",
+        },
+      ],
       "vars": {
         "NODE_ENV": "production"
       }
