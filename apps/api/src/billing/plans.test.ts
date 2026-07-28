@@ -3,7 +3,7 @@ import { Hono } from "hono";
 import { envelope } from "../envelope.js";
 import { errorHandler } from "../error-handler.js";
 import { hostAllowlist } from "../host-allowlist.js";
-import { planSchema, plansListResponseSchema } from "@recetario/types";
+import { plansListResponseSchema } from "@recetario/types";
 
 const { mockFindMany, mockPrisma, mockAuth } = vi.hoisted(() => {
   const mockFindMany = vi.fn();
