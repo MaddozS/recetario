@@ -30,7 +30,7 @@ jobs:
       - run: pnpm exec turbo build --filter=@recetario/web
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-      - run: rm -f apps/web/dist/server/wrangler.json
+      - run: rm -f apps/web/.wrangler/deploy/config.json
       - run: pnpm --filter @recetario/web exec wrangler pages deploy ./dist --commit-dirty
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
