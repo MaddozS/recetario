@@ -4,12 +4,10 @@ import { env } from "cloudflare:workers";
 import { syncEnvBindings } from "@recetario/config/env";
 import { clientIp, setSecurityHeaders } from "@recetario/config/request";
 import { auth, generateToken, getCsrfCookie } from "@recetario/auth";
-import {
-  getUserSubscription,
-  resolveSubscription,
-  seedSubscriptionPlans,
-} from "@recetario/billing";
-import { cacheGet, cacheSet, logAuditEvent, prisma } from "@recetario/db";
+import { resolveSubscription, seedSubscriptionPlans } from "@recetario/billing";
+import { logAuditEvent, prisma } from "@recetario/db";
+import { apiFetch, ApiError as ApiClientError } from "@/lib/api-client";
+import { subscriptionResponseSchema } from "@recetario/types";
 
 const globals = globalThis as typeof globalThis & {
   __plansSeeded?: boolean;
@@ -76,27 +74,17 @@ export const onRequest = defineMiddleware(async (context, next) => {
       seedSubscriptionPlans().catch(() => {});
     }
 
-    const subCacheKey = `sub:${session.user.id}`;
-    let sub =
-      await cacheGet<ReturnType<typeof resolveSubscription>>(subCacheKey);
-    if (!sub) {
-      try {
-        const dbSub = await getUserSubscription(session.user.id);
-        sub = resolveSubscription(dbSub);
-      } catch {
-        sub = resolveSubscription(null);
-      }
-      await cacheSet(subCacheKey, sub, 300);
-    } else {
-      // Date deserialization: cache returns ISO strings, rehydrate to Date
-      if (sub.currentPeriodEnd) {
-        sub.currentPeriodEnd = new Date(sub.currentPeriodEnd);
-      }
-      if (sub.trialEnd) {
-        sub.trialEnd = new Date(sub.trialEnd);
-      }
+    try {
+      const sub = await apiFetch(
+        "/api/billing/subscription",
+        { schema: subscriptionResponseSchema },
+        context.request,
+      );
+      context.locals.subscription = sub;
+    } catch (err) {
+      if (!(err instanceof ApiClientError) || err.code !== "NOT_FOUND") throw err;
+      context.locals.subscription = resolveSubscription(null);
     }
-    context.locals.subscription = sub;
 
     // ── 5. CSRF: get-or-create per-session token ─────────────────────────────
     const existingToken = context.cookies.get(getCsrfCookie())?.value;

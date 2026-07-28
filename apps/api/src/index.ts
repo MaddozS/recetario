@@ -28,6 +28,26 @@ import { errorHandler } from "./error-handler.js";
 import { hostAllowlist } from "./host-allowlist.js";
 import { rateLimit } from "./rate-limit.js";
 import { authSessionHandler } from "./auth-session.js";
+import { recipesListHandler } from "./recipes/list.js";
+import { recipesDetailHandler } from "./recipes/detail.js";
+import { recipesCreateHandler } from "./recipes/create.js";
+import { recipesUpdateHandler } from "./recipes/update.js";
+import { recipesDeleteHandler } from "./recipes/delete.js";
+import {
+  fixedCostsCreateHandler,
+  fixedCostsUpdateHandler,
+  fixedCostsDeleteHandler,
+} from "./recipes/fixed-costs.js";
+import { presentationsListHandler } from "./recipes/presentations.js";
+import { ingredientsListHandler } from "./ingredients/list.js";
+import { ingredientsCreateHandler } from "./ingredients/create.js";
+import { ingredientsUpdateHandler } from "./ingredients/update.js";
+import { ingredientsDeleteHandler } from "./ingredients/delete.js";
+import { ingredientsUsageHandler } from "./ingredients/usage.js";
+import { preferencesGetHandler } from "./preferences/get.js";
+import { preferencesUpdateHandler } from "./preferences/update.js";
+import { subscriptionHandler } from "./billing/subscription.js";
+import { plansHandler } from "./billing/plans.js";
 
 const app = new Hono();
 
@@ -216,6 +236,27 @@ app.post("/api/auth/reset-password", async (c) => {
 });
 
 app.get("/api/auth/session", authSessionHandler());
+
+app.get("/api/recipes", recipesListHandler());
+app.get("/api/recipes/:id", recipesDetailHandler());
+app.post("/api/recipes", recipesCreateHandler());
+app.patch("/api/recipes/:id", recipesUpdateHandler());
+app.delete("/api/recipes/:id", recipesDeleteHandler());
+app.post("/api/recipes/:id/fixed-costs", fixedCostsCreateHandler());
+app.patch("/api/recipes/:id/fixed-costs/:fid", fixedCostsUpdateHandler());
+app.delete("/api/recipes/:id/fixed-costs/:fid", fixedCostsDeleteHandler());
+app.get("/api/recipes/:id/presentations", presentationsListHandler());
+app.get("/api/ingredients", ingredientsListHandler());
+app.post("/api/ingredients", ingredientsCreateHandler());
+app.patch("/api/ingredients/:id", ingredientsUpdateHandler());
+app.delete("/api/ingredients/:id", ingredientsDeleteHandler());
+app.get("/api/ingredients/:id/usage", ingredientsUsageHandler());
+
+app.get("/api/preferences", preferencesGetHandler());
+app.put("/api/preferences", preferencesUpdateHandler());
+
+app.get("/api/billing/subscription", subscriptionHandler());
+app.get("/api/billing/plans", plansHandler());
 
 app.all("/api/auth/*", async (c) => {
   const path = new URL(c.req.url).pathname;

@@ -3,7 +3,6 @@ import { Icon } from "astro-icon/components";
 import { Button, Card, PasswordInput } from "@recetario/ui";
 import BillingSection from "@/components/BillingSection.astro";
 import Layout from "@/layouts/Layout.astro";
-import { getUserPreferences, upsertUserPreferences } from "@recetario/db";
 import {
   ACCENT_FAMILIES,
   ACCENT_LABELS,
@@ -21,6 +20,8 @@ import {
 } from "@recetario/billing";
 import FeedbackAlert from "@/components/FeedbackAlert.astro";
 import { validateCsrf } from "@recetario/auth";
+import { apiFetch } from "@/lib/api-client";
+import type { UserPreferences } from "@recetario/types";
 
 if (!Astro.locals.session || !Astro.locals.user) {
   return Astro.redirect("/sign-in");
@@ -38,7 +39,7 @@ const subscription = Astro.locals.subscription;
 const ownerId = user.id;
 
 const [prefs, recipeCount, ingredientCount] = await Promise.all([
-  getUserPreferences(user.id),
+  apiFetch<UserPreferences>("/api/preferences", {}, Astro.request),
   countUserRecipes(ownerId),
   countUserIngredients(ownerId),
 ]);
@@ -76,12 +77,19 @@ if (Astro.request.method === "POST") {
   const accentColor = formData.get("accentColor") as string;
 
   try {
-    await upsertUserPreferences(user.id, {
-      theme: ["system", "light", "dark"].includes(theme) ? theme : "system",
-      accentColor: ACCENT_FAMILIES.includes(accentColor as AccentFamily)
-        ? accentColor
-        : undefined,
-    });
+    await apiFetch(
+      "/api/preferences",
+      {
+        method: "PUT",
+        body: {
+          theme: ["system", "light", "dark"].includes(theme) ? theme : "system",
+          accentColor: ACCENT_FAMILIES.includes(accentColor as AccentFamily)
+            ? accentColor
+            : undefined,
+        },
+      },
+      Astro.request,
+    );
     feedback = {
       type: "success",
       message: "Preferencias guardadas correctamente.",

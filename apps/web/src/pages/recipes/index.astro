@@ -1,9 +1,11 @@
 ---
 import { Icon } from "astro-icon/components";
 import Layout from "@/layouts/Layout.astro";
+import { apiFetch } from "@/lib/api-client";
+import { z } from "zod";
+import { recipeSummarySchema } from "@recetario/types";
 import {
   createRecipe,
-  listRecipeSummaries,
   duplicateRecipe,
 } from "@recetario/db";
 import { listIngredientUsage } from "@recetario/db";
@@ -78,7 +80,11 @@ if (Astro.request.method === "POST") {
   }
 }
 
-const recipes = await listRecipeSummaries(ownerId);
+const recipes = await apiFetch(
+  "/api/recipes",
+  { schema: z.array(recipeSummarySchema) },
+  Astro.request,
+);
 
 const ingredientUsage = recipes.length > 0 ? await listIngredientUsage(ownerId) : {};
 const categoryCount = new Set(recipes.filter((r) => r.category).map((r) => r.category)).size;
@@ -215,7 +221,7 @@ const showUpgradeModal = Astro.url.searchParams.get("upgrade") === "1";
                       <RecipeMiniCard
                         id={r.id}
                         name={r.name}
-                        category={r.category}
+                        category={r.category ?? undefined}
                         timeAgo={r.timeAgo}
                       />
                     </div>
@@ -311,7 +317,7 @@ const showUpgradeModal = Astro.url.searchParams.get("upgrade") === "1";
                       <RecipeGridCard
                         id={r.id}
                         name={r.name}
-                        category={r.category}
+                        category={r.category ?? undefined}
                         ingredientCount={r.ingredientCount}
                         canDuplicate={hasFeature(subscription, "recipe_duplicate")}
                       />

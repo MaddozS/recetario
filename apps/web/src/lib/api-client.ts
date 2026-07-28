@@ -2,7 +2,7 @@ import type { ZodIssue, ZodType } from "zod";
 import type { ApiErrorCode } from "@recetario/types";
 import { parseApiError } from "@recetario/types";
 
-export type ApiFetchMethod = "GET" | "POST" | "PATCH" | "DELETE";
+export type ApiFetchMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
 export type ApiFetchOptions<T> = {
   method?: ApiFetchMethod;

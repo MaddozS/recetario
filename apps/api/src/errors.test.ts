@@ -37,9 +37,9 @@ describe("codeToStatus", () => {
     expect(codeToStatus("FORBIDDEN")).toBe(403);
     expect(codeToStatus("NOT_FOUND")).toBe(404);
     expect(codeToStatus("RATE_LIMITED")).toBe(429);
-    expect(codeToStatus("INTERNAL")).toBe(500);
-    expect(codeToStatus("DOMAIN_ERROR")).toBe(500);
-  });
+  expect(codeToStatus("INTERNAL")).toBe(500);
+  expect(codeToStatus("DOMAIN_ERROR")).toBe(409);
+});
 });
 
 describe("statusToCode", () => {
@@ -48,6 +48,7 @@ describe("statusToCode", () => {
   it("maps 403 to FORBIDDEN", () => expect(statusToCode(403)).toBe("FORBIDDEN"));
   it("maps 404 to NOT_FOUND", () => expect(statusToCode(404)).toBe("NOT_FOUND"));
   it("maps 429 to RATE_LIMITED", () => expect(statusToCode(429)).toBe("RATE_LIMITED"));
+  it("maps 409 to DOMAIN_ERROR", () => expect(statusToCode(409)).toBe("DOMAIN_ERROR"));
   it("maps any other to INTERNAL", () => {
     expect(statusToCode(500)).toBe("INTERNAL");
     expect(statusToCode(502)).toBe("INTERNAL");

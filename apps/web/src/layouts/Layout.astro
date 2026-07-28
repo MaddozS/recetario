@@ -2,10 +2,11 @@
 import '@/styles/global.css'
 import { ClientRouter } from "astro:transitions";
 import { Icon } from 'astro-icon/components'
-import { getUserPreferences } from '@recetario/db'
 import { hasFeature } from '@recetario/billing'
 import { getAccentCssVars } from '@recetario/ui/accent-colors'
 import type { AccentFamily } from '@recetario/ui/accent-colors'
+import { apiFetch } from '@/lib/api-client'
+import type { UserPreferences } from '@recetario/types'
 import Header from '@/components/Header.astro'
 import RecipesSidebar from '@/components/RecipesSidebar.astro'
 
@@ -19,7 +20,9 @@ const subscription = Astro.locals.subscription;
 const showProduction = subscription ? hasFeature(subscription, 'production_planner') : false;
 const userId = Astro.locals.user?.id;
 
-const userPrefs = userId ? await getUserPreferences(userId) : null;
+const userPrefs: UserPreferences | null = userId
+  ? await apiFetch<UserPreferences>('/api/preferences', {}, Astro.request)
+  : null;
 const recipeHref = '/recipes';
 const theme = userPrefs?.theme ?? 'system';
 const accent = (userPrefs?.accentColor ?? 'coral') as AccentFamily;

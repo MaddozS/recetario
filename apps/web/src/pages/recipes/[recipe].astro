@@ -1,13 +1,13 @@
 ---
+import type { RecipeWithIngredients } from '@recetario/types';
 import type { Ingredient, RecipeIngredientWithData, RecipeIngredient, RecipePresentation } from '@recetario/db';
 import { Icon } from "astro-icon/components";
 import Layout from "../../layouts/Layout.astro";
 import PresentationCard from "../../components/PresentationCard.astro";
+import { apiFetch } from "@/lib/api-client";
 import {
-  getRecipeById,
   deleteRecipe,
   duplicateRecipe,
-  updateRecipe,
 } from '@recetario/db';
 import { listIngredients } from '@recetario/db';
 import {
@@ -325,34 +325,6 @@ if (Astro.request.method === 'POST') {
         message: 'No se pudo eliminar la receta.',
       });
     }
-  } else if (action === 'duplicate_recipe') {
-    if (!Number.isFinite(recipeIdNumber)) {
-      return Astro.redirect('/recipes');
-    }
-
-    if (!hasFeature(subscription, 'recipe_duplicate')) {
-      if (expectsJsonResponse) {
-        return jsonResponse({ error: 'Funcionalidad no disponible en tu plan.' }, 403);
-      }
-      return redirectToRecipePage({ type: 'error', message: 'Funcionalidad no disponible en tu plan.' });
-    }
-
-    try {
-      const duplicated = await duplicateRecipe(recipeIdNumber, ownerId);
-      const redirectUrl = new URL(Astro.url);
-      redirectUrl.pathname = `/recipes/${duplicated.id}`;
-      redirectUrl.searchParams.set('edit', 'true');
-      redirectUrl.searchParams.set('type', 'success');
-      redirectUrl.searchParams.set('message', `Receta "${duplicated.name}" creada exitosamente.`);
-      return Astro.redirect(redirectUrl.toString());
-    } catch (error) {
-      return respondRecipeError(
-        error instanceof Error && error.message === 'Recipe not found'
-          ? 'No se encontró la receta original.'
-          : 'Error al duplicar la receta.',
-        500,
-      );
-    }
   } else if (action === 'update_recipe') {
     if (Number.isFinite(recipeIdNumber)) {
       const name = String(formData.get('recipeName') || '');
@@ -381,15 +353,53 @@ if (Astro.request.method === 'POST') {
       const rawInstructions = String(formData.get('instructions') || '').trim();
       const instructions = rawInstructions ? sanitizeHtml(rawInstructions) : undefined;
 
-      await updateRecipe(recipeIdNumber, {
-        name,
-        category,
-        instructions,
-        desiredMargin,
-        fixedCostsPercentage,
-        ingredients: ingredientsToSave,
-      }, ownerId);
-      return Astro.redirect(Astro.url.pathname);
+      try {
+        await apiFetch(`/api/recipes/${recipeIdNumber}`, {
+          method: 'PATCH',
+          body: {
+            name,
+            category,
+            instructions,
+            desiredMargin,
+            fixedCostsPercentage,
+            ingredients: ingredientsToSave,
+          },
+        }, Astro.request);
+        return Astro.redirect(Astro.url.pathname);
+      } catch (error) {
+        const message = error && typeof error === 'object' && 'message' in error
+          ? String((error as { message: string }).message)
+          : 'No se pudo actualizar la receta.';
+        return redirectToRecipePage({ type: 'error', message });
+      }
+    }
+  } else if (action === 'duplicate_recipe') {
+    if (!Number.isFinite(recipeIdNumber)) {
+      return Astro.redirect('/recipes');
+    }
+
+    if (!hasFeature(subscription, 'recipe_duplicate')) {
+      if (expectsJsonResponse) {
+        return jsonResponse({ error: 'Funcionalidad no disponible en tu plan.' }, 403);
+      }
+      return redirectToRecipePage({ type: 'error', message: 'Funcionalidad no disponible en tu plan.' });
+    }
+
+    try {
+      const duplicated = await duplicateRecipe(recipeIdNumber, ownerId);
+      const redirectUrl = new URL(Astro.url);
+      redirectUrl.pathname = `/recipes/${duplicated.id}`;
+      redirectUrl.searchParams.set('edit', 'true');
+      redirectUrl.searchParams.set('type', 'success');
+      redirectUrl.searchParams.set('message', `Receta "${duplicated.name}" creada exitosamente.`);
+      return Astro.redirect(redirectUrl.toString());
+    } catch (error) {
+      return respondRecipeError(
+        error instanceof Error && error.message === 'Recipe not found'
+          ? 'No se encontró la receta original.'
+          : 'Error al duplicar la receta.',
+        500,
+      );
     }
   } else if (action === 'create_recipe_fixed_cost') {
     if (!expectsJsonResponse) {
@@ -598,10 +608,18 @@ if (!recipeIdParam) {
   return Astro.redirect('/recipes');
 }
 
-// Obtener la receta desde la base de datos
-const recipe = await getRecipeById(recipeIdParam, ownerId);
-if (!recipe) {
-  return Astro.redirect('/recipes');
+let recipe: RecipeWithIngredients;
+try {
+  recipe = await apiFetch<RecipeWithIngredients>(
+    `/api/recipes/${recipeIdParam}`,
+    {},
+    Astro.request,
+  );
+} catch (error) {
+  if (error && typeof error === 'object' && 'status' in error && (error as { status: number }).status === 404) {
+    return Astro.redirect('/recipes');
+  }
+  throw error;
 }
 
 const { ingredients: recipeIngredients, name, category, instructions, id, desiredMargin, fixedCostsPercentage, presentations, updatedAt } = recipe;
