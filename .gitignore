@@ -50,3 +50,6 @@ apps/*/.wrangler/
 
 # Graphify output
 graphify-out/
+
+# Code-review scratch patches (apply via `git apply` and discard)
+.scratch/
