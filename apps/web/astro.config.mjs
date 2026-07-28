@@ -39,9 +39,6 @@ export default defineConfig({
       },
     },
     plugins: [tailwindcss()],
-    ssr: {
-      external: ["satteri", "@bruits/satteri-wasm32-wasi"],
-    },
   },
 
   integrations: [
