@@ -7,8 +7,8 @@ import {
   recipeSummarySchema,
   recipeCreateResponseSchema,
   ingredientUsageMapSchema,
+  usageCountsResponseSchema,
 } from "@recetario/types";
-import { countUserRecipes } from "@recetario/billing";
 import { canCreateRecipe, hasFeature } from "@recetario/billing";
 import { timeAgo } from "@recetario/billing";
 import EmptyState from "@/components/EmptyState.astro";
@@ -20,12 +20,6 @@ import FeedbackAlert from "@/components/FeedbackAlert.astro";
 import { validateCsrf } from "@recetario/auth";
 
 if (!Astro.locals.session || !Astro.locals.user) {
-  Astro.redirect("/sign-in");
-}
-
-const ownerId = Astro.locals.user?.id;
-
-if (!ownerId) {
   return Astro.redirect("/sign-in");
 }
 
@@ -42,7 +36,11 @@ if (Astro.request.method === "POST") {
   let createdRecipeId: number | null = null;
 
   if (action === "create_recipe") {
-    const recipeCount = await countUserRecipes(ownerId as string);
+    const { recipes: recipeCount } = await apiFetch(
+      "/api/usage-counts",
+      { schema: usageCountsResponseSchema },
+      Astro,
+    );
     if (!canCreateRecipe(subscription, recipeCount)) {
       const errorUrl = new URL(Astro.url);
       errorUrl.searchParams.set("type", "error");

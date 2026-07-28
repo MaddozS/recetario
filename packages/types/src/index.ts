@@ -8,3 +8,4 @@ export * from "./api/billing.js";
 export * from "./api/recipes.js";
 export * from "./api/auth.js";
 export * from "./api/audit.js";
+export * from "./api/usage.js";

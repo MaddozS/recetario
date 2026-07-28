@@ -2,7 +2,6 @@
 import { Icon } from "astro-icon/components";
 import Layout from "@/layouts/Layout.astro";
 import { Button, Card } from "@recetario/ui";
-import { countUserIngredients } from "@recetario/billing";
 import { canCreateIngredient } from "@recetario/billing";
 import { parseNumberInput } from "@/lib/form-utils";
 import { UNIT_OPTIONS, DEFAULT_UNIT } from "@/lib/constants";
@@ -13,6 +12,7 @@ import {
   ingredientSchema,
   ingredientUsageMapSchema,
   ingredientUsageResponseSchema,
+  usageCountsResponseSchema,
 } from "@recetario/types";
 import FeedbackAlert from "@/components/FeedbackAlert.astro";
 import UnitCostDisplay from "@/components/UnitCostDisplay.astro";
@@ -22,8 +22,6 @@ import EmptyState from "@/components/EmptyState.astro";
 if (!Astro.locals.session || !Astro.locals.user) {
   return Astro.redirect("/sign-in");
 }
-
-const ownerId = Astro.locals.user!.id;
 
 type IngredientFormInput = {
   name: string;
@@ -119,7 +117,11 @@ if (Astro.request.method === "POST") {
     }
 
     if (action === "create") {
-      const ingredientCount = await countUserIngredients(ownerId);
+      const { ingredients: ingredientCount } = await apiFetch(
+        "/api/usage-counts",
+        { schema: usageCountsResponseSchema },
+        Astro,
+      );
       if (!canCreateIngredient(Astro.locals.subscription, ingredientCount)) {
         return redirectWithFeedback({
           type: "error",

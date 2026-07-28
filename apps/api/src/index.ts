@@ -59,6 +59,7 @@ import { subscriptionHandler } from "./billing/subscription.js";
 import { plansHandler } from "./billing/plans.js";
 import { credentialStatusHandler } from "./auth/credential-status.js";
 import { auditLogHandler } from "./audit/log.js";
+import { usageCountsHandler } from "./usage-counts.js";
 import {
   presentationsFixedCostsCreateHandler,
   presentationsFixedCostsUpdateHandler,
@@ -293,6 +294,7 @@ app.put("/api/preferences", preferencesUpdateHandler());
 
 app.get("/api/billing/subscription", subscriptionHandler());
 app.get("/api/billing/plans", plansHandler());
+app.get("/api/usage-counts", usageCountsHandler());
 
 app.all("/api/auth/*", async (c) => {
   // ponytail: per-request prisma + auth to dodge the pg.Pool wedge

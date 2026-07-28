@@ -4,22 +4,20 @@ import {
   getRemainingRecipes,
   getRemainingIngredients,
 } from "@recetario/billing";
-import { countUserRecipes, countUserIngredients } from "@recetario/billing";
 import { buildPricingPlans } from "@recetario/billing";
 import { apiFetch } from "@/lib/api-client";
 import { z } from "zod";
+import { usageCountsResponseSchema } from "@recetario/types";
 import BillingSection from "@/components/BillingSection.astro";
 
 if (!Astro.locals.session || !Astro.locals.user) {
   return Astro.redirect("/sign-in");
 }
 
-const ownerId = Astro.locals.user!.id;
 const subscription = Astro.locals.subscription;
 
-const [recipeCount, ingredientCount, rawPlans] = await Promise.all([
-  countUserRecipes(ownerId),
-  countUserIngredients(ownerId),
+const [counts, rawPlans] = await Promise.all([
+  apiFetch("/api/usage-counts", { schema: usageCountsResponseSchema }, Astro),
   apiFetch(
     "/api/billing/plans",
     {
@@ -35,6 +33,7 @@ const [recipeCount, ingredientCount, rawPlans] = await Promise.all([
     Astro,
   ),
 ]);
+const { recipes: recipeCount, ingredients: ingredientCount } = counts;
 
 const plans = buildPricingPlans(rawPlans);
 
