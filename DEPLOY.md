@@ -10,7 +10,7 @@ KitchCalc runs on two Cloudflare Workers (web on Pages, api on Workers) backed b
 
 ## Prerequisites
 
-- Node `>= 22.12.0`, pnpm `11.1.2` (locked via `packageManager` field)
+- Node `>= 22.23.1`, pnpm `11.1.2` (locked via `packageManager` field)
 - `pnpm install` — auto-runs `prisma generate` via `apps/web` postinstall
 - `pnpm dlx wrangler@4 login` — OAuth token stored at `~/.wrangler/config/default.toml`
 - Account ID: `5f065700ca8d436da492ff3b73d0cc05`

@@ -20,15 +20,19 @@ jobs:
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: "22"
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - id: filter
         run: |
-          CHANGED=$(pnpm exec turbo run build \
-            --filter="@recetario/web...[${{ github.event.before }}]" \
-            --dry-run=json | jq -e '.packages | length > 0' && echo "true" || echo "false")
-          echo "changed=$CHANGED" >> "$GITHUB_OUTPUT"
+          if [ "${{ github.event.before }}" = "0000000000000000000000000000000000000000" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            CHANGED=$(pnpm exec turbo run build \
+              --filter="@recetario/web...[${{ github.event.before }}]" \
+              --dry-run=json 2>/dev/null | jq -e '.packages | length > 0' >/dev/null && echo "true" || echo "false")
+            echo "changed=$CHANGED" >> "$GITHUB_OUTPUT"
+          fi
 
   deploy:
     needs: detect
@@ -41,7 +45,7 @@ jobs:
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: "22"
           cache: pnpm
       - uses: actions/cache@v4
         with:
