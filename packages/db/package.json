@@ -13,7 +13,7 @@
   },
   "files": ["dist", "prisma", "generated"],
   "scripts": {
-    "build": "tsc --build tsconfig.build.json",
+    "build": "tsc --build tsconfig.build.json && cp generated/prisma/internal/query_compiler_fast_bg.wasm generated/prisma/internal/query_compiler_fast_bg.js dist/generated/prisma/internal/",
     "generate": "prisma generate && node scripts/patch-prisma-worker-client.mjs",
     "migrate": "prisma migrate dev",
     "deploy": "prisma migrate deploy",
