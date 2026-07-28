@@ -24,6 +24,7 @@ pnpm-debug.log*
 # environment variables
 .env
 .env.production
+.env.cloudflare
 .dev.vars
 apps/*/.dev.vars
 
