@@ -1,18 +1,18 @@
 function createDebug(namespace) {
-  const logger = function (..._args) {};
+  const logger = function () {};
   logger.enabled = false;
   logger.namespace = namespace || "";
   logger.extend = (ns) => createDebug(namespace ? namespace + ":" + ns : ns);
   return logger;
 }
 createDebug.enabled = false;
-createDebug.log = (..._args) => {};
+createDebug.log = () => {};
 createDebug.namespaces = [];
 createDebug.inspectOpts = {};
 createDebug.selectColor = () => "";
 createDebug.humanize = () => "";
-createDebug.formatArgs = (..._args) => {};
-createDebug.save = (..._args) => createDebug;
+createDebug.formatArgs = () => {};
+createDebug.save = () => createDebug;
 createDebug.load = () => createDebug;
 createDebug.useColors = () => false;
 createDebug.colors = [];

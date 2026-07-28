@@ -29,7 +29,6 @@ import InstructionsEditor from '../../components/InstructionsEditor.astro';
 import { Button, Badge, FinancialSummary, SectionHeading, Card } from "@recetario/ui";
 import RecipeActionsMenu from "../../components/RecipeActionsMenu.astro";
 import RecipeFixedCosts from "../../components/RecipeFixedCosts.astro";
-import PresentationFixedCosts from "../../components/PresentationFixedCosts.astro";
 
 const recipeIdParam = Astro.params.recipe;
 const recipeIdNumber = Number(recipeIdParam);
@@ -1288,13 +1287,6 @@ const financialEditFields = buildFinancialEditFields();
                   precioVentaSugeridoBatch={presPrecioVentaSugerido}
                 />
 {/* PresentationFixedCosts hidden until presentation-level FC planning is complete */}
-                {false ? (
-                  <PresentationFixedCosts
-                    presentationFixedCosts={pres.fixedCosts ?? []}
-                    presentationId={pres.id}
-                    isEditing={isEditMode}
-                  />
-                ) : null}
               </div>
             );
           })}
@@ -1559,6 +1551,7 @@ const financialEditFields = buildFinancialEditFields();
         history.replaceState(null, '', `#${tabId}`);
       }
       // Persist tab across redirects
+      // eslint-disable-next-line no-empty
       try { sessionStorage.setItem(`recipe-tab:${window.location.pathname}`, tabId); } catch {}
     };
 

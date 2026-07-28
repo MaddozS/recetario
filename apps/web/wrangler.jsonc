@@ -3,6 +3,7 @@
   "name": "recetario-web",
   "compatibility_date": "2026-06-10",
   "compatibility_flags": ["nodejs_compat"],
+  "pages_build_output_dir": "./dist",
   "observability": {
     "enabled": true,
   },
