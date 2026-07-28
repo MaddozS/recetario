@@ -3,7 +3,7 @@ import { env } from "cloudflare:workers";
 // ── Orchestration imports (thin delegation to @recetario/* packages) ──────────
 import { syncEnvBindings } from "@recetario/config/env";
 import { clientIp, setSecurityHeaders } from "@recetario/config/request";
-import { auth, generateToken, getCsrfCookie } from "@recetario/auth";
+import { generateToken, getCsrfCookie } from "@recetario/auth";
 import { resolveSubscription, seedSubscriptionPlans } from "@recetario/billing";
 import { logAuditEvent, prisma } from "@recetario/db";
 import {
@@ -11,13 +11,21 @@ import {
   ApiError as ApiClientError,
   setApiBinding,
 } from "@/lib/api-client";
-import { subscriptionResponseSchema } from "@recetario/types";
+import {
+  sessionResponseSchema,
+  type SessionResponse,
+  subscriptionResponseSchema,
+} from "@recetario/types";
 
 const globals = globalThis as typeof globalThis & {
   __plansSeeded?: boolean;
 };
 
 const SIGN_IN_PATHS = ["/sign-in/email", "/sign-in/social"];
+
+type ApiServiceBinding = {
+  fetch: (input: string | URL | Request, init?: RequestInit) => Promise<Response>;
+};
 
 async function detectSignInEvent(
   path: string,
@@ -38,31 +46,59 @@ export const onRequest = defineMiddleware(async (context, next) => {
   syncEnvBindings(env as Record<string, unknown>);
   setApiBinding(context.locals.runtime?.env?.API);
 
-  // ── 1. Auth: resolve session from request headers ──────────────────────────
-  const session = await auth.api.getSession({
-    headers: context.request.headers,
-  });
+  // ── 0. Relay: /api/auth/* must reach the API worker (the web app does
+  //       not own the Better Auth instance). In production we forward via
+  //       the `API` service binding; in dev the Vite proxy in
+  //       `astro.config.mjs` handles this before the request ever hits
+  //       the middleware.
+  if (context.url.pathname.startsWith("/api/auth/")) {
+    const api = context.locals.runtime?.env?.API as
+      | ApiServiceBinding
+      | undefined;
+    if (api) {
+      return api.fetch(context.request);
+    }
+    return new Response("API service binding not configured", { status: 500 });
+  }
 
-  if (session?.user) {
+  // ── 1. Auth: resolve session from the API worker ─────────────────────────
+  let session: SessionResponse | null;
+  try {
+    session = await apiFetch(
+      "/api/auth/session",
+      { schema: sessionResponseSchema },
+      context.request,
+    );
+  } catch (err) {
+    if (
+      !(err instanceof ApiClientError) ||
+      (err.status !== 401 && err.code !== "UNAUTHENTICATED")
+    ) {
+      console.error("[/api/auth/session] unexpected error:", err);
+    }
+    session = null;
+  }
+
+  if (session) {
+    const { user: sessionUser } = session;
+
     // ── 2. User: build AppUser from session data + check credential account ───
     const userName =
-      session.user.name || session.user.email?.split("@")[0] || "Usuario";
+      sessionUser.name || sessionUser.email?.split("@")[0] || "Usuario";
 
     const credentialAccount = await prisma.account.findFirst({
-      where: { userId: session.user.id, providerId: "credential" },
+      where: { userId: sessionUser.id, providerId: "credential" },
       select: { id: true },
     });
 
-    const sessionExtra = session.user as Record<string, unknown>;
-
     const appUser: AppUser = {
-      id: session.user.id,
-      email: session.user.email ?? null,
+      id: sessionUser.id,
+      email: sessionUser.email ?? null,
       name: userName,
-      firstName: (sessionExtra.firstName as string) ?? null,
-      lastName: (sessionExtra.lastName as string) ?? null,
-      image: session.user.image ?? null,
-      role: (sessionExtra.role as string) ?? "USER",
+      firstName: sessionUser.firstName ?? null,
+      lastName: sessionUser.lastName ?? null,
+      image: sessionUser.image ?? null,
+      role: sessionUser.role ?? "USER",
       hasPasswordAuth: credentialAccount !== null,
     };
 
@@ -70,8 +106,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
     context.locals.session = { user: appUser };
 
     // ── 3. Audit: log sign-in events ──────────────────────────────────────────
-    const url = new URL(context.request.url);
-    detectSignInEvent(url.pathname, session.user.id, context.request);
+    detectSignInEvent(context.url.pathname, sessionUser.id, context.request);
 
     // ── 4. Billing: seed plans (once) + resolve subscription with cache ───────
     if (!globals.__plansSeeded) {

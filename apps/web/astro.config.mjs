@@ -24,6 +24,18 @@ export default defineConfig({
         { find: "@/", replacement: path.resolve(__dirname, "./src") },
       ],
     },
+    // Forward `/api/auth/*` to the API worker in dev so the browser-side
+    // Better Auth client can hit the same origin. The web app does not own
+    // the Better Auth instance; in production the middleware relays via
+    // the `API` service binding (see `src/middleware.ts`).
+    server: {
+      proxy: {
+        "/api/auth": {
+          target: process.env.INTERNAL_API_URL ?? "http://localhost:8787",
+          changeOrigin: true,
+        },
+      },
+    },
     plugins: [tailwindcss()],
   },
 

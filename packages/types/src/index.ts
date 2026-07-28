@@ -6,3 +6,4 @@ export * from "./api/preferences.js";
 export * from "./api/reasons.js";
 export * from "./api/billing.js";
 export * from "./api/recipes.js";
+export * from "./api/auth.js";
