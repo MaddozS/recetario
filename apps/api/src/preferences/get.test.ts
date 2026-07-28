@@ -3,25 +3,26 @@ import { Hono } from "hono";
 import { envelope } from "../envelope.js";
 import { errorHandler } from "../error-handler.js";
 
-const mockGetSession = vi.fn();
-const mockUserPreferencesFindUnique = vi.fn();
-const mockUserPreferencesCreate = vi.fn();
+const { mockGetSession, mockAuth, mockGetUserPreferences, mockUserPreferencesCreate } = vi.hoisted(() => {
+  const mockGetSession = vi.fn();
+  const mockAuth = { api: { getSession: (...args: unknown[]) => mockGetSession(...args) } };
+  const mockGetUserPreferences = vi.fn();
+  const mockUserPreferencesCreate = vi.fn();
+  return { mockGetSession, mockAuth, mockGetUserPreferences, mockUserPreferencesCreate };
+});
 
 vi.mock("@recetario/auth/server", () => ({
-  auth: {
-    api: {
-      getSession: (args: unknown) => mockGetSession(args),
-    },
-  },
+  createAuth: () => mockAuth,
 }));
 
 vi.mock("@recetario/db", () => ({
-  prisma: {
+  createPrismaClient: () => ({
     userPreferences: {
-      findUnique: (args: unknown) => mockUserPreferencesFindUnique(args),
       create: (args: unknown) => mockUserPreferencesCreate(args),
     },
-  },
+  }),
+  getUserPreferences: (userId: string, db: unknown) =>
+    mockGetUserPreferences(userId, db),
 }));
 
 const { preferencesGetHandler } = await import("./get.js");
@@ -50,7 +51,7 @@ async function getAs(userId: string): Promise<Response> {
 describe("preferencesGetHandler", () => {
   beforeEach(() => {
     mockGetSession.mockReset();
-    mockUserPreferencesFindUnique.mockReset();
+    mockGetUserPreferences.mockReset();
     mockUserPreferencesCreate.mockReset();
   });
 
@@ -60,13 +61,13 @@ describe("preferencesGetHandler", () => {
     expect(res.status).toBe(401);
     const body = (await res.json()) as { error: { code: string } };
     expect(body.error.code).toBe("UNAUTHENTICATED");
-    expect(mockUserPreferencesFindUnique).not.toHaveBeenCalled();
+    expect(mockGetUserPreferences).not.toHaveBeenCalled();
   });
 
   it("creates defaults on first GET and returns them", async () => {
     const userId = `user-defaults-${Date.now()}`;
     mockGetSession.mockResolvedValueOnce(sessionFor(userId));
-    mockUserPreferencesFindUnique.mockResolvedValueOnce(null);
+    mockGetUserPreferences.mockResolvedValueOnce(null);
     mockUserPreferencesCreate.mockResolvedValueOnce({
       userId,
       theme: "system",
@@ -83,14 +84,14 @@ describe("preferencesGetHandler", () => {
     expect(body.userId).toBe(userId);
     expect(body.theme).toBe("system");
     expect(body.accentColor).toBe("coral");
-    expect(mockUserPreferencesFindUnique).toHaveBeenCalledTimes(1);
+    expect(mockGetUserPreferences).toHaveBeenCalledTimes(1);
     expect(mockUserPreferencesCreate).toHaveBeenCalledTimes(1);
   });
 
   it("returns existing preferences without creating a row", async () => {
     const userId = `user-existing-${Date.now()}`;
     mockGetSession.mockResolvedValueOnce(sessionFor(userId));
-    mockUserPreferencesFindUnique.mockResolvedValueOnce({
+    mockGetUserPreferences.mockResolvedValueOnce({
       userId,
       theme: "dark",
       accentColor: "violet",

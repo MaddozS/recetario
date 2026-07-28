@@ -3,19 +3,24 @@ import { Hono } from "hono";
 import { envelope } from "../envelope.js";
 import { errorHandler } from "../error-handler.js";
 
-const mockGetSession = vi.fn();
-const mockGetRecipeById = vi.fn();
-const mockUpdateRecipe = vi.fn();
+const { mockGetSession, mockAuth, mockGetRecipeById, mockUpdateRecipe } = vi.hoisted(() => {
+  const mockGetSession = vi.fn();
+  const mockAuth = { api: { getSession: (...args: unknown[]) => mockGetSession(...args) } };
+  const mockGetRecipeById = vi.fn();
+  const mockUpdateRecipe = vi.fn();
+  return { mockGetSession, mockAuth, mockGetRecipeById, mockUpdateRecipe };
+});
 
 vi.mock("@recetario/auth/server", () => ({
-  auth: { api: { getSession: (args: unknown) => mockGetSession(args) } },
+  createAuth: () => mockAuth,
 }));
 
 vi.mock("@recetario/db", () => ({
-  getRecipeById: (id: number, ownerId: string) =>
+  createPrismaClient: () => ({}),
+  getRecipeById: (id: number, ownerId: string, _db: unknown) =>
     mockGetRecipeById(id, ownerId),
-  updateRecipe: (id: number, input: unknown, ownerId: string) =>
-    mockUpdateRecipe(id, input, ownerId),
+  updateRecipe: (id: number, input: unknown, ownerId: string, db: unknown) =>
+    mockUpdateRecipe(id, input, ownerId, db),
 }));
 
 const { recipesUpdateHandler } = await import("./update.js");
@@ -85,6 +90,7 @@ describe("recipesUpdateHandler", () => {
         recipeFixedCosts: undefined,
       },
       "user-1",
+      expect.anything(),
     );
   });
 

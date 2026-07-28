@@ -36,7 +36,7 @@ export type RecipeFixedCost = FixedCostLine & {
   recipeId: number;
 };
 
-export type PresentationFixedCost = FixedCostLine & {
+export type PresentationFixedCost = Omit<FixedCostLine, "hours"> & {
   presentationId: number;
 };
 

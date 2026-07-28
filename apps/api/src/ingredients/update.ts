@@ -1,8 +1,8 @@
 import type { Handler } from "hono";
-import { auth } from "@recetario/auth/server";
-import { prisma, cacheDelete } from "@recetario/db";
+import { updateIngredient, cacheDelete } from "@recetario/db";
 import { ApiError } from "../errors.js";
 import { ingredientUpdateSchema, ingredientSchema } from "@recetario/types";
+import { withFreshDb } from "../fresh-db.js";
 
 function toResponse(row: {
   id: number;
@@ -10,8 +10,8 @@ function toResponse(row: {
   unit: string;
   price: number | string;
   purchaseQuantity: number | string;
-  brand: string | null;
-  supplier: string | null;
+  brand?: string | null;
+  supplier?: string | null;
 }) {
   return ingredientSchema.parse({
     id: row.id,
@@ -25,52 +25,41 @@ function toResponse(row: {
 }
 
 export function ingredientsUpdateHandler(): Handler {
-  return async (c) => {
-    const session = await auth.api.getSession({ headers: c.req.raw.headers });
-    if (!session?.user) {
-      throw new ApiError("UNAUTHENTICATED", "Authentication required");
-    }
+  return async (c) =>
+    withFreshDb(c, async (prisma, auth) => {
+      const session = await auth.api.getSession({ headers: c.req.raw.headers });
+      if (!session?.user) {
+        throw new ApiError("UNAUTHENTICATED", "Authentication required");
+      }
 
-    const id = Number(c.req.param("id"));
-    if (!Number.isFinite(id)) {
-      throw new ApiError("NOT_FOUND", "Ingredient not found");
-    }
-
-    let body: unknown;
-    try {
-      body = await c.req.json();
-    } catch {
-      throw new ApiError("VALIDATION_ERROR", "Invalid JSON body");
-    }
-
-    const parsed = ingredientUpdateSchema.safeParse(body);
-    if (!parsed.success) {
-      throw new ApiError("VALIDATION_ERROR", "Invalid ingredient input");
-    }
-
-    const data = parsed.data;
-
-    try {
-      const updated = await prisma.ingredient.update({
-        where: { id, ownerId: session.user.id },
-        data,
-      });
-
-      const ownerId = session.user.id;
-      await cacheDelete(`ingredients:${ownerId}`);
-      await cacheDelete(`ingredient_usage:${ownerId}`);
-
-      return c.json(toResponse(updated));
-    } catch (err) {
-      if (
-        err &&
-        typeof err === "object" &&
-        "code" in err &&
-        (err as { code?: string }).code === "P2025"
-      ) {
+      const id = Number(c.req.param("id"));
+      if (!Number.isFinite(id)) {
         throw new ApiError("NOT_FOUND", "Ingredient not found");
       }
-      throw err;
-    }
-  };
+
+      let body: unknown;
+      try {
+        body = await c.req.json();
+      } catch {
+        throw new ApiError("VALIDATION_ERROR", "Invalid JSON body");
+      }
+
+      const parsed = ingredientUpdateSchema.safeParse(body);
+      if (!parsed.success) {
+        throw new ApiError("VALIDATION_ERROR", "Invalid ingredient input");
+      }
+
+      const data = parsed.data;
+
+      const updated = await updateIngredient(id, data, session.user.id, prisma);
+      if (!updated) {
+        throw new ApiError("NOT_FOUND", "Ingredient not found");
+      }
+
+      const ownerId = session.user.id;
+      await cacheDelete(`ingredients:${ownerId}`, prisma);
+      await cacheDelete(`ingredient_usage:${ownerId}`, prisma);
+
+      return c.json(toResponse(updated));
+    });
 }

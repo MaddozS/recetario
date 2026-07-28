@@ -1,4 +1,4 @@
-# AGENTS.md — KitchCalc (Recetario)
+# AGENTS.md — Recetario
 
 ## Stack
 
@@ -46,13 +46,25 @@ Better Auth via `src/lib/auth.ts` (server singleton) + `src/lib/auth-client.ts` 
 
 ### Data layer
 
-**PostgreSQL + Prisma ORM** with `@prisma/adapter-pg` + `pg.Pool` (max 3, 30s idle). Singleton in `src/lib/prisma.ts`.
+**PostgreSQL + Prisma ORM** is the data layer for `apps/api` (Hono worker) and the seed script. The web app (`apps/web`) does NOT import Prisma or `@recetario/db` directly — every web page calls `apps/api` via `apiFetch` (see "Web→API destination rule" below). The `pg.Pool` singleton in `packages/db/src/prisma.ts` exists for the seed and the `apps/api` per-request path (which opens a fresh pool per request via `withFreshDb`).
 
 - Output: `generated/prisma/` (non-standard — set in `schema.prisma:7`)
-- Import via `@/lib/db/*` barrel (`index.ts`). Direct `@/lib/prisma` only for raw access.
+- Apps import via the `@recetario/db` workspace package; the web app must not import it.
 - Multi-tenant: every record has `ownerId`. Scoped by `RECIPES_STATIC_OWNER_ID`/`EMAIL` env vars for seed users.
-- CRITICAL: Every Prisma query over tenant data (`findMany`, `findFirst`, `update`, `delete`, `upsert`, `count`) MUST include `where: { ownerId: Astro.locals.user.id }` plus any additional filters, or it is a security bug. Reject PRs that omit this. New tenant records must set `ownerId` on create. Seed/bootstrap flows are the only exception.
+- CRITICAL: Every Prisma query in `apps/api` over tenant data (`findMany`, `findFirst`, `update`, `delete`, `upsert`, `count`) MUST include `where: { ownerId: session.user.id }` (or `where: { recipe: { ownerId } }` for nested joins) plus any additional filters, or it is a security bug. Reject PRs that omit this. New tenant records must set `ownerId` on create. Seed/bootstrap flows are the only exception.
 - Seed data: `data/ingredients.json`, `data/recipes.json`. Loaded on first run via `seedIfNeeded()`.
+
+#### Web→API destination rule
+
+`apps/web` is a thin SSR client of `apps/api`. It must not import `prisma` or `@recetario/db` directly. The only allowed data access from web is:
+
+- `apiFetch(path, { schema, ... }, Astro.request)` from `@/lib/api-client` for live data
+- Types from `@recetario/types` (Zod schemas and TS types — type-only is fine)
+- Pure transformation in `apps/web/src/lib/*` (e.g. `production-calculator.ts`)
+
+If a new feature needs data access from a web page, add the endpoint in `apps/api` and call it via `apiFetch`. This rule dodges the `pg.Pool` wedge in `@astrojs/cloudflare` dev (memory #63) and keeps the data layer in one place.
+
+**apps/api per-request prisma+auth** — every API handler in `apps/api/src/{recipes,ingredients,presentations,preferences,billing,auth-session,audit,auth}.ts` and the inline handlers in `apps/api/src/index.ts` (account/*, stripe/*, auth/forgot-password, auth/reset-password) must wrap their body in `withFreshDb(c, async (prisma, auth) => {...})` from `apps/api/src/fresh-db.ts`. This dodges the pg.Pool wedge (memory #63) by opening a fresh pool per request, calling `createAuth(freshPrisma)` for the session check, and `prisma.$disconnect()` in the `finally` block. The DB helpers in `packages/db/src/{recipes,ingredients,presentations,preferences,cache}.ts` and the billing helpers in `packages/billing/src/billing.ts` all accept an optional `db: PrismaClient` last arg (default = singleton for backward compat) — pass `prisma` through. The DB-backed `cacheGet`/`cacheSet`/`cacheDelete` from `packages/db/src/cache.ts` also take a `db` arg; passing the per-request `prisma` is the only way to keep the cache layer from wedging. The in-memory `cache.ts` in `apps/api/src/` is unaffected — it never touches pg.
 
 ### Key gotchas
 
@@ -65,7 +77,6 @@ Better Auth via `src/lib/auth.ts` (server singleton) + `src/lib/auth-client.ts` 
 
 #### Operational gotchas
 
-- **Import paths**: use `@/lib/db/ingredients`, `@/lib/db/recipes`, `@/lib/db/billing`, etc.
 - **Forms**: no Astro Actions. POST to the same page, read `Astro.request.formData()`, then redirect. Spanish locale: `parseNumberInput()` converts comma to dot.
 - **Subscription cache**: middleware caches subscription state for 60s via `src/lib/cache.ts`.
 - **pnpm allowed builds**: only `esbuild`, `sharp`, `@prisma/engines`, `prisma` are allowed in `pnpm-workspace.yaml`.
@@ -190,8 +201,6 @@ Unused imports and variables should be cleaned before validation, not after. Opt
 
 The goal is to eliminate the need for a dedicated fix-ESLint task after validation.
 
-### Agent Report Template
-All agent reports (kitchcalc-builder, kitchcalc-reviewer, kitchcalc-explore) must include a `## Skills Used` section listing which skills were loaded during execution, or `none` if no skills were used. This closes the feedback loop for skill effectiveness evaluation.
 
 ### Parallel Execution Notes
 When a plan dispatches 2+ tasks in parallel, include a "Parallel Execution Notes" section listing any files touched by multiple tasks. State whether the overlap is expected conflict-free (different sections of the same file) or needs coordination.
@@ -210,19 +219,6 @@ pnpm install
 pnpm dev
 ```
 
-## Agent skills
-
-### Issue tracker
-
-GitHub Issues for MaddozS/recetario. See `docs/agents/issue-tracker.md`.
-
-### Triage labels
-
-Default canonical labels: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. See `docs/agents/triage-labels.md`.
-
-### Domain docs
-
-Single-context: `CONTEXT.md` + `docs/adr/` at the repo root. See `docs/agents/domain.md`.
 
 ## graphify
 

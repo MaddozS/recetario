@@ -1,67 +1,66 @@
 import type { Handler } from "hono";
-import { auth } from "@recetario/auth/server";
-import { prisma } from "@recetario/db";
+import { getUserPreferences, upsertUserPreferences } from "@recetario/db";
 import { preferencesResponseSchema, preferencesUpdateSchema } from "@recetario/types";
 import * as cache from "../cache.js";
 import { ApiError } from "../errors.js";
+import { withFreshDb } from "../fresh-db.js";
 
 const CACHE_TTL_MS = 60_000;
 
 export function preferencesUpdateHandler(): Handler {
-  return async (c) => {
-    const session = await auth.api.getSession({ headers: c.req.raw.headers });
-    if (!session?.user) {
-      throw new ApiError("UNAUTHENTICATED", "Authentication required");
-    }
-    const userId = session.user.id;
+  return async (c) =>
+    withFreshDb(c, async (prisma, auth) => {
+      const session = await auth.api.getSession({ headers: c.req.raw.headers });
+      if (!session?.user) {
+        throw new ApiError("UNAUTHENTICATED", "Authentication required");
+      }
+      const userId = session.user.id;
 
-    let raw: unknown;
-    try {
-      raw = await c.req.json();
-    } catch {
-      return c.json(
-        {
-          error: {
-            code: "VALIDATION_ERROR",
-            message: "Request body must be valid JSON",
+      let raw: unknown;
+      try {
+        raw = await c.req.json();
+      } catch {
+        return c.json(
+          {
+            error: {
+              code: "VALIDATION_ERROR",
+              message: "Request body must be valid JSON",
+            },
           },
-        },
-        400,
-      );
-    }
+          400,
+        );
+      }
 
-    const parsed = preferencesUpdateSchema.safeParse(raw);
-    if (!parsed.success) {
-      return c.json(
-        {
-          error: {
-            code: "VALIDATION_ERROR",
-            message: "Invalid preferences payload",
-            issues: parsed.error.issues,
+      const parsed = preferencesUpdateSchema.safeParse(raw);
+      if (!parsed.success) {
+        return c.json(
+          {
+            error: {
+              code: "VALIDATION_ERROR",
+              message: "Invalid preferences payload",
+              issues: parsed.error.issues,
+            },
           },
+          400,
+        );
+      }
+
+      const data = await upsertUserPreferences(
+        userId,
+        {
+          theme: parsed.data.theme,
+          accentColor: parsed.data.accentColor,
         },
-        400,
+        prisma,
       );
-    }
 
-    const existing = await prisma.userPreferences.findUnique({ where: { userId } });
-    const theme = parsed.data.theme ?? existing?.theme ?? "system";
-    const accentColor =
-      parsed.data.accentColor ?? existing?.accentColor ?? "coral";
+      const validated = preferencesResponseSchema.parse({
+        userId: data.userId,
+        theme: data.theme,
+        accentColor: data.accentColor,
+      });
 
-    const data = await prisma.userPreferences.upsert({
-      where: { userId },
-      update: { theme, accentColor, updatedAt: new Date() },
-      create: { userId, theme, accentColor, updatedAt: new Date() },
+      cache.set(`prefs:${userId}`, validated, CACHE_TTL_MS);
+      return c.json(validated);
     });
-
-    const validated = preferencesResponseSchema.parse({
-      userId: data.userId,
-      theme: data.theme,
-      accentColor: data.accentColor,
-    });
-
-    cache.set(`prefs:${userId}`, validated, CACHE_TTL_MS);
-    return c.json(validated);
-  };
 }

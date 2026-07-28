@@ -22,7 +22,6 @@
     "@recetario/auth": "workspace:^",
     "@recetario/billing": "workspace:^",
     "@recetario/config": "workspace:^",
-    "@recetario/db": "workspace:^",
     "@recetario/types": "workspace:^",
     "@recetario/ui": "workspace:^",
     "@tailwindcss/vite": "4.3.0",
@@ -34,6 +33,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "0.9.9",
+    "@astrojs/node": "^11.0.2",
     "@astrojs/ts-plugin": "^1.10.10",
     "@eslint/js": "10.0.1",
     "@playwright/test": "^1.60.0",

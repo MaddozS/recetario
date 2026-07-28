@@ -1,31 +1,25 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { Hono } from "hono";
 import { envelope } from "../envelope.js";
 import { errorHandler } from "../error-handler.js";
 
-const { mockGetSession, mockPrismaIngredient, mockCacheDelete } = vi.hoisted(
-  () => ({
-    mockGetSession: vi.fn(),
-    mockPrismaIngredient: {
-      create: vi.fn(),
-    },
-    mockCacheDelete: vi.fn(),
-  }),
-);
+const { mockGetSession, mockAuth, mockCreateIngredient, mockCacheDelete } = vi.hoisted(() => {
+  const mockGetSession = vi.fn();
+  const mockAuth = { api: { getSession: (...args: unknown[]) => mockGetSession(...args) } };
+  const mockCreateIngredient = vi.fn();
+  const mockCacheDelete = vi.fn();
+  return { mockGetSession, mockAuth, mockCreateIngredient, mockCacheDelete };
+});
 
 vi.mock("@recetario/auth/server", () => ({
-  auth: {
-    api: {
-      getSession: (args: unknown) => mockGetSession(args),
-    },
-  },
+  createAuth: () => mockAuth,
 }));
 
 vi.mock("@recetario/db", () => ({
-  prisma: {
-    ingredient: mockPrismaIngredient,
-  },
-  cacheDelete: mockCacheDelete,
+  createPrismaClient: () => ({}),
+  createIngredient: (input: unknown, ownerId: string, db: unknown) =>
+    mockCreateIngredient(input, ownerId, db),
+  cacheDelete: (key: string, db: unknown) => mockCacheDelete(key, db),
 }));
 
 const { ingredientsCreateHandler } = await import("./create.js");
@@ -46,7 +40,7 @@ function buildApp() {
 
 beforeEach(() => {
   mockGetSession.mockReset();
-  mockPrismaIngredient.create.mockReset();
+  mockCreateIngredient.mockReset();
   mockCacheDelete.mockReset();
   mockGetSession.mockResolvedValue(sessionFixture);
 });
@@ -63,7 +57,7 @@ describe("ingredientsCreateHandler", () => {
       brand: null,
       supplier: null,
     };
-    mockPrismaIngredient.create.mockResolvedValueOnce(created);
+    mockCreateIngredient.mockResolvedValueOnce(created);
 
     const res = await buildApp().request("/api/ingredients", {
       method: "POST",
@@ -80,20 +74,23 @@ describe("ingredientsCreateHandler", () => {
     const body = (await res.json()) as { id: number; name: string };
     expect(body.id).toBe(42);
     expect(body.name).toBe("Tomato");
-    expect(mockPrismaIngredient.create).toHaveBeenCalledWith({
-      data: {
-        ownerId: userId,
+    expect(mockCreateIngredient).toHaveBeenCalledWith(
+      {
         name: "Tomato",
         unit: "kg",
         price: 3.5,
         purchaseQuantity: 1,
-        brand: null,
-        supplier: null,
       },
-    });
-    expect(mockCacheDelete).toHaveBeenCalledWith(`ingredients:${userId}`);
+      userId,
+      expect.anything(),
+    );
+    expect(mockCacheDelete).toHaveBeenCalledWith(
+      `ingredients:${userId}`,
+      expect.anything(),
+    );
     expect(mockCacheDelete).toHaveBeenCalledWith(
       `ingredient_usage:${userId}`,
+      expect.anything(),
     );
   });
 
@@ -109,7 +106,7 @@ describe("ingredientsCreateHandler", () => {
       error: { code: string; message: string };
     };
     expect(body.error.code).toBe("VALIDATION_ERROR");
-    expect(mockPrismaIngredient.create).not.toHaveBeenCalled();
+    expect(mockCreateIngredient).not.toHaveBeenCalled();
   });
 
   it("returns 401 when there is no session", async () => {
@@ -127,6 +124,6 @@ describe("ingredientsCreateHandler", () => {
     });
 
     expect(res.status).toBe(401);
-    expect(mockPrismaIngredient.create).not.toHaveBeenCalled();
+    expect(mockCreateIngredient).not.toHaveBeenCalled();
   });
 });

@@ -60,7 +60,7 @@ if (canAccess && recipeIdsParam && batchesParam) {
     const allRecipesById = await apiFetch(
       `/api/recipes/by-ids?ids=${recipeIds.join(",")}`,
       { schema: z.array(recipeWithIngredientsSchema) },
-      Astro.request,
+      Astro,
     );
     const recipeMap = new Map(allRecipesById.map((r) => [r.id, r]));
     const validSelections = selections.filter((s) => recipeMap.has(s.recipeId));
@@ -87,7 +87,7 @@ const allRecipes = canAccess
   ? await apiFetch(
       "/api/recipes",
       { schema: z.array(recipeSummarySchema) },
-      Astro.request,
+      Astro,
     )
   : [];
 const allRecipeData =
@@ -95,7 +95,7 @@ const allRecipeData =
     ? await apiFetch(
         `/api/recipes/by-ids?ids=${allRecipes.map((r) => r.id).join(",")}`,
         { schema: z.array(recipeWithIngredientsSchema) },
-        Astro.request,
+        Astro,
       )
     : [];
 

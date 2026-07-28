@@ -3,16 +3,21 @@ import { Hono } from "hono";
 import { envelope } from "../envelope.js";
 import { errorHandler } from "../error-handler.js";
 
-const mockGetSession = vi.fn();
-const mockCreateRecipe = vi.fn();
+const { mockGetSession, mockAuth, mockCreateRecipe } = vi.hoisted(() => {
+  const mockGetSession = vi.fn();
+  const mockAuth = { api: { getSession: (...args: unknown[]) => mockGetSession(...args) } };
+  const mockCreateRecipe = vi.fn();
+  return { mockGetSession, mockAuth, mockCreateRecipe };
+});
 
 vi.mock("@recetario/auth/server", () => ({
-  auth: { api: { getSession: (args: unknown) => mockGetSession(args) } },
+  createAuth: () => mockAuth,
 }));
 
 vi.mock("@recetario/db", () => ({
-  createRecipe: (ownerId: string, input: unknown) =>
-    mockCreateRecipe(ownerId, input),
+  createPrismaClient: () => ({}),
+  createRecipe: (ownerId: string, input: unknown, db: unknown) =>
+    mockCreateRecipe(ownerId, input, db),
 }));
 
 const { recipesCreateHandler } = await import("./create.js");
@@ -55,7 +60,7 @@ describe("recipesCreateHandler", () => {
     expect(res.status).toBe(201);
     const body = (await res.json()) as { id: number; name: string };
     expect(body.id).toBe(99);
-    expect(mockCreateRecipe).toHaveBeenCalledWith("user-1", { name: "Tarta" });
+    expect(mockCreateRecipe).toHaveBeenCalledWith("user-1", { name: "Tarta" }, expect.anything());
   });
 
   it("returns 400 on invalid input", async () => {
@@ -80,6 +85,6 @@ describe("recipesCreateHandler", () => {
       body: JSON.stringify({}),
     });
     expect(res.status).toBe(201);
-    expect(mockCreateRecipe).toHaveBeenCalledWith("user-1", {});
+    expect(mockCreateRecipe).toHaveBeenCalledWith("user-1", {}, expect.anything());
   });
 });

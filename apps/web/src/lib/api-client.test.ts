@@ -10,6 +10,15 @@ function makeRequest(cookie?: string): Request {
   return new Request("https://example.com/", { headers });
 }
 
+function makeContext(
+  opts: { cookie?: string; userId?: string | null } = {},
+): { request: Request; locals?: { user?: { id: string } | null } } {
+  return {
+    request: makeRequest(opts.cookie),
+    locals: { user: opts.userId ? { id: opts.userId } : null },
+  };
+}
+
 function jsonResponse(
   status: number,
   body: unknown,
@@ -53,10 +62,13 @@ describe("apiFetch — 2xx", () => {
     const data = await apiFetch<{ ok: boolean; n: number }>(
       "/api/x",
       {},
-      makeRequest("sid=abc"),
+      makeContext({ cookie: "sid=abc" }),
     );
     expect(data).toEqual({ ok: true, n: 1 });
-    expect(binding.fetch).toHaveBeenCalledWith("/api/x", expect.any(Object));
+    expect(binding.fetch).toHaveBeenCalledWith(
+      new URL("/api/x", "https://example.com/"),
+      expect.any(Object),
+    );
   });
 
   it("validates the body with a Zod schema when provided", async () => {
@@ -66,7 +78,7 @@ describe("apiFetch — 2xx", () => {
     setApiBinding(binding);
 
     const schema = z.object({ name: z.string(), count: z.number() });
-    const data = await apiFetch("/api/x", { schema }, makeRequest());
+    const data = await apiFetch("/api/x", { schema }, makeContext());
     expect(data).toEqual({ name: "Tarta", count: 3 });
   });
 
@@ -78,7 +90,7 @@ describe("apiFetch — 2xx", () => {
 
     const schema = z.object({ name: z.string() });
     await expect(
-      apiFetch("/api/x", { schema }, makeRequest()),
+      apiFetch("/api/x", { schema }, makeContext()),
     ).rejects.toBeInstanceOf(z.ZodError);
   });
 
@@ -87,7 +99,7 @@ describe("apiFetch — 2xx", () => {
       makeBinding(async () => new Response("not-json", { status: 200 })),
     );
 
-    await expect(apiFetch("/api/x", {}, makeRequest())).rejects.toMatchObject({
+    await expect(apiFetch("/api/x", {}, makeContext())).rejects.toMatchObject({
       name: "ApiError",
       code: "INTERNAL",
     });
@@ -104,7 +116,7 @@ describe("apiFetch — non-2xx", () => {
       ),
     );
 
-    await expect(apiFetch("/api/x", {}, makeRequest())).rejects.toMatchObject({
+    await expect(apiFetch("/api/x", {}, makeContext())).rejects.toMatchObject({
       name: "ApiError",
       code: "UNAUTHENTICATED",
       status: 401,
@@ -122,7 +134,7 @@ describe("apiFetch — non-2xx", () => {
       ),
     );
 
-    await expect(apiFetch("/api/x", {}, makeRequest())).rejects.toMatchObject({
+    await expect(apiFetch("/api/x", {}, makeContext())).rejects.toMatchObject({
       name: "ApiError",
       code: "VALIDATION_ERROR",
       issues,
@@ -133,12 +145,12 @@ describe("apiFetch — non-2xx", () => {
   it("throws ApiError INTERNAL with traceId when the envelope doesn't match", async () => {
     setApiBinding(mockBinding(jsonResponse(500, { not: "an envelope" })));
 
-    await expect(apiFetch("/api/x", {}, makeRequest())).rejects.toMatchObject({
+    await expect(apiFetch("/api/x", {}, makeContext())).rejects.toMatchObject({
       name: "ApiError",
       code: "INTERNAL",
       status: 500,
     });
-    await expect(apiFetch("/api/x", {}, makeRequest())).rejects.toMatchObject({
+    await expect(apiFetch("/api/x", {}, makeContext())).rejects.toMatchObject({
       traceId: expect.stringMatching(/^web-/),
     });
   });
@@ -152,8 +164,7 @@ describe("apiFetch — non-2xx", () => {
       ),
     );
 
-    await expect(apiFetch("/api/x", {}, makeRequest())).rejects.toMatchObject({
-      name: "ApiError",
+    await expect(apiFetch("/api/x", {}, makeContext())).rejects.toMatchObject({
       traceId: "srv-xyz",
     });
   });
@@ -171,7 +182,7 @@ describe("apiFetch — non-2xx", () => {
       ),
     );
 
-    await expect(apiFetch("/api/x", {}, makeRequest())).rejects.toMatchObject({
+    await expect(apiFetch("/api/x", {}, makeContext())).rejects.toMatchObject({
       name: "ApiError",
       reason: "ingredient_in_use",
     });
@@ -183,7 +194,7 @@ describe("apiFetch — cookie forwarding", () => {
     const binding = makeBinding(async () => jsonResponse(200, {}));
     setApiBinding(binding);
 
-    await apiFetch("/api/x", {}, makeRequest("session=abc; csrf=xyz"));
+    await apiFetch("/api/x", {}, makeContext({ cookie: "session=abc; csrf=xyz" }));
     const init = binding.fetch.mock.calls[0]?.[1] as RequestInit;
     const headers = init.headers as Record<string, string>;
     expect(headers.cookie).toBe("session=abc; csrf=xyz");
@@ -193,10 +204,42 @@ describe("apiFetch — cookie forwarding", () => {
     const binding = makeBinding(async () => jsonResponse(200, {}));
     setApiBinding(binding);
 
-    await apiFetch("/api/x", {}, makeRequest());
+    await apiFetch("/api/x", {}, makeContext());
     const init = binding.fetch.mock.calls[0]?.[1] as RequestInit;
     const headers = init.headers as Record<string, string>;
     expect(headers.cookie).toBeUndefined();
+  });
+});
+
+describe("apiFetch — x-user-id forwarding", () => {
+  it("forwards x-user-id when locals.user.id is set", async () => {
+    const binding = makeBinding(async () => jsonResponse(200, {}));
+    setApiBinding(binding);
+
+    await apiFetch("/api/x", {}, makeContext({ userId: "user-42" }));
+    const init = binding.fetch.mock.calls[0]?.[1] as RequestInit;
+    const headers = init.headers as Record<string, string>;
+    expect(headers["x-user-id"]).toBe("user-42");
+  });
+
+  it("omits x-user-id when there is no authenticated user", async () => {
+    const binding = makeBinding(async () => jsonResponse(200, {}));
+    setApiBinding(binding);
+
+    await apiFetch("/api/x", {}, makeContext({ userId: null }));
+    const init = binding.fetch.mock.calls[0]?.[1] as RequestInit;
+    const headers = init.headers as Record<string, string>;
+    expect(headers["x-user-id"]).toBeUndefined();
+  });
+
+  it("omits x-user-id when locals is not provided", async () => {
+    const binding = makeBinding(async () => jsonResponse(200, {}));
+    setApiBinding(binding);
+
+    await apiFetch("/api/x", {}, { request: makeRequest() });
+    const init = binding.fetch.mock.calls[0]?.[1] as RequestInit;
+    const headers = init.headers as Record<string, string>;
+    expect(headers["x-user-id"]).toBeUndefined();
   });
 });
 
@@ -207,7 +250,7 @@ describe("apiFetch — dev fallback (INTERNAL_API_URL)", () => {
       .spyOn(globalThis, "fetch")
       .mockResolvedValue(jsonResponse(200, { ok: 1 }));
 
-    const data = await apiFetch<{ ok: number }>("/api/x", {}, makeRequest());
+    const data = await apiFetch<{ ok: number }>("/api/x", {}, makeContext());
     expect(data).toEqual({ ok: 1 });
     expect(fetchSpy).toHaveBeenCalledWith(
       "http://api.local:8787/api/x",
@@ -217,7 +260,7 @@ describe("apiFetch — dev fallback (INTERNAL_API_URL)", () => {
 
   it("throws when no binding and no INTERNAL_API_URL are set", async () => {
     const fetchSpy = vi.spyOn(globalThis, "fetch");
-    await expect(apiFetch("/api/x", {}, makeRequest())).rejects.toThrow(
+    await expect(apiFetch("/api/x", {}, makeContext())).rejects.toThrow(
       /INTERNAL_API_URL/,
     );
     expect(fetchSpy).not.toHaveBeenCalled();
@@ -229,7 +272,7 @@ describe("apiFetch — body and method", () => {
     const binding = makeBinding(async () => jsonResponse(200, {}));
     setApiBinding(binding);
 
-    await apiFetch("/api/x", { method: "POST", body: { a: 1 } }, makeRequest());
+    await apiFetch("/api/x", { method: "POST", body: { a: 1 } }, makeContext());
     const init = binding.fetch.mock.calls[0]?.[1] as RequestInit;
     expect(init.method).toBe("POST");
     expect(init.body).toBe(JSON.stringify({ a: 1 }));

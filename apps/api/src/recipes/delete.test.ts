@@ -3,16 +3,21 @@ import { Hono } from "hono";
 import { envelope } from "../envelope.js";
 import { errorHandler } from "../error-handler.js";
 
-const mockGetSession = vi.fn();
-const mockDeleteRecipe = vi.fn();
+const { mockGetSession, mockAuth, mockDeleteRecipe } = vi.hoisted(() => {
+  const mockGetSession = vi.fn();
+  const mockAuth = { api: { getSession: (...args: unknown[]) => mockGetSession(...args) } };
+  const mockDeleteRecipe = vi.fn();
+  return { mockGetSession, mockAuth, mockDeleteRecipe };
+});
 
 vi.mock("@recetario/auth/server", () => ({
-  auth: { api: { getSession: (args: unknown) => mockGetSession(args) } },
+  createAuth: () => mockAuth,
 }));
 
 vi.mock("@recetario/db", () => ({
-  deleteRecipe: (id: number, ownerId: string) =>
-    mockDeleteRecipe(id, ownerId),
+  createPrismaClient: () => ({}),
+  deleteRecipe: (id: number, ownerId: string, db: unknown) =>
+    mockDeleteRecipe(id, ownerId, db),
 }));
 
 const { recipesDeleteHandler } = await import("./delete.js");
@@ -49,7 +54,7 @@ describe("recipesDeleteHandler", () => {
 
     const res = await buildApp().request("/api/recipes/1", { method: "DELETE" });
     expect(res.status).toBe(204);
-    expect(mockDeleteRecipe).toHaveBeenCalledWith(1, "user-1");
+    expect(mockDeleteRecipe).toHaveBeenCalledWith(1, "user-1", expect.anything());
   });
 
   it("returns 404 when the recipe does not belong to the user", async () => {

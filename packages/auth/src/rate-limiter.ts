@@ -1,20 +1,21 @@
-import { prisma } from "@recetario/db";
+import { prisma, type PrismaClient } from "@recetario/db";
 
 export async function rateLimitCheck(
   key: string,
   maxAttempts: number,
   windowSeconds: number,
+  client: PrismaClient = prisma,
 ): Promise<{ allowed: boolean; remaining: number }> {
   try {
     const now = Date.now();
     const windowMs = windowSeconds * 1000;
 
-    const existing = await prisma.rateLimitEntry.findUnique({
+    const existing = await client.rateLimitEntry.findUnique({
       where: { key },
     });
 
     if (!existing || Number(existing.resetAt) <= now) {
-      await prisma.rateLimitEntry.upsert({
+      await client.rateLimitEntry.upsert({
         where: { key },
         update: {
           count: 1,
@@ -33,7 +34,7 @@ export async function rateLimitCheck(
       return { allowed: false, remaining: 0 };
     }
 
-    await prisma.rateLimitEntry.update({
+    await client.rateLimitEntry.update({
       where: { key },
       data: { count: existing.count + 1 },
     });

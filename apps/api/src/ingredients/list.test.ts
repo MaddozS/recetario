@@ -3,15 +3,21 @@ import { Hono } from "hono";
 import { envelope } from "../envelope.js";
 import { errorHandler } from "../error-handler.js";
 
-const mockGetSession = vi.fn();
-const mockListIngredients = vi.fn();
+const { mockGetSession, mockAuth, mockListIngredients } = vi.hoisted(() => {
+  const mockGetSession = vi.fn();
+  const mockAuth = { api: { getSession: (...args: unknown[]) => mockGetSession(...args) } };
+  const mockListIngredients = vi.fn();
+  return { mockGetSession, mockAuth, mockListIngredients };
+});
 
 vi.mock("@recetario/auth/server", () => ({
-  auth: { api: { getSession: (args: unknown) => mockGetSession(args) } },
+  createAuth: () => mockAuth,
 }));
 
 vi.mock("@recetario/db", () => ({
-  listIngredients: (ownerId: string) => mockListIngredients(ownerId),
+  createPrismaClient: () => ({}),
+  listIngredients: (ownerId: string, db: unknown) =>
+    mockListIngredients(ownerId, db),
 }));
 
 const { ingredientsListHandler } = await import("./list.js");
@@ -42,7 +48,7 @@ describe("ingredientsListHandler", () => {
     expect(mockListIngredients).not.toHaveBeenCalled();
   });
 
-  it("returns only id, name and unit, scoped to the user", async () => {
+  it("returns the full ingredient shape, scoped to the user", async () => {
     mockGetSession.mockResolvedValueOnce(sessionFixture);
     mockListIngredients.mockResolvedValueOnce([
       {
@@ -65,11 +71,17 @@ describe("ingredientsListHandler", () => {
 
     const res = await buildApp().request("/api/ingredients");
     expect(res.status).toBe(200);
-    const body = (await res.json()) as Array<{ id: number; name: string; unit: string }>;
+    const body = (await res.json()) as Array<{
+      id: number;
+      name: string;
+      unit: string;
+      price: number;
+      purchaseQuantity: number;
+    }>;
     expect(body).toEqual([
-      { id: 1, name: "Harina", unit: "kg" },
-      { id: 2, name: "Azucar", unit: "kg" },
+      { id: 1, name: "Harina", unit: "kg", price: 25, purchaseQuantity: 1, brand: "X", supplier: "Y" },
+      { id: 2, name: "Azucar", unit: "kg", price: 30, purchaseQuantity: 1 },
     ]);
-    expect(mockListIngredients).toHaveBeenCalledWith("user-1");
+    expect(mockListIngredients).toHaveBeenCalledWith("user-1", expect.anything());
   });
 });

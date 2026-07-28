@@ -3,29 +3,41 @@ import { Hono } from "hono";
 import { envelope } from "../envelope.js";
 import { errorHandler } from "../error-handler.js";
 
-const mockGetSession = vi.fn();
-const mockFindFirstRecipe = vi.fn();
-const mockFindFirstFixedCost = vi.fn();
-const mockCreateFixedCost = vi.fn();
-const mockUpdateFixedCost = vi.fn();
-const mockDeleteFixedCost = vi.fn();
+const { mockGetSession, mockAuth, mockPrisma } = vi.hoisted(() => {
+  const mockGetSession = vi.fn();
+  const mockAuth = { api: { getSession: (...args: unknown[]) => mockGetSession(...args) } };
+  const mockFindFirstRecipe = vi.fn();
+  const mockFindFirstFixedCost = vi.fn();
+  const mockCreateFixedCost = vi.fn();
+  const mockUpdateFixedCost = vi.fn();
+  const mockDeleteFixedCost = vi.fn();
+  const mockPrisma = {
+    recipe: { findFirst: mockFindFirstRecipe },
+    recipeFixedCost: {
+      findFirst: mockFindFirstFixedCost,
+      create: mockCreateFixedCost,
+      update: mockUpdateFixedCost,
+      delete: mockDeleteFixedCost,
+    },
+  };
+  return {
+    mockGetSession,
+    mockAuth,
+    mockPrisma,
+    mockFindFirstRecipe,
+    mockFindFirstFixedCost,
+    mockCreateFixedCost,
+    mockUpdateFixedCost,
+    mockDeleteFixedCost,
+  };
+});
 
 vi.mock("@recetario/auth/server", () => ({
-  auth: { api: { getSession: (args: unknown) => mockGetSession(args) } },
+  createAuth: () => mockAuth,
 }));
 
 vi.mock("@recetario/db", () => ({
-  prisma: {
-    recipe: {
-      findFirst: (args: unknown) => mockFindFirstRecipe(args),
-    },
-    recipeFixedCost: {
-      findFirst: (args: unknown) => mockFindFirstFixedCost(args),
-      create: (args: unknown) => mockCreateFixedCost(args),
-      update: (args: unknown) => mockUpdateFixedCost(args),
-      delete: (args: unknown) => mockDeleteFixedCost(args),
-    },
-  },
+  createPrismaClient: () => mockPrisma,
 }));
 
 const {
@@ -52,8 +64,8 @@ function buildApp() {
 describe("fixedCostsCreateHandler", () => {
   beforeEach(() => {
     mockGetSession.mockReset();
-    mockFindFirstRecipe.mockReset();
-    mockCreateFixedCost.mockReset();
+    mockPrisma.recipe.findFirst.mockReset();
+    mockPrisma.recipeFixedCost.create.mockReset();
   });
 
   it("returns 401 when there is no session", async () => {
@@ -66,8 +78,8 @@ describe("fixedCostsCreateHandler", () => {
 
   it("creates a fixed cost when the recipe is owned", async () => {
     mockGetSession.mockResolvedValueOnce(sessionFixture);
-    mockFindFirstRecipe.mockResolvedValueOnce({ id: 1 });
-    mockCreateFixedCost.mockResolvedValueOnce({
+    mockPrisma.recipe.findFirst.mockResolvedValueOnce({ id: 1 });
+    mockPrisma.recipeFixedCost.create.mockResolvedValueOnce({
       id: 7,
       recipeId: 1,
       name: "Luz",
@@ -90,7 +102,7 @@ describe("fixedCostsCreateHandler", () => {
     expect(res.status).toBe(201);
     const body = (await res.json()) as { id: number; name: string };
     expect(body.id).toBe(7);
-    expect(mockCreateFixedCost).toHaveBeenCalledWith({
+    expect(mockPrisma.recipeFixedCost.create).toHaveBeenCalledWith({
       data: {
         recipeId: 1,
         name: "Luz",
@@ -104,7 +116,7 @@ describe("fixedCostsCreateHandler", () => {
 
   it("returns 404 when the recipe is not owned", async () => {
     mockGetSession.mockResolvedValueOnce(sessionFixture);
-    mockFindFirstRecipe.mockResolvedValueOnce(null);
+    mockPrisma.recipe.findFirst.mockResolvedValueOnce(null);
 
     const res = await buildApp().request("/api/recipes/42/fixed-costs", {
       method: "POST",
@@ -116,12 +128,12 @@ describe("fixedCostsCreateHandler", () => {
       }),
     });
     expect(res.status).toBe(404);
-    expect(mockCreateFixedCost).not.toHaveBeenCalled();
+    expect(mockPrisma.recipeFixedCost.create).not.toHaveBeenCalled();
   });
 
   it("returns 400 on invalid input", async () => {
     mockGetSession.mockResolvedValueOnce(sessionFixture);
-    mockFindFirstRecipe.mockResolvedValueOnce({ id: 1 });
+    mockPrisma.recipe.findFirst.mockResolvedValueOnce({ id: 1 });
 
     const res = await buildApp().request("/api/recipes/1/fixed-costs", {
       method: "POST",
@@ -135,18 +147,18 @@ describe("fixedCostsCreateHandler", () => {
 describe("fixedCostsUpdateHandler", () => {
   beforeEach(() => {
     mockGetSession.mockReset();
-    mockFindFirstFixedCost.mockReset();
-    mockUpdateFixedCost.mockReset();
+    mockPrisma.recipeFixedCost.findFirst.mockReset();
+    mockPrisma.recipeFixedCost.update.mockReset();
   });
 
   it("updates a fixed cost when owned", async () => {
     mockGetSession.mockResolvedValueOnce(sessionFixture);
-    mockFindFirstFixedCost.mockResolvedValueOnce({
+    mockPrisma.recipeFixedCost.findFirst.mockResolvedValueOnce({
       id: 7,
       recipeId: 1,
       recipe: { ownerId: "user-1" },
     });
-    mockUpdateFixedCost.mockResolvedValueOnce({
+    mockPrisma.recipeFixedCost.update.mockResolvedValueOnce({
       id: 7,
       recipeId: 1,
       name: "Luz mod",
@@ -165,12 +177,12 @@ describe("fixedCostsUpdateHandler", () => {
       },
     );
     expect(res.status).toBe(200);
-    expect(mockUpdateFixedCost).toHaveBeenCalled();
+    expect(mockPrisma.recipeFixedCost.update).toHaveBeenCalled();
   });
 
   it("returns 404 when the fixed cost does not belong to the user", async () => {
     mockGetSession.mockResolvedValueOnce(sessionFixture);
-    mockFindFirstFixedCost.mockResolvedValueOnce(null);
+    mockPrisma.recipeFixedCost.findFirst.mockResolvedValueOnce(null);
 
     const res = await buildApp().request(
       "/api/recipes/1/fixed-costs/7",
@@ -185,7 +197,7 @@ describe("fixedCostsUpdateHandler", () => {
 
   it("returns 404 when the fixed cost belongs to a different user", async () => {
     mockGetSession.mockResolvedValueOnce(sessionFixture);
-    mockFindFirstFixedCost.mockResolvedValueOnce({
+    mockPrisma.recipeFixedCost.findFirst.mockResolvedValueOnce({
       id: 7,
       recipeId: 1,
       recipe: { ownerId: "other-user" },
@@ -206,36 +218,36 @@ describe("fixedCostsUpdateHandler", () => {
 describe("fixedCostsDeleteHandler", () => {
   beforeEach(() => {
     mockGetSession.mockReset();
-    mockFindFirstFixedCost.mockReset();
-    mockDeleteFixedCost.mockReset();
+    mockPrisma.recipeFixedCost.findFirst.mockReset();
+    mockPrisma.recipeFixedCost.delete.mockReset();
   });
 
   it("deletes a fixed cost when owned", async () => {
     mockGetSession.mockResolvedValueOnce(sessionFixture);
-    mockFindFirstFixedCost.mockResolvedValueOnce({
+    mockPrisma.recipeFixedCost.findFirst.mockResolvedValueOnce({
       id: 7,
       recipeId: 1,
       recipe: { ownerId: "user-1" },
     });
-    mockDeleteFixedCost.mockResolvedValueOnce({});
+    mockPrisma.recipeFixedCost.delete.mockResolvedValueOnce({});
 
     const res = await buildApp().request(
       "/api/recipes/1/fixed-costs/7",
       { method: "DELETE" },
     );
     expect(res.status).toBe(204);
-    expect(mockDeleteFixedCost).toHaveBeenCalledWith({ where: { id: 7 } });
+    expect(mockPrisma.recipeFixedCost.delete).toHaveBeenCalledWith({ where: { id: 7 } });
   });
 
   it("returns 404 when the fixed cost does not belong to the user", async () => {
     mockGetSession.mockResolvedValueOnce(sessionFixture);
-    mockFindFirstFixedCost.mockResolvedValueOnce(null);
+    mockPrisma.recipeFixedCost.findFirst.mockResolvedValueOnce(null);
 
     const res = await buildApp().request(
       "/api/recipes/1/fixed-costs/7",
       { method: "DELETE" },
     );
     expect(res.status).toBe(404);
-    expect(mockDeleteFixedCost).not.toHaveBeenCalled();
+    expect(mockPrisma.recipeFixedCost.delete).not.toHaveBeenCalled();
   });
 });

@@ -2,10 +2,6 @@
 import { Icon } from "astro-icon/components";
 import Layout from "@/layouts/Layout.astro";
 import { Button, Card } from "@recetario/ui";
-import {
-  listIngredients,
-  listIngredientUsage,
-} from "@recetario/db";
 import { countUserIngredients } from "@recetario/billing";
 import { canCreateIngredient } from "@recetario/billing";
 import { parseNumberInput } from "@/lib/form-utils";
@@ -13,7 +9,11 @@ import { UNIT_OPTIONS, DEFAULT_UNIT } from "@/lib/constants";
 import { validateCsrf } from "@recetario/auth";
 import { apiFetch, ApiError } from "@/lib/api-client";
 import { z } from "zod";
-import { ingredientUsageResponseSchema } from "@recetario/types";
+import {
+  ingredientSchema,
+  ingredientUsageMapSchema,
+  ingredientUsageResponseSchema,
+} from "@recetario/types";
 import FeedbackAlert from "@/components/FeedbackAlert.astro";
 import UnitCostDisplay from "@/components/UnitCostDisplay.astro";
 import IngredientFormFields from "@/components/IngredientFormFields.astro";
@@ -141,13 +141,14 @@ if (Astro.request.method === "POST") {
               supplier: ingredientInput.supplier || undefined,
             },
           },
-          Astro.request,
+          Astro,
         );
       } catch (error) {
         const message =
           error instanceof ApiError
             ? error.message
             : "No se pudo crear el ingrediente.";
+        void message;
         return redirectWithFeedback({ type: "error", message });
       }
 
@@ -179,7 +180,7 @@ if (Astro.request.method === "POST") {
             supplier: ingredientInput.supplier || undefined,
           },
         },
-        Astro.request,
+        Astro,
       );
     } catch (error) {
       if (error instanceof ApiError && error.status === 404) {
@@ -192,6 +193,7 @@ if (Astro.request.method === "POST") {
         error instanceof ApiError
           ? error.message
           : "No se pudo actualizar el ingrediente.";
+      void message;
       return redirectWithFeedback({
         type: "error",
         message,
@@ -217,7 +219,7 @@ if (Astro.request.method === "POST") {
       await apiFetch(
         `/api/ingredients/${ingredientId}`,
         { method: "DELETE" },
-        Astro.request,
+        Astro,
       );
     } catch (error) {
       if (
@@ -228,8 +230,9 @@ if (Astro.request.method === "POST") {
         const usage = await apiFetch(
           `/api/ingredients/${ingredientId}/usage`,
           { schema: ingredientUsageResponseSchema },
-          Astro.request,
+          Astro,
         );
+        void usage;
         return redirectWithFeedback({
           type: "error",
           message: "No se puede eliminar porque el ingrediente está en uso.",
@@ -246,6 +249,7 @@ if (Astro.request.method === "POST") {
         error instanceof ApiError
           ? error.message
           : "No se pudo eliminar el ingrediente.";
+      void message;
       return redirectWithFeedback({ type: "error", message });
     }
 
@@ -277,8 +281,16 @@ const blockedRecipes = (() => {
   }
 })();
 
-const ingredients = await listIngredients(ownerId);
-const ingredientUsage = await listIngredientUsage(ownerId);
+const ingredients = await apiFetch(
+  "/api/ingredients",
+  { schema: z.array(ingredientSchema) },
+  Astro,
+);
+const ingredientUsage = await apiFetch(
+  "/api/ingredients/usage",
+  { schema: ingredientUsageMapSchema },
+  Astro,
+);
 
 void redirectWithFeedback;
 ---
@@ -410,7 +422,7 @@ void redirectWithFeedback;
               </thead>
               <tbody class="divide-border-light divide-y">
                 {ingredients.map((ingredient) => {
-                  const usedRecipes = ingredientUsage[ingredient.id] || [];
+                  const usedRecipes = ingredientUsage[String(ingredient.id)] || [];
                   const usedRecipesPayload = encodeURIComponent(
                     JSON.stringify(usedRecipes),
                   );

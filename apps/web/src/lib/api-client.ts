@@ -17,6 +17,11 @@ type ServiceBinding = {
   fetch: (input: string | URL, init?: RequestInit) => Promise<Response>;
 };
 
+export type ApiFetchContext = {
+  request: Request;
+  locals?: { user?: { id?: string | null } | null };
+};
+
 const g = globalThis as typeof globalThis & {
   __recetarioApiBinding?: ServiceBinding;
 };
@@ -57,13 +62,20 @@ function newTraceId(): string {
 export async function apiFetch<T = unknown>(
   path: string,
   options: ApiFetchOptions<T>,
-  astroRequest: Request,
+  context: ApiFetchContext,
 ): Promise<T> {
   const { method = "GET", body, schema, signal } = options;
+  const { request, locals } = context;
 
   const headers: Record<string, string> = { accept: "application/json" };
-  const cookie = astroRequest.headers.get("cookie");
+  const cookie = request.headers.get("cookie");
   if (cookie) headers.cookie = cookie;
+  // Forward the authenticated user so the API rate limiter applies the
+  // per-user bucket (60 reads / 60s, 10 writes / 60s) instead of the
+  // per-IP fallback (30 / 60s). Without this, multi-endpoint page loads
+  // trip the IP limit at ~7 page loads/60s.
+  const userId = locals?.user?.id;
+  if (userId) headers["x-user-id"] = userId;
 
   const init: RequestInit = { method, headers, signal };
   if (body !== undefined) {
@@ -74,7 +86,7 @@ export async function apiFetch<T = unknown>(
   const binding = g.__recetarioApiBinding;
   let res: Response;
   if (binding) {
-    res = await binding.fetch(path, init);
+    res = await binding.fetch(new URL(path, request.url), init);
   } else {
     const base = import.meta.env.INTERNAL_API_URL as string | undefined;
     if (!base) {

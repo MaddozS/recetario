@@ -115,3 +115,50 @@ export const fixedCostUpdateSchema = z
   .refine((v) => Object.keys(v).length > 0, {
     message: "At least one field must be provided",
   });
+
+export const presentationCreateSchema = z.object({
+  name: z.string().min(1).max(120),
+  unitsPerBatch: z.coerce.number().positive(),
+  salePrice: z.coerce.number().nonnegative().nullable().optional(),
+});
+
+export const presentationUpdateSchema = z
+  .object({
+    name: z.string().min(1).max(120).optional(),
+    unitsPerBatch: z.coerce.number().positive().optional(),
+    salePrice: z.coerce.number().nonnegative().nullable().optional(),
+  })
+  .refine((v) => Object.keys(v).length > 0, {
+    message: "At least one field must be provided",
+  });
+
+export const presentationFixedCostCreateSchema = z.object({
+  name: z.string().min(1).max(120).optional(),
+  type: fixedCostTypeSchema,
+  base: fixedCostBaseSchema,
+  value: z.coerce.number().positive(),
+});
+
+export const presentationFixedCostUpdateSchema = z
+  .object({
+    name: z.string().min(1).max(120).optional(),
+    type: fixedCostTypeSchema.optional(),
+    base: fixedCostBaseSchema.optional(),
+    value: z.coerce.number().positive().optional(),
+  })
+  .refine((v) => Object.keys(v).length > 0, {
+    message: "At least one field must be provided",
+  });
+
+export const recipeCreateResponseSchema = z.object({
+  id: z.number().int().positive(),
+  name: z.string(),
+  category: z.string().optional(),
+  desiredMargin: z.number().optional(),
+  fixedCostsPercentage: z.number().optional(),
+});
+
+export const ingredientUsageMapSchema = z.record(
+  z.string(),
+  z.array(z.string()),
+);

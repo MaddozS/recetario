@@ -4,14 +4,21 @@ import { envelope } from "../envelope.js";
 import { errorHandler } from "../error-handler.js";
 import { hostAllowlist } from "../host-allowlist.js";
 
-const mockFindMany = vi.fn();
+const { mockFindMany, mockPrisma, mockAuth } = vi.hoisted(() => {
+  const mockFindMany = vi.fn();
+  const mockPrisma = {
+    subscriptionPlan: { findMany: mockFindMany },
+  };
+  const mockAuth = { api: { getSession: vi.fn() } };
+  return { mockFindMany, mockPrisma, mockAuth };
+});
+
+vi.mock("@recetario/auth/server", () => ({
+  createAuth: () => mockAuth,
+}));
 
 vi.mock("@recetario/db", () => ({
-  prisma: {
-    subscriptionPlan: {
-      findMany: (args: unknown) => mockFindMany(args),
-    },
-  },
+  createPrismaClient: () => mockPrisma,
 }));
 
 const cacheStore = new Map<string, { value: unknown; expiresAt: number }>();

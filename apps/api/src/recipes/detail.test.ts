@@ -3,16 +3,21 @@ import { Hono } from "hono";
 import { envelope } from "../envelope.js";
 import { errorHandler } from "../error-handler.js";
 
-const mockGetSession = vi.fn();
-const mockGetRecipeById = vi.fn();
+const { mockGetSession, mockAuth, mockGetRecipeById } = vi.hoisted(() => {
+  const mockGetSession = vi.fn();
+  const mockAuth = { api: { getSession: (...args: unknown[]) => mockGetSession(...args) } };
+  const mockGetRecipeById = vi.fn();
+  return { mockGetSession, mockAuth, mockGetRecipeById };
+});
 
 vi.mock("@recetario/auth/server", () => ({
-  auth: { api: { getSession: (args: unknown) => mockGetSession(args) } },
+  createAuth: () => mockAuth,
 }));
 
 vi.mock("@recetario/db", () => ({
-  getRecipeById: (id: number, ownerId: string) =>
-    mockGetRecipeById(id, ownerId),
+  createPrismaClient: () => ({}),
+  getRecipeById: (id: number, ownerId: string, db: unknown) =>
+    mockGetRecipeById(id, ownerId, db),
 }));
 
 const { recipesDetailHandler } = await import("./detail.js");
@@ -59,7 +64,7 @@ describe("recipesDetailHandler", () => {
     expect(res.status).toBe(200);
     const body = (await res.json()) as { id: number; name: string };
     expect(body.name).toBe("Tarta");
-    expect(mockGetRecipeById).toHaveBeenCalledWith(1, "user-1");
+    expect(mockGetRecipeById).toHaveBeenCalledWith(1, "user-1", expect.anything());
   });
 
   it("returns 404 when the recipe does not belong to the user", async () => {

@@ -3,27 +3,23 @@ import { Hono } from "hono";
 import { envelope } from "../envelope.js";
 import { errorHandler } from "../error-handler.js";
 
-const mockGetSession = vi.fn();
-const mockPrismaIngredientUpdate = vi.fn();
-const mockPrismaIngredientFindFirst = vi.fn();
-const mockCacheDelete = vi.fn();
+const { mockGetSession, mockAuth, mockUpdateIngredient, mockCacheDelete } = vi.hoisted(() => {
+  const mockGetSession = vi.fn();
+  const mockAuth = { api: { getSession: (...args: unknown[]) => mockGetSession(...args) } };
+  const mockUpdateIngredient = vi.fn();
+  const mockCacheDelete = vi.fn();
+  return { mockGetSession, mockAuth, mockUpdateIngredient, mockCacheDelete };
+});
 
 vi.mock("@recetario/auth/server", () => ({
-  auth: {
-    api: {
-      getSession: (args: unknown) => mockGetSession(args),
-    },
-  },
+  createAuth: () => mockAuth,
 }));
 
 vi.mock("@recetario/db", () => ({
-  prisma: {
-    ingredient: {
-      update: (args: unknown) => mockPrismaIngredientUpdate(args),
-      findFirst: (args: unknown) => mockPrismaIngredientFindFirst(args),
-    },
-  },
-  cacheDelete: mockCacheDelete,
+  createPrismaClient: () => ({}),
+  updateIngredient: (id: number, input: unknown, ownerId: string, db: unknown) =>
+    mockUpdateIngredient(id, input, ownerId, db),
+  cacheDelete: (key: string, db: unknown) => mockCacheDelete(key, db),
 }));
 
 const { ingredientsUpdateHandler } = await import("./update.js");
@@ -44,8 +40,7 @@ function buildApp() {
 
 beforeEach(() => {
   mockGetSession.mockReset();
-  mockPrismaIngredientUpdate.mockReset();
-  mockPrismaIngredientFindFirst.mockReset();
+  mockUpdateIngredient.mockReset();
   mockCacheDelete.mockReset();
   mockGetSession.mockResolvedValue(sessionFixture);
 });
@@ -62,7 +57,7 @@ describe("ingredientsUpdateHandler", () => {
       brand: null,
       supplier: null,
     };
-    mockPrismaIngredientUpdate.mockResolvedValueOnce(updated);
+    mockUpdateIngredient.mockResolvedValueOnce(updated);
 
     const res = await buildApp().request("/api/ingredients/7", {
       method: "PATCH",
@@ -74,13 +69,19 @@ describe("ingredientsUpdateHandler", () => {
     const body = (await res.json()) as { id: number; name: string };
     expect(body.id).toBe(7);
     expect(body.name).toBe("Tomato (updated)");
-    expect(mockPrismaIngredientUpdate).toHaveBeenCalledWith({
-      where: { id: 7, ownerId: userId },
-      data: { name: "Tomato (updated)", price: 4.0 },
-    });
-    expect(mockCacheDelete).toHaveBeenCalledWith(`ingredients:${userId}`);
+    expect(mockUpdateIngredient).toHaveBeenCalledWith(
+      7,
+      { name: "Tomato (updated)", price: 4.0 },
+      userId,
+      expect.anything(),
+    );
+    expect(mockCacheDelete).toHaveBeenCalledWith(
+      `ingredients:${userId}`,
+      expect.anything(),
+    );
     expect(mockCacheDelete).toHaveBeenCalledWith(
       `ingredient_usage:${userId}`,
+      expect.anything(),
     );
   });
 
@@ -94,13 +95,11 @@ describe("ingredientsUpdateHandler", () => {
     expect(res.status).toBe(400);
     const body = (await res.json()) as { error: { code: string } };
     expect(body.error.code).toBe("VALIDATION_ERROR");
-    expect(mockPrismaIngredientUpdate).not.toHaveBeenCalled();
+    expect(mockUpdateIngredient).not.toHaveBeenCalled();
   });
 
   it("returns 404 when the ingredient does not belong to the user", async () => {
-    mockPrismaIngredientUpdate.mockImplementationOnce(() => {
-      throw Object.assign(new Error("not found"), { code: "P2025" });
-    });
+    mockUpdateIngredient.mockResolvedValueOnce(null);
 
     const res = await buildApp().request("/api/ingredients/999", {
       method: "PATCH",

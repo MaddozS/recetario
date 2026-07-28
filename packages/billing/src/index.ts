@@ -24,6 +24,7 @@ export {
   markSubscriptionPastDue,
   syncPlansFromStripe,
   getPricingPlans,
+  buildPricingPlans,
   countUserRecipes,
   countUserIngredients,
 } from "./billing.js";

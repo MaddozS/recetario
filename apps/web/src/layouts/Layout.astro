@@ -21,7 +21,7 @@ const showProduction = subscription ? hasFeature(subscription, 'production_plann
 const userId = Astro.locals.user?.id;
 
 const userPrefs: UserPreferences | null = userId
-  ? await apiFetch<UserPreferences>('/api/preferences', {}, Astro.request)
+  ? await apiFetch<UserPreferences>('/api/preferences', {}, Astro)
   : null;
 const recipeHref = '/recipes';
 const theme = userPrefs?.theme ?? 'system';

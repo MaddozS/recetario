@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@recetario/config": "workspace:^",
+    "@recetario/types": "workspace:^",
     "stripe": "22.1.1"
   },
   "peerDependencies": {

@@ -4,19 +4,20 @@ import { envelope } from "../envelope.js";
 import { errorHandler } from "../error-handler.js";
 import { hostAllowlist } from "../host-allowlist.js";
 
-const mockGetSession = vi.fn();
-const mockGetUserSubscription = vi.fn();
+const { mockGetSession, mockAuth, mockGetUserSubscription } = vi.hoisted(() => {
+  const mockGetSession = vi.fn();
+  const mockAuth = { api: { getSession: (...args: unknown[]) => mockGetSession(...args) } };
+  const mockGetUserSubscription = vi.fn();
+  return { mockGetSession, mockAuth, mockGetUserSubscription };
+});
 
 vi.mock("@recetario/auth/server", () => ({
-  auth: {
-    api: {
-      getSession: (args: unknown) => mockGetSession(args),
-    },
-  },
+  createAuth: () => mockAuth,
 }));
 
 vi.mock("@recetario/billing", () => ({
-  getUserSubscription: (id: string) => mockGetUserSubscription(id),
+  getUserSubscription: (id: string, db: unknown) =>
+    mockGetUserSubscription(id, db),
   resolveSubscription: (sub: unknown) => {
     if (!sub) {
       return {
@@ -64,6 +65,10 @@ vi.mock("@recetario/billing", () => ({
       trialEnd: s.trialEnd ? s.trialEnd.toISOString() : null,
     };
   },
+}));
+
+vi.mock("@recetario/db", () => ({
+  createPrismaClient: () => ({}),
 }));
 
 const cacheStore = new Map<string, { value: unknown; expiresAt: number }>();
@@ -143,7 +148,7 @@ describe("subscriptionHandler", () => {
     expect(body.priceCents).toBe(1999);
 
     expect(mockGetUserSubscription).toHaveBeenCalledTimes(1);
-    expect(mockGetUserSubscription).toHaveBeenCalledWith("user-1");
+    expect(mockGetUserSubscription).toHaveBeenCalledWith("user-1", expect.anything());
   });
 
   it("returns 404 NOT_FOUND when user has no active subscription", async () => {

@@ -3,15 +3,21 @@ import { Hono } from "hono";
 import { envelope } from "../envelope.js";
 import { errorHandler } from "../error-handler.js";
 
-const mockGetSession = vi.fn();
-const mockListRecipeSummaries = vi.fn();
+const { mockGetSession, mockAuth, mockListRecipeSummaries } = vi.hoisted(() => {
+  const mockGetSession = vi.fn();
+  const mockAuth = { api: { getSession: (...args: unknown[]) => mockGetSession(...args) } };
+  const mockListRecipeSummaries = vi.fn();
+  return { mockGetSession, mockAuth, mockListRecipeSummaries };
+});
 
 vi.mock("@recetario/auth/server", () => ({
-  auth: { api: { getSession: (args: unknown) => mockGetSession(args) } },
+  createAuth: () => mockAuth,
 }));
 
 vi.mock("@recetario/db", () => ({
-  listRecipeSummaries: (ownerId: string) => mockListRecipeSummaries(ownerId),
+  createPrismaClient: () => ({}),
+  listRecipeSummaries: (ownerId: string, db: unknown) =>
+    mockListRecipeSummaries(ownerId, db),
 }));
 
 const { recipesListHandler } = await import("./list.js");
@@ -58,6 +64,6 @@ describe("recipesListHandler", () => {
     const body = (await res.json()) as Array<{ id: number; name: string }>;
     expect(body).toHaveLength(2);
     expect(body[0].name).toBe("Tarta");
-    expect(mockListRecipeSummaries).toHaveBeenCalledWith("user-1");
+    expect(mockListRecipeSummaries).toHaveBeenCalledWith("user-1", expect.anything());
   });
 });

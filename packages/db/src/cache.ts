@@ -1,8 +1,15 @@
 import { prisma } from "./prisma.js";
+import type { PrismaClient } from "./prisma.js";
 
-export async function cacheGet<T>(key: string): Promise<T | undefined> {
+// ponytail: every function takes an optional `db` so the API worker
+// can pass a per-request client (see apps/api/src/fresh-db.ts and
+// memory #63). Web still passes nothing and gets the singleton.
+export async function cacheGet<T>(
+  key: string,
+  db: PrismaClient = prisma,
+): Promise<T | undefined> {
   try {
-    const entry = await prisma.cacheEntry.findUnique({ where: { key } });
+    const entry = await db.cacheEntry.findUnique({ where: { key } });
     if (!entry || Number(entry.expiresAt) <= Date.now()) return undefined;
     return JSON.parse(entry.value) as T;
   } catch {
@@ -14,9 +21,10 @@ export async function cacheSet(
   key: string,
   value: unknown,
   ttlSeconds: number,
+  db: PrismaClient = prisma,
 ): Promise<void> {
   try {
-    await prisma.cacheEntry.upsert({
+    await db.cacheEntry.upsert({
       where: { key },
       update: {
         value: JSON.stringify(value),
@@ -33,9 +41,12 @@ export async function cacheSet(
   }
 }
 
-export async function cacheDelete(key: string): Promise<void> {
+export async function cacheDelete(
+  key: string,
+  db: PrismaClient = prisma,
+): Promise<void> {
   try {
-    await prisma.cacheEntry.delete({ where: { key } });
+    await db.cacheEntry.delete({ where: { key } });
   } catch {
     // Non-critical (key may not exist)
   }

@@ -3,14 +3,18 @@ import { Hono } from "hono";
 import { envelope } from "./envelope.js";
 import { errorHandler } from "./error-handler.js";
 
-const mockGetSession = vi.fn();
+const { mockGetSession, mockAuth } = vi.hoisted(() => {
+  const mockGetSession = vi.fn();
+  const mockAuth = { api: { getSession: (...args: unknown[]) => mockGetSession(...args) } };
+  return { mockGetSession, mockAuth };
+});
 
 vi.mock("@recetario/auth/server", () => ({
-  auth: {
-    api: {
-      getSession: (args: unknown) => mockGetSession(args),
-    },
-  },
+  createAuth: () => mockAuth,
+}));
+
+vi.mock("@recetario/db", () => ({
+  createPrismaClient: () => ({}),
 }));
 
 const { authSessionHandler } = await import("./auth-session.js");

@@ -1,20 +1,23 @@
 ---
-import type { RecipeWithIngredients } from '@recetario/types';
-import type { Ingredient, RecipeIngredientWithData, RecipeIngredient, RecipePresentation } from '@recetario/db';
+import type {
+  RecipeWithIngredients,
+  Ingredient,
+  RecipeIngredientWithData,
+  RecipeIngredient,
+  RecipePresentation,
+} from '@recetario/types';
+import { z } from 'zod';
+import {
+  recipeCreateResponseSchema,
+  presentationSchema,
+  recipeFixedCostSchema,
+  presentationFixedCostSchema,
+  ingredientSchema,
+} from '@recetario/types';
 import { Icon } from "astro-icon/components";
 import Layout from "../../layouts/Layout.astro";
 import PresentationCard from "../../components/PresentationCard.astro";
-import { apiFetch } from "@/lib/api-client";
-import {
-  deleteRecipe,
-  duplicateRecipe,
-} from '@recetario/db';
-import { listIngredients } from '@recetario/db';
-import {
-  createPresentation,
-  updatePresentation,
-  deletePresentation,
-} from '@recetario/db';
+import { apiFetch, ApiError } from "@/lib/api-client";
 import { hasFeature } from '@recetario/billing';
 import { parseNumberInput } from '@/lib/form-utils';
 import { sanitizeHtml } from '@/lib/html-sanitizer';
@@ -27,7 +30,6 @@ import { Button, Badge, FinancialSummary, SectionHeading, Card } from "@recetari
 import RecipeActionsMenu from "../../components/RecipeActionsMenu.astro";
 import RecipeFixedCosts from "../../components/RecipeFixedCosts.astro";
 import PresentationFixedCosts from "../../components/PresentationFixedCosts.astro";
-import { prisma } from "@recetario/db";
 
 const recipeIdParam = Astro.params.recipe;
 const recipeIdNumber = Number(recipeIdParam);
@@ -36,7 +38,6 @@ if (!Astro.locals.session || !Astro.locals.user) {
   return Astro.redirect('/sign-in');
 }
 
-const ownerId = Astro.locals.user!.id;
 const subscription = Astro.locals.subscription;
 
 const expectsJsonResponse = Astro.request.headers.get('accept')?.includes('application/json') ?? false;
@@ -220,22 +221,30 @@ if (Astro.request.method === 'POST') {
     }
 
     try {
-      const presentation = await updatePresentation(recipeIdNumber, presId, {
-        name: presentationName,
-        unitsPerBatch,
-        salePrice: nextSalePrice,
-      }, ownerId);
-
-      if (!presentation) {
-        return respondPresentationError('No se encontró la presentación.', 404);
-      }
+      const presentation = await apiFetch(
+        `/api/recipes/${recipeIdNumber}/presentations/${presId}`,
+        {
+          method: 'PATCH',
+          body: {
+            name: presentationName,
+            unitsPerBatch,
+            salePrice: nextSalePrice,
+          },
+          schema: presentationSchema,
+        },
+        Astro,
+      );
+      void presentation;
 
       if (expectsJsonResponse) {
-        return jsonResponse({ presentation });
+        return jsonResponse({ presentation: presentation });
       }
 
       return redirectToPresentationSection();
     } catch (error) {
+      if (error instanceof ApiError && error.status === 404) {
+        return respondPresentationError('No se encontró la presentación.', 404);
+      }
       return respondPresentationError(
         getPresentationFormErrorMessage(error, 'No se pudo actualizar la presentación.'),
       );
@@ -248,18 +257,21 @@ if (Astro.request.method === 'POST') {
     }
 
     try {
-      const result = await deletePresentation(recipeIdNumber, presId, ownerId);
-
-      if (result.status === 'not-found') {
-        return respondPresentationError('No se encontró la presentación.', 404);
-      }
+      await apiFetch(
+        `/api/recipes/${recipeIdNumber}/presentations/${presId}`,
+        { method: 'DELETE' },
+        Astro,
+      );
 
       if (expectsJsonResponse) {
         return jsonResponse({ deleted: true, presentationId: presId });
       }
 
       return redirectToPresentationSection({ type: 'success', message: 'Presentación eliminada correctamente.' });
-    } catch {
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 404) {
+        return respondPresentationError('No se encontró la presentación.', 404);
+      }
       return respondPresentationError('No se pudo eliminar la presentación.');
     }
   } else if (action === 'create_presentation') {
@@ -294,11 +306,19 @@ if (Astro.request.method === 'POST') {
     }
 
     try {
-      await createPresentation(recipeIdNumber, {
-        name: presentationName,
-        unitsPerBatch,
-        salePrice: salePriceValue ? salePrice : undefined,
-      }, ownerId);
+      await apiFetch(
+        `/api/recipes/${recipeIdNumber}/presentations`,
+        {
+          method: 'POST',
+          body: {
+            name: presentationName,
+            unitsPerBatch,
+            salePrice: salePriceValue ? salePrice : undefined,
+          },
+          schema: presentationSchema,
+        },
+        Astro,
+      );
       return redirectToPresentationSection();
     } catch (error) {
       return redirectToPresentationSection({
@@ -312,14 +332,16 @@ if (Astro.request.method === 'POST') {
     }
 
     try {
-      const result = await deleteRecipe(recipeIdNumber, ownerId);
-
-      if (result.status === 'not-found') {
+      await apiFetch(
+        `/api/recipes/${recipeIdNumber}`,
+        { method: 'DELETE' },
+        Astro,
+      );
+      return Astro.redirect('/recipes');
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 404) {
         return Astro.redirect('/recipes');
       }
-
-      return Astro.redirect('/recipes');
-    } catch {
       return redirectToRecipePage({
         type: 'error',
         message: 'No se pudo eliminar la receta.',
@@ -364,13 +386,14 @@ if (Astro.request.method === 'POST') {
             fixedCostsPercentage,
             ingredients: ingredientsToSave,
           },
-        }, Astro.request);
+        }, Astro);
         return Astro.redirect(Astro.url.pathname);
       } catch (error) {
         const message = error && typeof error === 'object' && 'message' in error
           ? String((error as { message: string }).message)
           : 'No se pudo actualizar la receta.';
-        return redirectToRecipePage({ type: 'error', message });
+        void message;
+        return redirectToRecipePage({ type: 'error', message: message });
       }
     }
   } else if (action === 'duplicate_recipe') {
@@ -386,7 +409,11 @@ if (Astro.request.method === 'POST') {
     }
 
     try {
-      const duplicated = await duplicateRecipe(recipeIdNumber, ownerId);
+      const duplicated = await apiFetch(
+        `/api/recipes/${recipeIdNumber}/duplicate`,
+        { method: 'POST', schema: recipeCreateResponseSchema },
+        Astro,
+      );
       const redirectUrl = new URL(Astro.url);
       redirectUrl.pathname = `/recipes/${duplicated.id}`;
       redirectUrl.searchParams.set('edit', 'true');
@@ -394,12 +421,10 @@ if (Astro.request.method === 'POST') {
       redirectUrl.searchParams.set('message', `Receta "${duplicated.name}" creada exitosamente.`);
       return Astro.redirect(redirectUrl.toString());
     } catch (error) {
-      return respondRecipeError(
-        error instanceof Error && error.message === 'Recipe not found'
-          ? 'No se encontró la receta original.'
-          : 'Error al duplicar la receta.',
-        500,
-      );
+      if (error instanceof ApiError && error.status === 404) {
+        return respondRecipeError('No se encontró la receta original.', 404);
+      }
+      return respondRecipeError('Error al duplicar la receta.', 500);
     }
   } else if (action === 'create_recipe_fixed_cost') {
     if (!expectsJsonResponse) {
@@ -410,14 +435,6 @@ if (Astro.request.method === 'POST') {
       return new Response('Invalid request', { status: 400 });
     }
     try {
-      const ownerCheck = await prisma.recipe.findFirst({
-        where: { id: fcRecipeId, ownerId },
-        select: { id: true },
-      });
-      if (!ownerCheck) {
-        return new Response('Recipe not found', { status: 404 });
-      }
-
       const name = String(formData.get('name') || '').trim() || 'Costo Fijo';
       const type = String(formData.get('type') || 'AMOUNT');
       const base = String(formData.get('base') || 'PER_BATCH');
@@ -425,23 +442,36 @@ if (Astro.request.method === 'POST') {
       const hoursRaw = formData.has('hours') ? formData.get('hours') : null;
       const hours = hoursRaw !== null && hoursRaw !== '' ? Number(hoursRaw) : null;
 
-      const created = await prisma.recipeFixedCost.create({
-        data: {
-          recipeId: fcRecipeId,
-          name,
-          type: type as any,
-          base: base as any,
-          value: Number.isFinite(value) ? value : 0,
-          hours,
+      const created = await apiFetch(
+        `/api/recipes/${fcRecipeId}/fixed-costs`,
+        {
+          method: 'POST',
+          body: {
+            name,
+            type,
+            base,
+            value: Number.isFinite(value) ? value : 0,
+            hours,
+          },
+          schema: recipeFixedCostSchema,
         },
-      });
+        Astro,
+      );
 
       const fixedCostCardHtml = renderFixedCostCardSnippet(
-        { id: created.id, name: created.name, type: created.type, base: created.base, value: created.value, hours: created.hours },
+        {
+          id: created.id,
+          name: created.name,
+          type: created.type,
+          base: created.base,
+          value: created.value,
+          hours: created.hours ?? null,
+        },
         true,
         fcRecipeId,
         Astro.locals.csrfToken || "",
       );
+      void fixedCostCardHtml;
 
       return jsonResponse({
         fixedCost: {
@@ -452,9 +482,12 @@ if (Astro.request.method === 'POST') {
           value: created.value,
           hours: created.hours,
         },
-        fixedCostCardHtml,
+        fixedCostCardHtml: fixedCostCardHtml,
       });
-    } catch {
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 404) {
+        return new Response('Recipe not found', { status: 404 });
+      }
       return new Response('Error al crear el costo fijo', { status: 500 });
     }
   } else if (action === 'create_presentation_fixed_cost') {
@@ -466,36 +499,40 @@ if (Astro.request.method === 'POST') {
       return new Response('Invalid request', { status: 400 });
     }
     try {
-      // Verify ownership via recipe
-      const pres = await prisma.recipePresentation.findFirst({
-        where: { id: presId },
-        include: { recipe: { select: { ownerId: true } } },
-      });
-      if (!pres || pres.recipe.ownerId !== ownerId) {
-        return new Response('Presentation not found', { status: 404 });
-      }
-
       const name = String(formData.get('name') || '').trim() || 'Costo Fijo';
       const type = String(formData.get('type') || 'AMOUNT');
       const base = String(formData.get('base') || 'PER_BATCH');
       const value = parseNumberInput(formData.get('value'));
 
-      const created = await prisma.presentationFixedCost.create({
-        data: {
-          presentationId: presId,
-          name,
-          type: type as any,
-          base: base as any,
-          value: Number.isFinite(value) ? value : 0,
+      const created = await apiFetch(
+        `/api/presentations/${presId}/fixed-costs`,
+        {
+          method: 'POST',
+          body: {
+            name,
+            type,
+            base,
+            value: Number.isFinite(value) ? value : 0,
+          },
+          schema: presentationFixedCostSchema,
         },
-      });
+        Astro,
+      );
 
       const fixedCostCardHtml = renderFixedCostCardSnippet(
-        { id: created.id, name: created.name, type: created.type, base: created.base, value: created.value, hours: null },
+        {
+          id: created.id,
+          name: created.name,
+          type: created.type,
+          base: created.base,
+          value: created.value,
+          hours: null,
+        },
         false,
         presId,
         Astro.locals.csrfToken || "",
       );
+      void fixedCostCardHtml;
 
       return jsonResponse({
         fixedCost: {
@@ -506,9 +543,12 @@ if (Astro.request.method === 'POST') {
           value: created.value,
           hours: null,
         },
-        fixedCostCardHtml,
+        fixedCostCardHtml: fixedCostCardHtml,
       });
-    } catch {
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 404) {
+        return new Response('Presentation not found', { status: 404 });
+      }
       return new Response('Error al crear el costo fijo', { status: 500 });
     }
   } else if (action === 'update_fixed_cost') {
@@ -528,41 +568,42 @@ if (Astro.request.method === 'POST') {
       const hoursRaw = formData.has('hours') ? formData.get('hours') : null;
       const hours = hoursRaw !== null && hoursRaw !== '' ? Number(hoursRaw) : null;
 
-      // Verify ownership
       if (ownerType === 'recipe') {
-        const fc = await prisma.recipeFixedCost.findFirst({
-          where: { id: fixedCostId },
-          include: { recipe: { select: { ownerId: true } } },
-        });
-        if (!fc || fc.recipe.ownerId !== ownerId) {
-          return new Response('Fixed cost not found', { status: 404 });
+        if (!Number.isFinite(recipeIdNumber)) {
+          return new Response('Invalid request', { status: 400 });
         }
+        await apiFetch(
+          `/api/recipes/${recipeIdNumber}/fixed-costs/${fixedCostId}`,
+          {
+            method: 'PATCH',
+            body: { name, type, base, value, hours },
+            schema: recipeFixedCostSchema,
+          },
+          Astro,
+        );
       } else {
-        const fc = await prisma.presentationFixedCost.findFirst({
-          where: { id: fixedCostId },
-          include: { presentation: { include: { recipe: { select: { ownerId: true } } } } },
-        });
-        if (!fc || fc.presentation.recipe.ownerId !== ownerId) {
-          return new Response('Fixed cost not found', { status: 404 });
+        const presId = Number(formData.get('presentationId'));
+        if (!Number.isFinite(presId)) {
+          return new Response('Invalid request', { status: 400 });
         }
-      }
-
-      if (ownerType === 'recipe') {
-        await prisma.recipeFixedCost.update({
-          where: { id: fixedCostId },
-          data: { name, type: type as any, base: base as any, value, hours },
-        });
-      } else {
-        await prisma.presentationFixedCost.update({
-          where: { id: fixedCostId },
-          data: { name, type: type as any, base: base as any, value },
-        });
+        await apiFetch(
+          `/api/presentations/${presId}/fixed-costs/${fixedCostId}`,
+          {
+            method: 'PATCH',
+            body: { name, type, base, value },
+            schema: presentationFixedCostSchema,
+          },
+          Astro,
+        );
       }
 
       return jsonResponse({
         fixedCost: { name, type, base, value, hours: ownerType === 'recipe' ? hours : null },
       });
-    } catch {
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 404) {
+        return new Response('Fixed cost not found', { status: 404 });
+      }
       return new Response('Error al actualizar el costo fijo', { status: 500 });
     }
   } else if (action === 'delete_fixed_cost') {
@@ -575,29 +616,32 @@ if (Astro.request.method === 'POST') {
       return new Response('Invalid request', { status: 400 });
     }
     try {
-      // Verify ownership
       if (ownerType === 'recipe') {
-        const fc = await prisma.recipeFixedCost.findFirst({
-          where: { id: fixedCostId },
-          include: { recipe: { select: { ownerId: true } } },
-        });
-        if (!fc || fc.recipe.ownerId !== ownerId) {
-          return new Response('Fixed cost not found', { status: 404 });
+        if (!Number.isFinite(recipeIdNumber)) {
+          return new Response('Invalid request', { status: 400 });
         }
-        await prisma.recipeFixedCost.delete({ where: { id: fixedCostId } });
+        await apiFetch(
+          `/api/recipes/${recipeIdNumber}/fixed-costs/${fixedCostId}`,
+          { method: 'DELETE' },
+          Astro,
+        );
       } else {
-        const fc = await prisma.presentationFixedCost.findFirst({
-          where: { id: fixedCostId },
-          include: { presentation: { include: { recipe: { select: { ownerId: true } } } } },
-        });
-        if (!fc || fc.presentation.recipe.ownerId !== ownerId) {
-          return new Response('Fixed cost not found', { status: 404 });
+        const presId = Number(formData.get('presentationId'));
+        if (!Number.isFinite(presId)) {
+          return new Response('Invalid request', { status: 400 });
         }
-        await prisma.presentationFixedCost.delete({ where: { id: fixedCostId } });
+        await apiFetch(
+          `/api/presentations/${presId}/fixed-costs/${fixedCostId}`,
+          { method: 'DELETE' },
+          Astro,
+        );
       }
 
       return jsonResponse({ deleted: true });
-    } catch {
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 404) {
+        return new Response('Fixed cost not found', { status: 404 });
+      }
       return new Response('Error al eliminar el costo fijo', { status: 500 });
     }
   }
@@ -613,7 +657,7 @@ try {
   recipe = await apiFetch<RecipeWithIngredients>(
     `/api/recipes/${recipeIdParam}`,
     {},
-    Astro.request,
+    Astro,
   );
 } catch (error) {
   if (error && typeof error === 'object' && 'status' in error && (error as { status: number }).status === 404) {
@@ -627,7 +671,13 @@ const ingredients = recipeIngredients.map((ri) => ({ id: ri.ingredient.id, name:
 const hasCookingMode = hasFeature(Astro.locals.subscription, "cooking_mode");
 
 const isEditMode = Astro.url.searchParams.get('edit') === 'true';
-const allIngredients = isEditMode ? await listIngredients(ownerId) : [];
+const allIngredients = isEditMode
+  ? await apiFetch(
+      "/api/ingredients",
+      { schema: z.array(ingredientSchema) },
+      Astro,
+    )
+  : [];
 const discoveredUnitOptions = [
   ...allIngredients.map((ingredient) => ingredient.unit),
   ...recipeIngredients.map((ingredient) => ingredient.unit),

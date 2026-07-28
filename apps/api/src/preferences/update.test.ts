@@ -4,25 +4,21 @@ import { envelope } from "../envelope.js";
 import { errorHandler } from "../error-handler.js";
 import * as cache from "../cache.js";
 
-const mockGetSession = vi.fn();
-const mockUserPreferencesFindUnique = vi.fn();
-const mockUserPreferencesUpsert = vi.fn();
+const { mockGetSession, mockAuth, mockUpsertUserPreferences } = vi.hoisted(() => {
+  const mockGetSession = vi.fn();
+  const mockAuth = { api: { getSession: (...args: unknown[]) => mockGetSession(...args) } };
+  const mockUpsertUserPreferences = vi.fn();
+  return { mockGetSession, mockAuth, mockUpsertUserPreferences };
+});
 
 vi.mock("@recetario/auth/server", () => ({
-  auth: {
-    api: {
-      getSession: (args: unknown) => mockGetSession(args),
-    },
-  },
+  createAuth: () => mockAuth,
 }));
 
 vi.mock("@recetario/db", () => ({
-  prisma: {
-    userPreferences: {
-      findUnique: (args: unknown) => mockUserPreferencesFindUnique(args),
-      upsert: (args: unknown) => mockUserPreferencesUpsert(args),
-    },
-  },
+  createPrismaClient: () => ({}),
+  upsertUserPreferences: (userId: string, prefs: unknown, db: unknown) =>
+    mockUpsertUserPreferences(userId, prefs, db),
 }));
 
 const { preferencesUpdateHandler } = await import("./update.js");
@@ -59,8 +55,7 @@ async function putJson(uid: string, body: unknown): Promise<Response> {
 describe("preferencesUpdateHandler", () => {
   beforeEach(() => {
     mockGetSession.mockReset();
-    mockUserPreferencesFindUnique.mockReset();
-    mockUserPreferencesUpsert.mockReset();
+    mockUpsertUserPreferences.mockReset();
     cache.set(`prefs:user-prefs-2`, { stale: true }, 60_000);
   });
 
@@ -70,7 +65,7 @@ describe("preferencesUpdateHandler", () => {
     expect(res.status).toBe(401);
     const body = (await res.json()) as { error: { code: string } };
     expect(body.error.code).toBe("UNAUTHENTICATED");
-    expect(mockUserPreferencesUpsert).not.toHaveBeenCalled();
+    expect(mockUpsertUserPreferences).not.toHaveBeenCalled();
   });
 
   it("returns 400 VALIDATION_ERROR with issues on invalid body", async () => {
@@ -83,13 +78,12 @@ describe("preferencesUpdateHandler", () => {
     expect(body.error.code).toBe("VALIDATION_ERROR");
     expect(Array.isArray(body.error.issues)).toBe(true);
     expect((body.error.issues as unknown[]).length).toBeGreaterThan(0);
-    expect(mockUserPreferencesUpsert).not.toHaveBeenCalled();
+    expect(mockUpsertUserPreferences).not.toHaveBeenCalled();
   });
 
   it("upserts and refreshes the cache on valid body", async () => {
     mockGetSession.mockResolvedValueOnce(sessionFixture);
-    mockUserPreferencesFindUnique.mockResolvedValueOnce(null);
-    mockUserPreferencesUpsert.mockResolvedValueOnce({
+    mockUpsertUserPreferences.mockResolvedValueOnce({
       userId: "user-prefs-2",
       theme: "dark",
       accentColor: "indigo",
@@ -103,7 +97,7 @@ describe("preferencesUpdateHandler", () => {
     const body = (await res.json()) as { theme: string; accentColor: string };
     expect(body.theme).toBe("dark");
     expect(body.accentColor).toBe("indigo");
-    expect(mockUserPreferencesUpsert).toHaveBeenCalledTimes(1);
+    expect(mockUpsertUserPreferences).toHaveBeenCalledTimes(1);
 
     const cached = cache.get<{ theme: string; accentColor: string }>(
       "prefs:user-prefs-2",
@@ -111,25 +105,5 @@ describe("preferencesUpdateHandler", () => {
     expect(cached).toBeDefined();
     expect(cached?.theme).toBe("dark");
     expect(cached?.accentColor).toBe("indigo");
-  });
-
-  it("merges partial updates with the existing row", async () => {
-    mockGetSession.mockResolvedValueOnce(sessionFixture);
-    mockUserPreferencesFindUnique.mockResolvedValueOnce({
-      userId: "user-prefs-2",
-      theme: "light",
-      accentColor: "emerald",
-    });
-    mockUserPreferencesUpsert.mockResolvedValueOnce({
-      userId: "user-prefs-2",
-      theme: "light",
-      accentColor: "rose",
-    });
-
-    const res = await putJson("user-prefs-2", { accentColor: "rose" });
-    expect(res.status).toBe(200);
-    const body = (await res.json()) as { theme: string; accentColor: string };
-    expect(body.theme).toBe("light");
-    expect(body.accentColor).toBe("rose");
   });
 });

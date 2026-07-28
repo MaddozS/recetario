@@ -3,27 +3,24 @@ import { Hono } from "hono";
 import { envelope } from "../envelope.js";
 import { errorHandler } from "../error-handler.js";
 
-const mockGetSession = vi.fn();
-const mockIngredientFindFirst = vi.fn();
-const mockRecipeIngredientFindMany = vi.fn();
+const { mockGetSession, mockAuth, mockPrisma } = vi.hoisted(() => {
+  const mockGetSession = vi.fn();
+  const mockAuth = { api: { getSession: (...args: unknown[]) => mockGetSession(...args) } };
+  const mockIngredientFindFirst = vi.fn();
+  const mockRecipeIngredientFindMany = vi.fn();
+  const mockPrisma = {
+    ingredient: { findFirst: mockIngredientFindFirst },
+    recipeIngredient: { findMany: mockRecipeIngredientFindMany },
+  };
+  return { mockGetSession, mockAuth, mockPrisma, mockIngredientFindFirst, mockRecipeIngredientFindMany };
+});
 
 vi.mock("@recetario/auth/server", () => ({
-  auth: {
-    api: {
-      getSession: (args: unknown) => mockGetSession(args),
-    },
-  },
+  createAuth: () => mockAuth,
 }));
 
 vi.mock("@recetario/db", () => ({
-  prisma: {
-    ingredient: {
-      findFirst: (args: unknown) => mockIngredientFindFirst(args),
-    },
-    recipeIngredient: {
-      findMany: (args: unknown) => mockRecipeIngredientFindMany(args),
-    },
-  },
+  createPrismaClient: () => mockPrisma,
 }));
 
 const { ingredientsUsageHandler } = await import("./usage.js");
@@ -44,15 +41,15 @@ function buildApp() {
 
 beforeEach(() => {
   mockGetSession.mockReset();
-  mockIngredientFindFirst.mockReset();
-  mockRecipeIngredientFindMany.mockReset();
+  mockPrisma.ingredient.findFirst.mockReset();
+  mockPrisma.recipeIngredient.findMany.mockReset();
   mockGetSession.mockResolvedValue(sessionFixture);
 });
 
 describe("ingredientsUsageHandler", () => {
   it("returns the recipes that use the ingredient", async () => {
-    mockIngredientFindFirst.mockResolvedValueOnce({ id: 7, ownerId: userId });
-    mockRecipeIngredientFindMany.mockResolvedValueOnce([
+    mockPrisma.ingredient.findFirst.mockResolvedValueOnce({ id: 7, ownerId: userId });
+    mockPrisma.recipeIngredient.findMany.mockResolvedValueOnce([
       { recipe: { id: 10, name: "Tarta", salePrice: 250 } },
       { recipe: { id: 11, name: "Flan", salePrice: null } },
     ]);
@@ -69,16 +66,16 @@ describe("ingredientsUsageHandler", () => {
   });
 
   it("scopes both the ingredient and recipe lookups to the owner", async () => {
-    mockIngredientFindFirst.mockResolvedValueOnce({ id: 7, ownerId: userId });
-    mockRecipeIngredientFindMany.mockResolvedValueOnce([]);
+    mockPrisma.ingredient.findFirst.mockResolvedValueOnce({ id: 7, ownerId: userId });
+    mockPrisma.recipeIngredient.findMany.mockResolvedValueOnce([]);
 
     await buildApp().request("/api/ingredients/7/usage");
 
-    expect(mockIngredientFindFirst).toHaveBeenCalledWith({
+    expect(mockPrisma.ingredient.findFirst).toHaveBeenCalledWith({
       where: { id: 7, ownerId: userId },
       select: { id: true },
     });
-    expect(mockRecipeIngredientFindMany).toHaveBeenCalledWith({
+    expect(mockPrisma.recipeIngredient.findMany).toHaveBeenCalledWith({
       where: {
         ingredientId: 7,
         recipe: { ownerId: userId },
@@ -89,15 +86,15 @@ describe("ingredientsUsageHandler", () => {
   });
 
   it("returns 404 when the ingredient does not belong to the user", async () => {
-    mockIngredientFindFirst.mockResolvedValueOnce(null);
+    mockPrisma.ingredient.findFirst.mockResolvedValueOnce(null);
 
     const res = await buildApp().request("/api/ingredients/999/usage");
     expect(res.status).toBe(404);
   });
 
   it("returns an empty list when the ingredient is unused", async () => {
-    mockIngredientFindFirst.mockResolvedValueOnce({ id: 7, ownerId: userId });
-    mockRecipeIngredientFindMany.mockResolvedValueOnce([]);
+    mockPrisma.ingredient.findFirst.mockResolvedValueOnce({ id: 7, ownerId: userId });
+    mockPrisma.recipeIngredient.findMany.mockResolvedValueOnce([]);
 
     const res = await buildApp().request("/api/ingredients/7/usage");
     expect(res.status).toBe(200);

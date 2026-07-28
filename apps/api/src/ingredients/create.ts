@@ -1,8 +1,8 @@
 import type { Handler } from "hono";
-import { auth } from "@recetario/auth/server";
-import { prisma, cacheDelete } from "@recetario/db";
+import { createIngredient, cacheDelete } from "@recetario/db";
 import { ApiError } from "../errors.js";
 import { ingredientCreateSchema, ingredientSchema } from "@recetario/types";
+import { withFreshDb } from "../fresh-db.js";
 
 function toResponse(row: {
   id: number;
@@ -10,8 +10,8 @@ function toResponse(row: {
   unit: string;
   price: number | string;
   purchaseQuantity: number | string;
-  brand: string | null;
-  supplier: string | null;
+  brand?: string | null;
+  supplier?: string | null;
 }) {
   return ingredientSchema.parse({
     id: row.id,
@@ -25,39 +25,29 @@ function toResponse(row: {
 }
 
 export function ingredientsCreateHandler(): Handler {
-  return async (c) => {
-    const session = await auth.api.getSession({ headers: c.req.raw.headers });
-    if (!session?.user) throw new ApiError("UNAUTHENTICATED", "Authentication required");
+  return async (c) =>
+    withFreshDb(c, async (prisma, auth) => {
+      const session = await auth.api.getSession({ headers: c.req.raw.headers });
+      if (!session?.user) throw new ApiError("UNAUTHENTICATED", "Authentication required");
 
-    let body: unknown;
-    try {
-      body = await c.req.json();
-    } catch {
-      throw new ApiError("VALIDATION_ERROR", "Invalid JSON body");
-    }
+      let body: unknown;
+      try {
+        body = await c.req.json();
+      } catch {
+        throw new ApiError("VALIDATION_ERROR", "Invalid JSON body");
+      }
 
-    const parsed = ingredientCreateSchema.safeParse(body);
-    if (!parsed.success) {
-      throw new ApiError("VALIDATION_ERROR", "Invalid ingredient input");
-    }
+      const parsed = ingredientCreateSchema.safeParse(body);
+      if (!parsed.success) {
+        throw new ApiError("VALIDATION_ERROR", "Invalid ingredient input");
+      }
 
-    const input = parsed.data;
-    const data = await prisma.ingredient.create({
-      data: {
-        ownerId: session.user.id,
-        name: input.name,
-        unit: input.unit,
-        price: input.price,
-        purchaseQuantity: input.purchaseQuantity,
-        brand: input.brand ?? null,
-        supplier: input.supplier ?? null,
-      },
+      const data = await createIngredient(parsed.data, session.user.id, prisma);
+
+      const ownerId = session.user.id;
+      await cacheDelete(`ingredients:${ownerId}`, prisma);
+      await cacheDelete(`ingredient_usage:${ownerId}`, prisma);
+
+      return c.json(toResponse(data), 201 as never);
     });
-
-    const ownerId = session.user.id;
-    await cacheDelete(`ingredients:${ownerId}`);
-    await cacheDelete(`ingredient_usage:${ownerId}`);
-
-    return c.json(toResponse(data), 201 as never);
-  };
 }
