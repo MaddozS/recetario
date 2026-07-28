@@ -29,6 +29,7 @@ import { hostAllowlist } from "./host-allowlist.js";
 import { rateLimit } from "./rate-limit.js";
 import { authSessionHandler } from "./auth-session.js";
 import { recipesListHandler } from "./recipes/list.js";
+import { recipesByIdsHandler } from "./recipes/by-ids.js";
 import { recipesDetailHandler } from "./recipes/detail.js";
 import { recipesCreateHandler } from "./recipes/create.js";
 import { recipesUpdateHandler } from "./recipes/update.js";
@@ -238,6 +239,7 @@ app.post("/api/auth/reset-password", async (c) => {
 app.get("/api/auth/session", authSessionHandler());
 
 app.get("/api/recipes", recipesListHandler());
+app.get("/api/recipes/by-ids", recipesByIdsHandler());
 app.get("/api/recipes/:id", recipesDetailHandler());
 app.post("/api/recipes", recipesCreateHandler());
 app.patch("/api/recipes/:id", recipesUpdateHandler());

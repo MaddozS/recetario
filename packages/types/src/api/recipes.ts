@@ -15,37 +15,41 @@ export const recipeIngredientInputSchema = z.object({
   ingredientId: z.coerce.number().int().positive(),
   quantity: z.coerce.number().positive(),
   unit: z.string().min(1).max(40),
-  comment: z.string().nullable().optional(),
+  comment: z.string().optional(),
 });
 
 export const recipeSummarySchema = z.object({
   id: z.number().int().positive(),
   name: z.string(),
-  category: z.string().nullable().optional(),
+  category: z.string().optional(),
   ingredientCount: z.number().int().nonnegative(),
-  updatedAt: z.string().nullable().optional(),
+  updatedAt: z.string().optional(),
 });
 
-export const fixedCostSchema = z.object({
+export const recipeFixedCostSchema = z.object({
   id: z.number().int().positive(),
-  recipeId: z.number().int().positive().optional(),
-  presentationId: z.number().int().positive().optional(),
+  recipeId: z.number().int().positive(),
   name: z.string(),
   type: fixedCostTypeSchema,
   base: fixedCostBaseSchema,
   value: z.number(),
-  hours: z.number().nullable().optional(),
+  hours: z.number().optional(),
 });
 
-export const presentationFixedCostSchema = fixedCostSchema.omit({
-  recipeId: true,
+export const presentationFixedCostSchema = z.object({
+  id: z.number().int().positive(),
+  presentationId: z.number().int().positive(),
+  name: z.string(),
+  type: fixedCostTypeSchema,
+  base: fixedCostBaseSchema,
+  value: z.number(),
 });
 
 export const presentationSchema = z.object({
   id: z.number().int().positive(),
   name: z.string(),
   unitsPerBatch: z.number().positive(),
-  salePrice: z.number().nonnegative().nullable().optional(),
+  salePrice: z.number().nonnegative().optional(),
   fixedCosts: z.array(presentationFixedCostSchema).optional(),
 });
 
@@ -56,22 +60,22 @@ export const recipeIngredientDetailSchema = recipeIngredientInputSchema.extend({
     unit: z.string(),
     price: z.number().nonnegative(),
     purchaseQuantity: z.number().positive(),
-    brand: z.string().nullable().optional(),
-    supplier: z.string().nullable().optional(),
+    brand: z.string().optional(),
+    supplier: z.string().optional(),
   }),
 });
 
 export const recipeWithIngredientsSchema = z.object({
   id: z.number().int().positive(),
   name: z.string(),
-  category: z.string().nullable().optional(),
-  instructions: z.string().nullable().optional(),
+  category: z.string().optional(),
+  instructions: z.string().optional(),
   desiredMargin: z.number(),
   fixedCostsPercentage: z.number().nonnegative(),
-  updatedAt: z.string().nullable().optional(),
+  updatedAt: z.string().optional(),
   ingredients: z.array(recipeIngredientDetailSchema),
   presentations: z.array(presentationSchema),
-  recipeFixedCosts: z.array(fixedCostSchema),
+  recipeFixedCosts: z.array(recipeFixedCostSchema),
 });
 
 export const recipeCreateSchema = z.object({
