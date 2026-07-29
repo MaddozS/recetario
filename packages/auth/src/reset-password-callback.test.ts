@@ -28,7 +28,7 @@ describe("createResetPasswordCallback", () => {
 
     await callback({
       user: { id: "user-1", email: "juan@example.com" },
-      url: "https://example.com/reset?token=better-auth-token",
+      url: "https://api.example.com/api/auth/reset-password/better-auth-token?callbackURL=https://example.com/reset",
     });
 
     expect(prisma.user.findUnique).toHaveBeenCalledWith({
@@ -37,7 +37,7 @@ describe("createResetPasswordCallback", () => {
     });
     expect(mockCreatePasswordResetToken).toHaveBeenCalledWith("user-1", 10);
     expect(mockGetResetPasswordEmailHtml).toHaveBeenCalledWith(expect.objectContaining({
-      resetLink: expect.stringContaining(mockToken),
+      resetLink: "https://api.example.com/reset-password?token=550e8400-e29b-41d4-a716-446655440000",
       userName: "Juan",
       expiryMinutes: 10,
     }));
@@ -64,7 +64,7 @@ describe("createResetPasswordCallback", () => {
 
     await callback({
       user: { id: "user-2", email: "anon@example.com" },
-      url: "https://example.com/reset",
+      url: "https://api.example.com/api/auth/reset-password/better-auth-token?callbackURL=%2F",
     });
 
     expect(mockGetResetPasswordEmailHtml).toHaveBeenCalledWith(expect.objectContaining({
@@ -85,7 +85,7 @@ describe("createResetPasswordCallback", () => {
 
     await callback({
       user: { id: "user-3", email: "test@example.com" },
-      url: "https://example.com/reset?token=better-auth-token",
+      url: "https://api.example.com/api/auth/reset-password/better-auth-token?callbackURL=%2F",
     });
 
     expect(mockGetResetPasswordEmailHtml).toHaveBeenCalledWith(expect.objectContaining({
@@ -93,6 +93,9 @@ describe("createResetPasswordCallback", () => {
     }));
     expect(mockGetResetPasswordEmailHtml).toHaveBeenCalledWith(expect.objectContaining({
       resetLink: expect.not.stringContaining("better-auth-token"),
+    }));
+    expect(mockGetResetPasswordEmailHtml).toHaveBeenCalledWith(expect.objectContaining({
+      resetLink: expect.not.stringContaining("callbackURL"),
     }));
   });
 
@@ -111,7 +114,7 @@ describe("createResetPasswordCallback", () => {
     await expect(
       callback({
         user: { id: "user-4", email: "fail@example.com" },
-        url: "https://example.com/reset",
+        url: "https://api.example.com/api/auth/reset-password/better-auth-token?callbackURL=%2F",
       }),
     ).resolves.toBeUndefined();
 
@@ -137,7 +140,7 @@ describe("createResetPasswordCallback", () => {
     await expect(
       callback({
         user: { id: "user-5", email: "fail@example.com" },
-        url: "https://example.com/reset",
+        url: "https://api.example.com/api/auth/reset-password/better-auth-token?callbackURL=%2F",
       }),
     ).resolves.toBeUndefined();
 
