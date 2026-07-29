@@ -8,6 +8,7 @@ import {
   markTokenAsUsed,
   getRemainingSeconds,
   formatTime,
+  hashPassword,
 } from "@recetario/auth/server";
 import { logAuditEvent, createPrismaClient } from "@recetario/db";
 import {
@@ -140,7 +141,7 @@ app.post("/api/auth/forgot-password", async (c) => {
 });
 
 app.get("/api/auth/reset-password", async (c) => {
-  return withFreshDb(c, async (_prisma, _auth) => {
+  return withFreshDb(c, async (prisma) => {
     const token = new URL(c.req.url).searchParams.get("token");
 
     if (!token) {
@@ -148,7 +149,7 @@ app.get("/api/auth/reset-password", async (c) => {
     }
 
     try {
-      const validation = await validatePasswordResetToken(token);
+      const validation = await validatePasswordResetToken(token, prisma);
 
       if (!validation.valid) {
         const errorMessages = {
@@ -196,7 +197,7 @@ app.post("/api/auth/reset-password", async (c) => {
         );
       }
 
-      const validation = await validatePasswordResetToken(token);
+      const validation = await validatePasswordResetToken(token, prisma);
 
       if (!validation.valid) {
         const errorMessages = {
@@ -226,16 +227,13 @@ app.post("/api/auth/reset-password", async (c) => {
         );
       }
 
-      await auth.api.changePassword({
-        headers: c.req.raw.headers,
-        body: {
-          currentPassword: "",
-          newPassword: password,
-          revokeOtherSessions: false,
-        },
+      const hashedPassword = await hashPassword(password);
+      await prisma.account.updateMany({
+        where: { userId: validation.userId!, providerId: "credential" },
+        data: { password: hashedPassword },
       });
 
-      await markTokenAsUsed(token);
+      await markTokenAsUsed(token, prisma);
 
       await logAuditEvent(
         {

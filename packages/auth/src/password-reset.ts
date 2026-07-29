@@ -1,4 +1,5 @@
-import { prisma } from "@recetario/db";
+import type { PrismaClient } from "@recetario/db";
+import { prisma as defaultPrisma } from "@recetario/db";
 
 export interface ResetPasswordTemplateData {
   resetLink: string;
@@ -86,8 +87,10 @@ export interface TokenValidationResult {
 
 export async function createPasswordResetToken(
   userId: string,
-  expiryMinutes = 10
+  expiryMinutes = 10,
+  db?: PrismaClient,
 ): Promise<string> {
+  const prisma = db ?? defaultPrisma;
   const token = crypto.randomUUID();
   const expiresAt = new Date(Date.now() + expiryMinutes * 60 * 1000);
 
@@ -107,8 +110,10 @@ export async function createPasswordResetToken(
 }
 
 export async function validatePasswordResetToken(
-  token: string
+  token: string,
+  db?: PrismaClient,
 ): Promise<TokenValidationResult> {
+  const prisma = db ?? defaultPrisma;
   const resetToken = await prisma.passwordResetToken.findUnique({
     where: { token },
   });
@@ -132,7 +137,8 @@ export async function validatePasswordResetToken(
   };
 }
 
-export async function markTokenAsUsed(token: string): Promise<void> {
+export async function markTokenAsUsed(token: string, db?: PrismaClient): Promise<void> {
+  const prisma = db ?? defaultPrisma;
   await prisma.passwordResetToken.update({
     where: { token },
     data: { usedAt: new Date() },

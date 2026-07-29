@@ -33,6 +33,7 @@ export type { SendEmailFn } from "./email.js";
 export {
   createResetPasswordCallback,
 } from "./reset-password-callback.js";
+export { hashPassword } from "./hash-password.js";
 export {
   createVerificationEmailCallback,
 } from "./verification-email-callback.js";

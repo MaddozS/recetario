@@ -1,4 +1,5 @@
 import type { SendEmailFn } from "./email.js";
+import type { PrismaClient } from "@recetario/db";
 
 type PrismaForReset = {
   user: {
@@ -11,12 +12,16 @@ type PrismaForReset = {
 
 const RESET_TOKEN_EXPIRY_MINUTES = 10;
 
+const WEB_ORIGIN = process.env.WEB_ORIGIN ?? "http://localhost:4321";
+const API_URL = process.env.BETTER_AUTH_URL ?? "http://localhost:8787";
+
 export function createResetPasswordCallback(
   prisma: PrismaForReset,
   sendEmail: SendEmailFn,
   createPasswordResetToken: (
     userId: string,
     expiryMinutes?: number,
+    db?: PrismaClient,
   ) => Promise<string>,
   getResetPasswordEmailHtml: (data: {
     resetLink: string;
@@ -43,9 +48,18 @@ export function createResetPasswordCallback(
         RESET_TOKEN_EXPIRY_MINUTES,
       );
 
-      // ponytail: strips Better Auth's query token and uses our own
+      // ponytail: strips Better Auth's path token and query params,
+      // then replaces the API origin+path with the web app origin+path.
+      // The user lands on the web app's /reset-password page which calls
+      // the API validation endpoint via fetch. This keeps the auth flow
+      // consistent with the verification-email callback pattern.
       // See ADR-0001: password-reset-token-authority
-      const resetLink = `${url.split("?")[0]}?token=${resetToken}`;
+      const baseUrl = url.split("?")[0];
+      const basePath = baseUrl.substring(0, baseUrl.lastIndexOf("/"));
+      const webUrl = basePath
+        .replace(API_URL, WEB_ORIGIN)
+        .replace("/api/auth/reset-password", "/reset-password");
+      const resetLink = `${webUrl}?token=${resetToken}`;
       const html = getResetPasswordEmailHtml({
         resetLink,
         userName,
