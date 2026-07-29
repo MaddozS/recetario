@@ -64,7 +64,7 @@ function parseEnvCloudflare(envName) {
 
 function preCheck() {
   try {
-    execSync("wrangler whoami", { stdio: "pipe" });
+    execSync("pnpm exec wrangler whoami", { stdio: "pipe" });
   } catch {
     console.error("wrangler is not authenticated.");
     console.error("Run: pnpm dlx wrangler login");
@@ -125,7 +125,7 @@ function buildCommands(env, secretsMap, values, only) {
         target: "workers",
         value,
         cwd: resolve(root, "apps/api"),
-        cmd: `wrangler secret put ${key} --env ${envConfig.workers}`,
+        cmd: `pnpm exec wrangler secret put ${key} --env ${envConfig.workers}`,
       });
     }
     if (entry.targets.includes("pages")) {
@@ -134,7 +134,7 @@ function buildCommands(env, secretsMap, values, only) {
         target: "pages",
         value,
         cwd: null,
-        cmd: `wrangler pages secret put ${key} --branch ${envConfig.pages} --project-name recetario`,
+        cmd: `pnpm exec wrangler pages secret put ${key} --branch ${envConfig.pages} --project-name recetario`,
       });
     }
   }
