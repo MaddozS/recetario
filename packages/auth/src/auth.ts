@@ -31,6 +31,7 @@ export function createAuth(prisma: PrismaClient): any {
   }
 
   return betterAuth({
+    baseURL: WEB_ORIGIN,
     database: prismaAdapter(prisma, {
       provider: "postgresql",
     }),

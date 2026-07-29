@@ -11,6 +11,7 @@ export const REQUIRED_ENV_KEYS = [
   "SENDER_EMAIL",
   "STRIPE_SECRET_KEY",
   "STRIPE_WEBHOOK_SECRET",
+  "WEB_ORIGIN",
 ] as const;
 
 export function syncEnvBindings(bindings: Record<string, unknown>): void {
@@ -23,6 +24,6 @@ export function syncEnvBindings(bindings: Record<string, unknown>): void {
 }
 
 console.assert(
-  REQUIRED_ENV_KEYS.length === 12,
+  REQUIRED_ENV_KEYS.length === 13,
   "REQUIRED_ENV_KEYS length mismatch",
 );
