@@ -91,7 +91,7 @@ describe("plansHandler", () => {
     const res = await buildApp().request("/api/billing/plans", {}, {});
 
     expect(res.status).toBe(200);
-    const body = (await res.json()) as Array<{ id: string; priceCents: number }>;
+    const body = (await res.json()) as Array<{ id: string; priceCents: number; features: Record<string, boolean> }>;
     expect(body).toHaveLength(2);
     expect(body[0]?.id).toBe("basic_monthly");
     expect(body[1]?.id).toBe("pro_monthly");
