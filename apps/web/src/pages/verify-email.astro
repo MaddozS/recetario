@@ -3,7 +3,11 @@ import { Icon } from "astro-icon/components";
 import { Button } from "@recetario/ui";
 import LandingLayout from "@/layouts/LandingLayout.astro";
 
-const callbackURL = Astro.url.searchParams.get("callbackURL") ?? "/sign-in";
+const rawCallback = Astro.url.searchParams.get("callbackURL");
+const callbackURL =
+  rawCallback && rawCallback.startsWith("/") && rawCallback !== "/" && !rawCallback.includes("//") && !rawCallback.includes(":")
+    ? rawCallback
+    : "/sign-in";
 ---
 
 <LandingLayout>
@@ -106,7 +110,11 @@ const callbackURL = Astro.url.searchParams.get("callbackURL") ?? "/sign-in";
 
     const params = new URLSearchParams(window.location.search);
     const token = params.get("token");
-    const callbackURL = params.get("callbackURL") || "/sign-in";
+    const safeCallback = params.get("callbackURL");
+    const callbackURL =
+      safeCallback && safeCallback.startsWith("/") && safeCallback !== "/" && !safeCallback.includes("//") && !safeCallback.includes(":")
+        ? safeCallback
+        : "/sign-in";
 
     if (!token) {
       loadingEl.classList.add("hidden");
@@ -119,7 +127,7 @@ const callbackURL = Astro.url.searchParams.get("callbackURL") ?? "/sign-in";
     import("@recetario/auth/client")
       .then(async ({ authClient }) => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        await (authClient as any).verifyEmail({ token });
+        await (authClient as any).verifyEmail({ query: { token } });
         sessionStorage.removeItem("kitchcalc:signup_email");
         loadingEl.classList.add("hidden");
         successEl.classList.remove("hidden");

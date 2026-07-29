@@ -18,10 +18,15 @@ export function plansHandler(): Handler {
       // ponytail: lazy-seed plans on first request; idempotent
       await seedSubscriptionPlans(prisma);
 
-      const plans = await prisma.subscriptionPlan.findMany({
+      const rows = await prisma.subscriptionPlan.findMany({
         where: { active: true },
         orderBy: { priceCents: "asc" },
       });
+
+      const plans = rows.map(({ featuresJson, ...rest }) => ({
+        ...rest,
+        features: JSON.parse(featuresJson),
+      }));
 
       cache.set(CACHE_KEY, plans, CACHE_TTL_MS);
       return c.json(plans);
