@@ -1,0 +1,55 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "recetario-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-07-08",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": {
+    "enabled": true,
+  },
+  "dev": {
+    "port": 8787,
+    "local_protocol": "http",
+  },
+  "define": {
+    "import.meta.url": "\"file:///worker/index.js\"",
+  },
+  "vars": {
+    "NODE_ENV": "production",
+    // INTERNAL_API_HOST: required for the host allowlist (production tier
+    // of the API destination). Set per environment via `wrangler secret put`
+    // or the dashboard. Example: "api.recetario.app".
+  },
+  "env": {
+    "staging": {
+      "name": "recetario-api-staging",
+      "main": "src/index.ts",
+      "compatibility_date": "2026-07-08",
+      "compatibility_flags": ["nodejs_compat"],
+      "observability": {
+        "enabled": true
+      },
+      "define": {
+        "import.meta.url": "\"file:///worker/index.js\""
+      },
+      "vars": {
+        "NODE_ENV": "staging"
+      }
+    },
+    "production": {
+      "name": "recetario-api-production",
+      "main": "src/index.ts",
+      "compatibility_date": "2026-07-08",
+      "compatibility_flags": ["nodejs_compat"],
+      "observability": {
+        "enabled": true
+      },
+      "define": {
+        "import.meta.url": "\"file:///worker/index.js\""
+      },
+      "vars": {
+        "NODE_ENV": "production"
+      }
+    }
+  }
+}

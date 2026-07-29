@@ -1,8 +1,16 @@
 # build output
 dist/
 
+# package compilation output
+packages/*/dist/
+*.tsbuildinfo
+
 # generated types
 .astro/
+
+# generated Prisma clients
+**/generated/prisma/
+**/generated/prisma-sqlite/
 
 # dependencies
 node_modules/
@@ -16,6 +24,9 @@ pnpm-debug.log*
 # environment variables
 .env
 .env.production
+.env.cloudflare
+.dev.vars
+apps/*/.dev.vars
 
 # local databases
 data/dev.db
@@ -28,5 +39,18 @@ data/dev.db-wal
 # jetbrains setting folder
 .idea/
 
-.vercel/
-.vercel
+.turbo/
+.wrangler/
+apps/*/.turbo/
+apps/*/.wrangler/
+
+
+# local tool state
+.pnpm-store/
+.commandcode/settings.local.json
+
+# Graphify output
+graphify-out/
+
+# Code-review scratch patches (apply via `git apply` and discard)
+.scratch/

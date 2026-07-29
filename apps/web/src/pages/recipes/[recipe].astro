@@ -1,0 +1,1823 @@
+---
+import type {
+  RecipeWithIngredients,
+  Ingredient,
+  RecipeIngredientWithData,
+  RecipeIngredient,
+  RecipePresentation,
+} from '@recetario/types';
+import { z } from 'zod';
+import {
+  recipeCreateResponseSchema,
+  presentationSchema,
+  recipeFixedCostSchema,
+  presentationFixedCostSchema,
+  ingredientSchema,
+} from '@recetario/types';
+import { Icon } from "astro-icon/components";
+import Layout from "../../layouts/Layout.astro";
+import PresentationCard from "../../components/PresentationCard.astro";
+import { apiFetch, ApiError } from "@/lib/api-client";
+import { hasFeature } from '@recetario/billing';
+import { parseNumberInput } from '@/lib/form-utils';
+import { sanitizeHtml } from '@/lib/html-sanitizer';
+import { validateCsrf } from '@recetario/auth';
+import { UNIT_OPTIONS } from '@/lib/constants';
+import FeedbackAlert from '../../components/FeedbackAlert.astro';
+import RecipeInstructions from '../../components/RecipeInstructions.astro';
+import InstructionsEditor from '../../components/InstructionsEditor.astro';
+import { Button, Badge, FinancialSummary, SectionHeading, Card } from "@recetario/ui";
+import RecipeActionsMenu from "../../components/RecipeActionsMenu.astro";
+import RecipeFixedCosts from "../../components/RecipeFixedCosts.astro";
+
+const recipeIdParam = Astro.params.recipe;
+const recipeIdNumber = Number(recipeIdParam);
+
+if (!Astro.locals.session || !Astro.locals.user) {
+  return Astro.redirect('/sign-in');
+}
+
+const subscription = Astro.locals.subscription;
+
+const expectsJsonResponse = Astro.request.headers.get('accept')?.includes('application/json') ?? false;
+
+const buildPresentationSectionUrl = (feedback?: { type: 'success' | 'error'; message: string }) => {
+  const nextUrl = new URL(Astro.url);
+
+  if (feedback) {
+    nextUrl.searchParams.set('type', feedback.type);
+    nextUrl.searchParams.set('message', feedback.message);
+  } else {
+    nextUrl.searchParams.delete('type');
+    nextUrl.searchParams.delete('message');
+  }
+
+  nextUrl.hash = '#presentaciones';
+  return `${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`;
+};
+
+const redirectToPresentationSection = (feedback?: { type: 'success' | 'error'; message: string }) => (
+  Astro.redirect(buildPresentationSectionUrl(feedback))
+);
+
+const buildRecipePageUrl = (feedback?: { type: 'success' | 'error'; message: string }) => {
+  const nextUrl = new URL(Astro.url);
+
+  if (feedback) {
+    nextUrl.searchParams.set('type', feedback.type);
+    nextUrl.searchParams.set('message', feedback.message);
+  } else {
+    nextUrl.searchParams.delete('type');
+    nextUrl.searchParams.delete('message');
+  }
+
+  nextUrl.hash = '';
+  return `${nextUrl.pathname}${nextUrl.search}`;
+};
+
+const redirectToRecipePage = (feedback?: { type: 'success' | 'error'; message: string }) => (
+  Astro.redirect(buildRecipePageUrl(feedback))
+);
+
+const jsonResponse = (body: unknown, status = 200) => new Response(JSON.stringify(body), {
+  status,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+const respondPresentationError = (message: string, status = 400) => {
+  if (expectsJsonResponse) {
+    return new Response(message, { status });
+  }
+  return redirectToPresentationSection({ type: 'error', message });
+};
+
+const respondRecipeError = (message: string, status = 500) => {
+  if (expectsJsonResponse) {
+    return jsonResponse({ error: message }, status);
+  }
+  return redirectToRecipePage({ type: 'error', message });
+};
+
+const getPresentationFormErrorMessage = (error: unknown, fallback: string) => {
+  if (!(error instanceof Error) || !error.message) {
+    return fallback;
+  }
+
+  switch (error.message) {
+    case 'Invalid presentation name':
+      return 'El nombre de la presentación es obligatorio.';
+    case 'Invalid presentation units':
+      return 'Las piezas por mezcla deben ser mayores a 0.';
+    case 'Invalid presentation sale price':
+      return 'El precio de venta debe ser 0 o mayor.';
+    case 'Recipe not found':
+      return 'No se encontró la receta.';
+    default:
+      return fallback;
+  }
+};
+
+/**
+ * Render a FixedCostCard HTML snippet for AJAX response.
+ * Replicates the display-mode structure from FixedCostCard.astro.
+ */
+function renderFixedCostCardSnippet(
+  fc: { id: number; name: string; type: string; base: string; value: number; hours?: number | null },
+  isRecipeLevel: boolean,
+  ownerId: number,
+  csrfToken: string,
+): string {
+  const typeLabel: Record<string, string> = { PERCENTAGE: "Porcentaje", AMOUNT: "Monto" };
+  const baseLabel: Record<string, string> = { PER_BATCH: "Por Mezcla", PER_UNIT: "Por Unidad", PER_HOUR: "Por Hora" };
+  const typeColor: Record<string, string> = {
+    PERCENTAGE: "bg-turmeric-bg text-turmeric-solid border-turmeric-border",
+    AMOUNT: "bg-accent-50 text-accent-600 border-accent-200",
+  };
+  const baseColor: Record<string, string> = {
+    PER_BATCH: "bg-herb-bg text-herb-solid border-herb-border",
+    PER_UNIT: "bg-accent-50 text-accent-600 border-accent-200",
+    PER_HOUR: "bg-chili-bg text-chili-solid border-chili-border",
+  };
+  const displayValue = fc.type === "PERCENTAGE" ? `${fc.value}%` : `$${Number(fc.value).toFixed(2)}`;
+  const ownerType = isRecipeLevel ? "recipe" : "presentation";
+  const hoursHtml = fc.base === "PER_HOUR" && fc.hours != null
+    ? `<span class="fixed-cost-hours text-muted-foreground text-xs tabular-nums">(${fc.hours}h)</span>`
+    : "";
+
+  return `<fixed-cost-card class="bg-card border-border flex flex-col rounded-2xl border p-5 shadow-sm transition-all" data-id="${fc.id}" data-type="${fc.type}" data-base="${fc.base}" data-value="${fc.value}" data-hours="${fc.hours ?? ""}" data-owner-type="${ownerType}">
+<form method="post" class="flex flex-col">
+<input type="hidden" name="action" value="update_fixed_cost" />
+<input type="hidden" name="fixedCostId" value="${fc.id}" />
+<input type="hidden" name="ownerType" value="${ownerType}" />
+<input type="hidden" name="ownerId" value="${ownerId}" />
+<input type="hidden" name="_csrf" value="${csrfToken}" />
+<div class="display-content flex flex-wrap items-center gap-3">
+<div class="flex min-w-0 flex-1 flex-wrap items-center gap-2">
+<span class="fixed-cost-name text-foreground font-[family-name:var(--font-display)] text-base font-bold">${fc.name}</span>
+<span class="type-badge inline-flex items-center rounded-full border px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wide ${typeColor[fc.type]}">${typeLabel[fc.type]}</span>
+<span class="base-badge inline-flex items-center rounded-full border px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wide ${baseColor[fc.base]}">${baseLabel[fc.base]}</span>
+<span class="fixed-cost-value text-foreground font-mono text-sm font-semibold tabular-nums">${displayValue}</span>
+${hoursHtml}
+</div>
+<div class="flex shrink-0 items-center gap-1">
+<button type="button" class="delete-btn hidden inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl text-danger transition-colors hover:bg-danger-bg" aria-label="Eliminar costo fijo" title="Eliminar"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>
+<button type="button" class="edit-btn inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl text-accent-600 transition-colors hover:bg-accent-50" aria-label="Editar costo fijo" aria-pressed="false" title="Editar"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg></button>
+</div>
+</div>
+<div class="edit-content hidden space-y-4">
+<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+<div class="flex flex-col gap-1"><label class="text-subtle-foreground text-[11px] font-bold tracking-[0.16em] uppercase">Nombre</label><input name="name" type="text" class="fixed-cost-name-input border-border bg-background text-foreground focus:ring-accent-500/20 rounded-xl border px-3 py-2 text-sm transition-all focus:ring-2 focus:outline-none" value="${fc.name}" required /></div>
+<div class="flex flex-col gap-1"><label class="text-subtle-foreground text-[11px] font-bold tracking-[0.16em] uppercase">Tipo</label><select name="type" class="fixed-cost-type-select border-border bg-background text-foreground focus:ring-accent-500/20 rounded-xl border px-3 py-2 text-sm transition-all focus:ring-2 focus:outline-none"><option value="PERCENTAGE"${fc.type === "PERCENTAGE" ? " selected" : ""}>Porcentaje</option><option value="AMOUNT"${fc.type === "AMOUNT" ? " selected" : ""}>Monto</option></select></div>
+<div class="flex flex-col gap-1"><label class="text-subtle-foreground text-[11px] font-bold tracking-[0.16em] uppercase">Base</label><select name="base" class="fixed-cost-base-select border-border bg-background text-foreground focus:ring-accent-500/20 rounded-xl border px-3 py-2 text-sm transition-all focus:ring-2 focus:outline-none"><option value="PER_BATCH"${fc.base === "PER_BATCH" ? " selected" : ""}>Por Mezcla</option><option value="PER_UNIT"${fc.base === "PER_UNIT" ? " selected" : ""}>Por Unidad</option>${isRecipeLevel ? `<option value="PER_HOUR"${fc.base === "PER_HOUR" ? " selected" : ""}>Por Hora</option>` : ""}</select></div>
+</div>
+<div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+<div class="flex flex-col gap-1"><label class="text-subtle-foreground text-[11px] font-bold tracking-[0.16em] uppercase">Valor</label><input name="value" type="text" inputmode="decimal" class="fixed-cost-value-input border-border bg-background text-foreground focus:ring-accent-500/20 font-mono rounded-xl border px-3 py-2 text-sm transition-all focus:ring-2 focus:outline-none" value="${fc.value}" required /></div>
+<div class="hours-field flex flex-col gap-1"${fc.base !== "PER_HOUR" ? ' style="display:none"' : ""}><label class="text-subtle-foreground text-[11px] font-bold tracking-[0.16em] uppercase">Horas</label><input name="hours" type="text" inputmode="decimal" class="fixed-cost-hours-input border-border bg-background text-foreground focus:ring-accent-500/20 font-mono rounded-xl border px-3 py-2 text-sm transition-all focus:ring-2 focus:outline-none" value="${fc.hours ?? 1}" /></div>
+<div class="hidden sm:block"></div>
+</div>
+<div class="flex flex-wrap items-center justify-between gap-3 border-t border-border-light pt-4">
+<div class="flex items-center gap-2"><button type="button" class="edit-delete-btn inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-danger-border px-4 py-2.5 text-sm font-bold text-danger transition-colors hover:bg-danger-bg"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg> Eliminar</button></div>
+<div class="flex items-center gap-2"><button type="button" class="cancel-btn border-border bg-card text-muted-foreground hover:bg-background inline-flex min-h-11 items-center justify-center rounded-xl border px-4 py-2.5 text-sm font-bold transition-colors">Cancelar</button><button type="submit" class="bg-accent-600 hover:bg-accent-700 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold text-white transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Guardar</button></div>
+</div>
+</div>
+<p class="fixed-cost-error text-danger mt-2 hidden text-xs font-semibold"></p>
+</form>
+<dialog data-animated class="delete-dialog fixed inset-0 m-auto w-[calc(100vw-2rem)] max-w-md rounded-3xl p-0 backdrop:bg-backdrop/50">
+<div class="border-border bg-card rounded-3xl border p-6 shadow-2xl">
+<div class="flex items-start gap-3"><div class="bg-danger-bg text-danger flex h-11 w-11 items-center justify-center rounded-2xl"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></div><div><h2 class="text-foreground text-lg font-bold">Confirmar eliminación</h2><p class="text-muted-foreground mt-2 text-sm">¿Eliminar este costo fijo? Esta acción no se puede deshacer.</p></div></div>
+<div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+<button type="button" class="delete-cancel-btn border-border bg-card text-muted-foreground hover:bg-background inline-flex min-h-11 items-center justify-center rounded-xl border px-5 py-3 text-sm font-bold transition-colors">Cancelar</button>
+<button type="button" class="delete-confirm-btn bg-danger-solid hover:bg-danger-hover inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-bold text-white transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg> Eliminar</button>
+</div></div></dialog>
+</fixed-cost-card>`;
+}
+
+if (Astro.request.method === 'POST') {
+  const formData = await Astro.request.formData();
+
+  if (!validateCsrf(Astro.request, formData)) {
+    return Astro.redirect(Astro.url.pathname);
+  }
+
+  const action = String(formData.get('action') || '');
+
+  if (action === 'update_presentation') {
+    const presId = Number(formData.get('presentationId'));
+    const presentationName = String(formData.get('presentationName') || '');
+    const unitsPerBatch = parseNumberInput(formData.get('unitsPerBatch'));
+    const rawSalePrice = String(formData.get('salePrice') ?? '').trim();
+    const salePrice = parseNumberInput(formData.get('salePrice'));
+    const nextSalePrice = formData.has('salePrice')
+      ? rawSalePrice === ''
+        ? null
+        : salePrice
+      : undefined;
+
+    if (!Number.isFinite(recipeIdNumber) || !Number.isFinite(presId)) {
+      return respondPresentationError('No se pudo actualizar la presentación.');
+    }
+
+    try {
+      const presentation = await apiFetch(
+        `/api/recipes/${recipeIdNumber}/presentations/${presId}`,
+        {
+          method: 'PATCH',
+          body: {
+            name: presentationName,
+            unitsPerBatch,
+            salePrice: nextSalePrice,
+          },
+          schema: presentationSchema,
+        },
+        Astro,
+      );
+      void presentation;
+
+      if (expectsJsonResponse) {
+        return jsonResponse({ presentation: presentation });
+      }
+
+      return redirectToPresentationSection();
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 404) {
+        return respondPresentationError('No se encontró la presentación.', 404);
+      }
+      return respondPresentationError(
+        getPresentationFormErrorMessage(error, 'No se pudo actualizar la presentación.'),
+      );
+    }
+  } else if (action === 'delete_presentation') {
+    const presId = Number(formData.get('presentationId'));
+
+    if (!Number.isFinite(recipeIdNumber) || !Number.isFinite(presId)) {
+      return respondPresentationError('No se pudo eliminar la presentación.');
+    }
+
+    try {
+      await apiFetch(
+        `/api/recipes/${recipeIdNumber}/presentations/${presId}`,
+        { method: 'DELETE' },
+        Astro,
+      );
+
+      if (expectsJsonResponse) {
+        return jsonResponse({ deleted: true, presentationId: presId });
+      }
+
+      return redirectToPresentationSection({ type: 'success', message: 'Presentación eliminada correctamente.' });
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 404) {
+        return respondPresentationError('No se encontró la presentación.', 404);
+      }
+      return respondPresentationError('No se pudo eliminar la presentación.');
+    }
+  } else if (action === 'create_presentation') {
+    const presentationName = String(formData.get('presentationName') || '').trim();
+    const unitsPerBatch = parseNumberInput(formData.get('unitsPerBatch'));
+    const salePriceValue = String(formData.get('salePrice') || '').trim();
+    const salePrice = parseNumberInput(formData.get('salePrice'));
+
+    if (!Number.isFinite(recipeIdNumber)) {
+      return Astro.redirect('/recipes');
+    }
+
+    if (!presentationName) {
+      return redirectToPresentationSection({
+        type: 'error',
+        message: 'El nombre de la presentación es obligatorio.',
+      });
+    }
+
+    if (!Number.isFinite(unitsPerBatch) || unitsPerBatch <= 0) {
+      return redirectToPresentationSection({
+        type: 'error',
+        message: 'Las piezas por mezcla deben ser mayores a 0.',
+      });
+    }
+
+    if (salePriceValue && (!Number.isFinite(salePrice) || salePrice < 0)) {
+      return redirectToPresentationSection({
+        type: 'error',
+        message: 'El precio de venta debe ser 0 o mayor.',
+      });
+    }
+
+    try {
+      await apiFetch(
+        `/api/recipes/${recipeIdNumber}/presentations`,
+        {
+          method: 'POST',
+          body: {
+            name: presentationName,
+            unitsPerBatch,
+            salePrice: salePriceValue ? salePrice : undefined,
+          },
+          schema: presentationSchema,
+        },
+        Astro,
+      );
+      return redirectToPresentationSection();
+    } catch (error) {
+      return redirectToPresentationSection({
+        type: 'error',
+        message: getPresentationFormErrorMessage(error, 'No se pudo crear la presentación.'),
+      });
+    }
+  } else if (action === 'delete_recipe') {
+    if (!Number.isFinite(recipeIdNumber)) {
+      return Astro.redirect('/recipes');
+    }
+
+    try {
+      await apiFetch(
+        `/api/recipes/${recipeIdNumber}`,
+        { method: 'DELETE' },
+        Astro,
+      );
+      return Astro.redirect('/recipes');
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 404) {
+        return Astro.redirect('/recipes');
+      }
+      return redirectToRecipePage({
+        type: 'error',
+        message: 'No se pudo eliminar la receta.',
+      });
+    }
+  } else if (action === 'update_recipe') {
+    if (Number.isFinite(recipeIdNumber)) {
+      const name = String(formData.get('recipeName') || '');
+      const ingredientIds = formData.getAll('ingredientId').map(String);
+      const quantities = formData.getAll('quantity').map(String);
+      const units = formData.getAll('unit').map(String);
+      const comments = formData.getAll('comment').map(String);
+
+      const ingredientsToSave = [];
+      for (let i = 0; i < ingredientIds.length; i++) {
+        const id = Number(ingredientIds[i]);
+        const q = Number(quantities[i]);
+        if (Number.isFinite(id) && Number.isFinite(q)) {
+          ingredientsToSave.push({
+            ingredientId: id,
+            quantity: q,
+            unit: units[i] || '',
+            comment: comments[i] || null,
+          });
+        }
+      }
+
+      const desiredMargin = Number(formData.get('desiredMargin')) || 0;
+      const fixedCostsPercentage = Number(formData.get('fixedCostsPercentage')) || 0;
+      const category = String(formData.get('category') || '').trim() || null;
+      const rawInstructions = String(formData.get('instructions') || '').trim();
+      const instructions = rawInstructions ? sanitizeHtml(rawInstructions) : undefined;
+
+      try {
+        await apiFetch(`/api/recipes/${recipeIdNumber}`, {
+          method: 'PATCH',
+          body: {
+            name,
+            category,
+            instructions,
+            desiredMargin,
+            fixedCostsPercentage,
+            ingredients: ingredientsToSave,
+          },
+        }, Astro);
+        return Astro.redirect(Astro.url.pathname);
+      } catch (error) {
+        const message = error && typeof error === 'object' && 'message' in error
+          ? String((error as { message: string }).message)
+          : 'No se pudo actualizar la receta.';
+        void message;
+        return redirectToRecipePage({ type: 'error', message: message });
+      }
+    }
+  } else if (action === 'duplicate_recipe') {
+    if (!Number.isFinite(recipeIdNumber)) {
+      return Astro.redirect('/recipes');
+    }
+
+    if (!hasFeature(subscription, 'recipe_duplicate')) {
+      if (expectsJsonResponse) {
+        return jsonResponse({ error: 'Funcionalidad no disponible en tu plan.' }, 403);
+      }
+      return redirectToRecipePage({ type: 'error', message: 'Funcionalidad no disponible en tu plan.' });
+    }
+
+    try {
+      const duplicated = await apiFetch(
+        `/api/recipes/${recipeIdNumber}/duplicate`,
+        { method: 'POST', schema: recipeCreateResponseSchema },
+        Astro,
+      );
+      const redirectUrl = new URL(Astro.url);
+      redirectUrl.pathname = `/recipes/${duplicated.id}`;
+      redirectUrl.searchParams.set('edit', 'true');
+      redirectUrl.searchParams.set('type', 'success');
+      redirectUrl.searchParams.set('message', `Receta "${duplicated.name}" creada exitosamente.`);
+      return Astro.redirect(redirectUrl.toString());
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 404) {
+        return respondRecipeError('No se encontró la receta original.', 404);
+      }
+      return respondRecipeError('Error al duplicar la receta.', 500);
+    }
+  } else if (action === 'create_recipe_fixed_cost') {
+    if (!expectsJsonResponse) {
+      return new Response('Expected JSON request', { status: 400 });
+    }
+    const fcRecipeId = Number(formData.get('recipeId'));
+    if (!Number.isFinite(fcRecipeId)) {
+      return new Response('Invalid request', { status: 400 });
+    }
+    try {
+      const name = String(formData.get('name') || '').trim() || 'Costo Fijo';
+      const type = String(formData.get('type') || 'AMOUNT');
+      const base = String(formData.get('base') || 'PER_BATCH');
+      const value = parseNumberInput(formData.get('value'));
+      const hoursRaw = formData.has('hours') ? formData.get('hours') : null;
+      const hours = hoursRaw !== null && hoursRaw !== '' ? Number(hoursRaw) : null;
+
+      const created = await apiFetch(
+        `/api/recipes/${fcRecipeId}/fixed-costs`,
+        {
+          method: 'POST',
+          body: {
+            name,
+            type,
+            base,
+            value: Number.isFinite(value) ? value : 0,
+            hours,
+          },
+          schema: recipeFixedCostSchema,
+        },
+        Astro,
+      );
+
+      const fixedCostCardHtml = renderFixedCostCardSnippet(
+        {
+          id: created.id,
+          name: created.name,
+          type: created.type,
+          base: created.base,
+          value: created.value,
+          hours: created.hours ?? null,
+        },
+        true,
+        fcRecipeId,
+        Astro.locals.csrfToken || "",
+      );
+      void fixedCostCardHtml;
+
+      return jsonResponse({
+        fixedCost: {
+          id: created.id,
+          name: created.name,
+          type: created.type,
+          base: created.base,
+          value: created.value,
+          hours: created.hours,
+        },
+        fixedCostCardHtml: fixedCostCardHtml,
+      });
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 404) {
+        return new Response('Recipe not found', { status: 404 });
+      }
+      return new Response('Error al crear el costo fijo', { status: 500 });
+    }
+  } else if (action === 'create_presentation_fixed_cost') {
+    if (!expectsJsonResponse) {
+      return new Response('Expected JSON request', { status: 400 });
+    }
+    const presId = Number(formData.get('presentationId'));
+    if (!Number.isFinite(presId)) {
+      return new Response('Invalid request', { status: 400 });
+    }
+    try {
+      const name = String(formData.get('name') || '').trim() || 'Costo Fijo';
+      const type = String(formData.get('type') || 'AMOUNT');
+      const base = String(formData.get('base') || 'PER_BATCH');
+      const value = parseNumberInput(formData.get('value'));
+
+      const created = await apiFetch(
+        `/api/presentations/${presId}/fixed-costs`,
+        {
+          method: 'POST',
+          body: {
+            name,
+            type,
+            base,
+            value: Number.isFinite(value) ? value : 0,
+          },
+          schema: presentationFixedCostSchema,
+        },
+        Astro,
+      );
+
+      const fixedCostCardHtml = renderFixedCostCardSnippet(
+        {
+          id: created.id,
+          name: created.name,
+          type: created.type,
+          base: created.base,
+          value: created.value,
+          hours: null,
+        },
+        false,
+        presId,
+        Astro.locals.csrfToken || "",
+      );
+      void fixedCostCardHtml;
+
+      return jsonResponse({
+        fixedCost: {
+          id: created.id,
+          name: created.name,
+          type: created.type,
+          base: created.base,
+          value: created.value,
+          hours: null,
+        },
+        fixedCostCardHtml: fixedCostCardHtml,
+      });
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 404) {
+        return new Response('Presentation not found', { status: 404 });
+      }
+      return new Response('Error al crear el costo fijo', { status: 500 });
+    }
+  } else if (action === 'update_fixed_cost') {
+    if (!expectsJsonResponse) {
+      return new Response('Expected JSON request', { status: 400 });
+    }
+    const fixedCostId = Number(formData.get('fixedCostId'));
+    const ownerType = String(formData.get('ownerType') || '');
+    if (!Number.isFinite(fixedCostId) || !ownerType) {
+      return new Response('Invalid request', { status: 400 });
+    }
+    try {
+      const name = String(formData.get('name') || '').trim();
+      const type = String(formData.get('type') || 'AMOUNT');
+      const base = String(formData.get('base') || 'PER_BATCH');
+      const value = Number(formData.get('value'));
+      const hoursRaw = formData.has('hours') ? formData.get('hours') : null;
+      const hours = hoursRaw !== null && hoursRaw !== '' ? Number(hoursRaw) : null;
+
+      if (ownerType === 'recipe') {
+        if (!Number.isFinite(recipeIdNumber)) {
+          return new Response('Invalid request', { status: 400 });
+        }
+        await apiFetch(
+          `/api/recipes/${recipeIdNumber}/fixed-costs/${fixedCostId}`,
+          {
+            method: 'PATCH',
+            body: { name, type, base, value, hours },
+            schema: recipeFixedCostSchema,
+          },
+          Astro,
+        );
+      } else {
+        const presId = Number(formData.get('presentationId'));
+        if (!Number.isFinite(presId)) {
+          return new Response('Invalid request', { status: 400 });
+        }
+        await apiFetch(
+          `/api/presentations/${presId}/fixed-costs/${fixedCostId}`,
+          {
+            method: 'PATCH',
+            body: { name, type, base, value },
+            schema: presentationFixedCostSchema,
+          },
+          Astro,
+        );
+      }
+
+      return jsonResponse({
+        fixedCost: { name, type, base, value, hours: ownerType === 'recipe' ? hours : null },
+      });
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 404) {
+        return new Response('Fixed cost not found', { status: 404 });
+      }
+      return new Response('Error al actualizar el costo fijo', { status: 500 });
+    }
+  } else if (action === 'delete_fixed_cost') {
+    if (!expectsJsonResponse) {
+      return new Response('Expected JSON request', { status: 400 });
+    }
+    const fixedCostId = Number(formData.get('fixedCostId'));
+    const ownerType = String(formData.get('ownerType') || '');
+    if (!Number.isFinite(fixedCostId) || !ownerType) {
+      return new Response('Invalid request', { status: 400 });
+    }
+    try {
+      if (ownerType === 'recipe') {
+        if (!Number.isFinite(recipeIdNumber)) {
+          return new Response('Invalid request', { status: 400 });
+        }
+        await apiFetch(
+          `/api/recipes/${recipeIdNumber}/fixed-costs/${fixedCostId}`,
+          { method: 'DELETE' },
+          Astro,
+        );
+      } else {
+        const presId = Number(formData.get('presentationId'));
+        if (!Number.isFinite(presId)) {
+          return new Response('Invalid request', { status: 400 });
+        }
+        await apiFetch(
+          `/api/presentations/${presId}/fixed-costs/${fixedCostId}`,
+          { method: 'DELETE' },
+          Astro,
+        );
+      }
+
+      return jsonResponse({ deleted: true });
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 404) {
+        return new Response('Fixed cost not found', { status: 404 });
+      }
+      return new Response('Error al eliminar el costo fijo', { status: 500 });
+    }
+  }
+}
+
+// Obtener el ID de la receta desde los parámetros
+if (!recipeIdParam) {
+  return Astro.redirect('/recipes');
+}
+
+let recipe: RecipeWithIngredients;
+try {
+  recipe = await apiFetch<RecipeWithIngredients>(
+    `/api/recipes/${recipeIdParam}`,
+    {},
+    Astro,
+  );
+} catch (error) {
+  if (error && typeof error === 'object' && 'status' in error && (error as { status: number }).status === 404) {
+    return Astro.redirect('/recipes');
+  }
+  throw error;
+}
+
+const { ingredients: recipeIngredients, name, category, instructions, id, desiredMargin, fixedCostsPercentage, presentations, updatedAt } = recipe;
+const ingredients = recipeIngredients.map((ri) => ({ id: ri.ingredient.id, name: ri.ingredient.name }));
+const hasCookingMode = hasFeature(Astro.locals.subscription, "cooking_mode");
+
+const isEditMode = Astro.url.searchParams.get('edit') === 'true';
+const allIngredients = isEditMode
+  ? await apiFetch(
+      "/api/ingredients",
+      { schema: z.array(ingredientSchema) },
+      Astro,
+    )
+  : [];
+const discoveredUnitOptions = [
+  ...allIngredients.map((ingredient) => ingredient.unit),
+  ...recipeIngredients.map((ingredient) => ingredient.unit),
+]
+  .map((unit) => unit.trim())
+  .filter((unit) => unit.length > 0);
+const unitOptions = Array.from(new Set([...UNIT_OPTIONS, ...discoveredUnitOptions]));
+const getUnitOptionsForValue = (currentUnit: string) => {
+  if (unitOptions.includes(currentUnit)) {
+    return unitOptions.map((unit) => ({ value: unit, label: unit }));
+  }
+
+  return [
+    {
+      value: currentUnit,
+      label: currentUnit.trim().length > 0 ? currentUnit : 'Sin unidad',
+    },
+    ...unitOptions.map((unit) => ({ value: unit, label: unit })),
+  ];
+};
+
+let lastUpdatedText = '';
+if (updatedAt) {
+  const d = new Date(updatedAt);
+  const now = new Date();
+  const isToday = d.getDate() === now.getDate() && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+
+  const timeOpts: Intl.DateTimeFormatOptions = { hour: 'numeric', minute: '2-digit', hour12: true };
+  const timeStr = d.toLocaleTimeString('es-MX', timeOpts);
+
+  if (isToday) {
+    lastUpdatedText = `Hoy, ${timeStr}`;
+  } else {
+    lastUpdatedText = `${d.toLocaleDateString('es-MX')} ${timeStr}`;
+  }
+}
+
+// Multiplicador de batch (ej. 2 = doble receta)
+const multiplierParam = Astro.url.searchParams.get('multiplier');
+const multiplier = Math.max(parseFloat(multiplierParam ?? '1') || 1, 0.01);
+const showAdjustedQuantity = Math.abs(multiplier - 1) > 0.0001;
+const multiplierStep = multiplier >= 2 ? 1 : 0.5;
+const normalizeMultiplier = (value: number) => Math.round(value * 10000) / 10000;
+const decrementMultiplier = normalizeMultiplier(Math.max(multiplier - multiplierStep, 0.01));
+const incrementMultiplier = normalizeMultiplier(multiplier + multiplierStep);
+const multiplierDownHref = `${Astro.url.pathname}?multiplier=${decrementMultiplier}`;
+const multiplierUpHref = `${Astro.url.pathname}?multiplier=${incrementMultiplier}`;
+const recipeEditFormId = 'recipe-edit-form';
+const createPresentationDialogId = 'create-presentation-dialog';
+const ingredientRemoveButtonClasses = 'remove-ingredient-btn inline-flex min-h-11 min-w-11 items-center justify-center rounded-full text-danger transition-colors hover:bg-danger-bg hover:text-danger';
+
+const clampPercentageValue = (value: number, max = Number.POSITIVE_INFINITY) => {
+  if (!Number.isFinite(value)) return 0;
+  return Math.min(max, Math.max(0, value));
+};
+
+const desiredMarginValue = clampPercentageValue(desiredMargin, 99.99);
+const fixedCostsPercentageValue = clampPercentageValue(fixedCostsPercentage);
+const feedbackTypeParam = Astro.url.searchParams.get('type');
+const feedbackType = (feedbackTypeParam === 'error' || feedbackTypeParam === 'success') ? feedbackTypeParam : null;
+const feedbackMessage = Astro.url.searchParams.get('message');
+
+// Redondeo contable para unidades pequeñas (g/ml)
+const roundHalfUp = (value: number) => {
+  return value >= 0 ? Math.floor(value + 0.5) : Math.ceil(value - 0.5);
+};
+
+const aplicarRedondeoUnidadPequena = (cantidad: number, unidad: string) => {
+  const u = unidad.toLowerCase();
+  if (u === 'g' || u === 'ml') {
+    return roundHalfUp(cantidad);
+  }
+  return cantidad;
+};
+
+const formatCantidad = (cantidad: number, unidad: string) => {
+  const ajustada = aplicarRedondeoUnidadPequena(cantidad, unidad);
+  const u = unidad.toLowerCase();
+  return (u === 'g' || u === 'ml') ? ajustada.toString() : ajustada.toFixed(2);
+};
+
+// --- Helpers de Cálculo ---
+
+const getCostoBaseCompra = (insumo: Ingredient) => {
+  if (insumo.purchaseQuantity === 0) return 0;
+  return insumo.price / insumo.purchaseQuantity;
+};
+
+const calcularSubtotalIngrediente = (ri: RecipeIngredient, insumo: Ingredient) => {
+  if (!insumo) return 0;
+
+  let cantidadAjustada = aplicarRedondeoUnidadPequena(ri.quantity * multiplier, ri.unit);
+  const unidadInsumo = insumo.unit.toLowerCase();
+  const unidadReceta = ri.unit.toLowerCase();
+
+  // Conversión inteligente: si el insumo es kg/lt y la receta usa g/ml
+  if ((unidadInsumo === 'kg' || unidadInsumo === 'lt') &&
+      (unidadReceta === 'g' || unidadReceta === 'ml')) {
+    cantidadAjustada = cantidadAjustada / 1000;
+  }
+
+  return getCostoBaseCompra(insumo) * cantidadAjustada;
+};
+
+const calcularCostoDirecto = (ingredients: RecipeIngredientWithData[]) => {
+  return ingredients.reduce((total, ri) => {
+    return total + calcularSubtotalIngrediente(ri, ri.ingredient!);
+  }, 0);
+};
+
+const costoDirectoTotal = calcularCostoDirecto(recipeIngredients);
+const costoOperativo = costoDirectoTotal * (fixedCostsPercentageValue / 100);
+
+// --- Advanced Cost Calculations ---
+const hasAdvancedCosts = hasFeature(subscription, 'advanced_costs');
+
+const computeFixedCostAmount = (fc: { type: string; base: string; value: number; hours?: number | null }): number => {
+  if (fc.type === 'AMOUNT') {
+    if (fc.base === 'PER_HOUR') return fc.value * (fc.hours ?? 1);
+    return fc.value * multiplier;
+  }
+  // PERCENTAGE
+  return costoDirectoTotal * (fc.value / 100);
+};
+
+const recipeFixedCostsTotal = recipe.recipeFixedCosts?.reduce(
+  (sum, fc) => sum + computeFixedCostAmount(fc), 0
+) ?? 0;
+
+const recipeBatchCost = costoDirectoTotal + (hasAdvancedCosts ? recipeFixedCostsTotal : costoOperativo);
+
+const computePresentationBatchCost = (pres: RecipePresentation): number => {
+  const presFixedCostsTotal = (pres.fixedCosts ?? []).reduce((sum, fc) => {
+    if (fc.type === 'AMOUNT') {
+      if (fc.base === 'PER_UNIT') return sum + fc.value * pres.unitsPerBatch * multiplier;
+      return sum + fc.value * multiplier;
+    }
+    return sum + recipeBatchCost * (fc.value / 100);
+  }, 0);
+  return recipeBatchCost + presFixedCostsTotal;
+};
+
+void redirectToPresentationSection;
+void redirectToRecipePage;
+void jsonResponse;
+void respondPresentationError;
+void respondRecipeError;
+void getPresentationFormErrorMessage;
+
+// --- FinancialSummary rows ---
+const buildFinancialRows = () => {
+  if (hasAdvancedCosts) {
+    const baseRows: Array<{ label: string; value: string; subtitle?: string; secondaryValue?: string; color?: string }> = [
+      { label: "Costo Insumos", value: `$${costoDirectoTotal.toFixed(2)}`, subtitle: "Costo base de materiales", color: "danger" },
+    ];
+
+    // Total fixed costs summary row
+    baseRows.push({
+      label: "Total Costos Fijos",
+      value: `$${recipeFixedCostsTotal.toFixed(2)}`,
+      subtitle: "Suma de costos fijos de la receta",
+      color: "muted" as const,
+    });
+
+    // Total recipe cost
+    baseRows.push({
+      label: "Costo Total Receta",
+      value: `$${recipeBatchCost.toFixed(2)}`,
+      subtitle: "Insumos + Costos Fijos",
+      color: "accent" as const,
+    });
+
+    // Desired margin
+    baseRows.push({
+      label: "Margen Deseado",
+      value: `${desiredMarginValue}%`,
+      subtitle: "Objetivo de ganancia",
+      color: "success" as const,
+    });
+
+    return { rows: baseRows, highlightIndex: 2, editRowIndices: [3] };
+  }
+
+  // Legacy mode
+  return {
+    rows: [
+      { label: "Costo Insumos", value: `$${costoDirectoTotal.toFixed(2)}`, subtitle: "Costo base de materiales", color: "danger" as const },
+      { label: "Gastos Operativos", value: `${fixedCostsPercentageValue}%`, subtitle: "Servicios, labor, etc.", secondaryValue: `+$${costoOperativo.toFixed(2)}`, color: "muted" as const },
+      { label: "Costo Total Real", value: `$${recipeBatchCost.toFixed(2)}`, subtitle: "Insumos + Operativos", color: "accent" as const },
+      { label: "Margen Utilidad", value: `${desiredMarginValue}%`, subtitle: "Objetivo de ganancia", color: "success" as const },
+    ],
+    highlightIndex: 2,
+    editRowIndices: hasAdvancedCosts ? [] : [1, 3],
+  };
+};
+
+const { rows: financialRows, highlightIndex: financialHighlightIndex } = buildFinancialRows();
+
+const buildFinancialEditFields = () => {
+  if (hasAdvancedCosts) {
+    return [{ rowIndex: 3, name: "desiredMargin", currentValue: desiredMarginValue.toString(), suffix: "%" }];
+  }
+  return [
+    { rowIndex: 1, name: "fixedCostsPercentage", currentValue: fixedCostsPercentageValue.toString(), suffix: "%" },
+    { rowIndex: 3, name: "desiredMargin", currentValue: desiredMarginValue.toString(), suffix: "%" },
+  ];
+};
+
+const financialEditFields = buildFinancialEditFields();
+---
+
+<Layout currentRecipe={id} showSideBar={true} currentPage="recipes" breadcrumbs={[{ label: "Recetas", href: "/recipes" }, { label: name }]}>
+  <div transition:animate="slide" class="w-full">
+    <div class="px-1 sm:px-2 lg:px-8 py-4">
+      {feedbackType && feedbackMessage && (
+        <FeedbackAlert type={feedbackType} message={feedbackMessage} />
+      )}
+
+      {isEditMode && (
+        <form id={recipeEditFormId} method="POST" action={Astro.url.pathname} class="hidden" data-astro-reload>
+          <input type="hidden" name="action" value="update_recipe" />
+          <input type="hidden" name="_csrf" value={Astro.locals.csrfToken || ""} />
+          <input type="hidden" name="instructions" value={instructions || ""} data-hidden-ta />
+        </form>
+      )}
+
+      <!-- Header: Row 1 - Title + Actions (desktop right side) -->
+      <div class="flex items-start justify-between gap-3 pb-3">
+        <!-- Title (left) -->
+        <div class="flex-1">
+          {isEditMode ? (
+            <>
+              <input
+                id="recipe-name-input"
+                name="recipeName"
+                form={recipeEditFormId}
+                type="text"
+                class="w-full text-3xl sm:text-4xl leading-tight font-black bg-background border border-border rounded-xl p-2 text-foreground focus:ring-2 focus:ring-accent-500/20"
+                value={name}
+              />
+              <div class="mt-2">
+                <input
+                  type="text"
+                  name="category"
+                  form={recipeEditFormId}
+                  class="w-full max-w-xs bg-background border border-border rounded-xl p-2 text-sm text-secondary-foreground focus:ring-2 focus:ring-accent-500/20"
+                  value={category || ''}
+                  placeholder="Categoría (ej. Panes, Galletas, Pasteles)"
+                />
+              </div>
+            </>
+          ) : (
+            <h1 class="text-3xl sm:text-4xl leading-tight font-black text-foreground">{name}</h1>
+          )}
+        </div>
+
+        <!-- Right side: Mezclas (desktop) + Menu button -->
+        <div class="flex items-center gap-2">
+          <!-- Mezclas counter (hidden on mobile, shown on sm+) -->
+          {!isEditMode && (
+            <form method="get" data-astro-reload class:list={[
+              "hidden sm:flex w-full items-center justify-between gap-2 rounded-xl border px-2 py-1.5 shadow-sm sm:w-auto sm:justify-start transition-colors",
+              showAdjustedQuantity ? "border-accent-200 bg-accent-50/30" : "border-border bg-card"
+            ]}>
+              <span class="text-[10px] font-black uppercase tracking-widest text-subtle-foreground px-2">Mezclas</span>
+              <div class="flex items-center gap-1 bg-background rounded-full p-1 border border-border-light">
+                <a href={multiplierDownHref} data-astro-reload class="w-6 h-6 flex items-center justify-center rounded-full hover:bg-hover-muted text-muted-foreground font-bold transition-colors active:scale-95">-</a>
+                <input type="number" name="multiplier" value={multiplier} step="0.0001" min="0.0001" class="w-10 bg-transparent text-center font-mono font-semibold text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 p-0 border-none text-sm tabular-nums" onchange="this.form.submit()" aria-label="Multiplicador" />
+                <a href={multiplierUpHref} data-astro-reload class="w-6 h-6 flex items-center justify-center rounded-full hover:bg-hover-muted text-muted-foreground font-bold transition-colors active:scale-95">+</a>
+              </div>
+            </form>
+          )}
+
+          <!-- Menu button (always visible) -->
+          {!isEditMode && (
+            <RecipeActionsMenu
+              recipeId={id}
+              editHref={`${Astro.url.pathname}?edit=true`}
+              canDuplicate={hasFeature(subscription, "recipe_duplicate")}
+              canDelete={true}
+              variant="page"
+            />
+          )}
+        </div>
+      </div>
+
+      <!-- Header: Row 2 - Badge + Timestamp -->
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-4">
+        <!-- Badge + timestamp (left) -->
+        <div class="flex items-center gap-3 text-sm font-medium text-muted-foreground">
+          <Badge variant="category" color="accent" class="gap-1.5 px-3 py-1 tracking-wider uppercase font-black">
+            <Icon name="lucide:tag" size={12} /> {category || "Sin categoría"}
+          </Badge>
+          {lastUpdatedText && (
+            <span class="text-xs text-subtle-foreground font-semibold">
+              Actualizado {lastUpdatedText.toLowerCase().replace('hoy, ', 'hoy ')}
+            </span>
+          )}
+        </div>
+
+        <!-- Edit mode: Guardar/Cancelar -->
+        {isEditMode && (
+          <div class="flex items-center gap-2 self-end">
+            <Button variant="primary" icon="save" type="submit" form={recipeEditFormId} size="sm">
+              Guardar
+            </Button>
+            <form method="get" action={Astro.url.pathname} data-astro-reload class="contents">
+              <Button variant="ghost" icon="x" type="submit" size="sm">
+                Cancelar
+              </Button>
+            </form>
+          </div>
+        )}
+      </div>
+
+      <!-- Header: Row 1b - Mezclas counter (mobile only) -->
+      {!isEditMode && (
+        <form method="get" data-astro-reload class:list={[
+          "flex sm:hidden mb-4 w-full items-center justify-between gap-2 rounded-xl border px-2 py-1.5 shadow-sm transition-colors",
+          showAdjustedQuantity ? "border-accent-200 bg-accent-50/30" : "border-border bg-card"
+        ]}>
+          <span class="text-[10px] font-black uppercase tracking-widest text-subtle-foreground px-2">Mezclas</span>
+          <div class="flex items-center gap-1 bg-background rounded-full p-1 border border-border-light">
+            <a href={multiplierDownHref} data-astro-reload class="w-6 h-6 flex items-center justify-center rounded-full hover:bg-hover-muted text-muted-foreground font-bold transition-colors active:scale-95">-</a>
+            <input type="number" name="multiplier" value={multiplier} step="0.0001" min="0.0001" class="w-10 bg-transparent text-center font-mono font-semibold text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 p-0 border-none text-sm tabular-nums" onchange="this.form.submit()" aria-label="Multiplicador" />
+            <a href={multiplierUpHref} data-astro-reload class="w-6 h-6 flex items-center justify-center rounded-full hover:bg-hover-muted text-muted-foreground font-bold transition-colors active:scale-95">+</a>
+          </div>
+        </form>
+      )}
+
+      <!-- Financial Summary -->
+      <div class="py-6 sm:py-8">
+        <FinancialSummary
+          rows={financialRows}
+          highlightRow={financialHighlightIndex}
+          isEditMode={isEditMode}
+          editFormId={recipeEditFormId}
+          editFields={financialEditFields}
+        />
+      </div>
+
+      <!-- Tabs -->
+      <div class="flex border-b border-border mb-6" role="tablist" id="recipe-tabs" aria-label="Secciones de la receta">
+        <button
+          role="tab"
+          id="tab-ingredientes"
+          class="tab-btn px-4 py-2.5 text-sm font-bold border-b-2 -mb-px transition-colors"
+          aria-selected="true"
+          aria-controls="panel-ingredientes"
+          data-tab="ingredientes"
+        >
+          Ingredientes
+        </button>
+        <button
+          role="tab"
+          id="tab-costos-fijos"
+          class="tab-btn px-4 py-2.5 text-sm font-bold border-b-2 -mb-px transition-colors"
+          aria-selected="false"
+          aria-controls="panel-costos-fijos"
+          data-tab="costos-fijos"
+        >
+          Costos Fijos
+        </button>
+        <button
+          role="tab"
+          id="tab-presentaciones"
+          class="tab-btn px-4 py-2.5 text-sm font-bold border-b-2 -mb-px transition-colors"
+          aria-selected="false"
+          aria-controls="panel-presentaciones"
+          data-tab="presentaciones"
+        >
+          Presentaciones
+        </button>
+        <button role="tab" id="tab-preparacion" class="tab-btn px-4 py-2.5 text-sm font-bold border-b-2 -mb-px transition-colors" aria-selected="false" aria-controls="panel-preparacion" data-tab="preparacion">
+          Preparación
+        </button>
+      </div>
+
+      <!-- Tab Panels -->
+      <!-- Ingredientes -->
+      <div id="panel-ingredientes" role="tabpanel" aria-labelledby="tab-ingredientes" class="tab-panel">
+        <Card class="!p-0 overflow-visible">
+          <div class="flex items-center justify-between px-5 sm:px-6 lg:px-8 py-5 border-b border-border-light bg-card">
+            <h2 class="text-sm font-bold text-foreground">Lista de Ingredientes</h2>
+            <label class="flex items-center gap-2 text-xs text-muted-foreground bg-background px-3 py-1.5 rounded-lg border border-border cursor-pointer hover:bg-muted transition-colors">
+              <input id="toggle-comments" type="checkbox" class="w-4 h-4 rounded border-border text-accent-600 focus:ring-accent-500" />
+              <span class="font-semibold text-secondary-foreground">Ver notas</span>
+            </label>
+          </div>
+
+          {isEditMode ? (
+            <div class="px-5 py-5 sm:px-6 lg:px-8">
+              <div class="hidden md:grid md:grid-cols-[minmax(0,2.4fr)_11rem_minmax(0,1fr)_3rem] md:gap-4 md:px-1 md:pb-3 text-[10px] uppercase font-bold text-subtle-foreground">
+                <span>Ingrediente</span>
+                <span class="text-center">Cantidad</span>
+                <span>Notas</span>
+                <span class="sr-only">Acciones</span>
+              </div>
+
+              <div id="edit-ingredients-tbody" class="space-y-3">
+                {recipeIngredients.map(ri => (
+                   <div class="edit-ingredient-row grid grid-cols-1 gap-3 rounded-2xl border border-border bg-background/50 p-3 md:grid-cols-[minmax(0,2.4fr)_minmax(0,13rem)_minmax(0,1fr)_3rem] md:items-center md:bg-card md:p-0 md:border-0 md:rounded-none md:border-b md:border-border-light md:pb-3">
+                    <div class="space-y-1 min-w-0">
+                      <label class="text-[10px] uppercase font-bold text-subtle-foreground md:sr-only">Ingrediente</label>
+                      <div class="ingredient-picker relative" data-ingredient-picker>
+                        <select name="ingredientId" form={recipeEditFormId} class="hidden">
+                          {allIngredients.map(i => (
+                            <option value={i.id} data-unit={i.unit} selected={i.id === ri.ingredientId}>{i.name}</option>
+                          ))}
+                        </select>
+                        <div class="relative">
+                          <input type="text"
+                            class="ingredient-search-input w-full bg-card md:bg-background border border-border rounded-xl pl-9 pr-8 p-2 text-sm font-semibold text-secondary-foreground focus:ring-2 focus:ring-accent-500/20 placeholder:text-muted-foreground"
+                            placeholder="Buscar..."
+                            autocomplete="off"
+                            value={allIngredients.find(i => i.id === ri.ingredientId)?.name ?? ''}
+                          />
+                          <svg class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                          <button type="button" class="ingredient-picker-clear absolute right-2 top-1/2 -translate-y-1/2 hidden" aria-label="Limpiar">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-muted-foreground"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                          </button>
+                        </div>
+                        <div class="ingredient-dropdown hidden absolute z-50 left-0 right-0 mt-1 max-h-48 overflow-y-auto bg-card border border-border rounded-xl shadow-lg">
+                          {allIngredients.map(i => (
+                            <button type="button" class="ingredient-option w-full text-left px-3 py-2 text-sm text-secondary-foreground hover:bg-accent-50 hover:text-accent-600 transition-colors" data-value={i.id} data-unit={i.unit}>
+                              {i.name}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="space-y-1 min-w-0">
+                      <label class="text-[10px] uppercase font-bold text-subtle-foreground md:sr-only">Cantidad</label>
+                      <div class="grid min-w-0 grid-cols-[minmax(0,1fr)_5.5rem] items-center gap-2">
+                        <input type="number" step="0.01" name="quantity" form={recipeEditFormId} class="quantity-input w-full min-w-0 bg-card border border-border rounded-xl p-2 text-center font-mono font-semibold text-secondary-foreground focus:ring-2 focus:ring-accent-500/20" value={ri.quantity} />
+                        <select name="unit" form={recipeEditFormId} class="unit-select w-full min-w-0 bg-card border border-border rounded-xl p-2 text-sm text-muted-foreground focus:ring-2 focus:ring-accent-500/20">
+                          {getUnitOptionsForValue(ri.unit).map((unitOption) => (
+                            <option value={unitOption.value} selected={unitOption.value === ri.unit}>{unitOption.label}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+
+                    <div class="space-y-1 min-w-0">
+                      <label class="text-[10px] uppercase font-bold text-subtle-foreground md:sr-only">Notas</label>
+                      <input type="text" name="comment" form={recipeEditFormId} class="comment-input w-full bg-card border border-border rounded-xl p-2 text-sm text-muted-foreground focus:ring-2 focus:ring-accent-500/20" value={ri.comment || ''} placeholder="Opcional" />
+                    </div>
+
+                    <div class="flex items-center justify-end md:justify-center">
+                      <button type="button" class={ingredientRemoveButtonClasses} aria-label="Eliminar ingrediente">
+                        <Icon name="lucide:trash-2" size={18} />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div class="flex justify-center pt-4">
+                <Button
+                  variant="secondary"
+                  icon="plus"
+                  size="md"
+                  id="add-ingredient-btn"
+                  class="border-accent-200 text-accent-600 hover:bg-accent-50 shadow-sm"
+                >
+                  Añadir Ingrediente
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <>
+              <div class="md:hidden divide-y divide-border-light">
+                {
+                recipeIngredients.map(ri => {
+                  return (
+                    <article class="px-5 py-4 space-y-3">
+                      <div class="flex items-start justify-between gap-3">
+                        <div class="min-w-0">
+                          <p class="font-semibold text-foreground leading-tight break-words">{ri.ingredient.name}</p>
+                          <p class="mt-1 text-xs text-muted-foreground">Cantidad usada en esta mezcla</p>
+                          {ri.comment ? (
+                            <p class="mt-1 text-xs text-subtle-foreground ingredient-comment hidden break-words">{ri.comment}</p>
+                          ) : null}
+                        </div>
+                        <div class="text-right whitespace-nowrap">
+                          <p class="text-[10px] font-bold uppercase tracking-wider text-subtle-foreground">Costo</p>
+                          <p class="font-mono font-semibold text-secondary-foreground">
+                            ${calcularSubtotalIngrediente(ri, ri.ingredient!).toFixed(2)}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div class={`grid gap-2 ${showAdjustedQuantity ? 'grid-cols-2' : 'grid-cols-1'}`}>
+                        <div class="rounded-xl border border-border bg-background px-3 py-2">
+                          <p class="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Base</p>
+                          <p class="mt-1 flex items-baseline gap-2 text-secondary-foreground">
+                            <span class="text-lg font-mono font-semibold">{formatCantidad(ri.quantity, ri.unit)}</span>
+                            <span class="text-xs font-semibold uppercase text-muted-foreground">{ri.unit}</span>
+                          </p>
+                        </div>
+                        {showAdjustedQuantity ? (
+                          <div class="rounded-xl border border-accent-200 bg-accent-50 px-3 py-2">
+                            <p class="text-[10px] font-bold uppercase tracking-wider text-accent-600">Con x{multiplier}</p>
+                            <p class="mt-1 flex items-baseline gap-2 text-accent-700">
+                              <span class="text-lg font-mono font-semibold">{formatCantidad(ri.quantity * multiplier, ri.unit)}</span>
+                              <span class="text-xs font-semibold uppercase text-accent-500">{ri.unit}</span>
+                            </p>
+                          </div>
+                        ) : null}
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+
+              <div class="hidden md:block overflow-x-auto">
+                <table class="w-full table-auto text-left overflow-x-auto">
+                  <thead class="bg-background text-subtle-foreground text-[10px] uppercase font-bold">
+                    <tr>
+                      <th class="px-6 lg:px-8 py-3 w-max text-left">Ingrediente</th>
+                      <th class="px-6 lg:px-8 py-3 text-left">Cantidad</th>
+                      <th class="px-6 lg:px-8 py-3 text-right">Subtotal</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-border-light">
+                    {
+                    recipeIngredients.map(ri => {
+                      return (
+                        <tr class="group hover:bg-hover-muted dark:hover:bg-hover-muted transition-colors">
+                          <td class="px-6 lg:px-8 py-4 border-r border-border-light w-max">
+                            <div class="font-semibold text-secondary-foreground whitespace-nowrap inline-block">{ri.ingredient.name}</div>
+                            {ri.comment ? (
+                              <div class="mt-1 text-xs text-subtle-foreground ingredient-comment hidden max-w-[28ch] break-words">{ri.comment}</div>
+                            ) : null}
+                          </td>
+                          <td class="px-6 lg:px-8 py-4 border-r border-border-light w-auto">
+                            <div class={`flex gap-2 ${showAdjustedQuantity ? 'min-w-[240px]' : 'min-w-[120px]'}`}>
+                              <div class="flex-1 rounded-xl border border-border bg-background px-3 py-2">
+                                <p class="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Base</p>
+                                <p class="mt-1 flex items-baseline gap-2 text-secondary-foreground">
+                                  <span class="text-lg font-mono font-semibold">{formatCantidad(ri.quantity, ri.unit)}</span>
+                                  <span class="text-xs font-semibold uppercase text-muted-foreground">{ri.unit}</span>
+                                </p>
+                              </div>
+                              {showAdjustedQuantity ? (
+                                <div class="flex-1 rounded-xl border border-accent-200 bg-accent-50 px-3 py-2">
+                                  <p class="text-[10px] font-bold uppercase tracking-wider text-accent-600">Con x{multiplier}</p>
+                                  <p class="mt-1 flex items-baseline gap-2 text-accent-700">
+                                    <span class="text-lg font-mono font-semibold">{formatCantidad(ri.quantity * multiplier, ri.unit)}</span>
+                                    <span class="text-xs font-semibold uppercase text-accent-500">{ri.unit}</span>
+                                  </p>
+                                </div>
+                              ) : null}
+                            </div>
+                          </td>
+                          <td class="px-6 lg:px-8 py-4 text-right font-mono font-semibold text-muted-foreground">
+                            ${calcularSubtotalIngrediente(ri, ri.ingredient!).toFixed(2)}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )}
+        </Card>
+
+      </div>
+
+      <!-- Costos Fijos -->
+      <div id="panel-costos-fijos" role="tabpanel" aria-labelledby="tab-costos-fijos" class="tab-panel" hidden>
+        <RecipeFixedCosts
+          recipeFixedCosts={recipe.recipeFixedCosts}
+          recipeId={id}
+          isEditing={isEditMode}
+        />
+      </div>
+
+      <!-- Presentaciones -->
+      <div id="panel-presentaciones" role="tabpanel" aria-labelledby="tab-presentaciones" class="tab-panel" hidden>
+        <div class="flex items-start justify-between gap-3 py-6 px-1">
+          <SectionHeading icon="tag" title="Presentaciones de Venta" subtitle="Define cuantas piezas salen por mezcla" />
+          <Button
+            variant="primary"
+            icon="plus"
+            data-open-create-presentation-dialog={createPresentationDialogId}
+          >
+            <span class="sm:hidden">Nueva</span>
+            <span class="hidden sm:inline">Nueva Presentación</span>
+          </Button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+          {presentations?.map(pres => {
+            const presBatchCost = computePresentationBatchCost(pres);
+            const presPrecioVentaSugerido = presBatchCost / (1 - (desiredMarginValue / 100));
+            return (
+              <div class="flex flex-col gap-3">
+                <PresentationCard
+                  id={pres.id}
+                  name={pres.name}
+                  unitsPerBatch={pres.unitsPerBatch}
+                  salePrice={pres.salePrice}
+                  multiplier={multiplier}
+                  costoProduccionRealBatch={presBatchCost}
+                  precioVentaSugeridoBatch={presPrecioVentaSugerido}
+                />
+{/* PresentationFixedCosts hidden until presentation-level FC planning is complete */}
+              </div>
+            );
+          })}
+        </div>
+
+        <dialog
+          data-animated
+          id={createPresentationDialogId}
+          class="fixed inset-0 m-auto w-[calc(100vw-2rem)] max-w-md max-h-[calc(100dvh-2rem)] rounded-3xl border border-border p-0 shadow-2xl backdrop:bg-backdrop/50"
+        >
+          <form
+            method="post"
+            action={Astro.url.pathname + Astro.url.search}
+            class="max-h-[calc(100dvh-2rem)] overflow-auto rounded-3xl bg-card p-6"
+          >
+            <input type="hidden" name="action" value="create_presentation" />
+            <input type="hidden" name="_csrf" value={Astro.locals.csrfToken || ""} />
+
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <p class="text-xs font-black uppercase tracking-[0.18em] text-accent-500">
+                  Nueva presentación
+                </p>
+                <h2 class="mt-2 text-xl font-black text-foreground">
+                  Define una nueva venta por pieza
+                </h2>
+                <p class="mt-2 text-sm text-muted-foreground">
+                  Puedes ajustar nombre, rendimiento y precio desde la tarjeta después.
+                </p>
+              </div>
+              <button
+                type="button"
+                data-close-create-presentation-dialog={createPresentationDialogId}
+                class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border text-muted-foreground transition-colors hover:bg-background hover:text-secondary-foreground"
+                aria-label="Cerrar modal"
+              >
+                <Icon name="lucide:x" size={18} />
+              </button>
+            </div>
+
+            <label
+              class="mt-6 block text-sm font-semibold text-secondary-foreground"
+              for="create-presentation-name"
+            >
+              Nombre de la presentación
+            </label>
+            <input
+              id="create-presentation-name"
+              name="presentationName"
+              type="text"
+              required
+              maxlength="120"
+              placeholder="Ej. Caja de 6"
+              class="mt-2 w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground outline-none transition-colors placeholder:text-subtle-foreground focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20"
+            />
+
+            <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div>
+                <label
+                  class="block text-sm font-semibold text-secondary-foreground"
+                  for="create-presentation-units"
+                >
+                  Piezas por mezcla
+                </label>
+                <input
+                  id="create-presentation-units"
+                  name="unitsPerBatch"
+                  type="number"
+                  min="0.01"
+                  step="0.01"
+                  required
+                  placeholder="12"
+                  class="mt-2 w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground font-mono outline-none transition-colors placeholder:text-subtle-foreground focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20"
+                />
+              </div>
+
+              <div>
+                <label
+                  class="block text-sm font-semibold text-secondary-foreground"
+                  for="create-presentation-price"
+                >
+                  Precio de venta
+                </label>
+                <input
+                  id="create-presentation-price"
+                  name="salePrice"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  placeholder="Opcional"
+                  class="mt-2 w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground font-mono outline-none transition-colors placeholder:text-subtle-foreground focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20"
+                />
+              </div>
+            </div>
+
+            <div class="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+              <Button variant="secondary" data-close-create-presentation-dialog={createPresentationDialogId}>
+                Cancelar
+              </Button>
+              <Button variant="primary" icon="plus" type="submit">
+                Crear presentación
+              </Button>
+            </div>
+          </form>
+        </dialog>
+      </div>
+      <!-- Preparación -->
+      <div id="panel-preparacion" role="tabpanel" aria-labelledby="tab-preparacion" class="tab-panel" hidden>
+        {isEditMode ? (
+          <InstructionsEditor
+            recipeEditFormId={recipeEditFormId}
+            instructions={instructions}
+            ingredients={ingredients}
+            recipeIngredientIds={recipeIngredients.map(ri => ri.ingredientId)}
+          />
+        ) : instructions ? (
+          <RecipeInstructions
+            instructions={instructions}
+            ingredients={ingredients}
+            isPro={hasCookingMode}
+          />
+        ) : (
+          <div class="bg-card border-border mx-1 mt-6 overflow-hidden rounded-2xl border shadow-sm sm:mx-2 lg:mx-8">
+            <div class="border-border-light flex items-center gap-3 border-b px-5 py-5 sm:px-6 lg:px-8">
+              <h2 class="text-foreground flex items-center gap-2 text-sm font-bold">Preparación</h2>
+            </div>
+            <div class="px-5 py-12 sm:px-6 lg:px-8 text-center">
+              <p class="text-muted-foreground text-sm">No hay instrucciones todavía.</p>
+              <p class="text-subtle-foreground mt-2 text-xs">Haz clic en <strong>Editar</strong> para agregar la preparación de esta receta.</p>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  </div>
+
+<script>
+  import { bindDialogBackdrop } from "@recetario/ui/dialog";
+
+  const KEY = 'recetario.showComments';
+  const presentationDialogId = 'create-presentation-dialog';
+
+  const updateCommentControls = (show: boolean) => {
+    const checkbox = document.getElementById('toggle-comments');
+    if (checkbox instanceof HTMLInputElement) {
+      checkbox.checked = show;
+    }
+  };
+
+  const setVisibility = (show: boolean) => {
+    document.querySelectorAll('.ingredient-comment').forEach((el) => {
+      el.classList.toggle('hidden', !show);
+    });
+    updateCommentControls(show);
+
+    try {
+      localStorage.setItem(KEY, show ? '1' : '0');
+    } catch {
+      /* noop */
+    }
+  };
+
+  const initCommentsToggle = () => {
+    const checkbox = document.getElementById('toggle-comments');
+
+    if (checkbox instanceof HTMLInputElement && checkbox.dataset.bound !== '1') {
+      checkbox.dataset.bound = '1';
+      checkbox.addEventListener('change', (e) => {
+        const target = e.currentTarget;
+        if (!(target instanceof HTMLInputElement)) return;
+        setVisibility(target.checked);
+      });
+    }
+
+    const stored = (typeof localStorage !== 'undefined' && localStorage.getItem(KEY)) === '1';
+    setVisibility(stored);
+  };
+
+  const setupCreatePresentationDialog = () => {
+    const dialog = document.getElementById(presentationDialogId);
+    const nameInput = document.getElementById('create-presentation-name');
+    const openButtons = document.querySelectorAll(
+      `[data-open-create-presentation-dialog="${presentationDialogId}"]`,
+    );
+    const closeButtons = document.querySelectorAll(
+      `[data-close-create-presentation-dialog="${presentationDialogId}"]`,
+    );
+
+    if (!(dialog instanceof HTMLDialogElement)) {
+      return;
+    }
+
+    const openDialog = () => {
+      const form = dialog.querySelector('form');
+      if (form instanceof HTMLFormElement) {
+        form.reset();
+      }
+
+      if (!dialog.open) {
+        dialog.showModal();
+      }
+
+      if (nameInput instanceof HTMLInputElement) {
+        requestAnimationFrame(() => nameInput.focus());
+      }
+    };
+
+    const closeDialog = () => {
+      if (dialog.open) {
+        dialog.close();
+      }
+    };
+
+    openButtons.forEach((button) => {
+      if (!(button instanceof HTMLButtonElement)) return;
+      if (button.dataset.createPresentationDialogBound === '1') return;
+
+      button.dataset.createPresentationDialogBound = '1';
+      button.addEventListener('click', openDialog);
+    });
+
+    closeButtons.forEach((button) => {
+      if (!(button instanceof HTMLButtonElement)) return;
+      if (button.dataset.createPresentationDialogBound === '1') return;
+
+      button.dataset.createPresentationDialogBound = '1';
+      button.addEventListener('click', closeDialog);
+    });
+
+    if (dialog.dataset.createPresentationDialogBound === '1') {
+      return;
+    }
+
+    dialog.dataset.createPresentationDialogBound = '1';
+    bindDialogBackdrop(dialog);
+  };
+
+  const setupTabs = () => {
+    const tabs = document.querySelectorAll<HTMLButtonElement>('.tab-btn');
+    const panels = document.querySelectorAll<HTMLDivElement>('.tab-panel');
+
+    const activateTab = (tabId: string) => {
+      // Update tabs
+      tabs.forEach(t => {
+        const isSelected = t.dataset.tab === tabId;
+        t.setAttribute('aria-selected', isSelected ? 'true' : 'false');
+        t.classList.toggle('text-accent-600', isSelected);
+        t.classList.toggle('border-accent-500', isSelected);
+        t.classList.toggle('text-muted-foreground', !isSelected);
+        t.classList.toggle('border-transparent', !isSelected);
+        t.classList.toggle('hover:border-border', !isSelected);
+      });
+
+      // Update panels
+      panels.forEach(p => {
+        const isSelected = p.id === `panel-${tabId}`;
+        p.hidden = !isSelected;
+      });
+
+      // Update hash
+      if (window.location.hash !== `#${tabId}`) {
+        history.replaceState(null, '', `#${tabId}`);
+      }
+      // Persist tab across redirects
+      // eslint-disable-next-line no-empty
+      try { sessionStorage.setItem(`recipe-tab:${window.location.pathname}`, tabId); } catch {}
+    };
+
+    // Get initial tab from hash or default to ingredientes
+    const initialTab = window.location.hash?.replace('#', '') || sessionStorage.getItem(`recipe-tab:${window.location.pathname}`) || 'ingredientes';
+    activateTab(initialTab);
+
+    // Tab click handlers
+    tabs.forEach(tab => {
+      if (tab.dataset.tabsBound === '1') return;
+      tab.dataset.tabsBound = '1';
+
+      tab.addEventListener('click', () => {
+        const tabId = tab.dataset.tab;
+        if (tabId) activateTab(tabId);
+      });
+    });
+
+    // Keyboard navigation
+    const tabList = document.getElementById('recipe-tabs');
+    if (tabList && tabList.dataset.tabsKeyboardBound !== '1') {
+      tabList.dataset.tabsKeyboardBound = '1';
+      tabList.addEventListener('keydown', (e) => {
+        const currentTab = document.activeElement as HTMLButtonElement;
+        if (!currentTab?.classList.contains('tab-btn')) return;
+
+        const tabIds = ['ingredientes', 'costos-fijos', 'presentaciones', 'preparacion'];
+        const currentIndex = tabIds.indexOf(currentTab.dataset.tab || '');
+        let nextIndex = -1;
+
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+          e.preventDefault();
+          nextIndex = (currentIndex + 1) % tabIds.length;
+        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+          e.preventDefault();
+          nextIndex = (currentIndex - 1 + tabIds.length) % tabIds.length;
+        }
+
+        if (nextIndex >= 0) {
+          activateTab(tabIds[nextIndex]);
+          const nextTab = document.querySelector<HTMLButtonElement>(`[data-tab="${tabIds[nextIndex]}"]`);
+          nextTab?.focus();
+        }
+      });
+    }
+
+    // Hash change listener
+    const handleHashChange = () => {
+      const hash = window.location.hash?.replace('#', '') || 'ingredientes';
+      if (['ingredientes', 'costos-fijos', 'presentaciones', 'preparacion'].includes(hash)) {
+        activateTab(hash);
+      }
+    };
+
+    if (!tabList?.dataset.hashChangeBound) {
+      window.addEventListener('hashchange', handleHashChange);
+      if (tabList) tabList.dataset.hashChangeBound = '1';
+    }
+  };
+
+  document.addEventListener('astro:page-load', initCommentsToggle);
+  document.addEventListener('astro:after-swap', initCommentsToggle);
+  document.addEventListener('astro:page-load', setupCreatePresentationDialog);
+  document.addEventListener('astro:after-swap', setupCreatePresentationDialog);
+  document.addEventListener('astro:page-load', setupTabs);
+  document.addEventListener('astro:after-swap', setupTabs);
+
+</script>
+
+{isEditMode && (
+  <template id="ingredient-row-template">
+    <div class="edit-ingredient-row grid grid-cols-1 gap-3 rounded-2xl border border-border bg-background/50 p-3 md:grid-cols-[minmax(0,2.4fr)_minmax(0,13rem)_minmax(0,1fr)_3rem] md:items-center md:bg-card md:p-0 md:border-0 md:rounded-none md:border-b md:border-border-light md:pb-3">
+      <div class="space-y-1 min-w-0">
+        <label class="text-[10px] uppercase font-bold text-subtle-foreground md:hidden">Ingrediente</label>
+        <div class="ingredient-picker relative" data-ingredient-picker>
+          <select name="ingredientId" form={recipeEditFormId} class="hidden">
+            {allIngredients.map(i => (
+              <option value={i.id} data-unit={i.unit}>{i.name}</option>
+            ))}
+          </select>
+          <div class="relative">
+            <input type="text"
+              class="ingredient-search-input w-full bg-card md:bg-background border border-border rounded-xl pl-9 pr-8 p-2 text-sm font-semibold text-secondary-foreground focus:ring-2 focus:ring-accent-500/20 placeholder:text-muted-foreground"
+              placeholder="Buscar..."
+              autocomplete="off"
+              value=""
+            />
+            <svg class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <button type="button" class="ingredient-picker-clear absolute right-2 top-1/2 -translate-y-1/2 hidden" aria-label="Limpiar">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-muted-foreground"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+          </div>
+          <div class="ingredient-dropdown hidden absolute z-50 left-0 right-0 mt-1 max-h-48 overflow-y-auto bg-card border border-border rounded-xl shadow-lg">
+            {allIngredients.map(i => (
+              <button type="button" class="ingredient-option w-full text-left px-3 py-2 text-sm text-secondary-foreground hover:bg-accent-50 hover:text-accent-600 transition-colors" data-value={i.id} data-unit={i.unit}>
+                {i.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+      <div class="space-y-1 min-w-0">
+        <label class="text-[10px] uppercase font-bold text-subtle-foreground md:hidden">Cantidad</label>
+        <div class="grid min-w-0 grid-cols-[minmax(0,1fr)_5.5rem] items-center gap-2">
+          <input type="number" step="0.01" name="quantity" form={recipeEditFormId} class="quantity-input w-full min-w-0 bg-card border border-border rounded-xl p-2 text-center font-bold text-secondary-foreground focus:ring-2 focus:ring-accent-500/20" value="1" />
+          <select name="unit" form={recipeEditFormId} class="unit-select w-full min-w-0 bg-card border border-border rounded-xl p-2 text-sm text-muted-foreground focus:ring-2 focus:ring-accent-500/20">
+            {getUnitOptionsForValue('').map((unitOption, index) => (
+              <option value={unitOption.value} selected={index === 0}>{unitOption.label}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+      <div class="space-y-1 min-w-0">
+        <label class="text-[10px] uppercase font-bold text-subtle-foreground md:hidden">Notas</label>
+        <input type="text" name="comment" form={recipeEditFormId} class="comment-input w-full bg-card border border-border rounded-xl p-2 text-sm text-muted-foreground focus:ring-2 focus:ring-accent-500/20" value="" placeholder="Opcional" />
+      </div>
+      <div class="flex items-center justify-end md:justify-center">
+        <button type="button" class={ingredientRemoveButtonClasses} aria-label="Eliminar ingrediente">
+          <Icon name="lucide:trash-2" size={18} />
+        </button>
+      </div>
+    </div>
+  </template>
+
+  <script is:inline>
+    function setupRecipeEditor() {
+      const addBtn = document.getElementById('add-ingredient-btn');
+      const tbody = document.getElementById('edit-ingredients-tbody');
+      const template = document.getElementById('ingredient-row-template');
+
+      if (addBtn && tbody && template && addBtn.dataset.bound !== '1') {
+        addBtn.dataset.bound = '1';
+        addBtn.addEventListener('click', () => {
+          const clone = template.content.cloneNode(true);
+          tbody.appendChild(clone);
+        });
+      }
+
+      if (tbody && tbody.dataset.bound !== '1') {
+        tbody.dataset.bound = '1';
+        tbody.addEventListener('click', (e) => {
+          const removeBtn = e.target.closest('.remove-ingredient-btn');
+          if (removeBtn) {
+            const row = removeBtn.closest('.edit-ingredient-row');
+            if (row) row.remove();
+          }
+        });
+      }
+
+      const form = document.getElementById('recipe-edit-form');
+      if (form instanceof HTMLFormElement && form.dataset.bound !== '1') {
+        form.dataset.bound = '1';
+        form.addEventListener('submit', (event) => {
+          const rows = document.querySelectorAll(
+            `[name="quantity"][form="${form.id}"]`,
+          );
+          const hasAtLeastOneIngredient = rows.length > 0;
+
+          if (!hasAtLeastOneIngredient) {
+            event.preventDefault();
+            window.alert('Agrega al menos un ingrediente antes de guardar.');
+          }
+        });
+      }
+
+      // Ingredient picker — event delegation
+      if (tbody && tbody.dataset.pickerBound !== '1') {
+        tbody.dataset.pickerBound = '1';
+
+        const closeAllDropdowns = () => {
+          tbody.querySelectorAll('.ingredient-dropdown').forEach(d => d.classList.add('hidden'));
+        };
+
+        tbody.addEventListener('focusin', (e) => {
+          const input = e.target.closest('.ingredient-search-input');
+          if (input) {
+            closeAllDropdowns();
+            const picker = input.closest('.ingredient-picker');
+            const dropdown = picker?.querySelector('.ingredient-dropdown');
+            if (dropdown) dropdown.classList.remove('hidden');
+          }
+        });
+
+        tbody.addEventListener('input', (e) => {
+          const input = e.target.closest('.ingredient-search-input');
+          if (!input) return;
+          const picker = input.closest('.ingredient-picker');
+          if (!picker) return;
+          const dropdown = picker.querySelector('.ingredient-dropdown');
+          const clearBtn = picker.querySelector('.ingredient-picker-clear');
+          const query = input.value.toLowerCase().trim();
+
+          if (clearBtn) clearBtn.classList.toggle('hidden', !query);
+
+          const options = dropdown?.querySelectorAll('.ingredient-option');
+          if (!options) return;
+          let hasVisible = false;
+          options.forEach(opt => {
+            const text = (opt.textContent || '').toLowerCase();
+            const match = !query || text.includes(query);
+            opt.classList.toggle('hidden', !match);
+            if (match) hasVisible = true;
+          });
+          if (!hasVisible && dropdown) dropdown.classList.add('hidden');
+          else if (dropdown) dropdown.classList.remove('hidden');
+        });
+
+        tbody.addEventListener('click', (e) => {
+          const option = e.target.closest('.ingredient-option');
+          if (!option) return;
+          const picker = option.closest('.ingredient-picker');
+          if (!picker) return;
+          const select = picker.querySelector('select');
+          const input = picker.querySelector('.ingredient-search-input');
+          const dropdown = picker.querySelector('.ingredient-dropdown');
+          const clearBtn = picker.querySelector('.ingredient-picker-clear');
+
+          const val = option.dataset.value;
+          if (select && val) {
+            select.value = val;
+            select.dispatchEvent(new Event('change', { bubbles: true }));
+          }
+          if (input) input.value = option.textContent || '';
+          if (dropdown) dropdown.classList.add('hidden');
+          if (clearBtn) clearBtn.classList.remove('hidden');
+        });
+
+        tbody.addEventListener('click', (e) => {
+          const clearBtn = e.target.closest('.ingredient-picker-clear');
+          if (!clearBtn) return;
+          const picker = clearBtn.closest('.ingredient-picker');
+          if (!picker) return;
+          const select = picker.querySelector('select');
+          const input = picker.querySelector('.ingredient-search-input');
+          const dropdown = picker.querySelector('.ingredient-dropdown');
+          const options = dropdown?.querySelectorAll('.ingredient-option');
+          if (select) select.value = '';
+          if (input) input.value = '';
+          if (options) options.forEach(opt => opt.classList.remove('hidden'));
+          if (clearBtn) clearBtn.classList.add('hidden');
+          if (dropdown) dropdown.classList.add('hidden');
+        });
+
+        document.addEventListener('click', (e) => {
+          const picker = e.target.closest('.ingredient-picker');
+          if (!picker) closeAllDropdowns();
+        });
+      }
+
+      // Close dropdowns on Escape
+      if (document.body && document.body.dataset.escPickerBound !== '1') {
+        document.body.dataset.escPickerBound = '1';
+        document.body.addEventListener('keydown', (e) => {
+          if (e.key !== 'Escape') return;
+          const tbody = document.getElementById('edit-ingredients-tbody');
+          if (tbody) {
+            tbody.querySelectorAll('.ingredient-dropdown').forEach(d => d.classList.add('hidden'));
+          }
+        });
+      }
+    }
+
+    document.addEventListener('astro:page-load', setupRecipeEditor);
+    document.addEventListener('astro:after-swap', setupRecipeEditor);
+    setupRecipeEditor();
+  </script>
+)}
+
+</Layout>

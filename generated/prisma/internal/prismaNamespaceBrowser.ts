@@ -55,13 +55,19 @@ export const ModelName = {
   Recipe: 'Recipe',
   RecipeIngredient: 'RecipeIngredient',
   RecipePresentation: 'RecipePresentation',
+  RecipeFixedCost: 'RecipeFixedCost',
+  PresentationFixedCost: 'PresentationFixedCost',
   UserPreferences: 'UserPreferences',
   SubscriptionPlan: 'SubscriptionPlan',
   User: 'User',
   Session: 'Session',
   Account: 'Account',
   Verification: 'Verification',
-  Subscription: 'Subscription'
+  Subscription: 'Subscription',
+  RateLimitEntry: 'RateLimitEntry',
+  CacheEntry: 'CacheEntry',
+  AuditLog: 'AuditLog',
+  PasswordResetToken: 'PasswordResetToken'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -130,6 +136,31 @@ export const RecipePresentationScalarFieldEnum = {
 export type RecipePresentationScalarFieldEnum = (typeof RecipePresentationScalarFieldEnum)[keyof typeof RecipePresentationScalarFieldEnum]
 
 
+export const RecipeFixedCostScalarFieldEnum = {
+  id: 'id',
+  recipeId: 'recipeId',
+  name: 'name',
+  type: 'type',
+  base: 'base',
+  value: 'value',
+  hours: 'hours'
+} as const
+
+export type RecipeFixedCostScalarFieldEnum = (typeof RecipeFixedCostScalarFieldEnum)[keyof typeof RecipeFixedCostScalarFieldEnum]
+
+
+export const PresentationFixedCostScalarFieldEnum = {
+  id: 'id',
+  presentationId: 'presentationId',
+  name: 'name',
+  type: 'type',
+  base: 'base',
+  value: 'value'
+} as const
+
+export type PresentationFixedCostScalarFieldEnum = (typeof PresentationFixedCostScalarFieldEnum)[keyof typeof PresentationFixedCostScalarFieldEnum]
+
+
 export const UserPreferencesScalarFieldEnum = {
   userId: 'userId',
   theme: 'theme',
@@ -160,9 +191,12 @@ export type SubscriptionPlanScalarFieldEnum = (typeof SubscriptionPlanScalarFiel
 export const UserScalarFieldEnum = {
   id: 'id',
   name: 'name',
+  firstName: 'firstName',
+  lastName: 'lastName',
   email: 'email',
   emailVerified: 'emailVerified',
   image: 'image',
+  role: 'role',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -230,6 +264,53 @@ export const SubscriptionScalarFieldEnum = {
 } as const
 
 export type SubscriptionScalarFieldEnum = (typeof SubscriptionScalarFieldEnum)[keyof typeof SubscriptionScalarFieldEnum]
+
+
+export const RateLimitEntryScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  count: 'count',
+  resetAt: 'resetAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RateLimitEntryScalarFieldEnum = (typeof RateLimitEntryScalarFieldEnum)[keyof typeof RateLimitEntryScalarFieldEnum]
+
+
+export const CacheEntryScalarFieldEnum = {
+  key: 'key',
+  value: 'value',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CacheEntryScalarFieldEnum = (typeof CacheEntryScalarFieldEnum)[keyof typeof CacheEntryScalarFieldEnum]
+
+
+export const AuditLogScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  action: 'action',
+  ipAddress: 'ipAddress',
+  userAgent: 'userAgent',
+  createdAt: 'createdAt'
+} as const
+
+export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typeof AuditLogScalarFieldEnum]
+
+
+export const PasswordResetTokenScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  token: 'token',
+  expiresAt: 'expiresAt',
+  usedAt: 'usedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type PasswordResetTokenScalarFieldEnum = (typeof PasswordResetTokenScalarFieldEnum)[keyof typeof PasswordResetTokenScalarFieldEnum]
 
 
 export const SortOrder = {

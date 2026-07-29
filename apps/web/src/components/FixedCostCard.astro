@@ -1,0 +1,766 @@
+---
+import { Icon } from "astro-icon/components";
+import { Button } from "@recetario/ui";
+
+interface Props {
+  id: number;
+  name: string;
+  type: "PERCENTAGE" | "AMOUNT";
+  base: "PER_BATCH" | "PER_UNIT" | "PER_HOUR";
+  value: number;
+  hours?: number | null;
+  isRecipeLevel: boolean;
+  recipeId?: number;
+  presentationId?: number;
+}
+
+const {
+  id,
+  name,
+  type,
+  base,
+  value,
+  hours,
+  isRecipeLevel,
+  recipeId,
+  presentationId,
+} = Astro.props;
+
+const typeLabels: Record<string, string> = {
+  PERCENTAGE: "Porcentaje",
+  AMOUNT: "Monto",
+};
+
+const baseLabels: Record<string, string> = {
+  PER_BATCH: "Por Mezcla",
+  PER_UNIT: "Por Unidad",
+  PER_HOUR: "Por Hora",
+};
+
+const typeBadgeColors: Record<string, string> = {
+  PERCENTAGE: "bg-turmeric-bg text-turmeric-solid border-turmeric-border",
+  AMOUNT: "bg-accent-50 text-accent-600 border-accent-200",
+};
+
+const baseBadgeColors: Record<string, string> = {
+  PER_BATCH: "bg-herb-bg text-herb-solid border-herb-border",
+  PER_UNIT: "bg-accent-50 text-accent-600 border-accent-200",
+  PER_HOUR: "bg-chili-bg text-chili-solid border-chili-border",
+};
+
+const displayValue =
+  type === "PERCENTAGE" ? `${value}%` : `$${Number(value).toFixed(2)}`;
+
+const ownerType = recipeId ? "recipe" : "presentation";
+const ownerId = recipeId || presentationId;
+---
+
+<fixed-cost-card
+  class="bg-card border-border flex flex-col rounded-2xl border p-5 shadow-sm transition-all"
+  data-mode="display"
+  data-id={id}
+  data-type={type}
+  data-base={base}
+  data-value={value}
+  data-hours={hours ?? ""}
+  data-owner-type={ownerType}
+>
+  <form method="post" class="flex flex-col">
+    <input type="hidden" name="action" value="update_fixed_cost" />
+    <input type="hidden" name="fixedCostId" value={id} />
+    <input type="hidden" name="ownerType" value={ownerType} />
+    <input type="hidden" name="ownerId" value={ownerId} />
+    <input type="hidden" name="_csrf" value={Astro.locals.csrfToken || ""} />
+
+    <!-- Display Mode -->
+    <div class="display-content flex flex-wrap items-center gap-3">
+      <div class="flex min-w-0 flex-1 flex-wrap items-center gap-2">
+        <span
+          class="fixed-cost-name text-foreground font-[family-name:var(--font-display)] text-base font-bold"
+          >{name}</span
+        >
+
+        <!-- Type Badge -->
+        <span
+          class={`type-badge inline-flex items-center rounded-full border px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wide ${typeBadgeColors[type]}`}
+        >
+          {typeLabels[type]}
+        </span>
+
+        <!-- Base Badge -->
+        <span
+          class={`base-badge inline-flex items-center rounded-full border px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wide ${baseBadgeColors[base]}`}
+        >
+          {baseLabels[base]}
+        </span>
+
+        <!-- Value -->
+        <span
+          class="fixed-cost-value text-foreground font-mono text-sm font-semibold tabular-nums"
+        >
+          {displayValue}
+        </span>
+
+        <!-- Hours (PER_HOUR only) -->
+        {
+          base === "PER_HOUR" && hours != null && (
+            <span class="fixed-cost-hours text-muted-foreground text-xs tabular-nums">
+              ({hours}h)
+            </span>
+          )
+        }
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex shrink-0 items-center gap-1">
+        <Button
+          variant="iconDanger"
+          iconOnly
+          icon="trash-2"
+          class="delete-btn hidden"
+          ariaLabel="Eliminar costo fijo"
+          title="Eliminar"
+        />
+        <Button
+          variant="iconAccent"
+          iconOnly
+          icon="pencil"
+          class="edit-btn"
+          ariaLabel="Editar costo fijo"
+          aria-pressed="false"
+          title="Editar"
+        />
+      </div>
+    </div>
+
+    <!-- Edit Mode -->
+    <div class="edit-content hidden space-y-4">
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <!-- Name -->
+        <div class="flex flex-col gap-1">
+          <label
+            class="text-subtle-foreground text-[11px] font-bold tracking-[0.16em] uppercase"
+          >
+            Nombre
+          </label>
+          <input
+            name="name"
+            type="text"
+            class="fixed-cost-name-input border-border bg-background text-foreground focus:ring-accent-500/20 rounded-xl border px-3 py-2 text-sm transition-all focus:ring-2 focus:outline-none"
+            value={name}
+            required
+          />
+        </div>
+
+        <!-- Type -->
+        <div class="flex flex-col gap-1">
+          <label
+            class="text-subtle-foreground text-[11px] font-bold tracking-[0.16em] uppercase"
+          >
+            Tipo
+          </label>
+          <select
+            name="type"
+            class="fixed-cost-type-select border-border bg-background text-foreground focus:ring-accent-500/20 rounded-xl border px-3 py-2 text-sm transition-all focus:ring-2 focus:outline-none"
+          >
+            <option value="PERCENTAGE" selected={type === "PERCENTAGE"}>
+              Porcentaje
+            </option>
+            <option value="AMOUNT" selected={type === "AMOUNT"}> Monto </option>
+          </select>
+        </div>
+
+        <!-- Base -->
+        <div class="flex flex-col gap-1">
+          <label
+            class="text-subtle-foreground text-[11px] font-bold tracking-[0.16em] uppercase"
+          >
+            Base
+          </label>
+          <select
+            name="base"
+            class="fixed-cost-base-select border-border bg-background text-foreground focus:ring-accent-500/20 rounded-xl border px-3 py-2 text-sm transition-all focus:ring-2 focus:outline-none"
+          >
+            <option value="PER_BATCH" selected={base === "PER_BATCH"}>
+              Por Mezcla
+            </option>
+            <option value="PER_UNIT" selected={base === "PER_UNIT"}>
+              Por Unidad
+            </option>
+            {
+              isRecipeLevel && (
+                <option value="PER_HOUR" selected={base === "PER_HOUR"}>
+                  Por Hora
+                </option>
+              )
+            }
+          </select>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <!-- Value -->
+        <div class="flex flex-col gap-1">
+          <label
+            class="text-subtle-foreground text-[11px] font-bold tracking-[0.16em] uppercase"
+          >
+            Valor
+          </label>
+          <input
+            name="value"
+            type="text"
+            inputmode="decimal"
+            class="fixed-cost-value-input border-border bg-background text-foreground focus:ring-accent-500/20 rounded-xl border px-3 py-2 font-mono text-sm transition-all focus:ring-2 focus:outline-none"
+            value={value}
+            required
+          />
+        </div>
+
+        <!-- Hours (shown conditionally via JS but always rendered for PER_HOUR context) -->
+        <div
+          class="hours-field flex flex-col gap-1"
+          style={base !== "PER_HOUR" ? "display:none" : undefined}
+        >
+          <label
+            class="text-subtle-foreground text-[11px] font-bold tracking-[0.16em] uppercase"
+          >
+            Horas
+          </label>
+          <input
+            name="hours"
+            type="text"
+            inputmode="decimal"
+            class="fixed-cost-hours-input border-border bg-background text-foreground focus:ring-accent-500/20 rounded-xl border px-3 py-2 font-mono text-sm transition-all focus:ring-2 focus:outline-none"
+            value={hours ?? 1}
+          />
+        </div>
+
+        <!-- Spacer for grid alignment -->
+        <div class="hidden sm:block"></div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div
+        class="border-border-light flex flex-wrap items-center justify-between gap-3 border-t pt-4"
+      >
+        <div class="flex items-center gap-2">
+          <Button variant="danger" icon="trash-2" class="edit-delete-btn">
+            Eliminar
+          </Button>
+        </div>
+        <div class="flex items-center gap-2">
+          <Button variant="secondary" class="cancel-btn"> Cancelar </Button>
+          <Button variant="primary" icon="check" type="submit">
+            Guardar
+          </Button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Error Display -->
+    <p class="fixed-cost-error text-danger mt-2 hidden text-xs font-semibold">
+    </p>
+  </form>
+
+  <!-- Delete Confirmation Dialog -->
+  <dialog
+    data-animated
+    class="delete-dialog backdrop:bg-backdrop/50 fixed inset-0 m-auto w-[calc(100vw-2rem)] max-w-md rounded-3xl p-0"
+  >
+    <div class="border-border bg-card rounded-3xl border p-6 shadow-2xl">
+      <div class="flex items-start gap-3">
+        <div
+          class="bg-danger-bg text-danger flex h-11 w-11 items-center justify-center rounded-2xl"
+        >
+          <Icon name="lucide:trash-2" size={18} />
+        </div>
+        <div>
+          <h2 class="text-foreground text-lg font-bold">
+            Confirmar eliminación
+          </h2>
+          <p class="text-muted-foreground mt-2 text-sm">
+            ¿Eliminar este costo fijo? Esta acción no se puede deshacer.
+          </p>
+        </div>
+      </div>
+
+      <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+        <button
+          type="button"
+          class="delete-cancel-btn border-border bg-card text-muted-foreground hover:bg-background inline-flex min-h-11 items-center justify-center rounded-xl border px-5 py-3 text-sm font-bold transition-colors"
+        >
+          Cancelar
+        </button>
+        <button
+          type="button"
+          class="delete-confirm-btn bg-danger-solid hover:bg-danger-hover inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-bold text-white transition-colors"
+        >
+          <Icon name="lucide:trash-2" size={16} /> Eliminar
+        </button>
+      </div>
+    </div>
+  </dialog>
+</fixed-cost-card>
+
+<script>
+  import { bindDialogBackdrop } from "@recetario/ui/dialog";
+
+  class FixedCostCard extends HTMLElement {
+    // Display elements
+    displayContent: HTMLDivElement | null = null;
+    editContent: HTMLDivElement | null = null;
+
+    // Buttons
+    btnEdit: HTMLButtonElement | null = null;
+    btnDelete: HTMLButtonElement | null = null;
+    btnEditDelete: HTMLButtonElement | null = null;
+    btnCancel: HTMLButtonElement | null = null;
+
+    // Inputs
+    inputName: HTMLInputElement | null = null;
+    selectType: HTMLSelectElement | null = null;
+    selectBase: HTMLSelectElement | null = null;
+    inputValue: HTMLInputElement | null = null;
+    inputHours: HTMLInputElement | null = null;
+    hoursField: HTMLDivElement | null = null;
+
+    // Display values
+    displayNameEl: HTMLSpanElement | null = null;
+    displayValueEl: HTMLSpanElement | null = null;
+    displayHoursEl: HTMLSpanElement | null = null;
+    typeBadge: HTMLSpanElement | null = null;
+    baseBadge: HTMLSpanElement | null = null;
+
+    // Dialogs
+    deleteDialog: HTMLDialogElement | null = null;
+    btnDeleteCancel: HTMLButtonElement | null = null;
+    btnDeleteConfirm: HTMLButtonElement | null = null;
+
+    // Form
+    form: HTMLFormElement | null = null;
+    errorEl: HTMLParagraphElement | null = null;
+
+    // State
+    isEditing: boolean = false;
+    isCreateMode: boolean = false;
+    originalName: string = "";
+    originalType: string = "";
+    originalBase: string = "";
+    originalValue: string = "0";
+    originalHours: string = "1";
+    escHandler: ((e: KeyboardEvent) => void) | null = null;
+    errorDismissTimeout: number | undefined = undefined;
+
+    connectedCallback() {
+      if (this.dataset.bound === "1") return;
+      this.dataset.bound = "1";
+
+      this.displayContent =
+        this.querySelector<HTMLDivElement>(".display-content");
+      this.editContent = this.querySelector<HTMLDivElement>(".edit-content");
+
+      this.btnEdit = this.querySelector<HTMLButtonElement>(".edit-btn");
+      this.btnDelete = this.querySelector<HTMLButtonElement>(".delete-btn");
+      this.btnEditDelete =
+        this.querySelector<HTMLButtonElement>(".edit-delete-btn");
+      this.btnCancel = this.querySelector<HTMLButtonElement>(".cancel-btn");
+
+      this.inputName = this.querySelector<HTMLInputElement>(
+        ".fixed-cost-name-input",
+      );
+      this.selectType = this.querySelector<HTMLSelectElement>(
+        ".fixed-cost-type-select",
+      );
+      this.selectBase = this.querySelector<HTMLSelectElement>(
+        ".fixed-cost-base-select",
+      );
+      this.inputValue = this.querySelector<HTMLInputElement>(
+        ".fixed-cost-value-input",
+      );
+      this.inputHours = this.querySelector<HTMLInputElement>(
+        ".fixed-cost-hours-input",
+      );
+      this.hoursField = this.querySelector<HTMLDivElement>(".hours-field");
+
+      this.displayNameEl =
+        this.querySelector<HTMLSpanElement>(".fixed-cost-name");
+      this.displayValueEl =
+        this.querySelector<HTMLSpanElement>(".fixed-cost-value");
+      this.displayHoursEl =
+        this.querySelector<HTMLSpanElement>(".fixed-cost-hours");
+      this.typeBadge = this.querySelector<HTMLSpanElement>(".type-badge");
+      this.baseBadge = this.querySelector<HTMLSpanElement>(".base-badge");
+
+      this.deleteDialog =
+        this.querySelector<HTMLDialogElement>(".delete-dialog");
+      this.btnDeleteCancel =
+        this.querySelector<HTMLButtonElement>(".delete-cancel-btn");
+      this.btnDeleteConfirm = this.querySelector<HTMLButtonElement>(
+        ".delete-confirm-btn",
+      );
+
+      this.form = this.querySelector<HTMLFormElement>("form");
+      this.errorEl =
+        this.querySelector<HTMLParagraphElement>(".fixed-cost-error");
+
+      this.isCreateMode = this.dataset.mode === "create";
+
+      if (this.isCreateMode) {
+        // Start in edit mode
+        this.displayContent?.classList.add("hidden");
+        this.editContent?.classList.remove("hidden");
+        this.isEditing = true;
+      } else {
+        // Edit toggle - only for display mode
+        this.btnEdit?.addEventListener("click", () => this.toggleEdit());
+      }
+      this.btnCancel?.addEventListener("click", () => this.toggleEdit(false));
+      this.btnDelete?.addEventListener("click", () => this.openDeleteDialog());
+      this.btnEditDelete?.addEventListener("click", () =>
+        this.openDeleteDialog(),
+      );
+
+      // Delete dialog
+      this.btnDeleteCancel?.addEventListener("click", () =>
+        this.closeDeleteDialog(),
+      );
+      this.btnDeleteConfirm?.addEventListener("click", () =>
+        this.deleteFixedCost(),
+      );
+
+      // Base select change - toggle hours field visibility
+      this.selectBase?.addEventListener("change", () =>
+        this.toggleHoursField(),
+      );
+
+      // Escape key while editing
+      this.escHandler = (e) => {
+        if (e.key === "Escape" && this.isEditing) {
+          this.toggleEdit(false);
+        }
+      };
+      document.addEventListener("keydown", this.escHandler);
+
+      // Bind dialog backdrop
+      if (this.deleteDialog) {
+        bindDialogBackdrop(this.deleteDialog);
+      }
+
+      // Form submission
+      this.form?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        if (!this.form) return;
+
+        if (!this.form.checkValidity()) {
+          this.form.reportValidity();
+          return;
+        }
+
+        const parsedValue = parseFloat(this.inputValue?.value || "");
+        if (!Number.isFinite(parsedValue) || parsedValue < 0) {
+          this.showError("El valor debe ser un número mayor o igual a 0.");
+          return;
+        }
+
+        try {
+          const formData = new FormData(this.form);
+          const response = await fetch(window.location.href, {
+            method: "POST",
+            headers: { Accept: "application/json" },
+            body: formData,
+          });
+
+          if (response.redirected) {
+            throw new Error(
+              "Tu sesión expiró. Recarga la página e inicia sesión nuevamente.",
+            );
+          }
+
+          if (!response.ok) {
+            const message = (await response.text()).trim();
+            throw new Error(message || "Hubo un error al guardar los cambios.");
+          }
+
+          const contentType = response.headers.get("content-type") || "";
+          if (!contentType.includes("application/json")) {
+            throw new Error("La respuesta del servidor no fue válida.");
+          }
+
+          const payload = await response.json().catch(() => null);
+          if (!payload?.fixedCost) {
+            throw new Error("La respuesta del servidor no fue válida.");
+          }
+
+          if (this.isCreateMode) {
+            // Replace with server-rendered display card
+            if (payload.fixedCostCardHtml) {
+              this.outerHTML = payload.fixedCostCardHtml;
+            }
+            window.location.href =
+              window.location.pathname + "?_fc=" + Date.now();
+            return;
+          }
+
+          this.applyFixedCost(payload.fixedCost);
+          this.toggleEdit(true);
+          window.location.href =
+            window.location.pathname + "?_fc=" + Date.now();
+        } catch (error) {
+          console.error(error);
+          const message =
+            error instanceof Error && error.message
+              ? error.message
+              : "Hubo un error al guardar los cambios.";
+          this.showError(message);
+        }
+      });
+    }
+
+    disconnectedCallback() {
+      if (this.escHandler) {
+        document.removeEventListener("keydown", this.escHandler);
+        this.escHandler = null;
+      }
+    }
+
+    toggleEdit(save = false) {
+      if (this.isCreateMode && !save) {
+        this.remove();
+        return;
+      }
+      this.isEditing = !this.isEditing;
+
+      if (this.isEditing) {
+        this.clearError();
+
+        // Store originals
+        this.originalName = this.inputName?.value || "";
+        this.originalType = this.selectType?.value || "";
+        this.originalBase = this.selectBase?.value || "";
+        this.originalValue = this.inputValue?.value || "0";
+        this.originalHours = this.inputHours?.value || "1";
+
+        // Show edit content, hide display content
+        this.displayContent?.classList.add("hidden");
+        this.editContent?.classList.remove("hidden");
+
+        if (this.btnEdit) {
+          this.btnEdit.setAttribute("aria-pressed", "true");
+          this.btnEdit.setAttribute("title", "Cancelar edición");
+          this.btnEdit.setAttribute("aria-label", "Cancelar edición");
+        }
+
+        if (this.btnDelete) {
+          this.btnDelete.classList.remove("hidden");
+          this.btnDelete.classList.add("inline-flex");
+        }
+      } else {
+        if (!save) {
+          // Revert to original
+          if (this.inputName) this.inputName.value = this.originalName;
+          if (this.selectType) this.selectType.value = this.originalType;
+          if (this.selectBase) this.selectBase.value = this.originalBase;
+          if (this.inputValue) this.inputValue.value = this.originalValue;
+          if (this.inputHours) this.inputHours.value = this.originalHours;
+          this.toggleHoursField();
+        }
+
+        // Show display content, hide edit content
+        this.displayContent?.classList.remove("hidden");
+        this.editContent?.classList.add("hidden");
+
+        if (this.btnEdit) {
+          this.btnEdit.setAttribute("aria-pressed", "false");
+          this.btnEdit.setAttribute("title", "Editar");
+          this.btnEdit.setAttribute("aria-label", "Editar costo fijo");
+        }
+
+        if (this.btnDelete) {
+          this.btnDelete.classList.add("hidden");
+          this.btnDelete.classList.remove("inline-flex");
+        }
+
+        this.closeDeleteDialog();
+      }
+    }
+
+    toggleHoursField() {
+      const base = this.selectBase?.value || "";
+      if (this.hoursField) {
+        this.hoursField.style.display = base === "PER_HOUR" ? "flex" : "none";
+      }
+    }
+
+    applyFixedCost(fixedCost: {
+      name?: string;
+      type?: string;
+      base?: string;
+      value?: number;
+      hours?: number | null;
+    }) {
+      if (fixedCost.name !== undefined) {
+        if (this.inputName) this.inputName.value = fixedCost.name;
+        if (this.displayNameEl) this.displayNameEl.textContent = fixedCost.name;
+      }
+      if (fixedCost.type !== undefined) {
+        if (this.selectType) this.selectType.value = fixedCost.type;
+        if (this.typeBadge) {
+          const labels: Record<string, string> = {
+            PERCENTAGE: "Porcentaje",
+            AMOUNT: "Monto",
+          };
+          this.typeBadge.textContent = labels[fixedCost.type] || fixedCost.type;
+
+          const colors: Record<string, string> = {
+            PERCENTAGE:
+              "bg-turmeric-bg text-turmeric-solid border-turmeric-border",
+            AMOUNT: "bg-accent-50 text-accent-600 border-accent-200",
+          };
+          this.typeBadge.className = `type-badge inline-flex items-center rounded-full border px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wide ${colors[fixedCost.type] || colors.PERCENTAGE}`;
+        }
+        this.dataset.type = fixedCost.type;
+      }
+      if (fixedCost.base !== undefined) {
+        if (this.selectBase) this.selectBase.value = fixedCost.base;
+        if (this.baseBadge) {
+          const labels: Record<string, string> = {
+            PER_BATCH: "Por Mezcla",
+            PER_UNIT: "Por Unidad",
+            PER_HOUR: "Por Hora",
+          };
+          this.baseBadge.textContent = labels[fixedCost.base] || fixedCost.base;
+
+          const colors: Record<string, string> = {
+            PER_BATCH: "bg-herb-bg text-herb-solid border-herb-border",
+            PER_UNIT: "bg-accent-50 text-accent-600 border-accent-200",
+            PER_HOUR: "bg-chili-bg text-chili-solid border-chili-border",
+          };
+          this.baseBadge.className = `base-badge inline-flex items-center rounded-full border px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wide ${colors[fixedCost.base] || colors.PER_BATCH}`;
+        }
+        this.toggleHoursField();
+        this.dataset.base = fixedCost.base;
+      }
+      if (fixedCost.value !== undefined) {
+        const val = Number(fixedCost.value);
+        if (this.inputValue) this.inputValue.value = String(val);
+        const type = this.selectType?.value || this.dataset.type || "AMOUNT";
+        const display =
+          type === "PERCENTAGE" ? `${val}%` : `$${val.toFixed(2)}`;
+        if (this.displayValueEl) this.displayValueEl.textContent = display;
+        this.dataset.value = String(val);
+      }
+      if (fixedCost.hours !== undefined) {
+        const hrs = fixedCost.hours;
+        if (this.inputHours)
+          this.inputHours.value = hrs != null ? String(hrs) : "";
+        if (this.displayHoursEl) {
+          if (hrs != null) {
+            this.displayHoursEl.textContent = `(${hrs}h)`;
+            this.displayHoursEl.classList.remove("hidden");
+          } else {
+            this.displayHoursEl.classList.add("hidden");
+          }
+        }
+        this.dataset.hours = hrs != null ? String(hrs) : "";
+      }
+    }
+
+    showError(message: string) {
+      if (!this.errorEl) return;
+      if (this.errorDismissTimeout) {
+        clearTimeout(this.errorDismissTimeout);
+      }
+      this.errorEl.textContent = message;
+      this.errorEl.classList.remove("hidden");
+    }
+
+    clearError() {
+      if (!this.errorEl) return;
+      this.errorEl.classList.add("hidden");
+      if (this.errorDismissTimeout) {
+        clearTimeout(this.errorDismissTimeout);
+        this.errorDismissTimeout = undefined;
+      }
+    }
+
+    openDeleteDialog() {
+      if (!(this.deleteDialog instanceof HTMLDialogElement)) return;
+      if (!this.deleteDialog.open) {
+        this.deleteDialog.showModal();
+      }
+    }
+
+    closeDeleteDialog() {
+      if (!(this.deleteDialog instanceof HTMLDialogElement)) return;
+      if (this.deleteDialog.open) {
+        this.deleteDialog.close();
+      }
+    }
+
+    async deleteFixedCost() {
+      if (!this.form) return;
+
+      if (this.btnDeleteConfirm) {
+        this.btnDeleteConfirm.disabled = true;
+        this.btnDeleteConfirm.classList.add("opacity-75", "cursor-not-allowed");
+      }
+
+      try {
+        const formData = new FormData(this.form);
+        formData.set("action", "delete_fixed_cost");
+
+        const response = await fetch(window.location.href, {
+          method: "POST",
+          headers: { Accept: "application/json" },
+          body: formData,
+        });
+
+        if (response.redirected) {
+          throw new Error(
+            "Tu sesión expiró. Recarga la página e inicia sesión nuevamente.",
+          );
+        }
+
+        if (!response.ok) {
+          const message = (await response.text()).trim();
+          throw new Error(
+            message || "Hubo un error al eliminar el costo fijo.",
+          );
+        }
+
+        const contentType = response.headers.get("content-type") || "";
+        if (!contentType.includes("application/json")) {
+          throw new Error("La respuesta del servidor no fue válida.");
+        }
+
+        const payload = await response.json().catch(() => null);
+        if (!payload?.deleted) {
+          throw new Error("La respuesta del servidor no fue válida.");
+        }
+
+        this.closeDeleteDialog();
+        this.remove();
+        window.location.href = window.location.pathname + "?_fc=" + Date.now();
+      } catch (error) {
+        console.error(error);
+        const message =
+          error instanceof Error && error.message
+            ? error.message
+            : "Hubo un error al eliminar el costo fijo.";
+        this.showError(message);
+      } finally {
+        if (this.btnDeleteConfirm) {
+          this.btnDeleteConfirm.disabled = false;
+          this.btnDeleteConfirm.classList.remove(
+            "opacity-75",
+            "cursor-not-allowed",
+          );
+        }
+      }
+    }
+  }
+
+  if (!customElements.get("fixed-cost-card")) {
+    customElements.define("fixed-cost-card", FixedCostCard);
+  }
+</script>

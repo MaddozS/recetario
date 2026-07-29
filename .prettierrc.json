@@ -1,0 +1,3 @@
+{
+  "extends": "@recetario/config/prettier.base.json"
+}

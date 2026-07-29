@@ -1,0 +1,550 @@
+---
+import { Button, SectionHeading } from "@recetario/ui";
+import Layout from "@/layouts/Layout.astro";
+import { apiFetch } from "@/lib/api-client";
+import { z } from "zod";
+import {
+  recipeSummarySchema,
+  recipeWithIngredientsSchema,
+} from "@recetario/types";
+import { hasFeature, isPro } from "@recetario/billing";
+import { PRODUCTION_BASIC_RECIPE_LIMIT } from "@/lib/constants";
+import { calculateProduction } from "@/lib/production-calculator";
+import type {
+  ProductionRecipeSelection,
+  ConsolidatedIngredient,
+  ProductionSummary,
+} from "@/lib/production-types";
+import UpgradePrompt from "@/components/UpgradePrompt.astro";
+import ProductionRecipeSelector from "@/components/ProductionRecipeSelector.astro";
+import ProductionIngredientsTable from "@/components/ProductionIngredientsTable.astro";
+import ProductionFinancialSummary from "@/components/ProductionFinancialSummary.astro";
+import ProductionRecipeBreakdown from "@/components/ProductionRecipeBreakdown.astro";
+
+if (!Astro.locals.session || !Astro.locals.user) {
+  return Astro.redirect("/sign-in");
+}
+
+const subscription = Astro.locals.subscription;
+const canAccess = hasFeature(subscription, "production_planner");
+const isProUser = isPro(subscription);
+const maxRecipes = isProUser ? Infinity : PRODUCTION_BASIC_RECIPE_LIMIT;
+
+let selections: ProductionRecipeSelection[] = [];
+let results: {
+  consolidatedIngredients: ConsolidatedIngredient[];
+  summary: ProductionSummary;
+} | null = null;
+
+let recipePresentations = new Map<number, { id: number; name: string }[]>();
+
+// GET handler — render from query params
+const recipeIdsParam = Astro.url.searchParams.get("recipes");
+const batchesParam = Astro.url.searchParams.get("batches");
+const presentationsParam = Astro.url.searchParams.get("presentations");
+
+if (canAccess && recipeIdsParam && batchesParam) {
+  const ids = recipeIdsParam.split(",").map(Number).filter(Number.isFinite);
+  const batchVals = batchesParam.split(",").map((v) => Number(v) || 1);
+  const presVals = presentationsParam
+    ? presentationsParam.split(",").map(Number)
+    : [];
+  selections = ids.map((id, i) => ({
+    recipeId: id,
+    batches: batchVals[i] || 1,
+    presentationId: Number.isFinite(presVals[i]) ? presVals[i] : undefined,
+  }));
+
+  if (selections.length > 0) {
+    const recipeIds = selections.map((s) => s.recipeId);
+    const allRecipesById = await apiFetch(
+      `/api/recipes/by-ids?ids=${recipeIds.join(",")}`,
+      { schema: z.array(recipeWithIngredientsSchema) },
+      Astro,
+    );
+    const recipeMap = new Map(allRecipesById.map((r) => [r.id, r]));
+    const validSelections = selections.filter((s) => recipeMap.has(s.recipeId));
+    const validRecipes = validSelections.map((s) => recipeMap.get(s.recipeId)!);
+
+    if (!isProUser && validSelections.length > PRODUCTION_BASIC_RECIPE_LIMIT) {
+      validSelections.length = PRODUCTION_BASIC_RECIPE_LIMIT;
+    }
+
+    results = calculateProduction(
+      validSelections.slice(
+        0,
+        isProUser ? undefined : PRODUCTION_BASIC_RECIPE_LIMIT,
+      ),
+      validRecipes.slice(
+        0,
+        isProUser ? undefined : PRODUCTION_BASIC_RECIPE_LIMIT,
+      ),
+    );
+  }
+}
+
+const allRecipes = canAccess
+  ? await apiFetch(
+      "/api/recipes",
+      { schema: z.array(recipeSummarySchema) },
+      Astro,
+    )
+  : [];
+const allRecipeData =
+  canAccess && allRecipes.length > 0
+    ? await apiFetch(
+        `/api/recipes/by-ids?ids=${allRecipes.map((r) => r.id).join(",")}`,
+        { schema: z.array(recipeWithIngredientsSchema) },
+        Astro,
+      )
+    : [];
+
+for (const r of allRecipeData) {
+  if (r && r.presentations.length > 0) {
+    recipePresentations.set(
+      r.id,
+      r.presentations.map((p) => ({ id: p.id, name: p.name })),
+    );
+  }
+}
+
+const recipeDataJson = JSON.stringify(allRecipeData.filter(Boolean));
+const hasUpgradeParam = Astro.url.searchParams.has("upgrade");
+const currentPage = "production";
+---
+
+<Layout
+  title="Planificador de Producción"
+  currentPage={currentPage}
+  showSideBar={true}
+  breadcrumbs={[{ label: "Planificador de Producción" }]}
+>
+  {
+    !canAccess ? (
+      <div class="mx-auto mt-16 max-w-lg px-4">
+        <UpgradePrompt
+          tier="basic"
+          feature="Planificador de producción"
+          description="Planifica hasta 3 recetas simultáneas y obtén costos consolidados, ingredientes totales y hoja de producción imprimible."
+        />
+      </div>
+    ) : !isProUser &&
+      hasUpgradeParam &&
+      selections.length > PRODUCTION_BASIC_RECIPE_LIMIT ? (
+      <div class="mx-auto mt-16 max-w-lg px-4">
+        <UpgradePrompt
+          tier="pro"
+          feature="Planificador de producción sin límites"
+          description="El plan Basic permite hasta 3 recetas por plan de producción. Actualiza a Pro para planificar recetas ilimitadas, guardar planes, lista de compras y más."
+        />
+      </div>
+    ) : (
+      <div class="mx-auto max-w-5xl space-y-6 pb-12">
+        <SectionHeading
+          icon="factory"
+          title="Planificador de Producción"
+          level="h1"
+        />
+
+        <ProductionRecipeSelector
+          recipes={allRecipes}
+          selections={selections}
+          recipePresentations={recipePresentations}
+          maxRecipes={maxRecipes}
+        />
+
+        <div id="production-results" class="space-y-6">
+          {results && (
+            <>
+              <ProductionIngredientsTable
+                ingredients={results.consolidatedIngredients}
+              />
+              <ProductionFinancialSummary summary={results.summary} />
+              <ProductionRecipeBreakdown recipes={results.summary.perRecipe} />
+              <div class="no-print flex justify-center">
+                <Button
+                  variant="secondary"
+                  icon="printer"
+                  onclick="window.print()"
+                >
+                  Imprimir hoja de producción
+                </Button>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    )
+  }
+</Layout>
+
+<script
+  type="application/json"
+  id="production-data"
+  is:inline
+  set:html={recipeDataJson}
+/>
+
+<script>
+  import { calculateProduction } from "../lib/production-calculator";
+  import type {
+    ConsolidatedIngredient,
+    ProductionSummary,
+    ProductionRecipeResult,
+    ProductionRecipeSelection,
+  } from "../lib/production-types";
+  import type { RecipeWithIngredients } from "@recetario/types";
+
+  let recipeData: RecipeWithIngredients[] = [];
+  let debounceTimer: ReturnType<typeof setTimeout> | undefined;
+  const BASIC_LIMIT = 3;
+  const formatCurrency = (value: number): string => `$${value.toFixed(2)}`;
+
+  function formatQty(value: number): string {
+    if (value < 1) return value.toFixed(3);
+    if (Number.isInteger(value)) return String(value);
+    return value.toFixed(2);
+  }
+
+  function smartQty(value: number, unit: string): string {
+    const u = unit.toLowerCase();
+    if ((u === "g" || u === "ml") && value >= 1000) {
+      return `${formatQty(value / 1000)} ${u === "g" ? "kg" : "lt"}`;
+    }
+    return `${formatQty(value)} ${unit}`;
+  }
+
+  function escHtml(str: string): string {
+    const div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function marginColor(margin: number): string {
+    if (margin > 30) return "text-success";
+    if (margin > 15) return "text-warning";
+    return "text-danger";
+  }
+
+  function renderIngredientsTable(
+    ingredients: ConsolidatedIngredient[],
+  ): string {
+    if (ingredients.length === 0) return "";
+    const rows = ingredients
+      .map(
+        (ing) => `
+        <tr class="hover:bg-hover-muted transition-colors dark:hover:bg-hover-muted">
+          <td class="px-6 py-4 break-words">
+            <div>
+              <p class="text-foreground font-semibold">${escHtml(ing.name)}</p>
+              ${ing.brand ? `<p class="text-subtle-foreground mt-0.5 text-xs">${escHtml(ing.brand)}${ing.supplier ? " · " + escHtml(ing.supplier) : ""}</p>` : ""}
+            </div>
+          </td>
+          <td class="text-secondary-foreground px-6 py-4 font-mono font-semibold whitespace-nowrap tabular-nums" colspan="2">${smartQty(ing.totalQuantity, ing.unit)}</td>
+          <td class="text-secondary-foreground px-6 py-4 font-mono text-sm tabular-nums whitespace-nowrap">${formatCurrency(ing.unitCost)}/${ing.unit}</td>
+          <td class="text-foreground px-6 py-4 font-mono font-semibold tabular-nums whitespace-nowrap">${formatCurrency(ing.totalCost)}</td>
+          <td class="px-6 py-4 break-words">
+            <div class="flex flex-wrap gap-1.5">${ing.sourceRecipes
+              .map(
+                (src) => `
+              <span class="bg-muted text-secondary-foreground inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium">
+                <span class="truncate max-w-[20ch]">${escHtml(src.recipeName)}</span>
+                <span class="text-subtle-foreground shrink-0">(${src.quantity < 1 ? src.quantity.toFixed(2) : Number.isInteger(src.quantity) ? src.quantity : src.quantity.toFixed(1)} ${ing.unit})</span>
+              </span>`,
+              )
+              .join("")}</div>
+          </td>
+        </tr>`,
+      )
+      .join("");
+
+    return `<div class="production-sheet ingredients-table border-border bg-card overflow-hidden rounded-2xl border shadow-sm">
+  <div class="border-border border-b px-6 py-4">
+    <h2 class="text-foreground text-lg font-bold">Ingredientes consolidados</h2>
+    <p class="text-muted-foreground mt-0.5 text-sm">${ingredients.length} ingrediente${ingredients.length !== 1 ? "s" : ""} en total</p>
+  </div>
+  <div class="overflow-x-auto">
+    <table class="min-w-full text-left table-fixed">
+      <thead class="bg-background text-muted-foreground text-[11px] font-bold tracking-[0.16em] uppercase">
+        <tr><th class="px-6 py-4 w-[35%]">Ingrediente</th><th class="px-6 py-4 w-[17%]" colspan="2">Cantidad total</th><th class="px-6 py-4 w-[13%]">Costo unitario</th><th class="px-6 py-4 w-[13%]">Costo total</th><th class="px-6 py-4 w-[22%]">Recetas</th></tr>
+      </thead>
+      <tbody class="divide-border-light divide-y">${rows}</tbody>
+    </table>
+  </div>
+</div>`;
+  }
+
+  function renderFinancialSummary(summary: ProductionSummary): string {
+    const {
+      totalIngredientsCost,
+      totalOperationalCost,
+      projectedRevenue,
+      estimatedProfit,
+      effectiveMargin,
+    } = summary;
+    const noRevenue = projectedRevenue <= 0;
+
+    const financialRow = (
+      color: string,
+      label: string,
+      value: string,
+      sub: string,
+      secondaryVal: string,
+    ) => {
+      const borderMap: Record<string, string> = {
+        danger: "border-l-danger-solid/60",
+        muted: "border-l-muted-foreground/30",
+        accent: "border-l-accent-400/60",
+        success: "border-l-success-solid/60",
+      };
+      const borderCls = borderMap[color] || "border-l-transparent";
+      const secondary = secondaryVal
+        ? `<p class="text-subtle-foreground mt-0.5 font-mono text-[11px] font-semibold">${secondaryVal}</p>`
+        : "";
+      return `<div class="flex flex-col justify-between border-l-[3px] py-1 pl-3 sm:pl-4 ${borderCls}">
+        <p class="text-subtle-foreground mb-1.5 text-[10px] font-black tracking-wider uppercase">${label}</p>
+        <div>
+          <p class="truncate font-mono text-2xl leading-none font-semibold tabular-nums text-foreground 2xl:text-3xl" title="${value}">${value}</p>
+          <p class="text-subtle-foreground mt-1.5 line-clamp-1 text-[11px] font-semibold">${sub}</p>
+          ${secondary}
+        </div>
+      </div>`;
+    };
+
+    return `<div class="production-sheet financial-summary">
+  <div class="bg-card rounded-2xl border border-border shadow-sm p-5 sm:p-6">
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      ${financialRow("danger", "Costo Insumos", formatCurrency(totalIngredientsCost), "Insumos de todas las recetas", "")}
+      ${financialRow("muted", "Costo Operativo", formatCurrency(totalOperationalCost), "Servicios, labor, etc.", "")}
+      ${financialRow("accent", "Ingresos Proyectados", noRevenue ? "N/A" : formatCurrency(projectedRevenue), noRevenue ? "Sin precios de venta configurados" : "Ventas totales proyectadas", "")}
+      ${financialRow("success", "Ganancia Estimada", noRevenue ? "Sin datos" : formatCurrency(estimatedProfit) + " (" + effectiveMargin.toFixed(1) + "%)", noRevenue ? "" : "Margen de ganancia estimado", "")}
+    </div>
+  </div>
+</div>`;
+  }
+
+  function renderRecipeBreakdown(recipes: ProductionRecipeResult[]): string {
+    if (recipes.length === 0) return "";
+    const items = recipes
+      .map((r) => {
+        const bestId = r.presentations.reduce(
+          (best: { id: number; margin: number }, p) => {
+            if (!p.revenue || p.revenue <= 0 || r.totalCost <= 0) return best;
+            const m = ((p.revenue - r.totalCost) / p.revenue) * 100;
+            return m > best.margin ? { id: p.id, margin: m } : best;
+          },
+          { id: -1, margin: -Infinity },
+        ).id;
+
+        const presRows = r.presentations
+          .map((p) => {
+            const margin =
+              p.revenue > 0 && r.totalCost > 0
+                ? ((p.revenue - r.totalCost) / p.revenue) * 100
+                : null;
+            const isSel = p.id === r.selectedPresentationId;
+            const isBest = p.id === bestId;
+            return `<tr class="hover:bg-hover-muted dark:hover:bg-hover-muted${isSel ? " bg-accent-50/50" : ""}">
+          <td class="text-foreground px-4 py-3 font-medium align-top">
+            <div class="text-foreground font-medium">${escHtml(p.name)}</div>
+            <div class="mt-1 flex flex-wrap gap-1">${isSel ? '<span class="bg-accent-100 text-accent-700 border-accent-200 inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-bold whitespace-nowrap">Seleccionada</span>' : ""}${isBest && margin !== null ? '<span class="bg-success-bg text-success border-success-border inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-bold whitespace-nowrap">Más rentable</span>' : ""}</div>
+          </td>
+          <td class="text-secondary-foreground px-4 py-3 font-mono tabular-nums">${p.totalUnits}</td>
+          <td class="text-secondary-foreground px-4 py-3 font-mono tabular-nums">${formatCurrency(p.unitCost)}</td>
+          <td class="px-4 py-3 font-mono tabular-nums">${p.salePrice ? `<span class="text-secondary-foreground">${formatCurrency(p.salePrice)}</span>` : '<span class="text-warning">Sin precio</span>'}</td>
+          <td class="text-foreground px-4 py-3 font-mono font-semibold tabular-nums">${p.revenue > 0 ? formatCurrency(p.revenue) : '<span class="text-warning">Sin precio</span>'}</td>
+          <td class="px-4 py-3 font-mono font-semibold tabular-nums">${margin !== null ? `<span class="${marginColor(margin)}">${margin.toFixed(1)}%</span>` : '<span class="text-muted-foreground">—</span>'}</td>
+        </tr>`;
+          })
+          .join("");
+
+        return `<details class="border-border bg-card overflow-hidden rounded-2xl border shadow-sm">
+    <summary class="hover:bg-muted flex cursor-pointer items-center justify-between gap-4 px-6 py-4 transition-colors">
+      <div class="min-w-0"><div class="flex items-center gap-2"><h3 class="text-foreground truncate text-base font-bold">${escHtml(r.recipeName)}</h3>${r.category ? `<span class="bg-muted text-muted-foreground border-border shrink-0 rounded-full border px-2.5 py-0.5 text-[11px] font-semibold">${escHtml(r.category)}</span>` : ""}</div>
+        <p class="text-muted-foreground mt-0.5 text-xs">${r.batches} batch${r.batches !== 1 ? "es" : ""} · Insumos: ${formatCurrency(r.ingredientsCost)} · Operativo: ${formatCurrency(r.operationalCost)} · Total: ${formatCurrency(r.totalCost)}</p>
+      </div>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-subtle-foreground shrink-0"><polyline points="6 9 12 15 18 9"/></svg>
+    </summary>
+    <div class="space-y-6 px-6 pb-6">
+       <div><h4 class="text-muted-foreground mb-3 text-xs font-bold tracking-[0.16em] uppercase">Costos</h4>
+         <div class="grid grid-cols-3 gap-3">
+           <div class="bg-muted/40 rounded-xl p-3 border-l-[3px] border-l-danger-solid/60"><p class="text-muted-foreground text-[11px] font-semibold">Insumos</p><p class="text-foreground mt-1 text-lg font-bold tabular-nums">${formatCurrency(r.ingredientsCost)}</p></div>
+           <div class="bg-muted/40 rounded-xl p-3 border-l-[3px] border-l-muted-foreground/30"><p class="text-muted-foreground text-[11px] font-semibold">Operativo</p><p class="text-foreground mt-1 text-lg font-bold tabular-nums">${formatCurrency(r.operationalCost)}</p></div>
+           <div class="bg-muted/40 rounded-xl p-3 border-l-[3px] border-l-accent-400/60"><p class="text-muted-foreground text-[11px] font-semibold">Total</p><p class="text-foreground mt-1 text-lg font-bold tabular-nums">${formatCurrency(r.totalCost)}</p></div>
+        </div>
+      </div>
+      ${r.presentations.length > 0 ? `<div><h4 class="text-muted-foreground mb-3 text-xs font-bold tracking-[0.16em] uppercase">Presentaciones</h4><div class="border-border overflow-x-auto rounded-xl border"><table class="min-w-full text-left text-sm"><thead class="bg-background text-muted-foreground text-[11px] font-bold tracking-[0.16em] uppercase"><tr><th class="px-4 py-3">Presentación</th><th class="px-4 py-3">Unidades totales</th><th class="px-4 py-3">Costo unitario</th><th class="px-4 py-3">Precio venta</th><th class="px-4 py-3">Ingreso</th><th class="px-4 py-3">Margen</th></tr></thead><tbody class="divide-border-light divide-y">${presRows}</tbody></table></div></div>` : '<div class="bg-muted rounded-xl p-4 text-center"><p class="text-muted-foreground text-sm">Sin presentaciones configuradas</p></div>'}
+    </div>
+  </details>`;
+      })
+      .join("");
+
+    return `<div class="production-sheet recipe-breakdown space-y-4">
+  <h2 class="text-foreground flex items-center gap-2 text-lg font-bold"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-accent-600"><path d="M3 7v6a4 4 0 0 0 4 4h10a4 4 0 0 0 4-4V7"/><path d="M12 3v16"/><path d="m8 11 4-4 4 4"/></svg>Desglose por receta</h2>${items}</div>`;
+  }
+
+  function readSelections(isPro: boolean): ProductionRecipeSelection[] {
+    const sel: ProductionRecipeSelection[] = [];
+    document
+      .querySelectorAll<HTMLInputElement>(
+        '#recipe-selector-form input[name="recipe_id"]:checked',
+      )
+      .forEach((cb) => {
+        const recipeId = Number(cb.value);
+        const row = cb.closest("[data-recipe-row]") as HTMLElement;
+        if (!isPro && sel.length >= BASIC_LIMIT) return;
+        sel.push({
+          recipeId,
+          batches:
+            Number(
+              row?.querySelector<HTMLInputElement>('input[name="batches"]')
+                ?.value,
+            ) || 1,
+          presentationId:
+            Number(
+              row?.querySelector<HTMLSelectElement>(
+                'select[name="presentation_id"]',
+              )?.value,
+            ) || undefined,
+        });
+      });
+    return sel;
+  }
+
+  function updateURL(selections: ProductionRecipeSelection[]) {
+    const p = new URLSearchParams();
+    p.set("recipes", selections.map((s) => s.recipeId).join(","));
+    p.set("batches", selections.map((s) => s.batches).join(","));
+    const presIds = selections
+      .map((s) => s.presentationId)
+      .filter((id) => id !== undefined);
+    if (presIds.length > 0) p.set("presentations", presIds.join(","));
+    history.replaceState(null, "", `/produccion?${p.toString()}`);
+  }
+
+  function updateCounter(count: number) {
+    const el = document.getElementById("selected-count");
+    if (el) el.textContent = String(count);
+  }
+
+  function recalculate() {
+    const isPro = !document.querySelector("[data-basic-limit]");
+    const sel = readSelections(isPro);
+    const recipes = sel
+      .map((s) => recipeData.find((r) => r.id === s.recipeId))
+      .filter((r): r is RecipeWithIngredients => r !== undefined);
+
+    const resultsEl = document.getElementById("production-results");
+    if (!resultsEl) return;
+
+    if (sel.length === 0 || recipes.length === 0) {
+      resultsEl.innerHTML = "";
+      updateURL(sel);
+      updateCounter(0);
+      return;
+    }
+
+    const result = calculateProduction(sel, recipes);
+    resultsEl.innerHTML =
+      renderIngredientsTable(result.consolidatedIngredients) +
+      renderFinancialSummary(result.summary) +
+      renderRecipeBreakdown(result.summary.perRecipe) +
+      '<div class="flex justify-center no-print"><button onclick="window.print()" class="border-border bg-card text-muted-foreground hover:bg-background inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border px-6 py-3 text-sm font-bold transition-colors"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> Imprimir hoja de producción</button></div>';
+    updateURL(sel);
+    updateCounter(sel.length);
+  }
+
+  function bindEvents() {
+    const form = document.getElementById("recipe-selector-form");
+    if (!form || form.dataset.calcBound === "1") return;
+    form.dataset.calcBound = "1";
+    form.addEventListener("submit", (e) => e.preventDefault());
+
+    const calcBtn = document.getElementById("calc-production-btn");
+    if (calcBtn) calcBtn.addEventListener("click", () => recalculate());
+
+    const isPro = !form.hasAttribute("data-basic-limit");
+    function onChange() {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(recalculate, 150);
+    }
+
+    function syncDisabledStates() {
+      if (isPro || !form) return;
+      const checkboxes = form.querySelectorAll<HTMLInputElement>(
+        'input[name="recipe_id"]',
+      );
+      const checkedCount = form.querySelectorAll<HTMLInputElement>(
+        'input[name="recipe_id"]:checked',
+      ).length;
+      const atLimit = checkedCount >= BASIC_LIMIT;
+      checkboxes.forEach((cb) => {
+        if (!cb.checked) {
+          cb.disabled = atLimit;
+          const row = cb.closest("[data-recipe-row]");
+          if (row) {
+            if (atLimit) row.classList.add("opacity-40");
+            else row.classList.remove("opacity-40");
+          }
+        }
+      });
+    }
+
+    form.addEventListener("change", (e) => {
+      const t = e.target as HTMLElement;
+      if (t.matches('input[name="recipe_id"]')) {
+        const row = t.closest("[data-recipe-row]");
+        const controls = row?.querySelector(".recipe-controls") as HTMLElement;
+        if ((t as HTMLInputElement).checked) {
+          row?.classList.add("bg-accent-50", "ring-accent-200", "ring-1");
+          row?.classList.remove("hover:bg-muted", "opacity-40");
+          controls?.classList.remove("hidden");
+        } else {
+          row?.classList.remove("bg-accent-50", "ring-accent-200", "ring-1");
+          row?.classList.add("hover:bg-muted");
+          controls?.classList.add("hidden");
+        }
+        if (!isPro) {
+          const checkedCount = form.querySelectorAll<HTMLInputElement>(
+            'input[name="recipe_id"]:checked',
+          ).length;
+          if ((t as HTMLInputElement).checked && checkedCount > BASIC_LIMIT) {
+            (t as HTMLInputElement).checked = false;
+            row?.classList.remove("bg-accent-50", "ring-accent-200", "ring-1");
+            row?.classList.add("hover:bg-muted");
+            controls?.classList.add("hidden");
+            syncDisabledStates();
+            return;
+          }
+          syncDisabledStates();
+        }
+        onChange();
+      } else if (
+        t.matches('input[name="batches"]') ||
+        t.matches('select[name="presentation_id"]')
+      ) {
+        onChange();
+      }
+    });
+    form.addEventListener("input", (e) => {
+      const t = e.target as HTMLElement;
+      if (t.matches('input[name="batches"]')) onChange();
+    });
+  }
+
+  function init() {
+    const dataEl = document.getElementById("production-data");
+    if (dataEl) {
+      try {
+        recipeData = JSON.parse(dataEl.textContent || "[]");
+      } catch {
+        recipeData = [];
+      }
+    }
+    bindEvents();
+  }
+
+  document.addEventListener("astro:page-load", init);
+  document.addEventListener("astro:after-swap", init);
+  if (document.readyState !== "loading") init();
+</script>

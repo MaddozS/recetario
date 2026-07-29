@@ -1,0 +1,39 @@
+name: Deploy Web
+
+on:
+  push:
+    branches: [dev, master]
+
+concurrency:
+  group: deploy-web-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: ${{ github.ref_name == 'master' && 'production' || 'staging' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+      - uses: actions/cache@v4
+        with:
+          path: .turbo/cache
+          key: turbo-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            turbo-${{ runner.os }}-
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec turbo build --filter=@recetario/web
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      - run: rm -f apps/web/.wrangler/deploy/config.json
+      - run: |
+          pnpm --filter @recetario/web exec wrangler deploy \
+            --env=${{ github.ref_name == 'master' && 'production' || 'staging' }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

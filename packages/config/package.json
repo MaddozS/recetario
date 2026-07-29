@@ -1,0 +1,37 @@
+{
+  "name": "@recetario/config",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "files": [
+    "tsconfig.base.json",
+    "eslint.base.cjs",
+    "prettier.base.json",
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsc --build tsconfig.build.json"
+  },
+  "exports": {
+    "./tsconfig.base.json": "./tsconfig.base.json",
+    "./eslint.base.cjs": "./eslint.base.cjs",
+    "./prettier.base.json": "./prettier.base.json",
+    "./env": {
+      "types": "./dist/src/env.d.ts",
+      "default": "./dist/src/env.js"
+    },
+    "./request": {
+      "types": "./dist/src/request.d.ts",
+      "default": "./dist/src/request.js"
+    },
+    "./lazy": {
+      "types": "./dist/src/lazy.d.ts",
+      "default": "./dist/src/lazy.js"
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^25.8.0",
+    "typescript": "^6.0.0"
+  }
+}

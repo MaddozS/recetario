@@ -1,0 +1,38 @@
+{
+  "name": "@recetario/db",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "default": "./dist/src/index.js"
+    }
+  },
+  "files": ["dist", "prisma", "generated"],
+  "scripts": {
+    "build": "tsc --build tsconfig.build.json && cp generated/prisma/internal/query_compiler_fast_bg.wasm generated/prisma/internal/query_compiler_fast_bg.js dist/generated/prisma/internal/",
+    "generate": "prisma generate && node scripts/patch-prisma-worker-client.mjs",
+    "migrate": "prisma migrate dev",
+    "deploy": "prisma migrate deploy",
+    "studio": "prisma studio",
+    "seed": "tsx prisma/seed.ts",
+    "seed:fixed-costs": "tsx prisma/seed-fixed-costs.ts"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "7.8.0",
+    "@prisma/client": "7.8.0",
+    "@recetario/config": "workspace:^",
+    "@recetario/types": "workspace:^",
+    "dotenv": "17.4.2",
+    "pg": "8.20.0"
+  },
+  "devDependencies": {
+    "prisma": "7.8.0",
+    "tsx": "4.22.0",
+    "typescript": "^6.0.0",
+    "@types/pg": "8.20.0"
+  }
+}

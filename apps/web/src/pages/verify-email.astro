@@ -1,0 +1,150 @@
+---
+import { Icon } from "astro-icon/components";
+import { Button } from "@recetario/ui";
+import LandingLayout from "@/layouts/LandingLayout.astro";
+
+const rawCallback = Astro.url.searchParams.get("callbackURL");
+const callbackURL =
+  rawCallback && rawCallback.startsWith("/") && rawCallback !== "/" && !rawCallback.includes("//") && !rawCallback.includes(":")
+    ? rawCallback
+    : "/sign-in";
+---
+
+<LandingLayout>
+  <nav
+    class="border-border bg-background/80 fixed inset-x-0 top-0 z-50 border-b backdrop-blur-xl"
+  >
+    <div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
+      <a href="/" class="flex shrink-0 items-center gap-2.5">
+        <img
+          src="/kitchcalc_logo.svg"
+          alt="KitchCalc"
+          class="h-9 w-9 rounded-xl"
+        />
+        <span class="text-foreground text-lg font-black">KitchCalc</span>
+      </a>
+    </div>
+  </nav>
+  <div class="flex min-h-[80vh] items-center justify-center px-4 pt-20">
+    <div
+      class="bg-card shadow-accent-tint relative w-full max-w-sm rounded-2xl p-10 pt-12 text-center shadow-lg"
+    >
+      <div
+        aria-hidden="true"
+        class="bg-accent-500 absolute top-0 right-8 left-8 h-1 rounded-full"
+      >
+      </div>
+
+      <div id="verify-loading" class="flex flex-col items-center">
+        <div
+          class="bg-accent-50 mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl"
+        >
+          <svg
+            class="text-accent-600 h-7 w-7 animate-spin"
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            ><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg
+          >
+        </div>
+        <h1 class="text-foreground text-2xl font-black">Verificando...</h1>
+        <p class="text-muted-foreground mt-2 text-sm">
+          Estamos verificando tu email.
+        </p>
+      </div>
+
+      <div id="verify-success" class="hidden flex-col items-center">
+        <div
+          class="bg-success-bg mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl"
+        >
+          <Icon name="lucide:mail-check" size={28} class="text-success" />
+        </div>
+        <h1 class="text-foreground text-2xl font-black">Email verificado</h1>
+        <p class="text-muted-foreground mt-2 text-sm">
+          Tu email ha sido verificado correctamente.
+        </p>
+        <div class="mt-6">
+          <Button variant="primary" href={callbackURL} class="w-full">
+            Iniciar sesión
+          </Button>
+        </div>
+      </div>
+
+      <div id="verify-error" class="hidden flex-col items-center">
+        <div
+          class="bg-danger-bg mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl"
+        >
+          <Icon name="lucide:alert-triangle" size={28} class="text-danger" />
+        </div>
+        <h1 class="text-foreground text-2xl font-black">
+          Error de verificación
+        </h1>
+        <p class="text-muted-foreground mt-2 text-sm" id="verify-error-msg">
+          El enlace de verificación es inválido o ha expirado.
+        </p>
+        <div class="mt-6">
+          <Button variant="primary" href="/sign-in" class="w-full">
+            Ir al inicio de sesión
+          </Button>
+        </div>
+      </div>
+    </div>
+  </div>
+</LandingLayout>
+
+<script>
+  function setupVerifyEmail() {
+    const loadingEl = document.getElementById("verify-loading");
+    const successEl = document.getElementById("verify-success");
+    const errorEl = document.getElementById("verify-error");
+    const errorMsgEl = document.getElementById("verify-error-msg");
+    if (!loadingEl || !successEl || !errorEl || !errorMsgEl) return;
+    if (loadingEl.dataset.bound) return;
+    loadingEl.dataset.bound = "1";
+
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("token");
+    const safeCallback = params.get("callbackURL");
+    const callbackURL =
+      safeCallback && safeCallback.startsWith("/") && safeCallback !== "/" && !safeCallback.includes("//") && !safeCallback.includes(":")
+        ? safeCallback
+        : "/sign-in";
+
+    if (!token) {
+      loadingEl.classList.add("hidden");
+      errorEl.classList.remove("hidden");
+      errorMsgEl.textContent =
+        "No se encontr\u00f3 el token de verificaci\u00f3n.";
+      return;
+    }
+
+    import("@recetario/auth/client")
+      .then(async ({ authClient }) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await (authClient as any).verifyEmail({ query: { token } });
+        sessionStorage.removeItem("kitchcalc:signup_email");
+        loadingEl.classList.add("hidden");
+        successEl.classList.remove("hidden");
+        const btn =
+          document.querySelector<HTMLAnchorElement>("#verify-success a");
+        if (btn) btn.href = callbackURL;
+      })
+      .catch((error) => {
+        loadingEl.classList.add("hidden");
+        errorEl.classList.remove("hidden");
+        errorMsgEl.textContent =
+          (error as { message?: string })?.message ||
+          "El enlace de verificaci\u00f3n es inv\u00e1lido o ha expirado.";
+      });
+  }
+
+  document.addEventListener("astro:page-load", setupVerifyEmail);
+  document.addEventListener("astro:after-swap", setupVerifyEmail);
+  setupVerifyEmail();
+</script>

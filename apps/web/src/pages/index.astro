@@ -1,0 +1,37 @@
+---
+import LandingLayout from "@/layouts/LandingLayout.astro";
+import LandingNavbar from "@/components/landing/LandingNavbar.astro";
+import HeroSection from "@/components/landing/HeroSection.astro";
+import FeaturesSection from "@/components/landing/FeaturesSection.astro";
+import HowItWorksSection from "@/components/landing/HowItWorksSection.astro";
+import PricingSection from "@/components/landing/PricingSection.astro";
+import CTASection from "@/components/landing/CTASection.astro";
+import LandingFooter from "@/components/landing/LandingFooter.astro";
+import { buildPricingPlans } from "@recetario/billing";
+import { apiFetch } from "@/lib/api-client";
+import { planSchema } from "@recetario/types";
+import { z } from "zod";
+
+const isAuthenticated = Boolean(Astro.locals.user && Astro.locals.session);
+const rawPlans = await apiFetch(
+  "/api/billing/plans",
+  { schema: z.array(planSchema) },
+  Astro,
+).catch((e: unknown) => {
+  console.error("[landing/pricing] plans fetch failed, rendering with empty prices:", e);
+  return [];
+});
+const plans = buildPricingPlans(rawPlans);
+---
+
+<LandingLayout>
+  <LandingNavbar isAuthenticated={isAuthenticated} />
+  <main id="main-content" tabindex="-1">
+    <HeroSection />
+    <FeaturesSection />
+    <HowItWorksSection />
+    <PricingSection isAuthenticated={isAuthenticated} plans={plans} />
+    <CTASection />
+  </main>
+  <LandingFooter />
+</LandingLayout>
