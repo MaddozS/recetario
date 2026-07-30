@@ -26,7 +26,13 @@ import { UNIT_OPTIONS } from '@/lib/constants';
 import FeedbackAlert from '../../components/FeedbackAlert.astro';
 import RecipeInstructions from '../../components/RecipeInstructions.astro';
 import InstructionsEditor from '../../components/InstructionsEditor.astro';
-import { Button, Badge, FinancialSummary, SectionHeading, Card } from "@recetario/ui";
+import Button from "../../components/ui/Button.astro";
+import Badge from "../../components/ui/Badge.astro";
+import FinancialSummary from "../../components/ui/FinancialSummary.astro";
+import SectionHeading from "../../components/ui/SectionHeading.astro";
+import Card from "../../components/ui/Card.astro";
+
+
 import RecipeActionsMenu from "../../components/RecipeActionsMenu.astro";
 import RecipeFixedCosts from "../../components/RecipeFixedCosts.astro";
 
@@ -1424,7 +1430,7 @@ const financialEditFields = buildFinancialEditFields();
   </div>
 
 <script>
-  import { bindDialogBackdrop } from "@recetario/ui/dialog";
+  import { bindDialogBackdrop } from "../../lib/dialog";
 
   const KEY = 'recetario.showComments';
   const presentationDialogId = 'create-presentation-dialog';

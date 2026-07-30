@@ -1,6 +1,7 @@
 ---
 import { Icon } from "astro-icon/components";
-import { Button } from "@recetario/ui";
+import Button from "./ui/Button.astro";
+
 
 export type BreadcrumbItem = { label: string; href?: string };
 
@@ -170,7 +171,7 @@ const parentHref = parentItem?.href ?? "";
 
 <script>
   import { signOut } from "@recetario/auth/client";
-  import { showLoadingOverlay } from "@recetario/ui/loading-overlay";
+  import { showLoadingOverlay } from "../lib/loading-overlay";
 
   function setupSignOut() {
     const button = document.getElementById("sign-out-button");

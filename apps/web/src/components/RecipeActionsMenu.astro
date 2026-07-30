@@ -1,6 +1,7 @@
 ---
 import { Icon } from "astro-icon/components";
-import { Button } from "@recetario/ui";
+import Button from "./ui/Button.astro";
+
 
 interface Props {
   recipeId: number;
@@ -210,7 +211,7 @@ const deleteFormId = `ram-del-form-${recipeId}`;
 </style>
 
 <script>
-  import { bindDialogBackdrop } from "@recetario/ui/dialog";
+  import { bindDialogBackdrop } from "../lib/dialog";
 
   function setupRecipeActionsMenus() {
     const triggers = document.querySelectorAll(

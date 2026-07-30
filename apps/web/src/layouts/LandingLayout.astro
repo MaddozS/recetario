@@ -1,7 +1,7 @@
 ---
 import "@/styles/global.css";
 import { ClientRouter } from "astro:transitions";
-import { getAccentCssVars } from "@recetario/ui/accent-colors";
+import { getAccentCssVars } from "../lib/accent-colors";
 
 const landingTheme = Astro.cookies.get("landing_theme")?.value ?? "light";
 const accentCssVars = getAccentCssVars("coral", landingTheme);
@@ -249,7 +249,7 @@ const accentCssVars = getAccentCssVars("coral", landingTheme);
       }
     </style>
     <script>
-      import { getAccentCssVars } from "@recetario/ui/accent-colors";
+    import { getAccentCssVars } from "../lib/accent-colors";
 
       declare global {
         interface Window {

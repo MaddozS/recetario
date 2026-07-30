@@ -1,6 +1,6 @@
 ---
 import { Icon } from "astro-icon/components";
-import { Button } from "@recetario/ui";
+import Button from "./ui/Button.astro";
 
 interface PresentationFixedCostLine {
   id: number;
@@ -286,7 +286,7 @@ const fixedCostsJson = JSON.stringify(presentationFixedCosts);
 </presentation-card>
 
 <script>
-  import { bindDialogBackdrop } from "@recetario/ui/dialog";
+  import { bindDialogBackdrop } from "../lib/dialog";
 
   type PresentationFixedCostLine = {
     id: number;

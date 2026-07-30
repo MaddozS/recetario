@@ -1,7 +1,8 @@
 ---
 import type { ConsolidatedIngredient } from "@/lib/production-types";
 import { formatCurrency } from "@recetario/billing";
-import { Card } from "@recetario/ui";
+import Card from "./ui/Card.astro";
+
 
 interface Props {
   ingredients: ConsolidatedIngredient[];

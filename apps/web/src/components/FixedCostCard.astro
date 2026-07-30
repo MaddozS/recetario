@@ -1,6 +1,6 @@
 ---
 import { Icon } from "astro-icon/components";
-import { Button } from "@recetario/ui";
+import Button from "./ui/Button.astro";
 
 interface Props {
   id: number;
@@ -303,7 +303,7 @@ const ownerId = recipeId || presentationId;
 </fixed-cost-card>
 
 <script>
-  import { bindDialogBackdrop } from "@recetario/ui/dialog";
+  import { bindDialogBackdrop } from "../lib/dialog";
 
   class FixedCostCard extends HTMLElement {
     // Display elements
