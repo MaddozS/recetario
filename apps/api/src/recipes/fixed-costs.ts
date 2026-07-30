@@ -5,7 +5,7 @@ import {
   fixedCostCreateSchema,
   fixedCostUpdateSchema,
 } from "@recetario/types";
-import { ApiError } from "../errors.js";
+import { ApiError } from "../errors";
 
 export function fixedCostsCreateHandler(): Handler {
   return async (c) => {

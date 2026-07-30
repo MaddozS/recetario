@@ -1,4 +1,4 @@
-export { stripe } from "./stripe.js";
+export { stripe } from "./stripe";
 export {
   getUserSubscription,
   seedSubscriptionPlans,
@@ -11,10 +11,10 @@ export {
   getPricingPlans,
   countUserRecipes,
   countUserIngredients,
-} from "./billing.js";
+} from "./billing";
 export type {
   UserSubscription,
   CreateSubscriptionInput,
-} from "./billing.js";
-export { buildPricingPlans } from "./pricing-plans.js";
-export type { PricingPlan } from "./pricing-plans.js";
+} from "./billing";
+export { buildPricingPlans } from "./pricing-plans";
+export type { PricingPlan } from "./pricing-plans";

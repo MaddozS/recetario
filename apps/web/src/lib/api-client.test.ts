@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { z } from "zod";
-import { apiFetch, setApiBinding } from "./api-client.js";
+import { apiFetch, setApiBinding } from "./api-client";
 
 const ENV_KEY = "INTERNAL_API_URL";
 

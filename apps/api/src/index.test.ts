@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import { createTestEnv } from "./test-utils/index.js";
+import { createTestEnv } from "./test-utils/index";
 
 beforeAll(() => {
   process.env.DATABASE_URL = "postgres://test:test@localhost:5432/test";
@@ -18,7 +18,7 @@ beforeAll(() => {
 
 describe("health endpoint", () => {
   it("returns 200 and ok body", async () => {
-    const { default: app } = await import("./index.js");
+    const { default: app } = await import("./index");
     const res = await app.request(
       "/health",
       {},

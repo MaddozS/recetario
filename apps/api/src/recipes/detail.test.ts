@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { Hono } from "hono";
-import { envelope } from "../envelope.js";
-import { errorHandler } from "../error-handler.js";
+import { envelope } from "../envelope";
+import { errorHandler } from "../error-handler";
 
 const { mockGetSession, mockAuth, mockGetRecipeById } = vi.hoisted(() => {
   const mockGetSession = vi.fn();
@@ -20,7 +20,7 @@ vi.mock("@recetario/db", () => ({
     mockGetRecipeById(id, ownerId),
 }));
 
-const { recipesDetailHandler } = await import("./detail.js");
+const { recipesDetailHandler } = await import("./detail");
 
 const sessionFixture = {
   user: { id: "user-1", email: "ada@example.com" },

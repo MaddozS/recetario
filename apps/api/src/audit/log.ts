@@ -2,7 +2,7 @@ import type { Handler } from "hono";
 import { prisma } from "@recetario/db";
 import { auth } from "@recetario/auth/server";
 import { auditLogCreateSchema } from "@recetario/types";
-import { ApiError } from "../errors.js";
+import { ApiError } from "../errors";
 
 export function auditLogHandler(): Handler {
   return async (c) => {

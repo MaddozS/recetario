@@ -5,7 +5,7 @@
  * para el modelo Freemium de KitchCalc.
  */
 
-import type { UserSubscription } from "./billing.js";
+import type { UserSubscription } from "./billing";
 
 export type SubscriptionTier = "free" | "basic" | "pro";
 

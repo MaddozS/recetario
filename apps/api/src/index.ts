@@ -24,47 +24,47 @@ import {
 import { syncEnvBindings } from "@recetario/config/env";
 import { clientIp, setSecurityHeaders } from "@recetario/config/request";
 
-import { envelope } from "./envelope.js";
-import { errorHandler } from "./error-handler.js";
-import { hostAllowlist } from "./host-allowlist.js";
-import { rateLimit } from "./rate-limit.js";
-import { authSessionHandler } from "./auth-session.js";
-import { recipesListHandler } from "./recipes/list.js";
-import { recipesByIdsHandler } from "./recipes/by-ids.js";
-import { recipesDetailHandler } from "./recipes/detail.js";
-import { recipesCreateHandler } from "./recipes/create.js";
-import { recipesUpdateHandler } from "./recipes/update.js";
-import { recipesDeleteHandler } from "./recipes/delete.js";
-import { recipesDuplicateHandler } from "./recipes/duplicate.js";
+import { envelope } from "./envelope";
+import { errorHandler } from "./error-handler";
+import { hostAllowlist } from "./host-allowlist";
+import { rateLimit } from "./rate-limit";
+import { authSessionHandler } from "./auth-session";
+import { recipesListHandler } from "./recipes/list";
+import { recipesByIdsHandler } from "./recipes/by-ids";
+import { recipesDetailHandler } from "./recipes/detail";
+import { recipesCreateHandler } from "./recipes/create";
+import { recipesUpdateHandler } from "./recipes/update";
+import { recipesDeleteHandler } from "./recipes/delete";
+import { recipesDuplicateHandler } from "./recipes/duplicate";
 import {
   fixedCostsCreateHandler,
   fixedCostsUpdateHandler,
   fixedCostsDeleteHandler,
-} from "./recipes/fixed-costs.js";
-import { presentationsListHandler } from "./recipes/presentations.js";
+} from "./recipes/fixed-costs";
+import { presentationsListHandler } from "./recipes/presentations";
 import {
   presentationsCreateHandler,
   presentationsUpdateHandler,
   presentationsDeleteHandler,
-} from "./recipes/presentations.js";
-import { ingredientsListHandler } from "./ingredients/list.js";
-import { ingredientsCreateHandler } from "./ingredients/create.js";
-import { ingredientsUpdateHandler } from "./ingredients/update.js";
-import { ingredientsDeleteHandler } from "./ingredients/delete.js";
-import { ingredientsUsageHandler } from "./ingredients/usage.js";
-import { ingredientsUsageBulkHandler } from "./ingredients/usage-bulk.js";
-import { preferencesGetHandler } from "./preferences/get.js";
-import { preferencesUpdateHandler } from "./preferences/update.js";
-import { subscriptionHandler } from "./billing/subscription.js";
-import { plansHandler } from "./billing/plans.js";
-import { credentialStatusHandler } from "./auth/credential-status.js";
-import { auditLogHandler } from "./audit/log.js";
-import { usageCountsHandler } from "./usage-counts.js";
+} from "./recipes/presentations";
+import { ingredientsListHandler } from "./ingredients/list";
+import { ingredientsCreateHandler } from "./ingredients/create";
+import { ingredientsUpdateHandler } from "./ingredients/update";
+import { ingredientsDeleteHandler } from "./ingredients/delete";
+import { ingredientsUsageHandler } from "./ingredients/usage";
+import { ingredientsUsageBulkHandler } from "./ingredients/usage-bulk";
+import { preferencesGetHandler } from "./preferences/get";
+import { preferencesUpdateHandler } from "./preferences/update";
+import { subscriptionHandler } from "./billing/subscription";
+import { plansHandler } from "./billing/plans";
+import { credentialStatusHandler } from "./auth/credential-status";
+import { auditLogHandler } from "./audit/log";
+import { usageCountsHandler } from "./usage-counts";
 import {
   presentationsFixedCostsCreateHandler,
   presentationsFixedCostsUpdateHandler,
   presentationsFixedCostsDeleteHandler,
-} from "./presentations/fixed-costs.js";
+} from "./presentations/fixed-costs";
 
 const app = new Hono();
 

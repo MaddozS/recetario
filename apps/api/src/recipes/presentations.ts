@@ -5,7 +5,7 @@ import {
   presentationCreateSchema,
   presentationUpdateSchema,
 } from "@recetario/types";
-import { ApiError } from "../errors.js";
+import { ApiError } from "../errors";
 
 export function presentationsListHandler(): Handler {
   return async (c) => {

@@ -1,9 +1,9 @@
 import { describe, it, expect } from "vitest";
 import { Hono } from "hono";
-import { envelope } from "./envelope.js";
-import { errorHandler } from "./error-handler.js";
-import { ApiError } from "./errors.js";
-import { createTestEnv } from "./test-utils/index.js";
+import { envelope } from "./envelope";
+import { errorHandler } from "./error-handler";
+import { ApiError } from "./errors";
+import { createTestEnv } from "./test-utils/index";
 
 describe("envelope middleware", () => {
   it("passes through 2xx responses", async () => {

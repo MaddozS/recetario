@@ -1,5 +1,5 @@
 import type { MiddlewareHandler } from "hono";
-import { ApiError } from "./errors.js";
+import { ApiError } from "./errors";
 
 export function hostAllowlist(): MiddlewareHandler {
   return async (c, next) => {

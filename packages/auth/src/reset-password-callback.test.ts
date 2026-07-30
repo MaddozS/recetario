@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { createResetPasswordCallback } from "./reset-password-callback.js";
+import { createResetPasswordCallback } from "./reset-password-callback";
 
 const mockToken = "550e8400-e29b-41d4-a716-446655440000";
 

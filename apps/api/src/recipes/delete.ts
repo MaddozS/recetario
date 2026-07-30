@@ -1,7 +1,7 @@
 import type { Handler } from "hono";
 import { deleteRecipe } from "@recetario/db";
 import { auth } from "@recetario/auth/server";
-import { ApiError } from "../errors.js";
+import { ApiError } from "../errors";
 
 export function recipesDeleteHandler(): Handler {
   return async (c) => {

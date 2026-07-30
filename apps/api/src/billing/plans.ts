@@ -1,6 +1,6 @@
 import type { Handler } from "hono";
 import { prisma } from "@recetario/db";
-import * as cache from "../cache.js";
+import * as cache from "../cache";
 import { seedSubscriptionPlans } from "@recetario/billing/server";
 
 const CACHE_TTL_MS = 60_000;

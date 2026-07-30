@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { Hono } from "hono";
-import { envelope } from "../envelope.js";
-import { errorHandler } from "../error-handler.js";
+import { envelope } from "../envelope";
+import { errorHandler } from "../error-handler";
 
 const { mockGetSession, mockAuth, mockPrisma } = vi.hoisted(() => {
   const mockGetSession = vi.fn();
@@ -48,7 +48,7 @@ const {
   presentationsCreateHandler,
   presentationsUpdateHandler,
   presentationsDeleteHandler,
-} = await import("./presentations.js");
+} = await import("./presentations");
 
 const sessionFixture = {
   user: { id: "user-1", email: "ada@example.com" },
@@ -276,4 +276,3 @@ describe("presentationsDeleteHandler", () => {
     });
   });
 });
-

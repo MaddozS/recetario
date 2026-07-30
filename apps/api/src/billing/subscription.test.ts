@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { Hono } from "hono";
-import { envelope } from "../envelope.js";
-import { errorHandler } from "../error-handler.js";
-import { hostAllowlist } from "../host-allowlist.js";
+import { envelope } from "../envelope";
+import { errorHandler } from "../error-handler";
+import { hostAllowlist } from "../host-allowlist";
 
 const { mockGetSession, mockAuth, mockGetUserSubscription, mockSeedSubscriptionPlans } = vi.hoisted(() => {
   const mockGetSession = vi.fn();
@@ -79,7 +79,7 @@ vi.mock("@recetario/db", () => ({
 
 const cacheStore = new Map<string, { value: unknown; expiresAt: number }>();
 
-vi.mock("../cache.js", () => ({
+vi.mock("../cache", () => ({
   get: (key: string) => {
     const entry = cacheStore.get(key);
     if (!entry) return undefined;
@@ -94,7 +94,7 @@ vi.mock("../cache.js", () => ({
   },
 }));
 
-const { subscriptionHandler } = await import("./subscription.js");
+const { subscriptionHandler } = await import("./subscription");
 
 const sessionFixture = {
   user: { id: "user-1", email: "ada@example.com" },

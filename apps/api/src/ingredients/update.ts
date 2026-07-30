@@ -1,7 +1,7 @@
 import type { Handler } from "hono";
 import { updateIngredient } from "@recetario/db";
 import { auth } from "@recetario/auth/server";
-import { ApiError } from "../errors.js";
+import { ApiError } from "../errors";
 import { ingredientUpdateSchema, ingredientSchema } from "@recetario/types";
 
 function toResponse(row: {

@@ -3,8 +3,8 @@ import { prisma } from "@recetario/db";
 import { auth } from "@recetario/auth/server";
 import { getUserSubscription, seedSubscriptionPlans } from "@recetario/billing/server";
 import { resolveSubscription } from "@recetario/billing";
-import { ApiError } from "../errors.js";
-import * as cache from "../cache.js";
+import { ApiError } from "../errors";
+import * as cache from "../cache";
 
 const CACHE_TTL_MS = 60_000;
 

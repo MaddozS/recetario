@@ -1,4 +1,4 @@
-import { PrismaClient } from "../generated/client/client.js";
+import { PrismaClient } from "../generated/client/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { readFileSync } from "node:fs";
 import { resolve, dirname } from "node:path";

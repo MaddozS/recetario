@@ -1,9 +1,9 @@
 import { prisma, cacheDelete } from "@recetario/db";
 import type { PrismaClient } from "@recetario/db";
-import { stripe } from "./stripe.js";
-import { TIER_CONFIG } from "./plans-config.js";
-import { buildPricingPlans } from "./pricing-plans.js";
-import type { PricingPlan } from "./pricing-plans.js";
+import { stripe } from "./stripe";
+import { TIER_CONFIG } from "./plans-config";
+import { buildPricingPlans } from "./pricing-plans";
+import type { PricingPlan } from "./pricing-plans";
 import type Stripe from "stripe";
 
 // ponytail: every function takes an optional `db` so the API worker

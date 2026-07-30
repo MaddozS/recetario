@@ -3,8 +3,8 @@ import { prisma } from "@recetario/db";
 import { auth } from "@recetario/auth/server";
 import { getUserPreferences } from "@recetario/db";
 import { preferencesResponseSchema } from "@recetario/types";
-import * as cache from "../cache.js";
-import { ApiError } from "../errors.js";
+import * as cache from "../cache";
+import { ApiError } from "../errors";
 
 const CACHE_TTL_MS = 60_000;
 const DEFAULT_THEME = "system" as const;

@@ -1,8 +1,8 @@
 import type { Handler } from "hono";
 import { getRecipesByIds } from "@recetario/db";
 import { auth } from "@recetario/auth/server";
-import * as cache from "../cache.js";
-import { ApiError } from "../errors.js";
+import * as cache from "../cache";
+import { ApiError } from "../errors";
 
 const MAX_IDS = 100;
 const CACHE_TTL_MS = 60_000;

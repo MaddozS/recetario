@@ -2,7 +2,7 @@ import type { Handler } from "hono";
 import { listIngredients } from "@recetario/db";
 import { ingredientSchema } from "@recetario/types";
 import { auth } from "@recetario/auth/server";
-import { ApiError } from "../errors.js";
+import { ApiError } from "../errors";
 
 export function ingredientsListHandler(): Handler {
   return async (c) => {

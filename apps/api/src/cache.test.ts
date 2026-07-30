@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { get, set, increment, peek } from "./cache.js";
+import { get, set, increment, peek } from "./cache";
 
 describe("cache", () => {
   beforeEach(() => {

@@ -1,7 +1,7 @@
 import type { Handler } from "hono";
 import { listRecipeSummaries } from "@recetario/db";
 import { auth } from "@recetario/auth/server";
-import { ApiError } from "../errors.js";
+import { ApiError } from "../errors";
 
 export function recipesListHandler(): Handler {
   return async (c) => {

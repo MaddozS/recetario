@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { Hono } from "hono";
-import { envelope } from "../envelope.js";
-import { errorHandler } from "../error-handler.js";
+import { envelope } from "../envelope";
+import { errorHandler } from "../error-handler";
 
 const { mockGetSession, mockAuth, mockGetUserPreferences, mockUserPreferencesCreate } = vi.hoisted(() => {
   const mockGetSession = vi.fn();
@@ -25,7 +25,7 @@ vi.mock("@recetario/db", () => ({
     mockGetUserPreferences(userId),
 }));
 
-const { preferencesGetHandler } = await import("./get.js");
+const { preferencesGetHandler } = await import("./get");
 
 function buildApp(): Hono {
   const app = new Hono();

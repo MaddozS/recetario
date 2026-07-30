@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { Hono } from "hono";
-import { envelope } from "../envelope.js";
-import { errorHandler } from "../error-handler.js";
+import { envelope } from "../envelope";
+import { errorHandler } from "../error-handler";
 
 const { mockGetSession, mockAuth, mockPrisma } = vi.hoisted(() => {
   const mockGetSession = vi.fn();
@@ -23,7 +23,7 @@ vi.mock("@recetario/db", () => ({
   prisma: mockPrisma,
 }));
 
-const { ingredientsUsageHandler } = await import("./usage.js");
+const { ingredientsUsageHandler } = await import("./usage");
 
 const userId = "user-1";
 const sessionFixture = {

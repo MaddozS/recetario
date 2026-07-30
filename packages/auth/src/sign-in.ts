@@ -1,4 +1,4 @@
-import { authClient } from "./auth-client.js";
+import { authClient } from "./auth-client";
 
 export function getSafeRedirect(): string {
   const params = new URLSearchParams(

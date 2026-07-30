@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { Hono } from "hono";
-import { envelope } from "../envelope.js";
-import { errorHandler } from "../error-handler.js";
-import { hostAllowlist } from "../host-allowlist.js";
+import { envelope } from "../envelope";
+import { errorHandler } from "../error-handler";
+import { hostAllowlist } from "../host-allowlist";
 import { plansListResponseSchema } from "@recetario/types";
 
 const { mockFindMany, mockPrisma, mockAuth } = vi.hoisted(() => {
@@ -24,7 +24,7 @@ vi.mock("@recetario/db", () => ({
 
 const cacheStore = new Map<string, { value: unknown; expiresAt: number }>();
 
-vi.mock("../cache.js", () => ({
+vi.mock("../cache", () => ({
   get: (key: string) => {
     const entry = cacheStore.get(key);
     if (!entry) return undefined;
@@ -39,7 +39,7 @@ vi.mock("../cache.js", () => ({
   },
 }));
 
-const { plansHandler } = await import("./plans.js");
+const { plansHandler } = await import("./plans");
 
 const planFixture = [
   {

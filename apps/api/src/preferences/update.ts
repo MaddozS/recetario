@@ -2,8 +2,8 @@ import type { Handler } from "hono";
 import { auth } from "@recetario/auth/server";
 import { getUserPreferences, upsertUserPreferences } from "@recetario/db";
 import { preferencesResponseSchema, preferencesUpdateSchema } from "@recetario/types";
-import * as cache from "../cache.js";
-import { ApiError } from "../errors.js";
+import * as cache from "../cache";
+import { ApiError } from "../errors";
 
 const CACHE_TTL_MS = 60_000;
 

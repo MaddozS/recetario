@@ -1,5 +1,5 @@
-import { formatCurrency } from "./formatters.js";
-import { TIER_CONFIG } from "./plans-config.js";
+import { formatCurrency } from "./formatters";
+import { TIER_CONFIG } from "./plans-config";
 
 export interface PricingPlan {
   id: string;

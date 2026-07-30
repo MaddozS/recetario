@@ -1,7 +1,7 @@
 import type { Handler } from "hono";
 import { prisma } from "@recetario/db";
 import { auth } from "@recetario/auth/server";
-import { ApiError } from "../errors.js";
+import { ApiError } from "../errors";
 import { ingredientUsageResponseSchema } from "@recetario/types";
 
 export function ingredientsUsageHandler(): Handler {

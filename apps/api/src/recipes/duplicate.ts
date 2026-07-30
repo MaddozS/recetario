@@ -1,7 +1,7 @@
 import type { Handler } from "hono";
 import { duplicateRecipe } from "@recetario/db";
 import { auth } from "@recetario/auth/server";
-import { ApiError } from "../errors.js";
+import { ApiError } from "../errors";
 
 export function recipesDuplicateHandler(): Handler {
   return async (c) => {
