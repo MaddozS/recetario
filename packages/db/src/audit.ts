@@ -1,4 +1,5 @@
-import type { AuditAction, PrismaClient } from "../generated/prisma/client.js";
+import type { AuditAction } from "@prisma/client"
+import { prisma } from "./prisma";
 
 export async function logAuditEvent(
   params: {
@@ -7,10 +8,9 @@ export async function logAuditEvent(
     ipAddress?: string | null;
     userAgent?: string | null;
   },
-  client: PrismaClient,
 ): Promise<void> {
   try {
-    await client.auditLog.create({
+    await prisma.auditLog.create({
       data: {
         userId: params.userId,
         action: params.action,

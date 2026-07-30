@@ -1,6 +1,5 @@
-import { prisma } from "./prisma.js";
-import type { PrismaClient } from "./prisma.js";
-import type { Prisma } from "../generated/prisma/client.js";
+import { prisma } from "./prisma";
+import type { Prisma } from "@prisma/client";
 import type {
   RecipeSummary,
   RecipeWithIngredients,
@@ -8,7 +7,7 @@ import type {
   DeleteRecipeResult,
   UpdateRecipeInput,
 } from "@recetario/types";
-import { createPresentation } from "./presentations.js";
+import { createPresentation } from "./presentations";
 import {
   normalizeOptionalText,
   toNumber,
@@ -20,31 +19,13 @@ import {
   normalizeFixedCostBase,
   normalizeFixedCostValue,
   normalizeFixedCostHours,
-} from "./helpers.js";
-import { cacheGet, cacheSet, cacheDelete } from "./cache.js";
-
-// ponytail: every helper takes an optional `db` so the API worker
-// can pass a per-request client (see apps/api/src/fresh-db.ts and
-// memory #63). Web keeps using the singleton.
-
-async function invalidateRecipeCache(
-  ownerId: string,
-  recipeId: number | undefined,
-  db: PrismaClient,
-) {
-  await cacheDelete(`recipes:${ownerId}`, db);
-  if (recipeId !== undefined) await cacheDelete(`recipe:${recipeId}`, db);
-}
+} from "./helpers";
 
 export async function listRecipeSummaries(
   ownerId: string,
-  db: PrismaClient = prisma,
 ): Promise<RecipeSummary[]> {
-  const cacheKey = `recipes:${ownerId}`;
-  const cached = await cacheGet<RecipeSummary[]>(cacheKey, db);
-  if (cached) return cached;
 
-  const rows = await db.recipe.findMany({
+  const rows = await prisma.recipe.findMany({
     where: { ownerId },
     select: {
       id: true,
@@ -64,23 +45,17 @@ export async function listRecipeSummaries(
     updatedAt: row.updatedAt?.toISOString(),
   }));
 
-  await cacheSet(cacheKey, result, 60, db);
   return result;
 }
 
 export async function getRecipeById(
   recipeId: string | number,
   ownerId: string,
-  db: PrismaClient = prisma,
 ): Promise<RecipeWithIngredients | null> {
   const id = Number(recipeId);
   if (!Number.isFinite(id)) return null;
 
-  const cacheKey = `recipe:${id}`;
-  const cached = await cacheGet<RecipeWithIngredients | null>(cacheKey, db);
-  if (cached !== undefined) return cached;
-
-  const recipe = await db.recipe.findFirst({
+  const recipe = await prisma.recipe.findFirst({
     where: { id, ownerId },
     include: {
       recipeIngredients: {
@@ -98,23 +73,20 @@ export async function getRecipeById(
   });
 
   if (!recipe) {
-    await cacheSet(cacheKey, null, 60, db);
     return null;
   }
 
   const result: RecipeWithIngredients = normalizeRecipeRow(recipe);
-  await cacheSet(cacheKey, result, 60, db);
   return result;
 }
 
 export async function getRecipesByIds(
   ids: number[],
   ownerId: string,
-  db: PrismaClient = prisma,
 ): Promise<RecipeWithIngredients[]> {
   if (ids.length === 0) return [];
 
-  const rows = await db.recipe.findMany({
+  const rows = await prisma.recipe.findMany({
     where: { id: { in: ids }, ownerId },
     include: {
       recipeIngredients: {
@@ -132,10 +104,6 @@ export async function getRecipesByIds(
   });
 
   const results = rows.map(normalizeRecipeRow);
-
-  for (const r of results) {
-    await cacheSet(`recipe:${r.id}`, r, 60, db);
-  }
 
   return results;
 }
@@ -211,7 +179,6 @@ function normalizeRecipeRow(recipe: RecipeWithIncludes): RecipeWithIngredients {
 export async function createRecipe(
   ownerId: string,
   input: CreateRecipeInput = {},
-  db: PrismaClient = prisma,
 ): Promise<{ id: number; name: string }> {
   const name = normalizeOptionalText(input.name) ?? "Nueva Receta";
   const category = normalizeCategory(input.category);
@@ -220,7 +187,7 @@ export async function createRecipe(
     input.fixedCostsPercentage ?? 0,
   );
 
-  const data = await db.$transaction(async (tx) => {
+  const data = await prisma.$transaction(async (tx) => {
     const recipe = await tx.recipe.create({
       data: {
         ownerId,
@@ -250,24 +217,21 @@ export async function createRecipe(
     return recipe;
   });
 
-  await invalidateRecipeCache(ownerId, undefined, db);
   return { id: data.id, name: data.name };
 }
 
 export async function deleteRecipe(
   recipeId: number,
   ownerId: string,
-  db: PrismaClient = prisma,
 ): Promise<DeleteRecipeResult> {
   if (!Number.isFinite(recipeId)) {
     return { status: "not-found" };
   }
 
   try {
-    await db.recipe.delete({
+    await prisma.recipe.delete({
       where: { id: recipeId, ownerId },
     });
-    await invalidateRecipeCache(ownerId, recipeId, db);
     return { status: "deleted" };
   } catch {
     return { status: "not-found" };
@@ -278,7 +242,6 @@ export async function updateRecipe(
   recipeId: number,
   input: UpdateRecipeInput,
   ownerId: string,
-  db: PrismaClient = prisma,
 ): Promise<void> {
   const desiredMargin = normalizeDesiredMargin(input.desiredMargin);
   const fixedCostsPercentage = normalizeFixedCostsPercentage(
@@ -287,7 +250,7 @@ export async function updateRecipe(
   const category = normalizeCategory(input.category);
   const instructions = normalizeOptionalText(input.instructions) ?? null;
 
-  await db.$transaction(async (tx) => {
+  await prisma.$transaction(async (tx) => {
     await tx.recipe.update({
       where: { id: recipeId, ownerId },
       data: {
@@ -337,15 +300,13 @@ export async function updateRecipe(
       }
     }
   });
-  await invalidateRecipeCache(ownerId, recipeId, db);
 }
 
 export async function duplicateRecipe(
   sourceRecipeId: number,
   ownerId: string,
-  db: PrismaClient = prisma,
 ): Promise<{ id: number; name: string }> {
-  const source = await getRecipeById(sourceRecipeId, ownerId, db);
+  const source = await getRecipeById(sourceRecipeId, ownerId);
   if (!source) {
     throw new Error("Recipe not found");
   }
@@ -372,7 +333,6 @@ export async function duplicateRecipe(
         hours: fc.hours,
       })),
     },
-    db,
   );
 
   if (source.ingredients.length > 0) {
@@ -392,7 +352,6 @@ export async function duplicateRecipe(
         })),
       },
       ownerId,
-      db,
     );
   }
 
@@ -414,7 +373,6 @@ export async function duplicateRecipe(
         })),
       },
       ownerId,
-      db,
     );
   }
 

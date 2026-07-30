@@ -3,18 +3,15 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "main": "./dist/src/index.js",
+  "main": "./dist/src/index.ts",
   "types": "./dist/src/index.d.ts",
   "exports": {
-    ".": {
-      "types": "./dist/src/index.d.ts",
-      "default": "./dist/src/index.js"
-    }
+    ".": "./src/index.ts"
   },
   "files": ["dist", "prisma", "generated"],
   "scripts": {
-    "build": "tsc --build tsconfig.build.json && cp generated/prisma/internal/query_compiler_fast_bg.wasm generated/prisma/internal/query_compiler_fast_bg.js dist/generated/prisma/internal/",
-    "generate": "prisma generate && node scripts/patch-prisma-worker-client.mjs",
+    "build": "tsc --build",
+    "generate": "prisma generate",
     "migrate": "prisma migrate dev",
     "deploy": "prisma migrate deploy",
     "studio": "prisma studio",
@@ -22,17 +19,16 @@
     "seed:fixed-costs": "tsx prisma/seed-fixed-costs.ts"
   },
   "dependencies": {
-    "@prisma/adapter-pg": "7.8.0",
     "@prisma/client": "7.8.0",
+    "@prisma/extension-accelerate": "3.0.1",
+    "typescript": "7.0.2",
     "@recetario/config": "workspace:^",
     "@recetario/types": "workspace:^",
-    "dotenv": "17.4.2",
-    "pg": "8.20.0"
+    "dotenv": "17.4.2"
   },
   "devDependencies": {
     "prisma": "7.8.0",
-    "tsx": "4.22.0",
-    "typescript": "^6.0.0",
-    "@types/pg": "8.20.0"
+    "@types/node": "26.1.2",
+    "tsx": "4.22.0"
   }
 }

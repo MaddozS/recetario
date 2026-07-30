@@ -1,5 +1,4 @@
-import { prisma } from "./prisma.js";
-import type { PrismaClient } from "./prisma.js";
+import { prisma } from "./prisma";
 import type { UserPreferences } from "@recetario/types";
 
 const validThemes = ["system", "light", "dark"] as const;
@@ -28,9 +27,8 @@ function isValidAccentColor(
 // memory #63). Web keeps using the singleton.
 export async function getUserPreferences(
   userId: string,
-  db: PrismaClient = prisma,
 ): Promise<UserPreferences | null> {
-  const data = await db.userPreferences.findUnique({
+  const data = await prisma.userPreferences.findUnique({
     where: { userId },
   });
 
@@ -50,9 +48,8 @@ export async function getUserPreferences(
 export async function upsertUserPreferences(
   userId: string,
   prefs: { theme?: string; accentColor?: string },
-  db: PrismaClient = prisma,
 ): Promise<UserPreferences> {
-  const existing = await db.userPreferences.findUnique({
+  const existing = await prisma.userPreferences.findUnique({
     where: { userId },
   });
 
@@ -63,7 +60,7 @@ export async function upsertUserPreferences(
     ? (prefs.accentColor as UserPreferences["accentColor"])
     : (existing?.accentColor ?? "coral");
 
-  const data = await db.userPreferences.upsert({
+  const data = await prisma.userPreferences.upsert({
     where: { userId },
     update: {
       theme,

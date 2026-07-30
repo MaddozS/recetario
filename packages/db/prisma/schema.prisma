@@ -3,15 +3,7 @@ datasource db {
 }
 
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
-  runtime  = "workerd"
-}
-
-generator apiClient {
-  provider = "prisma-client"
-  output   = "../../../apps/api/generated/prisma"
-  runtime  = "workerd"
+  provider   = "prisma-client-js"
 }
 
 model Ingredient {
