@@ -3,23 +3,21 @@ import { Hono } from "hono";
 import { envelope } from "../envelope.js";
 import { errorHandler } from "../error-handler.js";
 
-const { mockGetSession, mockAuth, mockDeleteIngredient, mockCacheDelete } = vi.hoisted(() => {
+const { mockGetSession, mockAuth, mockDeleteIngredient } = vi.hoisted(() => {
   const mockGetSession = vi.fn();
   const mockAuth = { api: { getSession: (...args: unknown[]) => mockGetSession(...args) } };
   const mockDeleteIngredient = vi.fn();
-  const mockCacheDelete = vi.fn();
-  return { mockGetSession, mockAuth, mockDeleteIngredient, mockCacheDelete };
+  return { mockGetSession, mockAuth, mockDeleteIngredient };
 });
 
 vi.mock("@recetario/auth/server", () => ({
-  createAuth: () => mockAuth,
+  auth: mockAuth,
 }));
 
 vi.mock("@recetario/db", () => ({
-  createPrismaClient: () => ({}),
-  deleteIngredient: (id: number, ownerId: string, db: unknown) =>
-    mockDeleteIngredient(id, ownerId, db),
-  cacheDelete: (key: string, db: unknown) => mockCacheDelete(key, db),
+  prisma: {},
+  deleteIngredient: (id: number, ownerId: string) =>
+    mockDeleteIngredient(id, ownerId),
 }));
 
 const { ingredientsDeleteHandler } = await import("./delete.js");
@@ -41,7 +39,6 @@ function buildApp() {
 beforeEach(() => {
   mockGetSession.mockReset();
   mockDeleteIngredient.mockReset();
-  mockCacheDelete.mockReset();
   mockGetSession.mockResolvedValue(sessionFixture);
 });
 
@@ -54,15 +51,7 @@ describe("ingredientsDeleteHandler", () => {
     });
 
     expect(res.status).toBe(204);
-    expect(mockDeleteIngredient).toHaveBeenCalledWith(7, userId, expect.anything());
-    expect(mockCacheDelete).toHaveBeenCalledWith(
-      `ingredients:${userId}`,
-      expect.anything(),
-    );
-    expect(mockCacheDelete).toHaveBeenCalledWith(
-      `ingredient_usage:${userId}`,
-      expect.anything(),
-    );
+    expect(mockDeleteIngredient).toHaveBeenCalledWith(7, userId);
   });
 
   it("returns 409 with the recipe list when the ingredient is in use", async () => {

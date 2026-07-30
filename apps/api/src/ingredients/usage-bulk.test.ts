@@ -14,11 +14,11 @@ const { mockGetSession, mockAuth, mockPrisma, mockFindMany } = vi.hoisted(() => 
 });
 
 vi.mock("@recetario/auth/server", () => ({
-  createAuth: () => mockAuth,
+  auth: mockAuth,
 }));
 
 vi.mock("@recetario/db", () => ({
-  createPrismaClient: () => mockPrisma,
+  prisma: mockPrisma,
 }));
 
 const { ingredientsUsageBulkHandler } = await import("./usage-bulk.js");

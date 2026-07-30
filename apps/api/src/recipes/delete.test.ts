@@ -11,13 +11,13 @@ const { mockGetSession, mockAuth, mockDeleteRecipe } = vi.hoisted(() => {
 });
 
 vi.mock("@recetario/auth/server", () => ({
-  createAuth: () => mockAuth,
+  auth: mockAuth,
 }));
 
 vi.mock("@recetario/db", () => ({
-  createPrismaClient: () => ({}),
-  deleteRecipe: (id: number, ownerId: string, db: unknown) =>
-    mockDeleteRecipe(id, ownerId, db),
+  prisma: {},
+  deleteRecipe: (id: number, ownerId: string) =>
+    mockDeleteRecipe(id, ownerId),
 }));
 
 const { recipesDeleteHandler } = await import("./delete.js");
@@ -54,7 +54,7 @@ describe("recipesDeleteHandler", () => {
 
     const res = await buildApp().request("/api/recipes/1", { method: "DELETE" });
     expect(res.status).toBe(204);
-    expect(mockDeleteRecipe).toHaveBeenCalledWith(1, "user-1", expect.anything());
+    expect(mockDeleteRecipe).toHaveBeenCalledWith(1, "user-1");
   });
 
   it("returns 404 when the recipe does not belong to the user", async () => {

@@ -33,11 +33,11 @@ const { mockGetSession, mockAuth, mockPrisma } = vi.hoisted(() => {
 });
 
 vi.mock("@recetario/auth/server", () => ({
-  createAuth: () => mockAuth,
+  auth: mockAuth,
 }));
 
 vi.mock("@recetario/db", () => ({
-  createPrismaClient: () => mockPrisma,
+  prisma: mockPrisma,
 }));
 
 const {

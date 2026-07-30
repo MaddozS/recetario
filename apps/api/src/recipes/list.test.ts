@@ -11,13 +11,13 @@ const { mockGetSession, mockAuth, mockListRecipeSummaries } = vi.hoisted(() => {
 });
 
 vi.mock("@recetario/auth/server", () => ({
-  createAuth: () => mockAuth,
+  auth: mockAuth,
 }));
 
 vi.mock("@recetario/db", () => ({
-  createPrismaClient: () => ({}),
-  listRecipeSummaries: (ownerId: string, db: unknown) =>
-    mockListRecipeSummaries(ownerId, db),
+  prisma: {},
+  listRecipeSummaries: (ownerId: string) =>
+    mockListRecipeSummaries(ownerId),
 }));
 
 const { recipesListHandler } = await import("./list.js");
@@ -64,6 +64,6 @@ describe("recipesListHandler", () => {
     const body = (await res.json()) as Array<{ id: number; name: string }>;
     expect(body).toHaveLength(2);
     expect(body[0].name).toBe("Tarta");
-    expect(mockListRecipeSummaries).toHaveBeenCalledWith("user-1", expect.anything());
+    expect(mockListRecipeSummaries).toHaveBeenCalledWith("user-1");
   });
 });

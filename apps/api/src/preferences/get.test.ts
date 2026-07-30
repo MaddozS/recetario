@@ -12,17 +12,17 @@ const { mockGetSession, mockAuth, mockGetUserPreferences, mockUserPreferencesCre
 });
 
 vi.mock("@recetario/auth/server", () => ({
-  createAuth: () => mockAuth,
+  auth: mockAuth,
 }));
 
 vi.mock("@recetario/db", () => ({
-  createPrismaClient: () => ({
+  prisma: {
     userPreferences: {
       create: (args: unknown) => mockUserPreferencesCreate(args),
     },
-  }),
-  getUserPreferences: (userId: string, db: unknown) =>
-    mockGetUserPreferences(userId, db),
+  },
+  getUserPreferences: (userId: string) =>
+    mockGetUserPreferences(userId),
 }));
 
 const { preferencesGetHandler } = await import("./get.js");

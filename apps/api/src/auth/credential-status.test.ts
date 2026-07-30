@@ -19,11 +19,11 @@ const { mockGetSession, mockAuth, mockPrisma, mockAccountFindFirst } = vi.hoiste
 });
 
 vi.mock("@recetario/auth/server", () => ({
-  createAuth: () => mockAuth,
+  auth: mockAuth,
 }));
 
 vi.mock("@recetario/db", () => ({
-  createPrismaClient: () => mockPrisma,
+  prisma: mockPrisma,
 }));
 
 const { credentialStatusHandler } = await import("./credential-status.js");

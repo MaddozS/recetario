@@ -12,14 +12,14 @@ const { mockGetSession, mockAuth, mockRecipeCount, mockIngredientCount } = vi.ho
 });
 
 vi.mock("@recetario/auth/server", () => ({
-  createAuth: () => mockAuth,
+  auth: mockAuth,
 }));
 
 vi.mock("@recetario/db", () => ({
-  createPrismaClient: () => ({
+  prisma: {
     recipe: { count: (args: unknown) => mockRecipeCount(args) },
     ingredient: { count: (args: unknown) => mockIngredientCount(args) },
-  }),
+  },
 }));
 
 const { usageCountsHandler } = await import("./usage-counts.js");

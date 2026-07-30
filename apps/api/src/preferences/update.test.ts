@@ -12,13 +12,13 @@ const { mockGetSession, mockAuth, mockUpsertUserPreferences } = vi.hoisted(() =>
 });
 
 vi.mock("@recetario/auth/server", () => ({
-  createAuth: () => mockAuth,
+  auth: mockAuth,
 }));
 
 vi.mock("@recetario/db", () => ({
-  createPrismaClient: () => ({}),
-  upsertUserPreferences: (userId: string, prefs: unknown, db: unknown) =>
-    mockUpsertUserPreferences(userId, prefs, db),
+  prisma: {},
+  upsertUserPreferences: (userId: string, prefs: unknown) =>
+    mockUpsertUserPreferences(userId, prefs),
 }));
 
 const { preferencesUpdateHandler } = await import("./update.js");

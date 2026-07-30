@@ -12,15 +12,15 @@ const { mockGetSession, mockAuth, mockGetRecipeById, mockUpdateRecipe } = vi.hoi
 });
 
 vi.mock("@recetario/auth/server", () => ({
-  createAuth: () => mockAuth,
+  auth: mockAuth,
 }));
 
 vi.mock("@recetario/db", () => ({
-  createPrismaClient: () => ({}),
-  getRecipeById: (id: number, ownerId: string, _db: unknown) =>
+  prisma: {},
+  getRecipeById: (id: number, ownerId: string) =>
     mockGetRecipeById(id, ownerId),
-  updateRecipe: (id: number, input: unknown, ownerId: string, db: unknown) =>
-    mockUpdateRecipe(id, input, ownerId, db),
+  updateRecipe: (id: number, input: unknown, ownerId: string) =>
+    mockUpdateRecipe(id, input, ownerId),
 }));
 
 const { recipesUpdateHandler } = await import("./update.js");
@@ -90,7 +90,6 @@ describe("recipesUpdateHandler", () => {
         recipeFixedCosts: undefined,
       },
       "user-1",
-      expect.anything(),
     );
   });
 

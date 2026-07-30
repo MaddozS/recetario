@@ -11,13 +11,12 @@ const { mockGetSession, mockAuth, mockListIngredients } = vi.hoisted(() => {
 });
 
 vi.mock("@recetario/auth/server", () => ({
-  createAuth: () => mockAuth,
+  auth: mockAuth,
 }));
 
 vi.mock("@recetario/db", () => ({
-  createPrismaClient: () => ({}),
-  listIngredients: (ownerId: string, db: unknown) =>
-    mockListIngredients(ownerId, db),
+  prisma: {},
+  listIngredients: (ownerId: string) => mockListIngredients(ownerId),
 }));
 
 const { ingredientsListHandler } = await import("./list.js");
@@ -82,6 +81,6 @@ describe("ingredientsListHandler", () => {
       { id: 1, name: "Harina", unit: "kg", price: 25, purchaseQuantity: 1, brand: "X", supplier: "Y" },
       { id: 2, name: "Azucar", unit: "kg", price: 30, purchaseQuantity: 1 },
     ]);
-    expect(mockListIngredients).toHaveBeenCalledWith("user-1", expect.anything());
+    expect(mockListIngredients).toHaveBeenCalledWith("user-1");
   });
 });

@@ -10,11 +10,7 @@ const { mockGetSession, mockAuth } = vi.hoisted(() => {
 });
 
 vi.mock("@recetario/auth/server", () => ({
-  createAuth: () => mockAuth,
-}));
-
-vi.mock("@recetario/db", () => ({
-  createPrismaClient: () => ({}),
+  auth: mockAuth,
 }));
 
 const { authSessionHandler } = await import("./auth-session.js");

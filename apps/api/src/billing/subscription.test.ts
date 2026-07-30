@@ -13,7 +13,7 @@ const { mockGetSession, mockAuth, mockGetUserSubscription, mockSeedSubscriptionP
 });
 
 vi.mock("@recetario/auth/server", () => ({
-  createAuth: () => mockAuth,
+  auth: mockAuth,
 }));
 
 vi.mock("@recetario/billing/server", () => ({
@@ -74,7 +74,7 @@ vi.mock("@recetario/billing", () => ({
 }));
 
 vi.mock("@recetario/db", () => ({
-  createPrismaClient: () => ({}),
+  prisma: {},
 }));
 
 const cacheStore = new Map<string, { value: unknown; expiresAt: number }>();

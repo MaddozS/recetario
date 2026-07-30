@@ -11,13 +11,13 @@ const { mockGetSession, mockAuth, mockCreateRecipe } = vi.hoisted(() => {
 });
 
 vi.mock("@recetario/auth/server", () => ({
-  createAuth: () => mockAuth,
+  auth: mockAuth,
 }));
 
 vi.mock("@recetario/db", () => ({
-  createPrismaClient: () => ({}),
-  createRecipe: (ownerId: string, input: unknown, db: unknown) =>
-    mockCreateRecipe(ownerId, input, db),
+  prisma: {},
+  createRecipe: (ownerId: string, input: unknown) =>
+    mockCreateRecipe(ownerId, input),
 }));
 
 const { recipesCreateHandler } = await import("./create.js");
@@ -60,7 +60,7 @@ describe("recipesCreateHandler", () => {
     expect(res.status).toBe(201);
     const body = (await res.json()) as { id: number; name: string };
     expect(body.id).toBe(99);
-    expect(mockCreateRecipe).toHaveBeenCalledWith("user-1", { name: "Tarta" }, expect.anything());
+    expect(mockCreateRecipe).toHaveBeenCalledWith("user-1", { name: "Tarta" });
   });
 
   it("returns 400 on invalid input", async () => {
@@ -85,6 +85,6 @@ describe("recipesCreateHandler", () => {
       body: JSON.stringify({}),
     });
     expect(res.status).toBe(201);
-    expect(mockCreateRecipe).toHaveBeenCalledWith("user-1", {}, expect.anything());
+    expect(mockCreateRecipe).toHaveBeenCalledWith("user-1", {});
   });
 });

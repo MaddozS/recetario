@@ -11,13 +11,13 @@ const { mockGetSession, mockAuth, mockGetRecipeById } = vi.hoisted(() => {
 });
 
 vi.mock("@recetario/auth/server", () => ({
-  createAuth: () => mockAuth,
+  auth: mockAuth,
 }));
 
 vi.mock("@recetario/db", () => ({
-  createPrismaClient: () => ({}),
-  getRecipeById: (id: number, ownerId: string, db: unknown) =>
-    mockGetRecipeById(id, ownerId, db),
+  prisma: {},
+  getRecipeById: (id: number, ownerId: string) =>
+    mockGetRecipeById(id, ownerId),
 }));
 
 const { recipesDetailHandler } = await import("./detail.js");
@@ -64,7 +64,7 @@ describe("recipesDetailHandler", () => {
     expect(res.status).toBe(200);
     const body = (await res.json()) as { id: number; name: string };
     expect(body.name).toBe("Tarta");
-    expect(mockGetRecipeById).toHaveBeenCalledWith(1, "user-1", expect.anything());
+    expect(mockGetRecipeById).toHaveBeenCalledWith(1, "user-1");
   });
 
   it("returns 404 when the recipe does not belong to the user", async () => {
