@@ -11,7 +11,6 @@
 @recetario/billing → config, types, (peer: db)
 @recetario/db → config, types
 @recetario/types → config (dev)
-@recetario/ui → config (dev)
 @recetario/config → (leaf)
 ```
 

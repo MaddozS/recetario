@@ -65,3 +65,30 @@ _Contrast with_: Runtime secret (previous).
 `scripts/secrets-map.json` — committed declarative mapping of which runtime secrets go to which Cloudflare product (`workers`, `pages`, `both`) and how our canonical environment names (`staging`, `production`) translate to Cloudflare-native names (Workers: `--env development`/`production`, Pages: `--branch dev`/`master`).
 
 _See also_: [ADR-0004](./docs/adr/0004-secrets-propagation-strategy.md).
+
+## Navigation
+
+**Soft navigation**:
+An in-app page change that keeps the app shell mounted and swaps main content after the next page is ready. Distinct from a full browser load.
+
+_Avoid_: "SPA navigation" (implies a client-owned shell we do not have), "page transition" (ambiguous with animation only).
+
+**Navigation pending feedback**:
+The immediate proof that a soft-navigation click registered: a top progress bar plus a generic main-content skeleton, shown with no delay gate. Last click wins if the user picks another target mid-load.
+
+_Avoid_: "loading state" (too generic), "page loader" / "full-page overlay" (reserved for heavier flows).
+
+**Mutation pending feedback**:
+The immediate proof that a save/delete/duplicate (or similar submit) registered. Inline saves keep the form visible with a busy control; redirect-heavy actions may use a blocking overlay.
+
+_Avoid_: "navigation pending feedback" (GET page changes only), "disabled form" (too narrow).
+
+**Navigation soft fail**:
+When a soft navigation fails for a non-auth reason, pending UI clears, the user stays on the current page, and an error is shown.
+
+_Contrast with_: Session-expired redirect (next).
+
+**Session-expired redirect**:
+When a soft navigation (or equivalent request) fails because the session is invalid or expired, the user is sent to sign-in with a visible banner explaining why.
+
+_Avoid_: "soft fail" (stays on page), "silent re-auth".

@@ -13,7 +13,6 @@
     "lint": "eslint .",
     "type-check": "astro check",
     "test": "vitest run",
-    "postinstall": "$npm_execpath --filter @recetario/db exec prisma generate",
     "cloudflare-build": "$npm_execpath --filter @recetario/db exec prisma generate && $npm_execpath --filter @recetario/db exec prisma migrate deploy && astro build"
   },
   "dependencies": {
@@ -23,7 +22,6 @@
     "@recetario/billing": "workspace:^",
     "@recetario/config": "workspace:^",
     "@recetario/types": "workspace:^",
-    "@recetario/ui": "workspace:^",
     "@tailwindcss/vite": "4.3.0",
     "astro": "7.1.4",
     "astro-icon": "1.1.5",
@@ -46,7 +44,7 @@
     "prettier": "3.8.3",
     "prettier-plugin-astro": "0.14.1",
     "prettier-plugin-tailwindcss": "^0.8.0",
-    "typescript": "6.0.3",
+    "typescript": "7.0.2",
     "typescript-eslint": "8.59.3",
     "vitest": "^3.0.0"
   }
