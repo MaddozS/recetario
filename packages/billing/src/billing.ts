@@ -1,18 +1,9 @@
-import { prisma, cacheDelete } from "@recetario/db";
-import type { PrismaClient } from "@recetario/db";
+import { prisma } from "@recetario/db";
 import { stripe } from "./stripe";
 import { TIER_CONFIG } from "./plans-config";
 import { buildPricingPlans } from "./pricing-plans";
 import type { PricingPlan } from "./pricing-plans";
 import type Stripe from "stripe";
-
-// ponytail: every function takes an optional `db` so the API worker
-// can pass a per-request client (see apps/api/src/fresh-db.ts and
-// memory #63). Web keeps using the singleton.
-
-async function invalidateSubCache(userId: string, db: PrismaClient) {
-  await cacheDelete(`sub:${userId}`, db);
-}
 
 const BASIC_FEATURES: Record<string, boolean> = {
   recipe_duplicate: true,
@@ -51,9 +42,7 @@ const FEATURE_FLAGS: Record<string, Record<string, boolean>> = {
 
 const KNOWN_TIERS = Object.keys(TIER_CONFIG).filter((t) => t !== "free");
 
-export async function syncPlansFromStripe(
-  db: PrismaClient = prisma,
-): Promise<void> {
+export async function syncPlansFromStripe(): Promise<void> {
   const prices = await stripe.prices.list({
     active: true,
     expand: ["data.product"],
@@ -74,7 +63,7 @@ export async function syncPlansFromStripe(
     syncedIds.push(id);
     const featuresJson = JSON.stringify(FEATURE_FLAGS[tier] ?? {});
 
-    await db.subscriptionPlan.upsert({
+    await prisma.subscriptionPlan.upsert({
       where: { id },
       update: {
         stripePriceId: price.id,
@@ -113,7 +102,7 @@ export async function syncPlansFromStripe(
   }
 
   if (syncedIds.length > 0) {
-    await db.subscriptionPlan.updateMany({
+    await prisma.subscriptionPlan.updateMany({
       where: {
         id: { notIn: syncedIds },
         tier: { in: KNOWN_TIERS },
@@ -124,11 +113,9 @@ export async function syncPlansFromStripe(
   }
 }
 
-export async function seedSubscriptionPlans(
-  db: PrismaClient = prisma,
-): Promise<void> {
+export async function seedSubscriptionPlans(): Promise<void> {
   try {
-    await syncPlansFromStripe(db);
+    await syncPlansFromStripe();
   } catch (error) {
     console.error("Failed to sync plans from Stripe:", error);
   }
@@ -136,17 +123,15 @@ export async function seedSubscriptionPlans(
 
 export type { PricingPlan };
 
-export async function getPricingPlans(
-  db: PrismaClient = prisma,
-): Promise<PricingPlan[]> {
-  let plans = await db.subscriptionPlan.findMany({
+export async function getPricingPlans(): Promise<PricingPlan[]> {
+  let plans = await prisma.subscriptionPlan.findMany({
     where: { active: true, tier: { in: KNOWN_TIERS } },
     orderBy: { id: "asc" },
   });
 
   if (plans.length === 0) {
-    await seedSubscriptionPlans(db);
-    plans = await db.subscriptionPlan.findMany({
+    await seedSubscriptionPlans();
+    plans = await prisma.subscriptionPlan.findMany({
       where: { active: true, tier: { in: KNOWN_TIERS } },
       orderBy: { id: "asc" },
     });
@@ -188,11 +173,8 @@ export type CreateSubscriptionInput = {
   trialEnd?: Date | null;
 };
 
-export async function getUserSubscription(
-  userId: string,
-  db: PrismaClient = prisma,
-): Promise<UserSubscription | null> {
-  const data = await db.subscription.findFirst({
+export async function getUserSubscription(userId: string): Promise<UserSubscription | null> {
+  const data = await prisma.subscription.findFirst({
     where: {
       userId,
       status: { in: ["active", "trialing"] },
@@ -229,20 +211,19 @@ export async function getUserSubscription(
 
 export async function createOrUpdateSubscription(
   input: CreateSubscriptionInput,
-  db: PrismaClient = prisma,
 ): Promise<void> {
   let resolvedPlanId = input.planId;
   let resolvedUserId = input.userId;
 
   if (!resolvedPlanId) {
-    const plan = await db.subscriptionPlan.findFirst({
+    const plan = await prisma.subscriptionPlan.findFirst({
       where: { stripePriceId: input.stripeSubscriptionId },
     });
     if (plan) resolvedPlanId = plan.id;
   }
 
   if (!resolvedUserId) {
-    const sub = await db.subscription.findUnique({
+    const sub = await prisma.subscription.findUnique({
       where: { stripeSubscriptionId: input.stripeSubscriptionId },
     });
     if (sub) resolvedUserId = sub.userId;
@@ -250,7 +231,7 @@ export async function createOrUpdateSubscription(
 
   if (!resolvedPlanId || !resolvedUserId) return;
 
-  await db.subscription.upsert({
+  await prisma.subscription.upsert({
     where: { stripeSubscriptionId: input.stripeSubscriptionId },
     update: {
       id: input.stripeSubscriptionId,
@@ -277,51 +258,45 @@ export async function createOrUpdateSubscription(
     },
   });
 
-  await invalidateSubCache(resolvedUserId, db);
 }
 
 export async function cancelSubscription(
   stripeSubscriptionId: string,
-  db: PrismaClient = prisma,
 ): Promise<void> {
-  const sub = await db.subscription.findUnique({
+  const sub = await prisma.subscription.findUnique({
     where: { stripeSubscriptionId },
     select: { userId: true },
   });
   if (!sub) return;
-  await db.subscription.update({
+  await prisma.subscription.update({
     where: { stripeSubscriptionId },
     data: { status: "canceled", cancelAtPeriodEnd: true },
   });
-  await invalidateSubCache(sub.userId, db);
 }
 
 export async function markSubscriptionPastDue(
   stripeSubscriptionId: string,
-  db: PrismaClient = prisma,
 ): Promise<void> {
-  const sub = await db.subscription.findUnique({
+  const sub = await prisma.subscription.findUnique({
     where: { stripeSubscriptionId },
     select: { userId: true },
   });
   if (!sub) return;
-  await db.subscription.update({
+  await prisma.subscription.update({
     where: { stripeSubscriptionId },
     data: { status: "past_due" },
   });
-  await invalidateSubCache(sub.userId, db);
 }
 
 export async function getPlanByStripePriceId(
   stripePriceId: string,
-  db: PrismaClient = prisma,
 ): Promise<{
   id: string;
   tier: string;
   name: string;
   stripePriceId: string;
 } | null> {
-  const data = await db.subscriptionPlan.findFirst({
+  const data = await prisma.subscriptionPlan.findFirst({
     where: { stripePriceId },
   });
   if (!data) return null;
@@ -335,9 +310,8 @@ export async function getPlanByStripePriceId(
 
 export async function getStripeCustomerId(
   userId: string,
-  db: PrismaClient = prisma,
 ): Promise<string | null> {
-  const data = await db.subscription.findFirst({
+  const data = await prisma.subscription.findFirst({
     where: { userId, stripeCustomerId: { not: null } },
     select: { stripeCustomerId: true },
     orderBy: { createdAt: "desc" },
@@ -347,16 +321,14 @@ export async function getStripeCustomerId(
 
 export async function countUserRecipes(
   ownerId: string,
-  db: PrismaClient = prisma,
 ): Promise<number> {
-  return db.recipe.count({ where: { ownerId } });
+  return prisma.recipe.count({ where: { ownerId } });
 }
 
 export async function countUserIngredients(
   ownerId: string,
-  db: PrismaClient = prisma,
 ): Promise<number> {
-  return db.ingredient.count({ where: { ownerId } });
+  return prisma.ingredient.count({ where: { ownerId } });
 }
 
 function parseFeaturesJson(
