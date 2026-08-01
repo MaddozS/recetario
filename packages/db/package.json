@@ -6,11 +6,16 @@
   "main": "./dist/src/index.ts",
   "types": "./dist/src/index.d.ts",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./prisma/generated/models": "./prisma/generated/models.ts",
+    "./prisma/generated/enums": "./prisma/generated/enums.ts",
+    "./prisma/generated/client": "./prisma/generated/client.ts",
+    "./prisma/generated/commonInputTypes": "./prisma/generated/commonInputTypes.ts",
+    "./prisma/generated/browser": "./prisma/generated/browser.ts"
   },
   "files": ["dist", "prisma", "generated"],
   "scripts": {
-    "build": "tsc --build",
+    "build": "tsc --noEmit",
     "generate": "prisma generate",
     "migrate": "prisma migrate dev",
     "deploy": "prisma migrate deploy",
