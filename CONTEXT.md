@@ -2,6 +2,23 @@
 
 Project-specific terminology for the KitchCalc monorepo (Recetario).
 
+## Data layer
+
+**CRUD method**:
+A function in `packages/db` that performs a single persistence operation (get/create/update/delete/upsert/duplicate) against Prisma and returns raw rows or a result object. CRUD methods are the only way `apps/api` and `packages/billing` touch tenant data; they centralize `ownerId` scoping.
+
+_Avoid_: "db helper", "repository" (implies patterns this codebase does not use).
+
+**Data layer boundary**:
+The rule that `packages/db` is pure persistence (no validation, no shaping) and `apps/api` owns validation (Zod) plus response shaping. `apps/api` never imports `prisma`; `packages/auth` keeps the raw client for the Better Auth adapter. See [ADR-0005](./docs/adr/0005-data-layer-boundary.md).
+
+_Avoid_: "ORM layer", "data access layer" (overloaded).
+
+**Raw row**:
+A Prisma result returned unmodified by a CRUD method (Dates as `Date`, camelCase fields). The API maps raw rows into `@recetario/types` DTOs before responding.
+
+_Avoid_: "model", "record" (ambiguous with schema).
+
 ## Auth
 
 **Auth callback**:
