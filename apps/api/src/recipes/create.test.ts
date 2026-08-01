@@ -15,9 +15,8 @@ vi.mock("@recetario/auth/server", () => ({
 }));
 
 vi.mock("@recetario/db", () => ({
-  prisma: {},
-  createRecipe: (ownerId: string, input: unknown) =>
-    mockCreateRecipe(ownerId, input),
+  createRecipe: (ownerId: string, input: unknown, ...rest: unknown[]) =>
+    mockCreateRecipe(ownerId, input, ...rest),
 }));
 
 const { recipesCreateHandler } = await import("./create");
@@ -35,6 +34,21 @@ function buildApp() {
   return app;
 }
 
+function recipeFixture(id: number) {
+  return {
+    id,
+    name: "Tarta",
+    category: null,
+    instructions: null,
+    desiredMargin: 30,
+    fixedCostsPercentage: 10,
+    updatedAt: new Date("2026-01-01T00:00:00Z"),
+    recipeIngredients: [],
+    presentations: [],
+    recipeFixedCosts: [],
+  };
+}
+
 describe("recipesCreateHandler", () => {
   beforeEach(() => {
     mockGetSession.mockReset();
@@ -50,7 +64,7 @@ describe("recipesCreateHandler", () => {
 
   it("creates a recipe with the given name and scopes to the user", async () => {
     mockGetSession.mockResolvedValueOnce(sessionFixture);
-    mockCreateRecipe.mockResolvedValueOnce({ id: 99, name: "Tarta" });
+    mockCreateRecipe.mockResolvedValueOnce(recipeFixture(99));
 
     const res = await buildApp().request("/api/recipes", {
       method: "POST",
@@ -60,7 +74,17 @@ describe("recipesCreateHandler", () => {
     expect(res.status).toBe(201);
     const body = (await res.json()) as { id: number; name: string };
     expect(body.id).toBe(99);
-    expect(mockCreateRecipe).toHaveBeenCalledWith("user-1", { name: "Tarta" });
+    expect(mockCreateRecipe).toHaveBeenCalledWith(
+      "user-1",
+      {
+        name: "Tarta",
+        category: null,
+        desiredMargin: 0,
+        fixedCostsPercentage: 0,
+      },
+      undefined,
+      undefined,
+    );
   });
 
   it("returns 400 on invalid input", async () => {
@@ -77,7 +101,7 @@ describe("recipesCreateHandler", () => {
 
   it("accepts an empty body and creates a default recipe", async () => {
     mockGetSession.mockResolvedValueOnce(sessionFixture);
-    mockCreateRecipe.mockResolvedValueOnce({ id: 1, name: "Nueva Receta" });
+    mockCreateRecipe.mockResolvedValueOnce(recipeFixture(1));
 
     const res = await buildApp().request("/api/recipes", {
       method: "POST",
@@ -85,6 +109,16 @@ describe("recipesCreateHandler", () => {
       body: JSON.stringify({}),
     });
     expect(res.status).toBe(201);
-    expect(mockCreateRecipe).toHaveBeenCalledWith("user-1", {});
+    expect(mockCreateRecipe).toHaveBeenCalledWith(
+      "user-1",
+      {
+        name: "Nueva Receta",
+        category: null,
+        desiredMargin: 0,
+        fixedCostsPercentage: 0,
+      },
+      undefined,
+      undefined,
+    );
   });
 });

@@ -1,5 +1,9 @@
 import type { Handler } from "hono";
-import { prisma } from "@recetario/db";
+import {
+  createRecipeFixedCost,
+  updateRecipeFixedCost,
+  deleteRecipeFixedCost,
+} from "@recetario/db";
 import { auth } from "@recetario/auth/server";
 import {
   fixedCostCreateSchema,
@@ -20,14 +24,6 @@ export function fixedCostsCreateHandler(): Handler {
       throw new ApiError("NOT_FOUND", "Recipe not found");
     }
 
-    const ownerRecipe = await prisma.recipe.findFirst({
-      where: { id: recipeId, ownerId: session.user.id },
-      select: { id: true },
-    });
-    if (!ownerRecipe) {
-      throw new ApiError("NOT_FOUND", "Recipe not found");
-    }
-
     let body: unknown;
     try {
       body = await c.req.json();
@@ -40,16 +36,16 @@ export function fixedCostsCreateHandler(): Handler {
       throw new ApiError("VALIDATION_ERROR", "Invalid fixed cost input");
     }
 
-    const created = await prisma.recipeFixedCost.create({
-      data: {
-        recipeId,
-        name: parsed.data.name ?? "Costo Fijo",
-        type: parsed.data.type,
-        base: parsed.data.base,
-        value: parsed.data.value,
-        hours: parsed.data.hours ?? null,
-      },
+    const created = await createRecipeFixedCost(recipeId, session.user.id, {
+      name: parsed.data.name ?? "Costo Fijo",
+      type: parsed.data.type,
+      base: parsed.data.base,
+      value: parsed.data.value,
+      hours: parsed.data.hours ?? null,
     });
+    if (!created) {
+      throw new ApiError("NOT_FOUND", "Recipe not found");
+    }
 
     return c.json(
       {
@@ -79,14 +75,6 @@ export function fixedCostsUpdateHandler(): Handler {
       throw new ApiError("NOT_FOUND", "Fixed cost not found");
     }
 
-    const fc = await prisma.recipeFixedCost.findFirst({
-      where: { id: fid, recipeId },
-      include: { recipe: { select: { ownerId: true } } },
-    });
-    if (!fc || fc.recipe.ownerId !== session.user.id) {
-      throw new ApiError("NOT_FOUND", "Fixed cost not found");
-    }
-
     let body: unknown;
     try {
       body = await c.req.json();
@@ -99,16 +87,21 @@ export function fixedCostsUpdateHandler(): Handler {
       throw new ApiError("VALIDATION_ERROR", "Invalid fixed cost input");
     }
 
-    const updated = await prisma.recipeFixedCost.update({
-      where: { id: fid },
-      data: {
+    const updated = await updateRecipeFixedCost(
+      recipeId,
+      fid,
+      session.user.id,
+      {
         ...(parsed.data.name !== undefined && { name: parsed.data.name }),
         ...(parsed.data.type !== undefined && { type: parsed.data.type }),
         ...(parsed.data.base !== undefined && { base: parsed.data.base }),
         ...(parsed.data.value !== undefined && { value: parsed.data.value }),
         ...(parsed.data.hours !== undefined && { hours: parsed.data.hours }),
       },
-    });
+    );
+    if (!updated) {
+      throw new ApiError("NOT_FOUND", "Fixed cost not found");
+    }
 
     return c.json({
       id: updated.id,
@@ -135,15 +128,11 @@ export function fixedCostsDeleteHandler(): Handler {
       throw new ApiError("NOT_FOUND", "Fixed cost not found");
     }
 
-    const fc = await prisma.recipeFixedCost.findFirst({
-      where: { id: fid, recipeId },
-      include: { recipe: { select: { ownerId: true } } },
-    });
-    if (!fc || fc.recipe.ownerId !== session.user.id) {
+    const result = await deleteRecipeFixedCost(recipeId, fid, session.user.id);
+    if (result.status === "not-found") {
       throw new ApiError("NOT_FOUND", "Fixed cost not found");
     }
 
-    await prisma.recipeFixedCost.delete({ where: { id: fid } });
     return c.body(null, 204);
   };
 }

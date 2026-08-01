@@ -3,19 +3,11 @@ import { Hono } from "hono";
 import { envelope } from "../envelope";
 import { errorHandler } from "../error-handler";
 
-const { mockGetSession, mockAuth, mockPrisma, mockAccountFindFirst } = vi.hoisted(() => {
+const { mockGetSession, mockAuth, mockGetCredentialAccount } = vi.hoisted(() => {
   const mockGetSession = vi.fn();
-  const mockAccountFindFirst = vi.fn();
+  const mockGetCredentialAccount = vi.fn();
   const mockAuth = { api: { getSession: (...args: unknown[]) => mockGetSession(...args) } };
-  const mockPrisma = {
-    account: { findFirst: mockAccountFindFirst },
-  };
-  return {
-    mockGetSession,
-    mockAuth,
-    mockPrisma,
-    mockAccountFindFirst,
-  };
+  return { mockGetSession, mockAuth, mockGetCredentialAccount };
 });
 
 vi.mock("@recetario/auth/server", () => ({
@@ -23,7 +15,7 @@ vi.mock("@recetario/auth/server", () => ({
 }));
 
 vi.mock("@recetario/db", () => ({
-  prisma: mockPrisma,
+  getCredentialAccount: (userId: string) => mockGetCredentialAccount(userId),
 }));
 
 const { credentialStatusHandler } = await import("./credential-status");
@@ -44,32 +36,29 @@ function buildApp() {
 describe("credentialStatusHandler", () => {
   beforeEach(() => {
     mockGetSession.mockReset();
-    mockAccountFindFirst.mockReset();
+    mockGetCredentialAccount.mockReset();
   });
 
   it("returns 401 when there is no session", async () => {
     mockGetSession.mockResolvedValueOnce(null);
     const res = await buildApp().request("/api/auth/credential-status");
     expect(res.status).toBe(401);
-    expect(mockAccountFindFirst).not.toHaveBeenCalled();
+    expect(mockGetCredentialAccount).not.toHaveBeenCalled();
   });
 
   it("returns hasPasswordAuth: true when a credential account exists", async () => {
     mockGetSession.mockResolvedValueOnce(sessionFixture);
-    mockAccountFindFirst.mockResolvedValueOnce({ id: "a1" });
+    mockGetCredentialAccount.mockResolvedValueOnce({ id: "a1" });
 
     const res = await buildApp().request("/api/auth/credential-status");
     expect(res.status).toBe(200);
     expect(await res.json()).toEqual({ hasPasswordAuth: true });
-    expect(mockAccountFindFirst).toHaveBeenCalledWith({
-      where: { userId: "user-1", providerId: "credential" },
-      select: { id: true },
-    });
+    expect(mockGetCredentialAccount).toHaveBeenCalledWith("user-1");
   });
 
   it("returns hasPasswordAuth: false when no credential account exists", async () => {
     mockGetSession.mockResolvedValueOnce(sessionFixture);
-    mockAccountFindFirst.mockResolvedValueOnce(null);
+    mockGetCredentialAccount.mockResolvedValueOnce(null);
 
     const res = await buildApp().request("/api/auth/credential-status");
     expect(res.status).toBe(200);

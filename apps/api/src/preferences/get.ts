@@ -1,7 +1,6 @@
 import type { Handler } from "hono";
-import { prisma } from "@recetario/db";
 import { auth } from "@recetario/auth/server";
-import { getUserPreferences } from "@recetario/db";
+import { getUserPreferences, createUserPreferences } from "@recetario/db";
 import { preferencesResponseSchema } from "@recetario/types";
 import * as cache from "../cache";
 import { ApiError } from "../errors";
@@ -30,12 +29,9 @@ export function preferencesGetHandler(): Handler {
     const existing = await getUserPreferences(userId);
     const data =
       existing ??
-      (await prisma.userPreferences.create({
-        data: {
-          userId,
-          theme: DEFAULT_THEME,
-          accentColor: DEFAULT_ACCENT,
-        },
+      (await createUserPreferences(userId, {
+        theme: DEFAULT_THEME,
+        accentColor: DEFAULT_ACCENT,
       }));
 
     const validated = preferencesResponseSchema.parse({

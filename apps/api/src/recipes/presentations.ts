@@ -1,5 +1,10 @@
 import type { Handler } from "hono";
-import { prisma } from "@recetario/db";
+import {
+  getPresentationsByRecipeId,
+  createPresentation,
+  updatePresentation,
+  deletePresentation,
+} from "@recetario/db";
 import { auth } from "@recetario/auth/server";
 import {
   presentationCreateSchema,
@@ -20,19 +25,13 @@ export function presentationsListHandler(): Handler {
       throw new ApiError("NOT_FOUND", "Recipe not found");
     }
 
-    const recipe = await prisma.recipe.findFirst({
-      where: { id: recipeId, ownerId: session.user.id },
-      select: { id: true },
-    });
-    if (!recipe) {
+    const presentations = await getPresentationsByRecipeId(
+      recipeId,
+      session.user.id,
+    );
+    if (!presentations) {
       throw new ApiError("NOT_FOUND", "Recipe not found");
     }
-
-    const presentations = await prisma.recipePresentation.findMany({
-      where: { recipeId },
-      include: { fixedCosts: true },
-      orderBy: { id: "asc" },
-    });
 
     return c.json(
       presentations.map((p) => ({
@@ -80,14 +79,6 @@ export function presentationsCreateHandler(): Handler {
       throw new ApiError("NOT_FOUND", "Recipe not found");
     }
 
-    const ownerRecipe = await prisma.recipe.findFirst({
-      where: { id: recipeId, ownerId: session.user.id },
-      select: { id: true },
-    });
-    if (!ownerRecipe) {
-      throw new ApiError("NOT_FOUND", "Recipe not found");
-    }
-
     let body: unknown;
     try {
       body = await c.req.json();
@@ -99,14 +90,18 @@ export function presentationsCreateHandler(): Handler {
       throw new ApiError("VALIDATION_ERROR", "Invalid presentation input");
     }
 
-    const created = await prisma.recipePresentation.create({
-      data: {
-        recipeId,
+    const created = await createPresentation(
+      recipeId,
+      session.user.id,
+      {
         name: parsed.data.name,
         unitsPerBatch: parsed.data.unitsPerBatch,
         salePrice: parsed.data.salePrice ?? null,
       },
-    });
+    );
+    if (!created) {
+      throw new ApiError("NOT_FOUND", "Recipe not found");
+    }
 
     const shaped = shapePresentation(created);
     shaped.recipeId = recipeId;
@@ -127,14 +122,6 @@ export function presentationsUpdateHandler(): Handler {
       throw new ApiError("NOT_FOUND", "Presentation not found");
     }
 
-    const presentation = await prisma.recipePresentation.findFirst({
-      where: { id: pid, recipeId, recipe: { ownerId: session.user.id } },
-      select: { id: true },
-    });
-    if (!presentation) {
-      throw new ApiError("NOT_FOUND", "Presentation not found");
-    }
-
     let body: unknown;
     try {
       body = await c.req.json();
@@ -146,9 +133,11 @@ export function presentationsUpdateHandler(): Handler {
       throw new ApiError("VALIDATION_ERROR", "Invalid presentation input");
     }
 
-    const updated = await prisma.recipePresentation.update({
-      where: { id: pid },
-      data: {
+    const updated = await updatePresentation(
+      pid,
+      recipeId,
+      session.user.id,
+      {
         ...(parsed.data.name !== undefined && { name: parsed.data.name }),
         ...(parsed.data.unitsPerBatch !== undefined && {
           unitsPerBatch: parsed.data.unitsPerBatch,
@@ -157,7 +146,10 @@ export function presentationsUpdateHandler(): Handler {
           salePrice: parsed.data.salePrice,
         }),
       },
-    });
+    );
+    if (!updated) {
+      throw new ApiError("NOT_FOUND", "Presentation not found");
+    }
 
     const shaped = shapePresentation(updated);
     shaped.recipeId = recipeId;
@@ -178,15 +170,11 @@ export function presentationsDeleteHandler(): Handler {
       throw new ApiError("NOT_FOUND", "Presentation not found");
     }
 
-    const presentation = await prisma.recipePresentation.findFirst({
-      where: { id: pid, recipeId, recipe: { ownerId: session.user.id } },
-      select: { id: true },
-    });
-    if (!presentation) {
+    const result = await deletePresentation(recipeId, pid, session.user.id);
+    if (result.status === "not-found") {
       throw new ApiError("NOT_FOUND", "Presentation not found");
     }
 
-    await prisma.recipePresentation.delete({ where: { id: pid } });
     return c.body(null, 204);
   };
 }

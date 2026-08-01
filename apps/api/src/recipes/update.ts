@@ -1,5 +1,5 @@
 import type { Handler } from "hono";
-import { getRecipeById, updateRecipe } from "@recetario/db";
+import { getRecipe, updateRecipe } from "@recetario/db";
 import { auth } from "@recetario/auth/server";
 import { recipeUpdateSchema } from "@recetario/types";
 import { ApiError } from "../errors";
@@ -29,24 +29,43 @@ export function recipesUpdateHandler(): Handler {
       throw new ApiError("VALIDATION_ERROR", "Invalid recipe input");
     }
 
-    const existing = await getRecipeById(id, session.user.id);
+    const existing = await getRecipe(id, session.user.id);
     if (!existing) {
       throw new ApiError("NOT_FOUND", "Recipe not found");
     }
 
     const updateInput = {
-      ...parsed.data,
-      ingredients: parsed.data.ingredients.map((ing) => ({
-        ingredientId: ing.ingredientId,
-        quantity: ing.quantity,
-        unit: ing.unit,
-        comment: ing.comment ?? null,
-      })),
+      name: parsed.data.name,
+      category: parsed.data.category ?? null,
+      instructions: parsed.data.instructions ?? null,
+      desiredMargin: parsed.data.desiredMargin,
+      fixedCostsPercentage: parsed.data.fixedCostsPercentage,
     };
 
-    await updateRecipe(id, updateInput, session.user.id);
+    const ingredients = parsed.data.ingredients.map((ing) => ({
+      ingredientId: ing.ingredientId,
+      quantity: ing.quantity,
+      unit: ing.unit,
+      comment: ing.comment ?? null,
+    }));
 
-    const updated = await getRecipeById(id, session.user.id);
+    const recipeFixedCosts = parsed.data.recipeFixedCosts?.map((fc) => ({
+      name: fc.name ?? "Costo Fijo",
+      type: fc.type,
+      base: fc.base,
+      value: fc.value,
+      hours: fc.hours ?? null,
+    }));
+
+    await updateRecipe(
+      id,
+      updateInput,
+      session.user.id,
+      ingredients,
+      recipeFixedCosts,
+    );
+
+    const updated = await getRecipe(id, session.user.id);
     return c.json(updated);
   };
 }

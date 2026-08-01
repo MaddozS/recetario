@@ -1,6 +1,7 @@
 import type { Handler } from "hono";
 import { duplicateRecipe } from "@recetario/db";
 import { auth } from "@recetario/auth/server";
+import { recipeWithIngredientsSchema } from "@recetario/types";
 import { ApiError } from "../errors";
 
 export function recipesDuplicateHandler(): Handler {
@@ -19,6 +20,6 @@ export function recipesDuplicateHandler(): Handler {
     if (!duplicated) {
       throw new ApiError("NOT_FOUND", "Recipe not found");
     }
-    return c.json(duplicated, 201);
+    return c.json(recipeWithIngredientsSchema.parse(duplicated), 201);
   };
 }

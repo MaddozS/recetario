@@ -10,16 +10,20 @@ import {
   formatTime,
   hashPassword,
 } from "@recetario/auth/server";
-import { logAuditEvent, prisma } from "@recetario/db";
 import {
+  logAuditEvent,
+  updateAccountPassword,
+  updateUserName,
   stripe,
+  seedSubscriptionPlans,
+} from "@recetario/db";
+import {
   getPlanByStripePriceId,
   getStripeCustomerId,
   getUserSubscription,
   createOrUpdateSubscription,
   cancelSubscription,
   markSubscriptionPastDue,
-  seedSubscriptionPlans,
 } from "@recetario/billing/server";
 import { syncEnvBindings } from "@recetario/config/env";
 import { clientIp, setSecurityHeaders } from "@recetario/config/request";
@@ -222,10 +226,11 @@ app.post("/api/auth/reset-password", async (c) => {
       }
 
       const hashedPassword = await hashPassword(password);
-      await prisma.account.updateMany({
-        where: { userId: validation.userId!, providerId: "credential" },
-        data: { password: hashedPassword },
-      });
+      await updateAccountPassword(
+        validation.userId!,
+        "credential",
+        hashedPassword,
+      );
 
       await markTokenAsUsed(token);
 
@@ -292,7 +297,7 @@ app.all("/api/auth/*", async (c) => {
 
     if (c.req.method === "POST") {
       if (path.includes("/sign-in/email")) {
-        const { allowed } = await rateLimitCheck(`signin:${ip}`, 5, 60, prisma);
+        const { allowed } = await rateLimitCheck(`signin:${ip}`, 5, 60);
         if (!allowed) {
           return c.text(
             "Too many sign-in attempts. Please try again later.",
@@ -302,7 +307,7 @@ app.all("/api/auth/*", async (c) => {
       }
 
       if (path.includes("/sign-up/email")) {
-        const { allowed } = await rateLimitCheck(`signup:${ip}`, 3, 3600, prisma);
+        const { allowed } = await rateLimitCheck(`signup:${ip}`, 3, 3600);
         if (!allowed) {
           return c.text(
             "Too many sign-up attempts. Please try again later.",
@@ -312,14 +317,14 @@ app.all("/api/auth/*", async (c) => {
       }
 
       if (path.includes("/sign-in/social")) {
-        const { allowed } = await rateLimitCheck(`oauth:${ip}`, 10, 900, prisma);
+        const { allowed } = await rateLimitCheck(`oauth:${ip}`, 10, 900);
         if (!allowed) {
           return c.text("Too many OAuth requests. Please try again later.", 429);
         }
       }
 
       if (path.includes("/forget-password")) {
-        const { allowed } = await rateLimitCheck(`forgot:${ip}`, 3, 3600, prisma);
+        const { allowed } = await rateLimitCheck(`forgot:${ip}`, 3, 3600);
         if (!allowed) {
           return c.text("Too many reset requests. Please try again later.", 429);
         }
@@ -340,11 +345,7 @@ app.post("/api/account/update-name", async (c) => {
     if (!firstName || !lastName) return c.text("Missing fields", 400);
 
     try {
-      const fullName = `${firstName} ${lastName}`;
-      await prisma.user.update({
-        where: { id: session.user.id },
-        data: { firstName, lastName, name: fullName },
-      });
+      await updateUserName(session.user.id, { firstName, lastName });
       return c.body(null, 200);
     } catch {
       return c.text("Error updating name", 500);

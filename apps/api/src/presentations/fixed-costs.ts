@@ -1,5 +1,9 @@
 import type { Handler } from "hono";
-import { prisma } from "@recetario/db";
+import {
+  createPresentationFixedCost,
+  updatePresentationFixedCost,
+  deletePresentationFixedCost,
+} from "@recetario/db";
 import { auth } from "@recetario/auth/server";
 import {
   presentationFixedCostCreateSchema,
@@ -19,14 +23,6 @@ export function presentationsFixedCostsCreateHandler(): Handler {
       throw new ApiError("NOT_FOUND", "Presentation not found");
     }
 
-    const presentation = await prisma.recipePresentation.findFirst({
-      where: { id: pid, recipe: { ownerId: session.user.id } },
-      select: { id: true },
-    });
-    if (!presentation) {
-      throw new ApiError("NOT_FOUND", "Presentation not found");
-    }
-
     let body: unknown;
     try {
       body = await c.req.json();
@@ -38,15 +34,15 @@ export function presentationsFixedCostsCreateHandler(): Handler {
       throw new ApiError("VALIDATION_ERROR", "Invalid fixed cost input");
     }
 
-    const created = await prisma.presentationFixedCost.create({
-      data: {
-        presentationId: pid,
-        name: parsed.data.name ?? "Costo Fijo",
-        type: parsed.data.type,
-        base: parsed.data.base,
-        value: parsed.data.value,
-      },
+    const created = await createPresentationFixedCost(pid, session.user.id, {
+      name: parsed.data.name ?? "Costo Fijo",
+      type: parsed.data.type,
+      base: parsed.data.base,
+      value: parsed.data.value,
     });
+    if (!created) {
+      throw new ApiError("NOT_FOUND", "Presentation not found");
+    }
 
     return c.json(
       {
@@ -75,18 +71,6 @@ export function presentationsFixedCostsUpdateHandler(): Handler {
       throw new ApiError("NOT_FOUND", "Fixed cost not found");
     }
 
-    const fc = await prisma.presentationFixedCost.findFirst({
-      where: {
-        id: fcid,
-        presentationId: pid,
-        presentation: { recipe: { ownerId: session.user.id } },
-      },
-      select: { id: true },
-    });
-    if (!fc) {
-      throw new ApiError("NOT_FOUND", "Fixed cost not found");
-    }
-
     let body: unknown;
     try {
       body = await c.req.json();
@@ -98,15 +82,20 @@ export function presentationsFixedCostsUpdateHandler(): Handler {
       throw new ApiError("VALIDATION_ERROR", "Invalid fixed cost input");
     }
 
-    const updated = await prisma.presentationFixedCost.update({
-      where: { id: fcid },
-      data: {
+    const updated = await updatePresentationFixedCost(
+      pid,
+      fcid,
+      session.user.id,
+      {
         ...(parsed.data.name !== undefined && { name: parsed.data.name }),
         ...(parsed.data.type !== undefined && { type: parsed.data.type }),
         ...(parsed.data.base !== undefined && { base: parsed.data.base }),
         ...(parsed.data.value !== undefined && { value: parsed.data.value }),
       },
-    });
+    );
+    if (!updated) {
+      throw new ApiError("NOT_FOUND", "Fixed cost not found");
+    }
 
     return c.json({
       id: updated.id,
@@ -132,19 +121,11 @@ export function presentationsFixedCostsDeleteHandler(): Handler {
       throw new ApiError("NOT_FOUND", "Fixed cost not found");
     }
 
-    const fc = await prisma.presentationFixedCost.findFirst({
-      where: {
-        id: fcid,
-        presentationId: pid,
-        presentation: { recipe: { ownerId: session.user.id } },
-      },
-      select: { id: true },
-    });
-    if (!fc) {
+    const result = await deletePresentationFixedCost(pid, fcid, session.user.id);
+    if (result.status === "not-found") {
       throw new ApiError("NOT_FOUND", "Fixed cost not found");
     }
 
-    await prisma.presentationFixedCost.delete({ where: { id: fcid } });
     return c.body(null, 204);
   };
 }

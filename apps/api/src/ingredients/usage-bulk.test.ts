@@ -3,14 +3,11 @@ import { Hono } from "hono";
 import { envelope } from "../envelope";
 import { errorHandler } from "../error-handler";
 
-const { mockGetSession, mockAuth, mockPrisma, mockFindMany } = vi.hoisted(() => {
+const { mockGetSession, mockAuth, mockGetIngredientUsage } = vi.hoisted(() => {
   const mockGetSession = vi.fn();
-  const mockFindMany = vi.fn();
+  const mockGetIngredientUsage = vi.fn();
   const mockAuth = { api: { getSession: (...args: unknown[]) => mockGetSession(...args) } };
-  const mockPrisma = {
-    recipeIngredient: { findMany: mockFindMany },
-  };
-  return { mockGetSession, mockAuth, mockPrisma, mockFindMany };
+  return { mockGetSession, mockAuth, mockGetIngredientUsage };
 });
 
 vi.mock("@recetario/auth/server", () => ({
@@ -18,7 +15,7 @@ vi.mock("@recetario/auth/server", () => ({
 }));
 
 vi.mock("@recetario/db", () => ({
-  prisma: mockPrisma,
+  getIngredientUsage: (ownerId: string) => mockGetIngredientUsage(ownerId),
 }));
 
 const { ingredientsUsageBulkHandler } = await import("./usage-bulk");
@@ -39,7 +36,7 @@ function buildApp() {
 describe("ingredientsUsageBulkHandler", () => {
   beforeEach(() => {
     mockGetSession.mockReset();
-    mockFindMany.mockReset();
+    mockGetIngredientUsage.mockReset();
   });
 
   it("returns 401 when no session", async () => {
@@ -50,11 +47,10 @@ describe("ingredientsUsageBulkHandler", () => {
 
   it("returns a record keyed by ingredientId", async () => {
     mockGetSession.mockResolvedValueOnce(sessionFixture);
-    mockFindMany.mockResolvedValueOnce([
-      { ingredientId: 1, recipe: { name: "Brownie" } },
-      { ingredientId: 1, recipe: { name: "Galleta" } },
-      { ingredientId: 2, recipe: { name: "Brownie" } },
-    ]);
+    mockGetIngredientUsage.mockResolvedValueOnce({
+      1: ["Brownie", "Galleta"],
+      2: ["Brownie"],
+    });
 
     const res = await buildApp().request("/api/ingredients/usage");
     expect(res.status).toBe(200);
@@ -62,9 +58,6 @@ describe("ingredientsUsageBulkHandler", () => {
       "1": ["Brownie", "Galleta"],
       "2": ["Brownie"],
     });
-    expect(mockFindMany).toHaveBeenCalledWith({
-      where: { recipe: { ownerId: "user-1" } },
-      select: { ingredientId: true, recipe: { select: { name: true } } },
-    });
+    expect(mockGetIngredientUsage).toHaveBeenCalledWith("user-1");
   });
 });

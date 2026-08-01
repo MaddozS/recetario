@@ -1,5 +1,42 @@
-import { describe, it, expect, beforeAll } from "vitest";
+import { describe, it, expect, vi, beforeAll } from "vitest";
 import { createTestEnv } from "./test-utils/index";
+
+vi.mock("@recetario/auth/server", () => ({
+  auth: {
+    api: {
+      getSession: vi.fn().mockResolvedValue(null),
+      requestPasswordReset: vi.fn(),
+      changeEmail: vi.fn(),
+      changePassword: vi.fn(),
+    },
+    handler: vi.fn(),
+  },
+  rateLimitCheck: vi.fn().mockResolvedValue({ allowed: true, remaining: 10 }),
+  validateCsrf: vi.fn().mockReturnValue(true),
+  validatePassword: vi.fn().mockReturnValue({ valid: true, errors: [] }),
+  validatePasswordResetToken: vi.fn().mockResolvedValue({ valid: false }),
+  markTokenAsUsed: vi.fn(),
+  getRemainingSeconds: vi.fn().mockResolvedValue(0),
+  formatTime: vi.fn().mockReturnValue("0 min"),
+  hashPassword: vi.fn(),
+}));
+
+vi.mock("@recetario/db", () => ({
+  stripe: { customers: { create: vi.fn() }, checkout: { sessions: { create: vi.fn() } }, billingPortal: { sessions: { create: vi.fn() } }, webhooks: { constructEvent: vi.fn() } },
+  seedSubscriptionPlans: vi.fn(),
+  logAuditEvent: vi.fn(),
+  updateAccountPassword: vi.fn(),
+  updateUserName: vi.fn(),
+}));
+
+vi.mock("@recetario/billing/server", () => ({
+  getPlanByStripePriceId: vi.fn(),
+  getStripeCustomerId: vi.fn(),
+  getUserSubscription: vi.fn(),
+  createOrUpdateSubscription: vi.fn(),
+  cancelSubscription: vi.fn(),
+  markSubscriptionPastDue: vi.fn(),
+}));
 
 beforeAll(() => {
   process.env.DATABASE_URL = "postgres://test:test@localhost:5432/test";

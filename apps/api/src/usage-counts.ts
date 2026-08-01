@@ -1,5 +1,5 @@
 import type { Handler } from "hono";
-import { prisma } from "@recetario/db";
+import { countUserRecipes, countUserIngredients } from "@recetario/db";
 import { auth } from "@recetario/auth/server";
 import { usageCountsResponseSchema } from "@recetario/types";
 import { ApiError } from "./errors";
@@ -13,8 +13,8 @@ export function usageCountsHandler(): Handler {
     const ownerId = session.user.id;
 
     const [recipes, ingredients] = await Promise.all([
-      prisma.recipe.count({ where: { ownerId } }),
-      prisma.ingredient.count({ where: { ownerId } }),
+      countUserRecipes(ownerId),
+      countUserIngredients(ownerId),
     ]);
 
     return c.json(usageCountsResponseSchema.parse({ recipes, ingredients }));

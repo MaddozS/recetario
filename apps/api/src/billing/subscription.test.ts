@@ -4,23 +4,22 @@ import { envelope } from "../envelope";
 import { errorHandler } from "../error-handler";
 import { hostAllowlist } from "../host-allowlist";
 
-const { mockGetSession, mockAuth, mockGetUserSubscription, mockSeedSubscriptionPlans } = vi.hoisted(() => {
+const { mockGetSession, mockAuth, mockGetSubscriptionByUserId, mockSeedSubscriptionPlans } = vi.hoisted(() => {
   const mockGetSession = vi.fn();
   const mockAuth = { api: { getSession: (...args: unknown[]) => mockGetSession(...args) } };
-  const mockGetUserSubscription = vi.fn();
+  const mockGetSubscriptionByUserId = vi.fn();
   const mockSeedSubscriptionPlans = vi.fn();
-  return { mockGetSession, mockAuth, mockGetUserSubscription, mockSeedSubscriptionPlans };
+  return { mockGetSession, mockAuth, mockGetSubscriptionByUserId, mockSeedSubscriptionPlans };
 });
 
 vi.mock("@recetario/auth/server", () => ({
   auth: mockAuth,
 }));
 
-vi.mock("@recetario/billing/server", () => ({
-  getUserSubscription: (id: string, db: unknown) =>
-    mockGetUserSubscription(id, db),
-  seedSubscriptionPlans: (db: unknown) =>
-    mockSeedSubscriptionPlans(db),
+vi.mock("@recetario/db", () => ({
+  getSubscriptionByUserId: (userId: string, statuses: string[]) =>
+    mockGetSubscriptionByUserId(userId, statuses),
+  seedSubscriptionPlans: () => mockSeedSubscriptionPlans(),
 }));
 
 vi.mock("@recetario/billing", () => ({
@@ -73,10 +72,6 @@ vi.mock("@recetario/billing", () => ({
   },
 }));
 
-vi.mock("@recetario/db", () => ({
-  prisma: {},
-}));
-
 const cacheStore = new Map<string, { value: unknown; expiresAt: number }>();
 
 vi.mock("../cache", () => ({
@@ -104,17 +99,28 @@ const sessionFixture = {
 const dbSubFixture = {
   id: "sub-row-1",
   userId: "user-1",
-  tier: "pro",
+  stripeCustomerId: "cus_123",
+  stripeSubscriptionId: "sub_123",
+  planId: "pro_monthly",
   status: "active",
-  recipesLimit: null,
-  ingredientsLimit: null,
-  features: { recipe_duplicate: true, pdf_export: true },
-  priceCents: 1999,
-  currency: "mxn",
-  billingInterval: "monthly",
+  currentPeriodStart: new Date("2025-01-01T00:00:00Z"),
   currentPeriodEnd: new Date("2030-01-01T00:00:00Z"),
   cancelAtPeriodEnd: false,
   trialEnd: null,
+  createdAt: new Date("2025-01-01T00:00:00Z"),
+  plan: {
+    id: "pro_monthly",
+    stripePriceId: "price_pro_monthly",
+    name: "Pro",
+    tier: "pro",
+    billingInterval: "monthly",
+    priceCents: 1999,
+    currency: "mxn",
+    recipesLimit: null,
+    ingredientsLimit: null,
+    featuresJson: JSON.stringify({ recipe_duplicate: true, pdf_export: true }),
+    active: true,
+  },
 };
 
 function buildApp() {
@@ -129,13 +135,13 @@ function buildApp() {
 describe("subscriptionHandler", () => {
   beforeEach(() => {
     mockGetSession.mockReset();
-    mockGetUserSubscription.mockReset();
+    mockGetSubscriptionByUserId.mockReset();
     cacheStore.clear();
   });
 
   it("returns 200 and resolved subscription when user has an active sub", async () => {
     mockGetSession.mockResolvedValueOnce(sessionFixture);
-    mockGetUserSubscription.mockResolvedValueOnce(dbSubFixture);
+    mockGetSubscriptionByUserId.mockResolvedValueOnce(dbSubFixture);
 
     const res = await buildApp().request(
       "/api/billing/subscription",
@@ -153,13 +159,13 @@ describe("subscriptionHandler", () => {
     expect(body.status).toBe("active");
     expect(body.priceCents).toBe(1999);
 
-    expect(mockGetUserSubscription).toHaveBeenCalledTimes(1);
-    expect(mockGetUserSubscription).toHaveBeenCalledWith("user-1", expect.anything());
+    expect(mockGetSubscriptionByUserId).toHaveBeenCalledTimes(1);
+    expect(mockGetSubscriptionByUserId).toHaveBeenCalledWith("user-1", ["active", "trialing"]);
   });
 
   it("returns 404 NOT_FOUND when user has no active subscription", async () => {
     mockGetSession.mockResolvedValueOnce(sessionFixture);
-    mockGetUserSubscription.mockResolvedValueOnce(null);
+    mockGetSubscriptionByUserId.mockResolvedValueOnce(null);
 
     const res = await buildApp().request("/api/billing/subscription", {}, {});
 
@@ -176,12 +182,12 @@ describe("subscriptionHandler", () => {
     expect(res.status).toBe(401);
     const body = (await res.json()) as { error: { code: string } };
     expect(body.error.code).toBe("UNAUTHENTICATED");
-    expect(mockGetUserSubscription).not.toHaveBeenCalled();
+    expect(mockGetSubscriptionByUserId).not.toHaveBeenCalled();
   });
 
   it("forwards the request cookie to auth.api.getSession", async () => {
     mockGetSession.mockResolvedValueOnce(sessionFixture);
-    mockGetUserSubscription.mockResolvedValueOnce(dbSubFixture);
+    mockGetSubscriptionByUserId.mockResolvedValueOnce(dbSubFixture);
 
     await buildApp().request(
       "/api/billing/subscription",
@@ -196,16 +202,16 @@ describe("subscriptionHandler", () => {
 
   it("serves the cached subscription on the second call without re-querying the DB", async () => {
     mockGetSession.mockResolvedValue(sessionFixture);
-    mockGetUserSubscription.mockResolvedValue(dbSubFixture);
+    mockGetSubscriptionByUserId.mockResolvedValue(dbSubFixture);
 
     const app = buildApp();
     const first = await app.request("/api/billing/subscription", {}, {});
     expect(first.status).toBe(200);
-    expect(mockGetUserSubscription).toHaveBeenCalledTimes(1);
+    expect(mockGetSubscriptionByUserId).toHaveBeenCalledTimes(1);
 
     const second = await app.request("/api/billing/subscription", {}, {});
     expect(second.status).toBe(200);
-    expect(mockGetUserSubscription).toHaveBeenCalledTimes(1);
+    expect(mockGetSubscriptionByUserId).toHaveBeenCalledTimes(1);
 
     const secondBody = (await second.json()) as { tier: string };
     expect(secondBody.tier).toBe("pro");

@@ -1,5 +1,5 @@
 import type { Handler } from "hono";
-import { prisma } from "@recetario/db";
+import { logAuditEvent } from "@recetario/db";
 import { auth } from "@recetario/auth/server";
 import { auditLogCreateSchema } from "@recetario/types";
 import { ApiError } from "../errors";
@@ -23,13 +23,11 @@ export function auditLogHandler(): Handler {
     }
 
     try {
-      await prisma.auditLog.create({
-        data: {
-          userId: session.user.id,
-          action: parsed.data.action,
-          ipAddress: parsed.data.ipAddress ?? null,
-          userAgent: parsed.data.userAgent ?? null,
-        },
+      await logAuditEvent({
+        userId: session.user.id,
+        action: parsed.data.action,
+        ipAddress: parsed.data.ipAddress ?? null,
+        userAgent: parsed.data.userAgent ?? null,
       });
     } catch {
       // ponytail: audit log is best-effort, never fail the request

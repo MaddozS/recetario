@@ -1,5 +1,5 @@
 import type { Handler } from "hono";
-import { prisma } from "@recetario/db";
+import { getIngredientUsage } from "@recetario/db";
 import { auth } from "@recetario/auth/server";
 import { ApiError } from "../errors";
 import { ingredientUsageMapSchema } from "@recetario/types";
@@ -11,20 +11,13 @@ export function ingredientsUsageBulkHandler(): Handler {
       throw new ApiError("UNAUTHENTICATED", "Authentication required");
     }
 
-    const rows = await prisma.recipeIngredient.findMany({
-      where: { recipe: { ownerId: session.user.id } },
-      select: {
-        ingredientId: true,
-        recipe: { select: { name: true } },
-      },
-    });
+    const usage = await getIngredientUsage(session.user.id);
 
-    const usage: Record<string, string[]> = {};
-    for (const row of rows) {
-      const list = usage[String(row.ingredientId)] ?? (usage[String(row.ingredientId)] = []);
-      list.push(row.recipe.name);
+    const stringMap: Record<string, string[]> = {};
+    for (const [key, value] of Object.entries(usage)) {
+      stringMap[String(key)] = value;
     }
 
-    return c.json(ingredientUsageMapSchema.parse(usage));
+    return c.json(ingredientUsageMapSchema.parse(stringMap));
   };
 }

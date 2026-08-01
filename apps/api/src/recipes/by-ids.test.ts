@@ -39,9 +39,12 @@ function recipeFixture(id: number) {
   return {
     id,
     name: `Receta ${id}`,
+    category: null,
+    instructions: null,
     desiredMargin: 30,
     fixedCostsPercentage: 10,
-    ingredients: [],
+    updatedAt: new Date("2026-01-01T00:00:00Z"),
+    recipeIngredients: [],
     presentations: [],
     recipeFixedCosts: [],
   };

@@ -3,32 +3,24 @@ import { Hono } from "hono";
 import { envelope } from "../envelope";
 import { errorHandler } from "../error-handler";
 
-const { mockGetSession, mockAuth, mockPrisma } = vi.hoisted(() => {
+const {
+  mockGetSession,
+  mockAuth,
+  mockCreatePresentationFixedCost,
+  mockUpdatePresentationFixedCost,
+  mockDeletePresentationFixedCost,
+} = vi.hoisted(() => {
   const mockGetSession = vi.fn();
   const mockAuth = { api: { getSession: (...args: unknown[]) => mockGetSession(...args) } };
-  const mockFindFirstPresentation = vi.fn();
-  const mockFindFirstFixedCost = vi.fn();
-  const mockCreateFixedCost = vi.fn();
-  const mockUpdateFixedCost = vi.fn();
-  const mockDeleteFixedCost = vi.fn();
-  const mockPrisma = {
-    recipePresentation: { findFirst: mockFindFirstPresentation },
-    presentationFixedCost: {
-      findFirst: mockFindFirstFixedCost,
-      create: mockCreateFixedCost,
-      update: mockUpdateFixedCost,
-      delete: mockDeleteFixedCost,
-    },
-  };
+  const mockCreatePresentationFixedCost = vi.fn();
+  const mockUpdatePresentationFixedCost = vi.fn();
+  const mockDeletePresentationFixedCost = vi.fn();
   return {
     mockGetSession,
     mockAuth,
-    mockPrisma,
-    mockFindFirstPresentation,
-    mockFindFirstFixedCost,
-    mockCreateFixedCost,
-    mockUpdateFixedCost,
-    mockDeleteFixedCost,
+    mockCreatePresentationFixedCost,
+    mockUpdatePresentationFixedCost,
+    mockDeletePresentationFixedCost,
   };
 });
 
@@ -37,7 +29,12 @@ vi.mock("@recetario/auth/server", () => ({
 }));
 
 vi.mock("@recetario/db", () => ({
-  prisma: mockPrisma,
+  createPresentationFixedCost: (pid: number, ownerId: string, input: unknown) =>
+    mockCreatePresentationFixedCost(pid, ownerId, input),
+  updatePresentationFixedCost: (pid: number, fcid: number, ownerId: string, input: unknown) =>
+    mockUpdatePresentationFixedCost(pid, fcid, ownerId, input),
+  deletePresentationFixedCost: (pid: number, fcid: number, ownerId: string) =>
+    mockDeletePresentationFixedCost(pid, fcid, ownerId),
 }));
 
 const {
@@ -64,8 +61,7 @@ function buildApp() {
 describe("presentationsFixedCostsCreateHandler", () => {
   beforeEach(() => {
     mockGetSession.mockReset();
-    mockPrisma.recipePresentation.findFirst.mockReset();
-    mockPrisma.presentationFixedCost.create.mockReset();
+    mockCreatePresentationFixedCost.mockReset();
   });
 
   it("returns 401 when there is no session", async () => {
@@ -80,7 +76,7 @@ describe("presentationsFixedCostsCreateHandler", () => {
 
   it("returns 404 when the presentation is not owned", async () => {
     mockGetSession.mockResolvedValueOnce(sessionFixture);
-    mockPrisma.recipePresentation.findFirst.mockResolvedValueOnce(null);
+    mockCreatePresentationFixedCost.mockResolvedValueOnce(null);
 
     const res = await buildApp().request("/api/presentations/99/fixed-costs", {
       method: "POST",
@@ -88,13 +84,12 @@ describe("presentationsFixedCostsCreateHandler", () => {
       body: JSON.stringify({ type: "AMOUNT", base: "PER_BATCH", value: 5 }),
     });
     expect(res.status).toBe(404);
-    expect(mockPrisma.presentationFixedCost.create).not.toHaveBeenCalled();
+    expect(mockCreatePresentationFixedCost).toHaveBeenCalled();
   });
 
   it("creates a fixed cost on an owned presentation", async () => {
     mockGetSession.mockResolvedValueOnce(sessionFixture);
-    mockPrisma.recipePresentation.findFirst.mockResolvedValueOnce({ id: 5 });
-    mockPrisma.presentationFixedCost.create.mockResolvedValueOnce({
+    mockCreatePresentationFixedCost.mockResolvedValueOnce({
       id: 7,
       presentationId: 5,
       name: "Empaque",
@@ -116,7 +111,6 @@ describe("presentationsFixedCostsCreateHandler", () => {
 
   it("returns 400 on invalid body", async () => {
     mockGetSession.mockResolvedValueOnce(sessionFixture);
-    mockPrisma.recipePresentation.findFirst.mockResolvedValueOnce({ id: 5 });
 
     const res = await buildApp().request("/api/presentations/5/fixed-costs", {
       method: "POST",
@@ -130,8 +124,7 @@ describe("presentationsFixedCostsCreateHandler", () => {
 describe("presentationsFixedCostsUpdateHandler", () => {
   beforeEach(() => {
     mockGetSession.mockReset();
-    mockPrisma.presentationFixedCost.findFirst.mockReset();
-    mockPrisma.presentationFixedCost.update.mockReset();
+    mockUpdatePresentationFixedCost.mockReset();
   });
 
   it("returns 401 when there is no session", async () => {
@@ -146,7 +139,7 @@ describe("presentationsFixedCostsUpdateHandler", () => {
 
   it("returns 404 when the fixed cost is not owned", async () => {
     mockGetSession.mockResolvedValueOnce(sessionFixture);
-    mockPrisma.presentationFixedCost.findFirst.mockResolvedValueOnce(null);
+    mockUpdatePresentationFixedCost.mockResolvedValueOnce(null);
 
     const res = await buildApp().request("/api/presentations/5/fixed-costs/7", {
       method: "PATCH",
@@ -154,13 +147,12 @@ describe("presentationsFixedCostsUpdateHandler", () => {
       body: JSON.stringify({ name: "X" }),
     });
     expect(res.status).toBe(404);
-    expect(mockPrisma.presentationFixedCost.update).not.toHaveBeenCalled();
+    expect(mockUpdatePresentationFixedCost).toHaveBeenCalled();
   });
 
   it("updates a fixed cost on an owned presentation", async () => {
     mockGetSession.mockResolvedValueOnce(sessionFixture);
-    mockPrisma.presentationFixedCost.findFirst.mockResolvedValueOnce({ id: 7 });
-    mockPrisma.presentationFixedCost.update.mockResolvedValueOnce({
+    mockUpdatePresentationFixedCost.mockResolvedValueOnce({
       id: 7,
       presentationId: 5,
       name: "Empaque mod",
@@ -175,12 +167,16 @@ describe("presentationsFixedCostsUpdateHandler", () => {
       body: JSON.stringify({ name: "Empaque mod", value: 2 }),
     });
     expect(res.status).toBe(200);
-    expect(mockPrisma.presentationFixedCost.update).toHaveBeenCalled();
+    expect(mockUpdatePresentationFixedCost).toHaveBeenCalledWith(
+      5,
+      7,
+      "user-1",
+      { name: "Empaque mod", value: 2 },
+    );
   });
 
   it("returns 400 when the body has no fields", async () => {
     mockGetSession.mockResolvedValueOnce(sessionFixture);
-    mockPrisma.presentationFixedCost.findFirst.mockResolvedValueOnce({ id: 7 });
 
     const res = await buildApp().request("/api/presentations/5/fixed-costs/7", {
       method: "PATCH",
@@ -194,8 +190,7 @@ describe("presentationsFixedCostsUpdateHandler", () => {
 describe("presentationsFixedCostsDeleteHandler", () => {
   beforeEach(() => {
     mockGetSession.mockReset();
-    mockPrisma.presentationFixedCost.findFirst.mockReset();
-    mockPrisma.presentationFixedCost.delete.mockReset();
+    mockDeletePresentationFixedCost.mockReset();
   });
 
   it("returns 401 when there is no session", async () => {
@@ -208,26 +203,23 @@ describe("presentationsFixedCostsDeleteHandler", () => {
 
   it("returns 404 when the fixed cost is not owned", async () => {
     mockGetSession.mockResolvedValueOnce(sessionFixture);
-    mockPrisma.presentationFixedCost.findFirst.mockResolvedValueOnce(null);
+    mockDeletePresentationFixedCost.mockResolvedValueOnce({ status: "not-found" });
 
     const res = await buildApp().request("/api/presentations/5/fixed-costs/7", {
       method: "DELETE",
     });
     expect(res.status).toBe(404);
-    expect(mockPrisma.presentationFixedCost.delete).not.toHaveBeenCalled();
+    expect(mockDeletePresentationFixedCost).toHaveBeenCalledWith(5, 7, "user-1");
   });
 
   it("deletes a fixed cost on an owned presentation", async () => {
     mockGetSession.mockResolvedValueOnce(sessionFixture);
-    mockPrisma.presentationFixedCost.findFirst.mockResolvedValueOnce({ id: 7 });
-    mockPrisma.presentationFixedCost.delete.mockResolvedValueOnce({ id: 7 });
+    mockDeletePresentationFixedCost.mockResolvedValueOnce({ status: "deleted" });
 
     const res = await buildApp().request("/api/presentations/5/fixed-costs/7", {
       method: "DELETE",
     });
     expect(res.status).toBe(204);
-    expect(mockPrisma.presentationFixedCost.delete).toHaveBeenCalledWith({
-      where: { id: 7 },
-    });
+    expect(mockDeletePresentationFixedCost).toHaveBeenCalledWith(5, 7, "user-1");
   });
 });

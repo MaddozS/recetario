@@ -3,19 +3,11 @@ import { Hono } from "hono";
 import { envelope } from "../envelope";
 import { errorHandler } from "../error-handler";
 
-const { mockGetSession, mockAuth, mockPrisma, mockAuditCreate } = vi.hoisted(() => {
+const { mockGetSession, mockAuth, mockLogAuditEvent } = vi.hoisted(() => {
   const mockGetSession = vi.fn();
-  const mockAuditCreate = vi.fn();
+  const mockLogAuditEvent = vi.fn();
   const mockAuth = { api: { getSession: (...args: unknown[]) => mockGetSession(...args) } };
-  const mockPrisma = {
-    auditLog: { create: mockAuditCreate },
-  };
-  return {
-    mockGetSession,
-    mockAuth,
-    mockPrisma,
-    mockAuditCreate,
-  };
+  return { mockGetSession, mockAuth, mockLogAuditEvent };
 });
 
 vi.mock("@recetario/auth/server", () => ({
@@ -23,7 +15,7 @@ vi.mock("@recetario/auth/server", () => ({
 }));
 
 vi.mock("@recetario/db", () => ({
-  prisma: mockPrisma,
+  logAuditEvent: (params: unknown) => mockLogAuditEvent(params),
 }));
 
 const { auditLogHandler } = await import("./log");
@@ -44,7 +36,7 @@ function buildApp() {
 describe("auditLogHandler", () => {
   beforeEach(() => {
     mockGetSession.mockReset();
-    mockAuditCreate.mockReset();
+    mockLogAuditEvent.mockReset();
   });
 
   it("returns 401 when no session", async () => {
@@ -55,12 +47,12 @@ describe("auditLogHandler", () => {
       body: JSON.stringify({ action: "sign_in" }),
     });
     expect(res.status).toBe(401);
-    expect(mockAuditCreate).not.toHaveBeenCalled();
+    expect(mockLogAuditEvent).not.toHaveBeenCalled();
   });
 
   it("writes the audit log row on a valid body", async () => {
     mockGetSession.mockResolvedValueOnce(sessionFixture);
-    mockAuditCreate.mockResolvedValueOnce({ id: "a1" });
+    mockLogAuditEvent.mockResolvedValueOnce(undefined);
 
     const res = await buildApp().request("/api/audit/log", {
       method: "POST",
@@ -68,13 +60,13 @@ describe("auditLogHandler", () => {
       body: JSON.stringify({ action: "sign_in", userAgent: "jest" }),
     });
     expect(res.status).toBe(200);
-    expect(mockAuditCreate).toHaveBeenCalledWith({
-      data: expect.objectContaining({
+    expect(mockLogAuditEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
         userId: "user-1",
         action: "sign_in",
         userAgent: "jest",
       }),
-    });
+    );
   });
 
   it("returns 400 on invalid body", async () => {
@@ -85,12 +77,12 @@ describe("auditLogHandler", () => {
       body: JSON.stringify({}),
     });
     expect(res.status).toBe(400);
-    expect(mockAuditCreate).not.toHaveBeenCalled();
+    expect(mockLogAuditEvent).not.toHaveBeenCalled();
   });
 
-  it("returns 200 even if the auditLog insert throws (best-effort)", async () => {
+  it("returns 200 even if the audit log insert throws (best-effort)", async () => {
     mockGetSession.mockResolvedValueOnce(sessionFixture);
-    mockAuditCreate.mockRejectedValueOnce(new Error("db down"));
+    mockLogAuditEvent.mockRejectedValueOnce(new Error("db down"));
     const res = await buildApp().request("/api/audit/log", {
       method: "POST",
       headers: { "content-type": "application/json" },
