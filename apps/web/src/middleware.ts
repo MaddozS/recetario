@@ -4,7 +4,7 @@ import { env } from "cloudflare:workers";
 import { syncEnvBindings } from "@recetario/config/env";
 import { clientIp, setSecurityHeaders } from "@recetario/config/request";
 import { generateToken, getCsrfCookie } from "@recetario/auth";
-import { resolveSubscription } from "@recetario/billing";
+import { getDefaultSubscription } from "@recetario/stripe";
 import {
   apiFetch,
   ApiError as ApiClientError,
@@ -134,7 +134,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
     } catch (err) {
       if (!(err instanceof ApiClientError) || err.code !== "NOT_FOUND")
         throw err;
-      context.locals.subscription = resolveSubscription(null);
+      context.locals.subscription = getDefaultSubscription();
     }
 
     // ── 5. CSRF: get-or-create per-session token ─────────────────────────────
@@ -152,7 +152,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
     // ── Unauthenticated: set all locals to null / defaults ──────────────────
     context.locals.user = null;
     context.locals.session = null;
-    context.locals.subscription = resolveSubscription(null);
+    context.locals.subscription = getDefaultSubscription();
     context.locals.csrfToken = null;
   }
 

@@ -14,17 +14,20 @@ import {
   logAuditEvent,
   updateAccountPassword,
   updateUserName,
-  stripe,
-  seedSubscriptionPlans,
+  getSubscriptionPlanByStripePriceId,
+  getStripeCustomerId,
+  getSubscriptionByStripeId,
+  upsertSubscription,
+  updateSubscription,
 } from "@recetario/db";
 import {
-  getPlanByStripePriceId,
-  getStripeCustomerId,
-  getUserSubscription,
-  createOrUpdateSubscription,
-  cancelSubscription,
-  markSubscriptionPastDue,
-} from "@recetario/billing/server";
+  createCustomer,
+  createCheckoutSession,
+  createPortalSession,
+  retrieveSubscription,
+  verifyWebhookSignature,
+} from "@recetario/stripe/server";
+import { createSubscriptionInputSchema } from "@recetario/types";
 import { syncEnvBindings } from "@recetario/config/env";
 import { clientIp, setSecurityHeaders } from "@recetario/config/request";
 
@@ -439,173 +442,100 @@ app.post("/api/stripe/checkout", async (c) => {
     const { priceId, successUrl, cancelUrl } = body;
     if (!priceId) return c.json({ error: "Missing priceId" }, 400);
 
-    const plan = await getPlanByStripePriceId(priceId);
+    const plan = await getSubscriptionPlanByStripePriceId(priceId);
     if (!plan) return c.json({ error: "Invalid price ID" }, 400);
 
     const appOrigin = new URL(c.req.url).origin;
     const userId = session.user.id;
-    const userEmail = session.user.email;
     const existingCustomerId = await getStripeCustomerId(userId);
-    const customerId =
-      existingCustomerId ??
-      (
-        await stripe.customers.create({
-          email: userEmail ?? undefined,
-          metadata: { userId },
-        })
-      ).id;
-
-    const checkoutSession = await stripe.checkout.sessions.create({
-      customer: customerId,
-      line_items: [{ price: priceId, quantity: 1 }],
-      mode: "subscription",
-      subscription_data: {
-        trial_period_days: 14,
-      },
-      success_url: safeRedirectUrl(
-        successUrl,
-        `${appOrigin}/settings/billing?success=1`,
-        appOrigin,
-      ),
-      cancel_url: safeRedirectUrl(
-        cancelUrl,
-        `${appOrigin}/pricing?canceled=1`,
-        appOrigin,
-      ),
-      metadata: {
-        userId,
-        planId: plan.id,
-      },
+    const customerId = existingCustomerId ?? (await createCustomer({ email: session.user.email ?? undefined, userId })).id;
+    const checkoutSession = await createCheckoutSession({
+      customerId,
+      priceId,
+      successUrl: safeRedirectUrl(successUrl, `${appOrigin}/settings/billing?success=1`, appOrigin),
+      cancelUrl: safeRedirectUrl(cancelUrl, `${appOrigin}/pricing?canceled=1`, appOrigin),
+      userId,
+      planId: plan.id,
     });
-
     return c.json({ url: checkoutSession.url });
   });
 
 app.post("/api/stripe/portal", async (c) => {
     const session = await auth.api.getSession({ headers: c.req.raw.headers });
-    if (!session?.user) {
-      return c.json({ error: "Authentication required" }, 401);
-    }
+    if (!session?.user) return c.json({ error: "Authentication required" }, 401);
+    if (!validateCsrf(c.req.raw)) return c.json({ error: "CSRF validation failed" }, 403);
 
-    if (!validateCsrf(c.req.raw)) {
-      return c.json({ error: "CSRF validation failed" }, 403);
-    }
-
-    const subscription = await getUserSubscription(session.user.id);
-    if (!subscription?.stripeCustomerId) {
-      return c.json({ error: "No subscription found" }, 404);
-    }
-
-    const portalSession = await stripe.billingPortal.sessions.create({
-      customer: subscription.stripeCustomerId,
-      return_url: `${new URL(c.req.url).origin}/settings/billing`,
-    });
-
+    const customerId = await getStripeCustomerId(session.user.id);
+    if (!customerId) return c.json({ error: "No subscription found" }, 404);
+    const portalSession = await createPortalSession(customerId, `${new URL(c.req.url).origin}/settings/billing`);
     return c.json({ url: portalSession.url });
   });
 
 app.post("/api/stripe/webhook", async (c) => {
-    await seedSubscriptionPlans();
-
     const payload = await c.req.text();
     const signature = c.req.header("stripe-signature");
-
     if (!signature) return c.text("Missing stripe-signature header", 400);
 
-    let event: ReturnType<typeof stripe.webhooks.constructEvent>;
+    let event: ReturnType<typeof verifyWebhookSignature>;
     try {
-      event = stripe.webhooks.constructEvent(
+      event = verifyWebhookSignature(
         payload,
         signature,
-        (c.env as Record<string, string | undefined>).STRIPE_WEBHOOK_SECRET ??
-          process.env.STRIPE_WEBHOOK_SECRET ??
-          "",
+        (c.env as Record<string, string | undefined>).STRIPE_WEBHOOK_SECRET ?? process.env.STRIPE_WEBHOOK_SECRET ?? "",
       );
     } catch {
-      console.error("Webhook signature verification failed");
       return c.text("Invalid signature", 400);
     }
 
     const obj = event.data.object as unknown as Record<string, unknown>;
+    const writeSubscription = async (input: {
+      stripeSubscriptionId: string;
+      stripeCustomerId: string;
+      priceId: string | null;
+      userId: string | null;
+      planId: string | null;
+      status: string;
+      currentPeriodStart: Date;
+      currentPeriodEnd: Date;
+      cancelAtPeriodEnd: boolean;
+      trialEnd: Date | null;
+    }) => {
+      const validated = createSubscriptionInputSchema.parse(input);
+      let planId = validated.planId;
+      let userId = validated.userId;
+      if (!planId && input.priceId) planId = (await getSubscriptionPlanByStripePriceId(input.priceId))?.id ?? null;
+      if (!userId) userId = (await getSubscriptionByStripeId(input.stripeSubscriptionId))?.userId ?? null;
+      if (!planId || !userId) return;
+      await upsertSubscription(validated.stripeSubscriptionId, { id: validated.stripeSubscriptionId, userId, stripeCustomerId: validated.stripeCustomerId, planId, status: validated.status, currentPeriodStart: validated.currentPeriodStart, currentPeriodEnd: validated.currentPeriodEnd, cancelAtPeriodEnd: validated.cancelAtPeriodEnd, trialEnd: validated.trialEnd ?? null });
+    };
 
     switch (event.type) {
       case "checkout.session.completed": {
         const metadata = obj.metadata as Record<string, string> | undefined;
-        const customerId =
-          typeof obj.customer === "string" ? obj.customer : null;
-        const subscriptionId =
-          typeof obj.subscription === "string" ? obj.subscription : null;
-
+        const subscriptionId = typeof obj.subscription === "string" ? obj.subscription : null;
+        const customerId = typeof obj.customer === "string" ? obj.customer : null;
         if (!subscriptionId || !customerId) break;
-
-        let sub: unknown;
-        try {
-          sub = await stripe.subscriptions.retrieve(subscriptionId);
-        } catch {
-          break;
-        }
-
-        await createOrUpdateSubscription({
-          stripeSubscriptionId: subscriptionId,
-          stripeCustomerId: customerId,
-          userId: metadata?.userId ?? null,
-          planId: metadata?.planId ?? null,
-          status: (sub as Record<string, unknown>).status as string,
-          currentPeriodStart: new Date(
-            getPeriod(sub, "current_period_start") * 1000,
-          ),
-          currentPeriodEnd: new Date(
-            getPeriod(sub, "current_period_end") * 1000,
-          ),
-          cancelAtPeriodEnd: Boolean(
-            (sub as Record<string, unknown>).cancel_at_period_end,
-          ),
-          trialEnd: getPeriod(sub, "trial_end")
-            ? new Date(getPeriod(sub, "trial_end") * 1000)
-            : null,
-        });
+        const sub = await retrieveSubscription(subscriptionId);
+        const items = sub.items?.data;
+        const priceId = items?.[0]?.price?.id ?? null;
+        await writeSubscription({ stripeSubscriptionId: subscriptionId, stripeCustomerId: customerId, priceId, userId: metadata?.userId ?? null, planId: metadata?.planId ?? null, status: sub.status, currentPeriodStart: new Date(getPeriod(sub, "current_period_start") * 1000), currentPeriodEnd: new Date(getPeriod(sub, "current_period_end") * 1000), cancelAtPeriodEnd: Boolean(sub.cancel_at_period_end), trialEnd: getPeriod(sub, "trial_end") ? new Date(getPeriod(sub, "trial_end") * 1000) : null });
         break;
       }
-
       case "customer.subscription.updated": {
-        const customerId =
-          typeof obj.customer === "string" ? obj.customer : null;
-
-        await createOrUpdateSubscription({
-          stripeSubscriptionId: obj.id as string,
-          stripeCustomerId: customerId ?? "",
-          userId: null,
-          planId: null,
-          status: obj.status as string,
-          currentPeriodStart: new Date(
-            getPeriod(obj, "current_period_start") * 1000,
-          ),
-          currentPeriodEnd: new Date(
-            getPeriod(obj, "current_period_end") * 1000,
-          ),
-          cancelAtPeriodEnd: Boolean(obj.cancel_at_period_end),
-          trialEnd: getPeriod(obj, "trial_end")
-            ? new Date(getPeriod(obj, "trial_end") * 1000)
-            : null,
-        });
+        const items = obj.items as { data?: Array<{ price?: { id?: string } }> } | undefined;
+        const priceId = items?.data?.[0]?.price?.id ?? null;
+        await writeSubscription({ stripeSubscriptionId: obj.id as string, stripeCustomerId: typeof obj.customer === "string" ? obj.customer : "", priceId, userId: null, planId: null, status: obj.status as string, currentPeriodStart: new Date(getPeriod(obj, "current_period_start") * 1000), currentPeriodEnd: new Date(getPeriod(obj, "current_period_end") * 1000), cancelAtPeriodEnd: Boolean(obj.cancel_at_period_end), trialEnd: getPeriod(obj, "trial_end") ? new Date(getPeriod(obj, "trial_end") * 1000) : null });
         break;
       }
-
-      case "customer.subscription.deleted": {
-        await cancelSubscription(obj.id as string);
+      case "customer.subscription.deleted":
+        if (await getSubscriptionByStripeId(obj.id as string)) await updateSubscription(obj.id as string, { status: "canceled", cancelAtPeriodEnd: true });
         break;
-      }
-
       case "invoice.payment_failed": {
-        const subscriptionId =
-          typeof obj.subscription === "string" ? obj.subscription : null;
-
-        if (subscriptionId)
-          await markSubscriptionPastDue(subscriptionId);
+        const subscriptionId = typeof obj.subscription === "string" ? obj.subscription : null;
+        if (subscriptionId && await getSubscriptionByStripeId(subscriptionId)) await updateSubscription(subscriptionId, { status: "past_due" });
         break;
       }
     }
-
     return c.text("OK");
   });
 

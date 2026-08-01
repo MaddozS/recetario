@@ -9,8 +9,8 @@ import {
   ingredientUsageMapSchema,
   usageCountsResponseSchema,
 } from "@recetario/types";
-import { canCreateRecipe, hasFeature } from "@recetario/billing";
-import { timeAgo } from "@recetario/billing";
+import { canCreateRecipe, hasFeature } from "@recetario/stripe";
+import { timeAgo } from "@recetario/stripe";
 import EmptyState from "@/components/EmptyState.astro";
 import RecipeMiniCard from "@/components/RecipeMiniCard.astro";
 import RecipeGridCard from "@/components/RecipeGridCard.astro";

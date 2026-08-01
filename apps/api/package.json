@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@recetario/auth": "workspace:^",
-    "@recetario/billing": "workspace:^",
+    "@recetario/stripe": "workspace:^",
     "@recetario/config": "workspace:^",
     "@recetario/types": "workspace:^",
     "@recetario/db": "workspace:^",

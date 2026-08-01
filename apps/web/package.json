@@ -19,7 +19,7 @@
     "@astrojs/cloudflare": "14.1.5",
     "@iconify-json/lucide": "1.2.107",
     "@recetario/auth": "workspace:^",
-    "@recetario/billing": "workspace:^",
+    "@recetario/stripe": "workspace:^",
     "@recetario/config": "workspace:^",
     "@recetario/types": "workspace:^",
     "@tailwindcss/vite": "4.3.0",

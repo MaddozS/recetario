@@ -4,7 +4,7 @@ import Layout from "@/layouts/Layout.astro";
 import Button from "../components/ui/Button.astro";
 import Card from "../components/ui/Card.astro";
 
-import { canCreateIngredient } from "@recetario/billing";
+import { canCreateIngredient } from "@recetario/stripe";
 import { parseNumberInput } from "@/lib/form-utils";
 import { UNIT_OPTIONS, DEFAULT_UNIT } from "@/lib/constants";
 import { validateCsrf } from "@recetario/auth";

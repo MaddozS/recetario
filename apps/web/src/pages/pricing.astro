@@ -3,10 +3,8 @@ import { Icon } from "astro-icon/components";
 import Badge from "../components/ui/Badge.astro";
 import Button from "../components/ui/Button.astro";
 import Layout from "@/layouts/Layout.astro";
-import { buildPricingPlans } from "@recetario/billing";
 import { apiFetch } from "@/lib/api-client";
-import { planSchema } from "@recetario/types";
-import { z } from "zod";
+import { plansListResponseSchema } from "@recetario/types";
 
 if (!Astro.locals.session || !Astro.locals.user) {
   return Astro.redirect("/sign-in");
@@ -17,10 +15,10 @@ const currentTier = subscription.tier;
 
 const rawPlans = await apiFetch(
   "/api/billing/plans",
-  { schema: z.array(planSchema) },
+  { schema: plansListResponseSchema },
   Astro,
 );
-const plans = buildPricingPlans(rawPlans);
+const plans = rawPlans;
 
 const getButtonLabel = (planId: string) => {
   if (planId === currentTier) return "Plan actual";

@@ -7,7 +7,7 @@
   "exports": "./src/index.ts",
   "files": ["dist", "src"],
   "scripts": {
-    "build": "tsc --build tsconfig.build.json"
+    "build": "tsc --noEmit -p tsconfig.build.json"
   },
   "dependencies": {
     "zod": "^3.23.0"

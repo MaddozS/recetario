@@ -6,7 +6,7 @@ import { setApiBinding } from "@/lib/api-client";
 import {
   getDefaultSubscription,
   type UserSubscriptionInfo,
-} from "@recetario/billing";
+} from "@recetario/stripe";
 
 const PRO_FEATURES: Record<string, boolean> = {
   recipe_duplicate: true,

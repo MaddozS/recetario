@@ -18,7 +18,7 @@ import { Icon } from "astro-icon/components";
 import Layout from "../../layouts/Layout.astro";
 import PresentationCard from "../../components/PresentationCard.astro";
 import { apiFetch, ApiError } from "@/lib/api-client";
-import { hasFeature } from '@recetario/billing';
+import { hasFeature } from '@recetario/stripe';
 import { parseNumberInput } from '@/lib/form-utils';
 import { sanitizeHtml } from '@/lib/html-sanitizer';
 import { validateCsrf } from '@recetario/auth';

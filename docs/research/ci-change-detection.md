@@ -8,7 +8,7 @@
 @recetario/web → auth, billing, config, types, ui
 @recetario/api → auth, billing, config, types, db
 @recetario/auth → config, (peer: db)
-@recetario/billing → config, types, (peer: db)
+@recetario/stripe → config, types, (peer: db)
 @recetario/db → config, types
 @recetario/types → config (dev)
 @recetario/config → (leaf)
@@ -110,7 +110,7 @@ jobs:
             web:
               - 'apps/web/**'
               - 'packages/auth/**'
-              - 'packages/billing/**'
+              - 'packages/stripe/**'
               - 'packages/config/**'
               - 'packages/types/**'
               - 'packages/ui/**'
@@ -121,7 +121,7 @@ jobs:
             api:
               - 'apps/api/**'
               - 'packages/auth/**'
-              - 'packages/billing/**'
+              - 'packages/stripe/**'
               - 'packages/config/**'
               - 'packages/types/**'
               - 'packages/db/**'

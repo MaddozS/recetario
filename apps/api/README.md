@@ -58,8 +58,8 @@ Worked example: `GET /api/billing/subscription`.
    ```ts
    import type { Handler } from "hono";
    import { auth } from "@recetario/auth/server";
-    import { getUserSubscription } from "@recetario/billing/server";
-    import { resolveSubscription } from "@recetario/billing";
+   import { getSubscriptionByUserId } from "@recetario/db";
+   import { subscriptionResponseSchema } from "@recetario/types";
    import { ApiError } from "../errors";
    import * as cache from "../cache";
 
@@ -68,20 +68,31 @@ Worked example: `GET /api/billing/subscription`.
    export function subscriptionHandler(): Handler {
      return async (c) => {
        const session = await auth.api.getSession({ headers: c.req.raw.headers });
-       if (!session?.user) {
-         throw new ApiError("UNAUTHENTICATED", "Authentication required");
-       }
+       if (!session?.user) throw new ApiError("UNAUTHENTICATED", "Authentication required");
 
        const cacheKey = `sub:${session.user.id}`;
        const cached = cache.get<unknown>(cacheKey);
        if (cached !== undefined) return c.json(cached);
 
-       const dbSub = await getUserSubscription(session.user.id);
+       const dbSub = await getSubscriptionByUserId(session.user.id, ["active", "trialing"]);
        if (!dbSub) throw new ApiError("NOT_FOUND", "No active subscription");
 
-       const resolved = resolveSubscription(dbSub);
-       cache.set(cacheKey, resolved, CACHE_TTL_MS);
-       return c.json(resolved);
+       const response = subscriptionResponseSchema.parse({
+         tier: dbSub.plan?.tier ?? "free",
+         status: dbSub.status,
+         recipesLimit: dbSub.plan?.recipesLimit ?? null,
+         ingredientsLimit: dbSub.plan?.ingredientsLimit ?? null,
+         features: JSON.parse(dbSub.plan?.featuresJson ?? "{}"),
+         priceCents: dbSub.plan?.priceCents ?? null,
+         currency: dbSub.plan?.currency ?? null,
+         billingInterval: dbSub.plan?.billingInterval ?? null,
+         currentPeriodEnd: dbSub.currentPeriodEnd?.toISOString() ?? null,
+         cancelAtPeriodEnd: dbSub.cancelAtPeriodEnd,
+         isTrial: dbSub.status === "trialing",
+         trialEnd: dbSub.trialEnd?.toISOString() ?? null,
+       });
+       cache.set(cacheKey, response, CACHE_TTL_MS);
+       return c.json(response);
      };
    }
    ```

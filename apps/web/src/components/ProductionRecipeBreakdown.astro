@@ -4,7 +4,7 @@ import Badge from "./ui/Badge.astro";
 import SectionHeading from "./ui/SectionHeading.astro";
 
 import type { ProductionRecipeResult } from "@/lib/production-types";
-import { formatCurrency } from "@recetario/billing";
+import { formatCurrency } from "@recetario/stripe";
 
 interface Props {
   recipes: ProductionRecipeResult[];

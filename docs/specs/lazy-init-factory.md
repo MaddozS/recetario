@@ -2,7 +2,7 @@
 
 ## Problem Statement
 
-Developers modifying the codebase must copy-paste the same Proxy-based lazy-initialization boilerplate (~16 lines) every time a new module needs deferred client creation. The pattern is already duplicated across 4 files: `packages/db/src/prisma.ts`, `packages/auth/src/auth.ts`, `packages/billing/src/stripe.ts`, and `apps/api/src/lib/prisma.ts`. If the pattern needs a fix (error handling, logging, debugging), it must be replicated in 4 separate places with no guarantee of consistency.
+Developers modifying the codebase must copy-paste the same Proxy-based lazy-initialization boilerplate (~16 lines) every time a new module needs deferred client creation. The pattern is already duplicated across 4 files: `packages/db/src/prisma.ts`, `packages/auth/src/auth.ts`, `packages/stripe/src/stripe.ts`, and `apps/api/src/lib/prisma.ts`. If the pattern needs a fix (error handling, logging, debugging), it must be replicated in 4 separate places with no guarantee of consistency.
 
 ## Solution
 
@@ -32,7 +32,7 @@ Extract a single `lazyInit<T>(key, initFn)` factory into `@recetario/config` tha
 
 - `@recetario/config` adds a `build` script (`tsc --build tsconfig.build.json`) that compiles `src/lazy.ts` → `dist/src/lazy.js`.
 - `package.json` exports entry `"./lazy"` pointing to `dist/src/lazy.js` + `dist/src/lazy.d.ts`.
-- `@recetario/config` moves from `devDependencies` to `dependencies` in `@recetario/auth`, `@recetario/billing`, and `@recetario/db`.
+- `@recetario/config` moves from `devDependencies` to `dependencies` in `@recetario/auth`, `@recetario/stripe`, and `@recetario/db`.
 - `@recetario/config` is added to `dependencies` in `@recetario/api`.
 - The `apps/api` Prisma client uses `lazyInit("api:prisma", ...)` with a distinct key to avoid collision with `packages/db`'s `"prisma"` key.
 

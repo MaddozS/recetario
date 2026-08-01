@@ -15,14 +15,12 @@ import {
 import {
   getRemainingRecipes,
   getRemainingIngredients,
-} from "@recetario/billing";
-import { buildPricingPlans } from "@recetario/billing";
+} from "@recetario/stripe";
 import FeedbackAlert from "@/components/FeedbackAlert.astro";
 import { validateCsrf } from "@recetario/auth";
 import { apiFetch } from "@/lib/api-client";
 import type { UserPreferences } from "@recetario/types";
-import { planSchema, usageCountsResponseSchema } from "@recetario/types";
-import { z } from "zod";
+import { plansListResponseSchema, usageCountsResponseSchema } from "@recetario/types";
 
 if (!Astro.locals.session || !Astro.locals.user) {
   return Astro.redirect("/sign-in");
@@ -38,14 +36,12 @@ const userInitial = (userFirstName || userName).charAt(0).toUpperCase();
 
 const subscription = Astro.locals.subscription;
 
-const [prefs, counts, rawPlans] = await Promise.all([
+const [prefs, counts, plans] = await Promise.all([
   apiFetch<UserPreferences>("/api/preferences", {}, Astro),
   apiFetch("/api/usage-counts", { schema: usageCountsResponseSchema }, Astro),
-  apiFetch("/api/billing/plans", { schema: z.array(planSchema) }, Astro),
+  apiFetch("/api/billing/plans", { schema: plansListResponseSchema }, Astro),
 ]);
 const { recipes: recipeCount, ingredients: ingredientCount } = counts;
-
-const plans = buildPricingPlans(rawPlans);
 
 const remainingRecipes = getRemainingRecipes(subscription, recipeCount);
 const remainingIngredients = getRemainingIngredients(

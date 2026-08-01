@@ -1,5 +1,5 @@
 {
-  "name": "@recetario/billing",
+  "name": "@recetario/stripe",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -10,7 +10,8 @@
   },
   "files": ["dist", "src"],
   "scripts": {
-    "build": "tsc --build tsconfig.build.json"
+    "build": "tsc --noEmit -p tsconfig.build.json",
+    "test": "vitest run"
   },
   "dependencies": {
     "@recetario/config": "workspace:^",
@@ -22,6 +23,7 @@
   },
   "devDependencies": {
     "@recetario/db": "workspace:^",
-    "typescript": "7.0.2"
+    "typescript": "7.0.2",
+    "vitest": "^3.1.0"
   }
 }

@@ -2,7 +2,7 @@
 import FinancialSummary from "./ui/FinancialSummary.astro";
 
 import type { ProductionSummary } from "@/lib/production-types";
-import { formatCurrency } from "@recetario/billing";
+import { formatCurrency } from "@recetario/stripe";
 
 interface Props {
   summary: ProductionSummary;

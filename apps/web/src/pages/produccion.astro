@@ -9,7 +9,7 @@ import {
   recipeSummarySchema,
   recipeWithIngredientsSchema,
 } from "@recetario/types";
-import { hasFeature, isPro } from "@recetario/billing";
+import { hasFeature, isPro } from "@recetario/stripe";
 import { PRODUCTION_BASIC_RECIPE_LIMIT } from "@/lib/constants";
 import { calculateProduction } from "@/lib/production-calculator";
 import type {

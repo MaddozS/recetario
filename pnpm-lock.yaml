@@ -222,15 +222,15 @@ importers:
       '@recetario/auth':
         specifier: workspace:^
         version: link:../../packages/auth
-      '@recetario/billing':
-        specifier: workspace:^
-        version: link:../../packages/billing
       '@recetario/config':
         specifier: workspace:^
         version: link:../../packages/config
       '@recetario/db':
         specifier: workspace:^
         version: link:../../packages/db
+      '@recetario/stripe':
+        specifier: workspace:^
+        version: link:../../packages/stripe
       '@recetario/types':
         specifier: workspace:^
         version: link:../../packages/types
@@ -262,12 +262,12 @@ importers:
       '@recetario/auth':
         specifier: workspace:^
         version: link:../../packages/auth
-      '@recetario/billing':
-        specifier: workspace:^
-        version: link:../../packages/billing
       '@recetario/config':
         specifier: workspace:^
         version: link:../../packages/config
+      '@recetario/stripe':
+        specifier: workspace:^
+        version: link:../../packages/stripe
       '@recetario/types':
         specifier: workspace:^
         version: link:../../packages/types
@@ -367,25 +367,6 @@ importers:
         specifier: ^3.1.0
         version: 3.2.7(@types/node@25.8.0)(jiti@2.7.0)(lightningcss@1.33.0)(tsx@4.22.0)(yaml@2.9.0)
 
-  packages/billing:
-    dependencies:
-      '@recetario/config':
-        specifier: workspace:^
-        version: link:../config
-      '@recetario/types':
-        specifier: workspace:^
-        version: link:../types
-      stripe:
-        specifier: 22.1.1
-        version: 22.1.1(@types/node@26.1.2)
-    devDependencies:
-      '@recetario/db':
-        specifier: workspace:^
-        version: link:../db
-      typescript:
-        specifier: 7.0.2
-        version: 7.0.2
-
   packages/config:
     devDependencies:
       '@types/node':
@@ -412,9 +393,6 @@ importers:
       dotenv:
         specifier: 17.4.2
         version: 17.4.2
-      stripe:
-        specifier: 22.1.1
-        version: 22.1.1(@types/node@26.1.2)
       typescript:
         specifier: 7.0.2
         version: 7.0.2
@@ -428,6 +406,28 @@ importers:
       tsx:
         specifier: 4.22.0
         version: 4.22.0
+      vitest:
+        specifier: ^3.1.0
+        version: 3.2.7(@types/node@26.1.2)(jiti@2.7.0)(lightningcss@1.33.0)(tsx@4.22.0)(yaml@2.9.0)
+
+  packages/stripe:
+    dependencies:
+      '@recetario/config':
+        specifier: workspace:^
+        version: link:../config
+      '@recetario/types':
+        specifier: workspace:^
+        version: link:../types
+      stripe:
+        specifier: 22.1.1
+        version: 22.1.1(@types/node@26.1.2)
+    devDependencies:
+      '@recetario/db':
+        specifier: workspace:^
+        version: link:../db
+      typescript:
+        specifier: 7.0.2
+        version: 7.0.2
       vitest:
         specifier: ^3.1.0
         version: 3.2.7(@types/node@26.1.2)(jiti@2.7.0)(lightningcss@1.33.0)(tsx@4.22.0)(yaml@2.9.0)

@@ -31,7 +31,7 @@ Key findings from `analysis-20260620-1718-monorepo-refactor.md` and `task-202606
 
 - **Current state**: Single Astro project, pnpm 11.1.2, deploys to Vercel as one app. `pnpm-workspace.yaml` exists with only `allowBuilds` (no `packages:` key).
 - **No circular dependencies** in current code. Refactor is feasible.
-- **Most coupled file**: `src/lib/db/billing.ts` (imports prisma + stripe + cache + plans-config + formatters). Will move to `packages/billing/`.
+- **Most coupled file**: `src/lib/db/billing.ts` (imports prisma + stripe + cache + plans-config + formatters). Will move to `packages/stripe/`.
 - **`.astro` in npm package is risky** — Button.astro imports from `astro-icon/components`. Need peerDeps on astro + astro-icon. Validate with 1-component spike first.
 - **`middleware.ts` is Astro-bound** — stays in `apps/web/`. Touches 7 modules after refactor (down from current god-module pattern).
 - **Prisma client output is non-standard** (`../generated/prisma`). Update `schema.prisma:7` to relative path within new `packages/db/`.
@@ -46,7 +46,7 @@ Key findings from `analysis-20260620-1718-monorepo-refactor.md` and `task-202606
 - [ ] `pnpm turbo run build lint type-check` runs all packages in dependency order
 - [ ] All 5 packages exist with valid `package.json` and `tsconfig.json` extending `packages/config/tsconfig.base.json`
 - [ ] `packages/db/prisma/schema.prisma` generates client to `packages/db/generated/prisma`
-- [ ] No `import { prisma } from "@/lib/prisma"` remains — all consumers use `@recetario/db` (or `@recetario/billing` for billing queries)
+- [ ] No `import { prisma } from "@/lib/prisma"` remains — all consumers use `@recetario/db` (or `@recetario/stripe` for billing queries)
 - [ ] All `import.meta.env` (server) replaced with `process.env` in packages
 - [ ] `src/middleware.ts` imports from `@recetario/{db,auth,billing}` — no direct `@/lib/*` for extracted modules
 - [ ] Vercel deploy succeeds with root directory set to `apps/web/`
@@ -72,7 +72,7 @@ Key findings from `analysis-20260620-1718-monorepo-refactor.md` and `task-202606
 3. **Phase 2 — Config + types packages**: Create `packages/config/` (tsconfig base, eslint base, prettier base) and `packages/types/` (empty initially, populate incrementally).
 4. **Phase 3 — DB package**: Move `prisma/` to `packages/db/prisma/`. Move `src/lib/prisma.ts` + `src/lib/db/*` (except `billing.ts`) + `src/lib/cache.ts` to `packages/db/src/`. Update all imports. Update Prisma output path.
 5. **Phase 4 — Auth package**: Move `src/lib/{auth, auth-client, csrf, csrf-client, rate-limiter, password-validation, password-reset, sign-in, sign-out}.ts` to `packages/auth/src/`. Wire `apps/web/middleware.ts` to import from `@recetario/auth`.
-6. **Phase 5 — Billing package**: Move `src/lib/{stripe, subscription, plans-config, formatters}.ts` + `src/lib/db/billing.ts` to `packages/billing/src/`. Update 4 import sites (middleware, checkout, portal, webhook).
+6. **Phase 5 — Billing package**: Move `src/lib/{stripe, subscription, plans-config, formatters}.ts` + `src/lib/db/billing.ts` to `packages/stripe/src/`. Update 4 import sites (middleware, checkout, portal, webhook).
 
 **Pros**: Each phase is a small PR. Easy rollback. UI spike de-risks the most uncertain piece.
 
@@ -217,7 +217,7 @@ For every flow affected by the refactor, the spec traces the actual code:
 4. Audit log on auth events
 
 **After** (Phase 4 complete, `apps/web/src/middleware.ts:1-100`):
-1. Imports: `@recetario/auth` (betterAuth, csrf helpers), `@recetario/billing` (getUserSubscription, seedSubscriptionPlans), `@recetario/db` (audit, cache) — same 7 logical concerns, but from packages
+1. Imports: `@recetario/auth` (betterAuth, csrf helpers), `@recetario/stripe` (getUserSubscription, seedSubscriptionPlans), `@recetario/db` (audit, cache) — same 7 logical concerns, but from packages
 2. Same `onRequest` logic, identical Astro.locals population
 3. Cache still Prisma-backed (in `@recetario/db`), accessed via `@recetario/db`
 4. Same audit logging
@@ -236,7 +236,7 @@ For every flow affected by the refactor, the spec traces the actual code:
 **After**:
 1. Frontmatter: `if (!Astro.locals.session) return Astro.redirect("/sign-in")` (unchanged)
 2. Data fetch: `import { getRecipeWithIngredients } from "@recetario/db"`
-3. Subscription check: `import { hasFeature } from "@recetario/billing"`
+3. Subscription check: `import { hasFeature } from "@recetario/stripe"`
 4. Template renders UI: `import { FinancialSummary } from "@recetario/ui"` (if spike passes) OR `"@/components/ui"` (if spike fails)
 5. Form handler: `parseNumberInput()` (web-local), `validateCsrf()` from `@recetario/auth`, call `@recetario/db` mutators
 
@@ -254,7 +254,7 @@ For every flow affected by the refactor, the spec traces the actual code:
 1. `APIRoute` POST handler (unchanged, stays in apps/web)
 2. Read raw body (unchanged)
 3. Verify signature using `process.env.STRIPE_WEBHOOK_SECRET` only (Vercel sets this)
-4. Switch on event → call `@recetario/billing` mutators (moved from `db/billing`)
+4. Switch on event → call `@recetario/stripe` mutators (moved from `db/billing`)
 
 **Design implication**: Webhook stays in `apps/web` (uses APIRoute). Only the mutator import path changes.
 
@@ -279,16 +279,16 @@ For every flow affected by the refactor, the spec traces the actual code:
 The refactor touches these parallel entry points (each must update):
 
 **Stripe API routes (4 sites importing from `@/lib/db/billing`)**:
-1. `apps/web/src/middleware.ts:3` — `import { getUserSubscription, seedSubscriptionPlans } from "@/lib/db/billing"` → `@recetario/billing`
-2. `apps/web/src/pages/api/stripe/checkout.ts:3` — `import { getPlanByStripePriceId, getStripeCustomerId } from "@/lib/db/billing"` → `@recetario/billing`
-3. `apps/web/src/pages/api/stripe/portal.ts:3` — `import { getUserSubscription } from "@/lib/db/billing"` → `@recetario/billing`
-4. `apps/web/src/pages/api/stripe/webhook.ts:4-9` — `import { createOrUpdateSubscription, cancelSubscription, markSubscriptionPastDue, seedSubscriptionPlans } from "@/lib/db/billing"` → `@recetario/billing`
+1. `apps/web/src/middleware.ts:3` — `import { getUserSubscription, seedSubscriptionPlans } from "@/lib/db/billing"` → `@recetario/stripe`
+2. `apps/web/src/pages/api/stripe/checkout.ts:3` — `import { getPlanByStripePriceId, getStripeCustomerId } from "@/lib/db/billing"` → `@recetario/stripe`
+3. `apps/web/src/pages/api/stripe/portal.ts:3` — `import { getUserSubscription } from "@/lib/db/billing"` → `@recetario/stripe`
+4. `apps/web/src/pages/api/stripe/webhook.ts:4-9` — `import { createOrUpdateSubscription, cancelSubscription, markSubscriptionPastDue, seedSubscriptionPlans } from "@/lib/db/billing"` → `@recetario/stripe`
 
 **Cache consumers (5 sites importing from `@/lib/cache`)**:
 1. `src/lib/db/recipes.ts` → `@recetario/db`
 2. `src/lib/db/ingredients.ts` → `@recetario/db`
 3. `src/lib/db/presentations.ts` → `@recetario/db`
-4. `src/lib/db/billing.ts` → `@recetario/billing` (file itself moves to billing)
+4. `src/lib/db/billing.ts` → `@recetario/stripe` (file itself moves to billing)
 5. `src/middleware.ts` → `@recetario/db`
 
 **Prisma direct imports (currently bypasses barrel, will be normalized)**:
@@ -319,7 +319,7 @@ All 8 will move to `packages/ui/src/` if Phase 1 spike succeeds. `apps/web/src/c
 - `presentations.ts` → `packages/db/src/presentations.ts`
 - `preferences.ts` → `packages/db/src/preferences.ts`
 - `audit.ts` → `packages/db/src/audit.ts`
-- `billing.ts` → `packages/billing/src/billing.ts` (DIFFERENT package)
+- `billing.ts` → `packages/stripe/src/billing.ts` (DIFFERENT package)
 
 **Auth module imports (9 files currently in `src/lib/`)**:
 - `auth.ts` → `packages/auth/src/auth.ts`
@@ -354,7 +354,7 @@ All 8 will move to `packages/ui/src/` if Phase 1 spike succeeds. `apps/web/src/c
 - **CRITICAL**: Every Prisma query in `@recetario/db` MUST include `where: { ownerId: ... }` (AGENTS.md invariant)
 - **Destructive updates**: Recipe update `$transaction` deletes + re-creates `RecipeIngredient` — preserved
 - **Composite PK**: `RecipeIngredient @@id([recipeId, ingredientId])` — preserved
-- **Billing queries move to `@recetario/billing`**: `getUserSubscription`, `seedSubscriptionPlans`, `getStripeCustomerId`, `getPlanByStripePriceId`, `createOrUpdateSubscription`, `cancelSubscription`, `markSubscriptionPastDue`, `syncPlansFromStripe`. They import `prisma` from `@recetario/db` and Prisma model types from `@recetario/db/generated/prisma`.
+- **Billing queries move to `@recetario/stripe`**: `getUserSubscription`, `seedSubscriptionPlans`, `getStripeCustomerId`, `getPlanByStripePriceId`, `createOrUpdateSubscription`, `cancelSubscription`, `markSubscriptionPastDue`, `syncPlansFromStripe`. They import `prisma` from `@recetario/db` and Prisma model types from `@recetario/db/generated/prisma`.
 - **No circular dependency**: `billing` → `db` (one-way). `db` does not import from `billing`.
 
 ### Auth
@@ -365,16 +365,16 @@ All 8 will move to `packages/ui/src/` if Phase 1 spike succeeds. `apps/web/src/c
 - **API handler**: `apps/web/src/pages/api/auth/[...all].ts` — calls `auth.handler(request)` from `@recetario/auth`.
 - **API routes for password reset**: `apps/web/src/pages/api/auth/{reset-password,forgot-password}.ts` — import token logic from `@recetario/auth/src/password-reset`.
 - **Env vars**: `BETTER_AUTH_URL`, `BETTER_AUTH_SECRET`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` (already in Vercel project).
-- **Feature flags**: `hasFeature(subscription, 'key')` lives in `@recetario/billing/src/subscription.ts`. Used by middleware and pages.
+- **Feature flags**: `hasFeature(subscription, 'key')` lives in `@recetario/stripe/src/subscription.ts`. Used by middleware and pages.
 
 ### Stripe / Billing
 
 - **Routes**: `apps/web/src/pages/api/stripe/{checkout,portal,webhook}.ts` — stay in `apps/web` (use `APIRoute`).
 - **Webhook secret**: `process.env.STRIPE_WEBHOOK_SECRET` (Vercel sets this).
-- **Stripe client**: `packages/billing/src/stripe.ts` (zero-dep, exports `stripe` singleton).
-- **Subscription logic**: `packages/billing/src/subscription.ts` (moved from `src/lib/subscription.ts`).
-- **Plan config**: `packages/billing/src/plans-config.ts` (FREE_FEATURES, Basic/Pro feature maps).
-- **Billing data layer**: `packages/billing/src/billing.ts` (moved from `src/lib/db/billing.ts`). Imports `prisma` from `@recetario/db` for subscription/subscriptionPlan model queries.
+- **Stripe client**: `packages/stripe/src/stripe.ts` (zero-dep, exports `stripe` singleton).
+- **Subscription logic**: `packages/stripe/src/subscription.ts` (moved from `src/lib/subscription.ts`).
+- **Plan config**: `packages/stripe/src/plans-config.ts` (FREE_FEATURES, Basic/Pro feature maps).
+- **Billing data layer**: `packages/stripe/src/billing.ts` (moved from `src/lib/db/billing.ts`). Imports `prisma` from `@recetario/db` for subscription/subscriptionPlan model queries.
 - **Env vars**: `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_*` (Vercel project).
 
 ### UI / UX
@@ -413,11 +413,11 @@ The refactor MUST preserve these invariants (per AGENTS.md and explore findings)
 
 3. **`RecipeIngredient` composite PK**: `@@id([recipeId, ingredientId])` preserved in schema.
 
-4. **Every Prisma query includes `ownerId`**: AGENTS.md "CRITICAL" requirement. Verified by `design-system-verify` skill + reviewer. After refactor, queries live in `packages/db/src/*` and `packages/billing/src/billing.ts`. Reviewer must audit both packages.
+4. **Every Prisma query includes `ownerId`**: AGENTS.md "CRITICAL" requirement. Verified by `design-system-verify` skill + reviewer. After refactor, queries live in `packages/db/src/*` and `packages/stripe/src/billing.ts`. Reviewer must audit both packages.
 
 5. **`recipe.totalCost == sum(ingredient.cost)`** (existing data invariant, not modified by refactor).
 
-6. **Feature flag tiers preserved**: `FREE_FEATURES` (12 keys, all false), Basic enables 5, Pro enables all 12. Logic unchanged. Code moves from `src/lib/subscription.ts` to `@recetario/billing/src/subscription.ts`.
+6. **Feature flag tiers preserved**: `FREE_FEATURES` (12 keys, all false), Basic enables 5, Pro enables all 12. Logic unchanged. Code moves from `src/lib/subscription.ts` to `@recetario/stripe/src/subscription.ts`.
 
 7. **Cache TTL unchanged**: 60s for subscription cache (`src/lib/cache.ts` semantics preserved in `@recetario/db/src/cache.ts`).
 
