@@ -52,8 +52,8 @@ export type RecipePresentation = {
   id: number;
   name: string;
   unitsPerBatch: number;
-  salePrice?: number;
-  fixedCosts?: PresentationFixedCost[];
+  salePrice: number | null;
+  fixedCosts: PresentationFixedCost[] | null;
 };
 
 export type RecipeWithIngredients = {

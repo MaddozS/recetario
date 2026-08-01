@@ -1,9 +1,9 @@
-import type { RecipePresentation, FixedCostType, FixedCostBase } from "@recetario/types";
+import type { FixedCostType, FixedCostBase } from "../prisma/generated/enums"
 
-export function normalizeOptionalText(value: unknown): string | undefined {
-  if (typeof value !== "string") return undefined;
+export function normalizeOptionalText(value: unknown): string | null {
+  if (typeof value !== "string") return null;
   const trimmed = value.trim();
-  return trimmed.length ? trimmed : undefined;
+  return trimmed.length ? trimmed : null;
 }
 
 export const toNumber = (value: unknown) => Number(value ?? 0);
@@ -51,21 +51,6 @@ export function normalizePresentationSalePrice(value: unknown): number {
     throw new Error("Invalid presentation sale price");
   }
   return roundToTwoDecimals(salePrice);
-}
-
-export function toRecipePresentation(record: {
-  id: number | string;
-  name: string;
-  units_per_batch: number | string;
-  sale_price: number | string | null;
-}): RecipePresentation {
-  return {
-    id: Number(record.id),
-    name: record.name,
-    unitsPerBatch: toNumber(record.units_per_batch),
-    salePrice:
-      record.sale_price !== null ? toNumber(record.sale_price) : undefined,
-  };
 }
 
 export function normalizeFixedCostType(value: unknown): FixedCostType {

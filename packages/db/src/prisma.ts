@@ -1,12 +1,8 @@
-import { PrismaClient } from "@prisma/client/edge";
-import { withAccelerate } from "@prisma/extension-accelerate";
+import { PrismaClient } from '../prisma/generated/client'
+import { withAccelerate } from '@prisma/extension-accelerate'
 
-const prismaClientSingleton = (nodeEnv: string) => {
-  return nodeEnv === 'production'
-    ? new PrismaClient({
-        accelerateUrl: process.env.DATABASE_URL,
-      }).$extends(withAccelerate())
-    : new PrismaClient().$extends(withAccelerate())
-}
+// Learn more about instantiating PrismaClient in Next.js here: https://www.prisma.io/docs/data-platform/accelerate/getting-started
 
-export const prisma = prismaClientSingleton(process.env.NODE_ENV as string)
+export const prisma = new PrismaClient({
+  accelerateUrl: process.env.DATABASE_URL ?? '',
+}).$extends(withAccelerate())

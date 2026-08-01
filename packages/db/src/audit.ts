@@ -1,4 +1,4 @@
-import type { AuditAction } from "@prisma/client"
+import type { AuditAction } from "../prisma/generated/enums"
 import { prisma } from "./prisma";
 
 export async function logAuditEvent(
