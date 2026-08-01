@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allow": [
+      "Shell(grep:*)",
+      "Shell(DATABASE_URL=$(grep '^DATABASE_URL=' .env | cut -d= -f2- | tr -d '\"') && psql \"$DATABASE_URL\" -c \"select id, tier, billing_interval, price_cents, currency, active, left(features_json, 70) as features_json from subscription_plans order by id;\")",
+      "Shell(pnpm:*)",
+      "Shell(curl -s -o /tmp/plans-body.json -w %{http_code} http://localhost:8787/api/billing/plans)",
+      "Shell(ls -la packages/types/dist/index.js packages/billing/dist/index.js packages/billing/dist/pricing-plans.js 2>&1; ls packages/types/dist/api/billing.js 2>&1)",
+      "Shell(cp:*)",
+      "Shell(sleep:*)",
+      "Shell(curl -s -w \"\\nHTTP %{http_code} → Redirect to: %{redirect_url}\" \"http://localhost:8787/api/auth/verify-email?token=fake&callbackURL=%2F\" 2>&1)",
+      "Shell(npx eslint packages/auth/src/verification-email-callback.ts packages/auth/src/verification-email-callback.test.ts 2 >& 1)",
+      "Shell(node_modules/.bin/eslint:*)",
+      "Shell(# Kill the old dev server and start fresh kill $(lsof -ti:8787) 2>/dev/null kill $(lsof -ti:4321) 2>/dev/null sleep 1 echo \"Ports freed\")",
+      "Shell(cd:*)",
+      "Shell(curl -s -i -X POST \"http://localhost:4321/api/auth/send-verification-email\" \\ -H \"Content-Type: application/json\" \\ -d '{\"email\":\"test@example.com\",\"callbackURL\":\"http://localhost:4321/sign-in\"}' 2>&1)",
+      "Shell(# Test full sign-up flow EMAIL=\"resend_test_$(date +%s)@example.com\" PASSWORD=\"Test1234!\" NAME_FIRST=\"Test\" NAME_LAST=\"User\" SIGNUP_RESP=$(curl -s -X POST \"http://localhost:8787/api/auth/sign-up/email\" \\ -H \"Content-Type: application/json\" \\ -d \"{\\\"email\\\":\\\"$EMAIL\\\",\\\"password\\\":\\\"$PASSWORD\\\",\\\"name\\\":\\\"$NAME_FIRST $NAME_LAST\\\",\\\"firstName\\\":\\\"$NAME_FIRST\\\",\\\"lastName\\\":\\\"$NAME_LAST\\\"}\" 2>&1) echo \"SIGNUP: $SIGNUP_RESP\" # Now test resend sleep 1 RESEND_RESP=$(curl -s -X POST \"http://localhost:8787/api/auth/send-verification-email\" \\ -H \"Content-Type: application/json\" \\ -d \"{\\\"email\\\":\\\"$EMAIL\\\",\\\"callbackURL\\\":\\\"http://localhost:4321/sign-in\\\"}\" 2>&1) echo \"RESEND: $RESEND_RESP\")",
+      "Shell(lsof -ti:8787 | xargs kill -9 2>/dev/null lsof -ti:4321 | xargs kill -9 2>/dev/null echo \"done\")",
+      "Shell(curl -s \"http://localhost:8787/api/auth/reset-password/KHLQOzVYa292NBdeMAwrdg13?token=a8a053cc-b24e-4e6c-8e8e-c086d03d2f00\" 2>&1)",
+      "Shell(curl -s http://localhost:8787/health 2>&1)",
+      "Shell(git:*)",
+      "Shell(node scripts/sync-cloudflare-secrets.mjs --env staging --dry-run)",
+      "Shell(node scripts/sync-cloudflare-secrets.mjs --env production --dry-run)",
+      "Shell(gh:*)",
+      "Shell(lsof:*)",
+      "Shell(mkdir:*)"
+    ],
+    "deny": [],
+    "defaultMode": "default"
+  }
+}
