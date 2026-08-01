@@ -21,7 +21,8 @@
     "deploy": "prisma migrate deploy",
     "studio": "prisma studio",
     "seed": "tsx prisma/seed.ts",
-    "seed:fixed-costs": "tsx prisma/seed-fixed-costs.ts"
+    "seed:fixed-costs": "tsx prisma/seed-fixed-costs.ts",
+    "test": "vitest run"
   },
   "dependencies": {
     "@prisma/client": "7.8.0",
@@ -29,11 +30,13 @@
     "typescript": "7.0.2",
     "@recetario/config": "workspace:^",
     "@recetario/types": "workspace:^",
+    "stripe": "22.1.1",
     "dotenv": "17.4.2"
   },
   "devDependencies": {
     "prisma": "7.8.0",
     "@types/node": "26.1.2",
-    "tsx": "4.22.0"
+    "tsx": "4.22.0",
+    "vitest": "^3.1.0"
   }
 }

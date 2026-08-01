@@ -1,5 +1,8 @@
 export { prisma } from "./prisma";
 export * from "./audit";
+export * from "./billing";
+export * from "./fixed-costs";
+export * from "./infra";
 export * from "./ingredients";
 export * from "./preferences";
 export * from "./presentations";

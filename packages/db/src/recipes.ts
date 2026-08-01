@@ -8,7 +8,7 @@ import type {
 } from "../prisma/generated/models";
 
 
-export async function listRecipeSummaries(ownerId: string) {
+export async function getRecipeSummaries(ownerId: string) {
 
   const rows = await prisma.recipe.findMany({
     where: { ownerId },
@@ -71,7 +71,7 @@ export async function getRecipesByIds(ids: number[], ownerId: string) {
 
 export async function createRecipe(
   ownerId: string,
-  recipe: RecipeUncheckedCreateInput,
+  recipe: Omit<RecipeUncheckedCreateInput, "ownerId">,
   recipeIngredients?: Omit<RecipeIngredientUncheckedCreateInput, "recipeId">[],
   recipeFixedCosts?: Omit<RecipeFixedCostUncheckedCreateInput, "recipeId">[],
   presentations?: Omit<RecipePresentationUncheckedCreateInput, "recipeId">[],
@@ -136,9 +136,17 @@ export async function createRecipe(
     const recipeRecord = await tx.recipe.findUnique({
       where: { id: recipeCreate.id },
       include: {
-        recipeIngredients: true,
+        recipeIngredients: {
+          include: {
+            ingredient: true,
+          },
+        },
         recipeFixedCosts: true,
-        presentations: true,
+        presentations: {
+          include: {
+            fixedCosts: true,
+          },
+        },
       },
     });
 
@@ -167,9 +175,9 @@ export async function updateRecipe(
   recipeId: number,
   input: RecipeUncheckedUpdateInput,
   ownerId: string,
-  recipeIngredients: RecipeIngredientUncheckedCreateInput[],
-  recipeFixedCosts?: RecipeFixedCostUncheckedCreateInput[],
-  presentations?: RecipePresentationUncheckedCreateInput[],
+  recipeIngredients: Omit<RecipeIngredientUncheckedCreateInput, "recipeId">[],
+  recipeFixedCosts?: Omit<RecipeFixedCostUncheckedCreateInput, "recipeId">[],
+  presentations?: Omit<RecipePresentationUncheckedCreateInput, "recipeId">[],
 ) {
 
   await prisma.$transaction(async (tx) => {
@@ -256,7 +264,6 @@ export async function duplicateRecipe(sourceRecipeId: number, ownerId: string) {
   const newRecipe = await createRecipe(
     ownerId,
     {
-      ownerId,
       name: newName,
       category: source.category,
       desiredMargin: source.desiredMargin,

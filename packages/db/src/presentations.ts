@@ -1,20 +1,20 @@
 import { prisma } from "./prisma";
 import type {
-  RecipePresentationUpdateInput,
+  RecipePresentationUncheckedUpdateInput,
   RecipePresentationUncheckedCreateInput,
   RecipeFixedCostUncheckedCreateInput
 } from "../prisma/generated/models"
 
-async function touchRecipeUpdatedAt(recipeId: number) {
+async function touchRecipeUpdatedAt(recipeId: number, ownerId: string) {
   await prisma.recipe.update({
-    where: { id: recipeId },
+    where: { id: recipeId, ownerId },
     data: { updatedAt: new Date() },
   });
 }
 
-export async function getPresentation(id: number) {
+export async function getPresentation(id: number, ownerId: string) {
   const data = await prisma.recipePresentation.findFirst({
-    where: { id },
+    where: { id, recipe: { ownerId } },
     include: {
       fixedCosts: true,
     },
@@ -25,9 +25,9 @@ export async function getPresentation(id: number) {
   return data
 }
 
-export async function getPresentationsByRecipeId(recipeId: number) {
+export async function getPresentationsByRecipeId(recipeId: number, ownerId: string) {
   const data = await prisma.recipePresentation.findMany({
-    where: { recipeId },
+    where: { recipeId, recipe: { ownerId } },
     include: {
       fixedCosts: true,
     },
@@ -41,7 +41,7 @@ export async function getPresentationsByRecipeId(recipeId: number) {
 export async function createPresentation(
   recipeId: number,
   ownerId: string,
-  input: RecipePresentationUncheckedCreateInput,
+  input: Omit<RecipePresentationUncheckedCreateInput, "recipeId">,
   fixedCosts?: Omit<RecipeFixedCostUncheckedCreateInput, "recipeId">,
 ) {
 
@@ -81,7 +81,7 @@ export async function createPresentation(
     return presentation;
   });
 
-  await touchRecipeUpdatedAt(recipeId);
+  await touchRecipeUpdatedAt(recipeId, ownerId);
 
   return data
 }
@@ -89,9 +89,18 @@ export async function createPresentation(
 export async function updatePresentation(
   id: number,
   recipeId: number,
-  data: RecipePresentationUpdateInput,
+  ownerId: string,
+  data: Omit<RecipePresentationUncheckedUpdateInput, "id" | "recipeId">,
   fixedCosts?: Omit<RecipeFixedCostUncheckedCreateInput, "recipeId">,
 ) {
+
+  const ownerRecipe = await prisma.recipe.findFirst({
+    where: { id: recipeId, ownerId },
+    select: { id: true },
+  });
+  if (!ownerRecipe) {
+    throw new Error("Recipe not found");
+  }
 
   const updated = await prisma.$transaction(async (tx) => {
     const presentationUpdated = await tx.recipePresentation.update({
@@ -117,7 +126,7 @@ export async function updatePresentation(
     return presentation;
   });
 
-  await touchRecipeUpdatedAt(recipeId);
+  await touchRecipeUpdatedAt(recipeId, ownerId);
 
   return updated
 }
@@ -141,7 +150,7 @@ export async function deletePresentation(recipeId: number, presentationId: numbe
     return { status: "not-found" };
   }
 
-  await touchRecipeUpdatedAt(recipeId);
+  await touchRecipeUpdatedAt(recipeId, ownerId);
 
   return { status: "deleted" };
 }

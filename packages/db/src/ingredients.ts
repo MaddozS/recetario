@@ -5,9 +5,9 @@ import type {
   IngredientUncheckedCreateInput,
 } from "../prisma/generated/models";
 
-export async function getIngredient(ingredientId: number) {
-  const data = await prisma.ingredient.findUnique({
-    where: { id: ingredientId },
+export async function getIngredient(ingredientId: number, ownerId: string) {
+  const data = await prisma.ingredient.findFirst({
+    where: { id: ingredientId, ownerId },
   });
 
   if (!data) return null;
@@ -25,7 +25,7 @@ export async function getIngredients(ownerId: string) {
   return rows;
 }
 
-export async function createIngredient(input: IngredientUncheckedCreateInput, ownerId: string) {
+export async function createIngredient(input: Omit<IngredientUncheckedCreateInput, "ownerId">, ownerId: string) {
 
   const data = await prisma.ingredient.create({
     data: {
@@ -42,7 +42,7 @@ export async function createIngredient(input: IngredientUncheckedCreateInput, ow
   return data
 }
 
-export async function updateIngredient(ingredientId: number, input: IngredientUncheckedUpdateInput, ownerId: string) {
+export async function updateIngredient(ingredientId: number, input: Omit<IngredientUncheckedUpdateInput, "ownerId" | "id">, ownerId: string) {
   try {
     const data = await prisma.ingredient.update({
       where: { id: ingredientId, ownerId },
@@ -101,7 +101,7 @@ export async function deleteIngredient(ingredientId: number, ownerId: string) {
 
 
 
-export async function listIngredientUsage(ownerId: string) {
+export async function getIngredientUsage(ownerId: string) {
   const rows = await prisma.recipeIngredient.findMany({
     where: { recipe: { ownerId } },
     select: {
@@ -120,4 +120,16 @@ export async function listIngredientUsage(ownerId: string) {
   }
 
   return usageByIngredient;
+}
+
+export async function getIngredientUsageRecipes(ingredientId: number, ownerId: string) {
+  const rows = await prisma.recipeIngredient.findMany({
+    where: { ingredientId, recipe: { ownerId } },
+    include: { recipe: true },
+    orderBy: { recipe: { id: "asc" } },
+  });
+
+  return (rows as unknown as Array<{ recipe: { id: number; name: string } }>)
+    .map((u) => u.recipe)
+    .filter((r): r is NonNullable<typeof r> => r !== null);
 }

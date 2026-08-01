@@ -13,7 +13,20 @@ export async function getUserPreferences(userId: string) {
   return data
 }
 
-export async function upsertUserPreferences(userId: string, prefs: UserPreferencesUncheckedCreateInput | UserPreferencesUncheckedUpdateInput) {
+export async function createUserPreferences(userId: string, prefs: Omit<UserPreferencesUncheckedCreateInput, "userId">) {
+  const data = await prisma.userPreferences.create({
+    data: {
+      userId,
+      theme: prefs.theme ?? Theme.system,
+      accentColor: prefs.accentColor ?? AccentColor.coral,
+      updatedAt: new Date(),
+    },
+  });
+
+  return data
+}
+
+export async function upsertUserPreferences(userId: string, prefs: Omit<UserPreferencesUncheckedCreateInput, "userId"> | Omit<UserPreferencesUncheckedUpdateInput, "userId">) {
   const existing = await prisma.userPreferences.findUnique({
     where: { userId },
   });
