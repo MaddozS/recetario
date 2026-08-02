@@ -1,8 +1,17 @@
-import { PrismaClient } from '../prisma/generated/client'
-import { withAccelerate } from '@prisma/extension-accelerate'
+import { PrismaClient } from "../prisma/generated/client";
+import { withAccelerate } from "@prisma/extension-accelerate";
 
-// Learn more about instantiating PrismaClient in Next.js here: https://www.prisma.io/docs/data-platform/accelerate/getting-started
+const accelerateUrl = process.env.DATABASE_URL;
 
-export const prisma = new PrismaClient({
-  accelerateUrl: process.env.DATABASE_URL ?? '',
-}).$extends(withAccelerate())
+export function createPrismaClient() {
+  if (!accelerateUrl) {
+    throw new Error("DATABASE_URL environment variable is not set");
+  }
+
+  return new PrismaClient({
+    accelerateUrl,
+    log: [{ emit: "event", level: "query" }],
+  }).$extends(withAccelerate());
+}
+
+export const prisma = createPrismaClient();
