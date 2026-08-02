@@ -16,23 +16,23 @@
     "cloudflare-build": "$npm_execpath --filter @recetario/db exec prisma generate && $npm_execpath --filter @recetario/db exec prisma migrate deploy && astro build"
   },
   "dependencies": {
-    "@astrojs/cloudflare": "14.1.5",
+    "@astrojs/cloudflare": "14.1.7",
     "@iconify-json/lucide": "1.2.107",
     "@recetario/auth": "workspace:^",
     "@recetario/stripe": "workspace:^",
     "@recetario/config": "workspace:^",
     "@recetario/types": "workspace:^",
     "@tailwindcss/vite": "4.3.0",
-    "astro": "7.1.4",
+    "astro": "7.1.6",
     "astro-icon": "1.1.5",
     "dotenv": "17.4.2",
     "tailwindcss": "4.3.0",
     "zod": "3.25.76"
   },
   "devDependencies": {
-    "@astrojs/check": "0.9.9",
-    "@astrojs/node": "^11.0.2",
-    "@astrojs/ts-plugin": "^1.10.10",
+    "@astrojs/check": "0.9.10",
+    "@astrojs/node": "11.0.2",
+    "@astrojs/ts-plugin": "1.10.10",
     "@eslint/js": "10.0.1",
     "@playwright/test": "^1.60.0",
     "@types/node": "25.8.0",

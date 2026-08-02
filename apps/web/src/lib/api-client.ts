@@ -19,7 +19,6 @@ type ServiceBinding = {
 
 export type ApiFetchContext = {
   request: Request;
-  locals?: { user?: { id?: string | null } | null };
 };
 
 const g = globalThis as typeof globalThis & {
@@ -31,7 +30,6 @@ export class ApiError extends Error {
   readonly issues?: ZodIssue[];
   readonly reason?: string;
   readonly traceId?: string;
-  readonly retryAfterMs?: number;
   readonly status: number;
 
   constructor(
@@ -46,7 +44,6 @@ export class ApiError extends Error {
     this.issues = extras.issues;
     this.reason = extras.reason;
     this.traceId = extras.traceId;
-    this.retryAfterMs = extras.retryAfterMs;
     this.status = status;
   }
 }
@@ -65,18 +62,11 @@ export async function apiFetch<T = unknown>(
   context: ApiFetchContext,
 ): Promise<T> {
   const { method = "GET", body, schema, signal } = options;
-  const { request, locals } = context;
+  const { request } = context;
 
   const headers: Record<string, string> = { accept: "application/json" };
   const cookie = request.headers.get("cookie");
   if (cookie) headers.cookie = cookie;
-  // Forward the authenticated user so the API rate limiter applies the
-  // per-user bucket (60 reads / 60s, 10 writes / 60s) instead of the
-  // per-IP fallback (30 / 60s). Without this, multi-endpoint page loads
-  // trip the IP limit at ~7 page loads/60s.
-  const userId = locals?.user?.id;
-  if (userId) headers["x-user-id"] = userId;
-
   const init: RequestInit = { method, headers, signal };
   if (body !== undefined) {
     headers["content-type"] = "application/json";
@@ -124,7 +114,6 @@ export async function apiFetch<T = unknown>(
       issues: parsed.issues,
       reason: parsed.reason,
       traceId: parsed.traceId ?? newTraceId(),
-      retryAfterMs: parsed.retryAfterMs,
     },
     res.status,
   );

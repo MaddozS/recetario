@@ -21,7 +21,6 @@ export default defineConfig({
     resolve: {
       alias: [
         { find: "debug", replacement: path.resolve(__dirname, "./src/lib/debug-stub.js") },
-        { find: /^@prisma\/client\/runtime\/.*\.wasm-base64\.mjs$/, replacement: path.resolve(__dirname, "./src/lib/empty-wasm-base64.mjs") },
         { find: "@/", replacement: path.resolve(__dirname, "./src") },
       ],
     },
