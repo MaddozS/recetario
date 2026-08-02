@@ -71,7 +71,7 @@ Key findings from `analysis-20260620-1718-monorepo-refactor.md` and `task-202606
 2. **Phase 1 — UI spike**: Extract `Button.astro` to `packages/ui/` as proof-of-concept. Validate it compiles + renders correctly. If success → Phase 2-3 extract all UI. If fail → skip `packages/ui/`, keep UI in `apps/web/`.
 3. **Phase 2 — Config + types packages**: Create `packages/config/` (tsconfig base, eslint base, prettier base) and `packages/types/` (empty initially, populate incrementally).
 4. **Phase 3 — DB package**: Move `prisma/` to `packages/db/prisma/`. Move `src/lib/prisma.ts` + `src/lib/db/*` (except `billing.ts`) + `src/lib/cache.ts` to `packages/db/src/`. Update all imports. Update Prisma output path.
-5. **Phase 4 — Auth package**: Move `src/lib/{auth, auth-client, csrf, csrf-client, rate-limiter, password-validation, password-reset, sign-in, sign-out}.ts` to `packages/auth/src/`. Wire `apps/web/middleware.ts` to import from `@recetario/auth`.
+5. **Phase 4 — Auth package**: Move `src/lib/{auth, auth-client, csrf, csrf-client, password-validation, password-reset, sign-in, sign-out}.ts` to `packages/auth/src/`. Wire `apps/web/middleware.ts` to import from `@recetario/auth`. API abuse protection is deferred to a future design.
 6. **Phase 5 — Billing package**: Move `src/lib/{stripe, subscription, plans-config, formatters}.ts` + `src/lib/db/billing.ts` to `packages/stripe/src/`. Update 4 import sites (middleware, checkout, portal, webhook).
 
 **Pros**: Each phase is a small PR. Easy rollback. UI spike de-risks the most uncertain piece.
@@ -157,14 +157,13 @@ recetario/
 │   │   │   ├── preferences.ts
 │   │   │   └── audit.ts
 │   │   └── package.json
-│   ├── auth/                         # Better Auth + CSRF + rate limit + password
+│   ├── auth/                         # Better Auth + CSRF + password
 │   │   ├── src/
 │   │   │   ├── index.ts
 │   │   │   ├── auth.ts
 │   │   │   ├── auth-client.ts
 │   │   │   ├── csrf.ts
 │   │   │   ├── csrf-client.ts
-│   │   │   ├── rate-limiter.ts
 │   │   │   ├── password-validation.ts
 │   │   │   ├── password-reset.ts
 │   │   │   ├── sign-in.ts
@@ -294,7 +293,7 @@ The refactor touches these parallel entry points (each must update):
 **Prisma direct imports (currently bypasses barrel, will be normalized)**:
 1. `src/lib/auth.ts:4` — `import { prisma } from "@/lib/prisma"` → `import { prisma } from "@recetario/db"`
 2. `src/lib/cache.ts` — moves to `@recetario/db/src/cache.ts`
-3. `src/lib/rate-limiter.ts` — moves to `@recetario/auth/src/rate-limiter.ts`, imports prisma from `@recetario/db`
+3. API rate limiting is deferred until a replacement abuse-protection design is approved.
 4. `src/lib/password-reset.ts` — moves to `@recetario/auth/src/password-reset.ts`, imports prisma from `@recetario/db`
 5. `src/pages/api/auth/update-name.ts` — direct prisma import, update to `@recetario/db`
 
@@ -326,7 +325,6 @@ All 8 will move to `packages/ui/src/` if Phase 1 spike succeeds. `apps/web/src/c
 - `auth-client.ts` → `packages/auth/src/auth-client.ts`
 - `csrf.ts` → `packages/auth/src/csrf.ts`
 - `csrf-client.ts` → `packages/auth/src/csrf-client.ts`
-- `rate-limiter.ts` → `packages/auth/src/rate-limiter.ts`
 - `password-validation.ts` → `packages/auth/src/password-validation.ts`
 - `password-reset.ts` → `packages/auth/src/password-reset.ts`
 - `sign-in.ts` → `packages/auth/src/sign-in.ts`

@@ -20,7 +20,7 @@ Split the Hono app into route modules — `routes/auth.ts`, `routes/account.ts`,
 
 ### Route module structure
 
-- `apps/api/src/routes/auth.ts`: forgot-password (POST), reset-password validate (GET), reset-password change (POST), catch-all auth handler (`/api/auth/*`), rate limiting middleware.
+- `apps/api/src/routes/auth.ts`: forgot-password (POST), reset-password validate (GET), reset-password change (POST), catch-all auth handler (`/api/auth/*`).
 - `apps/api/src/routes/account.ts`: update-name (POST), change-email (POST), change-password (POST).
 - `apps/api/src/routes/stripe.ts`: checkout (POST), portal (POST), webhook (POST).
 
@@ -46,9 +46,9 @@ app.route("/", stripeRoutes);
 - `clientIp`, `safeRedirectUrl`, `getPeriod`, `syncBindingsToProcessEnv`, `ENV_KEYS` are moved to `packages/config/env.ts` (same module as Candidate #2).
 - The `Bindings` type stays in `index.ts` at the top level since it defines the Hono type parameter.
 
-### Rate limiting
+### Abuse protection
 
-Rate limiting logic (currently inline in the catch-all handler) stays in the auth routes module since it only applies to auth endpoints.
+API rate limiting is currently disabled. A replacement will be designed separately before being added to the auth routes.
 
 ## Testing Decisions
 

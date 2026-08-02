@@ -152,7 +152,7 @@ Latest published `better-auth` on npm: **1.6.25**, 4 days ago (npm registry page
 - `apps/web/src/lib/empty-wasm-base64.mjs:1-3` — the stub, self-documented as workerd-irrelevant.
 - `apps/api/wrangler.jsonc:5-6` — `compatibility_date: 2026-07-08`, `compatibility_flags: ["nodejs_compat"]`.
 - `apps/api/src/index.ts:248-249` — the API worker **already** calls `auth.handler(c.req.raw)` for the catch-all `/api/auth/*`. The code path exists; the workaround file is what the web app falls back to.
-- `apps/api/src/index.ts:67-206` — the rate-limited auth endpoints (`/forgot-password`, `/reset-password`) that the API also handles. Same pattern, no workaround.
+- `apps/api/src/index.ts:67-206` — the auth endpoints (`/forgot-password`, `/reset-password`) that the API also handles. API rate limiting is now deferred; same pattern, no workaround.
 - `packages/auth/package.json:29` — `better-auth: 1.6.11`.
 - `packages/auth/src/auth.ts:1-90` — `betterAuth({…})` config; uses `prismaAdapter(prisma, { provider: "postgresql" })`.
 - `packages/db/src/prisma.ts:10-31` — `lazyInit` singleton Prisma client with `pg.Pool(max: 3)`.

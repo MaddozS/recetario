@@ -1,7 +1,6 @@
 import { Hono } from "hono";
 import {
   auth,
-  rateLimitCheck,
   validateCsrf,
   validatePassword,
   validatePasswordResetToken,
@@ -34,7 +33,6 @@ import { clientIp, setSecurityHeaders } from "@recetario/config/request";
 import { envelope } from "./envelope";
 import { errorHandler } from "./error-handler";
 import { hostAllowlist } from "./host-allowlist";
-import { rateLimit } from "./rate-limit";
 import { authSessionHandler } from "./auth-session";
 import { recipesListHandler } from "./recipes/list";
 import { recipesByIdsHandler } from "./recipes/by-ids";
@@ -104,11 +102,20 @@ function safeRedirectUrl(
 app.onError(errorHandler());
 app.use("*", envelope());
 app.use("*", hostAllowlist());
-app.use("*", rateLimit());
 app.use("*", async (c, next) => {
   syncEnvBindings(c.env as Record<string, unknown>);
   await next();
   setSecurityHeaders(c.res);
+});
+
+app.use("*", async (c, next) => {
+  const started = Date.now();
+  await next();
+  const elapsedMs = Date.now() - started;
+  const level = elapsedMs > 5_000 ? "warn" : "log";
+  console[level](
+    `[API] ${c.req.method} ${new URL(c.req.url).pathname} -> ${c.res.status} in ${elapsedMs}ms`,
+  );
 });
 
 app.get("/health", (c) =>
@@ -294,48 +301,7 @@ app.get("/api/billing/subscription", subscriptionHandler());
 app.get("/api/billing/plans", plansHandler());
 app.get("/api/usage-counts", usageCountsHandler());
 
-app.all("/api/auth/*", async (c) => {
-    const path = new URL(c.req.url).pathname;
-    const ip = clientIp(c.req.raw);
-
-    if (c.req.method === "POST") {
-      if (path.includes("/sign-in/email")) {
-        const { allowed } = await rateLimitCheck(`signin:${ip}`, 5, 60);
-        if (!allowed) {
-          return c.text(
-            "Too many sign-in attempts. Please try again later.",
-            429,
-          );
-        }
-      }
-
-      if (path.includes("/sign-up/email")) {
-        const { allowed } = await rateLimitCheck(`signup:${ip}`, 3, 3600);
-        if (!allowed) {
-          return c.text(
-            "Too many sign-up attempts. Please try again later.",
-            429,
-          );
-        }
-      }
-
-      if (path.includes("/sign-in/social")) {
-        const { allowed } = await rateLimitCheck(`oauth:${ip}`, 10, 900);
-        if (!allowed) {
-          return c.text("Too many OAuth requests. Please try again later.", 429);
-        }
-      }
-
-      if (path.includes("/forget-password")) {
-        const { allowed } = await rateLimitCheck(`forgot:${ip}`, 3, 3600);
-        if (!allowed) {
-          return c.text("Too many reset requests. Please try again later.", 429);
-        }
-      }
-    }
-
-    return await auth.handler(c.req.raw);
-  });
+app.all("/api/auth/*", async (c) => auth.handler(c.req.raw));
 
 app.post("/api/account/update-name", async (c) => {
     const session = await auth.api.getSession({ headers: c.req.raw.headers });

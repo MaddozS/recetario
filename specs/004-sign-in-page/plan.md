@@ -76,7 +76,7 @@ src/
 ├── lib/
 │   ├── auth-client.ts       # Better Auth client (unchanged)
 │   ├── csrf.ts / csrf-client.ts  # CSRF protection (unchanged)
-│   └── rate-limiter.ts      # Rate limiting (unchanged)
+│   └── sign-in.ts           # Sign-in helpers (unchanged)
 ├── layouts/
 │   └── LandingLayout.astro  # Landing page wrapper (unchanged)
 ├── components/

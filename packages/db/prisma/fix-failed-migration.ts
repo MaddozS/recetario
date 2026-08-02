@@ -50,7 +50,6 @@ async function main() {
     const hasFirstName = await columnExists(pool, "user", "first_name");
     const hasLastName = await columnExists(pool, "user", "last_name");
     const hasRole = await columnExists(pool, "user", "role");
-    const hasRateLimitTable = await tableExists(pool, "rate_limit_entries");
     const hasCacheTable = await tableExists(pool, "cache_entries");
     const hasAuditTable = await tableExists(pool, "audit_logs");
     const hasRoleEnum = await enumExists(pool, "Role");
@@ -59,7 +58,6 @@ async function main() {
     console.log(`  user.first_name:     ${hasFirstName}`);
     console.log(`  user.last_name:      ${hasLastName}`);
     console.log(`  user.role:           ${hasRole}`);
-    console.log(`  rate_limit_entries:  ${hasRateLimitTable}`);
     console.log(`  cache_entries:       ${hasCacheTable}`);
     console.log(`  audit_logs:          ${hasAuditTable}`);
     console.log(`  Role enum:           ${hasRoleEnum}`);
@@ -102,24 +100,6 @@ async function main() {
     if (!hasRole) {
       console.log("Adding role column...");
       await pool.query(`ALTER TABLE "user" ADD COLUMN "role" "Role" NOT NULL DEFAULT 'USER'`);
-    }
-
-    if (!hasRateLimitTable) {
-      console.log("Creating rate_limit_entries table...");
-      await pool.query(`
-        CREATE TABLE "rate_limit_entries" (
-          "id" TEXT NOT NULL,
-          "key" TEXT NOT NULL,
-          "count" INTEGER NOT NULL DEFAULT 0,
-          "reset_at" BIGINT NOT NULL,
-          "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-          "updated_at" TIMESTAMP(3) NOT NULL,
-          CONSTRAINT "rate_limit_entries_pkey" PRIMARY KEY ("id")
-        )
-      `);
-      await pool.query(
-        `CREATE UNIQUE INDEX "rate_limit_entries_key_key" ON "rate_limit_entries"("key")`,
-      );
     }
 
     if (!hasCacheTable) {

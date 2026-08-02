@@ -20,7 +20,6 @@ vi.mock("@recetario/auth/server", () => ({
     },
     handler: vi.fn(),
   },
-  rateLimitCheck: vi.fn().mockResolvedValue({ allowed: true, remaining: 10 }),
   validateCsrf: vi.fn().mockReturnValue(true),
   validatePassword: vi.fn().mockReturnValue({ valid: true, errors: [] }),
   validatePasswordResetToken: vi.fn().mockResolvedValue({ valid: false }),

@@ -7,7 +7,6 @@ export {
   setCsrfCookieHeader,
   validateCsrf,
 } from "./csrf";
-export { rateLimitCheck } from "./rate-limiter";
 export {
   validatePassword,
   getRuleResults,
