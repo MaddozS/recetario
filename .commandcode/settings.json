@@ -22,10 +22,12 @@
       "Shell(node scripts/sync-cloudflare-secrets.mjs --env staging --dry-run)",
       "Shell(node scripts/sync-cloudflare-secrets.mjs --env production --dry-run)",
       "Shell(gh:*)",
+      "Shell(gh issue create:*)",
       "Shell(lsof:*)",
       "Shell(mkdir:*)"
     ],
     "deny": [],
     "defaultMode": "default"
-  }
+  },
+  "tasteLearning": false
 }
