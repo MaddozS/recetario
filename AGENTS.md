@@ -94,7 +94,7 @@ If a new feature needs data access from a web page, add the endpoint in `apps/ap
 - `src/lib/formatters.ts` — exports `formatCurrency` and `timeAgo` (no `formatNumber`)
 - `src/lib/form-utils.ts` — `parseNumberInput(value)` for Spanish-format decimals
 - `src/lib/auth-client.ts` — client-side Better Auth (used for sign-in popup)
-- `src/lib/sign-in.ts` / `src/lib/sign-out.ts` — Google sign-in with popup/open-in-tab + rate limiting
+- `src/lib/sign-in.ts` / `src/lib/sign-out.ts` — Google sign-in with popup/open-in-tab
 - `src/lib/dialog.ts` — `bindDialogBackdrop()` utility
 
 ### Stripe billing
