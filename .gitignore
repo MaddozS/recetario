@@ -11,6 +11,7 @@ packages/*/dist/
 # generated Prisma clients
 **/generated/prisma/
 **/generated/prisma-sqlite/
+**/prisma/generated/
 
 # dependencies
 node_modules/
