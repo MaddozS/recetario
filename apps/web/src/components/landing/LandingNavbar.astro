@@ -1,5 +1,5 @@
 ---
-import { Icon } from "astro-icon/components";
+import { Sun, Moon } from "@lucide/astro";
 import Button from "../ui/Button.astro";
 
 
@@ -67,8 +67,8 @@ const { isAuthenticated = false } = Astro.props;
         class="text-muted-foreground hover:text-foreground hover:bg-hover-muted inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl transition-colors"
         aria-label="Cambiar tema"
       >
-        <Icon name="lucide:sun" size={18} class="block dark:hidden" />
-        <Icon name="lucide:moon" size={18} class="hidden dark:block" />
+        <Sun size={18} class="block dark:hidden" />
+        <Moon size={18} class="hidden dark:block" />
       </button>
 
       <Button
@@ -136,8 +136,8 @@ const { isAuthenticated = false } = Astro.props;
         class="text-muted-foreground hover:text-foreground hover:bg-hover-muted inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl transition-colors"
         aria-label="Cambiar tema"
       >
-        <Icon name="lucide:sun" size={18} class="block dark:hidden" />
-        <Icon name="lucide:moon" size={18} class="hidden dark:block" />
+        <Sun size={18} class="block dark:hidden" />
+        <Moon size={18} class="hidden dark:block" />
       </button>
     </div>
   </div>

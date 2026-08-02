@@ -1,5 +1,5 @@
 ---
-import { Icon } from "astro-icon/components";
+import { ZoomIn, X } from "@lucide/astro";
 
 const features = [
   {
@@ -86,7 +86,7 @@ const features = [
                       height="600"
                     />
                     <span class="text-muted-foreground/60 mt-1.5 flex items-center gap-1.5 text-xs transition-opacity group-hover/lightbox:opacity-100 md:opacity-0">
-                      <Icon name="lucide:zoom-in" size={14} />
+                      <ZoomIn size={14} />
                       Click para ampliar
                     </span>
                   </button>
@@ -117,7 +117,7 @@ const features = [
     class="text-muted-foreground hover:text-foreground bg-background/80 hover:bg-background fixed top-4 right-4 z-20 flex min-h-10 min-w-10 cursor-pointer items-center justify-center rounded-full backdrop-blur-sm transition-colors"
     aria-label="Cerrar"
   >
-    <Icon name="lucide:x" size={22} />
+    <X size={22} />
   </button>
 </dialog>
 

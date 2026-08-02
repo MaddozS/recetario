@@ -1,5 +1,5 @@
 ---
-import { Icon } from "astro-icon/components";
+import { Check, Clock, X } from "@lucide/astro";
 import type { PricingPlan } from "@recetario/stripe";
 
 const { isAuthenticated = false } = Astro.props;
@@ -178,7 +178,13 @@ const { plans } = Astro.props as Props;
                         : "text-subtle-foreground";
                     return (
                       <div class="flex min-w-0 items-center gap-2.5 text-sm">
-                        <Icon name={icon} size={16} class:list={[iconClass]} />
+                        {isComingSoon ? (
+                          <Clock size={16} class:list={[iconClass]} />
+                        ) : f.included ? (
+                          <Check size={16} class:list={[iconClass]} />
+                        ) : (
+                          <X size={16} class:list={[iconClass]} />
+                        )}
                         <span class:list={[textClass, "break-words"]}>
                           {f.text}
                         </span>

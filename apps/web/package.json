@@ -17,14 +17,13 @@
   },
   "dependencies": {
     "@astrojs/cloudflare": "14.1.7",
-    "@iconify-json/lucide": "1.2.107",
+    "@lucide/astro": "^1.28.0",
     "@recetario/auth": "workspace:^",
-    "@recetario/stripe": "workspace:^",
     "@recetario/config": "workspace:^",
+    "@recetario/stripe": "workspace:^",
     "@recetario/types": "workspace:^",
     "@tailwindcss/vite": "4.3.0",
     "astro": "7.1.6",
-    "astro-icon": "1.1.5",
     "dotenv": "17.4.2",
     "tailwindcss": "4.3.0",
     "zod": "3.25.76"
