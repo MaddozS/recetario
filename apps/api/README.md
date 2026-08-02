@@ -31,9 +31,6 @@ that mutates user data or hits Stripe goes here.
 - **Envelope** — `src/envelope.ts` wraps every error response in the
   canonical `{ error: { code, message, … } }` shape so the web's
   `apiFetch` can parse it via `parseApiError` from `@recetario/types`.
-- **Rate limit** — `src/rate-limit.ts` (global) and the in-handler
-  `rateLimitCheck()` from `@recetario/auth/server` for the special
-  auth-tier limits on the catch-all.
 
 ## 2. How to add a new endpoint
 
@@ -138,15 +135,13 @@ import { ApiError } from "../errors";
 
 throw new ApiError("NOT_FOUND", "Recipe not found");
 throw new ApiError("VALIDATION_ERROR", "Invalid recipe input");
-throw new ApiError("RATE_LIMITED", "Too many requests", 60_000); // retryAfterMs
 ```
 
 The global `errorHandler()` (mounted in `src/index.ts`) catches the throw,
 maps the `ApiErrorCode` to an HTTP status via `codeToStatus()`, and emits
 the canonical envelope. Returning `c.json({ error: ... }, 400)` by hand
-will work but is wrong — it bypasses the rate-limit `Retry-After` header,
-the traceId plumbing, and any future logging/observability the handler
-adds.
+will work but is wrong — it bypasses the canonical error handling and any
+future logging/observability the handler adds.
 
 For "the row was owned by a different user" cases, throw
 `new ApiError("NOT_FOUND", "…")`, not `403`. Returning 403 leaks the
@@ -168,31 +163,10 @@ from another user's cache key. `recipes-by-ids` is the obvious place this
 matters; ordering of ids in the key is the subtle gotcha — sort before
 joining so `?ids=1,2,3` and `?ids=3,1,2` share the same entry.
 
-## 6. Rate limit
+## 6. Abuse protection
 
-The global middleware in `src/rate-limit.ts` covers every route
-automatically:
-
-| Scope | Key | Cap | Window |
-|-------|-----|-----|--------|
-| Authenticated read (`GET`/`HEAD`/`OPTIONS`) | `ratelimit:user:{userId}:read` | 60 | 60 s |
-| Authenticated write (`POST`/`PUT`/`PATCH`/`DELETE`) | `ratelimit:user:{userId}:write` | 10 | 60 s |
-| Unauthenticated (no `x-user-id`) | `ratelimit:ip:{ip}` | 30 | 60 s |
-
-The auth catch-all (`/api/auth/*`) **opts out of the global middleware's
-counters** and uses the stricter auth-specific limits from
-`rateLimitCheck()` instead:
-
-| Path | Key | Cap | Window |
-|------|-----|-----|--------|
-| `POST /api/auth/sign-in/email` | `signin:{ip}` | 5 | 60 s |
-| `POST /api/auth/sign-up/email` | `signup:{ip}` | 3 | 3600 s |
-| `POST /api/auth/sign-in/social` | `oauth:{ip}` | 10 | 900 s |
-| `POST /api/auth/forget-password` | `forgot:{ip}` | 3 | 3600 s |
-
-The Stripe webhook (`POST /api/stripe/webhook`) is signature-verified
-inside the handler and is **not** rate-limited — Stripe's retries are the
-real back-pressure.
+API rate limiting is currently disabled. A replacement will be designed and
+added later with appropriate shared storage and endpoint-specific controls.
 
 ## 7. Test setup
 
@@ -240,43 +214,41 @@ middleware.
 
 ## 9. Endpoint inventory
 
-| Method | Path | Auth | Rate-limit tier | Cache TTL | Notes |
-|--------|------|------|-----------------|-----------|-------|
-| GET    | `/health` | none | none | — | Liveness probe. |
-| POST   | `/api/auth/forgot-password` | none | `forgot:{ip}` 3/3600s | — | Always returns success regardless of email existence. |
-| GET    | `/api/auth/reset-password` | token | none | — | Validates a password-reset token. |
-| POST   | `/api/auth/reset-password` | token | none | — | Marks token used; logs audit event. |
-| GET    | `/api/auth/session` | optional | none | — | Pass-through to `auth.api.getSession`. Used by `apps/web` middleware. |
-| ALL    | `/api/auth/*` | varies | per-path (signin/signup/oauth/forgot) | — | Catch-all for Better Auth. |
-| POST   | `/api/account/update-name` | user | write | — | First/last name. |
-| POST   | `/api/account/change-email` | user | write | — | Triggers verification email. |
-| POST   | `/api/account/change-password` | user | write | — | Min length 6. |
-| GET    | `/api/preferences` | user | read | 60 s | Creates default if missing. |
-| PUT    | `/api/preferences` | user | write | invalidates `prefs:{userId}` | — |
-| GET    | `/api/billing/subscription` | user | read | 60 s | Resolves tier from active subscription. 404 if no subscription. |
-| GET    | `/api/billing/plans` | none | read | 60 s | Active plans, ordered by price. |
-| POST   | `/api/stripe/checkout` | user | write | — | Requires CSRF. |
-| POST   | `/api/stripe/portal` | user | write | — | Requires CSRF. |
-| POST   | `/api/stripe/webhook` | sig | none | — | Signature-verified; no rate limit. |
-| GET    | `/api/recipes` | user | read | — | Summaries only. |
-| GET    | `/api/recipes/by-ids` | user | read | 60 s | Max 100 ids; order-insensitive key. |
-| GET    | `/api/recipes/:id` | user | read | — | Detail with ingredients, presentations, fixed costs. |
-| POST   | `/api/recipes` | user | write | — | Minimal create; full details come from PATCH. |
-| PATCH  | `/api/recipes/:id` | user | write | — | Destructive: deletes & re-creates `RecipeIngredient` rows in a transaction. |
-| DELETE | `/api/recipes/:id` | user | write | — | Cascades to ingredients and presentations. |
-| POST   | `/api/recipes/:id/fixed-costs` | user | write | — | — |
-| PATCH  | `/api/recipes/:id/fixed-costs/:fid` | user | write | — | Partial. |
-| DELETE | `/api/recipes/:id/fixed-costs/:fid` | user | write | — | — |
-| GET    | `/api/recipes/:id/presentations` | user | read | — | Includes per-presentation fixed costs. |
-| GET    | `/api/ingredients` | user | read | — | Trimmed to `{ id, name, unit }`. |
-| POST   | `/api/ingredients` | user | write | — | — |
-| PATCH  | `/api/ingredients/:id` | user | write | — | — |
-| DELETE | `/api/ingredients/:id` | user | write | — | Returns 409 `ingredient_in_use` if referenced. |
-| GET    | `/api/ingredients/:id/usage` | user | read | — | Recipes that reference this ingredient. |
+| Method | Path | Auth | Cache TTL | Notes |
+|--------|------|------|-----------|-------|
+| GET    | `/health` | none | — | Liveness probe. |
+| POST   | `/api/auth/forgot-password` | none | — | Always returns success regardless of email existence. |
+| GET    | `/api/auth/reset-password` | token | — | Validates a password-reset token. |
+| POST   | `/api/auth/reset-password` | token | — | Marks token used; logs audit event. |
+| GET    | `/api/auth/session` | optional | — | Pass-through to `auth.api.getSession`. Used by `apps/web` middleware. |
+| ALL    | `/api/auth/*` | varies | — | Catch-all for Better Auth. |
+| POST   | `/api/account/update-name` | user | — | First/last name. |
+| POST   | `/api/account/change-email` | user | — | Triggers verification email. |
+| POST   | `/api/account/change-password` | user | — | Min length 6. |
+| GET    | `/api/preferences` | user | 60 s | Creates default if missing. |
+| PUT    | `/api/preferences` | user | invalidates `prefs:{userId}` | — |
+| GET    | `/api/billing/subscription` | user | 60 s | Resolves tier from active subscription. 404 if no subscription. |
+| GET    | `/api/billing/plans` | none | 60 s | Active plans, ordered by price. |
+| POST   | `/api/stripe/checkout` | user | — | Requires CSRF. |
+| POST   | `/api/stripe/portal` | user | — | Requires CSRF. |
+| POST   | `/api/stripe/webhook` | sig | — | Signature-verified. |
+| GET    | `/api/recipes` | user | — | Summaries only. |
+| GET    | `/api/recipes/by-ids` | user | 60 s | Max 100 ids; order-insensitive key. |
+| GET    | `/api/recipes/:id` | user | — | Detail with ingredients, presentations, fixed costs. |
+| POST   | `/api/recipes` | user | — | Minimal create; full details come from PATCH. |
+| PATCH  | `/api/recipes/:id` | user | — | Destructive: deletes & re-creates `RecipeIngredient` rows in a transaction. |
+| DELETE | `/api/recipes/:id` | user | — | Cascades to ingredients and presentations. |
+| POST   | `/api/recipes/:id/fixed-costs` | user | — | — |
+| PATCH  | `/api/recipes/:id/fixed-costs/:fid` | user | — | Partial. |
+| DELETE | `/api/recipes/:id/fixed-costs/:fid` | user | — | — |
+| GET    | `/api/recipes/:id/presentations` | user | — | Includes per-presentation fixed costs. |
+| GET    | `/api/ingredients` | user | — | Trimmed to `{ id, name, unit }`. |
+| POST   | `/api/ingredients` | user | — | — |
+| PATCH  | `/api/ingredients/:id` | user | — | — |
+| DELETE | `/api/ingredients/:id` | user | — | Returns 409 `ingredient_in_use` if referenced. |
+| GET    | `/api/ingredients/:id/usage` | user | — | Recipes that reference this ingredient. |
 
-`Auth = user` means the global middleware saw a `x-user-id` header set by
-the Better Auth session lookup. `Auth = none` means the endpoint is
-publicly callable; `auth = optional` means it works either way.
+`Auth = user` means the endpoint requires a Better Auth session. `Auth = none` means the endpoint is publicly callable; `Auth = optional` means it works either way.
 
 ## 10. Migrating an existing web endpoint to the API
 
@@ -313,12 +285,11 @@ in-page POST handler that calls Prisma directly) to a handler here:
 ## 11. Redis swap path
 
 The cache module (`src/cache.ts`) is intentionally a flat
-`get / set / increment / peek` surface over a single `Map`. The block
+`get / set` surface over a single `Map`. The block
 comment at the top of the file spells out the upgrade:
 
-1. Add a `CacheBackend` interface with the same three methods
-   (`get(key)`, `set(key, value, ttlMs)`, `increment(key, ttlMs)`,
-   plus `peek(key)` for the stale-while-error helper).
+1. Add a `CacheBackend` interface with the same two methods
+   (`get(key)`, `set(key, value, ttlMs)`).
 2. Implement `InMemoryBackend` (move the current body) and `RedisBackend`
    (new). Talk to Upstash or Cloudflare Workers KV; both work via the
    `fetch` API in a workerd isolate.
@@ -326,10 +297,7 @@ comment at the top of the file spells out the upgrade:
    expose backend selection per-request.
 
 Callers don't change. The cache key conventions in §5 are stable
-across backends, so handlers stay put. The only handlers that need to
-adjust are the few that depend on `peek` for stale-while-error — that
-needs a backend that supports per-key lastGoodAt alongside the value
-(Redis `HMSET`/HGET, KV's metadata fields, or a sidecar key).
+across backends, so handlers stay put.
 
 The `pg.Pool` wedge documented in `@recetario/db`'s constraints
 (constraint #63) does **not** apply here — the cache is in-process
