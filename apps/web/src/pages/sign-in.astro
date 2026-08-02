@@ -1,6 +1,8 @@
 ---
 import { Icon } from "astro-icon/components";
-import { Button, PasswordInput } from "@recetario/ui";
+import Button from "../components/ui/Button.astro";
+import PasswordInput from "../components/ui/PasswordInput.astro";
+
 import LandingLayout from "@/layouts/LandingLayout.astro";
 
 if (Astro.locals.session) return Astro.redirect("/recipes");
@@ -171,8 +173,8 @@ const errorMessage = errorCode
     signInWithGoogle,
     getSafeRedirect,
   } from "@recetario/auth/client";
-  import { setupPasswordToggles } from "@recetario/ui/password-toggle";
-  import { showLoadingOverlay } from "@recetario/ui/loading-overlay";
+  import { setupPasswordToggles } from "../lib/password-toggle";
+  import { showLoadingOverlay } from "../lib/loading-overlay";
 
   function setupSignIn() {
     const form = document.getElementById("sign-in-form");

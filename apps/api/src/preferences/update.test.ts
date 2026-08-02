@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { Hono } from "hono";
-import { envelope } from "../envelope.js";
-import { errorHandler } from "../error-handler.js";
-import * as cache from "../cache.js";
+import { envelope } from "../envelope";
+import { errorHandler } from "../error-handler";
+import * as cache from "../cache";
 
 const { mockGetSession, mockAuth, mockUpsertUserPreferences } = vi.hoisted(() => {
   const mockGetSession = vi.fn();
@@ -12,16 +12,16 @@ const { mockGetSession, mockAuth, mockUpsertUserPreferences } = vi.hoisted(() =>
 });
 
 vi.mock("@recetario/auth/server", () => ({
-  createAuth: () => mockAuth,
+  auth: mockAuth,
 }));
 
 vi.mock("@recetario/db", () => ({
-  createPrismaClient: () => ({}),
-  upsertUserPreferences: (userId: string, prefs: unknown, db: unknown) =>
-    mockUpsertUserPreferences(userId, prefs, db),
+  prisma: {},
+  upsertUserPreferences: (userId: string, prefs: unknown) =>
+    mockUpsertUserPreferences(userId, prefs),
 }));
 
-const { preferencesUpdateHandler } = await import("./update.js");
+const { preferencesUpdateHandler } = await import("./update");
 
 const sessionFixture = {
   user: {

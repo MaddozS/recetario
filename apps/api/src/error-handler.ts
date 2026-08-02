@@ -1,6 +1,6 @@
 import type { ErrorHandler } from "hono";
 import type { ApiErrorResponse } from "@recetario/types";
-import { ApiError } from "./errors.js";
+import { ApiError } from "./errors";
 
 export function errorHandler(): ErrorHandler {
   return (err, c) => {

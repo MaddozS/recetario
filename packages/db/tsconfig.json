@@ -1,20 +1,21 @@
 {
+  "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
-    "composite": true,
-    "baseUrl": ".",
-    "moduleResolution": "NodeNext",
-    "module": "NodeNext",
-    "target": "ESNext",
-    "verbatimModuleSyntax": true,
-    "isolatedModules": true,
+    "composite": false,
+    "declaration": false,
+    "declarationMap": false,
     "esModuleInterop": true,
-    "resolveJsonModule": true,
+    "forceConsistentCasingInFileNames": true,
+    "inlineSources": false,
+    "isolatedModules": true,
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "preserveWatchOutput": true,
     "skipLibCheck": true,
     "strict": true,
-    "outDir": "./dist",
-    "rootDir": ".",
-    "declaration": true,
-    "declarationMap": true
+    "types": ["node"],
   },
-  "include": ["src", "generated/prisma"]
+  "exclude": ["node_modules", "prisma"]
 }

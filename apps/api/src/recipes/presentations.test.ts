@@ -1,34 +1,26 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { Hono } from "hono";
-import { envelope } from "../envelope.js";
-import { errorHandler } from "../error-handler.js";
+import { envelope } from "../envelope";
+import { errorHandler } from "../error-handler";
 
-const { mockGetSession, mockAuth, mockPrisma } = vi.hoisted(() => {
+const {
+  mockGetSession,
+  mockAuth,
+  mockGetPresentationsByRecipeId,
+  mockCreatePresentation,
+  mockUpdatePresentation,
+  mockDeletePresentation,
+} = vi.hoisted(() => {
   const mockGetSession = vi.fn();
   const mockAuth = { api: { getSession: (...args: unknown[]) => mockGetSession(...args) } };
-  const mockFindFirstRecipe = vi.fn();
-  const mockFindManyPresentations = vi.fn();
-  const mockFindFirstPresentation = vi.fn();
+  const mockGetPresentationsByRecipeId = vi.fn();
   const mockCreatePresentation = vi.fn();
   const mockUpdatePresentation = vi.fn();
   const mockDeletePresentation = vi.fn();
-  const mockPrisma = {
-    recipe: { findFirst: mockFindFirstRecipe },
-    recipePresentation: {
-      findMany: mockFindManyPresentations,
-      findFirst: mockFindFirstPresentation,
-      create: mockCreatePresentation,
-      update: mockUpdatePresentation,
-      delete: mockDeletePresentation,
-    },
-  };
   return {
     mockGetSession,
     mockAuth,
-    mockPrisma,
-    mockFindFirstRecipe,
-    mockFindManyPresentations,
-    mockFindFirstPresentation,
+    mockGetPresentationsByRecipeId,
     mockCreatePresentation,
     mockUpdatePresentation,
     mockDeletePresentation,
@@ -36,11 +28,18 @@ const { mockGetSession, mockAuth, mockPrisma } = vi.hoisted(() => {
 });
 
 vi.mock("@recetario/auth/server", () => ({
-  createAuth: () => mockAuth,
+  auth: mockAuth,
 }));
 
 vi.mock("@recetario/db", () => ({
-  createPrismaClient: () => mockPrisma,
+  getPresentationsByRecipeId: (recipeId: number, ownerId: string) =>
+    mockGetPresentationsByRecipeId(recipeId, ownerId),
+  createPresentation: (recipeId: number, ownerId: string, input: unknown) =>
+    mockCreatePresentation(recipeId, ownerId, input),
+  updatePresentation: (pid: number, recipeId: number, ownerId: string, input: unknown) =>
+    mockUpdatePresentation(pid, recipeId, ownerId, input),
+  deletePresentation: (recipeId: number, pid: number, ownerId: string) =>
+    mockDeletePresentation(recipeId, pid, ownerId),
 }));
 
 const {
@@ -48,7 +47,7 @@ const {
   presentationsCreateHandler,
   presentationsUpdateHandler,
   presentationsDeleteHandler,
-} = await import("./presentations.js");
+} = await import("./presentations");
 
 const sessionFixture = {
   user: { id: "user-1", email: "ada@example.com" },
@@ -69,8 +68,7 @@ function buildApp() {
 describe("presentationsListHandler", () => {
   beforeEach(() => {
     mockGetSession.mockReset();
-    mockPrisma.recipe.findFirst.mockReset();
-    mockPrisma.recipePresentation.findMany.mockReset();
+    mockGetPresentationsByRecipeId.mockReset();
   });
 
   it("returns 401 when there is no session", async () => {
@@ -81,8 +79,7 @@ describe("presentationsListHandler", () => {
 
   it("returns the presentations for a recipe owned by the user", async () => {
     mockGetSession.mockResolvedValueOnce(sessionFixture);
-    mockPrisma.recipe.findFirst.mockResolvedValueOnce({ id: 1 });
-    mockPrisma.recipePresentation.findMany.mockResolvedValueOnce([
+    mockGetPresentationsByRecipeId.mockResolvedValueOnce([
       {
         id: 10,
         name: "Individual",
@@ -101,19 +98,18 @@ describe("presentationsListHandler", () => {
 
   it("returns 404 when the recipe is not owned", async () => {
     mockGetSession.mockResolvedValueOnce(sessionFixture);
-    mockPrisma.recipe.findFirst.mockResolvedValueOnce(null);
+    mockGetPresentationsByRecipeId.mockResolvedValueOnce(null);
 
     const res = await buildApp().request("/api/recipes/42/presentations");
     expect(res.status).toBe(404);
-    expect(mockPrisma.recipePresentation.findMany).not.toHaveBeenCalled();
+    expect(mockGetPresentationsByRecipeId).toHaveBeenCalledWith(42, "user-1");
   });
 });
 
 describe("presentationsCreateHandler", () => {
   beforeEach(() => {
     mockGetSession.mockReset();
-    mockPrisma.recipe.findFirst.mockReset();
-    mockPrisma.recipePresentation.create.mockReset();
+    mockCreatePresentation.mockReset();
   });
 
   it("returns 401 when there is no session", async () => {
@@ -128,7 +124,7 @@ describe("presentationsCreateHandler", () => {
 
   it("returns 404 when the recipe is not owned", async () => {
     mockGetSession.mockResolvedValueOnce(sessionFixture);
-    mockPrisma.recipe.findFirst.mockResolvedValueOnce(null);
+    mockCreatePresentation.mockResolvedValueOnce(null);
 
     const res = await buildApp().request("/api/recipes/42/presentations", {
       method: "POST",
@@ -136,13 +132,12 @@ describe("presentationsCreateHandler", () => {
       body: JSON.stringify({ name: "Docena", unitsPerBatch: 12 }),
     });
     expect(res.status).toBe(404);
-    expect(mockPrisma.recipePresentation.create).not.toHaveBeenCalled();
+    expect(mockCreatePresentation).toHaveBeenCalled();
   });
 
   it("creates a presentation when the recipe is owned", async () => {
     mockGetSession.mockResolvedValueOnce(sessionFixture);
-    mockPrisma.recipe.findFirst.mockResolvedValueOnce({ id: 1 });
-    mockPrisma.recipePresentation.create.mockResolvedValueOnce({
+    mockCreatePresentation.mockResolvedValueOnce({
       id: 10,
       name: "Docena",
       unitsPerBatch: 12,
@@ -163,7 +158,6 @@ describe("presentationsCreateHandler", () => {
 
   it("returns 400 on invalid body", async () => {
     mockGetSession.mockResolvedValueOnce(sessionFixture);
-    mockPrisma.recipe.findFirst.mockResolvedValueOnce({ id: 1 });
 
     const res = await buildApp().request("/api/recipes/1/presentations", {
       method: "POST",
@@ -177,8 +171,7 @@ describe("presentationsCreateHandler", () => {
 describe("presentationsUpdateHandler", () => {
   beforeEach(() => {
     mockGetSession.mockReset();
-    mockPrisma.recipePresentation.findFirst.mockReset();
-    mockPrisma.recipePresentation.update.mockReset();
+    mockUpdatePresentation.mockReset();
   });
 
   it("returns 401 when there is no session", async () => {
@@ -193,7 +186,7 @@ describe("presentationsUpdateHandler", () => {
 
   it("returns 404 when the presentation is not owned", async () => {
     mockGetSession.mockResolvedValueOnce(sessionFixture);
-    mockPrisma.recipePresentation.findFirst.mockResolvedValueOnce(null);
+    mockUpdatePresentation.mockResolvedValueOnce(null);
 
     const res = await buildApp().request("/api/recipes/1/presentations/10", {
       method: "PATCH",
@@ -201,13 +194,12 @@ describe("presentationsUpdateHandler", () => {
       body: JSON.stringify({ name: "X" }),
     });
     expect(res.status).toBe(404);
-    expect(mockPrisma.recipePresentation.update).not.toHaveBeenCalled();
+    expect(mockUpdatePresentation).toHaveBeenCalled();
   });
 
   it("updates a presentation when owned", async () => {
     mockGetSession.mockResolvedValueOnce(sessionFixture);
-    mockPrisma.recipePresentation.findFirst.mockResolvedValueOnce({ id: 10 });
-    mockPrisma.recipePresentation.update.mockResolvedValueOnce({
+    mockUpdatePresentation.mockResolvedValueOnce({
       id: 10,
       name: "Docena mod",
       unitsPerBatch: 12,
@@ -220,12 +212,16 @@ describe("presentationsUpdateHandler", () => {
       body: JSON.stringify({ name: "Docena mod" }),
     });
     expect(res.status).toBe(200);
-    expect(mockPrisma.recipePresentation.update).toHaveBeenCalled();
+    expect(mockUpdatePresentation).toHaveBeenCalledWith(
+      10,
+      1,
+      "user-1",
+      { name: "Docena mod" },
+    );
   });
 
   it("returns 400 when the body has no fields", async () => {
     mockGetSession.mockResolvedValueOnce(sessionFixture);
-    mockPrisma.recipePresentation.findFirst.mockResolvedValueOnce({ id: 10 });
 
     const res = await buildApp().request("/api/recipes/1/presentations/10", {
       method: "PATCH",
@@ -239,8 +235,7 @@ describe("presentationsUpdateHandler", () => {
 describe("presentationsDeleteHandler", () => {
   beforeEach(() => {
     mockGetSession.mockReset();
-    mockPrisma.recipePresentation.findFirst.mockReset();
-    mockPrisma.recipePresentation.delete.mockReset();
+    mockDeletePresentation.mockReset();
   });
 
   it("returns 401 when there is no session", async () => {
@@ -253,27 +248,23 @@ describe("presentationsDeleteHandler", () => {
 
   it("returns 404 when the presentation is not owned", async () => {
     mockGetSession.mockResolvedValueOnce(sessionFixture);
-    mockPrisma.recipePresentation.findFirst.mockResolvedValueOnce(null);
+    mockDeletePresentation.mockResolvedValueOnce({ status: "not-found" });
 
     const res = await buildApp().request("/api/recipes/1/presentations/10", {
       method: "DELETE",
     });
     expect(res.status).toBe(404);
-    expect(mockPrisma.recipePresentation.delete).not.toHaveBeenCalled();
+    expect(mockDeletePresentation).toHaveBeenCalledWith(1, 10, "user-1");
   });
 
   it("deletes a presentation when owned", async () => {
     mockGetSession.mockResolvedValueOnce(sessionFixture);
-    mockPrisma.recipePresentation.findFirst.mockResolvedValueOnce({ id: 10 });
-    mockPrisma.recipePresentation.delete.mockResolvedValueOnce({ id: 10 });
+    mockDeletePresentation.mockResolvedValueOnce({ status: "deleted" });
 
     const res = await buildApp().request("/api/recipes/1/presentations/10", {
       method: "DELETE",
     });
     expect(res.status).toBe(204);
-    expect(mockPrisma.recipePresentation.delete).toHaveBeenCalledWith({
-      where: { id: 10 },
-    });
+    expect(mockDeletePresentation).toHaveBeenCalledWith(1, 10, "user-1");
   });
 });
-

@@ -35,7 +35,7 @@ Required root devDependencies:
   "devDependencies": {
     "@astrojs/check": "0.9.9",
     "turbo": "^2.9.18",
-    "typescript": "6.0.3",
+    "typescript": "7.0.2",
     "eslint": "10.4.0",
     "prettier": "3.8.3"
   }

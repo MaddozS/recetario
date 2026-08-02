@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { Hono } from "hono";
-import { envelope } from "../envelope.js";
-import { errorHandler } from "../error-handler.js";
+import { envelope } from "../envelope";
+import { errorHandler } from "../error-handler";
 
 const { mockGetSession, mockAuth, mockGetRecipesByIds } = vi.hoisted(() => {
   const mockGetSession = vi.fn();
@@ -11,16 +11,16 @@ const { mockGetSession, mockAuth, mockGetRecipesByIds } = vi.hoisted(() => {
 });
 
 vi.mock("@recetario/auth/server", () => ({
-  createAuth: () => mockAuth,
+  auth: mockAuth,
 }));
 
 vi.mock("@recetario/db", () => ({
-  createPrismaClient: () => ({}),
-  getRecipesByIds: (ids: number[], ownerId: string, db: unknown) =>
-    mockGetRecipesByIds(ids, ownerId, db),
+  prisma: {},
+  getRecipesByIds: (ids: number[], ownerId: string) =>
+    mockGetRecipesByIds(ids, ownerId),
 }));
 
-const { recipesByIdsHandler } = await import("./by-ids.js");
+const { recipesByIdsHandler } = await import("./by-ids");
 
 const sessionFixture = {
   user: { id: "user-1", email: "ada@example.com" },
@@ -39,9 +39,12 @@ function recipeFixture(id: number) {
   return {
     id,
     name: `Receta ${id}`,
+    category: null,
+    instructions: null,
     desiredMargin: 30,
     fixedCostsPercentage: 10,
-    ingredients: [],
+    updatedAt: new Date("2026-01-01T00:00:00Z"),
+    recipeIngredients: [],
     presentations: [],
     recipeFixedCosts: [],
   };
@@ -97,7 +100,7 @@ describe("recipesByIdsHandler", () => {
 
     const res = await buildApp().request("/api/recipes/by-ids?ids=1,abc,3,-2,0,4");
     expect(res.status).toBe(200);
-    expect(mockGetRecipesByIds).toHaveBeenCalledWith([1, 3, 4], "user-1", expect.anything());
+    expect(mockGetRecipesByIds).toHaveBeenCalledWith([1, 3, 4], "user-1");
 
     const body = (await res.json()) as Array<{ id: number }>;
     expect(body.map((r) => r.id)).toEqual([1, 3]);
@@ -111,7 +114,7 @@ describe("recipesByIdsHandler", () => {
     expect(res.status).toBe(200);
     const body = (await res.json()) as unknown[];
     expect(body).toEqual([]);
-    expect(mockGetRecipesByIds).toHaveBeenCalledWith([99, 100], "user-1", expect.anything());
+    expect(mockGetRecipesByIds).toHaveBeenCalledWith([99, 100], "user-1");
   });
 
   it("passes the session userId to getRecipesByIds (ownerId enforcement lives in @recetario/db)", async () => {
@@ -122,7 +125,7 @@ describe("recipesByIdsHandler", () => {
       headers: { cookie: "session=abc" },
     });
     expect(res.status).toBe(200);
-    expect(mockGetRecipesByIds).toHaveBeenCalledWith([1, 2, 3], "user-1", expect.anything());
+    expect(mockGetRecipesByIds).toHaveBeenCalledWith([1, 2, 3], "user-1");
   });
 
   it("caches the response for 60s and hits the cache on the second call", async () => {

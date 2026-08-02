@@ -60,8 +60,8 @@ Worked example: `GET /api/billing/subscription`.
    import { auth } from "@recetario/auth/server";
     import { getUserSubscription } from "@recetario/billing/server";
     import { resolveSubscription } from "@recetario/billing";
-   import { ApiError } from "../errors.js";
-   import * as cache from "../cache.js";
+   import { ApiError } from "../errors";
+   import * as cache from "../cache";
 
    const CACHE_TTL_MS = 60_000;
 
@@ -89,7 +89,7 @@ Worked example: `GET /api/billing/subscription`.
 3. **Wire the route** in `src/index.ts` next to its siblings:
 
    ```ts
-   import { subscriptionHandler } from "./billing/subscription.js";
+   import { subscriptionHandler } from "./billing/subscription";
    …
    app.get("/api/billing/subscription", subscriptionHandler());
    ```
@@ -123,7 +123,7 @@ use `.strict()` (Zod's default for `z.object`).
 ## 4. Throw `ApiError`; never return error JSON by hand
 
 ```ts
-import { ApiError } from "../errors.js";
+import { ApiError } from "../errors";
 
 throw new ApiError("NOT_FOUND", "Recipe not found");
 throw new ApiError("VALIDATION_ERROR", "Invalid recipe input");
@@ -188,7 +188,7 @@ real back-pressure.
 `vitest run` in this package. Helpers in `src/test-utils/`:
 
 ```ts
-import { createTestRequest, createTestEnv } from "../test-utils/index.js";
+import { createTestRequest, createTestEnv } from "../test-utils/index";
 
 const env = createTestEnv();
 const req = createTestRequest("/api/recipes", { method: "GET" });

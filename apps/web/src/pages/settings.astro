@@ -1,6 +1,9 @@
 ---
 import { Icon } from "astro-icon/components";
-import { Button, Card, PasswordInput } from "@recetario/ui";
+import Button from "../components/ui/Button.astro";
+import Card from "../components/ui/Card.astro";
+import PasswordInput from "../components/ui/PasswordInput.astro";
+
 import BillingSection from "@/components/BillingSection.astro";
 import Layout from "@/layouts/Layout.astro";
 import {
@@ -8,7 +11,7 @@ import {
   ACCENT_LABELS,
   getAccentPreviewColor,
   type AccentFamily,
-} from "@recetario/ui/accent-colors";
+} from "../lib/accent-colors";
 import {
   getRemainingRecipes,
   getRemainingIngredients,
@@ -498,7 +501,7 @@ if (feedback) {
   </section>
 
   <script>
-    import { getAccentCssVars } from "@recetario/ui/accent-colors";
+    import { getAccentCssVars } from "../lib/accent-colors";
 
     function getEffectiveTheme(pref: string): string {
       if (pref === "system") {
@@ -895,7 +898,7 @@ if (feedback) {
   </script>
 
   <script>
-    import { setupPasswordToggles } from "@recetario/ui/password-toggle";
+    import { setupPasswordToggles } from "../lib/password-toggle";
 
     function setupAccountForms() {
       setupPasswordToggles();

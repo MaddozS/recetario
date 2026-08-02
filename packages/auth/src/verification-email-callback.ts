@@ -1,4 +1,4 @@
-import type { SendEmailFn } from "./email.js";
+import type { SendEmailFn } from "./email";
 
 const WEB_ORIGIN = process.env.WEB_ORIGIN ?? "http://localhost:4321";
 const API_URL = process.env.BETTER_AUTH_URL ?? "http://localhost:8787";

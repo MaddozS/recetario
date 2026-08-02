@@ -45,6 +45,9 @@ apps/*/.turbo/
 apps/*/.wrangler/
 
 
+# Vite optimization cache (outside node_modules to survive pnpm restructures)
+.vite-cache/
+
 # local tool state
 .pnpm-store/
 .commandcode/settings.local.json

@@ -17,21 +17,12 @@
     "./tsconfig.base.json": "./tsconfig.base.json",
     "./eslint.base.cjs": "./eslint.base.cjs",
     "./prettier.base.json": "./prettier.base.json",
-    "./env": {
-      "types": "./dist/src/env.d.ts",
-      "default": "./dist/src/env.js"
-    },
-    "./request": {
-      "types": "./dist/src/request.d.ts",
-      "default": "./dist/src/request.js"
-    },
-    "./lazy": {
-      "types": "./dist/src/lazy.d.ts",
-      "default": "./dist/src/lazy.js"
-    }
+    "./env": "./src/env.ts",
+    "./request": "./src/request.ts",
+    "./lazy": "./src/lazy.ts"
   },
   "devDependencies": {
     "@types/node": "^25.8.0",
-    "typescript": "^6.0.0"
+    "typescript": "7.0.2"
   }
 }

@@ -4,14 +4,7 @@ datasource db {
 
 generator client {
   provider = "prisma-client"
-  output   = "../generated/prisma"
-  runtime  = "workerd"
-}
-
-generator apiClient {
-  provider = "prisma-client"
-  output   = "../../../apps/api/generated/prisma"
-  runtime  = "workerd"
+  output   = "./generated"
 }
 
 model Ingredient {
@@ -110,10 +103,25 @@ model PresentationFixedCost {
   @@map("presentation_fixed_costs")
 }
 
+enum Theme {
+  system
+  light
+  dark
+}
+enum AccentColor {
+  indigo
+  violet
+  blue
+  emerald
+  rose
+  amber
+  coral
+}
+
 model UserPreferences {
   userId      String    @id @map("user_id")
-  theme       String
-  accentColor String    @map("accent_color")
+  theme       Theme
+  accentColor AccentColor    @map("accent_color")
   updatedAt   DateTime? @map("updated_at") @db.Timestamptz()
 
   @@map("user_preferences")

@@ -1,9 +1,9 @@
 import { describe, it, expect } from "vitest";
 import { Hono } from "hono";
-import { rateLimit } from "./rate-limit.js";
-import { envelope } from "./envelope.js";
-import { errorHandler } from "./error-handler.js";
-import { set } from "./cache.js";
+import { rateLimit } from "./rate-limit";
+import { envelope } from "./envelope";
+import { errorHandler } from "./error-handler";
+import { set } from "./cache";
 
 function makeEnv(): Record<string, unknown> {
   return {};

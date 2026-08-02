@@ -1,2 +1,2 @@
-export { createTestEnv } from "./env.js";
-export { createTestRequest } from "./request.js";
+export { createTestEnv } from "./env";
+export { createTestRequest } from "./request";

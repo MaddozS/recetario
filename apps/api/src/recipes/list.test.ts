@@ -1,26 +1,24 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { Hono } from "hono";
-import { envelope } from "../envelope.js";
-import { errorHandler } from "../error-handler.js";
+import { envelope } from "../envelope";
+import { errorHandler } from "../error-handler";
 
-const { mockGetSession, mockAuth, mockListRecipeSummaries } = vi.hoisted(() => {
+const { mockGetSession, mockAuth, mockGetRecipeSummaries } = vi.hoisted(() => {
   const mockGetSession = vi.fn();
   const mockAuth = { api: { getSession: (...args: unknown[]) => mockGetSession(...args) } };
-  const mockListRecipeSummaries = vi.fn();
-  return { mockGetSession, mockAuth, mockListRecipeSummaries };
+  const mockGetRecipeSummaries = vi.fn();
+  return { mockGetSession, mockAuth, mockGetRecipeSummaries };
 });
 
 vi.mock("@recetario/auth/server", () => ({
-  createAuth: () => mockAuth,
+  auth: mockAuth,
 }));
 
 vi.mock("@recetario/db", () => ({
-  createPrismaClient: () => ({}),
-  listRecipeSummaries: (ownerId: string, db: unknown) =>
-    mockListRecipeSummaries(ownerId, db),
+  getRecipeSummaries: (ownerId: string) => mockGetRecipeSummaries(ownerId),
 }));
 
-const { recipesListHandler } = await import("./list.js");
+const { recipesListHandler } = await import("./list");
 
 const sessionFixture = {
   user: { id: "user-1", email: "ada@example.com" },
@@ -38,7 +36,7 @@ function buildApp() {
 describe("recipesListHandler", () => {
   beforeEach(() => {
     mockGetSession.mockReset();
-    mockListRecipeSummaries.mockReset();
+    mockGetRecipeSummaries.mockReset();
   });
 
   it("returns 401 when there is no session", async () => {
@@ -47,23 +45,36 @@ describe("recipesListHandler", () => {
     expect(res.status).toBe(401);
     const body = (await res.json()) as { error: { code: string } };
     expect(body.error.code).toBe("UNAUTHENTICATED");
-    expect(mockListRecipeSummaries).not.toHaveBeenCalled();
+    expect(mockGetRecipeSummaries).not.toHaveBeenCalled();
   });
 
   it("returns the recipe list scoped to the session user", async () => {
     mockGetSession.mockResolvedValueOnce(sessionFixture);
-    mockListRecipeSummaries.mockResolvedValueOnce([
-      { id: 1, name: "Tarta", category: "Postres", ingredientCount: 3, updatedAt: null },
-      { id: 2, name: "Pan", category: null, ingredientCount: 0, updatedAt: null },
+    mockGetRecipeSummaries.mockResolvedValueOnce([
+      {
+        id: 1,
+        name: "Tarta",
+        category: "Postres",
+        updatedAt: new Date("2026-01-01T00:00:00Z"),
+        recipeIngredients: [{ id: 1 }, { id: 2 }, { id: 3 }],
+      },
+      {
+        id: 2,
+        name: "Pan",
+        category: null,
+        updatedAt: null,
+        recipeIngredients: [],
+      },
     ]);
 
     const res = await buildApp().request("/api/recipes", {
       headers: { cookie: "session=abc" },
     });
     expect(res.status).toBe(200);
-    const body = (await res.json()) as Array<{ id: number; name: string }>;
+    const body = (await res.json()) as Array<{ id: number; name: string; ingredientCount: number }>;
     expect(body).toHaveLength(2);
     expect(body[0].name).toBe("Tarta");
-    expect(mockListRecipeSummaries).toHaveBeenCalledWith("user-1", expect.anything());
+    expect(body[0].ingredientCount).toBe(3);
+    expect(mockGetRecipeSummaries).toHaveBeenCalledWith("user-1");
   });
 });

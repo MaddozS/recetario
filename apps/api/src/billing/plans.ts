@@ -1,34 +1,30 @@
 import type { Handler } from "hono";
-import * as cache from "../cache.js";
-import { ApiError } from "../errors.js";
-import { withFreshDb } from "../fresh-db.js";
-import { seedSubscriptionPlans } from "@recetario/billing/server";
+import { getSubscriptionPlans, seedSubscriptionPlans } from "@recetario/db";
+import { plansListResponseSchema } from "@recetario/types";
+import * as cache from "../cache";
 
 const CACHE_TTL_MS = 60_000;
 const CACHE_KEY = "plans:all";
 
 export function plansHandler(): Handler {
-  return async (c) =>
-    withFreshDb(c, async (prisma) => {
-      const cached = cache.get<unknown>(CACHE_KEY);
-      if (cached !== undefined) {
-        return c.json(cached);
-      }
+  return async (c) => {
+    const cached = cache.get<unknown>(CACHE_KEY);
+    if (cached !== undefined) {
+      return c.json(cached);
+    }
 
-      // ponytail: lazy-seed plans on first request; idempotent
-      await seedSubscriptionPlans(prisma);
+    await seedSubscriptionPlans();
 
-      const rows = await prisma.subscriptionPlan.findMany({
-        where: { active: true },
-        orderBy: { priceCents: "asc" },
-      });
+    const rows = await getSubscriptionPlans(true);
 
-      const plans = rows.map(({ featuresJson, ...rest }) => ({
-        ...rest,
-        features: JSON.parse(featuresJson),
-      }));
+    const plans = rows.map(({ featuresJson, ...rest }) => ({
+      ...rest,
+      features: JSON.parse(featuresJson),
+    }));
 
-      cache.set(CACHE_KEY, plans, CACHE_TTL_MS);
-      return c.json(plans);
-    });
+    const validated = plansListResponseSchema.parse(plans);
+
+    cache.set(CACHE_KEY, validated, CACHE_TTL_MS);
+    return c.json(validated);
+  };
 }

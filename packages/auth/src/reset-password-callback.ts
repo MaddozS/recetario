@@ -1,14 +1,5 @@
-import type { SendEmailFn } from "./email.js";
-import type { PrismaClient } from "@recetario/db";
-
-type PrismaForReset = {
-  user: {
-    findUnique: (args: {
-      where: { id: string };
-      select: { firstName: boolean; name: boolean };
-    }) => Promise<{ firstName: string | null; name: string | null } | null>;
-  };
-};
+import type { SendEmailFn } from "./email";
+import { prisma } from "@recetario/db";
 
 const RESET_TOKEN_EXPIRY_MINUTES = 10;
 
@@ -16,12 +7,10 @@ const WEB_ORIGIN = process.env.WEB_ORIGIN ?? "http://localhost:4321";
 const API_URL = process.env.BETTER_AUTH_URL ?? "http://localhost:8787";
 
 export function createResetPasswordCallback(
-  prisma: PrismaForReset,
   sendEmail: SendEmailFn,
   createPasswordResetToken: (
     userId: string,
     expiryMinutes?: number,
-    db?: PrismaClient,
   ) => Promise<string>,
   getResetPasswordEmailHtml: (data: {
     resetLink: string;

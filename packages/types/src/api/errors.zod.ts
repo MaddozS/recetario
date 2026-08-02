@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { DOMAIN_ERROR_REASONS } from "./reasons.js";
-import type { ApiErrorParsed } from "./errors.js";
+import { DOMAIN_ERROR_REASONS } from "./reasons";
+import type { ApiErrorParsed } from "./errors";
 
 export const ApiErrorCodeSchema = z.enum([
   "UNAUTHENTICATED",

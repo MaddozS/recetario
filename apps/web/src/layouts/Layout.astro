@@ -3,8 +3,8 @@ import '@/styles/global.css'
 import { ClientRouter } from "astro:transitions";
 import { Icon } from 'astro-icon/components'
 import { hasFeature } from '@recetario/billing'
-import { getAccentCssVars } from '@recetario/ui/accent-colors'
-import type { AccentFamily } from '@recetario/ui/accent-colors'
+import { getAccentCssVars } from "../lib/accent-colors";
+import type { AccentFamily } from "../lib/accent-colors";
 import { apiFetch } from '@/lib/api-client'
 import type { UserPreferences } from '@recetario/types'
 import Header from '@/components/Header.astro'
@@ -215,7 +215,7 @@ const sidebarCollapsed = Astro.cookies.get("kitchcalc-sidebar-collapsed")?.value
 </style>
 
 <script>
-  import { getAccentCssVars } from "@recetario/ui/accent-colors";
+import { getAccentCssVars } from "../lib/accent-colors";
 
   function getEffectiveTheme(pref: string): string {
     if (pref === 'system') {

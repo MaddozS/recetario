@@ -1,11 +1,8 @@
-import "dotenv/config";
-import { PrismaClient } from "../generated/prisma/client.js";
+import { PrismaClient } from "../generated/client/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { readFileSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const connectionString = process.env.DATABASE_URL;
 if (!connectionString) {

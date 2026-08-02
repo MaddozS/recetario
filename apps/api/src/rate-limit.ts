@@ -1,6 +1,6 @@
 import type { MiddlewareHandler } from "hono";
-import { ApiError } from "./errors.js";
-import { increment, peek } from "./cache.js";
+import { ApiError } from "./errors";
+import { increment, peek } from "./cache";
 
 function isReadMethod(method: string): boolean {
   return method === "GET" || method === "HEAD" || method === "OPTIONS";

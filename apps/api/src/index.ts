@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import {
-  createAuth,
+  auth,
   rateLimitCheck,
   validateCsrf,
   validatePassword,
@@ -10,62 +10,65 @@ import {
   formatTime,
   hashPassword,
 } from "@recetario/auth/server";
-import { logAuditEvent, createPrismaClient } from "@recetario/db";
 import {
+  logAuditEvent,
+  updateAccountPassword,
+  updateUserName,
   stripe,
+  seedSubscriptionPlans,
+} from "@recetario/db";
+import {
   getPlanByStripePriceId,
   getStripeCustomerId,
   getUserSubscription,
   createOrUpdateSubscription,
   cancelSubscription,
   markSubscriptionPastDue,
-  seedSubscriptionPlans,
 } from "@recetario/billing/server";
 import { syncEnvBindings } from "@recetario/config/env";
 import { clientIp, setSecurityHeaders } from "@recetario/config/request";
 
-import { envelope } from "./envelope.js";
-import { errorHandler } from "./error-handler.js";
-import { hostAllowlist } from "./host-allowlist.js";
-import { rateLimit } from "./rate-limit.js";
-import { withFreshDb } from "./fresh-db.js";
-import { authSessionHandler } from "./auth-session.js";
-import { recipesListHandler } from "./recipes/list.js";
-import { recipesByIdsHandler } from "./recipes/by-ids.js";
-import { recipesDetailHandler } from "./recipes/detail.js";
-import { recipesCreateHandler } from "./recipes/create.js";
-import { recipesUpdateHandler } from "./recipes/update.js";
-import { recipesDeleteHandler } from "./recipes/delete.js";
-import { recipesDuplicateHandler } from "./recipes/duplicate.js";
+import { envelope } from "./envelope";
+import { errorHandler } from "./error-handler";
+import { hostAllowlist } from "./host-allowlist";
+import { rateLimit } from "./rate-limit";
+import { authSessionHandler } from "./auth-session";
+import { recipesListHandler } from "./recipes/list";
+import { recipesByIdsHandler } from "./recipes/by-ids";
+import { recipesDetailHandler } from "./recipes/detail";
+import { recipesCreateHandler } from "./recipes/create";
+import { recipesUpdateHandler } from "./recipes/update";
+import { recipesDeleteHandler } from "./recipes/delete";
+import { recipesDuplicateHandler } from "./recipes/duplicate";
 import {
   fixedCostsCreateHandler,
   fixedCostsUpdateHandler,
   fixedCostsDeleteHandler,
-} from "./recipes/fixed-costs.js";
-import { presentationsListHandler } from "./recipes/presentations.js";
+} from "./recipes/fixed-costs";
+import { presentationsListHandler } from "./recipes/presentations";
 import {
   presentationsCreateHandler,
   presentationsUpdateHandler,
   presentationsDeleteHandler,
-} from "./recipes/presentations.js";
-import { ingredientsListHandler } from "./ingredients/list.js";
-import { ingredientsCreateHandler } from "./ingredients/create.js";
-import { ingredientsUpdateHandler } from "./ingredients/update.js";
-import { ingredientsDeleteHandler } from "./ingredients/delete.js";
-import { ingredientsUsageHandler } from "./ingredients/usage.js";
-import { ingredientsUsageBulkHandler } from "./ingredients/usage-bulk.js";
-import { preferencesGetHandler } from "./preferences/get.js";
-import { preferencesUpdateHandler } from "./preferences/update.js";
-import { subscriptionHandler } from "./billing/subscription.js";
-import { plansHandler } from "./billing/plans.js";
-import { credentialStatusHandler } from "./auth/credential-status.js";
-import { auditLogHandler } from "./audit/log.js";
-import { usageCountsHandler } from "./usage-counts.js";
+} from "./recipes/presentations";
+import { ingredientsListHandler } from "./ingredients/list";
+import { ingredientsCreateHandler } from "./ingredients/create";
+import { ingredientsUpdateHandler } from "./ingredients/update";
+import { ingredientsDeleteHandler } from "./ingredients/delete";
+import { ingredientsUsageHandler } from "./ingredients/usage";
+import { ingredientsUsageBulkHandler } from "./ingredients/usage-bulk";
+import { preferencesGetHandler } from "./preferences/get";
+import { preferencesUpdateHandler } from "./preferences/update";
+import { subscriptionHandler } from "./billing/subscription";
+import { plansHandler } from "./billing/plans";
+import { credentialStatusHandler } from "./auth/credential-status";
+import { auditLogHandler } from "./audit/log";
+import { usageCountsHandler } from "./usage-counts";
 import {
   presentationsFixedCostsCreateHandler,
   presentationsFixedCostsUpdateHandler,
   presentationsFixedCostsDeleteHandler,
-} from "./presentations/fixed-costs.js";
+} from "./presentations/fixed-costs";
 
 const app = new Hono();
 
@@ -113,35 +116,32 @@ app.get("/health", (c) =>
 );
 
 app.post("/api/auth/forgot-password", async (c) => {
-  return withFreshDb(c, async (prisma, auth) => {
-    try {
-      const body = await c.req.json();
-      const email = body?.email as string | undefined;
+  try {
+    const body = await c.req.json();
+    const email = body?.email as string | undefined;
 
-      if (!email) {
-        return c.json({ error: "Email requerido", code: "INVALID_DATA" }, 400);
-      }
-
-      await auth.api.requestPasswordReset({
-        body: {
-          email,
-          redirectTo: `${new URL(c.req.url).origin}/reset-password`,
-        },
-      });
-    } catch (error) {
-      console.error("[AUTH] request-password-reset error:", error);
+    if (!email) {
+      return c.json({ error: "Email requerido", code: "INVALID_DATA" }, 400);
     }
 
-    return c.json({
-      success: true,
-      message:
-        "Si el email existe, recibirás un enlace para restablecer tu contraseña.",
+    await auth.api.requestPasswordReset({
+      body: {
+        email,
+        redirectTo: `${new URL(c.req.url).origin}/reset-password`,
+      },
     });
+  } catch (error) {
+    console.error("[AUTH] request-password-reset error:", error);
+  }
+
+  return c.json({
+    success: true,
+    message:
+      "Si el email existe, recibirás un enlace para restablecer tu contraseña.",
   });
 });
 
 app.get("/api/auth/reset-password", async (c) => {
-  return withFreshDb(c, async (prisma) => {
     const token = new URL(c.req.url).searchParams.get("token");
 
     if (!token) {
@@ -149,7 +149,7 @@ app.get("/api/auth/reset-password", async (c) => {
     }
 
     try {
-      const validation = await validatePasswordResetToken(token, prisma);
+      const validation = await validatePasswordResetToken(token);
 
       if (!validation.valid) {
         const errorMessages = {
@@ -181,10 +181,8 @@ app.get("/api/auth/reset-password", async (c) => {
       );
     }
   });
-});
 
 app.post("/api/auth/reset-password", async (c) => {
-  return withFreshDb(c, async (prisma, auth) => {
     try {
       const body = await c.req.json();
       const token = body?.token as string | undefined;
@@ -197,7 +195,7 @@ app.post("/api/auth/reset-password", async (c) => {
         );
       }
 
-      const validation = await validatePasswordResetToken(token, prisma);
+      const validation = await validatePasswordResetToken(token);
 
       if (!validation.valid) {
         const errorMessages = {
@@ -228,12 +226,13 @@ app.post("/api/auth/reset-password", async (c) => {
       }
 
       const hashedPassword = await hashPassword(password);
-      await prisma.account.updateMany({
-        where: { userId: validation.userId!, providerId: "credential" },
-        data: { password: hashedPassword },
-      });
+      await updateAccountPassword(
+        validation.userId!,
+        "credential",
+        hashedPassword,
+      );
 
-      await markTokenAsUsed(token, prisma);
+      await markTokenAsUsed(token);
 
       await logAuditEvent(
         {
@@ -242,7 +241,6 @@ app.post("/api/auth/reset-password", async (c) => {
           ipAddress: clientIp(c.req.raw),
           userAgent: c.req.header("user-agent") ?? null,
         },
-        prisma,
       );
 
       return c.json({
@@ -257,7 +255,6 @@ app.post("/api/auth/reset-password", async (c) => {
       );
     }
   });
-});
 
 app.get("/api/auth/session", authSessionHandler());
 
@@ -295,68 +292,49 @@ app.get("/api/billing/plans", plansHandler());
 app.get("/api/usage-counts", usageCountsHandler());
 
 app.all("/api/auth/*", async (c) => {
-  // ponytail: per-request prisma + auth to dodge the pg.Pool wedge
-  // documented in memory #63. The singleton `auth` was used by
-  // recipes/ingredients/etc. before they switched to withFreshDb;
-  // for the auth catch-all we open a fresh pool, use it, and
-  // disconnect() before workerd tears down the request context, so
-  // the pool never sits idle long enough to wedge. We also pass it
-  // to rateLimitCheck so the rate limit queries don't go through
-  // the wedged singleton pool.
-  const freshPrisma = createPrismaClient();
-  const freshAuth = createAuth(freshPrisma);
-  const path = new URL(c.req.url).pathname;
-  const ip = clientIp(c.req.raw);
+    const path = new URL(c.req.url).pathname;
+    const ip = clientIp(c.req.raw);
 
-  if (c.req.method === "POST") {
-    if (path.includes("/sign-in/email")) {
-      const { allowed } = await rateLimitCheck(`signin:${ip}`, 5, 60, freshPrisma);
-      if (!allowed) {
-        freshPrisma.$disconnect().catch(() => {});
-        return c.text(
-          "Too many sign-in attempts. Please try again later.",
-          429,
-        );
+    if (c.req.method === "POST") {
+      if (path.includes("/sign-in/email")) {
+        const { allowed } = await rateLimitCheck(`signin:${ip}`, 5, 60);
+        if (!allowed) {
+          return c.text(
+            "Too many sign-in attempts. Please try again later.",
+            429,
+          );
+        }
+      }
+
+      if (path.includes("/sign-up/email")) {
+        const { allowed } = await rateLimitCheck(`signup:${ip}`, 3, 3600);
+        if (!allowed) {
+          return c.text(
+            "Too many sign-up attempts. Please try again later.",
+            429,
+          );
+        }
+      }
+
+      if (path.includes("/sign-in/social")) {
+        const { allowed } = await rateLimitCheck(`oauth:${ip}`, 10, 900);
+        if (!allowed) {
+          return c.text("Too many OAuth requests. Please try again later.", 429);
+        }
+      }
+
+      if (path.includes("/forget-password")) {
+        const { allowed } = await rateLimitCheck(`forgot:${ip}`, 3, 3600);
+        if (!allowed) {
+          return c.text("Too many reset requests. Please try again later.", 429);
+        }
       }
     }
 
-    if (path.includes("/sign-up/email")) {
-      const { allowed } = await rateLimitCheck(`signup:${ip}`, 3, 3600, freshPrisma);
-      if (!allowed) {
-        freshPrisma.$disconnect().catch(() => {});
-        return c.text(
-          "Too many sign-up attempts. Please try again later.",
-          429,
-        );
-      }
-    }
-
-    if (path.includes("/sign-in/social")) {
-      const { allowed } = await rateLimitCheck(`oauth:${ip}`, 10, 900, freshPrisma);
-      if (!allowed) {
-        freshPrisma.$disconnect().catch(() => {});
-        return c.text("Too many OAuth requests. Please try again later.", 429);
-      }
-    }
-
-    if (path.includes("/forget-password")) {
-      const { allowed } = await rateLimitCheck(`forgot:${ip}`, 3, 3600, freshPrisma);
-      if (!allowed) {
-        freshPrisma.$disconnect().catch(() => {});
-        return c.text("Too many reset requests. Please try again later.", 429);
-      }
-    }
-  }
-
-  try {
-    return await freshAuth.handler(c.req.raw);
-  } finally {
-    freshPrisma.$disconnect().catch(() => {});
-  }
-});
+    return await auth.handler(c.req.raw);
+  });
 
 app.post("/api/account/update-name", async (c) => {
-  return withFreshDb(c, async (prisma, auth) => {
     const session = await auth.api.getSession({ headers: c.req.raw.headers });
     if (!session?.user) return c.text("Unauthorized", 401);
 
@@ -367,20 +345,14 @@ app.post("/api/account/update-name", async (c) => {
     if (!firstName || !lastName) return c.text("Missing fields", 400);
 
     try {
-      const fullName = `${firstName} ${lastName}`;
-      await prisma.user.update({
-        where: { id: session.user.id },
-        data: { firstName, lastName, name: fullName },
-      });
+      await updateUserName(session.user.id, { firstName, lastName });
       return c.body(null, 200);
     } catch {
       return c.text("Error updating name", 500);
     }
   });
-});
 
 app.post("/api/account/change-email", async (c) => {
-  return withFreshDb(c, async (prisma, auth) => {
     const session = await auth.api.getSession({ headers: c.req.raw.headers });
     if (!session?.user) return c.text("Unauthorized", 401);
 
@@ -395,15 +367,12 @@ app.post("/api/account/change-email", async (c) => {
         headers: c.req.raw.headers,
         body: { newEmail },
       });
-      await logAuditEvent(
-        {
-          userId: session.user.id,
-          action: "email_change",
-          ipAddress: clientIp(c.req.raw),
-          userAgent: c.req.header("user-agent") ?? null,
-        },
-        prisma,
-      );
+      await logAuditEvent({
+        userId: session.user.id,
+        action: "email_change",
+        ipAddress: clientIp(c.req.raw),
+        userAgent: c.req.header("user-agent") ?? null,
+      });
       return c.body(null, 200);
     } catch (error) {
       return c.text(
@@ -412,10 +381,8 @@ app.post("/api/account/change-email", async (c) => {
       );
     }
   });
-});
 
 app.post("/api/account/change-password", async (c) => {
-  return withFreshDb(c, async (prisma, auth) => {
     const session = await auth.api.getSession({ headers: c.req.raw.headers });
     if (!session?.user) return c.text("Unauthorized", 401);
 
@@ -437,15 +404,12 @@ app.post("/api/account/change-password", async (c) => {
           revokeOtherSessions: false,
         },
       });
-      await logAuditEvent(
-        {
-          userId: session.user.id,
-          action: "password_change",
-          ipAddress: clientIp(c.req.raw),
-          userAgent: c.req.header("user-agent") ?? null,
-        },
-        prisma,
-      );
+      await logAuditEvent({
+        userId: session.user.id,
+        action: "password_change",
+        ipAddress: clientIp(c.req.raw),
+        userAgent: c.req.header("user-agent") ?? null,
+      });
       return c.body(null, 200);
     } catch (error) {
       return c.text(
@@ -454,10 +418,8 @@ app.post("/api/account/change-password", async (c) => {
       );
     }
   });
-});
 
 app.post("/api/stripe/checkout", async (c) => {
-  return withFreshDb(c, async (prisma, auth) => {
     const session = await auth.api.getSession({ headers: c.req.raw.headers });
     if (!session?.user) {
       return c.json({ error: "Authentication required" }, 401);
@@ -477,13 +439,13 @@ app.post("/api/stripe/checkout", async (c) => {
     const { priceId, successUrl, cancelUrl } = body;
     if (!priceId) return c.json({ error: "Missing priceId" }, 400);
 
-    const plan = await getPlanByStripePriceId(priceId, prisma);
+    const plan = await getPlanByStripePriceId(priceId);
     if (!plan) return c.json({ error: "Invalid price ID" }, 400);
 
     const appOrigin = new URL(c.req.url).origin;
     const userId = session.user.id;
     const userEmail = session.user.email;
-    const existingCustomerId = await getStripeCustomerId(userId, prisma);
+    const existingCustomerId = await getStripeCustomerId(userId);
     const customerId =
       existingCustomerId ??
       (
@@ -518,10 +480,8 @@ app.post("/api/stripe/checkout", async (c) => {
 
     return c.json({ url: checkoutSession.url });
   });
-});
 
 app.post("/api/stripe/portal", async (c) => {
-  return withFreshDb(c, async (prisma, auth) => {
     const session = await auth.api.getSession({ headers: c.req.raw.headers });
     if (!session?.user) {
       return c.json({ error: "Authentication required" }, 401);
@@ -531,7 +491,7 @@ app.post("/api/stripe/portal", async (c) => {
       return c.json({ error: "CSRF validation failed" }, 403);
     }
 
-    const subscription = await getUserSubscription(session.user.id, prisma);
+    const subscription = await getUserSubscription(session.user.id);
     if (!subscription?.stripeCustomerId) {
       return c.json({ error: "No subscription found" }, 404);
     }
@@ -543,11 +503,9 @@ app.post("/api/stripe/portal", async (c) => {
 
     return c.json({ url: portalSession.url });
   });
-});
 
 app.post("/api/stripe/webhook", async (c) => {
-  return withFreshDb(c, async (prisma) => {
-    await seedSubscriptionPlans(prisma);
+    await seedSubscriptionPlans();
 
     const payload = await c.req.text();
     const signature = c.req.header("stripe-signature");
@@ -587,28 +545,25 @@ app.post("/api/stripe/webhook", async (c) => {
           break;
         }
 
-        await createOrUpdateSubscription(
-          {
-            stripeSubscriptionId: subscriptionId,
-            stripeCustomerId: customerId,
-            userId: metadata?.userId ?? null,
-            planId: metadata?.planId ?? null,
-            status: (sub as Record<string, unknown>).status as string,
-            currentPeriodStart: new Date(
-              getPeriod(sub, "current_period_start") * 1000,
-            ),
-            currentPeriodEnd: new Date(
-              getPeriod(sub, "current_period_end") * 1000,
-            ),
-            cancelAtPeriodEnd: Boolean(
-              (sub as Record<string, unknown>).cancel_at_period_end,
-            ),
-            trialEnd: getPeriod(sub, "trial_end")
-              ? new Date(getPeriod(sub, "trial_end") * 1000)
-              : null,
-          },
-          prisma,
-        );
+        await createOrUpdateSubscription({
+          stripeSubscriptionId: subscriptionId,
+          stripeCustomerId: customerId,
+          userId: metadata?.userId ?? null,
+          planId: metadata?.planId ?? null,
+          status: (sub as Record<string, unknown>).status as string,
+          currentPeriodStart: new Date(
+            getPeriod(sub, "current_period_start") * 1000,
+          ),
+          currentPeriodEnd: new Date(
+            getPeriod(sub, "current_period_end") * 1000,
+          ),
+          cancelAtPeriodEnd: Boolean(
+            (sub as Record<string, unknown>).cancel_at_period_end,
+          ),
+          trialEnd: getPeriod(sub, "trial_end")
+            ? new Date(getPeriod(sub, "trial_end") * 1000)
+            : null,
+        });
         break;
       }
 
@@ -616,31 +571,28 @@ app.post("/api/stripe/webhook", async (c) => {
         const customerId =
           typeof obj.customer === "string" ? obj.customer : null;
 
-        await createOrUpdateSubscription(
-          {
-            stripeSubscriptionId: obj.id as string,
-            stripeCustomerId: customerId ?? "",
-            userId: null,
-            planId: null,
-            status: obj.status as string,
-            currentPeriodStart: new Date(
-              getPeriod(obj, "current_period_start") * 1000,
-            ),
-            currentPeriodEnd: new Date(
-              getPeriod(obj, "current_period_end") * 1000,
-            ),
-            cancelAtPeriodEnd: Boolean(obj.cancel_at_period_end),
-            trialEnd: getPeriod(obj, "trial_end")
-              ? new Date(getPeriod(obj, "trial_end") * 1000)
-              : null,
-          },
-          prisma,
-        );
+        await createOrUpdateSubscription({
+          stripeSubscriptionId: obj.id as string,
+          stripeCustomerId: customerId ?? "",
+          userId: null,
+          planId: null,
+          status: obj.status as string,
+          currentPeriodStart: new Date(
+            getPeriod(obj, "current_period_start") * 1000,
+          ),
+          currentPeriodEnd: new Date(
+            getPeriod(obj, "current_period_end") * 1000,
+          ),
+          cancelAtPeriodEnd: Boolean(obj.cancel_at_period_end),
+          trialEnd: getPeriod(obj, "trial_end")
+            ? new Date(getPeriod(obj, "trial_end") * 1000)
+            : null,
+        });
         break;
       }
 
       case "customer.subscription.deleted": {
-        await cancelSubscription(obj.id as string, prisma);
+        await cancelSubscription(obj.id as string);
         break;
       }
 
@@ -649,13 +601,12 @@ app.post("/api/stripe/webhook", async (c) => {
           typeof obj.subscription === "string" ? obj.subscription : null;
 
         if (subscriptionId)
-          await markSubscriptionPastDue(subscriptionId, prisma);
+          await markSubscriptionPastDue(subscriptionId);
         break;
       }
     }
 
     return c.text("OK");
   });
-});
 
 export default app;

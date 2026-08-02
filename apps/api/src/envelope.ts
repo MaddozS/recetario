@@ -1,6 +1,6 @@
 import type { MiddlewareHandler } from "hono";
 import type { ApiErrorResponse } from "@recetario/types";
-import { statusToCode } from "./errors.js";
+import { statusToCode } from "./errors";
 
 const STATUS_MESSAGES: Record<number, string> = {
   400: "Bad request",

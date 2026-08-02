@@ -1,7 +1,9 @@
 ---
 import { Icon } from "astro-icon/components";
 import Layout from "@/layouts/Layout.astro";
-import { Button, Card } from "@recetario/ui";
+import Button from "../components/ui/Button.astro";
+import Card from "../components/ui/Card.astro";
+
 import { canCreateIngredient } from "@recetario/billing";
 import { parseNumberInput } from "@/lib/form-utils";
 import { UNIT_OPTIONS, DEFAULT_UNIT } from "@/lib/constants";
@@ -843,8 +845,8 @@ void redirectWithFeedback;
       return Number(normalized);
     };
 
-    import { bindDialogBackdrop } from "@recetario/ui/dialog";
-    import { showLoadingOverlay } from "@recetario/ui/loading-overlay";
+    import { bindDialogBackdrop } from "../lib/dialog";
+    import { showLoadingOverlay } from "../lib/loading-overlay";
 
     const formatCurrency = (value: number) => `$${value.toFixed(2)}`;
 

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { createVerificationEmailCallback } from "./verification-email-callback.js";
+import { createVerificationEmailCallback } from "./verification-email-callback";
 
 describe("createVerificationEmailCallback", () => {
   it("transforms API verify-email URL to web app URL", async () => {
