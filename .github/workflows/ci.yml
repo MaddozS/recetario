@@ -10,8 +10,6 @@ concurrency:
 
 jobs:
   check:
-    environment:
-      name: ${{ github.ref_name == 'master' && 'production' || 'staging' }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
