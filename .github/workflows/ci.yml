@@ -10,47 +10,28 @@ concurrency:
 
 jobs:
   check:
-    runs-on: ubuntu-latest
-
     environment:
-      name: ${{ github.base_ref == 'master' && 'production' || 'staging' }}
-
-    env:
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
-
+      name: ${{ github.ref_name == 'master' && 'production' || 'staging' }}
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        task:
-          - lint
-          - type-check
-          - test
-          - build
-
+        task: [lint, type-check, test, build]
     steps:
       - uses: actions/checkout@v4
-
       - uses: pnpm/action-setup@v4
         with:
           version: 11.1.2
-
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
           cache: pnpm
-
       - uses: actions/cache@v4
         with:
           path: .turbo/cache
           key: turbo-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
           restore-keys: |
             turbo-${{ runner.os }}-
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Generate Prisma Client
-        run: pnpm --filter @recetario/db generate
-
-      - name: Run ${{ matrix.task }}
-        run: pnpm ${{ matrix.task }}
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @recetario/db generate
+      - run: pnpm ${{ matrix.task }}
