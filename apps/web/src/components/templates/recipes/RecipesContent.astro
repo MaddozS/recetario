@@ -1,5 +1,5 @@
 ---
-import Icon from "@/components/ui/Icon.astro";
+import Icon from "@/components/atoms/Icon.astro";
 import { apiFetch } from "@/lib/api-client";
 import { z } from "zod";
 import {
@@ -7,17 +7,17 @@ import {
   ingredientUsageMapSchema,
 } from "@recetario/types";
 import { hasFeature, timeAgo } from "@recetario/stripe";
-import type { SubscriptionInfo } from "@recetario/stripe";
-import EmptyState from "@/components/EmptyState.astro";
-import RecipeMiniCard from "@/components/RecipeMiniCard.astro";
-import RecipeGridCard from "@/components/RecipeGridCard.astro";
-import RecipeStats from "@/components/RecipeStats.astro";
-import Button from "@/components/ui/Button.astro";
-import Card from "@/components/ui/Card.astro";
-import FeedbackAlert from "@/components/FeedbackAlert.astro";
+import type { UserSubscriptionInfo } from "@recetario/stripe";
+import EmptyState from "@/components/molecules/shared/EmptyState.astro";
+import RecipeMiniCard from "@/components/molecules/recipes/RecipeMiniCard.astro";
+import RecipeGridCard from "@/components/molecules/recipes/RecipeGridCard.astro";
+import RecipeStats from "@/components/molecules/recipes/RecipeStats.astro";
+import Button from "@/components/atoms/Button.astro";
+import Card from "@/components/molecules/shared/Card.astro";
+import FeedbackAlert from "@/components/molecules/shared/FeedbackAlert.astro";
 
 interface Props {
-  subscription: SubscriptionInfo;
+  subscription: UserSubscriptionInfo;
   selectedCategory?: string | null;
   feedbackType?: string | null;
   feedbackMessage?: string | null;
@@ -68,7 +68,7 @@ const recentRecipes = recipes
   .map((r) => ({ id: r.id, name: r.name, category: r.category, timeAgo: timeAgo(r.updatedAt!) }));
 ---
 
-<div>
+<div class="animate-fade-in">
   {
     feedbackType === "error" && feedbackMessage && (
       <div class="relative mb-6">
@@ -310,50 +310,49 @@ const recentRecipes = recipes
       uncategorized: ["bg-muted", "text-muted-foreground", "hover:bg-border"],
     };
 
-    function escapeHtml(str: string) {
-      const d = document.createElement("div");
-      d.textContent = str;
-      return d.innerHTML;
-    }
-
-    function createCard(r: typeof recipesData[0]) {
-      const a = document.createElement("a");
-      a.href = `/recipes/${r.id}`;
-      a.className = "recipe-grid-card block rounded-2xl border border-border bg-card p-5 shadow-sm hover:border-accent-300 hover:bg-accent-50/30 hover:shadow-md active:scale-[0.98] transition-all";
-      a.style.setProperty("transition", "transform 160ms var(--ease-out), box-shadow 160ms var(--ease-out), border-color 160ms var(--ease-out), background-color 160ms var(--ease-out)");
-      a.innerHTML = `<div class="flex items-start gap-3"><div class="min-w-0"><h3 class="truncate font-bold text-secondary-foreground">${escapeHtml(r.name)}</h3><div class="mt-2 flex flex-wrap items-center gap-2">${r.category ? `<span class="bg-accent-50 text-accent-600 border-accent-200 inline-flex items-center rounded-full border px-2.5 py-0.5 text-[11px] font-semibold">${escapeHtml(r.category)}</span>` : ""}<span class="text-xs text-muted-foreground">${r.ingredientCount} ${r.ingredientCount === 1 ? "ingrediente" : "ingredientes"}</span></div></div></div>`;
-      return a;
-    }
-
     function updateGrid() {
-      let filtered = recipesData;
+      const cardEls = gridWrapper!.querySelectorAll<HTMLElement>("[data-card-id]");
+      let visibleCount = 0;
 
-      if (activeCategory !== null) {
-        const catKey = activeCategory || "";
-        filtered = filtered.filter((r) => (r.category || "") === catKey);
-      }
-      if (activeSearchTerm) {
-        filtered = filtered.filter((r) => {
-          const name = (r.name || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-          return name.includes(activeSearchTerm);
-        });
-      }
+      cardEls.forEach((cardEl) => {
+        const id = Number(cardEl.dataset.cardId);
+        const recipe = recipesData.find((r) => r.id === id);
+        if (!recipe) return;
 
-      if (filtered.length === 0) {
-        gridWrapper!.innerHTML = `<div class="rounded-2xl border border-border bg-card p-8 text-center shadow-sm"><p class="text-muted-foreground text-sm">No se encontraron recetas</p></div>`;
-        return;
-      }
+        let matchesCategory = true;
+        if (activeCategory !== null) {
+          const catKey = activeCategory || "";
+          matchesCategory = (recipe.category || "") === catKey;
+        }
 
-      const grid = document.createElement("div");
-      grid.id = "filtered-grid";
-      grid.className = "grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3";
-      filtered.forEach((r, i) => {
-        const card = createCard(r);
-        card.style.setProperty("--stagger-index", String(i));
-        grid.appendChild(card);
+        let matchesSearch = true;
+        if (activeSearchTerm) {
+          const name = (recipe.name || "")
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "");
+          matchesSearch = name.includes(activeSearchTerm);
+        }
+
+        const isVisible = matchesCategory && matchesSearch;
+        cardEl.style.display = isVisible ? "" : "none";
+        if (isVisible) visibleCount++;
       });
-      gridWrapper!.innerHTML = "";
-      gridWrapper!.appendChild(grid);
+
+      let emptyMsg = gridWrapper!.querySelector<HTMLElement>(".snc-empty-grid-msg");
+      if (visibleCount === 0) {
+        if (!emptyMsg) {
+          emptyMsg = document.createElement("div");
+          emptyMsg.className =
+            "snc-empty-grid-msg rounded-2xl border border-border bg-card p-8 text-center shadow-sm mt-4";
+          emptyMsg.innerHTML =
+            '<p class="text-muted-foreground text-sm">No se encontraron recetas</p>';
+          gridWrapper!.appendChild(emptyMsg);
+        }
+        emptyMsg.style.display = "";
+      } else if (emptyMsg) {
+        emptyMsg.style.display = "none";
+      }
     }
 
     function updatePillStyles(index: string | null) {

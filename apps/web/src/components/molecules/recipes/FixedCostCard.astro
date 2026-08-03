@@ -1,6 +1,6 @@
 ---
-import Icon from "@/components/ui/Icon.astro";
-import Button from "./ui/Button.astro";
+import Icon from "@/components/atoms/Icon.astro";
+import Button from "@/components/atoms/Button.astro";
 
 interface Props {
   id: number;
@@ -70,13 +70,15 @@ const ownerId = recipeId || presentationId;
     <input type="hidden" name="fixedCostId" value={id} />
     <input type="hidden" name="ownerType" value={ownerType} />
     <input type="hidden" name="ownerId" value={ownerId} />
+    {presentationId && <input type="hidden" name="presentationId" value={presentationId} />}
+    {recipeId && <input type="hidden" name="recipeId" value={recipeId} />}
     <input type="hidden" name="_csrf" value={Astro.locals.csrfToken || ""} />
 
     <!-- Display Mode -->
     <div class="display-content flex flex-wrap items-center gap-3">
       <div class="flex min-w-0 flex-1 flex-wrap items-center gap-2">
         <span
-          class="fixed-cost-name text-foreground font-[family-name:var(--font-display)] text-base font-bold"
+          class="fixed-cost-name text-foreground font-display text-base font-bold"
           >{name}</span
         >
 
@@ -303,7 +305,9 @@ const ownerId = recipeId || presentationId;
 </fixed-cost-card>
 
 <script>
-  import { bindDialogBackdrop } from "../lib/dialog";
+  import { bindDialogBackdrop } from "@/lib/dialog";
+  import { startMutationPending } from "@/lib/mutation-pending";
+  import { parseNumberInput } from "@/lib/form-utils";
 
   class FixedCostCard extends HTMLElement {
     // Display elements
@@ -456,11 +460,32 @@ const ownerId = recipeId || presentationId;
           return;
         }
 
-        const parsedValue = parseFloat(this.inputValue?.value || "");
+        const parsedValue = parseNumberInput(this.inputValue?.value ?? "");
         if (!Number.isFinite(parsedValue) || parsedValue < 0) {
           this.showError("El valor debe ser un número mayor o igual a 0.");
           return;
         }
+
+        if (this.selectBase?.value === "PER_HOUR") {
+          const parsedHours = parseNumberInput(this.inputHours?.value ?? "");
+          if (!Number.isFinite(parsedHours) || parsedHours <= 0) {
+            this.showError("Las horas deben ser un número mayor a 0.");
+            return;
+          }
+        }
+
+        const submitBtn = this.form.querySelector<HTMLButtonElement>(
+          'button[type="submit"]',
+        );
+        const actionLabel = this.isCreateMode
+          ? "Agregando costo fijo…"
+          : "Guardando costo fijo…";
+        const btnText = this.isCreateMode ? "Agregando…" : "Guardando…";
+        const stopPending = startMutationPending(submitBtn, {
+          overlay: true,
+          message: actionLabel,
+          buttonText: btnText,
+        });
 
         try {
           const formData = new FormData(this.form);
@@ -491,22 +516,10 @@ const ownerId = recipeId || presentationId;
             throw new Error("La respuesta del servidor no fue válida.");
           }
 
-          if (this.isCreateMode) {
-            // Replace with server-rendered display card
-            if (payload.fixedCostCardHtml) {
-              this.outerHTML = payload.fixedCostCardHtml;
-            }
-            window.location.href =
-              window.location.pathname + "?_fc=" + Date.now();
-            return;
-          }
-
-          this.applyFixedCost(payload.fixedCost);
-          this.toggleEdit(true);
-          window.location.href =
-            window.location.pathname + "?_fc=" + Date.now();
+          this.reloadTab();
         } catch (error) {
           console.error(error);
+          stopPending();
           const message =
             error instanceof Error && error.message
               ? error.message
@@ -521,6 +534,49 @@ const ownerId = recipeId || presentationId;
         document.removeEventListener("keydown", this.escHandler);
         this.escHandler = null;
       }
+    }
+
+    setSubmitLoading(loading: boolean) {
+      const submitBtn = this.form?.querySelector<HTMLButtonElement>(
+        'button[type="submit"]',
+      );
+      if (!submitBtn) return;
+
+      if (loading) {
+        submitBtn.disabled = true;
+        submitBtn.setAttribute("aria-busy", "true");
+        submitBtn.classList.add("opacity-75", "cursor-not-allowed");
+
+        if (!submitBtn.dataset.originalHtml) {
+          submitBtn.dataset.originalHtml = submitBtn.innerHTML;
+        }
+
+        submitBtn.innerHTML = `
+          <svg class="h-4 w-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <span>Guardando...</span>
+        `;
+      } else {
+        submitBtn.disabled = false;
+        submitBtn.removeAttribute("aria-busy");
+        submitBtn.classList.remove("opacity-75", "cursor-not-allowed");
+        if (submitBtn.dataset.originalHtml) {
+          submitBtn.innerHTML = submitBtn.dataset.originalHtml;
+        }
+      }
+    }
+
+    reloadTab() {
+      const ownerType = this.dataset.ownerType;
+      const targetTab =
+        ownerType === "presentation" ? "#presentaciones" : "#costos-fijos";
+      const url = new URL(window.location.href);
+      url.searchParams.delete("_fc");
+      url.hash = targetTab;
+      history.replaceState(null, "", url.toString());
+      window.location.reload();
     }
 
     toggleEdit(save = false) {
@@ -692,6 +748,12 @@ const ownerId = recipeId || presentationId;
 
     closeDeleteDialog() {
       if (!(this.deleteDialog instanceof HTMLDialogElement)) return;
+      if (
+        this.deleteDialog.dataset.submitting === "1" ||
+        this.deleteDialog.getAttribute("aria-busy") === "true"
+      ) {
+        return;
+      }
       if (this.deleteDialog.open) {
         this.deleteDialog.close();
       }
@@ -700,9 +762,19 @@ const ownerId = recipeId || presentationId;
     async deleteFixedCost() {
       if (!this.form) return;
 
-      if (this.btnDeleteConfirm) {
-        this.btnDeleteConfirm.disabled = true;
-        this.btnDeleteConfirm.classList.add("opacity-75", "cursor-not-allowed");
+      const stopPending = startMutationPending(this.btnDeleteConfirm, {
+        overlay: true,
+        message: "Eliminando costo fijo…",
+        buttonText: "Eliminando…",
+      });
+
+      if (this.deleteDialog) {
+        this.deleteDialog.dataset.submitting = "1";
+        this.deleteDialog.setAttribute("aria-busy", "true");
+      }
+
+      if (this.btnDeleteCancel) {
+        this.btnDeleteCancel.disabled = true;
       }
 
       try {
@@ -738,23 +810,28 @@ const ownerId = recipeId || presentationId;
           throw new Error("La respuesta del servidor no fue válida.");
         }
 
+        if (this.deleteDialog) {
+          delete this.deleteDialog.dataset.submitting;
+          this.deleteDialog.removeAttribute("aria-busy");
+        }
         this.closeDeleteDialog();
         this.remove();
-        window.location.href = window.location.pathname + "?_fc=" + Date.now();
+        this.reloadTab();
       } catch (error) {
         console.error(error);
+        stopPending();
         const message =
           error instanceof Error && error.message
             ? error.message
             : "Hubo un error al eliminar el costo fijo.";
         this.showError(message);
       } finally {
-        if (this.btnDeleteConfirm) {
-          this.btnDeleteConfirm.disabled = false;
-          this.btnDeleteConfirm.classList.remove(
-            "opacity-75",
-            "cursor-not-allowed",
-          );
+        if (this.deleteDialog) {
+          delete this.deleteDialog.dataset.submitting;
+          this.deleteDialog.removeAttribute("aria-busy");
+        }
+        if (this.btnDeleteCancel) {
+          this.btnDeleteCancel.disabled = false;
         }
       }
     }

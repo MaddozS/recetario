@@ -1,7 +1,7 @@
 ---
 import type { ConsolidatedIngredient } from "@/lib/production-types";
 import { formatCurrency } from "@recetario/stripe";
-import Card from "./ui/Card.astro";
+import Card from "@/components/molecules/shared/Card.astro";
 
 
 interface Props {
@@ -26,7 +26,7 @@ const smartQuantity = (value: number, unit: string): string => {
 };
 ---
 
-<Card class="production-sheet ingredients-table overflow-hidden !p-0">
+<Card class="production-sheet ingredients-table overflow-hidden p-0!">
   <div class="border-border border-b px-6 py-4">
     <h2 class="text-foreground text-lg font-bold">Ingredientes consolidados</h2>
     <p class="text-muted-foreground mt-0.5 text-sm">
@@ -58,7 +58,7 @@ const smartQuantity = (value: number, unit: string): string => {
               data-unitCost={ing.unitCost}
               data-totalCost={ing.totalCost}
             >
-              <td class="px-6 py-4 break-words">
+              <td class="px-6 py-4 wrap-break-word">
                 <div>
                   <p class="text-foreground font-semibold">{ing.name}</p>
                   {ing.brand && (
@@ -81,7 +81,7 @@ const smartQuantity = (value: number, unit: string): string => {
               <td class="text-foreground px-6 py-4 font-mono font-semibold whitespace-nowrap tabular-nums">
                 {formatCurrency(ing.totalCost)}
               </td>
-              <td class="px-6 py-4 break-words">
+              <td class="px-6 py-4 wrap-break-word">
                 <div class="flex flex-wrap gap-1.5">
                   {ing.sourceRecipes.map((src) => (
                     <span class="bg-muted text-secondary-foreground inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium">

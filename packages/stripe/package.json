@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "@recetario/db": "workspace:^",
-    "typescript": "7.0.2",
+    "typescript": "6.0.2",
     "vitest": "^3.1.0"
   }
 }

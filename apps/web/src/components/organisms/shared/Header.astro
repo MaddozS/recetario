@@ -1,6 +1,6 @@
 ---
-import Icon from "@/components/ui/Icon.astro";
-import Button from "./ui/Button.astro";
+import Icon from "@/components/atoms/Icon.astro";
+import Button from "@/components/atoms/Button.astro";
 
 
 export type BreadcrumbItem = { label: string; href?: string };
@@ -141,7 +141,7 @@ const parentHref = parentItem?.href ?? "";
                   {item.label}
                 </a>
               ) : (
-                <span class="text-foreground max-w-[200px] truncate font-semibold">
+                <span class="text-foreground max-w-50 truncate font-semibold">
                   {item.label}
                 </span>
               )}
@@ -171,7 +171,7 @@ const parentHref = parentItem?.href ?? "";
 
 <script>
   import { signOut } from "@recetario/auth/client";
-  import { showLoadingOverlay } from "../lib/loading-overlay";
+  import { showLoadingOverlay } from "@/lib/loading-overlay";
 
   function setupSignOut() {
     const button = document.getElementById("sign-out-button");

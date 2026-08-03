@@ -1,7 +1,7 @@
 ---
-import Button from "./ui/Button.astro";
-import SectionHeading from "./ui/SectionHeading.astro";
-import FixedCostCard from "./FixedCostCard.astro";
+import Button from "@/components/atoms/Button.astro";
+import SectionHeading from "@/components/atoms/SectionHeading.astro";
+import FixedCostCard from "@/components/molecules/recipes/FixedCostCard.astro";
 
 interface FixedCostLine {
   id: number;
@@ -81,10 +81,12 @@ const { recipeFixedCosts, recipeId } = Astro.props;
           document.querySelector<HTMLInputElement>('input[name="_csrf"]')
             ?.value || "";
 
-        const cardHtml = `<fixed-cost-card class="bg-card border-border flex flex-col rounded-2xl border p-5 shadow-sm transition-all" data-mode="create">
+        const cardHtml = `<fixed-cost-card class="bg-card border-border flex flex-col rounded-2xl border p-5 shadow-sm transition-all" data-mode="create" data-owner-type="recipe">
 <form method="post" class="flex flex-col">
 <input type="hidden" name="action" value="create_recipe_fixed_cost" />
 <input type="hidden" name="recipeId" value="${recipeId}" />
+<input type="hidden" name="ownerId" value="${recipeId}" />
+<input type="hidden" name="ownerType" value="recipe" />
 <input type="hidden" name="_csrf" value="${csrfToken}" />
 <div class="display-content hidden flex flex-wrap items-center gap-3"><div class="flex min-w-0 flex-1 flex-wrap items-center gap-2"></div></div>
 <div class="edit-content space-y-4">

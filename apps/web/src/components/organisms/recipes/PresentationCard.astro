@@ -1,6 +1,6 @@
 ---
-import Icon from "@/components/ui/Icon.astro";
-import Button from "./ui/Button.astro";
+import Icon from "@/components/atoms/Icon.astro";
+import Button from "@/components/atoms/Button.astro";
 
 interface PresentationFixedCostLine {
   id: number;
@@ -14,7 +14,7 @@ interface Props {
   id: number;
   name: string;
   unitsPerBatch: number;
-  salePrice?: number;
+  salePrice: number | null;
   multiplier: number;
   costoProduccionRealBatch: number;
   precioVentaSugeridoBatch: number;
@@ -83,7 +83,7 @@ const fixedCostsJson = JSON.stringify(presentationFixedCosts);
       <input
         name="presentationName"
         type="text"
-        class="presentation-name focus:ring-accent-500/20 text-foreground -ml-1 w-full min-w-0 rounded-lg border-none bg-transparent p-1 font-[family-name:var(--font-display)] text-lg font-bold focus:ring-2"
+        class="presentation-name focus:ring-accent-500/20 text-foreground -ml-1 w-full min-w-0 rounded-lg border-none bg-transparent p-1 font-display text-lg font-bold focus:ring-2"
         value={name}
         required
         readonly
@@ -286,7 +286,8 @@ const fixedCostsJson = JSON.stringify(presentationFixedCosts);
 </presentation-card>
 
 <script>
-  import { bindDialogBackdrop } from "../lib/dialog";
+  import { bindDialogBackdrop } from "@/lib/dialog";
+  import { startMutationPending } from "@/lib/mutation-pending";
 
   type PresentationFixedCostLine = {
     id: number;
@@ -556,6 +557,12 @@ const fixedCostsJson = JSON.stringify(presentationFixedCosts);
 
     closeDeleteDialog() {
       if (!(this.deleteDialog instanceof HTMLDialogElement)) return;
+      if (
+        this.deleteDialog.dataset.submitting === "1" ||
+        this.deleteDialog.getAttribute("aria-busy") === "true"
+      ) {
+        return;
+      }
 
       if (this.deleteDialog.open) {
         this.deleteDialog.close();
@@ -565,14 +572,24 @@ const fixedCostsJson = JSON.stringify(presentationFixedCosts);
     async deletePresentation() {
       if (!this.form) return;
 
+      const stopPending = startMutationPending(this.btnDeleteConfirm, {
+        overlay: true,
+        message: "Eliminando presentación…",
+        buttonText: "Eliminando…",
+      });
+
+      if (this.deleteDialog) {
+        this.deleteDialog.dataset.submitting = "1";
+        this.deleteDialog.setAttribute("aria-busy", "true");
+      }
+
       if (this.btnDelete) {
         this.btnDelete.disabled = true;
         this.btnDelete.classList.add("opacity-75", "cursor-not-allowed");
       }
 
-      if (this.btnDeleteConfirm) {
-        this.btnDeleteConfirm.disabled = true;
-        this.btnDeleteConfirm.classList.add("opacity-75", "cursor-not-allowed");
+      if (this.btnDeleteCancel) {
+        this.btnDeleteCancel.disabled = true;
       }
 
       try {
@@ -610,27 +627,33 @@ const fixedCostsJson = JSON.stringify(presentationFixedCosts);
           throw new Error("La respuesta del servidor no fue válida.");
         }
 
+        if (this.deleteDialog) {
+          delete this.deleteDialog.dataset.submitting;
+          this.deleteDialog.removeAttribute("aria-busy");
+        }
         this.closeDeleteDialog();
         this.remove();
       } catch (error) {
         console.error(error);
+        stopPending();
         const message =
           error instanceof Error && error.message
             ? error.message
             : "Hubo un error al eliminar la presentación.";
         this.showError(message);
       } finally {
+        if (this.deleteDialog) {
+          delete this.deleteDialog.dataset.submitting;
+          this.deleteDialog.removeAttribute("aria-busy");
+        }
+
         if (this.btnDelete) {
           this.btnDelete.disabled = false;
           this.btnDelete.classList.remove("opacity-75", "cursor-not-allowed");
         }
 
-        if (this.btnDeleteConfirm) {
-          this.btnDeleteConfirm.disabled = false;
-          this.btnDeleteConfirm.classList.remove(
-            "opacity-75",
-            "cursor-not-allowed",
-          );
+        if (this.btnDeleteCancel) {
+          this.btnDeleteCancel.disabled = false;
         }
       }
     }

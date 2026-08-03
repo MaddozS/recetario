@@ -19,14 +19,14 @@ export function isMutationPending(): boolean {
  */
 export function startMutationPending(
   submitter?: HTMLButtonElement | HTMLInputElement | null,
-  options?: { overlay?: boolean; message?: string },
+  options?: { overlay?: boolean; message?: string; buttonText?: string },
 ): () => void {
   if (mutationPending) {
     return () => {}; // double-submit guard
   }
   mutationPending = true;
 
-  const { overlay = false, message } = options ?? {};
+  const { overlay = false, message, buttonText } = options ?? {};
 
   let removeOverlay: (() => void) | null = null;
 
@@ -65,14 +65,16 @@ export function startMutationPending(
   if (submitter) {
     submitter.disabled = true;
     submitter.setAttribute("aria-busy", "true");
-    // Store original text for restoration
+    // Store original text/html for restoration
     if (submitter instanceof HTMLButtonElement && !submitter.dataset.origLabel) {
-      submitter.dataset.origLabel = submitter.textContent ?? "";
-      submitter.textContent = "Guardando…";
+      submitter.dataset.origLabel = submitter.innerHTML;
+      const label = buttonText ?? (message ? message.replace(/…$/, "") : "Guardando");
+      submitter.innerHTML = `<svg class="h-4 w-4 animate-[sp_0.7s_linear_infinite]" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg><span>${label}…</span>`;
     }
     if (submitter instanceof HTMLInputElement && !submitter.dataset.origValue) {
       submitter.dataset.origValue = submitter.value;
-      submitter.value = "Guardando…";
+      const label = buttonText ?? (message ? message.replace(/…$/, "") : "Guardando");
+      submitter.value = `${label}…`;
     }
   }
 
@@ -82,7 +84,7 @@ export function startMutationPending(
       submitter.disabled = false;
       submitter.removeAttribute("aria-busy");
       if (submitter instanceof HTMLButtonElement && submitter.dataset.origLabel) {
-        submitter.textContent = submitter.dataset.origLabel;
+        submitter.innerHTML = submitter.dataset.origLabel;
         delete submitter.dataset.origLabel;
       }
       if (submitter instanceof HTMLInputElement && submitter.dataset.origValue) {
@@ -115,3 +117,128 @@ export function startMutationPending(
     mutationPending = false;
   };
 }
+
+export function setupGlobalFormSubmitListener(): void {
+  if (typeof document === "undefined") return;
+  if (document.documentElement.dataset.globalSubmitBound === "1") return;
+  document.documentElement.dataset.globalSubmitBound = "1";
+
+  document.addEventListener("submit", (e) => {
+    const form = e.target as HTMLFormElement | null;
+    if (!form) return;
+
+    const method = (form.getAttribute("method") || "GET").toUpperCase();
+    if (method === "GET") {
+      const bar = document.getElementById("nav-progress-bar");
+      if (bar) {
+        bar.style.transition = "width 8s cubic-bezier(0.1, 0.05, 0.2, 0.99), opacity 0.2s ease";
+        bar.style.width = "75%";
+        bar.style.opacity = "1";
+      }
+      return;
+    }
+
+    if (method !== "POST") return;
+    if (e.defaultPrevented) return;
+
+    const submitter =
+      (e.submitter as HTMLButtonElement | HTMLInputElement | null) ||
+      form.querySelector<HTMLButtonElement | HTMLInputElement>(
+        'button[type="submit"], input[type="submit"], [data-submit-button]',
+      ) ||
+      (form.id
+        ? document.querySelector<HTMLButtonElement | HTMLInputElement>(
+            `button[form="${form.id}"], input[form="${form.id}"]`,
+          )
+        : null);
+
+    const dialog =
+      form.closest<HTMLDialogElement>("dialog") ||
+      (submitter ? submitter.closest<HTMLDialogElement>("dialog") : null);
+    const container = dialog || form;
+
+    container.dataset.submitting = "1";
+
+    container
+      .querySelectorAll<
+        HTMLInputElement | HTMLSelectElement | HTMLButtonElement | HTMLTextAreaElement
+      >("input, select, button, textarea")
+      .forEach((el) => {
+        if (el instanceof HTMLButtonElement) {
+          el.disabled = true;
+        } else if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement) {
+          el.readOnly = true;
+          el.style.pointerEvents = "none";
+        } else if (el instanceof HTMLSelectElement) {
+          el.style.pointerEvents = "none";
+        }
+      });
+
+    if (dialog) {
+      dialog.addEventListener("cancel", (evt) => evt.preventDefault());
+    }
+
+    const actionVal =
+      form.querySelector<HTMLInputElement>('input[name="action"]')?.value || "";
+
+    let message = "Guardando cambios…";
+    let buttonText = "Guardando…";
+
+    if (actionVal.includes("create")) {
+      if (actionVal.includes("recipe")) {
+        message = "Creando receta…";
+        buttonText = "Creando…";
+      } else if (actionVal.includes("presentation")) {
+        message = "Creando presentación…";
+        buttonText = "Creando…";
+      } else {
+        message = "Agregando insumo…";
+        buttonText = "Agregando…";
+      }
+    } else if (actionVal.includes("delete")) {
+      if (actionVal.includes("recipe")) {
+        message = "Eliminando receta…";
+        buttonText = "Eliminando…";
+      } else if (actionVal.includes("presentation")) {
+        message = "Eliminando presentación…";
+        buttonText = "Eliminando…";
+      } else {
+        message = "Eliminando insumo…";
+        buttonText = "Eliminando…";
+      }
+    } else if (actionVal.includes("duplicate")) {
+      message = "Duplicando receta…";
+      buttonText = "Duplicando…";
+    } else if (actionVal.includes("update") || actionVal.includes("save") || form.id === "recipe-edit-form") {
+      if (actionVal.includes("recipe") || form.id === "recipe-edit-form") {
+        message = "Guardando receta…";
+        buttonText = "Guardando…";
+      } else if (actionVal.includes("presentation")) {
+        message = "Guardando presentación…";
+        buttonText = "Guardando…";
+      } else {
+        message = "Guardando cambios…";
+        buttonText = "Guardando…";
+      }
+    }
+
+    startMutationPending(submitter, { overlay: true, message, buttonText });
+  });
+
+  document.addEventListener("click", (e) => {
+    const target = e.target as HTMLElement | null;
+    if (!target) return;
+    const trigger = target.closest<HTMLElement>(
+      "a[data-astro-reload], a[href*='edit='], button[data-astro-reload]",
+    );
+    if (trigger) {
+      const bar = document.getElementById("nav-progress-bar");
+      if (bar) {
+        bar.style.transition = "width 8s cubic-bezier(0.1, 0.05, 0.2, 0.99), opacity 0.2s ease";
+        bar.style.width = "75%";
+        bar.style.opacity = "1";
+      }
+    }
+  });
+}
+

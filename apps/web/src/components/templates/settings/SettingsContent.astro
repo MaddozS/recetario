@@ -1,9 +1,9 @@
 ---
-import Icon from "@/components/ui/Icon.astro";
-import Button from "@/components/ui/Button.astro";
-import Card from "@/components/ui/Card.astro";
-import PasswordInput from "@/components/ui/PasswordInput.astro";
-import BillingSection from "@/components/BillingSection.astro";
+import Icon from "@/components/atoms/Icon.astro";
+import Button from "@/components/atoms/Button.astro";
+import Card from "@/components/molecules/shared/Card.astro";
+import PasswordInput from "@/components/molecules/shared/PasswordInput.astro";
+import BillingSection from "@/components/organisms/settings/BillingSection.astro";
 import {
   ACCENT_FAMILIES,
   ACCENT_LABELS,
@@ -15,13 +15,13 @@ import {
   getRemainingIngredients,
 } from "@recetario/stripe";
 import type { UserSubscriptionInfo } from "@recetario/stripe";
-import FeedbackAlert from "@/components/FeedbackAlert.astro";
+import FeedbackAlert from "@/components/molecules/shared/FeedbackAlert.astro";
 import { apiFetch } from "@/lib/api-client";
-import type { UserPreferences, AppUser } from "@recetario/types";
+import type { UserPreferences, SessionUser } from "@recetario/types";
 import { plansListResponseSchema, usageCountsResponseSchema } from "@recetario/types";
 
 interface Props {
-  user: AppUser;
+  user: SessionUser & { hasPasswordAuth?: boolean };
   preferences?: UserPreferences;
   subscription: UserSubscriptionInfo;
   activeTab: string;
@@ -70,7 +70,7 @@ const themeOptions = [
 ] as const;
 ---
 
-<section class="mx-auto max-w-3xl">
+<section class="animate-fade-in mx-auto max-w-3xl">
   {
     feedbackType && feedbackMessage && (
       <div class="mb-6">
@@ -479,9 +479,6 @@ const themeOptions = [
     const prefsForm = document.getElementById("preferences-form");
     const html = document.documentElement;
 
-    let savedTheme: string | null = null;
-    let savedAccent: string | null = null;
-
     function updateLivePreview(theme: string, accent: string) {
       const effective = getEffectiveTheme(theme);
       html.dataset.theme = theme;
@@ -745,8 +742,6 @@ const themeOptions = [
           });
 
           if (res.ok) {
-            savedTheme = newTheme;
-            savedAccent = newAccent;
             originalTheme = newTheme;
             originalAccent = newAccent;
             if (saveBtnWrapper) saveBtnWrapper.classList.add("hidden");

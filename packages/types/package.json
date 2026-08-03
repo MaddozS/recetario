@@ -13,7 +13,7 @@
     "zod": "^3.23.0"
   },
   "devDependencies": {
-    "typescript": "7.0.2",
+    "typescript": "6.0.2",
     "@recetario/config": "workspace:^"
   }
 }

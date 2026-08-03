@@ -1,5 +1,5 @@
 ---
-import Icon from "@/components/ui/Icon.astro";
+import Icon from "@/components/atoms/Icon.astro";
 
 interface IngredientRef {
   id: number;
@@ -123,8 +123,8 @@ const recipeIngredientIdsJson = JSON.stringify(recipeIngredientIds);
 </div>
 
 <script>
-  import { sanitizeHtml, looksLikeHtml } from "../lib/html-sanitizer";
-  import { markdownToEditorHtml } from "../lib/instructions-parser";
+  import { sanitizeHtml, looksLikeHtml } from "@/lib/html-sanitizer";
+  import { markdownToEditorHtml } from "@/lib/instructions-parser";
 
   function setupInstructionsEditor() {
     const editor = document.querySelector<HTMLElement>(".instructions-editor");

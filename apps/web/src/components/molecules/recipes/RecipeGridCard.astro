@@ -1,6 +1,6 @@
 ---
-import RecipeActionsMenu from "./RecipeActionsMenu.astro";
-import  Badge  from "./ui/Badge.astro";
+import RecipeActionsMenu from "@/components/molecules/recipes/RecipeActionsMenu.astro";
+import  Badge  from "@/components/atoms/Badge.astro";
 
 interface Props {
   id: number;
@@ -42,6 +42,7 @@ const {
           }
           <span class="text-muted-foreground text-xs">
             {ingredientCount}
+            {' '}
             {ingredientCount === 1 ? "ingrediente" : "ingredientes"}
           </span>
         </div>

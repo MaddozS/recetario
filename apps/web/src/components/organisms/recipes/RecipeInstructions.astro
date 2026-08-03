@@ -1,13 +1,13 @@
 ---
-import Icon from "@/components/ui/Icon.astro";
+import Icon from "@/components/atoms/Icon.astro";
 import {
   parseInstructions,
   highlightReferences,
   parseHtmlSteps,
   extractTimersFromHtml,
-} from "../lib/instructions-parser";
-import { sanitizeHtml, looksLikeHtml } from "../lib/html-sanitizer";
-import type { IngredientRef } from "../lib/instructions-parser";
+} from "@/lib/instructions-parser";
+import { sanitizeHtml, looksLikeHtml } from "@/lib/html-sanitizer";
+import type { IngredientRef } from "@/lib/instructions-parser";
 
 interface Props {
   instructions: string;

@@ -1,5 +1,5 @@
 ---
-import Icon from "@/components/ui/Icon.astro";
+import Icon from "@/components/atoms/Icon.astro";
 
 interface Props {
   recipeCount: number;
@@ -16,6 +16,7 @@ const { recipeCount, categoryCount, ingredientCount } = Astro.props;
   >
     <Icon name="lucide:book-open" size={14} />
     {recipeCount}
+    {' '}
     {recipeCount === 1 ? "Receta" : "Recetas"}
   </div>
   {

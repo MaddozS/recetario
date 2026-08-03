@@ -1,14 +1,15 @@
 ---
-import Button from "@/components/ui/Button.astro";
-import SectionHeading from "@/components/ui/SectionHeading.astro";
+import Button from "@/components/atoms/Button.astro";
+import SectionHeading from "@/components/atoms/SectionHeading.astro";
 import { apiFetch } from "@/lib/api-client";
 import { z } from "zod";
 import {
   recipeSummarySchema,
   recipeWithIngredientsSchema,
 } from "@recetario/types";
+import type { RecipeWithIngredients } from "@recetario/types";
 import { isPro } from "@recetario/stripe";
-import type { SubscriptionInfo } from "@recetario/stripe";
+import type { UserSubscriptionInfo } from "@recetario/stripe";
 import { PRODUCTION_BASIC_RECIPE_LIMIT } from "@/lib/constants";
 import { calculateProduction } from "@/lib/production-calculator";
 import type {
@@ -16,14 +17,14 @@ import type {
   ConsolidatedIngredient,
   ProductionSummary,
 } from "@/lib/production-types";
-import UpgradePrompt from "@/components/UpgradePrompt.astro";
-import ProductionRecipeSelector from "@/components/ProductionRecipeSelector.astro";
-import ProductionIngredientsTable from "@/components/ProductionIngredientsTable.astro";
-import ProductionFinancialSummary from "@/components/ProductionFinancialSummary.astro";
-import ProductionRecipeBreakdown from "@/components/ProductionRecipeBreakdown.astro";
+import UpgradePrompt from "@/components/molecules/shared/UpgradePrompt.astro";
+import ProductionRecipeSelector from "@/components/molecules/production/ProductionRecipeSelector.astro";
+import ProductionIngredientsTable from "@/components/organisms/production/ProductionIngredientsTable.astro";
+import ProductionFinancialSummary from "@/components/molecules/production/ProductionFinancialSummary.astro";
+import ProductionRecipeBreakdown from "@/components/organisms/production/ProductionRecipeBreakdown.astro";
 
 interface Props {
-  subscription: SubscriptionInfo;
+  subscription: UserSubscriptionInfo;
   canAccess: boolean;
   recipeIdsParam: string | null;
   batchesParam: string | null;
@@ -86,7 +87,7 @@ if (canAccess && recipeIdsParam && batchesParam) {
       validRecipes.slice(
         0,
         isProUser ? undefined : PRODUCTION_BASIC_RECIPE_LIMIT,
-      ),
+      ) as RecipeWithIngredients[],
     );
   }
 }
@@ -139,7 +140,7 @@ const recipeDataJson = JSON.stringify(allRecipeData.filter(Boolean));
       />
     </div>
   ) : (
-    <div class="mx-auto max-w-5xl space-y-6 pb-12">
+    <div class="animate-fade-in mx-auto max-w-5xl space-y-6 pb-12">
       <SectionHeading
         icon="factory"
         title="Planificador de Producción"
@@ -184,6 +185,64 @@ const recipeDataJson = JSON.stringify(allRecipeData.filter(Boolean));
   set:html={recipeDataJson}
 />
 
+<template id="tmpl-ingredients-sheet">
+  <div class="production-sheet ingredients-table border-border bg-card overflow-hidden rounded-2xl border shadow-sm">
+    <div class="border-border border-b px-6 py-4">
+      <h2 class="text-foreground text-lg font-bold">Ingredientes consolidados</h2>
+      <p class="text-muted-foreground mt-0.5 text-sm" data-summary-count></p>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="min-w-full text-left table-fixed">
+        <thead class="bg-background text-muted-foreground text-[11px] font-bold tracking-[0.16em] uppercase">
+          <tr>
+            <th class="px-6 py-4 w-[35%]">Ingrediente</th>
+            <th class="px-6 py-4 w-[17%]" colspan="2">Cantidad total</th>
+            <th class="px-6 py-4 w-[13%]">Costo unitario</th>
+            <th class="px-6 py-4 w-[13%]">Costo total</th>
+            <th class="px-6 py-4 w-[22%]">Recetas</th>
+          </tr>
+        </thead>
+        <tbody class="divide-border-light divide-y" data-tbody></tbody>
+      </table>
+    </div>
+  </div>
+</template>
+
+<template id="tmpl-financial-summary">
+  <div class="production-sheet financial-summary">
+    <div class="bg-card rounded-2xl border border-border shadow-sm p-5 sm:p-6">
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2" data-grid></div>
+    </div>
+  </div>
+</template>
+
+<template id="tmpl-recipe-breakdown">
+  <div class="production-sheet recipe-breakdown space-y-4">
+    <h2 class="text-foreground flex items-center gap-2 text-lg font-bold">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-accent-600">
+        <path d="M3 7v6a4 4 0 0 0 4 4h10a4 4 0 0 0 4-4V7"/>
+        <path d="M12 3v16"/>
+        <path d="m8 11 4-4 4 4"/>
+      </svg>
+      Desglose por receta
+    </h2>
+    <div class="space-y-4" data-items></div>
+  </div>
+</template>
+
+<template id="tmpl-print-button">
+  <div class="flex justify-center no-print">
+    <button onclick="window.print()" class="border-border bg-card text-muted-foreground hover:bg-background inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border px-6 py-3 text-sm font-bold transition-colors">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="6 9 6 2 18 2 18 9"/>
+        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+        <rect x="6" y="14" width="12" height="8"/>
+      </svg>
+      Imprimir hoja de producción
+    </button>
+  </div>
+</template>
+
 <script>
   import { calculateProduction } from "@/lib/production-calculator";
   import type {
@@ -225,13 +284,26 @@ const recipeDataJson = JSON.stringify(allRecipeData.filter(Boolean));
     return "text-danger";
   }
 
+  function getTemplate(id: string): HTMLElement {
+    const tmpl = document.getElementById(id) as HTMLTemplateElement | null;
+    if (!tmpl) throw new Error(`Template ${id} not found`);
+    return tmpl.content.firstElementChild!.cloneNode(true) as HTMLElement;
+  }
+
   function renderIngredientsTable(
     ingredients: ConsolidatedIngredient[],
-  ): string {
-    if (ingredients.length === 0) return "";
-    const rows = ingredients
-      .map(
-        (ing) => `
+  ): HTMLElement | null {
+    if (ingredients.length === 0) return null;
+    const sheet = getTemplate("tmpl-ingredients-sheet");
+    const countEl = sheet.querySelector("[data-summary-count]");
+    if (countEl) {
+      countEl.textContent = `${ingredients.length} ingrediente${ingredients.length !== 1 ? "s" : ""} en total`;
+    }
+    const tbody = sheet.querySelector("[data-tbody]");
+    if (tbody) {
+      tbody.innerHTML = ingredients
+        .map(
+          (ing) => `
         <tr class="hover:bg-hover-muted transition-colors dark:hover:bg-hover-muted">
           <td class="px-6 py-4 break-words">
             <div>
@@ -254,26 +326,13 @@ const recipeDataJson = JSON.stringify(allRecipeData.filter(Boolean));
               .join("")}</div>
           </td>
         </tr>`,
-      )
-      .join("");
-
-    return `<div class="production-sheet ingredients-table border-border bg-card overflow-hidden rounded-2xl border shadow-sm">
-  <div class="border-border border-b px-6 py-4">
-    <h2 class="text-foreground text-lg font-bold">Ingredientes consolidados</h2>
-    <p class="text-muted-foreground mt-0.5 text-sm">${ingredients.length} ingrediente${ingredients.length !== 1 ? "s" : ""} en total</p>
-  </div>
-  <div class="overflow-x-auto">
-    <table class="min-w-full text-left table-fixed">
-      <thead class="bg-background text-muted-foreground text-[11px] font-bold tracking-[0.16em] uppercase">
-        <tr><th class="px-6 py-4 w-[35%]">Ingrediente</th><th class="px-6 py-4 w-[17%]" colspan="2">Cantidad total</th><th class="px-6 py-4 w-[13%]">Costo unitario</th><th class="px-6 py-4 w-[13%]">Costo total</th><th class="px-6 py-4 w-[22%]">Recetas</th></tr>
-      </thead>
-      <tbody class="divide-border-light divide-y">${rows}</tbody>
-    </table>
-  </div>
-</div>`;
+        )
+        .join("");
+    }
+    return sheet;
   }
 
-  function renderFinancialSummary(summary: ProductionSummary): string {
+  function renderFinancialSummary(summary: ProductionSummary): HTMLElement {
     const {
       totalIngredientsCost,
       totalOperationalCost,
@@ -310,21 +369,28 @@ const recipeDataJson = JSON.stringify(allRecipeData.filter(Boolean));
       </div>`;
     };
 
-    return `<div class="production-sheet financial-summary">
-  <div class="bg-card rounded-2xl border border-border shadow-sm p-5 sm:p-6">
-    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-      ${financialRow("danger", "Costo Insumos", formatCurrency(totalIngredientsCost), "Insumos de todas las recetas", "")}
-      ${financialRow("muted", "Costo Operativo", formatCurrency(totalOperationalCost), "Servicios, labor, etc.", "")}
-      ${financialRow("accent", "Ingresos Proyectados", noRevenue ? "N/A" : formatCurrency(projectedRevenue), noRevenue ? "Sin precios de venta configurados" : "Ventas totales proyectadas", "")}
-      ${financialRow("success", "Ganancia Estimada", noRevenue ? "Sin datos" : formatCurrency(estimatedProfit) + " (" + effectiveMargin.toFixed(1) + "%)", noRevenue ? "" : "Margen de ganancia estimado", "")}
-    </div>
-  </div>
-</div>`;
+    const sheet = getTemplate("tmpl-financial-summary");
+    const grid = sheet.querySelector("[data-grid]");
+    if (grid) {
+      grid.innerHTML = [
+        financialRow("danger", "Costo Insumos", formatCurrency(totalIngredientsCost), "Insumos de todas las recetas", ""),
+        financialRow("muted", "Costo Operativo", formatCurrency(totalOperationalCost), "Servicios, labor, etc.", ""),
+        financialRow("accent", "Ingresos Proyectados", noRevenue ? "N/A" : formatCurrency(projectedRevenue), noRevenue ? "Sin precios de venta configurados" : "Ventas totales proyectadas", ""),
+        financialRow("success", "Ganancia Estimada", noRevenue ? "Sin datos" : formatCurrency(estimatedProfit) + " (" + effectiveMargin.toFixed(1) + "%)", noRevenue ? "" : "Margen de ganancia estimado", ""),
+      ].join("");
+    }
+    return sheet;
   }
 
-  function renderRecipeBreakdown(recipes: ProductionRecipeResult[]): string {
-    if (recipes.length === 0) return "";
-    const items = recipes
+  function renderRecipeBreakdown(
+    recipes: ProductionRecipeResult[],
+  ): HTMLElement | null {
+    if (recipes.length === 0) return null;
+    const sheet = getTemplate("tmpl-recipe-breakdown");
+    const itemsContainer = sheet.querySelector("[data-items]");
+    if (!itemsContainer) return sheet;
+
+    itemsContainer.innerHTML = recipes
       .map((r) => {
         const bestId = r.presentations.reduce(
           (best: { id: number; margin: number }, p) => {
@@ -378,8 +444,7 @@ const recipeDataJson = JSON.stringify(allRecipeData.filter(Boolean));
       })
       .join("");
 
-    return `<div class="production-sheet recipe-breakdown space-y-4">
-  <h2 class="text-foreground flex items-center gap-2 text-lg font-bold"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-accent-600"><path d="M3 7v6a4 4 0 0 0 4 4h10a4 4 0 0 0 4-4V7"/><path d="M12 3v16"/><path d="m8 11 4-4 4 4"/></svg>Desglose por receta</h2>${items}</div>`;
+    return sheet;
   }
 
   function readSelections(isPro: boolean): ProductionRecipeSelection[] {
@@ -444,11 +509,15 @@ const recipeDataJson = JSON.stringify(allRecipeData.filter(Boolean));
     }
 
     const result = calculateProduction(sel, recipes);
-    resultsEl.innerHTML =
-      renderIngredientsTable(result.consolidatedIngredients) +
-      renderFinancialSummary(result.summary) +
-      renderRecipeBreakdown(result.summary.perRecipe) +
-      '<div class="flex justify-center no-print"><button onclick="window.print()" class="border-border bg-card text-muted-foreground hover:bg-background inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border px-6 py-3 text-sm font-bold transition-colors"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> Imprimir hoja de producción</button></div>';
+    resultsEl.replaceChildren();
+    const ingSheet = renderIngredientsTable(result.consolidatedIngredients);
+    if (ingSheet) resultsEl.appendChild(ingSheet);
+    const finSheet = renderFinancialSummary(result.summary);
+    if (finSheet) resultsEl.appendChild(finSheet);
+    const bdSheet = renderRecipeBreakdown(result.summary.perRecipe);
+    if (bdSheet) resultsEl.appendChild(bdSheet);
+    const printBtn = getTemplate("tmpl-print-button");
+    resultsEl.appendChild(printBtn);
     updateURL(sel);
     updateCounter(sel.length);
   }

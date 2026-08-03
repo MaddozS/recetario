@@ -1,11 +1,11 @@
 ---
-import Icon from "@/components/ui/Icon.astro";
-import Badge from "./ui/Badge.astro";
-import Button from "./ui/Button.astro";
-import Card from "./ui/Card.astro";
+import Icon from "@/components/atoms/Icon.astro";
+import Badge from "@/components/atoms/Badge.astro";
+import Button from "@/components/atoms/Button.astro";
+import Card from "@/components/molecules/shared/Card.astro";
 import { isPaid } from "@recetario/stripe";
 import { formatCurrency } from "@recetario/stripe";
-import PricingModal from "@/components/PricingModal.astro";
+import PricingModal from "@/components/organisms/shared/PricingModal.astro";
 import type { UserSubscriptionInfo } from "@recetario/stripe";
 import type { PricingPlan } from "@recetario/stripe";
 

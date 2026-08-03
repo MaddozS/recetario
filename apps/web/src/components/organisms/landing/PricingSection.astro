@@ -161,11 +161,6 @@ const { plans } = Astro.props as Props;
                 <div class="mt-6 min-w-0 flex-1 space-y-3">
                   {plan.features.map((f) => {
                     const isComingSoon = f.status === "coming_soon";
-                    const icon = isComingSoon
-                      ? "lucide:clock"
-                      : f.included
-                        ? "lucide:check"
-                        : "lucide:x";
                     const iconClass = isComingSoon
                       ? "text-subtle-foreground"
                       : f.included

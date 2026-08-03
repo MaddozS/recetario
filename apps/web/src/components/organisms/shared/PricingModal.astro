@@ -1,8 +1,8 @@
 ---
-import Icon from "@/components/ui/Icon.astro";
-import Button from "./ui/Button.astro";
-import Badge from "./ui/Badge.astro";
-import Card from "./ui/Card.astro";
+import Icon from "@/components/atoms/Icon.astro";
+import Button from "@/components/atoms/Button.astro";
+import Badge from "@/components/atoms/Badge.astro";
+import Card from "@/components/molecules/shared/Card.astro";
 import type { PricingPlan } from "@recetario/types";
 import type { UserSubscriptionInfo } from "@recetario/types";
 
@@ -203,6 +203,8 @@ const currentTier = subscription.tier;
 </dialog>
 
 <script>
+  import { bindDialogBackdrop } from "@/lib/dialog";
+
   function setupPricingModal() {
     const modal = document.getElementById("pricing-modal");
     const openBtns = document.querySelectorAll("[data-open-pricing-modal]");
@@ -276,13 +278,17 @@ const currentTier = subscription.tier;
       if (btn.dataset.pricingModalCloseBound === "1") return;
       btn.dataset.pricingModalCloseBound = "1";
       btn.addEventListener("click", () => {
+        if (
+          modal.dataset.submitting === "1" ||
+          modal.getAttribute("aria-busy") === "true"
+        ) {
+          return;
+        }
         if (modal.open) modal.close();
       });
     });
 
-    modal.addEventListener("click", (e) => {
-      if (e.target === modal) modal.close();
-    });
+    bindDialogBackdrop(modal);
 
     document
       .querySelectorAll("#pricing-modal [data-subscribe-btn]")
@@ -311,6 +317,8 @@ const currentTier = subscription.tier;
           const cancelUrl = `${window.location.origin}/settings/billing?canceled=1`;
 
           btn.disabled = true;
+          modal.dataset.submitting = "1";
+          modal.setAttribute("aria-busy", "true");
           const originalText = btn.textContent;
           btn.textContent = "Redirigiendo...";
 
@@ -339,6 +347,8 @@ const currentTier = subscription.tier;
             }
           } catch (err) {
             btn.disabled = false;
+            delete modal.dataset.submitting;
+            modal.removeAttribute("aria-busy");
             btn.textContent = originalText;
             const errorEl = document.getElementById("pricing-modal-error");
             const errorMsg = document.getElementById("pricing-modal-error-msg");

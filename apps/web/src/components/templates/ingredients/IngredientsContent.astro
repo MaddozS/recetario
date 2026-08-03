@@ -1,7 +1,7 @@
 ---
-import Icon from "@/components/ui/Icon.astro";
-import Button from "@/components/ui/Button.astro";
-import Card from "@/components/ui/Card.astro";
+import Icon from "@/components/atoms/Icon.astro";
+import Button from "@/components/atoms/Button.astro";
+import Card from "@/components/molecules/shared/Card.astro";
 
 import { UNIT_OPTIONS, DEFAULT_UNIT } from "@/lib/constants";
 import { apiFetch } from "@/lib/api-client";
@@ -10,10 +10,10 @@ import {
   ingredientSchema,
   ingredientUsageMapSchema,
 } from "@recetario/types";
-import FeedbackAlert from "@/components/FeedbackAlert.astro";
-import UnitCostDisplay from "@/components/UnitCostDisplay.astro";
-import IngredientFormFields from "@/components/IngredientFormFields.astro";
-import EmptyState from "@/components/EmptyState.astro";
+import FeedbackAlert from "@/components/molecules/shared/FeedbackAlert.astro";
+import UnitCostDisplay from "@/components/atoms/UnitCostDisplay.astro";
+import IngredientFormFields from "@/components/molecules/ingredients/IngredientFormFields.astro";
+import EmptyState from "@/components/molecules/shared/EmptyState.astro";
 
 interface Props {
   feedbackType?: "error" | "success" | null;
@@ -46,7 +46,7 @@ const ingredientUsage = await apiFetch(
 );
 ---
 
-<div>
+<div class="animate-fade-in">
   {
     feedbackType && feedbackMessage && (
       <div class="mb-6">
@@ -107,7 +107,7 @@ const ingredientUsage = await apiFetch(
     </form>
   </Card>
 
-  <Card class="overflow-hidden !p-0">
+  <Card class="overflow-hidden p-0!">
     <div class="border-border border-b px-4 py-4 sm:px-6">
       <div
         class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between"
@@ -570,19 +570,117 @@ const ingredientUsage = await apiFetch(
 </div>
 
 <script>
-  function setupIngredientsScript() {
-    const searchInput = document.querySelector<HTMLInputElement>('[data-ingredient-search]');
-    const rows = document.querySelectorAll<HTMLElement>('[data-ingredient-row]');
-    const emptySearchState = document.querySelector<HTMLElement>('[data-ingredient-search-empty]');
+  import { bindDialogBackdrop } from "@/lib/dialog";
+  import { startMutationPending } from "@/lib/mutation-pending";
 
-    if (searchInput && searchInput.dataset.bound !== '1') {
-      searchInput.dataset.bound = '1';
-      searchInput.addEventListener('input', () => {
-        const query = searchInput.value.toLowerCase().trim();
+  function parseNumber(val: string): number {
+    if (!val) return NaN;
+    return parseFloat(val.trim().replace(',', '.'));
+  }
+
+  function updateIngredientForm(form: HTMLFormElement) {
+    const nameInput = form.querySelector<HTMLInputElement>('input[name="name"]');
+    const priceInput = form.querySelector<HTMLInputElement>('input[name="price"]');
+    const qtyInput = form.querySelector<HTMLInputElement>('input[name="purchaseQuantity"]');
+    const unitSelect = form.querySelector<HTMLSelectElement>('select[name="unit"]');
+    const submitBtn = form.querySelector<HTMLButtonElement>('[data-submit-button]');
+    const costValueEl = form.querySelector<HTMLElement>('[data-unit-cost-value]');
+    const costUnitEl = form.querySelector<HTMLElement>('[data-unit-cost-unit]');
+
+    const nameVal = nameInput ? nameInput.value.trim() : '';
+    const priceNum = priceInput ? parseNumber(priceInput.value) : NaN;
+    const qtyNum = qtyInput ? parseNumber(qtyInput.value) : NaN;
+    const unitVal = unitSelect ? unitSelect.value : 'kg';
+
+    const isPriceValid = !isNaN(priceNum) && priceNum >= 0;
+    const isQtyValid = !isNaN(qtyNum) && qtyNum > 0;
+    const isNameValid = nameVal.length > 0;
+
+    if (costValueEl) {
+      if (isPriceValid && isQtyValid) {
+        const unitCost = priceNum / qtyNum;
+        costValueEl.textContent = `$${unitCost.toFixed(2)}`;
+      } else {
+        costValueEl.textContent = '$0.00';
+      }
+    }
+
+    if (costUnitEl) {
+      costUnitEl.textContent = unitVal;
+    }
+
+    if (submitBtn) {
+      submitBtn.disabled = !(isNameValid && isPriceValid && isQtyValid);
+    }
+  }
+
+  function setupIngredientsScript() {
+    if (document.documentElement.dataset.ingredientsBound === '1') {
+      document.querySelectorAll<HTMLFormElement>('[data-ingredient-form]').forEach(updateIngredientForm);
+      return;
+    }
+    document.documentElement.dataset.ingredientsBound = '1';
+
+    document.addEventListener('submit', (e) => {
+      const form = e.target as HTMLFormElement | null;
+      if (!form) return;
+      const actionAttr = form.getAttribute('action');
+      if (actionAttr !== '/ingredients' && actionAttr !== '') return;
+
+      const dialog = form.closest<HTMLDialogElement>('dialog');
+      const container = dialog || form;
+      container.dataset.submitting = '1';
+
+      container.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLButtonElement | HTMLTextAreaElement>(
+        'input, select, button, textarea'
+      ).forEach((el) => {
+        if (el instanceof HTMLButtonElement) {
+          el.disabled = true;
+        } else if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement) {
+          el.readOnly = true;
+          el.style.pointerEvents = 'none';
+        } else if (el instanceof HTMLSelectElement) {
+          el.style.pointerEvents = 'none';
+        }
+      });
+
+      if (dialog) {
+        dialog.addEventListener('cancel', (evt) => evt.preventDefault());
+      }
+
+      const action = form.querySelector<HTMLInputElement>('input[name="action"]')?.value;
+      const submitBtn = form.querySelector<HTMLButtonElement>('[data-submit-button], button[type="submit"]');
+
+      let message = 'Procesando…';
+      let buttonText = 'Guardando…';
+
+      if (action === 'create') {
+        message = 'Agregando insumo…';
+        buttonText = 'Agregando…';
+      } else if (action === 'update') {
+        message = 'Guardando cambios…';
+        buttonText = 'Guardando…';
+      } else if (action === 'delete') {
+        message = 'Eliminando insumo…';
+        buttonText = 'Eliminando…';
+      }
+
+      startMutationPending(submitBtn, { overlay: true, message, buttonText });
+    });
+
+    document.addEventListener('input', (e) => {
+      const target = e.target as HTMLElement | null;
+      if (!target) return;
+
+      if (target.matches('[data-ingredient-search]')) {
+        const searchInput = target as HTMLInputElement;
+        const query = searchInput.value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+        const rows = document.querySelectorAll<HTMLElement>('[data-ingredient-row]');
+        const emptySearchState = document.querySelector<HTMLElement>('[data-ingredient-search-empty]');
         let visibleCount = 0;
 
         rows.forEach((row) => {
-          const searchData = row.dataset.search ?? '';
+          const searchData = (row.dataset.search ?? '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
           const matches = searchData.includes(query);
           row.style.display = matches ? '' : 'none';
           if (matches) visibleCount++;
@@ -591,20 +689,41 @@ const ingredientUsage = await apiFetch(
         if (emptySearchState) {
           emptySearchState.hidden = visibleCount > 0 || query === '';
         }
-      });
-    }
+      }
 
-    // Modal handlers (Edit & Delete)
-    const editModal = document.getElementById('edit-ingredient-modal') as HTMLDialogElement | null;
-    const deleteModal = document.getElementById('delete-confirm-modal') as HTMLDialogElement | null;
-    const createModal = document.getElementById('create-ingredient-modal') as HTMLDialogElement | null;
+      const form = target.closest<HTMLFormElement>('[data-ingredient-form]');
+      if (form) {
+        updateIngredientForm(form);
+      }
+    });
+
+    document.addEventListener('change', (e) => {
+      const target = e.target as HTMLElement | null;
+      if (!target) return;
+      const form = target.closest<HTMLFormElement>('[data-ingredient-form]');
+      if (form) {
+        updateIngredientForm(form);
+      }
+    });
 
     document.addEventListener('click', (e) => {
       const target = e.target as HTMLElement | null;
       if (!target) return;
 
+      const editModal = document.getElementById('edit-ingredient-modal') as HTMLDialogElement | null;
+      const deleteModal = document.getElementById('delete-confirm-modal') as HTMLDialogElement | null;
+      const createModal = document.getElementById('create-ingredient-modal') as HTMLDialogElement | null;
+
       const editTrigger = target.closest('[data-edit-trigger]') as HTMLElement | null;
       if (editTrigger && editModal) {
+        bindDialogBackdrop(editModal);
+        delete editModal.dataset.submitting;
+        editModal.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLButtonElement | HTMLTextAreaElement>(
+          'input, select, button, textarea'
+        ).forEach((el) => {
+          el.disabled = false;
+        });
+
         const payloadStr = editTrigger.dataset.ingredientPayload;
         if (payloadStr) {
           try {
@@ -625,6 +744,9 @@ const ingredientUsage = await apiFetch(
             if (qtyInput) qtyInput.value = String(data.purchaseQuantity);
             if (unitSelect) unitSelect.value = data.unit;
 
+            const editForm = editModal.querySelector<HTMLFormElement>('form');
+            if (editForm) updateIngredientForm(editForm);
+
             editModal.showModal();
           } catch {
             /* noop */
@@ -634,6 +756,14 @@ const ingredientUsage = await apiFetch(
 
       const deleteTrigger = target.closest('[data-delete-trigger]') as HTMLElement | null;
       if (deleteTrigger && deleteModal) {
+        bindDialogBackdrop(deleteModal);
+        delete deleteModal.dataset.submitting;
+        deleteModal.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLButtonElement | HTMLTextAreaElement>(
+          'input, select, button, textarea'
+        ).forEach((el) => {
+          el.disabled = false;
+        });
+
         const id = deleteTrigger.dataset.ingredientId;
         const name = deleteTrigger.dataset.ingredientName;
         const idInput = deleteModal.querySelector<HTMLInputElement>('input[name="ingredientId"]');
@@ -647,18 +777,27 @@ const ingredientUsage = await apiFetch(
       }
 
       if (target.closest('[data-open-create-modal]') && createModal) {
+        bindDialogBackdrop(createModal);
+        delete createModal.dataset.submitting;
+        createModal.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLButtonElement | HTMLTextAreaElement>(
+          'input, select, button, textarea'
+        ).forEach((el) => {
+          el.disabled = false;
+        });
         createModal.showModal();
       }
       if (target.closest('[data-close-create-modal]') && createModal) {
-        createModal.close();
+        if (createModal.dataset.submitting !== '1') createModal?.close();
       }
       if (target.closest('[data-close-edit-modal]') && editModal) {
-        editModal.close();
+        if (editModal.dataset.submitting !== '1') editModal?.close();
       }
       if (target.closest('[data-close-delete-modal]') && deleteModal) {
-        deleteModal.close();
+        if (deleteModal.dataset.submitting !== '1') deleteModal?.close();
       }
     });
+
+    document.querySelectorAll<HTMLFormElement>('[data-ingredient-form]').forEach(updateIngredientForm);
   }
 
   document.addEventListener('astro:page-load', setupIngredientsScript);

@@ -13,7 +13,25 @@
 export function bindDialogBackdrop(dialog: HTMLDialogElement): void {
   if (dialog.dataset.backdropBound === "1") return;
   dialog.dataset.backdropBound = "1";
+
+  // Prevent closing via backdrop click when submitting or busy
   dialog.addEventListener("click", (event) => {
+    if (
+      dialog.dataset.submitting === "1" ||
+      dialog.getAttribute("aria-busy") === "true"
+    ) {
+      return;
+    }
     if (event.target === dialog) dialog.close();
+  });
+
+  // Prevent closing via ESC key when submitting or busy
+  dialog.addEventListener("cancel", (event) => {
+    if (
+      dialog.dataset.submitting === "1" ||
+      dialog.getAttribute("aria-busy") === "true"
+    ) {
+      event.preventDefault();
+    }
   });
 }
