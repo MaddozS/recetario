@@ -8,6 +8,6 @@ export default defineConfig({
         seed: "pnpm exec tsx prisma/seed.ts",
     },
     datasource: {
-        url: process.env.DATABASE_URL || "postgresql://postgres:postgres@localhost:5432/recetario",
+        url: env("DATABASE_URL"),
     },
 });
