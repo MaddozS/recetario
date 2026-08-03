@@ -88,9 +88,13 @@ export async function apiFetch<T = unknown>(
   }
 
   if (res.ok) {
+    if (res.status === 204) {
+      return undefined as unknown as T;
+    }
     let data: T;
     try {
-      data = (await res.json()) as T;
+      const text = await res.text();
+      data = text && text.trim() ? (JSON.parse(text) as T) : (undefined as unknown as T);
     } catch {
       throw new ApiError("INTERNAL", "Internal error", {
         traceId: newTraceId(),

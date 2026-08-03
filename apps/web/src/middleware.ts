@@ -11,10 +11,8 @@ import {
   setApiBinding,
 } from "@/lib/api-client";
 import {
-  credentialStatusResponseSchema,
   sessionResponseSchema,
   type SessionResponse,
-  subscriptionResponseSchema,
 } from "@recetario/types";
 
 const SIGN_IN_PATHS = ["/sign-in/email", "/sign-in/social"];
@@ -85,26 +83,12 @@ export const onRequest = defineMiddleware(async (context, next) => {
     session = null;
   }
 
-  if (session) {
-    const { user: sessionUser } = session;
+  if (session && session.subscription) {
+    const { user: sessionUser, subscription } = session;
+    const hasPasswordAuth = session.hasPasswordAuth ?? false;
 
-    // ── 2. User: build AppUser from session data + check credential account ───
     const userName =
       sessionUser.name || sessionUser.email?.split("@")[0] || "Usuario";
-
-    let hasPasswordAuth = false;
-    try {
-      const credentialStatus = await apiFetch(
-        "/api/auth/credential-status",
-        { schema: credentialStatusResponseSchema },
-        context,
-      );
-      hasPasswordAuth = credentialStatus.hasPasswordAuth;
-    } catch (err) {
-      if (!(err instanceof ApiClientError) || err.status !== 401) {
-        console.error("[/api/auth/credential-status] error:", err);
-      }
-    }
 
     const appUser: AppUser = {
       id: sessionUser.id,
@@ -119,6 +103,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
 
     context.locals.user = appUser;
     context.locals.session = { user: appUser };
+    context.locals.subscription = subscription;
 
     // ── 3. Preferences: populate locals & sync cookies ─────────────────────────
     const prefsTheme = (session.preferences?.theme ??
@@ -157,20 +142,6 @@ export const onRequest = defineMiddleware(async (context, next) => {
 
     // ── 4. Audit: log sign-in events ──────────────────────────────────────────
     detectSignInEvent(context.url.pathname, sessionUser.id, context);
-
-    // ── 5. Billing: resolve subscription with cache ──────────────────────
-    try {
-      const sub = await apiFetch(
-        "/api/billing/subscription",
-        { schema: subscriptionResponseSchema },
-        context,
-      );
-      context.locals.subscription = sub;
-    } catch (err) {
-      if (!(err instanceof ApiClientError) || err.code !== "NOT_FOUND")
-        throw err;
-      context.locals.subscription = getDefaultSubscription();
-    }
 
     // ── 6. CSRF: get-or-create per-session token ─────────────────────────────
     const existingToken = context.cookies.get(getCsrfCookie())?.value;

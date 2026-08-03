@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { preferencesResponseSchema } from "./preferences";
+import { subscriptionResponseSchema } from "./billing";
 
 export const credentialStatusResponseSchema = z.object({
   hasPasswordAuth: z.boolean(),
@@ -20,6 +21,8 @@ export const sessionResponseSchema = z
     user: sessionUserSchema,
     session: z.object({ id: z.string() }).passthrough(),
     preferences: preferencesResponseSchema.optional(),
+    subscription: subscriptionResponseSchema,
+    hasPasswordAuth: z.boolean().optional(),
   })
   .nullable();
 

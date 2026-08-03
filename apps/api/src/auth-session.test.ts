@@ -8,6 +8,8 @@ const {
   mockAuth,
   mockGetUserPreferences,
   mockCreateUserPreferences,
+  mockGetSubscriptionByUserId,
+  mockGetCredentialAccount,
 } = vi.hoisted(() => {
   const mockGetSession = vi.fn();
   const mockAuth = {
@@ -15,11 +17,15 @@ const {
   };
   const mockGetUserPreferences = vi.fn();
   const mockCreateUserPreferences = vi.fn();
+  const mockGetSubscriptionByUserId = vi.fn();
+  const mockGetCredentialAccount = vi.fn();
   return {
     mockGetSession,
     mockAuth,
     mockGetUserPreferences,
     mockCreateUserPreferences,
+    mockGetSubscriptionByUserId,
+    mockGetCredentialAccount,
   };
 });
 
@@ -31,6 +37,9 @@ vi.mock("@recetario/db", () => ({
   getUserPreferences: (userId: string) => mockGetUserPreferences(userId),
   createUserPreferences: (userId: string, prefs: unknown) =>
     mockCreateUserPreferences(userId, prefs),
+  getSubscriptionByUserId: (userId: string, statusFilter: unknown) =>
+    mockGetSubscriptionByUserId(userId, statusFilter),
+  getCredentialAccount: (userId: string) => mockGetCredentialAccount(userId),
 }));
 
 const { authSessionHandler } = await import("./auth-session");
@@ -63,15 +72,17 @@ describe("authSessionHandler", () => {
     mockGetSession.mockReset();
     mockGetUserPreferences.mockReset();
     mockCreateUserPreferences.mockReset();
+    mockGetSubscriptionByUserId.mockReset();
   });
 
-  it("returns the session with preferences when the cookie is valid", async () => {
+  it("returns the session with preferences and subscription when the cookie is valid", async () => {
     mockGetSession.mockResolvedValueOnce(sessionFixture);
     mockGetUserPreferences.mockResolvedValueOnce({
       userId: "user-1",
       theme: "dark",
       accentColor: "emerald",
     });
+    mockGetSubscriptionByUserId.mockResolvedValueOnce(null);
 
     const res = await buildApp().request("/api/auth/session", {
       headers: { cookie: "better-auth.session_token=valid" },
@@ -81,6 +92,7 @@ describe("authSessionHandler", () => {
       user: { id: string };
       session: { token: string };
       preferences: { theme: string; accentColor: string };
+      subscription: { tier: string };
     };
     expect(body.user.id).toBe("user-1");
     expect(body.session.token).toBe("tok-1");
@@ -89,6 +101,7 @@ describe("authSessionHandler", () => {
       theme: "dark",
       accentColor: "emerald",
     });
+    expect(body.subscription.tier).toBe("free");
     expect(mockGetSession).toHaveBeenCalledTimes(1);
     expect(mockGetUserPreferences).toHaveBeenCalledWith("user-1");
   });

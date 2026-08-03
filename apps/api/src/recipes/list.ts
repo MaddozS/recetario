@@ -1,17 +1,13 @@
 import type { Handler } from "hono";
 import { getRecipeSummaries } from "@recetario/db";
 import { recipeSummarySchema } from "@recetario/types";
-import { auth } from "@recetario/auth/server";
-import { ApiError } from "../errors";
+import { getAuthUser } from "../middleware/auth";
 
 export function recipesListHandler(): Handler {
   return async (c) => {
-    const session = await auth.api.getSession({ headers: c.req.raw.headers });
-    if (!session?.user) {
-      throw new ApiError("UNAUTHENTICATED", "Authentication required");
-    }
+    const user = await getAuthUser(c);
 
-    const recipes = await getRecipeSummaries(session.user.id);
+    const recipes = await getRecipeSummaries(user.id);
     return c.json(
       recipes.map((r) =>
         recipeSummarySchema.parse({

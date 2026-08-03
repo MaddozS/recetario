@@ -1,9 +1,9 @@
 import type { Handler } from "hono";
-import { auth } from "@recetario/auth/server";
 import { getSubscriptionByUserId } from "@recetario/db";
 import { subscriptionResponseSchema } from "@recetario/types";
 import { ApiError } from "../errors";
 import * as cache from "../cache";
+import { getAuthUser } from "../middleware/auth";
 
 const CACHE_TTL_MS = 60_000;
 
@@ -20,14 +20,13 @@ function parseFeatures(raw: string | null | undefined): Record<string, boolean> 
 
 export function subscriptionHandler(): Handler {
   return async (c) => {
-    const session = await auth.api.getSession({ headers: c.req.raw.headers });
-    if (!session?.user) throw new ApiError("UNAUTHENTICATED", "Authentication required");
+    const user = await getAuthUser(c);
 
-    const cacheKey = `sub:${session.user.id}`;
+    const cacheKey = `sub:${user.id}`;
     const cached = cache.get<unknown>(cacheKey);
     if (cached !== undefined) return c.json(cached);
 
-    const dbSub = await getSubscriptionByUserId(session.user.id, ["active", "trialing"]);
+    const dbSub = await getSubscriptionByUserId(user.id, ["active", "trialing"]);
     if (!dbSub) throw new ApiError("NOT_FOUND", "No active subscription");
 
     const subscription = subscriptionResponseSchema.parse({

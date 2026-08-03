@@ -49,7 +49,7 @@ export const presentationSchema = z.object({
   id: z.number().int().positive(),
   name: z.string(),
   unitsPerBatch: z.number().positive(),
-  salePrice: z.number().nonnegative().optional(),
+  salePrice: z.number().nonnegative().nullable().optional(),
   fixedCosts: z.array(presentationFixedCostSchema).optional(),
 });
 

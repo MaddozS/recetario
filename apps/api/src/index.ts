@@ -30,6 +30,7 @@ import { createSubscriptionInputSchema } from "@recetario/types";
 import { syncEnvBindings } from "@recetario/config/env";
 import { clientIp, setSecurityHeaders } from "@recetario/config/request";
 
+import { requireAuth, type AuthVariables } from "./middleware/auth";
 import { envelope } from "./envelope";
 import { errorHandler } from "./error-handler";
 import { hostAllowlist } from "./host-allowlist";
@@ -71,7 +72,7 @@ import {
   presentationsFixedCostsDeleteHandler,
 } from "./presentations/fixed-costs";
 
-const app = new Hono();
+const app = new Hono<{ Variables: AuthVariables }>();
 
 function getPeriod(obj: unknown, field: string): number {
   if (obj && typeof obj === "object" && field in obj) {
@@ -268,6 +269,22 @@ app.post("/api/auth/reset-password", async (c) => {
 
 app.get("/api/auth/session", authSessionHandler());
 
+// ── Protected routes middleware ───────────────────────────────────────────
+app.use("/api/recipes/*", requireAuth());
+app.use("/api/recipes", requireAuth());
+app.use("/api/ingredients/*", requireAuth());
+app.use("/api/ingredients", requireAuth());
+app.use("/api/preferences/*", requireAuth());
+app.use("/api/preferences", requireAuth());
+app.use("/api/presentations/*", requireAuth());
+app.use("/api/account/*", requireAuth());
+app.use("/api/stripe/checkout", requireAuth());
+app.use("/api/stripe/portal", requireAuth());
+app.use("/api/billing/subscription", requireAuth());
+app.use("/api/usage-counts", requireAuth());
+app.use("/api/auth/credential-status", requireAuth());
+app.use("/api/audit/log", requireAuth());
+
 app.get("/api/recipes", recipesListHandler());
 app.get("/api/recipes/by-ids", recipesByIdsHandler());
 app.get("/api/recipes/:id", recipesDetailHandler());
@@ -304,9 +321,7 @@ app.get("/api/usage-counts", usageCountsHandler());
 app.all("/api/auth/*", async (c) => auth.handler(c.req.raw));
 
 app.post("/api/account/update-name", async (c) => {
-    const session = await auth.api.getSession({ headers: c.req.raw.headers });
-    if (!session?.user) return c.text("Unauthorized", 401);
-
+    const user = c.get("user");
     const formData = await c.req.raw.formData();
     const firstName = (formData.get("firstName") as string)?.trim() ?? "";
     const lastName = (formData.get("lastName") as string)?.trim() ?? "";
@@ -314,7 +329,7 @@ app.post("/api/account/update-name", async (c) => {
     if (!firstName || !lastName) return c.text("Missing fields", 400);
 
     try {
-      await updateUserName(session.user.id, { firstName, lastName });
+      await updateUserName(user.id, { firstName, lastName });
       return c.body(null, 200);
     } catch {
       return c.text("Error updating name", 500);
@@ -322,9 +337,7 @@ app.post("/api/account/update-name", async (c) => {
   });
 
 app.post("/api/account/change-email", async (c) => {
-    const session = await auth.api.getSession({ headers: c.req.raw.headers });
-    if (!session?.user) return c.text("Unauthorized", 401);
-
+    const user = c.get("user");
     const formData = await c.req.raw.formData();
     const newEmail = formData.get("newEmail") as string;
     const currentPassword = formData.get("currentPassword") as string;
@@ -337,7 +350,7 @@ app.post("/api/account/change-email", async (c) => {
         body: { newEmail },
       });
       await logAuditEvent({
-        userId: session.user.id,
+        userId: user.id,
         action: "email_change",
         ipAddress: clientIp(c.req.raw),
         userAgent: c.req.header("user-agent") ?? null,
@@ -352,9 +365,7 @@ app.post("/api/account/change-email", async (c) => {
   });
 
 app.post("/api/account/change-password", async (c) => {
-    const session = await auth.api.getSession({ headers: c.req.raw.headers });
-    if (!session?.user) return c.text("Unauthorized", 401);
-
+    const user = c.get("user");
     const formData = await c.req.raw.formData();
     const currentPassword = formData.get("currentPassword") as string;
     const newPassword = formData.get("newPassword") as string;
@@ -374,7 +385,7 @@ app.post("/api/account/change-password", async (c) => {
         },
       });
       await logAuditEvent({
-        userId: session.user.id,
+        userId: user.id,
         action: "password_change",
         ipAddress: clientIp(c.req.raw),
         userAgent: c.req.header("user-agent") ?? null,
@@ -389,11 +400,7 @@ app.post("/api/account/change-password", async (c) => {
   });
 
 app.post("/api/stripe/checkout", async (c) => {
-    const session = await auth.api.getSession({ headers: c.req.raw.headers });
-    if (!session?.user) {
-      return c.json({ error: "Authentication required" }, 401);
-    }
-
+    const user = c.get("user");
     if (!validateCsrf(c.req.raw)) {
       return c.json({ error: "CSRF validation failed" }, 403);
     }
@@ -412,9 +419,9 @@ app.post("/api/stripe/checkout", async (c) => {
     if (!plan) return c.json({ error: "Invalid price ID" }, 400);
 
     const appOrigin = new URL(c.req.url).origin;
-    const userId = session.user.id;
+    const userId = user.id;
     const existingCustomerId = await getStripeCustomerId(userId);
-    const customerId = existingCustomerId ?? (await createCustomer({ email: session.user.email ?? undefined, userId })).id;
+    const customerId = existingCustomerId ?? (await createCustomer({ email: user.email ?? undefined, userId })).id;
     const checkoutSession = await createCheckoutSession({
       customerId,
       priceId,
@@ -427,11 +434,10 @@ app.post("/api/stripe/checkout", async (c) => {
   });
 
 app.post("/api/stripe/portal", async (c) => {
-    const session = await auth.api.getSession({ headers: c.req.raw.headers });
-    if (!session?.user) return c.json({ error: "Authentication required" }, 401);
+    const user = c.get("user");
     if (!validateCsrf(c.req.raw)) return c.json({ error: "CSRF validation failed" }, 403);
 
-    const customerId = await getStripeCustomerId(session.user.id);
+    const customerId = await getStripeCustomerId(user.id);
     if (!customerId) return c.json({ error: "No subscription found" }, 404);
     const portalSession = await createPortalSession(customerId, `${new URL(c.req.url).origin}/settings/billing`);
     return c.json({ url: portalSession.url });
