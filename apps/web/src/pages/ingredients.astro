@@ -8,8 +8,8 @@ import {
   ingredientUsageResponseSchema,
   usageCountsResponseSchema,
 } from "@recetario/types";
-import IngredientsContent from "@/components/ingredients/IngredientsContent.astro";
-import IngredientsSkeleton from "@/components/ingredients/IngredientsSkeleton.astro";
+import IngredientsContent from "@/components/templates/ingredients/IngredientsContent.astro";
+import IngredientsSkeleton from "@/components/templates/ingredients/IngredientsSkeleton.astro";
 
 if (!Astro.locals.session || !Astro.locals.user) {
   return Astro.redirect("/sign-in");

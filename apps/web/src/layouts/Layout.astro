@@ -1,12 +1,12 @@
 ---
 import '@/styles/global.css'
 import { ClientRouter } from "astro:transitions";
-import Icon from "@/components/ui/Icon.astro";
+import Icon from "@/components/atoms/Icon.astro";
 import { hasFeature } from '@recetario/stripe'
 import { getAccentCssVars } from "../lib/accent-colors";
 import type { AccentFamily } from "../lib/accent-colors";
-import Header from '@/components/Header.astro'
-import RecipesSidebar from '@/components/RecipesSidebar.astro'
+import Header from '@/components/organisms/shared/Header.astro'
+import RecipesSidebar from '@/components/organisms/shared/RecipesSidebar.astro'
 
 const { currentPage, title, breadcrumbs } = Astro.props;
 const { showSideBar, showHeader = true, removeContentWrapper = false } = Astro.props;
@@ -63,6 +63,7 @@ const sidebarCollapsed = Astro.cookies.get("kitchcalc-sidebar-collapsed")?.value
     <ClientRouter fallback="none" />
 	</head>
 	<body class="bg-background flex flex-col min-h-dvh md:h-dvh md:overflow-hidden">
+    <div id="nav-progress-bar" class="fixed top-0 left-0 right-0 h-1 bg-accent-600 z-100 opacity-0 pointer-events-none transition-all duration-300 w-0"></div>
     <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-100 focus:bg-accent-600 focus:text-white focus:rounded-xl focus:px-4 focus:py-2 focus:outline-none">Saltar al contenido</a>
     {showHeader && (
       <Header
@@ -117,7 +118,7 @@ const sidebarCollapsed = Astro.cookies.get("kitchcalc-sidebar-collapsed")?.value
           >
             <a
               href={recipeHref}
-              data-astro-prefetch="hover"
+              data-astro-prefetch="viewport"
               class:list={[
                 'min-h-11 rounded-xl flex flex-col items-center justify-center gap-0.5 text-[11px] sm:text-xs font-bold transition-colors',
                 currentPage === 'recipes' ? 'bg-accent-600 text-white' : 'text-muted-foreground hover:bg-muted'
@@ -128,7 +129,7 @@ const sidebarCollapsed = Astro.cookies.get("kitchcalc-sidebar-collapsed")?.value
             </a>
             <a
               href="/ingredients"
-              data-astro-prefetch="hover"
+              data-astro-prefetch="viewport"
               class:list={[
                 'min-h-11 rounded-xl flex flex-col items-center justify-center gap-0.5 text-[11px] sm:text-xs font-bold transition-colors',
                 currentPage === 'ingredients' ? 'bg-accent-600 text-white' : 'text-muted-foreground hover:bg-muted'
@@ -140,7 +141,7 @@ const sidebarCollapsed = Astro.cookies.get("kitchcalc-sidebar-collapsed")?.value
             {showProduction && (
               <a
                 href="/produccion"
-                data-astro-prefetch="hover"
+                data-astro-prefetch="viewport"
                 class:list={[
                   'min-h-11 rounded-xl flex flex-col items-center justify-center gap-0.5 text-[11px] sm:text-xs font-bold transition-colors',
                   currentPage === 'production' ? 'bg-accent-600 text-white' : 'text-muted-foreground hover:bg-muted'
@@ -152,7 +153,7 @@ const sidebarCollapsed = Astro.cookies.get("kitchcalc-sidebar-collapsed")?.value
             )}
             <a
               href="/settings"
-              data-astro-prefetch="hover"
+              data-astro-prefetch="viewport"
               class:list={[
                 'min-h-11 rounded-xl flex flex-col items-center justify-center gap-0.5 text-[11px] sm:text-xs font-bold transition-colors',
                 currentPage === 'settings' ? 'bg-accent-600 text-white' : 'text-muted-foreground hover:bg-muted'
@@ -209,7 +210,10 @@ const sidebarCollapsed = Astro.cookies.get("kitchcalc-sidebar-collapsed")?.value
 </style>
 
 <script>
-import { getAccentCssVars } from "../lib/accent-colors";
+  import { getAccentCssVars } from "../lib/accent-colors";
+  import { setupGlobalFormSubmitListener } from "../lib/mutation-pending";
+
+  setupGlobalFormSubmitListener();
 
   function getEffectiveTheme(pref: string): string {
     if (pref === 'system') {
@@ -249,32 +253,53 @@ import { getAccentCssVars } from "../lib/accent-colors";
   applyTheme();
   setupOsListener();
 
-  document.addEventListener('astro:before-swap', (event) => {
+  document.addEventListener("astro:before-preparation", () => {
+    const bar = document.getElementById("nav-progress-bar");
+    if (bar) {
+      bar.style.width = "40%";
+      bar.style.opacity = "1";
+    }
+  });
+
+  document.addEventListener("astro:before-swap", (event) => {
+    const bar = document.getElementById("nav-progress-bar");
+    if (bar) {
+      bar.style.width = "100%";
+      setTimeout(() => {
+        bar.style.opacity = "0";
+        setTimeout(() => {
+          bar.style.width = "0%";
+        }, 300);
+      }, 150);
+    }
+
     const currentHtml = document.documentElement;
     const newHtml = event.newDocument.documentElement;
-    const currentStored = currentHtml.dataset.appTheme || 'system';
-    const newStored = newHtml.dataset.appTheme || 'system';
+    const currentStored = currentHtml.dataset.appTheme || "system";
+    const newStored = newHtml.dataset.appTheme || "system";
 
-    const stored = currentStored !== 'system' && newStored === 'system'
-      ? currentStored
-      : newStored;
-    const accent = newHtml.dataset.appAccent || currentHtml.dataset.appAccent || 'coral';
+    const stored =
+      currentStored !== "system" && newStored === "system"
+        ? currentStored
+        : newStored;
+    const accent =
+      newHtml.dataset.appAccent || currentHtml.dataset.appAccent || "coral";
     const effective = getEffectiveTheme(stored);
 
-    if (effective === 'dark') {
-      newHtml.classList.add('dark');
+    if (effective === "dark") {
+      newHtml.classList.add("dark");
     } else {
-      newHtml.classList.remove('dark');
+      newHtml.classList.remove("dark");
     }
     newHtml.dataset.theme = effective;
 
-    if (typeof getAccentCssVars === 'function') {
+    if (typeof getAccentCssVars === "function") {
       newHtml.style.cssText = getAccentCssVars(accent as string, effective);
     }
   });
 
-  document.addEventListener('astro:after-swap', applyTheme);
-  document.addEventListener('astro:page-load', applyTheme);
+  document.addEventListener("astro:after-swap", applyTheme);
+  document.addEventListener("astro:page-load", applyTheme);
 
   function setupSidebar() {
     const menuBtn = document.getElementById('mobile-menu-btn');

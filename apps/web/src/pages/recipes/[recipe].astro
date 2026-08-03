@@ -14,27 +14,27 @@ import {
   presentationFixedCostSchema,
   ingredientSchema,
 } from '@recetario/types';
-import Icon from "@/components/ui/Icon.astro";
+import Icon from "@/components/atoms/Icon.astro";
 import Layout from "../../layouts/Layout.astro";
-import PresentationCard from "../../components/PresentationCard.astro";
+import PresentationCard from "../../components/organisms/recipes/PresentationCard.astro";
 import { apiFetch, ApiError } from "@/lib/api-client";
 import { hasFeature } from '@recetario/stripe';
 import { parseNumberInput } from '@/lib/form-utils';
 import { sanitizeHtml } from '@/lib/html-sanitizer';
 import { validateCsrf } from '@recetario/auth';
 import { UNIT_OPTIONS } from '@/lib/constants';
-import FeedbackAlert from '../../components/FeedbackAlert.astro';
-import RecipeInstructions from '../../components/RecipeInstructions.astro';
-import InstructionsEditor from '../../components/InstructionsEditor.astro';
-import Button from "../../components/ui/Button.astro";
-import Badge from "../../components/ui/Badge.astro";
-import FinancialSummary from "../../components/ui/FinancialSummary.astro";
-import SectionHeading from "../../components/ui/SectionHeading.astro";
-import Card from "../../components/ui/Card.astro";
+import FeedbackAlert from '../../components/molecules/shared/FeedbackAlert.astro';
+import RecipeInstructions from '../../components/organisms/recipes/RecipeInstructions.astro';
+import InstructionsEditor from '../../components/organisms/recipes/InstructionsEditor.astro';
+import Button from "../../components/atoms/Button.astro";
+import Badge from "../../components/atoms/Badge.astro";
+import FinancialSummary from "../../components/organisms/shared/FinancialSummary.astro";
+import SectionHeading from "../../components/atoms/SectionHeading.astro";
+import Card from "../../components/molecules/shared/Card.astro";
 
 
-import RecipeActionsMenu from "../../components/RecipeActionsMenu.astro";
-import RecipeFixedCosts from "../../components/RecipeFixedCosts.astro";
+import RecipeActionsMenu from "../../components/molecules/recipes/RecipeActionsMenu.astro";
+import RecipeFixedCosts from "../../components/molecules/recipes/RecipeFixedCosts.astro";
 
 const recipeIdParam = Astro.params.recipe;
 const recipeIdNumber = Number(recipeIdParam);
@@ -125,80 +125,7 @@ const getPresentationFormErrorMessage = (error: unknown, fallback: string) => {
   }
 };
 
-/**
- * Render a FixedCostCard HTML snippet for AJAX response.
- * Replicates the display-mode structure from FixedCostCard.astro.
- */
-function renderFixedCostCardSnippet(
-  fc: { id: number; name: string; type: string; base: string; value: number; hours?: number | null },
-  isRecipeLevel: boolean,
-  ownerId: number,
-  csrfToken: string,
-): string {
-  const typeLabel: Record<string, string> = { PERCENTAGE: "Porcentaje", AMOUNT: "Monto" };
-  const baseLabel: Record<string, string> = { PER_BATCH: "Por Mezcla", PER_UNIT: "Por Unidad", PER_HOUR: "Por Hora" };
-  const typeColor: Record<string, string> = {
-    PERCENTAGE: "bg-turmeric-bg text-turmeric-solid border-turmeric-border",
-    AMOUNT: "bg-accent-50 text-accent-600 border-accent-200",
-  };
-  const baseColor: Record<string, string> = {
-    PER_BATCH: "bg-herb-bg text-herb-solid border-herb-border",
-    PER_UNIT: "bg-accent-50 text-accent-600 border-accent-200",
-    PER_HOUR: "bg-chili-bg text-chili-solid border-chili-border",
-  };
-  const displayValue = fc.type === "PERCENTAGE" ? `${fc.value}%` : `$${Number(fc.value).toFixed(2)}`;
-  const ownerType = isRecipeLevel ? "recipe" : "presentation";
-  const hoursHtml = fc.base === "PER_HOUR" && fc.hours != null
-    ? `<span class="fixed-cost-hours text-muted-foreground text-xs tabular-nums">(${fc.hours}h)</span>`
-    : "";
 
-  return `<fixed-cost-card class="bg-card border-border flex flex-col rounded-2xl border p-5 shadow-sm transition-all" data-id="${fc.id}" data-type="${fc.type}" data-base="${fc.base}" data-value="${fc.value}" data-hours="${fc.hours ?? ""}" data-owner-type="${ownerType}">
-<form method="post" class="flex flex-col">
-<input type="hidden" name="action" value="update_fixed_cost" />
-<input type="hidden" name="fixedCostId" value="${fc.id}" />
-<input type="hidden" name="ownerType" value="${ownerType}" />
-<input type="hidden" name="ownerId" value="${ownerId}" />
-<input type="hidden" name="_csrf" value="${csrfToken}" />
-<div class="display-content flex flex-wrap items-center gap-3">
-<div class="flex min-w-0 flex-1 flex-wrap items-center gap-2">
-<span class="fixed-cost-name text-foreground font-[family-name:var(--font-display)] text-base font-bold">${fc.name}</span>
-<span class="type-badge inline-flex items-center rounded-full border px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wide ${typeColor[fc.type]}">${typeLabel[fc.type]}</span>
-<span class="base-badge inline-flex items-center rounded-full border px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wide ${baseColor[fc.base]}">${baseLabel[fc.base]}</span>
-<span class="fixed-cost-value text-foreground font-mono text-sm font-semibold tabular-nums">${displayValue}</span>
-${hoursHtml}
-</div>
-<div class="flex shrink-0 items-center gap-1">
-<button type="button" class="delete-btn hidden inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl text-danger transition-colors hover:bg-danger-bg" aria-label="Eliminar costo fijo" title="Eliminar"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>
-<button type="button" class="edit-btn inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl text-accent-600 transition-colors hover:bg-accent-50" aria-label="Editar costo fijo" aria-pressed="false" title="Editar"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg></button>
-</div>
-</div>
-<div class="edit-content hidden space-y-4">
-<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-<div class="flex flex-col gap-1"><label class="text-subtle-foreground text-[11px] font-bold tracking-[0.16em] uppercase">Nombre</label><input name="name" type="text" class="fixed-cost-name-input border-border bg-background text-foreground focus:ring-accent-500/20 rounded-xl border px-3 py-2 text-sm transition-all focus:ring-2 focus:outline-none" value="${fc.name}" required /></div>
-<div class="flex flex-col gap-1"><label class="text-subtle-foreground text-[11px] font-bold tracking-[0.16em] uppercase">Tipo</label><select name="type" class="fixed-cost-type-select border-border bg-background text-foreground focus:ring-accent-500/20 rounded-xl border px-3 py-2 text-sm transition-all focus:ring-2 focus:outline-none"><option value="PERCENTAGE"${fc.type === "PERCENTAGE" ? " selected" : ""}>Porcentaje</option><option value="AMOUNT"${fc.type === "AMOUNT" ? " selected" : ""}>Monto</option></select></div>
-<div class="flex flex-col gap-1"><label class="text-subtle-foreground text-[11px] font-bold tracking-[0.16em] uppercase">Base</label><select name="base" class="fixed-cost-base-select border-border bg-background text-foreground focus:ring-accent-500/20 rounded-xl border px-3 py-2 text-sm transition-all focus:ring-2 focus:outline-none"><option value="PER_BATCH"${fc.base === "PER_BATCH" ? " selected" : ""}>Por Mezcla</option><option value="PER_UNIT"${fc.base === "PER_UNIT" ? " selected" : ""}>Por Unidad</option>${isRecipeLevel ? `<option value="PER_HOUR"${fc.base === "PER_HOUR" ? " selected" : ""}>Por Hora</option>` : ""}</select></div>
-</div>
-<div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
-<div class="flex flex-col gap-1"><label class="text-subtle-foreground text-[11px] font-bold tracking-[0.16em] uppercase">Valor</label><input name="value" type="text" inputmode="decimal" class="fixed-cost-value-input border-border bg-background text-foreground focus:ring-accent-500/20 font-mono rounded-xl border px-3 py-2 text-sm transition-all focus:ring-2 focus:outline-none" value="${fc.value}" required /></div>
-<div class="hours-field flex flex-col gap-1"${fc.base !== "PER_HOUR" ? ' style="display:none"' : ""}><label class="text-subtle-foreground text-[11px] font-bold tracking-[0.16em] uppercase">Horas</label><input name="hours" type="text" inputmode="decimal" class="fixed-cost-hours-input border-border bg-background text-foreground focus:ring-accent-500/20 font-mono rounded-xl border px-3 py-2 text-sm transition-all focus:ring-2 focus:outline-none" value="${fc.hours ?? 1}" /></div>
-<div class="hidden sm:block"></div>
-</div>
-<div class="flex flex-wrap items-center justify-between gap-3 border-t border-border-light pt-4">
-<div class="flex items-center gap-2"><button type="button" class="edit-delete-btn inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-danger-border px-4 py-2.5 text-sm font-bold text-danger transition-colors hover:bg-danger-bg"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg> Eliminar</button></div>
-<div class="flex items-center gap-2"><button type="button" class="cancel-btn border-border bg-card text-muted-foreground hover:bg-background inline-flex min-h-11 items-center justify-center rounded-xl border px-4 py-2.5 text-sm font-bold transition-colors">Cancelar</button><button type="submit" class="bg-accent-600 hover:bg-accent-700 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold text-white transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Guardar</button></div>
-</div>
-</div>
-<p class="fixed-cost-error text-danger mt-2 hidden text-xs font-semibold"></p>
-</form>
-<dialog data-animated class="delete-dialog fixed inset-0 m-auto w-[calc(100vw-2rem)] max-w-md rounded-3xl p-0 backdrop:bg-backdrop/50">
-<div class="border-border bg-card rounded-3xl border p-6 shadow-2xl">
-<div class="flex items-start gap-3"><div class="bg-danger-bg text-danger flex h-11 w-11 items-center justify-center rounded-2xl"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></div><div><h2 class="text-foreground text-lg font-bold">Confirmar eliminación</h2><p class="text-muted-foreground mt-2 text-sm">¿Eliminar este costo fijo? Esta acción no se puede deshacer.</p></div></div>
-<div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-<button type="button" class="delete-cancel-btn border-border bg-card text-muted-foreground hover:bg-background inline-flex min-h-11 items-center justify-center rounded-xl border px-5 py-3 text-sm font-bold transition-colors">Cancelar</button>
-<button type="button" class="delete-confirm-btn bg-danger-solid hover:bg-danger-hover inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-bold text-white transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg> Eliminar</button>
-</div></div></dialog>
-</fixed-cost-card>`;
-}
 
 if (Astro.request.method === 'POST') {
   const formData = await Astro.request.formData();
@@ -354,7 +281,16 @@ if (Astro.request.method === 'POST') {
     }
   } else if (action === 'update_recipe') {
     if (Number.isFinite(recipeIdNumber)) {
-      const name = String(formData.get('recipeName') || '');
+      let currentRecipe: RecipeWithIngredients | null;
+      try {
+        currentRecipe = await apiFetch<RecipeWithIngredients>(`/api/recipes/${recipeIdNumber}`, {}, Astro);
+      } catch {
+        currentRecipe = null;
+      }
+
+      const rawName = String(formData.get('recipeName') || formData.get('name') || '').trim();
+      const name = rawName || currentRecipe?.name || 'Receta';
+
       const ingredientIds = formData.getAll('ingredientId').map(String);
       const quantities = formData.getAll('quantity').map(String);
       const units = formData.getAll('unit').map(String);
@@ -363,19 +299,28 @@ if (Astro.request.method === 'POST') {
       const ingredientsToSave = [];
       for (let i = 0; i < ingredientIds.length; i++) {
         const id = Number(ingredientIds[i]);
-        const q = Number(quantities[i]);
-        if (Number.isFinite(id) && Number.isFinite(q)) {
+        const q = parseNumberInput(quantities[i]);
+        if (Number.isFinite(id) && id > 0 && Number.isFinite(q) && q > 0) {
+          const unit = (units[i] || '').trim() || 'unidad';
           ingredientsToSave.push({
             ingredientId: id,
             quantity: q,
-            unit: units[i] || '',
-            comment: comments[i] || null,
+            unit,
+            comment: comments[i] ? String(comments[i]).trim() : undefined,
           });
         }
       }
 
-      const desiredMargin = Number(formData.get('desiredMargin')) || 0;
-      const fixedCostsPercentage = Number(formData.get('fixedCostsPercentage')) || 0;
+      const parsedMargin = parseNumberInput(formData.get('desiredMargin'));
+      const desiredMargin = Number.isFinite(parsedMargin) && parsedMargin >= 0 && parsedMargin < 100
+        ? parsedMargin
+        : (currentRecipe?.desiredMargin ?? 0);
+
+      const parsedFcPct = parseNumberInput(formData.get('fixedCostsPercentage'));
+      const fixedCostsPercentage = Number.isFinite(parsedFcPct) && parsedFcPct >= 0
+        ? parsedFcPct
+        : (currentRecipe?.fixedCostsPercentage ?? 0);
+
       const category = String(formData.get('category') || '').trim() || null;
       const rawInstructions = String(formData.get('instructions') || '').trim();
       const instructions = rawInstructions ? sanitizeHtml(rawInstructions) : undefined;
@@ -397,8 +342,7 @@ if (Astro.request.method === 'POST') {
         const message = error && typeof error === 'object' && 'message' in error
           ? String((error as { message: string }).message)
           : 'No se pudo actualizar la receta.';
-        void message;
-        return redirectToRecipePage({ type: 'error', message: message });
+        return redirectToRecipePage({ type: 'error', message });
       }
     }
   } else if (action === 'duplicate_recipe') {
@@ -435,7 +379,7 @@ if (Astro.request.method === 'POST') {
     if (!expectsJsonResponse) {
       return new Response('Expected JSON request', { status: 400 });
     }
-    const fcRecipeId = Number(formData.get('recipeId'));
+    const fcRecipeId = Number(formData.get('recipeId') || formData.get('ownerId'));
     if (!Number.isFinite(fcRecipeId)) {
       return new Response('Invalid request', { status: 400 });
     }
@@ -445,7 +389,8 @@ if (Astro.request.method === 'POST') {
       const base = String(formData.get('base') || 'PER_BATCH');
       const value = parseNumberInput(formData.get('value'));
       const hoursRaw = formData.has('hours') ? formData.get('hours') : null;
-      const hours = hoursRaw !== null && hoursRaw !== '' ? Number(hoursRaw) : null;
+      const parsedHours = hoursRaw !== null && hoursRaw !== '' ? parseNumberInput(hoursRaw) : null;
+      const hours = parsedHours !== null && Number.isFinite(parsedHours) ? parsedHours : null;
 
       const created = await apiFetch(
         `/api/recipes/${fcRecipeId}/fixed-costs`,
@@ -463,21 +408,6 @@ if (Astro.request.method === 'POST') {
         Astro,
       );
 
-      const fixedCostCardHtml = renderFixedCostCardSnippet(
-        {
-          id: created.id,
-          name: created.name,
-          type: created.type,
-          base: created.base,
-          value: created.value,
-          hours: created.hours ?? null,
-        },
-        true,
-        fcRecipeId,
-        Astro.locals.csrfToken || "",
-      );
-      void fixedCostCardHtml;
-
       return jsonResponse({
         fixedCost: {
           id: created.id,
@@ -487,7 +417,6 @@ if (Astro.request.method === 'POST') {
           value: created.value,
           hours: created.hours,
         },
-        fixedCostCardHtml: fixedCostCardHtml,
       });
     } catch (error) {
       if (error instanceof ApiError && error.status === 404) {
@@ -499,7 +428,7 @@ if (Astro.request.method === 'POST') {
     if (!expectsJsonResponse) {
       return new Response('Expected JSON request', { status: 400 });
     }
-    const presId = Number(formData.get('presentationId'));
+    const presId = Number(formData.get('presentationId') || formData.get('ownerId'));
     if (!Number.isFinite(presId)) {
       return new Response('Invalid request', { status: 400 });
     }
@@ -524,21 +453,6 @@ if (Astro.request.method === 'POST') {
         Astro,
       );
 
-      const fixedCostCardHtml = renderFixedCostCardSnippet(
-        {
-          id: created.id,
-          name: created.name,
-          type: created.type,
-          base: created.base,
-          value: created.value,
-          hours: null,
-        },
-        false,
-        presId,
-        Astro.locals.csrfToken || "",
-      );
-      void fixedCostCardHtml;
-
       return jsonResponse({
         fixedCost: {
           id: created.id,
@@ -548,7 +462,6 @@ if (Astro.request.method === 'POST') {
           value: created.value,
           hours: null,
         },
-        fixedCostCardHtml: fixedCostCardHtml,
       });
     } catch (error) {
       if (error instanceof ApiError && error.status === 404) {
@@ -569,16 +482,22 @@ if (Astro.request.method === 'POST') {
       const name = String(formData.get('name') || '').trim();
       const type = String(formData.get('type') || 'AMOUNT');
       const base = String(formData.get('base') || 'PER_BATCH');
-      const value = Number(formData.get('value'));
+      const value = parseNumberInput(formData.get('value'));
       const hoursRaw = formData.has('hours') ? formData.get('hours') : null;
-      const hours = hoursRaw !== null && hoursRaw !== '' ? Number(hoursRaw) : null;
+      const parsedHours = hoursRaw !== null && hoursRaw !== '' ? parseNumberInput(hoursRaw) : null;
+      const hours = parsedHours !== null && Number.isFinite(parsedHours) ? parsedHours : null;
+
+      if (!Number.isFinite(value) || value < 0) {
+        return new Response('El valor debe ser un número mayor o igual a 0', { status: 400 });
+      }
 
       if (ownerType === 'recipe') {
-        if (!Number.isFinite(recipeIdNumber)) {
+        const targetRecipeId = Number(formData.get('recipeId') || formData.get('ownerId')) || recipeIdNumber;
+        if (!Number.isFinite(targetRecipeId)) {
           return new Response('Invalid request', { status: 400 });
         }
         await apiFetch(
-          `/api/recipes/${recipeIdNumber}/fixed-costs/${fixedCostId}`,
+          `/api/recipes/${targetRecipeId}/fixed-costs/${fixedCostId}`,
           {
             method: 'PATCH',
             body: { name, type, base, value, hours },
@@ -587,8 +506,8 @@ if (Astro.request.method === 'POST') {
           Astro,
         );
       } else {
-        const presId = Number(formData.get('presentationId'));
-        if (!Number.isFinite(presId)) {
+        const presId = Number(formData.get('presentationId') || formData.get('ownerId'));
+        if (!Number.isFinite(presId) || presId <= 0) {
           return new Response('Invalid request', { status: 400 });
         }
         await apiFetch(
@@ -622,17 +541,18 @@ if (Astro.request.method === 'POST') {
     }
     try {
       if (ownerType === 'recipe') {
-        if (!Number.isFinite(recipeIdNumber)) {
+        const targetRecipeId = Number(formData.get('recipeId') || formData.get('ownerId')) || recipeIdNumber;
+        if (!Number.isFinite(targetRecipeId)) {
           return new Response('Invalid request', { status: 400 });
         }
         await apiFetch(
-          `/api/recipes/${recipeIdNumber}/fixed-costs/${fixedCostId}`,
+          `/api/recipes/${targetRecipeId}/fixed-costs/${fixedCostId}`,
           { method: 'DELETE' },
           Astro,
         );
       } else {
-        const presId = Number(formData.get('presentationId'));
-        if (!Number.isFinite(presId)) {
+        const presId = Number(formData.get('presentationId') || formData.get('ownerId'));
+        if (!Number.isFinite(presId) || presId <= 0) {
           return new Response('Invalid request', { status: 400 });
         }
         await apiFetch(
@@ -673,6 +593,8 @@ try {
 
 const { ingredients: recipeIngredients, name, category, instructions, id, desiredMargin, fixedCostsPercentage, presentations, updatedAt } = recipe;
 const ingredients = recipeIngredients.map((ri) => ({ id: ri.ingredient.id, name: ri.ingredient.name }));
+const formatIngredientLabel = (i: { name?: string | null; brand?: string | null }) =>
+  i.brand && i.name ? `${i.name} (${i.brand})` : (i.name ?? '');
 const hasCookingMode = hasFeature(Astro.locals.subscription, "cooking_mode");
 
 const isEditMode = Astro.url.searchParams.get('edit') === 'true';
@@ -1090,7 +1012,7 @@ const financialEditFields = buildFinancialEditFields();
                       <div class="ingredient-picker relative" data-ingredient-picker>
                         <select name="ingredientId" form={recipeEditFormId} class="hidden">
                           {allIngredients.map(i => (
-                            <option value={i.id} data-unit={i.unit} selected={i.id === ri.ingredientId}>{i.name}</option>
+                            <option value={i.id} data-unit={i.unit} selected={i.id === ri.ingredientId}>{formatIngredientLabel(i)}</option>
                           ))}
                         </select>
                         <div class="relative">
@@ -1098,19 +1020,26 @@ const financialEditFields = buildFinancialEditFields();
                             class="ingredient-search-input w-full bg-card md:bg-background border border-border rounded-xl pl-9 pr-8 p-2 text-sm font-semibold text-secondary-foreground focus:ring-2 focus:ring-accent-500/20 placeholder:text-muted-foreground"
                             placeholder="Buscar..."
                             autocomplete="off"
-                            value={allIngredients.find(i => i.id === ri.ingredientId)?.name ?? ''}
+                            value={(() => {
+                              const matched = allIngredients.find(i => i.id === ri.ingredientId);
+                              return matched ? formatIngredientLabel(matched) : '';
+                            })()}
                           />
                           <svg class="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-                          <button type="button" class="ingredient-picker-clear absolute right-2 top-1/2 -translate-y-1/2 hidden" aria-label="Limpiar">
+                          <button type="button" class={`ingredient-picker-clear absolute right-2 top-1/2 -translate-y-1/2 ${ri.ingredientId ? '' : 'hidden'}`} aria-label="Limpiar">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-muted-foreground"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                           </button>
                         </div>
                         <div class="ingredient-dropdown hidden absolute z-50 left-0 right-0 mt-1 max-h-48 overflow-y-auto bg-card border border-border rounded-xl shadow-lg">
-                          {allIngredients.map(i => (
-                            <button type="button" class="ingredient-option w-full text-left px-3 py-2 text-sm text-secondary-foreground hover:bg-accent-50 hover:text-accent-600 transition-colors" data-value={i.id} data-unit={i.unit}>
-                              {i.name}
-                            </button>
-                          ))}
+                          {allIngredients.map(i => {
+                            const displayName = formatIngredientLabel(i);
+                            return (
+                              <button type="button" class="ingredient-option w-full text-left px-3 py-2 text-sm text-secondary-foreground hover:bg-accent-50 hover:text-accent-600 transition-colors flex items-center justify-between gap-2" data-value={i.id} data-unit={i.unit} data-name={displayName}>
+                                <span class="font-medium">{i.name}</span>
+                                {i.brand ? <span class="text-xs text-subtle-foreground">({i.brand})</span> : null}
+                              </button>
+                            );
+                          })}
                         </div>
                       </div>
                     </div>
@@ -1162,7 +1091,12 @@ const financialEditFields = buildFinancialEditFields();
                     <article class="px-5 py-4 space-y-3">
                       <div class="flex items-start justify-between gap-3">
                         <div class="min-w-0">
-                          <p class="font-semibold text-foreground leading-tight break-words">{ri.ingredient.name}</p>
+                          <p class="font-semibold text-foreground leading-tight break-words">
+                            {ri.ingredient.name}
+                            {ri.ingredient.brand ? (
+                              <span class="ml-1.5 text-xs font-normal text-subtle-foreground">({ri.ingredient.brand})</span>
+                            ) : null}
+                          </p>
                           <p class="mt-1 text-xs text-muted-foreground">Cantidad usada en esta mezcla</p>
                           {ri.comment ? (
                             <p class="mt-1 text-xs text-subtle-foreground ingredient-comment hidden break-words">{ri.comment}</p>
@@ -1214,7 +1148,13 @@ const financialEditFields = buildFinancialEditFields();
                       return (
                         <tr class="group hover:bg-hover-muted dark:hover:bg-hover-muted transition-colors">
                           <td class="px-6 lg:px-8 py-4 border-r border-border-light w-max">
-                            <div class="font-semibold text-secondary-foreground whitespace-nowrap inline-block">{ri.ingredient.name}</div>
+                            <div class="font-semibold text-secondary-foreground whitespace-nowrap inline-block">
+                              {ri.ingredient.name}
+                              {' '}
+                              {ri.ingredient.brand ? (
+                                <span class="ml-1.5 text-xs font-normal text-subtle-foreground">({ri.ingredient.brand})</span>
+                              ) : null}
+                            </div>
                             {ri.comment ? (
                               <div class="mt-1 text-xs text-subtle-foreground ingredient-comment hidden max-w-[28ch] break-words">{ri.comment}</div>
                             ) : null}
@@ -1349,7 +1289,7 @@ const financialEditFields = buildFinancialEditFields();
               class="mt-2 w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground outline-none transition-colors placeholder:text-subtle-foreground focus:border-accent-500 focus:ring-2 focus:ring-accent-500/20"
             />
 
-            <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div class="mt-4 grid grid-cols-1 gap-1 sm:grid-cols-2">
               <div>
                 <label
                   class="block text-sm font-semibold text-secondary-foreground"
@@ -1501,6 +1441,7 @@ const financialEditFields = buildFinancialEditFields();
     };
 
     const closeDialog = () => {
+      if (dialog.dataset.submitting === '1' || dialog.getAttribute('aria-busy') === 'true') return;
       if (dialog.open) {
         dialog.close();
       }
@@ -1532,6 +1473,8 @@ const financialEditFields = buildFinancialEditFields();
 
   const setupTabs = () => {
     const tabs = document.querySelectorAll<HTMLButtonElement>('.tab-btn');
+    if (!tabs.length) return;
+
     const panels = document.querySelectorAll<HTMLDivElement>('.tab-panel');
 
     const activateTab = (tabId: string) => {
@@ -1556,13 +1499,18 @@ const financialEditFields = buildFinancialEditFields();
       if (window.location.hash !== `#${tabId}`) {
         history.replaceState(null, '', `#${tabId}`);
       }
-      // Persist tab across redirects
-      // eslint-disable-next-line no-empty
-      try { sessionStorage.setItem(`recipe-tab:${window.location.pathname}`, tabId); } catch {}
+
     };
 
+    // Clean up _fc search param if present in URL
+    const currentUrl = new URL(window.location.href);
+    if (currentUrl.searchParams.has('_fc')) {
+      currentUrl.searchParams.delete('_fc');
+      history.replaceState(null, '', currentUrl.toString());
+    }
+
     // Get initial tab from hash or default to ingredientes
-    const initialTab = window.location.hash?.replace('#', '') || sessionStorage.getItem(`recipe-tab:${window.location.pathname}`) || 'ingredientes';
+    const initialTab = window.location.hash?.replace('#', '') || 'ingredientes';
     activateTab(initialTab);
 
     // Tab click handlers
@@ -1606,15 +1554,18 @@ const financialEditFields = buildFinancialEditFields();
 
     // Hash change listener
     const handleHashChange = () => {
+      const currentTabs = document.querySelectorAll<HTMLButtonElement>('.tab-btn');
+      if (!currentTabs.length) return;
+
       const hash = window.location.hash?.replace('#', '') || 'ingredientes';
       if (['ingredientes', 'costos-fijos', 'presentaciones', 'preparacion'].includes(hash)) {
         activateTab(hash);
       }
     };
 
-    if (!tabList?.dataset.hashChangeBound) {
+    if (tabList && !tabList.dataset.hashChangeBound) {
       window.addEventListener('hashchange', handleHashChange);
-      if (tabList) tabList.dataset.hashChangeBound = '1';
+      tabList.dataset.hashChangeBound = '1';
     }
   };
 
@@ -1635,7 +1586,7 @@ const financialEditFields = buildFinancialEditFields();
         <div class="ingredient-picker relative" data-ingredient-picker>
           <select name="ingredientId" form={recipeEditFormId} class="hidden">
             {allIngredients.map(i => (
-              <option value={i.id} data-unit={i.unit}>{i.name}</option>
+              <option value={i.id} data-unit={i.unit}>{formatIngredientLabel(i)}</option>
             ))}
           </select>
           <div class="relative">
@@ -1651,11 +1602,15 @@ const financialEditFields = buildFinancialEditFields();
             </button>
           </div>
           <div class="ingredient-dropdown hidden absolute z-50 left-0 right-0 mt-1 max-h-48 overflow-y-auto bg-card border border-border rounded-xl shadow-lg">
-            {allIngredients.map(i => (
-              <button type="button" class="ingredient-option w-full text-left px-3 py-2 text-sm text-secondary-foreground hover:bg-accent-50 hover:text-accent-600 transition-colors" data-value={i.id} data-unit={i.unit}>
-                {i.name}
-              </button>
-            ))}
+            {allIngredients.map(i => {
+              const displayName = formatIngredientLabel(i);
+              return (
+                <button type="button" class="ingredient-option w-full text-left px-3 py-2 text-sm text-secondary-foreground hover:bg-accent-50 hover:text-accent-600 transition-colors flex items-center justify-between gap-2" data-value={i.id} data-unit={i.unit} data-name={displayName}>
+                  <span class="font-medium">{i.name}</span>
+                  {i.brand ? <span class="text-xs text-subtle-foreground">({i.brand})</span> : null}
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>
@@ -1711,6 +1666,27 @@ const financialEditFields = buildFinancialEditFields();
       if (form instanceof HTMLFormElement && form.dataset.bound !== '1') {
         form.dataset.bound = '1';
         form.addEventListener('submit', (event) => {
+          const tbody = document.getElementById('edit-ingredients-tbody');
+          if (tbody) {
+            tbody.querySelectorAll('.edit-ingredient-row').forEach((row) => {
+              const select = row.querySelector<HTMLSelectElement>('select[name="ingredientId"]');
+              const input = row.querySelector<HTMLInputElement>('.ingredient-search-input');
+              if (select && input && input.value.trim() && !select.value) {
+                const query = input.value.trim().toLowerCase();
+                const dropdown = row.querySelector('.ingredient-dropdown');
+                const options = dropdown?.querySelectorAll<HTMLElement>('.ingredient-option');
+                let matchedVal = '';
+                options?.forEach((opt) => {
+                  const name = (opt.dataset.name || opt.textContent || '').toLowerCase();
+                  if (!matchedVal && (name.includes(query) || query.includes(name))) {
+                    matchedVal = opt.dataset.value || '';
+                  }
+                });
+                if (matchedVal) select.value = matchedVal;
+              }
+            });
+          }
+
           const rows = document.querySelectorAll(
             `[name="quantity"][form="${form.id}"]`,
           );
@@ -1756,7 +1732,7 @@ const financialEditFields = buildFinancialEditFields();
           if (!options) return;
           let hasVisible = false;
           options.forEach(opt => {
-            const text = (opt.textContent || '').toLowerCase();
+            const text = (opt.dataset.name || opt.textContent || '').toLowerCase();
             const match = !query || text.includes(query);
             opt.classList.toggle('hidden', !match);
             if (match) hasVisible = true;
@@ -1776,13 +1752,20 @@ const financialEditFields = buildFinancialEditFields();
           const clearBtn = picker.querySelector('.ingredient-picker-clear');
 
           const val = option.dataset.value;
+          const unit = option.dataset.unit;
           if (select && val) {
             select.value = val;
             select.dispatchEvent(new Event('change', { bubbles: true }));
           }
-          if (input) input.value = option.textContent || '';
+          if (input) input.value = option.dataset.name || option.textContent?.trim() || '';
           if (dropdown) dropdown.classList.add('hidden');
           if (clearBtn) clearBtn.classList.remove('hidden');
+
+          const row = picker.closest('.edit-ingredient-row');
+          const unitSelect = row?.querySelector<HTMLSelectElement>('.unit-select');
+          if (unitSelect && unit) {
+            unitSelect.value = unit;
+          }
         });
 
         tbody.addEventListener('click', (e) => {

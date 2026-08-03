@@ -1,8 +1,8 @@
 ---
 import Layout from "@/layouts/Layout.astro";
 import { hasFeature } from "@recetario/stripe";
-import ProductionContent from "@/components/production/ProductionContent.astro";
-import ProductionSkeleton from "@/components/production/ProductionSkeleton.astro";
+import ProductionContent from "@/components/templates/production/ProductionContent.astro";
+import ProductionSkeleton from "@/components/templates/production/ProductionSkeleton.astro";
 
 if (!Astro.locals.session || !Astro.locals.user) {
   return Astro.redirect("/sign-in");

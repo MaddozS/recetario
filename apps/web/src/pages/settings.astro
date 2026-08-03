@@ -3,8 +3,8 @@ import Layout from "@/layouts/Layout.astro";
 import { ACCENT_FAMILIES, type AccentFamily } from "@/lib/accent-colors";
 import { validateCsrf } from "@recetario/auth";
 import { apiFetch } from "@/lib/api-client";
-import SettingsContent from "@/components/settings/SettingsContent.astro";
-import SettingsSkeleton from "@/components/settings/SettingsSkeleton.astro";
+import SettingsContent from "@/components/templates/settings/SettingsContent.astro";
+import SettingsSkeleton from "@/components/templates/settings/SettingsSkeleton.astro";
 
 if (!Astro.locals.session || !Astro.locals.user) {
   return Astro.redirect("/sign-in");

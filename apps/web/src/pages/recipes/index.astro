@@ -1,5 +1,5 @@
 ---
-import Icon from "@/components/ui/Icon.astro";
+import Icon from "@/components/atoms/Icon.astro";
 import Layout from "@/layouts/Layout.astro";
 import { apiFetch, ApiError } from "@/lib/api-client";
 import {
@@ -7,9 +7,9 @@ import {
   usageCountsResponseSchema,
 } from "@recetario/types";
 import { canCreateRecipe, hasFeature } from "@recetario/stripe";
-import Button from "@/components/ui/Button.astro";
-import RecipesContent from "@/components/recipes/RecipesContent.astro";
-import RecipesSkeleton from "@/components/recipes/RecipesSkeleton.astro";
+import Button from "@/components/atoms/Button.astro";
+import RecipesContent from "@/components/templates/recipes/RecipesContent.astro";
+import RecipesSkeleton from "@/components/templates/recipes/RecipesSkeleton.astro";
 import { validateCsrf } from "@recetario/auth";
 
 if (!Astro.locals.session || !Astro.locals.user) {
@@ -94,6 +94,29 @@ if (Astro.request.method === "POST") {
         return Astro.redirect(errorUrl.toString());
       }
     }
+  }
+
+  if (action === "delete_recipe") {
+    const recipeIdToDelete = Number(formData.get("recipeId"));
+    if (Number.isFinite(recipeIdToDelete)) {
+      try {
+        await apiFetch(
+          `/api/recipes/${recipeIdToDelete}`,
+          { method: "DELETE" },
+          Astro,
+        );
+      } catch (error) {
+        const message =
+          error instanceof ApiError
+            ? error.message
+            : "No se pudo eliminar la receta.";
+        const errorUrl = new URL(Astro.url);
+        errorUrl.searchParams.set("type", "error");
+        errorUrl.searchParams.set("message", message);
+        return Astro.redirect(errorUrl.toString());
+      }
+    }
+    return Astro.redirect("/recipes");
   }
 
   if (createdRecipeId !== null) {
@@ -183,12 +206,21 @@ const showUpgradeModal = Astro.url.searchParams.get("upgrade") === "1";
       const dialogId = "create-recipe-dialog";
       const dialog = document.getElementById(dialogId);
       const nameInput = document.getElementById("create-recipe-name");
-      const openButtons = document.querySelectorAll(`[data-open-create-recipe-dialog="${dialogId}"]`);
-      const closeButtons = document.querySelectorAll(`[data-close-create-recipe-dialog="${dialogId}"]`);
-
       if (!(dialog instanceof HTMLDialogElement)) return;
 
       const openDialog = () => {
+        delete dialog.dataset.submitting;
+        dialog
+          .querySelectorAll<
+            HTMLInputElement | HTMLSelectElement | HTMLButtonElement | HTMLTextAreaElement
+          >("input, select, button, textarea")
+          .forEach((el) => {
+            el.disabled = false;
+            if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement) {
+              el.readOnly = false;
+            }
+            el.style.pointerEvents = "";
+          });
         const form = dialog.querySelector("form");
         if (form instanceof HTMLFormElement) form.reset();
         if (!dialog.open) dialog.showModal();

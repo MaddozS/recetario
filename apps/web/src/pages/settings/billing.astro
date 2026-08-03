@@ -3,7 +3,7 @@ import Layout from "@/layouts/Layout.astro";
 import { getRemainingRecipes, getRemainingIngredients } from "@recetario/stripe";
 import { apiFetch } from "@/lib/api-client";
 import { plansListResponseSchema, usageCountsResponseSchema } from "@recetario/types";
-import BillingSection from "@/components/BillingSection.astro";
+import BillingSection from "@/components/organisms/settings/BillingSection.astro";
 
 if (!Astro.locals.session || !Astro.locals.user) {
   return Astro.redirect("/sign-in");
