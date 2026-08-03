@@ -5,19 +5,13 @@ import { errorHandler } from "../error-handler";
 import { hostAllowlist } from "../host-allowlist";
 import { plansListResponseSchema } from "@recetario/types";
 
-const { mockGetSubscriptionPlans, mockSeedSubscriptionPlans } = vi.hoisted(() => {
-  const mockGetSubscriptionPlans = vi.fn();
-  const mockSeedSubscriptionPlans = vi.fn();
-  return { mockGetSubscriptionPlans, mockSeedSubscriptionPlans };
-});
+const { mockGetPricingPlans } = vi.hoisted(() => ({ mockGetPricingPlans: vi.fn() }));
 
-vi.mock("@recetario/db", () => ({
-  getSubscriptionPlans: (activeOnly: boolean) => mockGetSubscriptionPlans(activeOnly),
-  seedSubscriptionPlans: () => mockSeedSubscriptionPlans(),
+vi.mock("@recetario/stripe/server", () => ({
+  getPricingPlans: mockGetPricingPlans,
 }));
 
 const cacheStore = new Map<string, { value: unknown; expiresAt: number }>();
-
 vi.mock("../cache", () => ({
   get: (key: string) => {
     const entry = cacheStore.get(key);
@@ -37,30 +31,46 @@ const { plansHandler } = await import("./plans");
 
 const planFixture = [
   {
-    id: "basic_monthly",
-    stripePriceId: "price_basic_monthly",
-    name: "Basic",
-    tier: "basic",
-    billingInterval: "monthly",
-    priceCents: 999,
-    currency: "mxn",
-    recipesLimit: 75,
-    ingredientsLimit: null,
-    featuresJson: JSON.stringify({ recipe_duplicate: true }),
-    active: true,
+    id: "free",
+    tier: "free",
+    name: "Free",
+    description: "Para empezar a costear",
+    badge: null,
+    currency: "MXN",
+    monthlyPriceId: null,
+    monthlyDisplay: null,
+    yearlyPriceId: null,
+    yearlyDisplay: null,
+    yearlyPerMonthDisplay: null,
+    features: [],
   },
   {
-    id: "pro_monthly",
-    stripePriceId: "price_pro_monthly",
-    name: "Pro",
+    id: "basic",
+    tier: "basic",
+    name: "Basic",
+    description: "Para negocios en crecimiento",
+    badge: { text: "Recomendado", class: "bg-success-bg text-success" },
+    currency: "MXN",
+    monthlyPriceId: "price_basic_monthly",
+    monthlyDisplay: "$9.99",
+    yearlyPriceId: null,
+    yearlyDisplay: null,
+    yearlyPerMonthDisplay: null,
+    features: [{ text: "Hasta 75 recetas", included: true }],
+  },
+  {
+    id: "pro",
     tier: "pro",
-    billingInterval: "monthly",
-    priceCents: 1999,
-    currency: "mxn",
-    recipesLimit: null,
-    ingredientsLimit: null,
-    featuresJson: JSON.stringify({ recipe_duplicate: true, pdf_export: true }),
-    active: true,
+    name: "Pro",
+    description: "Para profesionales",
+    badge: { text: "Mas popular", class: "bg-accent-600 text-white" },
+    currency: "MXN",
+    monthlyPriceId: "price_pro_monthly",
+    monthlyDisplay: "$19.99",
+    yearlyPriceId: null,
+    yearlyDisplay: null,
+    yearlyPerMonthDisplay: null,
+    features: [{ text: "Recetas ilimitadas", included: true }],
   },
 ];
 
@@ -75,79 +85,42 @@ function buildApp() {
 
 describe("plansHandler", () => {
   beforeEach(() => {
-    mockGetSubscriptionPlans.mockReset();
-    mockSeedSubscriptionPlans.mockReset();
+    mockGetPricingPlans.mockReset();
     cacheStore.clear();
   });
 
-  it("returns 200 and the list of active plans ordered by price", async () => {
-    mockGetSubscriptionPlans.mockResolvedValueOnce(planFixture);
-
-    const res = await buildApp().request("/api/billing/plans", {}, {});
-
-    expect(res.status).toBe(200);
-    const body = (await res.json()) as Array<{ id: string; priceCents: number; features: Record<string, boolean> }>;
-    expect(body).toHaveLength(2);
-    expect(body[0]?.id).toBe("basic_monthly");
-    expect(body[1]?.id).toBe("pro_monthly");
-    expect(body[1]?.priceCents).toBe(1999);
-    expect(body[0]?.features).toEqual({ recipe_duplicate: true });
-    expect(body[1]?.features).toEqual({ recipe_duplicate: true, pdf_export: true });
-    expect((body[0] as Record<string, unknown>).featuresJson).toBeUndefined();
-
-    expect(mockGetSubscriptionPlans).toHaveBeenCalledTimes(1);
-    expect(mockGetSubscriptionPlans).toHaveBeenCalledWith(true);
-  });
-
-  it("returns an empty array when there are no active plans", async () => {
-    mockGetSubscriptionPlans.mockResolvedValueOnce([]);
-
-    const res = await buildApp().request("/api/billing/plans", {}, {});
-
-    expect(res.status).toBe(200);
-    const body = (await res.json()) as unknown[];
-    expect(body).toEqual([]);
-  });
-
-  it("serves the cached plans on the second call without re-querying the DB", async () => {
-    mockGetSubscriptionPlans.mockResolvedValueOnce(planFixture);
-
-    const app = buildApp();
-    const first = await app.request("/api/billing/plans", {}, {});
-    expect(first.status).toBe(200);
-    expect(mockGetSubscriptionPlans).toHaveBeenCalledTimes(1);
-
-    const second = await app.request("/api/billing/plans", {}, {});
-    expect(second.status).toBe(200);
-    expect(mockGetSubscriptionPlans).toHaveBeenCalledTimes(1);
-  });
-
-  it("rejects requests with the wrong Host header via host allowlist", async () => {
-    const res = await buildApp().request(
-      "http://api.local/api/billing/plans",
-      { headers: { Host: "evil.com" } },
-      { INTERNAL_API_HOST: "api.recetario.app" },
-    );
-    expect(res.status).toBe(403);
-    const body = (await res.json()) as { error: { code: string } };
-    expect(body.error.code).toBe("FORBIDDEN");
-  });
-
-  it("does not require authentication (public pricing data)", async () => {
-    mockGetSubscriptionPlans.mockResolvedValueOnce(planFixture);
-
+  it("returns the enriched pricing plan response", async () => {
+    mockGetPricingPlans.mockResolvedValueOnce(planFixture);
     const res = await buildApp().request("/api/billing/plans", {}, {});
     expect(res.status).toBe(200);
-  });
-
-  it("response body conforms to the consumer contract (z.array(planSchema))", async () => {
-    mockGetSubscriptionPlans.mockResolvedValueOnce(planFixture);
-
-    const res = await buildApp().request("/api/billing/plans", {}, {});
-    expect(res.status).toBe(200);
-
     const body = await res.json();
-    const parsed = plansListResponseSchema.safeParse(body);
-    expect(parsed.success).toBe(true);
+    expect(body).toEqual(planFixture);
+    expect(plansListResponseSchema.safeParse(body).success).toBe(true);
+    expect(mockGetPricingPlans).toHaveBeenCalledTimes(1);
+  });
+
+  it("returns an empty array when the pricing source is empty", async () => {
+    mockGetPricingPlans.mockResolvedValueOnce([]);
+    const res = await buildApp().request("/api/billing/plans", {}, {});
+    expect(res.status).toBe(200);
+    expect(await res.json()).toEqual([]);
+  });
+
+  it("serves cached plans on the second call", async () => {
+    mockGetPricingPlans.mockResolvedValueOnce(planFixture);
+    const app = buildApp();
+    await app.request("/api/billing/plans", {}, {});
+    await app.request("/api/billing/plans", {}, {});
+    expect(mockGetPricingPlans).toHaveBeenCalledTimes(1);
+  });
+
+  it("rejects requests with the wrong Host header", async () => {
+    const res = await buildApp().request("http://api.local/api/billing/plans", { headers: { Host: "evil.com" } }, { INTERNAL_API_HOST: "api.recetario.app" });
+    expect(res.status).toBe(403);
+  });
+
+  it("does not require authentication", async () => {
+    mockGetPricingPlans.mockResolvedValueOnce(planFixture);
+    expect((await buildApp().request("/api/billing/plans", {}, {})).status).toBe(200);
   });
 });

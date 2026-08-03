@@ -4,7 +4,6 @@ export type ApiErrorCode =
   | "UNAUTHENTICATED"
   | "FORBIDDEN"
   | "NOT_FOUND"
-  | "RATE_LIMITED"
   | "VALIDATION_ERROR"
   | "INTERNAL"
   | "DOMAIN_ERROR";
@@ -16,7 +15,6 @@ export type ApiErrorResponse = {
     issues?: ZodIssue[];
     reason?: string;
     traceId?: string;
-    retryAfterMs?: number;
   };
 };
 
@@ -26,6 +24,5 @@ export type ApiErrorParsed = {
   issues?: ZodIssue[];
   reason?: string;
   traceId?: string;
-  retryAfterMs?: number;
   raw: ApiErrorResponse;
 };

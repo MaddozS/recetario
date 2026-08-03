@@ -1,0 +1,144 @@
+---
+import Button from "@/components/atoms/Button.astro";
+import FixedCostCard from "@/components/molecules/recipes/FixedCostCard.astro";
+
+interface PresentationFixedCostLine {
+  id: number;
+  presentationId: number;
+  name: string;
+  type: "PERCENTAGE" | "AMOUNT";
+  base: "PER_BATCH" | "PER_UNIT" | "PER_HOUR";
+  value: number;
+}
+
+interface Props {
+  presentationFixedCosts: PresentationFixedCostLine[];
+  presentationId: number;
+  isEditing: boolean;
+}
+
+const { presentationFixedCosts, presentationId, isEditing } = Astro.props;
+---
+
+<section
+  class="space-y-3"
+  data-presentation-fc-container
+  data-presentation-id={presentationId}
+>
+  <div class="flex items-center justify-between gap-3">
+    <h3 class="text-foreground text-sm font-bold">Costos Fijos</h3>
+    {
+      isEditing && (
+        <Button
+          variant="secondary"
+          icon="plus"
+          size="sm"
+          data-open-presentation-fc-create={presentationId}
+        >
+          Agregar
+        </Button>
+      )
+    }
+  </div>
+
+  <div class="flex flex-col gap-2" data-presentation-fc-list>
+    {
+      presentationFixedCosts.length > 0 ? (
+        presentationFixedCosts.map((fc) => (
+          <FixedCostCard
+            id={fc.id}
+            name={fc.name}
+            type={fc.type}
+            base={fc.base}
+            value={fc.value}
+            hours={null}
+            isRecipeLevel={false}
+            presentationId={fc.presentationId}
+          />
+        ))
+      ) : (
+        <p
+          class="text-muted-foreground py-4 text-center text-xs"
+          data-presentation-fc-empty
+        >
+          Sin costos fijos
+        </p>
+      )
+    }
+  </div>
+</section>
+
+<script>
+  const setupPresentationFcCreate = () => {
+    const buttons = document.querySelectorAll<HTMLButtonElement>(
+      "[data-open-presentation-fc-create]",
+    );
+
+    buttons.forEach((button) => {
+      if (button.dataset.presFcBound === "1") return;
+      button.dataset.presFcBound = "1";
+
+      button.addEventListener("click", () => {
+        const presentationId = button.getAttribute(
+          "data-open-presentation-fc-create",
+        );
+        if (!presentationId) return;
+
+        const container = button.closest("[data-presentation-fc-container]");
+        if (!container) return;
+
+        const listEl = container.querySelector("[data-presentation-fc-list]");
+
+        const csrfToken =
+          document.querySelector<HTMLInputElement>('input[name="_csrf"]')
+            ?.value || "";
+
+        const cardHtml = `<fixed-cost-card class="bg-card border-border flex flex-col rounded-2xl border p-5 shadow-sm transition-all" data-mode="create" data-owner-type="presentation">
+<form method="post" class="flex flex-col">
+<input type="hidden" name="action" value="create_presentation_fixed_cost" />
+<input type="hidden" name="presentationId" value="${presentationId}" />
+<input type="hidden" name="ownerId" value="${presentationId}" />
+<input type="hidden" name="ownerType" value="presentation" />
+<input type="hidden" name="_csrf" value="${csrfToken}" />
+<div class="display-content hidden flex flex-wrap items-center gap-3"><div class="flex min-w-0 flex-1 flex-wrap items-center gap-2"></div></div>
+<div class="edit-content space-y-4">
+<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+<div class="flex flex-col gap-1"><label class="text-subtle-foreground text-[11px] font-bold tracking-[0.16em] uppercase">Nombre</label><input name="name" type="text" class="fixed-cost-name-input border-border bg-background text-foreground focus:ring-accent-500/20 rounded-xl border px-3 py-2 text-sm transition-all focus:ring-2 focus:outline-none" value="Costo Fijo" required /></div>
+<div class="flex flex-col gap-1"><label class="text-subtle-foreground text-[11px] font-bold tracking-[0.16em] uppercase">Tipo</label><select name="type" class="fixed-cost-type-select border-border bg-background text-foreground focus:ring-accent-500/20 rounded-xl border px-3 py-2 text-sm transition-all focus:ring-2 focus:outline-none"><option value="AMOUNT">Monto</option><option value="PERCENTAGE">Porcentaje</option></select></div>
+<div class="flex flex-col gap-1"><label class="text-subtle-foreground text-[11px] font-bold tracking-[0.16em] uppercase">Base</label><select name="base" class="fixed-cost-base-select border-border bg-background text-foreground focus:ring-accent-500/20 rounded-xl border px-3 py-2 text-sm transition-all focus:ring-2 focus:outline-none"><option value="PER_BATCH">Por Mezcla</option><option value="PER_UNIT">Por Unidad</option></select></div>
+</div>
+<div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+<div class="flex flex-col gap-1"><label class="text-subtle-foreground text-[11px] font-bold tracking-[0.16em] uppercase">Valor</label><input name="value" type="text" inputmode="decimal" class="fixed-cost-value-input border-border bg-background text-foreground focus:ring-accent-500/20 font-mono rounded-xl border px-3 py-2 text-sm transition-all focus:ring-2 focus:outline-none" value="0" required /></div>
+<div class="hidden sm:block"></div>
+</div>
+<div class="flex flex-wrap items-center justify-between gap-3 border-t border-border-light pt-4">
+<div class="flex items-center gap-2"></div>
+<div class="flex items-center gap-2"><button type="button" class="cancel-btn border-border bg-card text-muted-foreground hover:bg-background inline-flex min-h-11 items-center justify-center rounded-xl border px-4 py-2.5 text-sm font-bold transition-colors">Cancelar</button><button type="submit" class="bg-accent-600 hover:bg-accent-700 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold text-white transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Guardar</button></div>
+</div>
+</div>
+<p class="fixed-cost-error text-danger mt-2 hidden text-xs font-semibold"></p>
+</form>
+</fixed-cost-card>`;
+
+        if (listEl) {
+          const wrapper = document.createElement("div");
+          wrapper.innerHTML = cardHtml;
+          const card = wrapper.firstElementChild;
+          if (card) {
+            listEl.appendChild(card);
+          }
+
+          // Scroll to the new card
+          card?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }
+
+        // Remove empty state
+        const emptyEl = container.querySelector("[data-presentation-fc-empty]");
+        if (emptyEl) emptyEl.remove();
+      });
+    });
+  };
+
+  document.addEventListener("astro:page-load", setupPresentationFcCreate);
+  document.addEventListener("astro:after-swap", setupPresentationFcCreate);
+</script>

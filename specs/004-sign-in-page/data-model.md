@@ -50,15 +50,10 @@ No new database entities, tables, or schema changes. This feature modifies only 
 
 **Used for**: Session creation after successful sign-in. Managed entirely by Better Auth.
 
-### RateLimitEntry
+### Rate-limit persistence
 
-| Field   | Type     | Description                    |
-| ------- | -------- | ------------------------------ |
-| key     | string   | Rate limit key (IP/path based) |
-| count   | int      | Current request count          |
-| resetAt | datetime | Window reset timestamp         |
-
-**Used for**: Rate limiting on sign-in attempts. Read by middleware, managed by `src/lib/rate-limiter.ts`. Not modified by this feature.
+No rate-limit persistence is currently active. A replacement storage model will be
+added with the future backend abuse-protection design.
 
 ### AuditLog
 

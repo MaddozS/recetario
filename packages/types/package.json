@@ -7,13 +7,13 @@
   "exports": "./src/index.ts",
   "files": ["dist", "src"],
   "scripts": {
-    "build": "tsc --build tsconfig.build.json"
+    "build": "tsc --noEmit -p tsconfig.build.json"
   },
   "dependencies": {
     "zod": "^3.23.0"
   },
   "devDependencies": {
-    "typescript": "7.0.2",
+    "typescript": "6.0.2",
     "@recetario/config": "workspace:^"
   }
 }

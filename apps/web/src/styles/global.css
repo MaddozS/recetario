@@ -46,6 +46,22 @@
   .focus-ring {
     @apply focus-visible:ring-accent-500 outline-none focus-visible:ring-2 focus-visible:ring-offset-1;
   }
+
+  /* Fade-in transition for server islands and skeletons */
+  .animate-fade-in {
+    animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @media (hover: hover) and (pointer: fine) {

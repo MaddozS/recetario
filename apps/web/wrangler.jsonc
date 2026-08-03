@@ -1,24 +1,20 @@
 {
-  "$schema": "../../node_modules/wrangler/config-schema.json",
   "name": "recetario-web",
-  "compatibility_date": "2026-06-10",
+  "compatibility_date": "2026-07-28",
   "compatibility_flags": ["nodejs_compat"],
   "observability": {
     "enabled": true,
   },
-  "assets": {
-    "binding": "ASSETS",
-    "directory": "dist/client",
-  },
+
   "vars": {
     "NODE_ENV": "production",
   },
-  "kv_namespaces": [
-    {
-      "binding": "SESSION",
-      "id": "10323f891e024ef0ad89099b717c2c79"
-    }
-  ],
+  // "kv_namespaces": [
+  //   {
+  //     "binding": "SESSION",
+  //     "id": "10323f891e024ef0ad89099b717c2c79"
+  //   }
+  // ],
   "services": [
     {
       "binding": "API",
@@ -29,14 +25,10 @@
     "staging": {
       "name": "recetario-web-staging",
       "main": "dist/server/entry.mjs",
-      "compatibility_date": "2026-06-10",
+      "compatibility_date": "2026-08-01",
       "compatibility_flags": ["nodejs_compat"],
       "observability": {
         "enabled": true
-      },
-      "assets": {
-        "binding": "ASSETS",
-        "directory": "dist/client",
       },
       "services": [
         {
@@ -51,14 +43,10 @@
     "production": {
       "name": "recetario-web-production",
       "main": "dist/server/entry.mjs",
-      "compatibility_date": "2026-06-10",
+      "compatibility_date": "2026-08-01",
       "compatibility_flags": ["nodejs_compat"],
       "observability": {
         "enabled": true
-      },
-      "assets": {
-        "binding": "ASSETS",
-        "directory": "dist/client",
       },
       "services": [
         {

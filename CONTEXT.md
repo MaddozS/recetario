@@ -19,6 +19,24 @@ A Prisma result returned unmodified by a CRUD method (Dates as `Date`, camelCase
 
 _Avoid_: "model", "record" (ambiguous with schema).
 
+## Billing & Stripe
+
+**Stripe domain logic**:
+Code in `packages/stripe` that talks to the Stripe API or owns subscription/plan domain rules: the `stripe` singleton, `listPrices()`, checkout/portal helpers, webhook signature verification, `TIER_CONFIG`, `buildPricingPlans`, feature-gating helpers (`hasFeature`, `isPro`, `isPaid`, `canCreateRecipe`, `canCreateIngredient`, `getRemaining*`), `getDefaultSubscription`, and `UserSubscription`/`PricingPlan` shaping.
+
+**Stripe price sync**:
+The process of reconciling `SubscriptionPlan` rows with Stripe's active prices. `packages/stripe` fetches (`listPrices`) and maps to a minimal `SyncPlanInput`; `packages/db` persists (`syncPlans`) with pure upsert+deactivate. The db package never imports `stripe`; the tier whitelist and `featuresJson` are produced by stripe, not db.
+
+**Plans seed script**:
+`packages/db/prisma/seed-plans.ts` — the one place the db package imports `@recetario/stripe`. It calls `listPrices()` then `syncPlans()` and is run as a command (dev) and in the API deploy workflow (prod), not at runtime. Contrast with `packages/db/prisma/seed.ts` (ingredients/recipes dev seed).
+
+_Avoid_: "plan bootstrap", "runtime plan sync" (runtime auto-seed is removed).
+
+**Plan persistence method**:
+A CRUD method in `packages/db` that reads/writes `Subscription`/`SubscriptionPlan` rows (`getSubscriptionPlans`, `getSubscriptionByUserId`, `upsertSubscriptionPlan`, `upsertSubscription`, `updateSubscription`, `deactivatePlansNotIn`, `getStripeCustomerId`). Pure persistence, no Stripe API.
+
+_Avoid_: "billing method" (the Stripe logic lives in `packages/stripe`).
+
 ## Auth
 
 **Auth callback**:

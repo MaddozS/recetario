@@ -1,6 +1,6 @@
 # @recetario/auth
 
-Better Auth server + client, CSRF, rate limiter, password utilities, sign-in/out helpers, and email sending for KitchCalc.
+Better Auth server + client, CSRF, password utilities, sign-in/out helpers, and email sending for KitchCalc.
 
 ## Usage
 
@@ -9,7 +9,6 @@ import { auth } from "@recetario/auth";
 import { authClient } from "@recetario/auth";
 import { signInWithGoogle } from "@recetario/auth";
 import { signOut } from "@recetario/auth";
-import { rateLimitCheck } from "@recetario/auth";
 import { validatePassword } from "@recetario/auth";
 import { validateCsrf, generateToken } from "@recetario/auth";
 // etc.
@@ -46,7 +45,6 @@ import { validateCsrf, generateToken } from "@recetario/auth";
 | `auth-client.ts` | Better Auth browser client (uses `import.meta.env.PUBLIC_BETTER_AUTH_URL`) |
 | `csrf.ts` | Server-side CSRF token generation/validation |
 | `csrf-client.ts` | Client-side CSRF cookie reader |
-| `rate-limiter.ts` | DB-backed rate limiter (Prisma `RateLimitEntry`) |
 | `password-validation.ts` | Password strength rules (min 8 chars, upper, lower, digit, special) |
 | `password-reset.ts` | Password reset token CRUD + HTML email template |
 | `sign-in.ts` | Google/email sign-in helpers (client-side) |

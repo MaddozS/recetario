@@ -18,7 +18,7 @@ Make one barrel canonical. `server.ts` becomes the source of truth for server-sa
 
 ### Barrel relationship
 
-`server.ts` remains the canonical barrel for all server-safe exports (auth, csrf, rate-limiter, password-validation, password-reset, email).
+`server.ts` remains the canonical barrel for all server-safe exports (auth, csrf, password-validation, password-reset, email).
 
 `index.ts` re-exports everything from `server.ts` plus client-only modules (authClient, csrf-client, sign-in, sign-out):
 

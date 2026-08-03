@@ -13,7 +13,7 @@ Override the default Better Auth flow to add:
 1. **10-minute expiry** via custom token generation
 2. **Branded email template** via Resend HTML emails
 3. **Countdown timer** via client-side JavaScript
-4. **Rate limiting** via existing `rate-limiter.ts`
+4. **Rate limiting** is deferred; the previous implementation was removed pending a better design
 
 ### Resend Best Practices
 - Use transactional email templates with clear branding
@@ -27,7 +27,7 @@ Override the default Better Auth flow to add:
 - Store hashed token in database (not plain text)
 - Invalidate old tokens on new request
 - Log all password reset attempts in AuditLog
-- Rate limit forgot-password endpoint (5 per 15 min)
+- Add abuse protection to the forgot-password endpoint when the replacement design is implemented
 
 ---
 

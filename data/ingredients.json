@@ -21,8 +21,8 @@
     "id": 3,
     "name": "Azúcar mascabado",
     "unit": "kg",
-    "price": 71.6,
-    "purchaseQuantity": 1,
+    "price": 60,
+    "purchaseQuantity": 1.4,
     "brand": "Metco",
     "supplier": "Casa Santos Lugo"
   },
@@ -66,10 +66,10 @@
     "id": 8,
     "name": "Levadura",
     "unit": "g",
-    "price": 23.5,
-    "purchaseQuantity": 55,
-    "brand": "Tradipan",
-    "supplier": "Walmart"
+    "price": 36.7,
+    "purchaseQuantity": 125,
+    "brand": "SAF Instantaea",
+    "supplier": "Casa Santos Luego"
   },
   {
     "id": 9,
@@ -111,7 +111,7 @@
     "id": 13,
     "name": "Huevo",
     "unit": "pza",
-    "price": 90.9,
+    "price": 83,
     "purchaseQuantity": 30,
     "brand": "",
     "supplier": "Casa Santos Lugo"
@@ -120,7 +120,7 @@
     "id": 14,
     "name": "Plátano",
     "unit": "kg",
-    "price": 25,
+    "price": 20,
     "purchaseQuantity": 1,
     "brand": "",
     "supplier": ""
@@ -129,8 +129,8 @@
     "id": 15,
     "name": "Azúcar refinada",
     "unit": "kg",
-    "price": 27.55,
-    "purchaseQuantity": 1,
+    "price": 53.25,
+    "purchaseQuantity": 2,
     "brand": "",
     "supplier": ""
   },
@@ -237,8 +237,8 @@
     "id": 27,
     "name": "Queso crema",
     "unit": "kg",
-    "price": 186.5,
-    "purchaseQuantity": 1,
+    "price": 382.85,
+    "purchaseQuantity": 1.9,
     "brand": "",
     "supplier": ""
   },
@@ -264,7 +264,7 @@
     "id": 30,
     "name": "Nuez",
     "unit": "g",
-    "price": 120.2,
+    "price": 120.4,
     "purchaseQuantity": 500,
     "brand": "Abuelo José",
     "supplier": "Casa Santos Lugo"
@@ -273,7 +273,7 @@
     "id": 31,
     "name": "Leche evaporada",
     "unit": "lt",
-    "price": 55.5,
+    "price": 55.41,
     "purchaseQuantity": 1,
     "brand": "Natura Tamariz",
     "supplier": "Casa Santos Lugo"
@@ -282,8 +282,8 @@
     "id": 32,
     "name": "Chispas de chocolate Sicao",
     "unit": "g",
-    "price": 99,
-    "purchaseQuantity": 500,
+    "price": 1037,
+    "purchaseQuantity": 8000,
     "brand": "Sicao",
     "supplier": ""
   },
@@ -304,5 +304,41 @@
     "purchaseQuantity": 500,
     "brand": "",
     "supplier": ""
+  },
+  {
+    "id": 35,
+    "name": "Fécula de maíz",
+    "unit": "kg",
+    "price": 22.4,
+    "purchaseQuantity": 1,
+    "brand": "abuelo josé",
+    "supplier": "Casa santos lugo"
+  },
+  {
+    "id": 36,
+    "name": "Harina para pan",
+    "unit": "g",
+    "price": 10,
+    "purchaseQuantity": 500,
+    "brand": "San Blas",
+    "supplier": "Chedraui"
+  },
+  {
+    "id": 37,
+    "name": "Galletas maria",
+    "unit": "g",
+    "price": 11.61,
+    "purchaseQuantity": 170,
+    "brand": "Lara",
+    "supplier": "Casa Santos Lugo"
+  },
+  {
+    "id": 38,
+    "name": "Crema ácida",
+    "unit": "g",
+    "price": 45.9,
+    "purchaseQuantity": 426,
+    "brand": "Lala",
+    "supplier": "Casa Santos Lugo"
   }
 ]

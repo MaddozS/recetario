@@ -70,7 +70,7 @@ function isInAppLink(el: HTMLAnchorElement): boolean {
     if (url.origin !== location.origin) return false;
     if (url.protocol !== "http:" && url.protocol !== "https:") return false;
     if (url.pathname === location.pathname && url.hash && url.hash !== location.hash) return true;
-    if (url.pathname === location.pathname && !url.hash) return false;
+    if (url.pathname === location.pathname && url.search === location.search && !url.hash) return false;
     if (url.pathname.startsWith("/api/")) return false;
     if (url.pathname.startsWith("/sign-in") || url.pathname.startsWith("/sign-up") || url.pathname.startsWith("/pricing") || url.pathname.startsWith("/forgot-password")) return false;
     if (url.pathname === "/") return false;

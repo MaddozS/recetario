@@ -53,7 +53,7 @@ Better Auth via `src/lib/auth.ts` (server singleton) + `src/lib/auth-client.ts` 
 - CRITICAL: `packages/db` is **pure persistence** — CRUD methods only, returning raw Prisma rows or status objects. No validation, no normalization, no response shaping. Every tenant-scoped CRUD method takes `ownerId` and scopes its queries by it (or via `recipe: { ownerId }` for nested joins) — this is enforced **inside the db methods**, so `apps/api` never has to remember it. New tenant records must set `ownerId` on create. Seed/bootstrap flows are the only exception. The `@recetario/db` package has unit tests (`src/owner-scoping.test.ts`) asserting each method's `where` includes `ownerId`.
 - **`apps/api` never imports `prisma`** — all data access goes through `@recetario/db` CRUD methods. The only packages that import `prisma` are `packages/auth` (Better Auth's `prismaAdapter` requires the raw client) and the seed script.
 - Validation (Zod `.safeParse()` via `@recetario/types`) and response shaping live in `apps/api` handlers.
-- `packages/billing` owns the Stripe domain logic (webhook lifecycle, pricing, `UserSubscription` shaping) and calls `@recetario/db` CRUD methods; the plans seed (`syncPlansFromStripe`/`seedSubscriptionPlans`), `FEATURE_FLAGS`, and the `stripe` singleton live in `packages/db`.
+- `packages/stripe` owns Stripe domain logic (thin Stripe API helpers, pricing, feature gating, and subscription shaping) and calls `@recetario/db` CRUD methods. `packages/db` owns pure persistence; the only db→stripe import is `prisma/seed-plans.ts`.
 - Seed data: `data/ingredients.json`, `data/recipes.json`. Loaded on first run via `seedIfNeeded()`.
 
 #### Web→API destination rule
@@ -94,7 +94,7 @@ If a new feature needs data access from a web page, add the endpoint in `apps/ap
 - `src/lib/formatters.ts` — exports `formatCurrency` and `timeAgo` (no `formatNumber`)
 - `src/lib/form-utils.ts` — `parseNumberInput(value)` for Spanish-format decimals
 - `src/lib/auth-client.ts` — client-side Better Auth (used for sign-in popup)
-- `src/lib/sign-in.ts` / `src/lib/sign-out.ts` — Google sign-in with popup/open-in-tab + rate limiting
+- `src/lib/sign-in.ts` / `src/lib/sign-out.ts` — Google sign-in with popup/open-in-tab
 - `src/lib/dialog.ts` — `bindDialogBackdrop()` utility
 
 ### Stripe billing

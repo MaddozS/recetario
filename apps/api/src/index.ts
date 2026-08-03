@@ -1,7 +1,6 @@
 import { Hono } from "hono";
 import {
   auth,
-  rateLimitCheck,
   validateCsrf,
   validatePassword,
   validatePasswordResetToken,
@@ -14,24 +13,27 @@ import {
   logAuditEvent,
   updateAccountPassword,
   updateUserName,
-  stripe,
-  seedSubscriptionPlans,
+  getSubscriptionPlanByStripePriceId,
+  getStripeCustomerId,
+  getSubscriptionByStripeId,
+  upsertSubscription,
+  updateSubscription,
 } from "@recetario/db";
 import {
-  getPlanByStripePriceId,
-  getStripeCustomerId,
-  getUserSubscription,
-  createOrUpdateSubscription,
-  cancelSubscription,
-  markSubscriptionPastDue,
-} from "@recetario/billing/server";
+  createCustomer,
+  createCheckoutSession,
+  createPortalSession,
+  retrieveSubscription,
+  verifyWebhookSignature,
+} from "@recetario/stripe/server";
+import { createSubscriptionInputSchema } from "@recetario/types";
 import { syncEnvBindings } from "@recetario/config/env";
 import { clientIp, setSecurityHeaders } from "@recetario/config/request";
 
+import { requireAuth, type AuthVariables } from "./middleware/auth";
 import { envelope } from "./envelope";
 import { errorHandler } from "./error-handler";
 import { hostAllowlist } from "./host-allowlist";
-import { rateLimit } from "./rate-limit";
 import { authSessionHandler } from "./auth-session";
 import { recipesListHandler } from "./recipes/list";
 import { recipesByIdsHandler } from "./recipes/by-ids";
@@ -70,7 +72,7 @@ import {
   presentationsFixedCostsDeleteHandler,
 } from "./presentations/fixed-costs";
 
-const app = new Hono();
+const app = new Hono<{ Variables: AuthVariables }>();
 
 function getPeriod(obj: unknown, field: string): number {
   if (obj && typeof obj === "object" && field in obj) {
@@ -101,11 +103,20 @@ function safeRedirectUrl(
 app.onError(errorHandler());
 app.use("*", envelope());
 app.use("*", hostAllowlist());
-app.use("*", rateLimit());
 app.use("*", async (c, next) => {
   syncEnvBindings(c.env as Record<string, unknown>);
   await next();
   setSecurityHeaders(c.res);
+});
+
+app.use("*", async (c, next) => {
+  const started = Date.now();
+  await next();
+  const elapsedMs = Date.now() - started;
+  const level = elapsedMs > 5_000 ? "warn" : "log";
+  console[level](
+    `[API] ${c.req.method} ${new URL(c.req.url).pathname} -> ${c.res.status} in ${elapsedMs}ms`,
+  );
 });
 
 app.get("/health", (c) =>
@@ -258,6 +269,22 @@ app.post("/api/auth/reset-password", async (c) => {
 
 app.get("/api/auth/session", authSessionHandler());
 
+// ── Protected routes middleware ───────────────────────────────────────────
+app.use("/api/recipes/*", requireAuth());
+app.use("/api/recipes", requireAuth());
+app.use("/api/ingredients/*", requireAuth());
+app.use("/api/ingredients", requireAuth());
+app.use("/api/preferences/*", requireAuth());
+app.use("/api/preferences", requireAuth());
+app.use("/api/presentations/*", requireAuth());
+app.use("/api/account/*", requireAuth());
+app.use("/api/stripe/checkout", requireAuth());
+app.use("/api/stripe/portal", requireAuth());
+app.use("/api/billing/subscription", requireAuth());
+app.use("/api/usage-counts", requireAuth());
+app.use("/api/auth/credential-status", requireAuth());
+app.use("/api/audit/log", requireAuth());
+
 app.get("/api/recipes", recipesListHandler());
 app.get("/api/recipes/by-ids", recipesByIdsHandler());
 app.get("/api/recipes/:id", recipesDetailHandler());
@@ -291,53 +318,10 @@ app.get("/api/billing/subscription", subscriptionHandler());
 app.get("/api/billing/plans", plansHandler());
 app.get("/api/usage-counts", usageCountsHandler());
 
-app.all("/api/auth/*", async (c) => {
-    const path = new URL(c.req.url).pathname;
-    const ip = clientIp(c.req.raw);
-
-    if (c.req.method === "POST") {
-      if (path.includes("/sign-in/email")) {
-        const { allowed } = await rateLimitCheck(`signin:${ip}`, 5, 60);
-        if (!allowed) {
-          return c.text(
-            "Too many sign-in attempts. Please try again later.",
-            429,
-          );
-        }
-      }
-
-      if (path.includes("/sign-up/email")) {
-        const { allowed } = await rateLimitCheck(`signup:${ip}`, 3, 3600);
-        if (!allowed) {
-          return c.text(
-            "Too many sign-up attempts. Please try again later.",
-            429,
-          );
-        }
-      }
-
-      if (path.includes("/sign-in/social")) {
-        const { allowed } = await rateLimitCheck(`oauth:${ip}`, 10, 900);
-        if (!allowed) {
-          return c.text("Too many OAuth requests. Please try again later.", 429);
-        }
-      }
-
-      if (path.includes("/forget-password")) {
-        const { allowed } = await rateLimitCheck(`forgot:${ip}`, 3, 3600);
-        if (!allowed) {
-          return c.text("Too many reset requests. Please try again later.", 429);
-        }
-      }
-    }
-
-    return await auth.handler(c.req.raw);
-  });
+app.all("/api/auth/*", async (c) => auth.handler(c.req.raw));
 
 app.post("/api/account/update-name", async (c) => {
-    const session = await auth.api.getSession({ headers: c.req.raw.headers });
-    if (!session?.user) return c.text("Unauthorized", 401);
-
+    const user = c.get("user");
     const formData = await c.req.raw.formData();
     const firstName = (formData.get("firstName") as string)?.trim() ?? "";
     const lastName = (formData.get("lastName") as string)?.trim() ?? "";
@@ -345,7 +329,7 @@ app.post("/api/account/update-name", async (c) => {
     if (!firstName || !lastName) return c.text("Missing fields", 400);
 
     try {
-      await updateUserName(session.user.id, { firstName, lastName });
+      await updateUserName(user.id, { firstName, lastName });
       return c.body(null, 200);
     } catch {
       return c.text("Error updating name", 500);
@@ -353,9 +337,7 @@ app.post("/api/account/update-name", async (c) => {
   });
 
 app.post("/api/account/change-email", async (c) => {
-    const session = await auth.api.getSession({ headers: c.req.raw.headers });
-    if (!session?.user) return c.text("Unauthorized", 401);
-
+    const user = c.get("user");
     const formData = await c.req.raw.formData();
     const newEmail = formData.get("newEmail") as string;
     const currentPassword = formData.get("currentPassword") as string;
@@ -368,7 +350,7 @@ app.post("/api/account/change-email", async (c) => {
         body: { newEmail },
       });
       await logAuditEvent({
-        userId: session.user.id,
+        userId: user.id,
         action: "email_change",
         ipAddress: clientIp(c.req.raw),
         userAgent: c.req.header("user-agent") ?? null,
@@ -383,9 +365,7 @@ app.post("/api/account/change-email", async (c) => {
   });
 
 app.post("/api/account/change-password", async (c) => {
-    const session = await auth.api.getSession({ headers: c.req.raw.headers });
-    if (!session?.user) return c.text("Unauthorized", 401);
-
+    const user = c.get("user");
     const formData = await c.req.raw.formData();
     const currentPassword = formData.get("currentPassword") as string;
     const newPassword = formData.get("newPassword") as string;
@@ -405,7 +385,7 @@ app.post("/api/account/change-password", async (c) => {
         },
       });
       await logAuditEvent({
-        userId: session.user.id,
+        userId: user.id,
         action: "password_change",
         ipAddress: clientIp(c.req.raw),
         userAgent: c.req.header("user-agent") ?? null,
@@ -420,11 +400,7 @@ app.post("/api/account/change-password", async (c) => {
   });
 
 app.post("/api/stripe/checkout", async (c) => {
-    const session = await auth.api.getSession({ headers: c.req.raw.headers });
-    if (!session?.user) {
-      return c.json({ error: "Authentication required" }, 401);
-    }
-
+    const user = c.get("user");
     if (!validateCsrf(c.req.raw)) {
       return c.json({ error: "CSRF validation failed" }, 403);
     }
@@ -439,173 +415,99 @@ app.post("/api/stripe/checkout", async (c) => {
     const { priceId, successUrl, cancelUrl } = body;
     if (!priceId) return c.json({ error: "Missing priceId" }, 400);
 
-    const plan = await getPlanByStripePriceId(priceId);
+    const plan = await getSubscriptionPlanByStripePriceId(priceId);
     if (!plan) return c.json({ error: "Invalid price ID" }, 400);
 
     const appOrigin = new URL(c.req.url).origin;
-    const userId = session.user.id;
-    const userEmail = session.user.email;
+    const userId = user.id;
     const existingCustomerId = await getStripeCustomerId(userId);
-    const customerId =
-      existingCustomerId ??
-      (
-        await stripe.customers.create({
-          email: userEmail ?? undefined,
-          metadata: { userId },
-        })
-      ).id;
-
-    const checkoutSession = await stripe.checkout.sessions.create({
-      customer: customerId,
-      line_items: [{ price: priceId, quantity: 1 }],
-      mode: "subscription",
-      subscription_data: {
-        trial_period_days: 14,
-      },
-      success_url: safeRedirectUrl(
-        successUrl,
-        `${appOrigin}/settings/billing?success=1`,
-        appOrigin,
-      ),
-      cancel_url: safeRedirectUrl(
-        cancelUrl,
-        `${appOrigin}/pricing?canceled=1`,
-        appOrigin,
-      ),
-      metadata: {
-        userId,
-        planId: plan.id,
-      },
+    const customerId = existingCustomerId ?? (await createCustomer({ email: user.email ?? undefined, userId })).id;
+    const checkoutSession = await createCheckoutSession({
+      customerId,
+      priceId,
+      successUrl: safeRedirectUrl(successUrl, `${appOrigin}/settings/billing?success=1`, appOrigin),
+      cancelUrl: safeRedirectUrl(cancelUrl, `${appOrigin}/pricing?canceled=1`, appOrigin),
+      userId,
+      planId: plan.id,
     });
-
     return c.json({ url: checkoutSession.url });
   });
 
 app.post("/api/stripe/portal", async (c) => {
-    const session = await auth.api.getSession({ headers: c.req.raw.headers });
-    if (!session?.user) {
-      return c.json({ error: "Authentication required" }, 401);
-    }
+    const user = c.get("user");
+    if (!validateCsrf(c.req.raw)) return c.json({ error: "CSRF validation failed" }, 403);
 
-    if (!validateCsrf(c.req.raw)) {
-      return c.json({ error: "CSRF validation failed" }, 403);
-    }
-
-    const subscription = await getUserSubscription(session.user.id);
-    if (!subscription?.stripeCustomerId) {
-      return c.json({ error: "No subscription found" }, 404);
-    }
-
-    const portalSession = await stripe.billingPortal.sessions.create({
-      customer: subscription.stripeCustomerId,
-      return_url: `${new URL(c.req.url).origin}/settings/billing`,
-    });
-
+    const customerId = await getStripeCustomerId(user.id);
+    if (!customerId) return c.json({ error: "No subscription found" }, 404);
+    const portalSession = await createPortalSession(customerId, `${new URL(c.req.url).origin}/settings/billing`);
     return c.json({ url: portalSession.url });
   });
 
 app.post("/api/stripe/webhook", async (c) => {
-    await seedSubscriptionPlans();
-
     const payload = await c.req.text();
     const signature = c.req.header("stripe-signature");
-
     if (!signature) return c.text("Missing stripe-signature header", 400);
 
-    let event: ReturnType<typeof stripe.webhooks.constructEvent>;
+    let event: ReturnType<typeof verifyWebhookSignature>;
     try {
-      event = stripe.webhooks.constructEvent(
+      event = verifyWebhookSignature(
         payload,
         signature,
-        (c.env as Record<string, string | undefined>).STRIPE_WEBHOOK_SECRET ??
-          process.env.STRIPE_WEBHOOK_SECRET ??
-          "",
+        (c.env as Record<string, string | undefined>).STRIPE_WEBHOOK_SECRET ?? process.env.STRIPE_WEBHOOK_SECRET ?? "",
       );
     } catch {
-      console.error("Webhook signature verification failed");
       return c.text("Invalid signature", 400);
     }
 
     const obj = event.data.object as unknown as Record<string, unknown>;
+    const writeSubscription = async (input: {
+      stripeSubscriptionId: string;
+      stripeCustomerId: string;
+      priceId: string | null;
+      userId: string | null;
+      planId: string | null;
+      status: string;
+      currentPeriodStart: Date;
+      currentPeriodEnd: Date;
+      cancelAtPeriodEnd: boolean;
+      trialEnd: Date | null;
+    }) => {
+      const validated = createSubscriptionInputSchema.parse(input);
+      let planId = validated.planId;
+      let userId = validated.userId;
+      if (!planId && input.priceId) planId = (await getSubscriptionPlanByStripePriceId(input.priceId))?.id ?? null;
+      if (!userId) userId = (await getSubscriptionByStripeId(input.stripeSubscriptionId))?.userId ?? null;
+      if (!planId || !userId) return;
+      await upsertSubscription(validated.stripeSubscriptionId, { id: validated.stripeSubscriptionId, userId, stripeCustomerId: validated.stripeCustomerId, planId, status: validated.status, currentPeriodStart: validated.currentPeriodStart, currentPeriodEnd: validated.currentPeriodEnd, cancelAtPeriodEnd: validated.cancelAtPeriodEnd, trialEnd: validated.trialEnd ?? null });
+    };
 
     switch (event.type) {
       case "checkout.session.completed": {
         const metadata = obj.metadata as Record<string, string> | undefined;
-        const customerId =
-          typeof obj.customer === "string" ? obj.customer : null;
-        const subscriptionId =
-          typeof obj.subscription === "string" ? obj.subscription : null;
-
+        const subscriptionId = typeof obj.subscription === "string" ? obj.subscription : null;
+        const customerId = typeof obj.customer === "string" ? obj.customer : null;
         if (!subscriptionId || !customerId) break;
-
-        let sub: unknown;
-        try {
-          sub = await stripe.subscriptions.retrieve(subscriptionId);
-        } catch {
-          break;
-        }
-
-        await createOrUpdateSubscription({
-          stripeSubscriptionId: subscriptionId,
-          stripeCustomerId: customerId,
-          userId: metadata?.userId ?? null,
-          planId: metadata?.planId ?? null,
-          status: (sub as Record<string, unknown>).status as string,
-          currentPeriodStart: new Date(
-            getPeriod(sub, "current_period_start") * 1000,
-          ),
-          currentPeriodEnd: new Date(
-            getPeriod(sub, "current_period_end") * 1000,
-          ),
-          cancelAtPeriodEnd: Boolean(
-            (sub as Record<string, unknown>).cancel_at_period_end,
-          ),
-          trialEnd: getPeriod(sub, "trial_end")
-            ? new Date(getPeriod(sub, "trial_end") * 1000)
-            : null,
-        });
+        const sub = await retrieveSubscription(subscriptionId);
+        const items = sub.items?.data;
+        const priceId = items?.[0]?.price?.id ?? null;
+        await writeSubscription({ stripeSubscriptionId: subscriptionId, stripeCustomerId: customerId, priceId, userId: metadata?.userId ?? null, planId: metadata?.planId ?? null, status: sub.status, currentPeriodStart: new Date(getPeriod(sub, "current_period_start") * 1000), currentPeriodEnd: new Date(getPeriod(sub, "current_period_end") * 1000), cancelAtPeriodEnd: Boolean(sub.cancel_at_period_end), trialEnd: getPeriod(sub, "trial_end") ? new Date(getPeriod(sub, "trial_end") * 1000) : null });
         break;
       }
-
       case "customer.subscription.updated": {
-        const customerId =
-          typeof obj.customer === "string" ? obj.customer : null;
-
-        await createOrUpdateSubscription({
-          stripeSubscriptionId: obj.id as string,
-          stripeCustomerId: customerId ?? "",
-          userId: null,
-          planId: null,
-          status: obj.status as string,
-          currentPeriodStart: new Date(
-            getPeriod(obj, "current_period_start") * 1000,
-          ),
-          currentPeriodEnd: new Date(
-            getPeriod(obj, "current_period_end") * 1000,
-          ),
-          cancelAtPeriodEnd: Boolean(obj.cancel_at_period_end),
-          trialEnd: getPeriod(obj, "trial_end")
-            ? new Date(getPeriod(obj, "trial_end") * 1000)
-            : null,
-        });
+        const items = obj.items as { data?: Array<{ price?: { id?: string } }> } | undefined;
+        const priceId = items?.data?.[0]?.price?.id ?? null;
+        await writeSubscription({ stripeSubscriptionId: obj.id as string, stripeCustomerId: typeof obj.customer === "string" ? obj.customer : "", priceId, userId: null, planId: null, status: obj.status as string, currentPeriodStart: new Date(getPeriod(obj, "current_period_start") * 1000), currentPeriodEnd: new Date(getPeriod(obj, "current_period_end") * 1000), cancelAtPeriodEnd: Boolean(obj.cancel_at_period_end), trialEnd: getPeriod(obj, "trial_end") ? new Date(getPeriod(obj, "trial_end") * 1000) : null });
         break;
       }
-
-      case "customer.subscription.deleted": {
-        await cancelSubscription(obj.id as string);
+      case "customer.subscription.deleted":
+        if (await getSubscriptionByStripeId(obj.id as string)) await updateSubscription(obj.id as string, { status: "canceled", cancelAtPeriodEnd: true });
         break;
-      }
-
       case "invoice.payment_failed": {
-        const subscriptionId =
-          typeof obj.subscription === "string" ? obj.subscription : null;
-
-        if (subscriptionId)
-          await markSubscriptionPastDue(subscriptionId);
+        const subscriptionId = typeof obj.subscription === "string" ? obj.subscription : null;
+        if (subscriptionId && await getSubscriptionByStripeId(subscriptionId)) await updateSubscription(subscriptionId, { status: "past_due" });
         break;
       }
     }
-
     return c.text("OK");
   });
 

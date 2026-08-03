@@ -7,7 +7,7 @@ Prisma ORM wrapper for PostgreSQL. Provides the Prisma client singleton, databas
 - `prisma` — singleton PrismaClient with `@prisma/adapter-pg` (pg.Pool max 3, 30s idle)
 - `cacheGet / cacheSet` — simple subscription-cache using `globalThis.__RECETARIO_CACHE`
 - `logAuditEvent` — audit-log insert for sign-in events and sensitive actions
-- Query helpers for ingredients, recipes, presentations, user preferences, and billing (legacy — most billing moved to `@recetario/billing`)
+- Query helpers for ingredients, recipes, presentations, user preferences, and billing (legacy — most billing moved to `@recetario/stripe`)
 
 ## Usage
 

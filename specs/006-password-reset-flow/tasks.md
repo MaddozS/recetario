@@ -20,7 +20,7 @@
 
 - [x] T001 Verify `PasswordResetToken` migration was applied in `prisma/migrations/20260529012757_add_password_reset_token/migration.sql`
 - [x] T002 Verify `password_reset` exists in `AuditAction` enum in `prisma/schema.prisma`
-- [x] T003 Verify rate limiting exists for `/forget-password` in `src/pages/api/auth/[...all].ts`
+- [ ] T003 Add abuse protection for `/forget-password` after the replacement rate-limit design is approved
 
 ---
 
@@ -202,5 +202,5 @@ Task: T013 - Update reset-password.astro to use new endpoint
 - Migration already applied - no `npx prisma migrate dev` needed
 - Using Better Auth default paths (`/auth/forget-password`, `/auth/reset-password`)
 - Old `Verification` table tokens become orphaned (intentional)
-- Rate limiting already exists (3/hour per IP) - no changes needed
+- Rate limiting is deferred until a replacement abuse-protection design is implemented
 - Audit logging via existing `logAuditEvent()` from `@/lib/db/audit`

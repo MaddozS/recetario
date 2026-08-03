@@ -1,93 +1,36 @@
-import Stripe from "stripe";
-import { lazyInit } from "@recetario/config/lazy";
 import { prisma } from "./prisma";
 import type {
   SubscriptionUncheckedCreateInput,
   SubscriptionUncheckedUpdateInput,
   SubscriptionPlanUncheckedCreateInput,
-  SubscriptionPlanUncheckedUpdateInput,
   SubscriptionGetPayload,
 } from "../prisma/generated/models";
-
-// ponytail: lazy init — avoids reading STRIPE_SECRET_KEY at import time
-// in Vite SSR where .env isn't loaded into process.env.
-function initStripe(): Stripe {
-  const secret = process.env.STRIPE_SECRET_KEY;
-  if (!secret) {
-    throw new Error("STRIPE_SECRET_KEY environment variable is not set");
-  }
-  return new Stripe(secret, {
-    apiVersion: "2026-04-22.dahlia",
-  });
-}
-
-export const stripe = lazyInit("stripe", initStripe);
-
-const BASIC_FEATURES: Record<string, boolean> = {
-  recipe_duplicate: true,
-  recipe_photos: true,
-  stock_tracking: true,
-  production_planner: true,
-  production_save: false,
-  production_advanced: false,
-  pdf_export: false,
-  advanced_costs: true,
-  change_history: false,
-  data_import_export: false,
-  nutrition_info: false,
-  cooking_mode: false,
-};
-
-const PRO_FEATURES: Record<string, boolean> = {
-  recipe_duplicate: true,
-  recipe_photos: true,
-  stock_tracking: true,
-  production_planner: true,
-  production_save: true,
-  production_advanced: true,
-  pdf_export: true,
-  advanced_costs: true,
-  change_history: true,
-  data_import_export: true,
-  nutrition_info: true,
-  cooking_mode: true,
-};
-
-export const FEATURE_FLAGS: Record<string, Record<string, boolean>> = {
-  basic: BASIC_FEATURES,
-  pro: PRO_FEATURES,
-};
+import type { SyncPlanInput } from "@recetario/types";
 
 export async function getSubscriptionPlans(activeOnly = true) {
-  const rows = await prisma.subscriptionPlan.findMany({
+  return prisma.subscriptionPlan.findMany({
     where: activeOnly ? { active: true } : undefined,
     orderBy: { priceCents: "asc" },
   });
-  return rows;
 }
 
 export async function getSubscriptionPlanById(id: string) {
-  const row = await prisma.subscriptionPlan.findUnique({ where: { id } });
-  return row;
+  return prisma.subscriptionPlan.findUnique({ where: { id } });
 }
 
 export async function getSubscriptionPlanByStripePriceId(stripePriceId: string) {
-  const row = await prisma.subscriptionPlan.findFirst({
-    where: { stripePriceId },
-  });
-  return row;
+  return prisma.subscriptionPlan.findFirst({ where: { stripePriceId } });
 }
 
 export async function upsertSubscriptionPlan(
   id: string,
   input: Omit<SubscriptionPlanUncheckedCreateInput, "id">,
 ) {
-  const row = await prisma.subscriptionPlan.upsert({
+  return prisma.subscriptionPlan.upsert({
     where: { id },
     update: input,
     create: { id, ...input },
   });
-  return row;
 }
 
 export async function deactivatePlansNotIn(ids: string[]) {
@@ -98,56 +41,12 @@ export async function deactivatePlansNotIn(ids: string[]) {
   });
 }
 
-export async function syncPlansFromStripe(): Promise<void> {
-  const prices = await stripe.prices.list({
-    active: true,
-    expand: ["data.product"],
-    limit: 100,
-  });
-
-  const syncedIds: string[] = [];
-
-  for (const price of prices.data) {
-    const product = price.product as Stripe.Product;
-    const tier = product.metadata?.tier;
-    if (!tier || !FEATURE_FLAGS[tier]) continue;
-
-    const interval = price.recurring?.interval ?? "";
-    if (!["month", "year"].includes(interval)) continue;
-
-    const id = `${tier}_${interval}ly`;
-    syncedIds.push(id);
-    const featuresJson = JSON.stringify(FEATURE_FLAGS[tier] ?? {});
-
-    await upsertSubscriptionPlan(id, {
-      stripePriceId: price.id,
-      name: product.name,
-      tier,
-      billingInterval: interval === "month" ? "monthly" : "yearly",
-      priceCents: price.unit_amount ?? 0,
-      currency: price.currency ?? "usd",
-      recipesLimit: product.metadata?.recipes_limit
-        ? parseInt(product.metadata.recipes_limit)
-        : null,
-      ingredientsLimit: product.metadata?.ingredients_limit
-        ? parseInt(product.metadata.ingredients_limit)
-        : null,
-      featuresJson,
-      active: true,
-    });
+export async function syncPlans(input: SyncPlanInput[]): Promise<void> {
+  if (input.length === 0) return;
+  for (const plan of input) {
+    await upsertSubscriptionPlan(plan.id, plan);
   }
-
-  if (syncedIds.length > 0) {
-    await deactivatePlansNotIn(syncedIds);
-  }
-}
-
-export async function seedSubscriptionPlans(): Promise<void> {
-  try {
-    await syncPlansFromStripe();
-  } catch (error) {
-    console.error("Failed to sync plans from Stripe:", error);
-  }
+  await deactivatePlansNotIn(input.map((plan) => plan.id));
 }
 
 export async function getSubscriptionByUserId(
@@ -155,10 +54,7 @@ export async function getSubscriptionByUserId(
   statuses?: string[],
 ): Promise<SubscriptionGetPayload<{ include: { plan: true } }> | null> {
   const row = await prisma.subscription.findFirst({
-    where: {
-      userId,
-      ...(statuses ? { status: { in: statuses } } : {}),
-    },
+    where: { userId, ...(statuses ? { status: { in: statuses } } : {}) },
     include: { plan: true },
     orderBy: { createdAt: "desc" },
   });
@@ -166,33 +62,28 @@ export async function getSubscriptionByUserId(
 }
 
 export async function getSubscriptionByStripeId(stripeSubscriptionId: string) {
-  const row = await prisma.subscription.findUnique({
-    where: { stripeSubscriptionId },
-  });
-  return row;
+  return prisma.subscription.findUnique({ where: { stripeSubscriptionId } });
 }
 
 export async function upsertSubscription(
   stripeSubscriptionId: string,
   input: Omit<SubscriptionUncheckedCreateInput, "stripeSubscriptionId">,
 ) {
-  const row = await prisma.subscription.upsert({
+  return prisma.subscription.upsert({
     where: { stripeSubscriptionId },
     update: input,
     create: { stripeSubscriptionId, ...input },
   });
-  return row;
 }
 
 export async function updateSubscription(
   stripeSubscriptionId: string,
   input: SubscriptionUncheckedUpdateInput,
 ) {
-  const row = await prisma.subscription.update({
+  return prisma.subscription.update({
     where: { stripeSubscriptionId },
     data: input,
   });
-  return row;
 }
 
 export async function getStripeCustomerId(userId: string): Promise<string | null> {

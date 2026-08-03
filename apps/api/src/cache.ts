@@ -1,5 +1,5 @@
 // =============================================================================
-// In-memory cache — bounded LRU with stale-while-error hook
+// In-memory cache — bounded LRU
 // =============================================================================
 //
 // Memory budget & eviction policy
@@ -13,18 +13,10 @@
 // the head, and on overflow we trim from the tail. This is O(1) amortized
 // per operation, and good enough for a small bounded cache.
 //
-// Stale-while-error
-// -----------------
-// Each entry stores `lastGoodAt` separately from `expiresAt`. Callers can
-// fetch `{ value, lastGoodAt }` via `peek` and serve a stale value while a
-// refresh is in flight, then bump the entry on success. This is the seam
-// for the rate-limiter's stale-while-error fallback and for the HTTP cache
-// layer when a backing service hiccups.
-//
 // Redis migration path
 // --------------------
-// All storage lives behind `get/set/increment`. To swap in Redis later:
-//   1. Add a `CacheBackend` interface with the same three methods.
+// All storage lives behind `get/set`. To swap in Redis later:
+//   1. Add a `CacheBackend` interface with the same two methods.
 //   2. Implement `InMemoryBackend` (current) and `RedisBackend` (new).
 //   3. Pick the backend at module init based on `env.CACHE_BACKEND`.
 // Callers stay unchanged. See issue #65 for the original spec.
@@ -33,7 +25,6 @@
 type Entry<T = unknown> = {
   value: T;
   expiresAt: number;
-  lastGoodAt: number;
 };
 
 type Store = Map<string, Entry>;
@@ -80,27 +71,6 @@ export function set<T>(key: string, value: T, ttlMs: number): void {
   if (!sweepTimer) startSweep();
   if (store.has(key)) store.delete(key);
   const now = Date.now();
-  store.set(key, { value, expiresAt: now + ttlMs, lastGoodAt: now });
+  store.set(key, { value, expiresAt: now + ttlMs });
   trimToMax();
-}
-
-export function increment(key: string, ttlMs: number): number {
-  const now = Date.now();
-  const entry = store.get(key);
-  let count = 1;
-  let lastGoodAt = now;
-  if (entry && entry.expiresAt > now) {
-    count = (entry.value as number) + 1;
-    lastGoodAt = entry.lastGoodAt;
-  }
-  if (store.has(key)) store.delete(key);
-  store.set(key, { value: count, expiresAt: now + ttlMs, lastGoodAt });
-  if (!sweepTimer) startSweep();
-  return count;
-}
-
-export function peek<T>(key: string): { value: T; lastGoodAt: number } | undefined {
-  const entry = store.get(key);
-  if (!entry) return undefined;
-  return { value: entry.value as T, lastGoodAt: entry.lastGoodAt };
 }

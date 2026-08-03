@@ -4,17 +4,15 @@ import { env } from "cloudflare:workers";
 import { syncEnvBindings } from "@recetario/config/env";
 import { clientIp, setSecurityHeaders } from "@recetario/config/request";
 import { generateToken, getCsrfCookie } from "@recetario/auth";
-import { resolveSubscription } from "@recetario/billing";
+import { getDefaultSubscription } from "@recetario/stripe";
 import {
   apiFetch,
   ApiError as ApiClientError,
   setApiBinding,
 } from "@/lib/api-client";
 import {
-  credentialStatusResponseSchema,
   sessionResponseSchema,
   type SessionResponse,
-  subscriptionResponseSchema,
 } from "@recetario/types";
 
 const SIGN_IN_PATHS = ["/sign-in/email", "/sign-in/social"];
@@ -85,26 +83,12 @@ export const onRequest = defineMiddleware(async (context, next) => {
     session = null;
   }
 
-  if (session) {
-    const { user: sessionUser } = session;
+  if (session && session.subscription) {
+    const { user: sessionUser, subscription } = session;
+    const hasPasswordAuth = session.hasPasswordAuth ?? false;
 
-    // ── 2. User: build AppUser from session data + check credential account ───
     const userName =
       sessionUser.name || sessionUser.email?.split("@")[0] || "Usuario";
-
-    let hasPasswordAuth = false;
-    try {
-      const credentialStatus = await apiFetch(
-        "/api/auth/credential-status",
-        { schema: credentialStatusResponseSchema },
-        context,
-      );
-      hasPasswordAuth = credentialStatus.hasPasswordAuth;
-    } catch (err) {
-      if (!(err instanceof ApiClientError) || err.status !== 401) {
-        console.error("[/api/auth/credential-status] error:", err);
-      }
-    }
 
     const appUser: AppUser = {
       id: sessionUser.id,
@@ -119,25 +103,47 @@ export const onRequest = defineMiddleware(async (context, next) => {
 
     context.locals.user = appUser;
     context.locals.session = { user: appUser };
+    context.locals.subscription = subscription;
 
-    // ── 3. Audit: log sign-in events ──────────────────────────────────────────
+    // ── 3. Preferences: populate locals & sync cookies ─────────────────────────
+    const prefsTheme = (session.preferences?.theme ??
+      context.cookies.get("kitchcalc-theme")?.value ??
+      "system") as "system" | "light" | "dark";
+    const prefsAccent = (session.preferences?.accentColor ??
+      context.cookies.get("kitchcalc-accent")?.value ??
+      "coral") as
+      | "indigo"
+      | "violet"
+      | "blue"
+      | "emerald"
+      | "rose"
+      | "amber"
+      | "coral";
+
+    const userPrefs = {
+      userId: sessionUser.id,
+      theme: prefsTheme,
+      accentColor: prefsAccent,
+    };
+    context.locals.preferences = userPrefs;
+
+    context.cookies.set("kitchcalc-theme", userPrefs.theme, {
+      path: "/",
+      sameSite: "lax",
+      httpOnly: false,
+      maxAge: 31536000,
+    });
+    context.cookies.set("kitchcalc-accent", userPrefs.accentColor, {
+      path: "/",
+      sameSite: "lax",
+      httpOnly: false,
+      maxAge: 31536000,
+    });
+
+    // ── 4. Audit: log sign-in events ──────────────────────────────────────────
     detectSignInEvent(context.url.pathname, sessionUser.id, context);
 
-    // ── 4. Billing: resolve subscription with cache ──────────────────────
-    try {
-      const sub = await apiFetch(
-        "/api/billing/subscription",
-        { schema: subscriptionResponseSchema },
-        context,
-      );
-      context.locals.subscription = sub;
-    } catch (err) {
-      if (!(err instanceof ApiClientError) || err.code !== "NOT_FOUND")
-        throw err;
-      context.locals.subscription = resolveSubscription(null);
-    }
-
-    // ── 5. CSRF: get-or-create per-session token ─────────────────────────────
+    // ── 6. CSRF: get-or-create per-session token ─────────────────────────────
     const existingToken = context.cookies.get(getCsrfCookie())?.value;
     const csrfToken = existingToken ?? generateToken();
     context.locals.csrfToken = csrfToken;
@@ -152,11 +158,16 @@ export const onRequest = defineMiddleware(async (context, next) => {
     // ── Unauthenticated: set all locals to null / defaults ──────────────────
     context.locals.user = null;
     context.locals.session = null;
-    context.locals.subscription = resolveSubscription(null);
+    context.locals.preferences = {
+      userId: "",
+      theme: (context.cookies.get("kitchcalc-theme")?.value as "system" | "light" | "dark") ?? "system",
+      accentColor: (context.cookies.get("kitchcalc-accent")?.value as "coral") ?? "coral",
+    };
+    context.locals.subscription = getDefaultSubscription();
     context.locals.csrfToken = null;
   }
 
-  // ── 6. Response: apply security headers to every response ───────────────────
+  // ── 7. Response: apply security headers to every response ───────────────────
   const response = await next();
   setSecurityHeaders(response);
   return response;

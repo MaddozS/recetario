@@ -1,9 +1,8 @@
 import type { Handler } from "hono";
-import { auth } from "@recetario/auth/server";
 import { getUserPreferences, createUserPreferences } from "@recetario/db";
 import { preferencesResponseSchema } from "@recetario/types";
 import * as cache from "../cache";
-import { ApiError } from "../errors";
+import { getAuthUser } from "../middleware/auth";
 
 const CACHE_TTL_MS = 60_000;
 const DEFAULT_THEME = "system" as const;
@@ -15,11 +14,8 @@ function cacheKey(userId: string): string {
 
 export function preferencesGetHandler(): Handler {
   return async (c) => {
-    const session = await auth.api.getSession({ headers: c.req.raw.headers });
-    if (!session?.user) {
-      throw new ApiError("UNAUTHENTICATED", "Authentication required");
-    }
-    const userId = session.user.id;
+    const user = await getAuthUser(c);
+    const userId = user.id;
 
     const cached = cache.get<unknown>(cacheKey(userId));
     if (cached !== undefined) {

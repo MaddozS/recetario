@@ -1,0 +1,806 @@
+---
+import Icon from "@/components/atoms/Icon.astro";
+import Button from "@/components/atoms/Button.astro";
+import Card from "@/components/molecules/shared/Card.astro";
+
+import { UNIT_OPTIONS, DEFAULT_UNIT } from "@/lib/constants";
+import { apiFetch } from "@/lib/api-client";
+import { z } from "zod";
+import {
+  ingredientSchema,
+  ingredientUsageMapSchema,
+} from "@recetario/types";
+import FeedbackAlert from "@/components/molecules/shared/FeedbackAlert.astro";
+import UnitCostDisplay from "@/components/atoms/UnitCostDisplay.astro";
+import IngredientFormFields from "@/components/molecules/ingredients/IngredientFormFields.astro";
+import EmptyState from "@/components/molecules/shared/EmptyState.astro";
+
+interface Props {
+  feedbackType?: "error" | "success" | null;
+  feedbackMessage?: string | null;
+  blockedRecipes?: string[];
+  csrfToken?: string;
+}
+
+const {
+  feedbackType = null,
+  feedbackMessage = null,
+  blockedRecipes = [],
+  csrfToken = "",
+} = Astro.props;
+
+const labelClasses =
+  "mb-1.5 block text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground";
+const inputClasses =
+  "w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground outline-none transition placeholder:text-subtle-foreground focus:border-accent-300 focus:bg-card focus:ring-2 focus:ring-accent-500/20";
+
+const ingredients = await apiFetch(
+  "/api/ingredients",
+  { schema: z.array(ingredientSchema) },
+  Astro,
+);
+const ingredientUsage = await apiFetch(
+  "/api/ingredients/usage",
+  { schema: ingredientUsageMapSchema },
+  Astro,
+);
+---
+
+<div class="animate-fade-in">
+  {
+    feedbackType && feedbackMessage && (
+      <div class="mb-6">
+        <FeedbackAlert
+          type={feedbackType}
+          message={feedbackMessage}
+          recipes={blockedRecipes}
+        />
+      </div>
+    )
+  }
+
+  <Card padding="lg" class="mb-6 hidden lg:block">
+    <div
+      class="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between"
+    >
+      <div>
+        <h2 class="text-foreground text-2xl font-black">Agregar Insumo</h2>
+        <p class="text-muted-foreground mt-1 text-sm">
+          Captura la información de tus ingredientes y empaques.
+        </p>
+      </div>
+
+      <div class="text-muted-foreground text-left text-xs xl:text-right">
+        <p>
+          <span class="text-danger font-bold">*</span> Campos obligatorios
+        </p>
+        <p>Usa punto (.) o coma (,) para decimales</p>
+      </div>
+    </div>
+
+    <form method="post" action="/ingredients" class="mt-6" data-ingredient-form data-astro-reload>
+      <input type="hidden" name="action" value="create" />
+      <input type="hidden" name="_csrf" value={csrfToken} />
+
+      <div
+        class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-[minmax(0,2.3fr)_minmax(0,1.5fr)_minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,1.5fr)]"
+      >
+        <IngredientFormFields idPrefix="desktop" />
+      </div>
+
+      <div
+        class="border-accent-100 bg-accent-50/70 mt-5 flex flex-col gap-4 rounded-2xl border p-4 xl:flex-row xl:items-center xl:justify-between"
+      >
+        <UnitCostDisplay defaultUnit={DEFAULT_UNIT} />
+
+        <Button
+          variant="primary"
+          icon="plus"
+          type="submit"
+          data-submit-button
+          disabled
+          class="shadow-accent-200 min-w-52 shadow-sm"
+        >
+          Agregar Insumo
+        </Button>
+      </div>
+    </form>
+  </Card>
+
+  <Card class="overflow-hidden p-0!">
+    <div class="border-border border-b px-4 py-4 sm:px-6">
+      <div
+        class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between"
+      >
+        <div>
+          <div class="flex items-baseline gap-2">
+            <h2 class="text-foreground text-xl font-black">Tus Ingredientes</h2>
+            <span class="text-subtle-foreground text-sm font-semibold">
+              ({ingredients.length})
+            </span>
+          </div>
+          <p class="text-muted-foreground mt-1 text-sm">
+            Busca por ingrediente, proveedor o marca.
+          </p>
+        </div>
+
+        <div
+          class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end"
+        >
+          <Button
+            variant="primary"
+            icon="plus"
+            data-open-create-modal
+            class="lg:hidden"
+          >
+            Agregar Insumo
+          </Button>
+
+          <label class="relative block w-full sm:w-80">
+            <span class="sr-only">Buscar ingrediente</span>
+            <span
+              class="text-subtle-foreground pointer-events-none absolute inset-y-0 left-4 flex items-center"
+            >
+              <Icon name="lucide:search" size={16} />
+            </span>
+            <input
+              type="search"
+              placeholder="Buscar ingrediente o proveedor..."
+              class={`${inputClasses} pl-11 pr-4`}
+              data-ingredient-search
+            />
+          </label>
+        </div>
+      </div>
+    </div>
+
+    {
+      ingredients.length > 0 ? (
+        <>
+          <div class="overflow-x-auto">
+            <table class="min-w-full text-left">
+              <thead class="bg-background text-muted-foreground text-[11px] font-bold tracking-[0.16em] uppercase">
+                <tr>
+                  <th class="px-6 py-4">Insumo</th>
+                  <th class="px-6 py-4">Proveedor</th>
+                  <th class="px-6 py-4">Precio Empaque</th>
+                  <th class="px-6 py-4">Contenido</th>
+                  <th class="px-6 py-4">Costo x Unidad</th>
+                  <th class="px-6 py-4 text-right">Acciones</th>
+                </tr>
+              </thead>
+              <tbody class="divide-border-light divide-y">
+                {ingredients.map((ingredient) => {
+                  const usedRecipes = ingredientUsage[String(ingredient.id)] || [];
+                  const usedRecipesPayload = encodeURIComponent(
+                    JSON.stringify(usedRecipes),
+                  );
+                  const ingredientPayload = encodeURIComponent(
+                    JSON.stringify({
+                      id: ingredient.id,
+                      name: ingredient.name,
+                      supplier: ingredient.supplier ?? "",
+                      brand: ingredient.brand ?? "",
+                      price: ingredient.price,
+                      purchaseQuantity: ingredient.purchaseQuantity,
+                      unit: ingredient.unit,
+                    }),
+                  );
+                  const searchText = [
+                    ingredient.name,
+                    ingredient.supplier ?? "",
+                    ingredient.brand ?? "",
+                  ]
+                    .join(" ")
+                    .toLowerCase();
+                  const unitCost =
+                    ingredient.price / ingredient.purchaseQuantity;
+
+                  return (
+                    <tr
+                      class="hover:bg-hover-muted dark:hover:bg-hover-muted transition-colors"
+                      data-ingredient-row
+                      data-search={searchText}
+                    >
+                      <td class="px-6 py-5">
+                        <div class="min-w-56">
+                          <p class="text-foreground font-semibold">
+                            {ingredient.name}
+                          </p>
+                          {ingredient.brand && (
+                            <p class="text-subtle-foreground mt-1 text-xs">
+                              Marca: {ingredient.brand}
+                            </p>
+                          )}
+                        </div>
+                      </td>
+                      <td class="px-6 py-5">
+                        {ingredient.supplier ? (
+                          <span class="text-secondary-foreground text-sm font-medium">
+                            {ingredient.supplier}
+                          </span>
+                        ) : (
+                          <span class="text-subtle-foreground text-sm italic">
+                            Sin proveedor
+                          </span>
+                        )}
+                      </td>
+                      <td class="px-6 py-5">
+                        <span class="text-secondary-foreground font-mono text-sm font-semibold tabular-nums">
+                          ${ingredient.price.toFixed(2)}
+                        </span>
+                      </td>
+                      <td class="text-muted-foreground px-6 py-5 text-sm">
+                        <span class="text-secondary-foreground font-mono font-semibold">
+                          {ingredient.purchaseQuantity}
+                        </span>{" "}
+                        <span>{ingredient.unit}</span>
+                      </td>
+                      <td class="px-6 py-5">
+                        <span class="border-accent-100 bg-accent-50 text-accent-600 inline-flex items-center rounded-xl border px-3 py-2 font-mono text-sm font-semibold tabular-nums">
+                          ${unitCost.toFixed(2)} / {ingredient.unit}
+                        </span>
+                      </td>
+                      <td class="px-6 py-5 text-right">
+                        <div class="flex items-center justify-end gap-2">
+                          <Button
+                            variant="iconAccent"
+                            iconOnly
+                            icon="pencil"
+                            data-edit-trigger
+                            data-ingredient-payload={ingredientPayload}
+                            ariaLabel="Editar ingrediente"
+                          />
+
+                          <Button
+                            variant="iconDanger"
+                            iconOnly
+                            icon="trash-2"
+                            title={
+                              usedRecipes.length > 0
+                                ? "Ingrediente en uso"
+                                : "Eliminar ingrediente"
+                            }
+                            ariaLabel={
+                              usedRecipes.length > 0
+                                ? "Ingrediente en uso"
+                                : "Eliminar ingrediente"
+                            }
+                            data-delete-trigger
+                            data-ingredient-id={ingredient.id}
+                            data-ingredient-name={ingredient.name}
+                            data-used-recipes={usedRecipesPayload}
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          <div
+            hidden
+            class="border-border-light border-t px-6 py-10 text-center"
+            data-ingredient-search-empty
+          >
+            <div class="mx-auto flex max-w-sm flex-col items-center">
+              <div class="bg-muted text-subtle-foreground flex h-12 w-12 items-center justify-center rounded-2xl">
+                <Icon name="lucide:search-x" size={20} />
+              </div>
+              <p class="text-secondary-foreground mt-4 text-sm font-semibold">
+                No encontramos resultados
+              </p>
+              <p class="text-muted-foreground mt-1 text-sm">
+                Intenta con otro nombre, proveedor o marca.
+              </p>
+            </div>
+          </div>
+        </>
+      ) : (
+        <div class="px-6 py-14 text-center">
+          <EmptyState
+            icon="lucide:package-plus"
+            title="Todavía no tienes ingredientes"
+            description="Agrega tu primer insumo para empezar a costear recetas y presentaciones."
+            actionLabel="Agregar Insumo"
+          />
+        </div>
+      )
+    }
+  </Card>
+
+  <dialog
+    data-animated
+    id="create-ingredient-modal"
+    class="backdrop:bg-backdrop/50 fixed inset-0 m-auto w-[calc(100vw-2rem)] max-w-lg rounded-3xl p-0 lg:hidden"
+  >
+    <div
+      class="border-border bg-card max-h-[min(82vh,44rem)] overflow-y-auto rounded-3xl border p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom)+4.75rem)] shadow-2xl"
+    >
+      <div class="flex items-start justify-between gap-4">
+        <div>
+          <h3 class="text-foreground text-xl font-black">Agregar Insumo</h3>
+          <p class="text-muted-foreground mt-1 text-sm">
+            Captura la información de tu empaque sin salir del listado.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          class="border-border text-muted-foreground hover:bg-background hover:text-secondary-foreground inline-flex h-10 w-10 items-center justify-center rounded-xl border transition-colors"
+          aria-label="Cerrar modal"
+          data-close-create-modal
+        >
+          <Icon name="lucide:x" size={18} />
+        </button>
+      </div>
+
+      <form
+        method="post"
+        action="/ingredients"
+        class="mt-5 space-y-4"
+        data-ingredient-form
+        data-astro-reload
+      >
+        <input type="hidden" name="action" value="create" />
+        <input
+          type="hidden"
+          name="_csrf"
+          value={csrfToken}
+        />
+
+        <IngredientFormFields idPrefix="mobile" />
+
+        <div class="border-accent-100 bg-accent-50/70 rounded-2xl border p-4">
+          <UnitCostDisplay defaultUnit={DEFAULT_UNIT} />
+        </div>
+
+        <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+          <Button variant="secondary" data-close-create-modal>Cancelar</Button>
+          <Button
+            variant="primary"
+            icon="plus"
+            type="submit"
+            data-submit-button
+            disabled
+          >
+            Agregar Insumo
+          </Button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <dialog
+    data-animated
+    id="edit-ingredient-modal"
+    class="backdrop:bg-backdrop/50 fixed inset-0 m-auto w-[calc(100vw-2rem)] max-w-xl rounded-3xl p-0"
+  >
+    <div
+      class="border-border bg-card max-h-[min(82vh,44rem)] overflow-y-auto rounded-3xl border p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom)+1.5rem)] shadow-2xl"
+    >
+      <div class="flex items-start justify-between gap-4">
+        <div>
+          <h3 class="text-foreground text-xl font-black">Editar ingrediente</h3>
+          <p class="text-muted-foreground mt-1 text-sm">
+            Ajusta todos los datos del ingrediente sin perder consistencia en el costeo.
+          </p>
+          <p
+            id="edit-modal-error"
+            class="text-danger mt-2 hidden text-xs font-semibold"
+          >
+          </p>
+        </div>
+
+        <button
+          type="button"
+          class="border-border text-muted-foreground hover:bg-background hover:text-secondary-foreground inline-flex h-10 w-10 items-center justify-center rounded-xl border transition-colors"
+          aria-label="Cerrar modal"
+          data-close-edit-modal
+        >
+          <Icon name="lucide:x" size={18} />
+        </button>
+      </div>
+
+      <form
+        method="post"
+        action="/ingredients"
+        class="mt-5 space-y-4"
+        data-ingredient-form
+        data-astro-reload
+      >
+        <input type="hidden" name="action" value="update" />
+        <input type="hidden" name="ingredientId" value="" />
+        <input
+          type="hidden"
+          name="_csrf"
+          value={csrfToken}
+        />
+
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div class="md:col-span-2">
+            <label class={labelClasses} for="edit-name">
+              Nombre <span class="text-danger">*</span>
+            </label>
+            <input
+              id="edit-name"
+              name="name"
+              type="text"
+              class={inputClasses}
+              autocomplete="off"
+            />
+          </div>
+
+          <div>
+            <label class={labelClasses} for="edit-supplier">Proveedor</label>
+            <input
+              id="edit-supplier"
+              name="supplier"
+              type="text"
+              class={inputClasses}
+              autocomplete="off"
+            />
+          </div>
+
+          <div>
+            <label class={labelClasses} for="edit-brand">Marca</label>
+            <input
+              id="edit-brand"
+              name="brand"
+              type="text"
+              class={inputClasses}
+              autocomplete="off"
+            />
+          </div>
+
+          <div>
+            <label class={labelClasses} for="edit-price">
+              Precio empaque <span class="text-danger">*</span>
+            </label>
+            <div class="relative">
+              <span
+                class="text-subtle-foreground pointer-events-none absolute inset-y-0 left-4 flex items-center text-sm font-bold"
+              >
+                $
+              </span>
+              <input
+                id="edit-price"
+                name="price"
+                type="text"
+                inputmode="decimal"
+                class={`${inputClasses} pl-8 font-mono`}
+                autocomplete="off"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label class={labelClasses} for="edit-purchase-quantity">
+              Cant. empaque <span class="text-danger">*</span>
+            </label>
+            <div
+              class="border-border bg-background focus-within:border-accent-300 focus-within:bg-card focus-within:ring-accent-500/20 grid grid-cols-[minmax(0,1fr)_5.5rem] overflow-hidden rounded-xl border transition focus-within:ring-2"
+            >
+              <input
+                id="edit-purchase-quantity"
+                name="purchaseQuantity"
+                type="text"
+                inputmode="decimal"
+                class="text-foreground placeholder:text-subtle-foreground border-0 bg-transparent px-4 py-3 font-mono text-sm outline-none"
+                autocomplete="off"
+              />
+              <select
+                name="unit"
+                class="border-border bg-card text-secondary-foreground border-0 border-l px-3 py-3 text-sm font-semibold outline-none"
+              >
+                {
+                  UNIT_OPTIONS.map((option) => (
+                    <option value={option} selected={option === DEFAULT_UNIT}>
+                      {option}
+                    </option>
+                  ))
+                }
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="border-accent-100 bg-accent-50/70 rounded-2xl border p-4">
+          <UnitCostDisplay defaultUnit={DEFAULT_UNIT} />
+        </div>
+
+        <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+          <Button variant="secondary" data-close-edit-modal> Cancelar </Button>
+          <Button
+            variant="primary"
+            icon="check"
+            type="submit"
+            data-submit-button
+            disabled
+          >
+            Guardar cambios
+          </Button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <dialog
+    data-animated
+    id="delete-confirm-modal"
+    class="backdrop:bg-backdrop/50 fixed inset-0 m-auto w-[calc(100vw-2rem)] max-w-md rounded-3xl p-0"
+  >
+    <div class="border-border bg-card rounded-3xl border p-6 shadow-2xl">
+      <div class="flex items-start gap-3">
+        <div
+          class="bg-danger-bg text-danger flex h-11 w-11 items-center justify-center rounded-2xl"
+        >
+          <Icon name="lucide:trash-2" size={18} />
+        </div>
+        <div>
+          <h3 class="text-foreground text-lg font-bold">
+            Confirmar eliminación
+          </h3>
+          <p id="delete-modal-description" class="text-muted-foreground mt-2 text-sm">
+            ¿Eliminar este ingrediente? Esta acción no se puede deshacer.
+          </p>
+        </div>
+      </div>
+
+      <form method="post" action="/ingredients" class="mt-6 space-y-4" data-astro-reload>
+        <input type="hidden" name="action" value="delete" />
+        <input type="hidden" name="ingredientId" value="" />
+        <input
+          type="hidden"
+          name="_csrf"
+          value={csrfToken}
+        />
+
+        <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+          <Button variant="secondary" data-close-delete-modal>Cancelar</Button>
+          <Button variant="danger" icon="trash-2" type="submit">
+            Eliminar
+          </Button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+</div>
+
+<script>
+  import { bindDialogBackdrop } from "@/lib/dialog";
+  import { startMutationPending } from "@/lib/mutation-pending";
+
+  function parseNumber(val: string): number {
+    if (!val) return NaN;
+    return parseFloat(val.trim().replace(',', '.'));
+  }
+
+  function updateIngredientForm(form: HTMLFormElement) {
+    const nameInput = form.querySelector<HTMLInputElement>('input[name="name"]');
+    const priceInput = form.querySelector<HTMLInputElement>('input[name="price"]');
+    const qtyInput = form.querySelector<HTMLInputElement>('input[name="purchaseQuantity"]');
+    const unitSelect = form.querySelector<HTMLSelectElement>('select[name="unit"]');
+    const submitBtn = form.querySelector<HTMLButtonElement>('[data-submit-button]');
+    const costValueEl = form.querySelector<HTMLElement>('[data-unit-cost-value]');
+    const costUnitEl = form.querySelector<HTMLElement>('[data-unit-cost-unit]');
+
+    const nameVal = nameInput ? nameInput.value.trim() : '';
+    const priceNum = priceInput ? parseNumber(priceInput.value) : NaN;
+    const qtyNum = qtyInput ? parseNumber(qtyInput.value) : NaN;
+    const unitVal = unitSelect ? unitSelect.value : 'kg';
+
+    const isPriceValid = !isNaN(priceNum) && priceNum >= 0;
+    const isQtyValid = !isNaN(qtyNum) && qtyNum > 0;
+    const isNameValid = nameVal.length > 0;
+
+    if (costValueEl) {
+      if (isPriceValid && isQtyValid) {
+        const unitCost = priceNum / qtyNum;
+        costValueEl.textContent = `$${unitCost.toFixed(2)}`;
+      } else {
+        costValueEl.textContent = '$0.00';
+      }
+    }
+
+    if (costUnitEl) {
+      costUnitEl.textContent = unitVal;
+    }
+
+    if (submitBtn) {
+      submitBtn.disabled = !(isNameValid && isPriceValid && isQtyValid);
+    }
+  }
+
+  function setupIngredientsScript() {
+    if (document.documentElement.dataset.ingredientsBound === '1') {
+      document.querySelectorAll<HTMLFormElement>('[data-ingredient-form]').forEach(updateIngredientForm);
+      return;
+    }
+    document.documentElement.dataset.ingredientsBound = '1';
+
+    document.addEventListener('submit', (e) => {
+      const form = e.target as HTMLFormElement | null;
+      if (!form) return;
+      const actionAttr = form.getAttribute('action');
+      if (actionAttr !== '/ingredients' && actionAttr !== '') return;
+
+      const dialog = form.closest<HTMLDialogElement>('dialog');
+      const container = dialog || form;
+      container.dataset.submitting = '1';
+
+      container.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLButtonElement | HTMLTextAreaElement>(
+        'input, select, button, textarea'
+      ).forEach((el) => {
+        if (el instanceof HTMLButtonElement) {
+          el.disabled = true;
+        } else if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement) {
+          el.readOnly = true;
+          el.style.pointerEvents = 'none';
+        } else if (el instanceof HTMLSelectElement) {
+          el.style.pointerEvents = 'none';
+        }
+      });
+
+      if (dialog) {
+        dialog.addEventListener('cancel', (evt) => evt.preventDefault());
+      }
+
+      const action = form.querySelector<HTMLInputElement>('input[name="action"]')?.value;
+      const submitBtn = form.querySelector<HTMLButtonElement>('[data-submit-button], button[type="submit"]');
+
+      let message = 'Procesando…';
+      let buttonText = 'Guardando…';
+
+      if (action === 'create') {
+        message = 'Agregando insumo…';
+        buttonText = 'Agregando…';
+      } else if (action === 'update') {
+        message = 'Guardando cambios…';
+        buttonText = 'Guardando…';
+      } else if (action === 'delete') {
+        message = 'Eliminando insumo…';
+        buttonText = 'Eliminando…';
+      }
+
+      startMutationPending(submitBtn, { overlay: true, message, buttonText });
+    });
+
+    document.addEventListener('input', (e) => {
+      const target = e.target as HTMLElement | null;
+      if (!target) return;
+
+      if (target.matches('[data-ingredient-search]')) {
+        const searchInput = target as HTMLInputElement;
+        const query = searchInput.value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+        const rows = document.querySelectorAll<HTMLElement>('[data-ingredient-row]');
+        const emptySearchState = document.querySelector<HTMLElement>('[data-ingredient-search-empty]');
+        let visibleCount = 0;
+
+        rows.forEach((row) => {
+          const searchData = (row.dataset.search ?? '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+          const matches = searchData.includes(query);
+          row.style.display = matches ? '' : 'none';
+          if (matches) visibleCount++;
+        });
+
+        if (emptySearchState) {
+          emptySearchState.hidden = visibleCount > 0 || query === '';
+        }
+      }
+
+      const form = target.closest<HTMLFormElement>('[data-ingredient-form]');
+      if (form) {
+        updateIngredientForm(form);
+      }
+    });
+
+    document.addEventListener('change', (e) => {
+      const target = e.target as HTMLElement | null;
+      if (!target) return;
+      const form = target.closest<HTMLFormElement>('[data-ingredient-form]');
+      if (form) {
+        updateIngredientForm(form);
+      }
+    });
+
+    document.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement | null;
+      if (!target) return;
+
+      const editModal = document.getElementById('edit-ingredient-modal') as HTMLDialogElement | null;
+      const deleteModal = document.getElementById('delete-confirm-modal') as HTMLDialogElement | null;
+      const createModal = document.getElementById('create-ingredient-modal') as HTMLDialogElement | null;
+
+      const editTrigger = target.closest('[data-edit-trigger]') as HTMLElement | null;
+      if (editTrigger && editModal) {
+        bindDialogBackdrop(editModal);
+        delete editModal.dataset.submitting;
+        editModal.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLButtonElement | HTMLTextAreaElement>(
+          'input, select, button, textarea'
+        ).forEach((el) => {
+          el.disabled = false;
+        });
+
+        const payloadStr = editTrigger.dataset.ingredientPayload;
+        if (payloadStr) {
+          try {
+            const data = JSON.parse(decodeURIComponent(payloadStr));
+            const idInput = editModal.querySelector<HTMLInputElement>('input[name="ingredientId"]');
+            const nameInput = editModal.querySelector<HTMLInputElement>('input[name="name"]');
+            const supplierInput = editModal.querySelector<HTMLInputElement>('input[name="supplier"]');
+            const brandInput = editModal.querySelector<HTMLInputElement>('input[name="brand"]');
+            const priceInput = editModal.querySelector<HTMLInputElement>('input[name="price"]');
+            const qtyInput = editModal.querySelector<HTMLInputElement>('input[name="purchaseQuantity"]');
+            const unitSelect = editModal.querySelector<HTMLSelectElement>('select[name="unit"]');
+
+            if (idInput) idInput.value = data.id;
+            if (nameInput) nameInput.value = data.name;
+            if (supplierInput) supplierInput.value = data.supplier;
+            if (brandInput) brandInput.value = data.brand;
+            if (priceInput) priceInput.value = String(data.price);
+            if (qtyInput) qtyInput.value = String(data.purchaseQuantity);
+            if (unitSelect) unitSelect.value = data.unit;
+
+            const editForm = editModal.querySelector<HTMLFormElement>('form');
+            if (editForm) updateIngredientForm(editForm);
+
+            editModal.showModal();
+          } catch {
+            /* noop */
+          }
+        }
+      }
+
+      const deleteTrigger = target.closest('[data-delete-trigger]') as HTMLElement | null;
+      if (deleteTrigger && deleteModal) {
+        bindDialogBackdrop(deleteModal);
+        delete deleteModal.dataset.submitting;
+        deleteModal.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLButtonElement | HTMLTextAreaElement>(
+          'input, select, button, textarea'
+        ).forEach((el) => {
+          el.disabled = false;
+        });
+
+        const id = deleteTrigger.dataset.ingredientId;
+        const name = deleteTrigger.dataset.ingredientName;
+        const idInput = deleteModal.querySelector<HTMLInputElement>('input[name="ingredientId"]');
+        const descEl = document.getElementById('delete-modal-description');
+
+        if (idInput && id) idInput.value = id;
+        if (descEl && name) {
+          descEl.textContent = `¿Estás seguro de que deseas eliminar el ingrediente "${name}"? Esta acción no se puede deshacer.`;
+        }
+        deleteModal.showModal();
+      }
+
+      if (target.closest('[data-open-create-modal]') && createModal) {
+        bindDialogBackdrop(createModal);
+        delete createModal.dataset.submitting;
+        createModal.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLButtonElement | HTMLTextAreaElement>(
+          'input, select, button, textarea'
+        ).forEach((el) => {
+          el.disabled = false;
+        });
+        createModal.showModal();
+      }
+      if (target.closest('[data-close-create-modal]') && createModal) {
+        if (createModal.dataset.submitting !== '1') createModal?.close();
+      }
+      if (target.closest('[data-close-edit-modal]') && editModal) {
+        if (editModal.dataset.submitting !== '1') editModal?.close();
+      }
+      if (target.closest('[data-close-delete-modal]') && deleteModal) {
+        if (deleteModal.dataset.submitting !== '1') deleteModal?.close();
+      }
+    });
+
+    document.querySelectorAll<HTMLFormElement>('[data-ingredient-form]').forEach(updateIngredientForm);
+  }
+
+  document.addEventListener('astro:page-load', setupIngredientsScript);
+  document.addEventListener('astro:after-swap', setupIngredientsScript);
+  setupIngredientsScript();
+</script>

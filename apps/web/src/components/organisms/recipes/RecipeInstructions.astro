@@ -1,0 +1,629 @@
+---
+import Icon from "@/components/atoms/Icon.astro";
+import {
+  parseInstructions,
+  highlightReferences,
+  parseHtmlSteps,
+  extractTimersFromHtml,
+} from "@/lib/instructions-parser";
+import { sanitizeHtml, looksLikeHtml } from "@/lib/html-sanitizer";
+import type { IngredientRef } from "@/lib/instructions-parser";
+
+interface Props {
+  instructions: string;
+  ingredients: IngredientRef[];
+  isPro?: boolean;
+}
+
+const { instructions, ingredients, isPro = false } = Astro.props;
+
+const isHtml = looksLikeHtml(instructions);
+let steps: Array<{
+  number: number;
+  text?: string;
+  html?: string;
+  isGroupHeader?: boolean;
+  groupName?: string;
+  duration?: string;
+  temperature?: string;
+}>;
+let totalDuration: string | undefined;
+let notes: string[] | undefined;
+let cookingSteps: Array<{
+  index: number;
+  html: string;
+  timers: Array<{ value: number; unit: string }>;
+}>;
+
+if (isHtml) {
+  const sanitized = sanitizeHtml(instructions);
+  const stepHtmls = parseHtmlSteps(sanitized);
+  steps = stepHtmls.map((html, i) => ({
+    number: i + 1,
+    html,
+  }));
+  cookingSteps = stepHtmls.map((html, i) => ({
+    index: i,
+    html,
+    timers: extractTimersFromHtml(html),
+  }));
+} else {
+  const parsed = parseInstructions(instructions, ingredients);
+  steps = parsed.steps;
+  totalDuration = parsed.totalDuration;
+  notes = parsed.notes;
+  cookingSteps = parsed.steps
+    .filter((s) => !s.isGroupHeader)
+    .map((step, i) => ({
+      index: i,
+      html: `<div class="cooking-mode-step-number">${step.number}</div><p class="cooking-mode-step-text">${highlightReferences(step.text, ingredients)}</p>`,
+      timers: [] as Array<{ value: number; unit: string }>,
+    }));
+}
+const visibleSteps = cookingSteps;
+---
+
+<div
+  class="bg-card border-border mx-1 mt-6 overflow-hidden rounded-2xl border shadow-sm sm:mx-2 lg:mx-8"
+>
+  <div
+    class="border-border-light flex items-center justify-between gap-3 border-b px-5 py-5 sm:px-6 lg:px-8"
+  >
+    <h2 class="text-foreground flex items-center gap-2 text-sm font-bold">
+      <Icon name="lucide:list-checks" size={16} class="text-accent-500" />
+      Preparación
+    </h2>
+    <div class="flex items-center gap-2">
+      {
+        totalDuration && (
+          <span class="bg-accent-50 dark:bg-accent-500/10 text-accent-600 dark:text-accent-400 border-accent-200 inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[11px] font-semibold whitespace-nowrap">
+            <Icon name="lucide:timer" size={12} />
+            {totalDuration}
+          </span>
+        )
+      }
+      {
+        isPro && visibleSteps.length > 0 && (
+          <button
+            type="button"
+            data-open-cooking-mode
+            class="text-muted-foreground hover:bg-accent-50 hover:text-accent-600 inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg transition-colors"
+            title="Modo cocina"
+            aria-label="Modo cocina"
+          >
+            <Icon name="lucide:cooking-pot" size={16} />
+          </button>
+        )
+      }
+    </div>
+  </div>
+
+  <div class="recipe-instructions px-5 py-6 sm:px-6 lg:px-8">
+    {
+      isHtml
+        ? steps.map((step) => (
+            <div class="step-card">
+              <div class="step-number">{step.number}</div>
+              <div class="step-content">
+                <span class="step-text" set:html={step.html} />
+              </div>
+            </div>
+          ))
+        : steps.map((step) =>
+            step.isGroupHeader && step.groupName ? (
+              <div class="step-group-header">
+                <span>{step.groupName}</span>
+              </div>
+            ) : (
+              <div class="step-card">
+                <div class="step-number">{step.number}</div>
+                <div class="step-content">
+                  <span
+                    class="step-text"
+                    set:html={highlightReferences(step.text!, ingredients)}
+                  />
+                  {step.duration || step.temperature ? (
+                    <div class="step-meta">
+                      {step.duration && (
+                        <span class="step-badge step-badge-time">
+                          <Icon name="lucide:timer" size={11} />
+                          {step.duration.replace(/^⏱\s*/i, "")}
+                        </span>
+                      )}
+                      {step.temperature && (
+                        <span class="step-badge step-badge-temp">
+                          {step.temperature}
+                        </span>
+                      )}
+                    </div>
+                  ) : null}
+                </div>
+              </div>
+            ),
+          )
+    }
+
+    {
+      !isHtml && notes && notes.length > 0 && (
+        <div class="step-notes">
+          <h3 class="step-notes-title">
+            <Icon name="lucide:file-text" size={14} />
+            Notas
+          </h3>
+          {notes.map((note) => (
+            <p class="step-note-text">{note}</p>
+          ))}
+        </div>
+      )
+    }
+  </div>
+</div>
+
+{
+  isPro && visibleSteps.length > 0 && (
+    <dialog
+      id="cooking-mode-dialog"
+      class="cooking-mode-overlay bg-background fixed inset-0 m-auto h-full max-h-full w-full max-w-full rounded-none border-0 p-0 backdrop:bg-black/70"
+    >
+      <div class="flex h-full flex-col">
+        <div class="border-border flex items-center justify-between border-b px-6 py-4">
+          <span class="text-muted-foreground cooking-mode-counter text-sm font-bold">
+            Paso 1 de {visibleSteps.length}
+          </span>
+          <button
+            type="button"
+            data-close-cooking-mode
+            class="border-border text-muted-foreground hover:bg-background hover:text-secondary-foreground inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border transition-colors"
+            aria-label="Cerrar modo cocina"
+          >
+            <Icon name="lucide:x" size={18} />
+          </button>
+        </div>
+
+        <div class="flex flex-1 flex-col items-center justify-center overflow-y-auto px-6 py-8">
+          {visibleSteps.map((step, idx) => (
+            <div
+              class={
+                isHtml
+                  ? "cooking-mode-step cooking-mode-html-step"
+                  : "cooking-mode-step"
+              }
+              data-step-index={idx}
+              data-step-timers={JSON.stringify(step.timers)}
+              style={{ display: idx === 0 ? "flex" : "none" }}
+            >
+              {isHtml ? (
+                <div class="w-full max-w-2xl" set:html={step.html} />
+              ) : (
+                <div set:html={step.html} />
+              )}
+              {isHtml && step.timers.length > 0 && (
+                <div
+                  class="mt-10 flex flex-wrap justify-center gap-4"
+                  data-kitchen-timers
+                >
+                  {step.timers.map((timer, tIdx) => (
+                    <div
+                      class="kitchen-timer-card"
+                      data-kitchen-timer={`${idx}-${tIdx}`}
+                      data-timer-value={timer.value}
+                      data-timer-unit={timer.unit}
+                    >
+                      <div class="kitchen-timer-main">
+                        <div class="kitchen-timer-time-area">
+                          <span class="kitchen-timer-label">
+                            <svg
+                              class="h-3 w-3"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                              />
+                            </svg>
+                            Temporizador
+                          </span>
+                          <span
+                            class="kitchen-timer-display"
+                            data-timer-display
+                          >
+                            00:00
+                          </span>
+                        </div>
+                        <div class="kitchen-timer-actions">
+                          <button
+                            type="button"
+                            class="kitchen-timer-btn kitchen-timer-btn--play"
+                            data-timer-play
+                            title="Iniciar"
+                          >
+                            <svg
+                              class="ml-0.5 h-4 w-4"
+                              fill="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path d="M8 5v14l11-7z" />
+                            </svg>
+                          </button>
+                          <button
+                            type="button"
+                            class="kitchen-timer-btn kitchen-timer-btn--reset"
+                            data-timer-reset
+                            title="Reiniciar"
+                          >
+                            <svg
+                              class="h-4 w-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                              />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                      <div class="kitchen-timer-progress">
+                        <div
+                          class="kitchen-timer-progress-fill"
+                          data-timer-progress
+                          style="transform: scaleX(0)"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        <div class="border-border flex items-center justify-between border-t px-6 py-4">
+          <button
+            type="button"
+            data-cooking-prev
+            class="border-border bg-card text-muted-foreground hover:bg-background inline-flex items-center gap-2 rounded-xl border px-5 py-3 text-sm font-bold transition-colors disabled:cursor-not-allowed disabled:opacity-30"
+          >
+            <Icon name="lucide:chevron-left" size={16} />
+            Anterior
+          </button>
+          <button
+            type="button"
+            data-cooking-next
+            class="bg-accent-600 hover:bg-accent-700 inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-bold text-white transition-colors disabled:cursor-not-allowed disabled:opacity-30"
+          >
+            Siguiente
+            <Icon name="lucide:chevron-right" size={16} />
+          </button>
+        </div>
+      </div>
+    </dialog>
+  )
+}
+
+<script>
+  function setupCookingMode() {
+    const openBtns = document.querySelectorAll<HTMLElement>(
+      "[data-open-cooking-mode]",
+    );
+
+    const dialog = document.querySelector<HTMLDialogElement>(
+      "#cooking-mode-dialog",
+    );
+    if (!dialog || dialog.dataset.cookingBound) return;
+    dialog.dataset.cookingBound = "1";
+
+    const closeBtn = dialog.querySelector<HTMLElement>(
+      "[data-close-cooking-mode]",
+    );
+    const prevBtn = dialog.querySelector<HTMLElement>("[data-cooking-prev]");
+    const nextBtn = dialog.querySelector<HTMLElement>("[data-cooking-next]");
+    const counter = dialog.querySelector<HTMLElement>(".cooking-mode-counter");
+    const steps = dialog.querySelectorAll<HTMLElement>(".cooking-mode-step");
+    let current = 0;
+    let timerInstances: KitchenTimer[] = [];
+
+    function updateStep(index: number) {
+      stopAllTimers();
+      steps.forEach((s, i) => {
+        s.style.display = i === index ? "flex" : "none";
+      });
+      if (counter) {
+        counter.textContent = `Paso ${index + 1} de ${steps.length}`;
+      }
+      if (prevBtn) prevBtn.toggleAttribute("disabled", index === 0);
+      if (nextBtn)
+        nextBtn.toggleAttribute("disabled", index === steps.length - 1);
+      startTimersForStep(index);
+    }
+
+    function stopAllTimers() {
+      for (const t of timerInstances) t.stop();
+      timerInstances = [];
+    }
+
+    function startTimersForStep(stepIndex: number) {
+      const step = steps[stepIndex];
+      if (!step) return;
+      const timerContainers = step.querySelectorAll<HTMLElement>(
+        "[data-kitchen-timer]",
+      );
+      timerContainers.forEach((container) => {
+        const value = Number(container.dataset.timerValue);
+        const unit = container.dataset.timerUnit || "min";
+        const timer = new KitchenTimer(container, value, unit);
+        timerInstances.push(timer);
+      });
+    }
+
+    openBtns.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        stopAllTimers();
+        current = 0;
+        updateStep(0);
+        dialog!.showModal();
+      });
+    });
+
+    if (closeBtn) {
+      closeBtn.addEventListener("click", () => {
+        stopAllTimers();
+        dialog.close();
+      });
+    }
+
+    if (prevBtn) {
+      prevBtn.addEventListener("click", () => {
+        if (current > 0) {
+          current--;
+          updateStep(current);
+        }
+      });
+    }
+
+    if (nextBtn) {
+      nextBtn.addEventListener("click", () => {
+        if (current < steps.length - 1) {
+          current++;
+          updateStep(current);
+        }
+      });
+    }
+
+    dialog.addEventListener("click", (e) => {
+      const rect = dialog.getBoundingClientRect();
+      if (
+        e.clientX < rect.left ||
+        e.clientX > rect.right ||
+        e.clientY < rect.top ||
+        e.clientY > rect.bottom
+      ) {
+        stopAllTimers();
+        dialog.close();
+      }
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (dialog.open && e.key === "ArrowRight") {
+        nextBtn?.click();
+      } else if (dialog.open && e.key === "ArrowLeft") {
+        prevBtn?.click();
+      }
+    });
+
+    dialog.addEventListener("close", () => {
+      stopAllTimers();
+    });
+  }
+
+  class KitchenTimer {
+    private container: HTMLElement;
+    private displayEl: HTMLElement;
+    private playBtn: HTMLElement | null;
+    private resetBtn: HTMLElement | null;
+    private progressFill: HTMLElement | null;
+    private initialSeconds: number;
+    private secondsLeft: number;
+    private interval: ReturnType<typeof setInterval> | null = null;
+    private expiredBeepInterval: ReturnType<typeof setInterval> | null = null;
+    private running = false;
+    private expiredTriggered = false;
+
+    constructor(container: HTMLElement, value: number, unit: string) {
+      this.container = container;
+      this.displayEl = container.querySelector<HTMLElement>(
+        "[data-timer-display]",
+      )!;
+      this.playBtn = container.querySelector<HTMLElement>("[data-timer-play]");
+      this.resetBtn =
+        container.querySelector<HTMLElement>("[data-timer-reset]");
+      this.progressFill = container.querySelector<HTMLElement>(
+        "[data-timer-progress]",
+      );
+      this.initialSeconds =
+        unit === "hr" ? value * 3600 : unit === "min" ? value * 60 : value;
+      this.secondsLeft = this.initialSeconds;
+      this.updateDisplay();
+      this.updateClasses();
+
+      this.playBtn?.addEventListener("click", () => this.toggle());
+      this.resetBtn?.addEventListener("click", () => this.reset());
+    }
+
+    private updateDisplay() {
+      if (!this.displayEl) return;
+      const abs = Math.abs(this.secondsLeft);
+      const hrs = Math.floor(abs / 3600);
+      const mins = Math.floor((abs % 3600) / 60);
+      const secs = abs % 60;
+      const prefix = this.secondsLeft < 0 ? "-" : "";
+
+      if (hrs > 0) {
+        this.displayEl.textContent = `${prefix}${String(hrs).padStart(2, "0")}:${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+      } else {
+        this.displayEl.textContent = `${prefix}${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+      }
+    }
+
+    private updateClasses() {
+      this.container.classList.remove(
+        "kitchen-timer-card--running",
+        "kitchen-timer-card--expired",
+      );
+
+      if (this.secondsLeft <= 0 && this.expiredTriggered) {
+        this.container.classList.add("kitchen-timer-card--expired");
+      } else if (this.running) {
+        this.container.classList.add("kitchen-timer-card--running");
+      }
+
+      if (this.playBtn) {
+        if (this.secondsLeft <= 0) {
+          this.playBtn.innerHTML =
+            '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+          this.playBtn.className =
+            "kitchen-timer-btn kitchen-timer-btn--expired";
+        } else if (this.running) {
+          this.playBtn.innerHTML =
+            '<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/></svg>';
+          this.playBtn.className = "kitchen-timer-btn kitchen-timer-btn--pause";
+        } else {
+          this.playBtn.innerHTML =
+            '<svg class="w-4 h-4 ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+          this.playBtn.className = "kitchen-timer-btn kitchen-timer-btn--play";
+        }
+      }
+
+      if (this.progressFill) {
+        if (this.secondsLeft <= 0) {
+          this.progressFill.style.transform = "scaleX(1)";
+        } else {
+          const pct =
+            this.initialSeconds > 0
+              ? ((this.initialSeconds - this.secondsLeft) /
+                  this.initialSeconds) *
+                100
+              : 0;
+          this.progressFill.style.transform = `scaleX(${Math.min(pct, 100) / 100})`;
+        }
+      }
+    }
+
+    toggle() {
+      if (this.secondsLeft <= 0) {
+        this.reset();
+        return;
+      }
+      if (this.running) {
+        this.pause();
+      } else {
+        this.start();
+      }
+    }
+
+    start() {
+      if (this.interval) return;
+      this.running = true;
+      this.interval = setInterval(() => {
+        this.secondsLeft--;
+        this.updateDisplay();
+        this.updateClasses();
+        if (this.secondsLeft <= 0 && !this.expiredTriggered) {
+          this.expiredTriggered = true;
+          this.onExpired();
+        }
+      }, 1000);
+      this.updateClasses();
+    }
+
+    pause() {
+      this.running = false;
+      if (this.interval) {
+        clearInterval(this.interval);
+        this.interval = null;
+      }
+      this.updateClasses();
+    }
+
+    stop() {
+      this.running = false;
+      if (this.interval) {
+        clearInterval(this.interval);
+        this.interval = null;
+      }
+      if (this.expiredBeepInterval) {
+        clearInterval(this.expiredBeepInterval);
+        this.expiredBeepInterval = null;
+      }
+      this.updateClasses();
+    }
+
+    reset() {
+      if (this.expiredBeepInterval) {
+        clearInterval(this.expiredBeepInterval);
+        this.expiredBeepInterval = null;
+      }
+      this.stop();
+      this.secondsLeft = this.initialSeconds;
+      this.expiredTriggered = false;
+      this.updateDisplay();
+      if (this.progressFill) this.progressFill.style.width = "0%";
+      this.updateClasses();
+      this.container.classList.remove("kitchen-timer-card--expired");
+    }
+
+    private onExpired() {
+      try {
+        if (navigator.vibrate) {
+          navigator.vibrate([200, 100, 200, 100, 400]);
+        }
+      } catch {
+        // vibration not supported
+      }
+      this.playBeep();
+      this.expiredBeepInterval = setInterval(() => {
+        this.playBeep();
+      }, 1500);
+    }
+
+    private playBeep() {
+      try {
+        const AC =
+          window.AudioContext ||
+          (window as { webkitAudioContext?: typeof AudioContext })
+            .webkitAudioContext;
+        if (!AC) return;
+        const audioCtx = new AC();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.frequency.value = 880;
+        osc.type = "sine";
+        gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(
+          0.01,
+          audioCtx.currentTime + 0.6,
+        );
+        osc.start(audioCtx.currentTime);
+        osc.stop(audioCtx.currentTime + 0.6);
+        setTimeout(() => {
+          audioCtx.close();
+        }, 800);
+      } catch {
+        // audio not supported
+      }
+    }
+  }
+
+  document.addEventListener("astro:page-load", setupCookingMode);
+  document.addEventListener("astro:after-swap", setupCookingMode);
+</script>
