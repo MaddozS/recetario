@@ -31,4 +31,5 @@ jobs:
           restore-keys: |
             turbo-${{ runner.os }}-
       - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @recetario/db generate
       - run: pnpm ${{ matrix.task }}

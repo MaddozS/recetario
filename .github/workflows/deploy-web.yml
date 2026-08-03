@@ -29,6 +29,7 @@ jobs:
           restore-keys: |
             turbo-${{ runner.os }}-
       - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @recetario/db generate
       - run: pnpm exec turbo build --filter=@recetario/web
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
