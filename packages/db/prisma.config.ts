@@ -8,6 +8,6 @@ export default defineConfig({
         seed: "pnpm exec tsx prisma/seed.ts",
     },
     datasource: {
-        url: env("DATABASE_URL"),
+        url: process.env.DATABASE_URL || "prisma+postgres://accelerate.prisma-data.net/?api_key=dummy",
     },
 });
