@@ -120,10 +120,45 @@ export const onRequest = defineMiddleware(async (context, next) => {
     context.locals.user = appUser;
     context.locals.session = { user: appUser };
 
-    // ── 3. Audit: log sign-in events ──────────────────────────────────────────
+    // ── 3. Preferences: populate locals & sync cookies ─────────────────────────
+    const prefsTheme = (session.preferences?.theme ??
+      context.cookies.get("kitchcalc-theme")?.value ??
+      "system") as "system" | "light" | "dark";
+    const prefsAccent = (session.preferences?.accentColor ??
+      context.cookies.get("kitchcalc-accent")?.value ??
+      "coral") as
+      | "indigo"
+      | "violet"
+      | "blue"
+      | "emerald"
+      | "rose"
+      | "amber"
+      | "coral";
+
+    const userPrefs = {
+      userId: sessionUser.id,
+      theme: prefsTheme,
+      accentColor: prefsAccent,
+    };
+    context.locals.preferences = userPrefs;
+
+    context.cookies.set("kitchcalc-theme", userPrefs.theme, {
+      path: "/",
+      sameSite: "lax",
+      httpOnly: false,
+      maxAge: 31536000,
+    });
+    context.cookies.set("kitchcalc-accent", userPrefs.accentColor, {
+      path: "/",
+      sameSite: "lax",
+      httpOnly: false,
+      maxAge: 31536000,
+    });
+
+    // ── 4. Audit: log sign-in events ──────────────────────────────────────────
     detectSignInEvent(context.url.pathname, sessionUser.id, context);
 
-    // ── 4. Billing: resolve subscription with cache ──────────────────────
+    // ── 5. Billing: resolve subscription with cache ──────────────────────
     try {
       const sub = await apiFetch(
         "/api/billing/subscription",
@@ -137,7 +172,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
       context.locals.subscription = getDefaultSubscription();
     }
 
-    // ── 5. CSRF: get-or-create per-session token ─────────────────────────────
+    // ── 6. CSRF: get-or-create per-session token ─────────────────────────────
     const existingToken = context.cookies.get(getCsrfCookie())?.value;
     const csrfToken = existingToken ?? generateToken();
     context.locals.csrfToken = csrfToken;
@@ -152,11 +187,16 @@ export const onRequest = defineMiddleware(async (context, next) => {
     // ── Unauthenticated: set all locals to null / defaults ──────────────────
     context.locals.user = null;
     context.locals.session = null;
+    context.locals.preferences = {
+      userId: "",
+      theme: (context.cookies.get("kitchcalc-theme")?.value as "system" | "light" | "dark") ?? "system",
+      accentColor: (context.cookies.get("kitchcalc-accent")?.value as "coral") ?? "coral",
+    };
     context.locals.subscription = getDefaultSubscription();
     context.locals.csrfToken = null;
   }
 
-  // ── 6. Response: apply security headers to every response ───────────────────
+  // ── 7. Response: apply security headers to every response ───────────────────
   const response = await next();
   setSecurityHeaders(response);
   return response;

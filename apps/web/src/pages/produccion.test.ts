@@ -8,6 +8,21 @@ import {
   type UserSubscriptionInfo,
 } from "@recetario/stripe";
 
+vi.mock("astro/runtime/server/render/server-islands.js", async (importOriginal) => {
+  const mod = await importOriginal<any>();
+  return {
+    ...mod,
+    ServerIslandComponent: class extends mod.ServerIslandComponent {
+      async getIslandContent() {
+        if (this.props?.canAccess === false) {
+          return "<div>Funcion no disponible. Planifica hasta 3 recetas</div>";
+        }
+        return "<div>Planificador de Producción</div>";
+      }
+    },
+  };
+});
+
 const PRO_FEATURES: Record<string, boolean> = {
   recipe_duplicate: true,
   recipe_photos: true,
@@ -51,6 +66,11 @@ function makeProLocals(subscription: UserSubscriptionInfo): App.Locals {
   return {
     user: appUser,
     session: { user: appUser },
+    preferences: {
+      userId: "user-1",
+      theme: "system",
+      accentColor: "coral",
+    },
     subscription,
     csrfToken: "test-csrf",
     runtime: { env: {} },

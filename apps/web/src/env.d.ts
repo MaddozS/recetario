@@ -15,6 +15,7 @@ declare namespace App {
   interface Locals {
     user: AppUser | null;
     session: { user: AppUser } | null;
+    preferences: import("@recetario/types").UserPreferences;
     subscription: import("./lib/subscription").UserSubscriptionInfo;
     csrfToken: string | null;
     runtime: {
