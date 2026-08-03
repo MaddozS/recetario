@@ -72,6 +72,7 @@ const isActive = (page: string) => currentPage === page;
   >
     <a
       href="/recipes"
+      data-astro-prefetch="hover"
       class:list={[
         "sidebar-link flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors",
         isActive("recipes")
@@ -89,6 +90,7 @@ const isActive = (page: string) => currentPage === page;
     </a>
     <a
       href="/ingredients"
+      data-astro-prefetch="hover"
       class:list={[
         "sidebar-link flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors",
         isActive("ingredients")
@@ -108,6 +110,7 @@ const isActive = (page: string) => currentPage === page;
       showProduction && (
         <a
           href="/produccion"
+          data-astro-prefetch="hover"
           class:list={[
             "sidebar-link flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors",
             isActive("production")
@@ -127,6 +130,7 @@ const isActive = (page: string) => currentPage === page;
     }
     <a
       href="/settings"
+      data-astro-prefetch="hover"
       class:list={[
         "sidebar-link flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors",
         isActive("settings")

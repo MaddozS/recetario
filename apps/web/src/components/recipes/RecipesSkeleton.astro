@@ -1,0 +1,65 @@
+---
+import Card from "@/components/ui/Card.astro";
+---
+
+<div class="space-y-8 animate-pulse">
+  <!-- RecipeStats Skeleton -->
+  <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+    <Card padding="sm" class="h-20 bg-card/60">
+      <div class="h-4 w-28 bg-muted rounded"></div>
+      <div class="mt-3 h-6 w-16 bg-muted rounded"></div>
+    </Card>
+    <Card padding="sm" class="h-20 bg-card/60">
+      <div class="h-4 w-28 bg-muted rounded"></div>
+      <div class="mt-3 h-6 w-16 bg-muted rounded"></div>
+    </Card>
+    <Card padding="sm" class="h-20 bg-card/60">
+      <div class="h-4 w-28 bg-muted rounded"></div>
+      <div class="mt-3 h-6 w-16 bg-muted rounded"></div>
+    </Card>
+  </div>
+
+  <!-- Info cards Skeleton -->
+  <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+    <Card padding="sm" class="h-20 bg-card/60">
+      <div class="h-3 w-32 bg-muted rounded"></div>
+      <div class="mt-3 h-5 w-24 bg-muted rounded"></div>
+    </Card>
+    <Card padding="sm" class="h-20 bg-card/60">
+      <div class="h-3 w-32 bg-muted rounded"></div>
+      <div class="mt-3 h-5 w-24 bg-muted rounded"></div>
+    </Card>
+    <Card padding="sm" class="h-20 bg-card/60">
+      <div class="h-3 w-32 bg-muted rounded"></div>
+      <div class="mt-3 h-5 w-24 bg-muted rounded"></div>
+    </Card>
+  </div>
+
+  <!-- Filter Pills & Search Skeleton -->
+  <div class="space-y-3">
+    <div class="h-4 w-20 bg-muted rounded"></div>
+    <div class="flex items-center gap-2">
+      <div class="h-10 flex-1 bg-muted rounded-xl"></div>
+      <div class="h-10 w-28 bg-muted rounded-xl"></div>
+    </div>
+    <div class="flex items-center gap-2 overflow-hidden py-1">
+      <div class="h-8 w-20 bg-muted rounded-full shrink-0"></div>
+      <div class="h-8 w-24 bg-muted rounded-full shrink-0"></div>
+      <div class="h-8 w-16 bg-muted rounded-full shrink-0"></div>
+      <div class="h-8 w-28 bg-muted rounded-full shrink-0"></div>
+    </div>
+  </div>
+
+  <!-- Grid Skeleton -->
+  <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+    {Array.from({ length: 6 }).map(() => (
+      <Card padding="md" class="h-28 bg-card/60 space-y-3">
+        <div class="h-5 w-3/4 bg-muted rounded"></div>
+        <div class="flex items-center gap-2 pt-2">
+          <div class="h-5 w-16 bg-muted rounded-full"></div>
+          <div class="h-4 w-24 bg-muted rounded"></div>
+        </div>
+      </Card>
+    ))}
+  </div>
+</div>
