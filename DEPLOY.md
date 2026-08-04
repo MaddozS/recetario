@@ -92,8 +92,8 @@ pnpm --filter @recetario/db build
 # Deploy the api (no build step — wrangler bundles src/index.ts directly)
 pnpm --filter @recetario/api exec wrangler deploy
 
-# Deploy the web (builds via astro, then uploads dist/ to Pages)
-pnpm --filter @recetario/web exec wrangler pages deploy ./dist
+# Deploy the web (builds via astro, then uploads server worker and client assets via wrangler)
+pnpm --filter @recetario/web exec wrangler deploy
 ```
 
 Or via the root scripts:
