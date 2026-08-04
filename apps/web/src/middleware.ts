@@ -60,7 +60,15 @@ export const onRequest = defineMiddleware(async (context, next) => {
   if (context.url.pathname.startsWith("/api/auth/")) {
     const api = (env as { API?: ApiServiceBinding }).API;
     if (api) {
-      return api.fetch(context.request);
+      try {
+        return await api.fetch(context.request.clone());
+      } catch (err) {
+        console.error("[/api/auth relay] Service binding fetch failed:", err);
+        return new Response(
+          JSON.stringify({ error: "Auth service request failed" }),
+          { status: 500, headers: { "content-type": "application/json" } },
+        );
+      }
     }
     return new Response("API service binding not configured", { status: 500 });
   }
