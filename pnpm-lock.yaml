@@ -338,6 +338,9 @@ importers:
       vitest:
         specifier: ^3.0.0
         version: 3.2.7(@types/node@25.8.0)(jiti@2.7.0)(lightningcss@1.33.0)(tsx@4.22.0)(yaml@2.9.0)
+      wrangler:
+        specifier: 4.118.0
+        version: 4.118.0(@cloudflare/workers-types@5.20260801.1)
 
   packages/auth:
     dependencies:
