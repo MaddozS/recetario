@@ -1,9 +1,10 @@
 import { PrismaClient } from "../prisma/generated/client";
 import { withAccelerate } from "@prisma/extension-accelerate";
 
-const accelerateUrl = process.env.DATABASE_URL;
+let prismaInstance: ReturnType<typeof createPrismaClientInternal> | null = null;
 
-export function createPrismaClient() {
+function createPrismaClientInternal() {
+  const accelerateUrl = process.env.DATABASE_URL;
   if (!accelerateUrl) {
     throw new Error("DATABASE_URL environment variable is not set");
   }
@@ -14,4 +15,25 @@ export function createPrismaClient() {
   }).$extends(withAccelerate());
 }
 
-export const prisma = createPrismaClient();
+export function createPrismaClient() {
+  return createPrismaClientInternal();
+}
+
+export function getPrisma() {
+  if (!prismaInstance) {
+    prismaInstance = createPrismaClientInternal();
+  }
+  return prismaInstance;
+}
+
+export const prisma = new Proxy({} as ReturnType<typeof createPrismaClientInternal>, {
+  get(_target, prop, receiver) {
+    const instance = getPrisma();
+    const value = Reflect.get(instance, prop, receiver);
+    if (typeof value === "function") {
+      return value.bind(instance);
+    }
+    return value;
+  },
+});
+
