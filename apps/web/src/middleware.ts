@@ -42,14 +42,10 @@ function detectSignInEvent(
   ).catch(() => {});
 }
 
-function getRuntimeEnv(context: { locals?: unknown }): Record<string, unknown> {
-  const runtimeEnv = (context.locals as { runtime?: { env?: Record<string, unknown> } })?.runtime?.env;
-  if (runtimeEnv && Object.keys(runtimeEnv).length > 0) {
-    return runtimeEnv;
-  }
+function getRuntimeEnv(): Record<string, unknown> {
   try {
     const cfEnv = env as Record<string, unknown>;
-    if (cfEnv && Object.keys(cfEnv).length > 0) {
+    if (cfEnv && typeof cfEnv === "object") {
       return cfEnv;
     }
   } catch {
@@ -59,7 +55,7 @@ function getRuntimeEnv(context: { locals?: unknown }): Record<string, unknown> {
 }
 
 export const onRequest = defineMiddleware(async (context, next) => {
-  const bindings = getRuntimeEnv(context);
+  const bindings = getRuntimeEnv();
   syncEnvBindings(bindings);
   // ponytail: service binding is not wired to the API worker's wrangler dev
   // process in dev (separate miniflare instances). Skip it and let apiFetch
