@@ -1,13 +1,16 @@
 {
   "name": "recetario-web",
+  "assets": {
+    "directory": "./dist/client"
+  },
   "compatibility_date": "2026-07-28",
   "compatibility_flags": ["nodejs_compat"],
   "observability": {
-    "enabled": true,
+    "enabled": true
   },
 
   "vars": {
-    "NODE_ENV": "production",
+    "NODE_ENV": "production"
   },
   // "kv_namespaces": [
   //   {
@@ -18,13 +21,16 @@
   "services": [
     {
       "binding": "API",
-      "service": "recetario-api",
-    },
+      "service": "recetario-api"
+    }
   ],
   "env": {
     "staging": {
       "name": "recetario-web-staging",
       "main": "dist/server/entry.mjs",
+      "assets": {
+        "directory": "./dist/client"
+      },
       "compatibility_date": "2026-08-01",
       "compatibility_flags": ["nodejs_compat"],
       "observability": {
@@ -33,8 +39,8 @@
       "services": [
         {
           "binding": "API",
-          "service": "recetario-api-staging",
-        },
+          "service": "recetario-api-staging"
+        }
       ],
       "vars": {
         "NODE_ENV": "staging"
@@ -43,6 +49,9 @@
     "production": {
       "name": "recetario-web-production",
       "main": "dist/server/entry.mjs",
+      "assets": {
+        "directory": "./dist/client"
+      },
       "compatibility_date": "2026-08-01",
       "compatibility_flags": ["nodejs_compat"],
       "observability": {
@@ -51,8 +60,8 @@
       "services": [
         {
           "binding": "API",
-          "service": "recetario-api-production",
-        },
+          "service": "recetario-api-production"
+        }
       ],
       "vars": {
         "NODE_ENV": "production"
