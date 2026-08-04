@@ -14,11 +14,10 @@ import { createVerificationEmailCallback } from "./verification-email-callback";
 // ponytail: WEB_ORIGIN defaults to localhost:4321 (dev) so trustedOrigins
 // and errorURL don't need to be hardcoded. In prod, set
 // WEB_ORIGIN=https://app.kitchcalc.com in apps/api env.
-const WEB_ORIGIN = process.env.WEB_ORIGIN ?? "http://localhost:4321";
-const API_ORIGIN = process.env.BETTER_AUTH_URL ?? "http://localhost:8787";
-
-// ponytail: any type to bypass generic mismatch with inferred config
 export function createAuth(): any {
+  const webOrigin = process.env.WEB_ORIGIN ?? "http://localhost:4321";
+  const apiOrigin = process.env.BETTER_AUTH_URL ?? "http://localhost:8787";
+
   const googleClientId = process.env.GOOGLE_CLIENT_ID;
   if (!googleClientId) {
     throw new Error("GOOGLE_CLIENT_ID environment variable is not set");
@@ -29,7 +28,7 @@ export function createAuth(): any {
   }
 
   return betterAuth({
-    baseURL: WEB_ORIGIN,
+    baseURL: webOrigin,
     database: prismaAdapter(prisma, {
       provider: "postgresql",
     }),
@@ -79,7 +78,7 @@ export function createAuth(): any {
       }),
     },
     onAPIError: {
-      errorURL: `${WEB_ORIGIN}/sign-in`,
+      errorURL: `${webOrigin}/sign-in`,
     },
     session: {
       cookieCache: {
@@ -89,8 +88,27 @@ export function createAuth(): any {
     },
     // ponytail: both dev origins (API + web). For prod, set
     // BETTER_AUTH_URL and WEB_ORIGIN to the prod API and web URLs.
-    trustedOrigins: [API_ORIGIN, WEB_ORIGIN],
+    trustedOrigins: [apiOrigin, webOrigin],
   });
 }
 
-export const auth = createAuth()
+let authInstance: any = null;
+
+export function getAuth(): any {
+  if (!authInstance) {
+    authInstance = createAuth();
+  }
+  return authInstance;
+}
+
+export const auth = new Proxy({} as any, {
+  get(_target, prop, receiver) {
+    const instance = getAuth();
+    const value = Reflect.get(instance, prop, receiver);
+    if (typeof value === "function") {
+      return value.bind(instance);
+    }
+    return value;
+  },
+});
+
