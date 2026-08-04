@@ -11,9 +11,10 @@
     "./prisma/generated/enums": "./prisma/generated/enums.ts",
     "./prisma/generated/client": "./prisma/generated/client.ts",
     "./prisma/generated/commonInputTypes": "./prisma/generated/commonInputTypes.ts",
-    "./prisma/generated/browser": "./prisma/generated/browser.ts"
+    "./prisma/generated/browser": "./prisma/generated/browser.ts",
+    "./prisma/generated-node/client": "./prisma/generated-node/client.ts"
   },
-  "files": ["dist", "prisma", "generated"],
+  "files": ["dist", "prisma", "generated", "generated-node"],
   "scripts": {
     "build": "tsc --noEmit",
     "generate": "prisma generate",
