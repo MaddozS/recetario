@@ -101,13 +101,13 @@ function safeRedirectUrl(
 }
 
 app.onError(errorHandler());
-app.use("*", envelope());
-app.use("*", hostAllowlist());
 app.use("*", async (c, next) => {
   syncEnvBindings(c.env as Record<string, unknown>);
   await next();
   setSecurityHeaders(c.res);
 });
+app.use("*", envelope());
+app.use("*", hostAllowlist());
 
 app.use("*", async (c, next) => {
   const started = Date.now();

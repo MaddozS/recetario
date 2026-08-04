@@ -5,6 +5,7 @@ datasource db {
 generator client {
   provider = "prisma-client"
   output   = "./generated"
+  runtime  = "cloudflare"
 }
 
 model Ingredient {
@@ -202,7 +203,7 @@ model Account {
 }
 
 model Verification {
-  id         String   @id
+  id         String   @id @default(uuid())
   identifier String
   value      String
   expiresAt  DateTime @map("expires_at")

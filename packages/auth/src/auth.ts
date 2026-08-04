@@ -78,6 +78,16 @@ export function createAuth(): any {
       }),
     },
     onAPIError: {
+      onError(error: unknown) {
+        const err = error as Record<string, unknown> | null | undefined;
+        console.error("[Better Auth Error Details]", {
+          name: err?.name,
+          message: err?.message,
+          code: err?.code,
+          meta: err?.meta,
+          stack: err?.stack,
+        });
+      },
       errorURL: `${webOrigin}/sign-in`,
     },
     session: {
@@ -102,9 +112,9 @@ export function getAuth(): any {
 }
 
 export const auth = new Proxy({} as any, {
-  get(_target, prop, receiver) {
+  get(_target, prop) {
     const instance = getAuth();
-    const value = Reflect.get(instance, prop, receiver);
+    const value = Reflect.get(instance, prop);
     if (typeof value === "function") {
       return value.bind(instance);
     }
