@@ -32,7 +32,7 @@ jobs:
       - run: pnpm --filter @recetario/db generate
       - run: |
           DATABASE_URL="${{ secrets.DATABASE_URL }}" \
-            pnpm --filter @recetario/db exec prisma migrate deploy --config ../../prisma.config.ts
+            pnpm --filter @recetario/db exec prisma migrate deploy
       - run: pnpm --filter @recetario/db seed:plans
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
