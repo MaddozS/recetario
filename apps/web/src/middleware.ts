@@ -42,8 +42,24 @@ function detectSignInEvent(
   ).catch(() => {});
 }
 
+function getRuntimeEnv(context: { locals?: unknown }): Record<string, unknown> {
+  const runtimeEnv = (context.locals as { runtime?: { env?: Record<string, unknown> } })?.runtime?.env;
+  if (runtimeEnv && Object.keys(runtimeEnv).length > 0) {
+    return runtimeEnv;
+  }
+  try {
+    const cfEnv = env as Record<string, unknown>;
+    if (cfEnv && Object.keys(cfEnv).length > 0) {
+      return cfEnv;
+    }
+  } catch {
+    // ignore
+  }
+  return {};
+}
+
 export const onRequest = defineMiddleware(async (context, next) => {
-  const bindings = env as Record<string, unknown>;
+  const bindings = getRuntimeEnv(context);
   syncEnvBindings(bindings);
   // ponytail: service binding is not wired to the API worker's wrangler dev
   // process in dev (separate miniflare instances). Skip it and let apiFetch
@@ -58,7 +74,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
   //       `astro.config.mjs` handles this before the request ever hits
   //       the middleware.
   if (context.url.pathname.startsWith("/api/auth/")) {
-    const api = (env as { API?: ApiServiceBinding }).API;
+    const api = (bindings as { API?: ApiServiceBinding }).API;
     if (api) {
       try {
         return await api.fetch(context.request.clone());
