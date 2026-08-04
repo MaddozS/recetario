@@ -27,9 +27,9 @@ export function getPrisma() {
 }
 
 export const prisma = new Proxy({} as ReturnType<typeof createPrismaClientInternal>, {
-  get(_target, prop) {
+  get(_target, prop, receiver) {
     const instance = getPrisma();
-    const value = Reflect.get(instance, prop);
+    const value = Reflect.get(instance, prop, receiver);
     if (typeof value === "function") {
       return value.bind(instance);
     }
