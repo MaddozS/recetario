@@ -28,7 +28,7 @@
   "env": {
     "staging": {
       "name": "recetario-web-staging",
-      "main": "@astrojs/cloudflare/entrypoints/server",
+      "main": "dist/server/entry.mjs",
       "assets": {
         "directory": "./dist/client",
         "binding": "ASSETS"
@@ -50,7 +50,7 @@
     },
     "production": {
       "name": "recetario-web-production",
-      "main": "@astrojs/cloudflare/entrypoints/server",
+      "main": "dist/server/entry.mjs",
       "assets": {
         "directory": "./dist/client",
         "binding": "ASSETS"
