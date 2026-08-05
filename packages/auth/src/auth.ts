@@ -51,7 +51,7 @@ export function createAuth(): any {
       sendVerificationEmail: createVerificationEmailCallback(sendEmail),
       sendOnSignUp: true,
       sendOnSignIn: true,
-      expiresIn: 3600,
+      expiresIn: 86400,
     },
     socialProviders: {
       google: {
