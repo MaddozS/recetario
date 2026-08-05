@@ -4,6 +4,7 @@ import { createTestEnv } from "./test-utils/index";
 const mocks = vi.hoisted(() => ({
   getSubscriptionPlanByStripePriceId: vi.fn(),
   getSubscriptionByStripeId: vi.fn(),
+  getSubscriptionByUserId: vi.fn(),
   upsertSubscription: vi.fn(),
   updateSubscription: vi.fn(),
   verifyWebhookSignature: vi.fn(),
@@ -37,6 +38,7 @@ vi.mock("@recetario/db", () => ({
   updateUserName: vi.fn(),
   getSubscriptionPlanByStripePriceId: mocks.getSubscriptionPlanByStripePriceId,
   getSubscriptionByStripeId: mocks.getSubscriptionByStripeId,
+  getSubscriptionByUserId: mocks.getSubscriptionByUserId,
   upsertSubscription: mocks.upsertSubscription,
   updateSubscription: mocks.updateSubscription,
   getStripeCustomerId: vi.fn(),
@@ -136,7 +138,7 @@ describe("health endpoint", () => {
         headers: { "Content-Type": "application/json", Origin: "http://localhost:4321" },
         body: JSON.stringify({
           priceId: "price_123",
-          successUrl: "http://localhost:4321/settings/billing?success=1",
+          successUrl: "http://localhost:4321/settings?tab=billing&success=1",
           cancelUrl: "http://localhost:4321/pricing?canceled=1",
         }),
       },
@@ -146,7 +148,7 @@ describe("health endpoint", () => {
     expect(response.status).toBe(200);
     expect(mocks.createCheckoutSession).toHaveBeenCalledWith(
       expect.objectContaining({
-        successUrl: "http://localhost:4321/settings/billing?success=1",
+        successUrl: "http://localhost:4321/settings?tab=billing&success=1",
         cancelUrl: "http://localhost:4321/pricing?canceled=1",
       }),
     );

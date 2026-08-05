@@ -9,14 +9,20 @@ const {
   mockValidateCsrf,
   mockGetSubscriptionPlanByStripePriceId,
   mockGetStripeCustomerId,
+  mockGetSubscriptionByUserId,
+  mockUpsertSubscription,
   mockCreateCustomer,
   mockCreateCheckoutSession,
+  mockUpdateStripeSubscription,
 } = vi.hoisted(() => ({
   mockValidateCsrf: vi.fn(),
   mockGetSubscriptionPlanByStripePriceId: vi.fn(),
   mockGetStripeCustomerId: vi.fn(),
+  mockGetSubscriptionByUserId: vi.fn(),
+  mockUpsertSubscription: vi.fn(),
   mockCreateCustomer: vi.fn(),
   mockCreateCheckoutSession: vi.fn(),
+  mockUpdateStripeSubscription: vi.fn(),
 }));
 
 vi.mock("@recetario/auth/server", () => ({
@@ -26,12 +32,19 @@ vi.mock("@recetario/auth/server", () => ({
 vi.mock("@recetario/db", () => ({
   getSubscriptionPlanByStripePriceId: mockGetSubscriptionPlanByStripePriceId,
   getStripeCustomerId: mockGetStripeCustomerId,
+  getSubscriptionByUserId: mockGetSubscriptionByUserId,
+  upsertSubscription: mockUpsertSubscription,
 }));
 
-vi.mock("@recetario/stripe/server", () => ({
-  createCustomer: mockCreateCustomer,
-  createCheckoutSession: mockCreateCheckoutSession,
-}));
+vi.mock("@recetario/stripe/server", async () => {
+  const actual = await vi.importActual("@recetario/stripe/server");
+  return {
+    ...actual,
+    createCustomer: mockCreateCustomer,
+    createCheckoutSession: mockCreateCheckoutSession,
+    updateStripeSubscription: mockUpdateStripeSubscription,
+  };
+});
 
 const { stripeCheckoutHandler } = await import("./checkout");
 
@@ -59,6 +72,7 @@ describe("stripeCheckoutHandler", () => {
   beforeEach(() => {
     vi.resetAllMocks();
     mockValidateCsrf.mockReturnValue(true);
+    mockGetSubscriptionByUserId.mockResolvedValue(null);
   });
 
   it("returns 403 when CSRF validation fails", async () => {
@@ -124,10 +138,69 @@ describe("stripeCheckoutHandler", () => {
     expect(data.error).toBe("Invalid price ID");
   });
 
-  it("creates new Stripe customer if customerId does not exist in DB", async () => {
+  it("updates existing subscription in-place when user already has an active subscription", async () => {
     mockGetSubscriptionPlanByStripePriceId.mockResolvedValueOnce({
-      id: "plan_pro",
+      id: "pro_monthly",
+      tier: "pro",
+      billingInterval: "monthly",
+      stripePriceId: "price_pro_monthly",
     });
+
+    mockGetSubscriptionByUserId.mockResolvedValueOnce({
+      stripeSubscriptionId: "sub_existing123",
+      stripeCustomerId: "cus_existing123",
+      status: "active",
+      planId: "basic_monthly",
+      plan: { tier: "basic", billingInterval: "monthly" },
+    });
+
+    mockUpdateStripeSubscription.mockResolvedValueOnce({
+      id: "sub_existing123",
+      status: "active",
+      current_period_start: 1700000000,
+      current_period_end: 1702500000,
+      cancel_at_period_end: false,
+      trial_end: null,
+    });
+
+    const res = await buildApp().request(
+      "/api/stripe/checkout",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ priceId: "price_pro_monthly" }),
+      },
+      {},
+    );
+
+    expect(res.status).toBe(200);
+    expect(await res.json()).toEqual({
+      url: "http://localhost/settings?tab=billing&success=1",
+    });
+
+    expect(mockUpdateStripeSubscription).toHaveBeenCalledWith({
+      subscriptionId: "sub_existing123",
+      priceId: "price_pro_monthly",
+      isUpgrade: true,
+      isTrialing: false,
+    });
+
+    expect(mockUpsertSubscription).toHaveBeenCalledWith(
+      "sub_existing123",
+      expect.objectContaining({
+        planId: "pro_monthly",
+        status: "active",
+      }),
+    );
+  });
+
+  it("creates new Stripe customer and checkout session with trial for first time subscriber", async () => {
+    mockGetSubscriptionPlanByStripePriceId.mockResolvedValueOnce({
+      id: "basic_monthly",
+      tier: "basic",
+      billingInterval: "monthly",
+    });
+    mockGetSubscriptionByUserId.mockResolvedValue(null);
     mockGetStripeCustomerId.mockResolvedValueOnce(null);
     mockCreateCustomer.mockResolvedValueOnce({ id: "cus_new123" });
     mockCreateCheckoutSession.mockResolvedValueOnce({
@@ -139,7 +212,7 @@ describe("stripeCheckoutHandler", () => {
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ priceId: "price_pro_monthly" }),
+        body: JSON.stringify({ priceId: "price_basic_monthly" }),
       },
       {},
     );
@@ -155,17 +228,30 @@ describe("stripeCheckoutHandler", () => {
     expect(mockCreateCheckoutSession).toHaveBeenCalledWith(
       expect.objectContaining({
         customerId: "cus_new123",
-        priceId: "price_pro_monthly",
+        priceId: "price_basic_monthly",
         userId: "user_123",
-        planId: "plan_pro",
+        planId: "basic_monthly",
+        trialPeriodDays: 14,
       }),
     );
   });
 
-  it("reuses existing customerId from DB if present", async () => {
+  it("creates checkout session without trial for returning customer with prior canceled subscription", async () => {
     mockGetSubscriptionPlanByStripePriceId.mockResolvedValueOnce({
-      id: "plan_pro",
+      id: "pro_monthly",
+      tier: "pro",
+      billingInterval: "monthly",
     });
+
+    // 1st call for active/trialing returns null
+    // 2nd call for priorSub returns canceled sub
+    mockGetSubscriptionByUserId
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce({
+        stripeSubscriptionId: "sub_old999",
+        status: "canceled",
+      });
+
     mockGetStripeCustomerId.mockResolvedValueOnce("cus_existing456");
     mockCreateCheckoutSession.mockResolvedValueOnce({
       url: "https://checkout.stripe.com/pay/cs_test456",
@@ -182,10 +268,10 @@ describe("stripeCheckoutHandler", () => {
     );
 
     expect(res.status).toBe(200);
-    expect(mockCreateCustomer).not.toHaveBeenCalled();
     expect(mockCreateCheckoutSession).toHaveBeenCalledWith(
       expect.objectContaining({
         customerId: "cus_existing456",
+        trialPeriodDays: undefined,
       }),
     );
   });

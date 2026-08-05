@@ -76,7 +76,7 @@ describe("url-utils", () => {
 
   describe("safeRedirectUrl", () => {
     const appOrigin = "https://app.recetario.io";
-    const fallback = `${appOrigin}/settings/billing`;
+    const fallback = `${appOrigin}/settings?tab=billing`;
 
     it("returns fallback if input is undefined", () => {
       expect(safeRedirectUrl(undefined, fallback, appOrigin)).toBe(fallback);
@@ -95,7 +95,7 @@ describe("url-utils", () => {
     });
 
     it("accepts full URL matching app origin", () => {
-      const valid = "https://app.recetario.io/settings/billing?success=1";
+      const valid = "https://app.recetario.io/settings?tab=billing&success=1";
       expect(safeRedirectUrl(valid, fallback, appOrigin)).toBe(valid);
     });
 

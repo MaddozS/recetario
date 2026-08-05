@@ -53,12 +53,19 @@ export async function getSubscriptionByUserId(
   userId: string,
   statuses?: string[],
 ): Promise<SubscriptionGetPayload<{ include: { plan: true } }> | null> {
-  const row = await prisma.subscription.findFirst({
+  const rows = await prisma.subscription.findMany({
     where: { userId, ...(statuses ? { status: { in: statuses } } : {}) },
     include: { plan: true },
     orderBy: { createdAt: "desc" },
   });
-  return row as SubscriptionGetPayload<{ include: { plan: true } }> | null;
+  if (rows.length === 0) return null;
+
+  const activeOrTrialing = rows.find(
+    (s) => s.status === "active" || s.status === "trialing",
+  );
+  return (activeOrTrialing ?? rows[0]) as SubscriptionGetPayload<{
+    include: { plan: true };
+  }> | null;
 }
 
 export async function getSubscriptionByStripeId(stripeSubscriptionId: string) {

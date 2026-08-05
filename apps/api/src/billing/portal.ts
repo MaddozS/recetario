@@ -17,7 +17,7 @@ export function stripePortalHandler(): Handler<{ Variables: AuthVariables }> {
     const appOrigin = getAppOrigin(c);
     const portalSession = await createPortalSession(
       customerId,
-      `${appOrigin}/settings/billing`,
+      `${appOrigin}/settings?tab=billing`,
     );
     return c.json({ url: portalSession.url });
   };

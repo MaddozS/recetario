@@ -1,13 +1,39 @@
 import { describe, expect, it, vi } from "vitest";
 
-const prices = vi.hoisted(() => vi.fn());
-vi.mock("./stripe-client", () => ({
-  stripe: { prices: { list: prices } },
+const {
+  prices,
+  createSession,
+  retrieveSubscription,
+  updateSubscription,
+  createSchedule,
+  updateSchedule,
+  retrieveSchedule,
+} = vi.hoisted(() => ({
+  prices: vi.fn(),
+  createSession: vi.fn(),
+  retrieveSubscription: vi.fn(),
+  updateSubscription: vi.fn(),
+  createSchedule: vi.fn(),
+  updateSchedule: vi.fn(),
+  retrieveSchedule: vi.fn(),
 }));
 
-const { listPrices } = await import("./stripe-api");
+vi.mock("./stripe-client", () => ({
+  stripe: {
+    prices: { list: prices },
+    checkout: { sessions: { create: createSession } },
+    subscriptions: { retrieve: retrieveSubscription, update: updateSubscription },
+    subscriptionSchedules: {
+      create: createSchedule,
+      update: updateSchedule,
+      retrieve: retrieveSchedule,
+    },
+  },
+}));
 
-describe("listPrices", () => {
+const { listPrices, createCheckoutSession, updateStripeSubscription } = await import("./stripe-api");
+
+describe("stripe-api", () => {
   it("filters unknown tiers and maps Stripe prices to sync inputs", async () => {
     prices.mockResolvedValueOnce({
       data: [
@@ -40,4 +66,110 @@ describe("listPrices", () => {
       }),
     ]);
   });
+
+  it("creates checkout session with trial when trialPeriodDays > 0", async () => {
+    createSession.mockResolvedValueOnce({ url: "https://checkout.stripe.com/test" });
+    await createCheckoutSession({
+      customerId: "cus_123",
+      priceId: "price_basic",
+      successUrl: "https://app/success",
+      cancelUrl: "https://app/cancel",
+      userId: "user_123",
+      planId: "plan_basic",
+      trialPeriodDays: 14,
+    });
+
+    expect(createSession).toHaveBeenCalledWith(
+      expect.objectContaining({
+        subscription_data: { trial_period_days: 14 },
+      }),
+    );
+  });
+
+  it("creates checkout session without trial when trialPeriodDays is undefined or 0", async () => {
+    createSession.mockResolvedValueOnce({ url: "https://checkout.stripe.com/test" });
+    await createCheckoutSession({
+      customerId: "cus_123",
+      priceId: "price_basic",
+      successUrl: "https://app/success",
+      cancelUrl: "https://app/cancel",
+      userId: "user_123",
+      planId: "plan_basic",
+    });
+
+    expect(createSession).toHaveBeenCalledWith(
+      expect.not.objectContaining({
+        subscription_data: expect.anything(),
+      }),
+    );
+  });
+
+  it("updates existing subscription with always_invoice on upgrade", async () => {
+    retrieveSubscription.mockResolvedValueOnce({
+      id: "sub_123",
+      items: { data: [{ id: "item_123" }] },
+    });
+    updateSubscription.mockResolvedValueOnce({ id: "sub_123", status: "active" });
+
+    await updateStripeSubscription({
+      subscriptionId: "sub_123",
+      priceId: "price_pro",
+      isUpgrade: true,
+      isTrialing: false,
+    });
+
+    expect(updateSubscription).toHaveBeenCalledWith("sub_123", {
+      items: [{ id: "item_123", price: "price_pro" }],
+      proration_behavior: "always_invoice",
+    });
+  });
+
+  it("updates existing subscription preserving trial when trialing", async () => {
+    retrieveSubscription.mockResolvedValueOnce({
+      id: "sub_123",
+      items: { data: [{ id: "item_123" }] },
+    });
+    updateSubscription.mockResolvedValueOnce({ id: "sub_123", status: "trialing" });
+
+    await updateStripeSubscription({
+      subscriptionId: "sub_123",
+      priceId: "price_pro",
+      isUpgrade: true,
+      isTrialing: true,
+    });
+
+    expect(updateSubscription).toHaveBeenCalledWith("sub_123", {
+      items: [{ id: "item_123", price: "price_pro" }],
+      proration_behavior: "always_invoice",
+    });
+  });
+
+  it("updates existing subscription with subscription schedule on downgrade", async () => {
+    retrieveSubscription.mockResolvedValue({
+      id: "sub_123",
+      items: { data: [{ id: "item_123", price: { id: "price_pro" } }] },
+      current_period_end: 1789689600,
+    });
+    createSchedule.mockResolvedValueOnce({
+      id: "sched_123",
+      phases: [{ start_date: 1750000000, end_date: 1789689600, items: [{ price: "price_pro" }] }],
+    });
+    updateSchedule.mockResolvedValueOnce({ id: "sched_123" });
+
+    await updateStripeSubscription({
+      subscriptionId: "sub_123",
+      priceId: "price_basic",
+      isUpgrade: false,
+      isTrialing: false,
+    });
+
+    expect(createSchedule).toHaveBeenCalledWith({ from_subscription: "sub_123" });
+    expect(updateSchedule).toHaveBeenCalledWith("sched_123", expect.objectContaining({
+      end_behavior: "release",
+      phases: expect.arrayContaining([
+        expect.objectContaining({ items: [{ price: "price_basic", quantity: 1 }] }),
+      ]),
+    }));
+  });
 });
+

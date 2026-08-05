@@ -93,7 +93,7 @@ describe("stripePortalHandler", () => {
     });
     expect(mockCreatePortalSession).toHaveBeenCalledWith(
       "cus_test789",
-      "http://localhost/settings/billing",
+      "http://localhost/settings?tab=billing",
     );
   });
 });

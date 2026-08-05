@@ -52,6 +52,7 @@ import { plansHandler } from "./billing/plans";
 import { stripeCheckoutHandler } from "./billing/checkout";
 import { stripePortalHandler } from "./billing/portal";
 import { stripeWebhookHandler } from "./billing/webhook";
+import { syncCheckoutSessionHandler } from "./billing/sync-session";
 import { credentialStatusHandler } from "./auth/credential-status";
 import { auditLogHandler } from "./audit/log";
 import { usageCountsHandler } from "./usage-counts";
@@ -246,6 +247,7 @@ app.use("/api/presentations/*", requireAuth());
 app.use("/api/account/*", requireAuth());
 app.use("/api/stripe/checkout", requireAuth());
 app.use("/api/stripe/portal", requireAuth());
+app.use("/api/stripe/sync-session", requireAuth());
 app.use("/api/billing/subscription", requireAuth());
 app.use("/api/usage-counts", requireAuth());
 app.use("/api/auth/credential-status", requireAuth());
@@ -367,6 +369,7 @@ app.post("/api/account/change-password", async (c) => {
 
 app.post("/api/stripe/checkout", stripeCheckoutHandler());
 app.post("/api/stripe/portal", stripePortalHandler());
+app.post("/api/stripe/sync-session", syncCheckoutSessionHandler());
 
 app.post("/api/stripe/webhook", stripeWebhookHandler());
 

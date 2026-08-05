@@ -12,11 +12,34 @@ import {
 import { createSubscriptionInputSchema } from "@recetario/types";
 
 function getPeriod(obj: unknown, field: string): number {
-  if (obj && typeof obj === "object" && field in obj) {
-    const val = (obj as Record<string, unknown>)[field];
-    return typeof val === "number" ? val : 0;
+  if (!obj || typeof obj !== "object") return 0;
+  const rec = obj as Record<string, unknown>;
+
+  if (field in rec && typeof rec[field] === "number" && (rec[field] as number) > 0) {
+    return rec[field] as number;
   }
+
+  if ("items" in rec && rec.items && typeof rec.items === "object") {
+    const itemsObj = rec.items as Record<string, unknown>;
+    const data = itemsObj.data;
+    if (Array.isArray(data) && data.length > 0 && data[0] && typeof data[0] === "object") {
+      const item = data[0] as Record<string, unknown>;
+      if (field in item && typeof item[field] === "number" && (item[field] as number) > 0) {
+        return item[field] as number;
+      }
+    }
+  }
+
   return 0;
+}
+
+function parsePeriodDate(ts: number, isEnd = false): Date {
+  if (ts > 1000000000) {
+    return new Date(ts * 1000);
+  }
+  return isEnd
+    ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+    : new Date();
 }
 
 async function writeSubscription(input: {
@@ -100,11 +123,13 @@ export function stripeWebhookHandler(): Handler {
           userId: metadata?.userId ?? null,
           planId: metadata?.planId ?? null,
           status: sub.status,
-          currentPeriodStart: new Date(
-            getPeriod(sub, "current_period_start") * 1000,
+          currentPeriodStart: parsePeriodDate(
+            getPeriod(sub, "current_period_start"),
+            false,
           ),
-          currentPeriodEnd: new Date(
-            getPeriod(sub, "current_period_end") * 1000,
+          currentPeriodEnd: parsePeriodDate(
+            getPeriod(sub, "current_period_end"),
+            true,
           ),
           cancelAtPeriodEnd: Boolean(sub.cancel_at_period_end),
           trialEnd: getPeriod(sub, "trial_end")
@@ -126,11 +151,13 @@ export function stripeWebhookHandler(): Handler {
           userId: null,
           planId: null,
           status: obj.status as string,
-          currentPeriodStart: new Date(
-            getPeriod(obj, "current_period_start") * 1000,
+          currentPeriodStart: parsePeriodDate(
+            getPeriod(obj, "current_period_start"),
+            false,
           ),
-          currentPeriodEnd: new Date(
-            getPeriod(obj, "current_period_end") * 1000,
+          currentPeriodEnd: parsePeriodDate(
+            getPeriod(obj, "current_period_end"),
+            true,
           ),
           cancelAtPeriodEnd: Boolean(obj.cancel_at_period_end),
           trialEnd: getPeriod(obj, "trial_end")

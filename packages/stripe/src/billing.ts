@@ -10,8 +10,16 @@ export async function getPricingPlans(): Promise<PricingPlan[]> {
 }
 
 export async function getUserSubscription(userId: string): Promise<UserSubscription | null> {
-  const data = await getSubscriptionByUserId(userId, ["active", "trialing"]);
+  const data = await getSubscriptionByUserId(userId, ["active", "trialing", "canceled", "past_due"]);
   if (!data) return null;
+
+  const now = new Date();
+  if (data.status === "canceled" && data.currentPeriodEnd && data.currentPeriodEnd <= now) {
+    return null;
+  }
+
+  const cancelAtPeriodEnd = data.cancelAtPeriodEnd || data.status === "canceled";
+
   return userSubscriptionSchema.parse({
     ...data,
     stripeSubscriptionId: data.stripeSubscriptionId,
@@ -24,6 +32,7 @@ export async function getUserSubscription(userId: string): Promise<UserSubscript
     billingInterval: data.plan?.billingInterval ?? null,
     currentPeriodStart: data.currentPeriodStart?.toISOString() ?? null,
     currentPeriodEnd: data.currentPeriodEnd?.toISOString() ?? null,
+    cancelAtPeriodEnd,
     trialEnd: data.trialEnd?.toISOString() ?? null,
     createdAt: data.createdAt.toISOString(),
   });

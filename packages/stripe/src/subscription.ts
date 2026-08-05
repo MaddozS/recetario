@@ -61,3 +61,37 @@ export function isPaid(subscription: UserSubscriptionInfo): boolean {
 export function isPro(subscription: UserSubscriptionInfo): boolean {
   return subscription.tier === "pro";
 }
+
+export function getPlanRank(tier?: string | null, interval?: string | null): number {
+  const tierWeight = tier === "pro" ? 20 : tier === "basic" ? 10 : 0;
+  const intervalWeight = interval === "yearly" ? 2 : 1;
+  return tierWeight + intervalWeight;
+}
+
+export function isUpgrade(
+  currentPlan: { tier?: string | null; billingInterval?: string | null },
+  newPlan: { tier?: string | null; billingInterval?: string | null },
+): boolean {
+  const currentTier = currentPlan.tier ?? "free";
+  const newTier = newPlan.tier ?? "free";
+  const currentInterval = currentPlan.billingInterval ?? "monthly";
+  const newInterval = newPlan.billingInterval ?? "monthly";
+
+  // 1. Any transition from a Monthly cycle to an Annual cycle is an UPGRADE (upfront commitment)
+  if (currentInterval === "monthly" && newInterval === "yearly") {
+    return true;
+  }
+
+  // 2. Any transition from an Annual cycle to a Monthly cycle is a DOWNGRADE (scheduled at period end)
+  if (currentInterval === "yearly" && newInterval === "monthly") {
+    return false;
+  }
+
+  // 3. Within the same billing cycle (monthly->monthly or yearly->yearly):
+  const TIER_RANKS: Record<string, number> = { free: 0, basic: 1, pro: 2 };
+  const currentTierRank = TIER_RANKS[currentTier] ?? 0;
+  const newTierRank = TIER_RANKS[newTier] ?? 0;
+
+  return newTierRank > currentTierRank;
+}
+
