@@ -1,5 +1,4 @@
 {
-  "$schema": "../../node_modules/wrangler/config-schema.json",
   "name": "recetario-api",
   "main": "src/index.ts",
   "compatibility_date": "2026-07-08",
@@ -15,7 +14,7 @@
     "import.meta.url": "\"file:///worker/index.js\"",
   },
   "vars": {
-    "NODE_ENV": "production",
+  "NODE_ENV": "production"
     // INTERNAL_API_HOST: required for the host allowlist (production tier
     // of the API destination). Set per environment via `wrangler secret put`
     // or the dashboard. Example: "api.recetario.app".

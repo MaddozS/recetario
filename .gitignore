@@ -11,6 +11,8 @@ packages/*/dist/
 # generated Prisma clients
 **/generated/prisma/
 **/generated/prisma-sqlite/
+**/prisma/generated/
+**/prisma/generated-*/
 
 # dependencies
 node_modules/
@@ -44,6 +46,9 @@ data/dev.db-wal
 apps/*/.turbo/
 apps/*/.wrangler/
 
+
+# Vite optimization cache (outside node_modules to survive pnpm restructures)
+.vite-cache/
 
 # local tool state
 .pnpm-store/

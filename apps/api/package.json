@@ -11,19 +11,17 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@prisma/adapter-pg": "7.8.0",
-    "@prisma/client": "7.8.0",
     "@recetario/auth": "workspace:^",
-    "@recetario/billing": "workspace:^",
+    "@recetario/stripe": "workspace:^",
     "@recetario/config": "workspace:^",
     "@recetario/types": "workspace:^",
     "@recetario/db": "workspace:^",
-    "hono": "^4.10.8",
-    "pg": "8.20.0"
+    "hono": "^4.10.8"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^5.20260708.0",
-    "typescript": "6.0.3",
-    "wrangler": "^4.114.0"
+    "typescript": "6.0.2",
+    "vitest": "^3.1.0",
+    "@cloudflare/workers-types": "5.20260801.1",
+    "wrangler": "4.118.0"
   }
 }

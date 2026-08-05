@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { z } from "zod";
-import { apiFetch, setApiBinding } from "./api-client.js";
+import { apiFetch, setApiBinding } from "./api-client";
 
 const ENV_KEY = "INTERNAL_API_URL";
 
@@ -10,13 +10,8 @@ function makeRequest(cookie?: string): Request {
   return new Request("https://example.com/", { headers });
 }
 
-function makeContext(
-  opts: { cookie?: string; userId?: string | null } = {},
-): { request: Request; locals?: { user?: { id: string } | null } } {
-  return {
-    request: makeRequest(opts.cookie),
-    locals: { user: opts.userId ? { id: opts.userId } : null },
-  };
+function makeContext(opts: { cookie?: string } = {}): { request: Request } {
+  return { request: makeRequest(opts.cookie) };
 }
 
 function jsonResponse(
@@ -208,38 +203,6 @@ describe("apiFetch — cookie forwarding", () => {
     const init = binding.fetch.mock.calls[0]?.[1] as RequestInit;
     const headers = init.headers as Record<string, string>;
     expect(headers.cookie).toBeUndefined();
-  });
-});
-
-describe("apiFetch — x-user-id forwarding", () => {
-  it("forwards x-user-id when locals.user.id is set", async () => {
-    const binding = makeBinding(async () => jsonResponse(200, {}));
-    setApiBinding(binding);
-
-    await apiFetch("/api/x", {}, makeContext({ userId: "user-42" }));
-    const init = binding.fetch.mock.calls[0]?.[1] as RequestInit;
-    const headers = init.headers as Record<string, string>;
-    expect(headers["x-user-id"]).toBe("user-42");
-  });
-
-  it("omits x-user-id when there is no authenticated user", async () => {
-    const binding = makeBinding(async () => jsonResponse(200, {}));
-    setApiBinding(binding);
-
-    await apiFetch("/api/x", {}, makeContext({ userId: null }));
-    const init = binding.fetch.mock.calls[0]?.[1] as RequestInit;
-    const headers = init.headers as Record<string, string>;
-    expect(headers["x-user-id"]).toBeUndefined();
-  });
-
-  it("omits x-user-id when locals is not provided", async () => {
-    const binding = makeBinding(async () => jsonResponse(200, {}));
-    setApiBinding(binding);
-
-    await apiFetch("/api/x", {}, { request: makeRequest() });
-    const init = binding.fetch.mock.calls[0]?.[1] as RequestInit;
-    const headers = init.headers as Record<string, string>;
-    expect(headers["x-user-id"]).toBeUndefined();
   });
 });
 

@@ -1,6 +1,8 @@
 ---
-import { Icon } from "astro-icon/components";
-import { Button, PasswordInput } from "@recetario/ui";
+import Icon from "@/components/atoms/Icon.astro";
+import Button from "../components/atoms/Button.astro";
+import PasswordInput from "../components/molecules/shared/PasswordInput.astro";
+
 import LandingLayout from "@/layouts/LandingLayout.astro";
 
 if (Astro.locals.session) return Astro.redirect("/recipes");
@@ -251,8 +253,8 @@ if (Astro.locals.session) return Astro.redirect("/recipes");
     signInWithGoogle,
     getSafeRedirect,
   } from "@recetario/auth/client";
-  import { setupPasswordToggles } from "@recetario/ui/password-toggle";
-  import { showLoadingOverlay } from "@recetario/ui/loading-overlay";
+  import { setupPasswordToggles } from "../lib/password-toggle";
+  import { showLoadingOverlay } from "../lib/loading-overlay";
   import { validatePassword, getRuleResults } from "@recetario/auth/client";
 
   function setupSignUp() {

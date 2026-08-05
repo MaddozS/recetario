@@ -1,0 +1,1041 @@
+---
+import Icon from "@/components/atoms/Icon.astro";
+import Button from "@/components/atoms/Button.astro";
+import Card from "@/components/molecules/shared/Card.astro";
+import PasswordInput from "@/components/molecules/shared/PasswordInput.astro";
+import BillingSection from "@/components/organisms/settings/BillingSection.astro";
+import {
+  ACCENT_FAMILIES,
+  ACCENT_LABELS,
+  getAccentPreviewColor,
+  type AccentFamily,
+} from "@/lib/accent-colors";
+import {
+  getRemainingRecipes,
+  getRemainingIngredients,
+} from "@recetario/stripe";
+import type { UserSubscriptionInfo } from "@recetario/stripe";
+import FeedbackAlert from "@/components/molecules/shared/FeedbackAlert.astro";
+import { apiFetch } from "@/lib/api-client";
+import type { UserPreferences, SessionUser } from "@recetario/types";
+import { plansListResponseSchema, usageCountsResponseSchema } from "@recetario/types";
+
+interface Props {
+  user: SessionUser & { hasPasswordAuth?: boolean };
+  preferences?: UserPreferences;
+  subscription: UserSubscriptionInfo;
+  activeTab: string;
+  feedbackType?: string | null;
+  feedbackMessage?: string | null;
+  csrfToken?: string;
+}
+
+const {
+  user,
+  preferences,
+  subscription,
+  activeTab,
+  feedbackType = null,
+  feedbackMessage = null,
+  csrfToken = "",
+} = Astro.props;
+
+const userFirstName = user.firstName || "";
+const userLastName = user.lastName || "";
+const userName = user.name || "Usuario";
+const userEmail = user.email || "";
+const userImage = user.image || null;
+const userInitial = (userFirstName || userName).charAt(0).toUpperCase();
+
+const [counts, plans] = await Promise.all([
+  apiFetch("/api/usage-counts", { schema: usageCountsResponseSchema }, Astro),
+  apiFetch("/api/billing/plans", { schema: plansListResponseSchema }, Astro),
+]);
+const { recipes: recipeCount, ingredients: ingredientCount } = counts;
+
+const remainingRecipes = getRemainingRecipes(subscription, recipeCount);
+const remainingIngredients = getRemainingIngredients(
+  subscription,
+  ingredientCount,
+);
+
+const prefs = preferences ?? Astro.locals.preferences;
+const currentTheme = prefs?.theme ?? "system";
+const currentAccent = (prefs?.accentColor ?? "coral") as AccentFamily;
+
+const themeOptions = [
+  { value: "system", label: "Automático", icon: "lucide:monitor" },
+  { value: "light", label: "Claro", icon: "lucide:sun" },
+  { value: "dark", label: "Oscuro", icon: "lucide:moon" },
+] as const;
+---
+
+<section class="animate-fade-in mx-auto max-w-3xl">
+  {
+    feedbackType && feedbackMessage && (
+      <div class="mb-6">
+        <FeedbackAlert
+          type={feedbackType === "error" ? "error" : "success"}
+          message={feedbackMessage}
+        />
+      </div>
+    )
+  }
+
+  {/* Tab Navigation */}
+  <nav
+    class="border-border mb-8 flex gap-0 border-b"
+    aria-label="Configuración"
+  >
+    <a
+      href="/settings"
+      data-tab="profile"
+      class:list={[
+        "-mb-px inline-flex items-center gap-1.5 border-b-2 px-4 py-2.5 text-sm font-semibold transition-colors",
+        activeTab === "profile"
+          ? "border-accent-600 text-accent-600"
+          : "text-muted-foreground hover:text-secondary-foreground hover:border-muted-foreground/30 border-transparent",
+      ]}
+    >
+      <Icon name="lucide:user" size={16} class="hidden sm:block" />
+      Perfil
+    </a>
+    <a
+      href="/settings?tab=preferences"
+      data-tab="preferences"
+      class:list={[
+        "-mb-px inline-flex items-center gap-1.5 border-b-2 px-4 py-2.5 text-sm font-semibold transition-colors",
+        activeTab === "preferences"
+          ? "border-accent-600 text-accent-600"
+          : "text-muted-foreground hover:text-secondary-foreground hover:border-muted-foreground/30 border-transparent",
+      ]}
+    >
+      <Icon name="lucide:palette" size={16} class="hidden sm:block" />
+      Preferencias
+    </a>
+    <a
+      href="/settings?tab=billing"
+      data-tab="billing"
+      class:list={[
+        "-mb-px inline-flex items-center gap-1.5 border-b-2 px-4 py-2.5 text-sm font-semibold transition-colors",
+        activeTab === "billing"
+          ? "border-accent-600 text-accent-600"
+          : "text-muted-foreground hover:text-secondary-foreground hover:border-muted-foreground/30 border-transparent",
+      ]}
+    >
+      <Icon name="lucide:credit-card" size={16} class="hidden sm:block" />
+      Facturación
+    </a>
+  </nav>
+
+  {/* Profile Tab */}
+  <div
+    data-tab-content="profile"
+    class:list={["space-y-6", activeTab !== "profile" && "hidden"]}
+  >
+    {/* Profile Card */}
+    <Card padding="lg">
+      <div class="flex items-center gap-4">
+        <div
+          class="bg-accent-600 shadow-accent-100 flex h-16 w-16 flex-none items-center justify-center rounded-2xl text-xl font-bold text-white shadow-md"
+        >
+          {
+            userImage ? (
+              <img
+                src={userImage}
+                alt={userName}
+                referrerpolicy="no-referrer"
+                class="h-full w-full rounded-2xl object-cover"
+              />
+            ) : (
+              <span id="profile-user-initial">{userInitial}</span>
+            )
+          }
+        </div>
+        <div class="min-w-0">
+          <p
+            class="text-muted-foreground text-xs font-bold tracking-[0.16em] uppercase"
+          >
+            {user.hasPasswordAuth ? "Cuenta de email" : "Sesion de Google"}
+          </p>
+          <h2 id="profile-user-name" class="text-foreground mt-1 truncate text-xl font-bold">
+            {userFirstName} {userLastName}
+          </h2>
+          {
+            userEmail && (
+              <p id="profile-user-email" class="text-muted-foreground mt-0.5 truncate text-sm">
+                {userEmail}
+              </p>
+            )
+          }
+        </div>
+      </div>
+    </Card>
+
+    {/* Change Name */}
+    <Card padding="lg">
+      <h2 class="text-foreground text-lg font-bold">Nombre</h2>
+      <p class="text-muted-foreground mt-1 text-sm">
+        Actualiza tu nombre y apellido.
+      </p>
+      <div
+        id="change-name-feedback"
+        class="mt-4 hidden rounded-xl border px-4 py-3 text-sm font-semibold"
+      >
+      </div>
+      <form id="change-name-form" method="POST" class="mt-4 max-w-sm space-y-4">
+        <div>
+          <label
+            for="first-name"
+            class="text-muted-foreground mb-1.5 block text-[11px] font-bold tracking-[0.18em] uppercase"
+          >
+            Nombre <span class="text-danger">*</span>
+          </label>
+          <input
+            id="first-name"
+            name="firstName"
+            type="text"
+            required
+            value={userFirstName}
+            autocomplete="given-name"
+            class="border-border bg-background text-foreground placeholder:text-subtle-foreground focus:border-accent-300 focus:ring-accent-500/20 w-full rounded-xl border px-4 py-3 text-sm transition outline-none focus:ring-2"
+          />
+        </div>
+        <div>
+          <label
+            for="last-name"
+            class="text-muted-foreground mb-1.5 block text-[11px] font-bold tracking-[0.18em] uppercase"
+          >
+            Apellido <span class="text-danger">*</span>
+          </label>
+          <input
+            id="last-name"
+            name="lastName"
+            type="text"
+            required
+            value={userLastName}
+            autocomplete="family-name"
+            class="border-border bg-background text-foreground placeholder:text-subtle-foreground focus:border-accent-300 focus:ring-accent-500/20 w-full rounded-xl border px-4 py-3 text-sm transition outline-none focus:ring-2"
+          />
+        </div>
+        <Button
+          variant="primary"
+          type="submit"
+          icon="user"
+          id="change-name-btn"
+        >
+          Guardar nombre
+        </Button>
+      </form>
+    </Card>
+
+    {
+      user.hasPasswordAuth && (
+        <>
+          {/* Change Password */}
+          <Card padding="lg">
+            <h2 class="text-foreground text-lg font-bold">
+              Cambiar contraseña
+            </h2>
+            <p class="text-muted-foreground mt-1 text-sm">
+              Usa al menos 6 caracteres para tu nueva contraseña.
+            </p>
+            <div
+              id="change-password-feedback"
+              class="mt-4 hidden rounded-xl border px-4 py-3 text-sm font-semibold"
+            />
+            <form id="change-password-form" method="POST" class="mt-4 max-w-sm space-y-4">
+              <PasswordInput
+                id="current-password"
+                label="Contraseña actual"
+                autocomplete="current-password"
+                required
+              />
+              <PasswordInput
+                id="new-password"
+                label="Nueva contraseña"
+                placeholder="Mínimo 6 caracteres"
+                autocomplete="new-password"
+                required
+                minlength={6}
+              />
+              <PasswordInput
+                id="confirm-new-password"
+                label="Confirmar contraseña"
+                placeholder="Repite tu contraseña"
+                autocomplete="new-password"
+                required
+                minlength={6}
+              />
+              <Button
+                variant="primary"
+                type="submit"
+                icon="lock"
+                id="change-password-btn"
+              >
+                Cambiar contraseña
+              </Button>
+            </form>
+          </Card>
+        </>
+      )
+    }
+  </div>
+
+  {/* Preferences Tab */}
+  <div
+    data-tab-content="preferences"
+    class:list={[activeTab !== "preferences" && "hidden"]}
+  >
+    <div
+      id="preferences-feedback"
+      class="mb-4 hidden rounded-2xl border px-4 py-3 text-sm"
+      role="alert"
+      aria-atomic="true"
+      aria-live="assertive"
+      tabindex="-1"
+    >
+      <p id="preferences-feedback-message" class="font-semibold"></p>
+    </div>
+    <form
+      id="preferences-form"
+      method="POST"
+      action="/settings?tab=preferences"
+    >
+      <input type="hidden" name="_csrf" value={csrfToken} />
+      <input
+        type="hidden"
+        id="theme-input"
+        name="theme"
+        value={currentTheme}
+      />
+      <input
+        type="hidden"
+        id="accent-input"
+        name="accentColor"
+        value={currentAccent}
+      />
+
+      <div class="space-y-6">
+        <Card padding="lg">
+          <h2 class="text-foreground text-lg font-bold">Tema</h2>
+          <p class="text-muted-foreground mt-1 text-sm">
+            Selecciona cómo quieres que se vea la aplicación.
+          </p>
+          <div class="mt-4 flex flex-wrap gap-2">
+            {
+              themeOptions.map((opt) => {
+                const isActive = currentTheme === opt.value;
+                return (
+                  <Button
+                    variant={isActive ? "primary" : "secondary"}
+                    size="md"
+                    icon={opt.icon.replace("lucide:", "")}
+                    data-theme-option={opt.value}
+                    data-theme-active={isActive ? "1" : "0"}
+                    aria-pressed={isActive ? "true" : "false"}
+                  >
+                    {opt.label}
+                  </Button>
+                );
+              })
+            }
+          </div>
+        </Card>
+
+        <Card padding="lg">
+          <h2 class="text-foreground text-lg font-bold">Color de acento</h2>
+          <p class="text-muted-foreground mt-1 text-sm">
+            Personaliza el color principal de la aplicación.
+          </p>
+          <div class="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
+            {
+              ACCENT_FAMILIES.map((family) => {
+                const isActive = currentAccent === family;
+                return (
+                  <button
+                    type="button"
+                    data-accent-option={family}
+                    data-accent-active={isActive ? "1" : "0"}
+                    aria-pressed={isActive ? "true" : "false"}
+                    class:list={[
+                      "focus-visible:ring-accent-500 inline-flex min-h-10 items-center justify-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold transition-colors focus-visible:ring-2 focus-visible:outline-none",
+                      isActive
+                        ? "ring-accent-500 bg-accent-50 ring-2 ring-offset-1"
+                        : "border-border bg-card text-muted-foreground hover:bg-background border",
+                    ]}
+                  >
+                    <span
+                      class="block h-5 w-5 flex-none rounded-full border"
+                      style={`background-color: ${getAccentPreviewColor(family)}`}
+                      class:list={[
+                        isActive ? "border-accent-400" : "border-border",
+                      ]}
+                    />
+                    <span
+                      class:list={[
+                        isActive
+                          ? "text-accent-700"
+                          : "text-muted-foreground",
+                      ]}
+                    >
+                      {ACCENT_LABELS[family]}
+                    </span>
+                  </button>
+                );
+              })
+            }
+          </div>
+        </Card>
+
+        <div id="save-btn-wrapper" class="hidden">
+          <Button variant="primary" type="submit" icon="save">
+            Guardar cambios
+          </Button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  {/* Billing Tab */}
+  <div
+    data-tab-content="billing"
+    class:list={["space-y-6", activeTab !== "billing" && "hidden"]}
+  >
+    <BillingSection
+      {subscription}
+      {plans}
+      {recipeCount}
+      {ingredientCount}
+      {remainingRecipes}
+      {remainingIngredients}
+    />
+  </div>
+</section>
+
+<script>
+  import { getAccentCssVars } from "@/lib/accent-colors";
+  import { clearNavProgressBar } from "@/lib/mutation-pending";
+
+  function getEffectiveTheme(pref: string): string {
+    if (pref === "system") {
+      if (typeof window.matchMedia === "function") {
+        return window.matchMedia("(prefers-color-scheme: dark)").matches
+          ? "dark"
+          : "light";
+      }
+      return "light";
+    }
+    return pref;
+  }
+
+  function showFeedback(
+    container: HTMLElement | null,
+    type: "success" | "error",
+    message: string,
+  ) {
+    if (!container) return;
+    container.textContent = message;
+    container.className =
+      "mt-4 rounded-xl border px-4 py-3 text-sm font-semibold " +
+      (type === "success"
+        ? "border-success-border bg-success-bg text-success"
+        : "border-danger-border bg-danger-bg text-danger");
+    container.classList.remove("hidden");
+  }
+
+  function setButtonLoading(
+    btn: HTMLButtonElement,
+    loading: boolean,
+    defaultText: string,
+  ) {
+    btn.disabled = loading;
+    btn.setAttribute("aria-busy", loading ? "true" : "false");
+    if (loading) {
+      btn.innerHTML = `<span class="flex items-center gap-2"><svg class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>${defaultText}</span>`;
+    } else {
+      btn.textContent = defaultText;
+    }
+  }
+
+  function setupSettings() {
+    // ── Tab switching ──────────────────────────────────────────────────────────
+    const tabLinks = document.querySelectorAll<HTMLAnchorElement>("[data-tab]");
+    const tabContents =
+      document.querySelectorAll<HTMLElement>("[data-tab-content]");
+
+    tabLinks.forEach((link) => {
+      if (link.dataset.tabBound === "1") return;
+      link.dataset.tabBound = "1";
+
+      link.addEventListener("click", (e) => {
+        const targetTab = link.dataset.tab;
+        if (!targetTab) return;
+
+        e.preventDefault();
+
+        tabLinks.forEach((l) => {
+          const isActive = l.dataset.tab === targetTab;
+          l.className = `-mb-px inline-flex items-center gap-1.5 border-b-2 px-4 py-2.5 text-sm font-semibold transition-colors ${
+            isActive
+              ? "border-accent-600 text-accent-600"
+              : "text-muted-foreground hover:text-secondary-foreground hover:border-muted-foreground/30 border-transparent"
+          }`;
+        });
+
+        tabContents.forEach((content) => {
+          if (content.dataset.tabContent === targetTab) {
+            content.classList.remove("hidden");
+          } else {
+            content.classList.add("hidden");
+          }
+        });
+
+        const url = new URL(window.location.href);
+        if (targetTab === "profile") {
+          url.searchParams.delete("tab");
+        } else {
+          url.searchParams.set("tab", targetTab);
+        }
+        window.history.pushState({}, "", url.toString());
+      });
+    });
+
+    // ── Profile: Change Name Form ──────────────────────────────────────────────
+    const changeNameForm = document.getElementById("change-name-form");
+    const changeNameBtn = document.getElementById(
+      "change-name-btn",
+    ) as HTMLButtonElement | null;
+    const changeNameFeedback = document.getElementById("change-name-feedback");
+
+    if (changeNameForm && !changeNameForm.dataset.bound) {
+      changeNameForm.dataset.bound = "1";
+      changeNameForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        if (!changeNameBtn) return;
+
+        const formData = new FormData(changeNameForm as HTMLFormElement);
+        const firstName = (formData.get("firstName") as string)?.trim();
+        const lastName = (formData.get("lastName") as string)?.trim();
+
+        if (!firstName || !lastName) {
+          showFeedback(
+            changeNameFeedback,
+            "error",
+            "Por favor completa todos los campos requeridos.",
+          );
+          return;
+        }
+
+        setButtonLoading(changeNameBtn, true, "Guardando...");
+
+        try {
+          const res = await fetch("/api/account/update-name", {
+            method: "POST",
+            body: formData,
+          });
+
+          if (res.ok) {
+            const fullName = `${firstName} ${lastName}`;
+            const initial = firstName.charAt(0).toUpperCase();
+
+            const nameEl = document.getElementById("profile-user-name");
+            if (nameEl) nameEl.textContent = fullName;
+
+            const initialEl = document.getElementById("profile-user-initial");
+            if (initialEl) initialEl.textContent = initial;
+
+            showFeedback(
+              changeNameFeedback,
+              "success",
+              "Nombre actualizado correctamente.",
+            );
+          } else {
+            const errText = await res.text();
+            showFeedback(
+              changeNameFeedback,
+              "error",
+              errText || "Error al actualizar el nombre.",
+            );
+          }
+        } catch {
+          showFeedback(
+            changeNameFeedback,
+            "error",
+            "Error de conexión al actualizar el nombre.",
+          );
+        } finally {
+          setButtonLoading(changeNameBtn, false, "Guardar nombre");
+          clearNavProgressBar();
+        }
+      });
+    }
+
+    // ── Profile: Change Email Form ─────────────────────────────────────────────
+    const changeEmailForm = document.getElementById("change-email-form");
+    const changeEmailBtn = document.getElementById(
+      "change-email-btn",
+    ) as HTMLButtonElement | null;
+    const changeEmailFeedback = document.getElementById(
+      "change-email-feedback",
+    );
+
+    if (changeEmailForm && !changeEmailForm.dataset.bound) {
+      changeEmailForm.dataset.bound = "1";
+      changeEmailForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        if (!changeEmailBtn) return;
+
+        const newEmailEl = document.getElementById(
+          "new-email",
+        ) as HTMLInputElement | null;
+        const passwordEl = document.getElementById(
+          "email-current-password",
+        ) as HTMLInputElement | null;
+
+        const newEmail = newEmailEl?.value?.trim();
+        const currentPassword = passwordEl?.value;
+
+        if (!newEmail || !currentPassword) {
+          showFeedback(
+            changeEmailFeedback,
+            "error",
+            "Por favor completa todos los campos.",
+          );
+          return;
+        }
+
+        setButtonLoading(changeEmailBtn, true, "Cambiando email...");
+
+        try {
+          const bodyData = new FormData();
+          bodyData.append("newEmail", newEmail);
+          bodyData.append("currentPassword", currentPassword);
+
+          const res = await fetch("/api/account/change-email", {
+            method: "POST",
+            body: bodyData,
+          });
+
+          if (res.ok) {
+            const emailEl = document.getElementById("profile-user-email");
+            if (emailEl) emailEl.textContent = newEmail;
+
+            showFeedback(
+              changeEmailFeedback,
+              "success",
+              "Email actualizado correctamente.",
+            );
+            if (newEmailEl) newEmailEl.value = "";
+            if (passwordEl) passwordEl.value = "";
+          } else {
+            const errText = await res.text();
+            showFeedback(
+              changeEmailFeedback,
+              "error",
+              errText || "Error al cambiar el email.",
+            );
+          }
+        } catch {
+          showFeedback(
+            changeEmailFeedback,
+            "error",
+            "Error de conexión al cambiar el email.",
+          );
+        } finally {
+          setButtonLoading(changeEmailBtn, false, "Cambiar email");
+          clearNavProgressBar();
+        }
+      });
+    }
+
+    // ── Profile: Change Password Form ──────────────────────────────────────────
+    const changePasswordForm = document.getElementById("change-password-form");
+    const changePasswordBtn = document.getElementById(
+      "change-password-btn",
+    ) as HTMLButtonElement | null;
+    const changePasswordFeedback = document.getElementById(
+      "change-password-feedback",
+    );
+
+    if (changePasswordForm && !changePasswordForm.dataset.bound) {
+      changePasswordForm.dataset.bound = "1";
+      changePasswordForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        if (!changePasswordBtn) return;
+
+        const currentPasswordEl = document.getElementById(
+          "current-password",
+        ) as HTMLInputElement | null;
+        const newPasswordEl = document.getElementById(
+          "new-password",
+        ) as HTMLInputElement | null;
+        const confirmPasswordEl = document.getElementById(
+          "confirm-new-password",
+        ) as HTMLInputElement | null;
+
+        const currentPassword = currentPasswordEl?.value;
+        const newPassword = newPasswordEl?.value;
+        const confirmPassword = confirmPasswordEl?.value;
+
+        if (!currentPassword || !newPassword || !confirmPassword) {
+          showFeedback(
+            changePasswordFeedback,
+            "error",
+            "Por favor completa todos los campos.",
+          );
+          return;
+        }
+
+        if (newPassword.length < 6) {
+          showFeedback(
+            changePasswordFeedback,
+            "error",
+            "La nueva contraseña debe tener al menos 6 caracteres.",
+          );
+          return;
+        }
+
+        if (newPassword !== confirmPassword) {
+          showFeedback(
+            changePasswordFeedback,
+            "error",
+            "Las contraseñas no coinciden.",
+          );
+          return;
+        }
+
+        setButtonLoading(changePasswordBtn, true, "Cambiando contraseña...");
+
+        try {
+          const bodyData = new FormData();
+          bodyData.append("currentPassword", currentPassword);
+          bodyData.append("newPassword", newPassword);
+
+          const res = await fetch("/api/account/change-password", {
+            method: "POST",
+            body: bodyData,
+          });
+
+          if (res.ok) {
+            showFeedback(
+              changePasswordFeedback,
+              "success",
+              "Contraseña actualizada correctamente.",
+            );
+            if (currentPasswordEl) currentPasswordEl.value = "";
+            if (newPasswordEl) newPasswordEl.value = "";
+            if (confirmPasswordEl) confirmPasswordEl.value = "";
+          } else {
+            const errText = await res.text();
+            showFeedback(
+              changePasswordFeedback,
+              "error",
+              errText || "Error al cambiar la contraseña.",
+            );
+          }
+        } catch {
+          showFeedback(
+            changePasswordFeedback,
+            "error",
+            "Error de conexión al cambiar la contraseña.",
+          );
+        } finally {
+          setButtonLoading(changePasswordBtn, false, "Cambiar contraseña");
+          clearNavProgressBar();
+        }
+      });
+    }
+
+    // ── Preferences: Theme & Accent ────────────────────────────────────────────
+    const themeInput = document.getElementById("theme-input");
+    const accentInput = document.getElementById("accent-input");
+    const prefsForm = document.getElementById("preferences-form");
+    const html = document.documentElement;
+
+    function updateLivePreview(theme: string, accent: string) {
+      const effective = getEffectiveTheme(theme);
+      html.dataset.theme = theme;
+      html.dataset.accent = accent;
+      html.dataset.appTheme = theme;
+      html.dataset.appAccent = accent;
+
+      if (effective === "dark") {
+        html.classList.add("dark");
+      } else {
+        html.classList.remove("dark");
+      }
+
+      try {
+        html.style.cssText = getAccentCssVars(accent, effective);
+      } catch {
+        /* noop */
+      }
+    }
+
+    function updateThemeOptions(selected: string) {
+      document
+        .querySelectorAll<HTMLElement>("[data-theme-option]")
+        .forEach((el) => {
+          const value = el.dataset.themeOption;
+          const isActive = value === selected;
+          el.dataset.themeActive = isActive ? "1" : "0";
+          el.setAttribute("aria-pressed", isActive ? "true" : "false");
+
+          const selectedClasses = [
+            "bg-accent-600",
+            "text-white",
+            "shadow-sm",
+            "hover:bg-accent-700",
+          ];
+          const unselectedClasses = [
+            "border",
+            "border-border",
+            "bg-card",
+            "text-muted-foreground",
+            "hover:bg-background",
+          ];
+
+          if (isActive) {
+            el.classList.add(...selectedClasses);
+            el.classList.remove(...unselectedClasses);
+          } else {
+            el.classList.remove(...selectedClasses);
+            el.classList.add(...unselectedClasses);
+          }
+        });
+    }
+
+    function updateAccentOptions(selected: string) {
+      document
+        .querySelectorAll<HTMLElement>("[data-accent-option]")
+        .forEach((el) => {
+          const value = el.dataset.accentOption;
+          const isActive = value === selected;
+          el.dataset.accentActive = isActive ? "1" : "0";
+          el.setAttribute("aria-pressed", isActive ? "true" : "false");
+
+          const swatch = el.querySelector<HTMLElement>("span:first-child");
+          const label = el.querySelector<HTMLElement>("span:last-child");
+
+          if (isActive) {
+            el.classList.add(
+              "ring-2",
+              "ring-accent-500",
+              "ring-offset-1",
+              "bg-accent-50",
+            );
+            el.classList.remove(
+              "hover:bg-background",
+              "border",
+              "border-border",
+            );
+            if (swatch) {
+              swatch.classList.add("border-accent-400");
+              swatch.classList.remove("border-border");
+            }
+            if (label) {
+              label.classList.add("text-accent-700");
+              label.classList.remove("text-muted-foreground");
+            }
+          } else {
+            el.classList.remove(
+              "ring-2",
+              "ring-accent-500",
+              "ring-offset-1",
+              "bg-accent-50",
+            );
+            el.classList.add(
+              "hover:bg-background",
+              "border",
+              "border-border",
+            );
+            if (swatch) {
+              swatch.classList.remove("border-accent-400");
+              swatch.classList.add("border-border");
+            }
+            if (label) {
+              label.classList.remove("text-accent-700");
+              label.classList.add("text-muted-foreground");
+            }
+          }
+        });
+    }
+
+    document
+      .querySelectorAll<HTMLButtonElement>("[data-theme-option]")
+      .forEach((btn) => {
+        if (btn.dataset.themeToggleBound === "1") return;
+        btn.dataset.themeToggleBound = "1";
+
+        btn.addEventListener("click", () => {
+          const value = btn.dataset.themeOption;
+          if (!value) return;
+
+          const currentAccent =
+            accentInput instanceof HTMLInputElement
+              ? accentInput.value
+              : "coral";
+          updateLivePreview(value, currentAccent);
+          updateThemeOptions(value);
+
+          if (themeInput instanceof HTMLInputElement) {
+            themeInput.value = value;
+          }
+
+          checkIfChanged();
+        });
+      });
+
+    document
+      .querySelectorAll<HTMLButtonElement>("[data-accent-option]")
+      .forEach((btn) => {
+        if (btn.dataset.accentToggleBound === "1") return;
+        btn.dataset.accentToggleBound = "1";
+
+        btn.addEventListener("click", () => {
+          const value = btn.dataset.accentOption;
+          if (!value) return;
+
+          const currentTheme =
+            themeInput instanceof HTMLInputElement
+              ? themeInput.value
+              : "system";
+          updateLivePreview(currentTheme, value);
+          updateAccentOptions(value);
+
+          if (accentInput instanceof HTMLInputElement) {
+            accentInput.value = value;
+          }
+
+          checkIfChanged();
+        });
+      });
+
+    let originalTheme =
+      themeInput instanceof HTMLInputElement ? themeInput.value : "system";
+    let originalAccent =
+      accentInput instanceof HTMLInputElement ? accentInput.value : "coral";
+    const saveBtnWrapper = document.getElementById("save-btn-wrapper");
+    const saveBtn = document.querySelector<HTMLButtonElement>(
+      "#save-btn-wrapper button",
+    );
+    const saveBtnIcon = saveBtn?.querySelector<HTMLElement>("svg");
+    const prefsFeedback = document.getElementById("preferences-feedback");
+    const prefsFeedbackMsg = document.getElementById(
+      "preferences-feedback-message",
+    );
+
+    function setSaveBtnLoading(loading: boolean) {
+      if (!saveBtn) return;
+      saveBtn.disabled = loading;
+      saveBtn.setAttribute("aria-busy", loading ? "true" : "false");
+      if (loading && saveBtnIcon) {
+        saveBtnIcon.style.display = "none";
+        const spinner = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "svg",
+        );
+        spinner.setAttribute(
+          "class",
+          "h-4 w-4 animate-[sp_0.7s_linear_infinite]",
+        );
+        spinner.setAttribute("width", "24");
+        spinner.setAttribute("height", "24");
+        spinner.setAttribute("viewBox", "0 0 24 24");
+        spinner.setAttribute("fill", "none");
+        spinner.setAttribute("stroke", "currentColor");
+        spinner.setAttribute("stroke-width", "2.5");
+        spinner.setAttribute("stroke-linecap", "round");
+        spinner.setAttribute("stroke-linejoin", "round");
+        spinner.innerHTML = '<path d="M21 12a9 9 0 1 1-6.219-8.56" />';
+        spinner.dataset.spinner = "1";
+        saveBtn.insertBefore(spinner, saveBtn.firstChild);
+      } else if (!loading && saveBtnIcon) {
+        saveBtnIcon.style.display = "";
+        const spinner = saveBtn.querySelector<SVGElement>("[data-spinner]");
+        if (spinner) spinner.remove();
+      }
+    }
+
+    function showPrefsFeedback(type: "success" | "error", msg: string) {
+      if (!prefsFeedback || !prefsFeedbackMsg) return;
+      prefsFeedbackMsg.textContent = msg;
+      prefsFeedback.className =
+        "mb-4 rounded-2xl border px-4 py-3 text-sm " +
+        (type === "success"
+          ? "border-success-border bg-success-bg text-success"
+          : "border-danger-border bg-danger-bg text-danger");
+      prefsFeedback.classList.remove("hidden");
+      prefsFeedback.focus();
+    }
+
+    function hidePrefsFeedback() {
+      if (!prefsFeedback) return;
+      prefsFeedback.classList.add("hidden");
+    }
+
+    function checkIfChanged() {
+      const currentTheme =
+        themeInput instanceof HTMLInputElement ? themeInput.value : "system";
+      const currentAccent =
+        accentInput instanceof HTMLInputElement ? accentInput.value : "coral";
+      const changed =
+        currentTheme !== originalTheme || currentAccent !== originalAccent;
+      if (saveBtnWrapper) {
+        saveBtnWrapper.classList.toggle("hidden", !changed);
+      }
+      if (saveBtn) {
+        saveBtn.disabled = !changed;
+      }
+      if (!changed) hidePrefsFeedback();
+    }
+
+    if (prefsForm && !prefsForm.dataset.optimisticBound) {
+      prefsForm.dataset.optimisticBound = "1";
+
+      prefsForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(prefsForm as HTMLFormElement);
+        const newTheme = formData.get("theme") as string;
+        const newAccent = formData.get("accentColor") as string;
+
+        setSaveBtnLoading(true);
+
+        try {
+          const params = new URLSearchParams();
+          formData.forEach((value, key) =>
+            params.append(key, value as string),
+          );
+
+          const res = await fetch("/settings?tab=preferences", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: params,
+          });
+
+          if (res.ok) {
+            originalTheme = newTheme;
+            originalAccent = newAccent;
+            if (saveBtnWrapper) saveBtnWrapper.classList.add("hidden");
+            showPrefsFeedback(
+              "success",
+              "Preferencias guardadas correctamente.",
+            );
+          } else {
+            showPrefsFeedback("error", "Error al guardar las preferencias.");
+          }
+        } catch {
+          showPrefsFeedback("error", "Error al guardar las preferencias.");
+        } finally {
+          setSaveBtnLoading(false);
+        }
+      });
+    }
+  }
+
+  document.addEventListener("astro:page-load", setupSettings);
+  document.addEventListener("astro:after-swap", setupSettings);
+  setupSettings();
+</script>

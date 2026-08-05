@@ -1,5 +1,16 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { createResetPasswordCallback } from "./reset-password-callback.js";
+import { createResetPasswordCallback } from "./reset-password-callback";
+
+const { mockPrismaFindUnique } = vi.hoisted(() => {
+  const mockPrismaFindUnique = vi.fn();
+  return { mockPrismaFindUnique };
+});
+
+vi.mock("@recetario/db", () => ({
+  prisma: {
+    user: { findUnique: (...args: unknown[]) => mockPrismaFindUnique(...args) },
+  },
+}));
 
 const mockToken = "550e8400-e29b-41d4-a716-446655440000";
 
@@ -9,21 +20,18 @@ let mockGetResetPasswordEmailHtml: ReturnType<typeof vi.fn>;
 beforeEach(() => {
   mockCreatePasswordResetToken = vi.fn().mockResolvedValue(mockToken);
   mockGetResetPasswordEmailHtml = vi.fn().mockReturnValue("<html>reset link</html>");
+  mockPrismaFindUnique.mockReset();
 });
 
 describe("createResetPasswordCallback", () => {
   it("sends reset email with correct payload on happy path", async () => {
-    const prisma = {
-      user: {
-        findUnique: vi.fn().mockResolvedValue({
-          firstName: "Juan",
-          name: "Juan Pérez",
-        }),
-      },
-    };
+    mockPrismaFindUnique.mockResolvedValue({
+      firstName: "Juan",
+      name: "Juan Pérez",
+    });
     const sendEmail = vi.fn();
     const callback = createResetPasswordCallback(
-      prisma, sendEmail, mockCreatePasswordResetToken, mockGetResetPasswordEmailHtml,
+      sendEmail, mockCreatePasswordResetToken, mockGetResetPasswordEmailHtml,
     );
 
     await callback({
@@ -31,7 +39,7 @@ describe("createResetPasswordCallback", () => {
       url: "https://api.example.com/api/auth/reset-password/better-auth-token?callbackURL=https://example.com/reset",
     });
 
-    expect(prisma.user.findUnique).toHaveBeenCalledWith({
+    expect(mockPrismaFindUnique).toHaveBeenCalledWith({
       where: { id: "user-1" },
       select: { firstName: true, name: true },
     });
@@ -49,17 +57,13 @@ describe("createResetPasswordCallback", () => {
   });
 
   it("falls back to usuario when no firstName or name", async () => {
-    const prisma = {
-      user: {
-        findUnique: vi.fn().mockResolvedValue({
-          firstName: null,
-          name: null,
-        }),
-      },
-    };
+    mockPrismaFindUnique.mockResolvedValue({
+      firstName: null,
+      name: null,
+    });
     const sendEmail = vi.fn();
     const callback = createResetPasswordCallback(
-      prisma, sendEmail, mockCreatePasswordResetToken, mockGetResetPasswordEmailHtml,
+      sendEmail, mockCreatePasswordResetToken, mockGetResetPasswordEmailHtml,
     );
 
     await callback({
@@ -73,14 +77,10 @@ describe("createResetPasswordCallback", () => {
   });
 
   it("uses locally-generated token instead of Better Auth token in URL", async () => {
-    const prisma = {
-      user: {
-        findUnique: vi.fn().mockResolvedValue({ firstName: "Test", name: "Test" }),
-      },
-    };
+    mockPrismaFindUnique.mockResolvedValue({ firstName: "Test", name: "Test" });
     const sendEmail = vi.fn();
     const callback = createResetPasswordCallback(
-      prisma, sendEmail, mockCreatePasswordResetToken, mockGetResetPasswordEmailHtml,
+      sendEmail, mockCreatePasswordResetToken, mockGetResetPasswordEmailHtml,
     );
 
     await callback({
@@ -100,15 +100,11 @@ describe("createResetPasswordCallback", () => {
   });
 
   it("logs error when user lookup throws and does not rethrow", async () => {
-    const prisma = {
-      user: {
-        findUnique: vi.fn().mockRejectedValue(new Error("db error")),
-      },
-    };
+    mockPrismaFindUnique.mockRejectedValue(new Error("db error"));
     const sendEmail = vi.fn();
     const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     const callback = createResetPasswordCallback(
-      prisma, sendEmail, mockCreatePasswordResetToken, mockGetResetPasswordEmailHtml,
+      sendEmail, mockCreatePasswordResetToken, mockGetResetPasswordEmailHtml,
     );
 
     await expect(
@@ -127,14 +123,10 @@ describe("createResetPasswordCallback", () => {
 
   it("logs error when email dispatch throws and does not rethrow", async () => {
     const sendEmail = vi.fn().mockRejectedValue(new Error("email failed"));
-    const prisma = {
-      user: {
-        findUnique: vi.fn().mockResolvedValue({ firstName: "Test", name: "Test" }),
-      },
-    };
+    mockPrismaFindUnique.mockResolvedValue({ firstName: "Test", name: "Test" });
     const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     const callback = createResetPasswordCallback(
-      prisma, sendEmail, mockCreatePasswordResetToken, mockGetResetPasswordEmailHtml,
+      sendEmail, mockCreatePasswordResetToken, mockGetResetPasswordEmailHtml,
     );
 
     await expect(

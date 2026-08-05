@@ -16,17 +16,16 @@
 ### Existing Infrastructure
 - `src/lib/email.ts` - Resend integration with fallback stub
 - `src/lib/password-validation.ts` - Password rules (8+ chars, upper, lower, digit, special)
-- `src/lib/rate-limiter.ts` - Database-backed rate limiting
 - `src/lib/db/audit.ts` - `logAuditEvent()` function for audit logging
 - `src/pages/forgot-password.astro` - Uses `authClient.forgetPassword()` (Better Auth)
 - `src/pages/reset-password.astro` - Uses `authClient.resetPassword()` (Better Auth)
-- `src/pages/api/auth/[...all].ts` - Better Auth handler with rate limiting
+- `apps/api/src/index.ts` - Better Auth handler; abuse protection is deferred
 
 ### Better Auth Password Reset (Current)
 - Built-in: `forgetPassword()` and `resetPassword()` methods via Better Auth
 - Default expiry: 1 hour
 - Token storage: `Verification` model (identifier = "reset-password", value = token)
-- Rate limiting: 3 per hour per IP (already exists in `[...all].ts`)
+- Rate limiting: deferred until a replacement abuse-protection design is implemented
 - Current limitation: No countdown timer on reset page, plain text email
 
 ### Gaps Identified

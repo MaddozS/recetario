@@ -26,8 +26,7 @@ No `.env.local` — use `.env`.
 **postinstall** generates the Prisma client automatically; if you need to run the same step manually, use `pnpm exec prisma generate`.
 **cloudflare-build** (apps/web) runs Prisma generate, migrate deploy, and Astro build; reproduce with `pnpm --filter @recetario/web cloudflare-build`. **api deploy** via `pnpm --filter @recetario/api deploy` (wrangler deploy). Set per-environment secrets via `wrangler pages secret put <KEY>` (web) / `wrangler secret put <KEY>` (api) or the Cloudflare dashboard.
 
-No app test infrastructure is established.
-If tests are requested, propose `Vitest + @testing-library` and confirm with the user before scaffolding. Do not silently add a test framework.
+App test infrastructure: `apps/api` and `packages/db` use Vitest (`pnpm --filter @recetario/api test`, `pnpm --filter @recetario/db test`). If tests are requested for a package without infra, propose `Vitest` and confirm with the user before scaffolding.
 
 ## Architecture
 
@@ -46,12 +45,15 @@ Better Auth via `src/lib/auth.ts` (server singleton) + `src/lib/auth-client.ts` 
 
 ### Data layer
 
-**PostgreSQL + Prisma ORM** is the data layer for `apps/api` (Hono worker) and the seed script. The web app (`apps/web`) does NOT import Prisma or `@recetario/db` directly — every web page calls `apps/api` via `apiFetch` (see "Web→API destination rule" below). The `pg.Pool` singleton in `packages/db/src/prisma.ts` exists for the seed and the `apps/api` per-request path (which opens a fresh pool per request via `withFreshDb`).
+**PostgreSQL + Prisma ORM** is the data layer for `apps/api` (Hono worker) and the seed script. The web app (`apps/web`) does NOT import Prisma or `@recetario/db` directly — every web page calls `apps/api` via `apiFetch` (see "Web→API destination rule" below). The singleton PrismaClient (with the Accelerate extension) lives in `packages/db/src/prisma.ts`.
 
 - Output: `generated/prisma/` (non-standard — set in `schema.prisma:7`)
 - Apps import via the `@recetario/db` workspace package; the web app must not import it.
 - Multi-tenant: every record has `ownerId`. Scoped by `RECIPES_STATIC_OWNER_ID`/`EMAIL` env vars for seed users.
-- CRITICAL: Every Prisma query in `apps/api` over tenant data (`findMany`, `findFirst`, `update`, `delete`, `upsert`, `count`) MUST include `where: { ownerId: session.user.id }` (or `where: { recipe: { ownerId } }` for nested joins) plus any additional filters, or it is a security bug. Reject PRs that omit this. New tenant records must set `ownerId` on create. Seed/bootstrap flows are the only exception.
+- CRITICAL: `packages/db` is **pure persistence** — CRUD methods only, returning raw Prisma rows or status objects. No validation, no normalization, no response shaping. Every tenant-scoped CRUD method takes `ownerId` and scopes its queries by it (or via `recipe: { ownerId }` for nested joins) — this is enforced **inside the db methods**, so `apps/api` never has to remember it. New tenant records must set `ownerId` on create. Seed/bootstrap flows are the only exception. The `@recetario/db` package has unit tests (`src/owner-scoping.test.ts`) asserting each method's `where` includes `ownerId`.
+- **`apps/api` never imports `prisma`** — all data access goes through `@recetario/db` CRUD methods. The only packages that import `prisma` are `packages/auth` (Better Auth's `prismaAdapter` requires the raw client) and the seed script.
+- Validation (Zod `.safeParse()` via `@recetario/types`) and response shaping live in `apps/api` handlers.
+- `packages/stripe` owns Stripe domain logic (thin Stripe API helpers, pricing, feature gating, and subscription shaping) and calls `@recetario/db` CRUD methods. `packages/db` owns pure persistence; the only db→stripe import is `prisma/seed-plans.ts`.
 - Seed data: `data/ingredients.json`, `data/recipes.json`. Loaded on first run via `seedIfNeeded()`.
 
 #### Web→API destination rule
@@ -62,9 +64,7 @@ Better Auth via `src/lib/auth.ts` (server singleton) + `src/lib/auth-client.ts` 
 - Types from `@recetario/types` (Zod schemas and TS types — type-only is fine)
 - Pure transformation in `apps/web/src/lib/*` (e.g. `production-calculator.ts`)
 
-If a new feature needs data access from a web page, add the endpoint in `apps/api` and call it via `apiFetch`. This rule dodges the `pg.Pool` wedge in `@astrojs/cloudflare` dev (memory #63) and keeps the data layer in one place.
-
-**apps/api per-request prisma+auth** — every API handler in `apps/api/src/{recipes,ingredients,presentations,preferences,billing,auth-session,audit,auth}.ts` and the inline handlers in `apps/api/src/index.ts` (account/*, stripe/*, auth/forgot-password, auth/reset-password) must wrap their body in `withFreshDb(c, async (prisma, auth) => {...})` from `apps/api/src/fresh-db.ts`. This dodges the pg.Pool wedge (memory #63) by opening a fresh pool per request, calling `createAuth(freshPrisma)` for the session check, and `prisma.$disconnect()` in the `finally` block. The DB helpers in `packages/db/src/{recipes,ingredients,presentations,preferences,cache}.ts` and the billing helpers in `packages/billing/src/billing.ts` all accept an optional `db: PrismaClient` last arg (default = singleton for backward compat) — pass `prisma` through. The DB-backed `cacheGet`/`cacheSet`/`cacheDelete` from `packages/db/src/cache.ts` also take a `db` arg; passing the per-request `prisma` is the only way to keep the cache layer from wedging. The in-memory `cache.ts` in `apps/api/src/` is unaffected — it never touches pg.
+If a new feature needs data access from a web page, add the endpoint in `apps/api` and call it via `apiFetch`. This keeps the data layer in one place.
 
 ### Key gotchas
 
@@ -72,7 +72,7 @@ If a new feature needs data access from a web page, add the endpoint in `apps/ap
 
 - **MUST NOT VIOLATE** Recipe updates are destructive: the `$transaction` deletes all `RecipeIngredient` rows, then re-creates them.
 - **MUST NOT VIOLATE** Ingredient deletes are blocked when the ingredient is referenced by any recipe (returns `{ status: "blocked", recipes: [...] }`).
-- **MUST NOT VIOLATE** `RecipeIngredient` uses the composite PK `@@id([recipeId, ingredientId])`.
+- **MUST NOT VIOLATE** `RecipeIngredient` uses an autoincrement `id` PK with `@@index([recipeId, ingredientId])` (not a composite PK), so the same ingredient can appear multiple times in a recipe.
 - **Feature flags**: 12 keys live in `FREE_FEATURES` (all false). Basic enables 5; Pro enables all 12.
 
 #### Operational gotchas
@@ -94,7 +94,7 @@ If a new feature needs data access from a web page, add the endpoint in `apps/ap
 - `src/lib/formatters.ts` — exports `formatCurrency` and `timeAgo` (no `formatNumber`)
 - `src/lib/form-utils.ts` — `parseNumberInput(value)` for Spanish-format decimals
 - `src/lib/auth-client.ts` — client-side Better Auth (used for sign-in popup)
-- `src/lib/sign-in.ts` / `src/lib/sign-out.ts` — Google sign-in with popup/open-in-tab + rate limiting
+- `src/lib/sign-in.ts` / `src/lib/sign-out.ts` — Google sign-in with popup/open-in-tab
 - `src/lib/dialog.ts` — `bindDialogBackdrop()` utility
 
 ### Stripe billing

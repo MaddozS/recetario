@@ -1,7 +1,6 @@
 import { Hono } from "hono";
 import {
-  createAuth,
-  rateLimitCheck,
+  auth,
   validateCsrf,
   validatePassword,
   validatePasswordResetToken,
@@ -10,64 +9,70 @@ import {
   formatTime,
   hashPassword,
 } from "@recetario/auth/server";
-import { logAuditEvent, createPrismaClient } from "@recetario/db";
 import {
-  stripe,
-  getPlanByStripePriceId,
+  logAuditEvent,
+  updateAccountPassword,
+  updateUserName,
+  getSubscriptionPlanByStripePriceId,
   getStripeCustomerId,
-  getUserSubscription,
-  createOrUpdateSubscription,
-  cancelSubscription,
-  markSubscriptionPastDue,
-  seedSubscriptionPlans,
-} from "@recetario/billing/server";
+  getSubscriptionByStripeId,
+  upsertSubscription,
+  updateSubscription,
+} from "@recetario/db";
+import {
+  createCustomer,
+  createCheckoutSession,
+  createPortalSession,
+  retrieveSubscription,
+  verifyWebhookSignature,
+} from "@recetario/stripe/server";
+import { createSubscriptionInputSchema } from "@recetario/types";
 import { syncEnvBindings } from "@recetario/config/env";
 import { clientIp, setSecurityHeaders } from "@recetario/config/request";
 
-import { envelope } from "./envelope.js";
-import { errorHandler } from "./error-handler.js";
-import { hostAllowlist } from "./host-allowlist.js";
-import { rateLimit } from "./rate-limit.js";
-import { withFreshDb } from "./fresh-db.js";
-import { authSessionHandler } from "./auth-session.js";
-import { recipesListHandler } from "./recipes/list.js";
-import { recipesByIdsHandler } from "./recipes/by-ids.js";
-import { recipesDetailHandler } from "./recipes/detail.js";
-import { recipesCreateHandler } from "./recipes/create.js";
-import { recipesUpdateHandler } from "./recipes/update.js";
-import { recipesDeleteHandler } from "./recipes/delete.js";
-import { recipesDuplicateHandler } from "./recipes/duplicate.js";
+import { requireAuth, type AuthVariables } from "./middleware/auth";
+import { envelope } from "./envelope";
+import { errorHandler } from "./error-handler";
+import { hostAllowlist } from "./host-allowlist";
+import { authSessionHandler } from "./auth-session";
+import { recipesListHandler } from "./recipes/list";
+import { recipesByIdsHandler } from "./recipes/by-ids";
+import { recipesDetailHandler } from "./recipes/detail";
+import { recipesCreateHandler } from "./recipes/create";
+import { recipesUpdateHandler } from "./recipes/update";
+import { recipesDeleteHandler } from "./recipes/delete";
+import { recipesDuplicateHandler } from "./recipes/duplicate";
 import {
   fixedCostsCreateHandler,
   fixedCostsUpdateHandler,
   fixedCostsDeleteHandler,
-} from "./recipes/fixed-costs.js";
-import { presentationsListHandler } from "./recipes/presentations.js";
+} from "./recipes/fixed-costs";
+import { presentationsListHandler } from "./recipes/presentations";
 import {
   presentationsCreateHandler,
   presentationsUpdateHandler,
   presentationsDeleteHandler,
-} from "./recipes/presentations.js";
-import { ingredientsListHandler } from "./ingredients/list.js";
-import { ingredientsCreateHandler } from "./ingredients/create.js";
-import { ingredientsUpdateHandler } from "./ingredients/update.js";
-import { ingredientsDeleteHandler } from "./ingredients/delete.js";
-import { ingredientsUsageHandler } from "./ingredients/usage.js";
-import { ingredientsUsageBulkHandler } from "./ingredients/usage-bulk.js";
-import { preferencesGetHandler } from "./preferences/get.js";
-import { preferencesUpdateHandler } from "./preferences/update.js";
-import { subscriptionHandler } from "./billing/subscription.js";
-import { plansHandler } from "./billing/plans.js";
-import { credentialStatusHandler } from "./auth/credential-status.js";
-import { auditLogHandler } from "./audit/log.js";
-import { usageCountsHandler } from "./usage-counts.js";
+} from "./recipes/presentations";
+import { ingredientsListHandler } from "./ingredients/list";
+import { ingredientsCreateHandler } from "./ingredients/create";
+import { ingredientsUpdateHandler } from "./ingredients/update";
+import { ingredientsDeleteHandler } from "./ingredients/delete";
+import { ingredientsUsageHandler } from "./ingredients/usage";
+import { ingredientsUsageBulkHandler } from "./ingredients/usage-bulk";
+import { preferencesGetHandler } from "./preferences/get";
+import { preferencesUpdateHandler } from "./preferences/update";
+import { subscriptionHandler } from "./billing/subscription";
+import { plansHandler } from "./billing/plans";
+import { credentialStatusHandler } from "./auth/credential-status";
+import { auditLogHandler } from "./audit/log";
+import { usageCountsHandler } from "./usage-counts";
 import {
   presentationsFixedCostsCreateHandler,
   presentationsFixedCostsUpdateHandler,
   presentationsFixedCostsDeleteHandler,
-} from "./presentations/fixed-costs.js";
+} from "./presentations/fixed-costs";
 
-const app = new Hono();
+const app = new Hono<{ Variables: AuthVariables }>();
 
 function getPeriod(obj: unknown, field: string): number {
   if (obj && typeof obj === "object" && field in obj) {
@@ -77,32 +82,67 @@ function getPeriod(obj: unknown, field: string): number {
   return 0;
 }
 
+function getAppOrigin(c: { req: { header: (name: string) => string | undefined; url: string }; env?: unknown }): string {
+  const bindings = (c.env ?? {}) as Record<string, string | undefined>;
+  const envOrigin =
+    bindings.PUBLIC_APP_URL ||
+    bindings.WEB_ORIGIN ||
+    process.env.PUBLIC_APP_URL ||
+    process.env.WEB_ORIGIN;
+  if (envOrigin) {
+    return envOrigin.replace(/\/$/, "");
+  }
+
+  const originHeader = c.req.header("origin") || c.req.header("referer");
+  if (originHeader) {
+    try {
+      return new URL(originHeader).origin;
+    } catch {
+      // ignore
+    }
+  }
+
+  return new URL(c.req.url).origin;
+}
+
 function safeRedirectUrl(
   input: string | undefined,
   fallback: string,
   appOrigin: string,
 ): string {
   if (!input) return fallback;
-  if (input.startsWith("/") && !input.startsWith("//")) return input;
+
+  if (input.startsWith("/") && !input.startsWith("//")) {
+    return `${appOrigin}${input}`;
+  }
 
   try {
     const parsed = new URL(input);
     if (parsed.origin === appOrigin) return input;
   } catch {
-    if (input.startsWith("/") && !input.startsWith("//")) return input;
+    // ignore
   }
 
   return fallback;
 }
 
 app.onError(errorHandler());
-app.use("*", envelope());
-app.use("*", hostAllowlist());
-app.use("*", rateLimit());
 app.use("*", async (c, next) => {
   syncEnvBindings(c.env as Record<string, unknown>);
   await next();
   setSecurityHeaders(c.res);
+});
+app.use("*", envelope());
+app.use("*", hostAllowlist());
+
+app.use("*", async (c, next) => {
+  const started = Date.now();
+  await next();
+  const elapsedMs = Date.now() - started;
+  const level = elapsedMs > 5_000 ? "warn" : "log";
+  console[level](
+    `[API] ${c.req.method} ${new URL(c.req.url).pathname} -> ${c.res.status} in ${elapsedMs}ms`,
+  );
 });
 
 app.get("/health", (c) =>
@@ -113,35 +153,32 @@ app.get("/health", (c) =>
 );
 
 app.post("/api/auth/forgot-password", async (c) => {
-  return withFreshDb(c, async (prisma, auth) => {
-    try {
-      const body = await c.req.json();
-      const email = body?.email as string | undefined;
+  try {
+    const body = await c.req.json();
+    const email = body?.email as string | undefined;
 
-      if (!email) {
-        return c.json({ error: "Email requerido", code: "INVALID_DATA" }, 400);
-      }
-
-      await auth.api.requestPasswordReset({
-        body: {
-          email,
-          redirectTo: `${new URL(c.req.url).origin}/reset-password`,
-        },
-      });
-    } catch (error) {
-      console.error("[AUTH] request-password-reset error:", error);
+    if (!email) {
+      return c.json({ error: "Email requerido", code: "INVALID_DATA" }, 400);
     }
 
-    return c.json({
-      success: true,
-      message:
-        "Si el email existe, recibirás un enlace para restablecer tu contraseña.",
+    await auth.api.requestPasswordReset({
+      body: {
+        email,
+        redirectTo: `${getAppOrigin(c)}/reset-password`,
+      },
     });
+  } catch (error) {
+    console.error("[AUTH] request-password-reset error:", error);
+  }
+
+  return c.json({
+    success: true,
+    message:
+      "Si el email existe, recibirás un enlace para restablecer tu contraseña.",
   });
 });
 
 app.get("/api/auth/reset-password", async (c) => {
-  return withFreshDb(c, async (prisma) => {
     const token = new URL(c.req.url).searchParams.get("token");
 
     if (!token) {
@@ -149,7 +186,7 @@ app.get("/api/auth/reset-password", async (c) => {
     }
 
     try {
-      const validation = await validatePasswordResetToken(token, prisma);
+      const validation = await validatePasswordResetToken(token);
 
       if (!validation.valid) {
         const errorMessages = {
@@ -181,10 +218,8 @@ app.get("/api/auth/reset-password", async (c) => {
       );
     }
   });
-});
 
 app.post("/api/auth/reset-password", async (c) => {
-  return withFreshDb(c, async (prisma, auth) => {
     try {
       const body = await c.req.json();
       const token = body?.token as string | undefined;
@@ -197,7 +232,7 @@ app.post("/api/auth/reset-password", async (c) => {
         );
       }
 
-      const validation = await validatePasswordResetToken(token, prisma);
+      const validation = await validatePasswordResetToken(token);
 
       if (!validation.valid) {
         const errorMessages = {
@@ -228,12 +263,13 @@ app.post("/api/auth/reset-password", async (c) => {
       }
 
       const hashedPassword = await hashPassword(password);
-      await prisma.account.updateMany({
-        where: { userId: validation.userId!, providerId: "credential" },
-        data: { password: hashedPassword },
-      });
+      await updateAccountPassword(
+        validation.userId!,
+        "credential",
+        hashedPassword,
+      );
 
-      await markTokenAsUsed(token, prisma);
+      await markTokenAsUsed(token);
 
       await logAuditEvent(
         {
@@ -242,7 +278,6 @@ app.post("/api/auth/reset-password", async (c) => {
           ipAddress: clientIp(c.req.raw),
           userAgent: c.req.header("user-agent") ?? null,
         },
-        prisma,
       );
 
       return c.json({
@@ -257,9 +292,24 @@ app.post("/api/auth/reset-password", async (c) => {
       );
     }
   });
-});
 
 app.get("/api/auth/session", authSessionHandler());
+
+// ── Protected routes middleware ───────────────────────────────────────────
+app.use("/api/recipes/*", requireAuth());
+app.use("/api/recipes", requireAuth());
+app.use("/api/ingredients/*", requireAuth());
+app.use("/api/ingredients", requireAuth());
+app.use("/api/preferences/*", requireAuth());
+app.use("/api/preferences", requireAuth());
+app.use("/api/presentations/*", requireAuth());
+app.use("/api/account/*", requireAuth());
+app.use("/api/stripe/checkout", requireAuth());
+app.use("/api/stripe/portal", requireAuth());
+app.use("/api/billing/subscription", requireAuth());
+app.use("/api/usage-counts", requireAuth());
+app.use("/api/auth/credential-status", requireAuth());
+app.use("/api/audit/log", requireAuth());
 
 app.get("/api/recipes", recipesListHandler());
 app.get("/api/recipes/by-ids", recipesByIdsHandler());
@@ -294,72 +344,10 @@ app.get("/api/billing/subscription", subscriptionHandler());
 app.get("/api/billing/plans", plansHandler());
 app.get("/api/usage-counts", usageCountsHandler());
 
-app.all("/api/auth/*", async (c) => {
-  // ponytail: per-request prisma + auth to dodge the pg.Pool wedge
-  // documented in memory #63. The singleton `auth` was used by
-  // recipes/ingredients/etc. before they switched to withFreshDb;
-  // for the auth catch-all we open a fresh pool, use it, and
-  // disconnect() before workerd tears down the request context, so
-  // the pool never sits idle long enough to wedge. We also pass it
-  // to rateLimitCheck so the rate limit queries don't go through
-  // the wedged singleton pool.
-  const freshPrisma = createPrismaClient();
-  const freshAuth = createAuth(freshPrisma);
-  const path = new URL(c.req.url).pathname;
-  const ip = clientIp(c.req.raw);
-
-  if (c.req.method === "POST") {
-    if (path.includes("/sign-in/email")) {
-      const { allowed } = await rateLimitCheck(`signin:${ip}`, 5, 60, freshPrisma);
-      if (!allowed) {
-        freshPrisma.$disconnect().catch(() => {});
-        return c.text(
-          "Too many sign-in attempts. Please try again later.",
-          429,
-        );
-      }
-    }
-
-    if (path.includes("/sign-up/email")) {
-      const { allowed } = await rateLimitCheck(`signup:${ip}`, 3, 3600, freshPrisma);
-      if (!allowed) {
-        freshPrisma.$disconnect().catch(() => {});
-        return c.text(
-          "Too many sign-up attempts. Please try again later.",
-          429,
-        );
-      }
-    }
-
-    if (path.includes("/sign-in/social")) {
-      const { allowed } = await rateLimitCheck(`oauth:${ip}`, 10, 900, freshPrisma);
-      if (!allowed) {
-        freshPrisma.$disconnect().catch(() => {});
-        return c.text("Too many OAuth requests. Please try again later.", 429);
-      }
-    }
-
-    if (path.includes("/forget-password")) {
-      const { allowed } = await rateLimitCheck(`forgot:${ip}`, 3, 3600, freshPrisma);
-      if (!allowed) {
-        freshPrisma.$disconnect().catch(() => {});
-        return c.text("Too many reset requests. Please try again later.", 429);
-      }
-    }
-  }
-
-  try {
-    return await freshAuth.handler(c.req.raw);
-  } finally {
-    freshPrisma.$disconnect().catch(() => {});
-  }
-});
+app.all("/api/auth/*", async (c) => auth.handler(c.req.raw));
 
 app.post("/api/account/update-name", async (c) => {
-  return withFreshDb(c, async (prisma, auth) => {
-    const session = await auth.api.getSession({ headers: c.req.raw.headers });
-    if (!session?.user) return c.text("Unauthorized", 401);
-
+    const user = c.get("user");
     const formData = await c.req.raw.formData();
     const firstName = (formData.get("firstName") as string)?.trim() ?? "";
     const lastName = (formData.get("lastName") as string)?.trim() ?? "";
@@ -367,23 +355,15 @@ app.post("/api/account/update-name", async (c) => {
     if (!firstName || !lastName) return c.text("Missing fields", 400);
 
     try {
-      const fullName = `${firstName} ${lastName}`;
-      await prisma.user.update({
-        where: { id: session.user.id },
-        data: { firstName, lastName, name: fullName },
-      });
+      await updateUserName(user.id, { firstName, lastName });
       return c.body(null, 200);
     } catch {
       return c.text("Error updating name", 500);
     }
   });
-});
 
 app.post("/api/account/change-email", async (c) => {
-  return withFreshDb(c, async (prisma, auth) => {
-    const session = await auth.api.getSession({ headers: c.req.raw.headers });
-    if (!session?.user) return c.text("Unauthorized", 401);
-
+    const user = c.get("user");
     const formData = await c.req.raw.formData();
     const newEmail = formData.get("newEmail") as string;
     const currentPassword = formData.get("currentPassword") as string;
@@ -395,15 +375,12 @@ app.post("/api/account/change-email", async (c) => {
         headers: c.req.raw.headers,
         body: { newEmail },
       });
-      await logAuditEvent(
-        {
-          userId: session.user.id,
-          action: "email_change",
-          ipAddress: clientIp(c.req.raw),
-          userAgent: c.req.header("user-agent") ?? null,
-        },
-        prisma,
-      );
+      await logAuditEvent({
+        userId: user.id,
+        action: "email_change",
+        ipAddress: clientIp(c.req.raw),
+        userAgent: c.req.header("user-agent") ?? null,
+      });
       return c.body(null, 200);
     } catch (error) {
       return c.text(
@@ -412,13 +389,9 @@ app.post("/api/account/change-email", async (c) => {
       );
     }
   });
-});
 
 app.post("/api/account/change-password", async (c) => {
-  return withFreshDb(c, async (prisma, auth) => {
-    const session = await auth.api.getSession({ headers: c.req.raw.headers });
-    if (!session?.user) return c.text("Unauthorized", 401);
-
+    const user = c.get("user");
     const formData = await c.req.raw.formData();
     const currentPassword = formData.get("currentPassword") as string;
     const newPassword = formData.get("newPassword") as string;
@@ -437,15 +410,12 @@ app.post("/api/account/change-password", async (c) => {
           revokeOtherSessions: false,
         },
       });
-      await logAuditEvent(
-        {
-          userId: session.user.id,
-          action: "password_change",
-          ipAddress: clientIp(c.req.raw),
-          userAgent: c.req.header("user-agent") ?? null,
-        },
-        prisma,
-      );
+      await logAuditEvent({
+        userId: user.id,
+        action: "password_change",
+        ipAddress: clientIp(c.req.raw),
+        userAgent: c.req.header("user-agent") ?? null,
+      });
       return c.body(null, 200);
     } catch (error) {
       return c.text(
@@ -454,15 +424,9 @@ app.post("/api/account/change-password", async (c) => {
       );
     }
   });
-});
 
 app.post("/api/stripe/checkout", async (c) => {
-  return withFreshDb(c, async (prisma, auth) => {
-    const session = await auth.api.getSession({ headers: c.req.raw.headers });
-    if (!session?.user) {
-      return c.json({ error: "Authentication required" }, 401);
-    }
-
+    const user = c.get("user");
     if (!validateCsrf(c.req.raw)) {
       return c.json({ error: "CSRF validation failed" }, 403);
     }
@@ -477,185 +441,111 @@ app.post("/api/stripe/checkout", async (c) => {
     const { priceId, successUrl, cancelUrl } = body;
     if (!priceId) return c.json({ error: "Missing priceId" }, 400);
 
-    const plan = await getPlanByStripePriceId(priceId, prisma);
+    const plan = await getSubscriptionPlanByStripePriceId(priceId);
     if (!plan) return c.json({ error: "Invalid price ID" }, 400);
 
-    const appOrigin = new URL(c.req.url).origin;
-    const userId = session.user.id;
-    const userEmail = session.user.email;
-    const existingCustomerId = await getStripeCustomerId(userId, prisma);
-    const customerId =
-      existingCustomerId ??
-      (
-        await stripe.customers.create({
-          email: userEmail ?? undefined,
-          metadata: { userId },
-        })
-      ).id;
-
-    const checkoutSession = await stripe.checkout.sessions.create({
-      customer: customerId,
-      line_items: [{ price: priceId, quantity: 1 }],
-      mode: "subscription",
-      subscription_data: {
-        trial_period_days: 14,
-      },
-      success_url: safeRedirectUrl(
-        successUrl,
-        `${appOrigin}/settings/billing?success=1`,
-        appOrigin,
-      ),
-      cancel_url: safeRedirectUrl(
-        cancelUrl,
-        `${appOrigin}/pricing?canceled=1`,
-        appOrigin,
-      ),
-      metadata: {
-        userId,
-        planId: plan.id,
-      },
+    const appOrigin = getAppOrigin(c);
+    const userId = user.id;
+    const existingCustomerId = await getStripeCustomerId(userId);
+    const customerId = existingCustomerId ?? (await createCustomer({ email: user.email ?? undefined, userId })).id;
+    const checkoutSession = await createCheckoutSession({
+      customerId,
+      priceId,
+      successUrl: safeRedirectUrl(successUrl, `${appOrigin}/settings/billing?success=1`, appOrigin),
+      cancelUrl: safeRedirectUrl(cancelUrl, `${appOrigin}/pricing?canceled=1`, appOrigin),
+      userId,
+      planId: plan.id,
     });
-
     return c.json({ url: checkoutSession.url });
   });
-});
 
 app.post("/api/stripe/portal", async (c) => {
-  return withFreshDb(c, async (prisma, auth) => {
-    const session = await auth.api.getSession({ headers: c.req.raw.headers });
-    if (!session?.user) {
-      return c.json({ error: "Authentication required" }, 401);
-    }
+    const user = c.get("user");
+    if (!validateCsrf(c.req.raw)) return c.json({ error: "CSRF validation failed" }, 403);
 
-    if (!validateCsrf(c.req.raw)) {
-      return c.json({ error: "CSRF validation failed" }, 403);
-    }
-
-    const subscription = await getUserSubscription(session.user.id, prisma);
-    if (!subscription?.stripeCustomerId) {
-      return c.json({ error: "No subscription found" }, 404);
-    }
-
-    const portalSession = await stripe.billingPortal.sessions.create({
-      customer: subscription.stripeCustomerId,
-      return_url: `${new URL(c.req.url).origin}/settings/billing`,
-    });
-
+    const customerId = await getStripeCustomerId(user.id);
+    if (!customerId) return c.json({ error: "No subscription found" }, 404);
+    const appOrigin = getAppOrigin(c);
+    const portalSession = await createPortalSession(customerId, `${appOrigin}/settings/billing`);
     return c.json({ url: portalSession.url });
   });
-});
 
 app.post("/api/stripe/webhook", async (c) => {
-  return withFreshDb(c, async (prisma) => {
-    await seedSubscriptionPlans(prisma);
-
     const payload = await c.req.text();
     const signature = c.req.header("stripe-signature");
-
     if (!signature) return c.text("Missing stripe-signature header", 400);
 
-    let event: ReturnType<typeof stripe.webhooks.constructEvent>;
+    let event: Awaited<ReturnType<typeof verifyWebhookSignature>>;
     try {
-      event = stripe.webhooks.constructEvent(
-        payload,
-        signature,
+      const webhookSecret =
         (c.env as Record<string, string | undefined>).STRIPE_WEBHOOK_SECRET ??
-          process.env.STRIPE_WEBHOOK_SECRET ??
-          "",
-      );
-    } catch {
-      console.error("Webhook signature verification failed");
+        process.env.STRIPE_WEBHOOK_SECRET ??
+        "";
+      event = await verifyWebhookSignature(payload, signature, webhookSecret);
+    } catch (err) {
+      console.error("[Stripe Webhook Error] Signature verification failed:", err);
       return c.text("Invalid signature", 400);
     }
 
     const obj = event.data.object as unknown as Record<string, unknown>;
+    const writeSubscription = async (input: {
+      stripeSubscriptionId: string;
+      stripeCustomerId: string;
+      priceId: string | null;
+      userId: string | null;
+      planId: string | null;
+      status: string;
+      currentPeriodStart: Date;
+      currentPeriodEnd: Date;
+      cancelAtPeriodEnd: boolean;
+      trialEnd: Date | null;
+    }) => {
+      const validated = createSubscriptionInputSchema.parse(input);
+      let planId = validated.planId;
+      let userId = validated.userId;
+      if (!planId && input.priceId) planId = (await getSubscriptionPlanByStripePriceId(input.priceId))?.id ?? null;
+      if (!userId) userId = (await getSubscriptionByStripeId(input.stripeSubscriptionId))?.userId ?? null;
+      if (!planId || !userId) return;
+      await upsertSubscription(validated.stripeSubscriptionId, { id: validated.stripeSubscriptionId, userId, stripeCustomerId: validated.stripeCustomerId, planId, status: validated.status, currentPeriodStart: validated.currentPeriodStart, currentPeriodEnd: validated.currentPeriodEnd, cancelAtPeriodEnd: validated.cancelAtPeriodEnd, trialEnd: validated.trialEnd ?? null });
+    };
 
     switch (event.type) {
       case "checkout.session.completed": {
         const metadata = obj.metadata as Record<string, string> | undefined;
-        const customerId =
-          typeof obj.customer === "string" ? obj.customer : null;
-        const subscriptionId =
-          typeof obj.subscription === "string" ? obj.subscription : null;
-
+        const subscriptionId = typeof obj.subscription === "string" ? obj.subscription : null;
+        const customerId = typeof obj.customer === "string" ? obj.customer : null;
         if (!subscriptionId || !customerId) break;
-
-        let sub: unknown;
-        try {
-          sub = await stripe.subscriptions.retrieve(subscriptionId);
-        } catch {
-          break;
-        }
-
-        await createOrUpdateSubscription(
-          {
-            stripeSubscriptionId: subscriptionId,
-            stripeCustomerId: customerId,
-            userId: metadata?.userId ?? null,
-            planId: metadata?.planId ?? null,
-            status: (sub as Record<string, unknown>).status as string,
-            currentPeriodStart: new Date(
-              getPeriod(sub, "current_period_start") * 1000,
-            ),
-            currentPeriodEnd: new Date(
-              getPeriod(sub, "current_period_end") * 1000,
-            ),
-            cancelAtPeriodEnd: Boolean(
-              (sub as Record<string, unknown>).cancel_at_period_end,
-            ),
-            trialEnd: getPeriod(sub, "trial_end")
-              ? new Date(getPeriod(sub, "trial_end") * 1000)
-              : null,
-          },
-          prisma,
-        );
+        const sub = await retrieveSubscription(subscriptionId);
+        const items = sub.items?.data;
+        const priceId = items?.[0]?.price?.id ?? null;
+        await writeSubscription({ stripeSubscriptionId: subscriptionId, stripeCustomerId: customerId, priceId, userId: metadata?.userId ?? null, planId: metadata?.planId ?? null, status: sub.status, currentPeriodStart: new Date(getPeriod(sub, "current_period_start") * 1000), currentPeriodEnd: new Date(getPeriod(sub, "current_period_end") * 1000), cancelAtPeriodEnd: Boolean(sub.cancel_at_period_end), trialEnd: getPeriod(sub, "trial_end") ? new Date(getPeriod(sub, "trial_end") * 1000) : null });
         break;
       }
-
       case "customer.subscription.updated": {
-        const customerId =
-          typeof obj.customer === "string" ? obj.customer : null;
-
-        await createOrUpdateSubscription(
-          {
-            stripeSubscriptionId: obj.id as string,
-            stripeCustomerId: customerId ?? "",
-            userId: null,
-            planId: null,
-            status: obj.status as string,
-            currentPeriodStart: new Date(
-              getPeriod(obj, "current_period_start") * 1000,
-            ),
-            currentPeriodEnd: new Date(
-              getPeriod(obj, "current_period_end") * 1000,
-            ),
-            cancelAtPeriodEnd: Boolean(obj.cancel_at_period_end),
-            trialEnd: getPeriod(obj, "trial_end")
-              ? new Date(getPeriod(obj, "trial_end") * 1000)
-              : null,
-          },
-          prisma,
-        );
+        const items = obj.items as { data?: Array<{ price?: { id?: string } }> } | undefined;
+        const priceId = items?.data?.[0]?.price?.id ?? null;
+        await writeSubscription({ stripeSubscriptionId: obj.id as string, stripeCustomerId: typeof obj.customer === "string" ? obj.customer : "", priceId, userId: null, planId: null, status: obj.status as string, currentPeriodStart: new Date(getPeriod(obj, "current_period_start") * 1000), currentPeriodEnd: new Date(getPeriod(obj, "current_period_end") * 1000), cancelAtPeriodEnd: Boolean(obj.cancel_at_period_end), trialEnd: getPeriod(obj, "trial_end") ? new Date(getPeriod(obj, "trial_end") * 1000) : null });
         break;
       }
-
       case "customer.subscription.deleted": {
-        await cancelSubscription(obj.id as string, prisma);
+        const dbSub = await getSubscriptionByStripeId(obj.id as string);
+        if (dbSub) {
+          await updateSubscription(obj.id as string, { status: "canceled", cancelAtPeriodEnd: true });
+        }
         break;
       }
-
       case "invoice.payment_failed": {
-        const subscriptionId =
-          typeof obj.subscription === "string" ? obj.subscription : null;
-
-        if (subscriptionId)
-          await markSubscriptionPastDue(subscriptionId, prisma);
+        const subscriptionId = typeof obj.subscription === "string" ? obj.subscription : null;
+        if (subscriptionId) {
+          const dbSub = await getSubscriptionByStripeId(subscriptionId);
+          if (dbSub) {
+            await updateSubscription(subscriptionId, { status: "past_due" });
+          }
+        }
         break;
       }
     }
-
     return c.text("OK");
   });
-});
 
 export default app;

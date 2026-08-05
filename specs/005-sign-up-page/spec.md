@@ -150,5 +150,5 @@ La página de registro debe seguir los mismos lineamientos de diseño que la pá
 - El perfil de Google proporciona `given_name` y `family_name` que se usarán para nombre y apellido respectivamente durante el registro con Google.
 - La página de inicio de sesión (`/sign-in`) ya existe y contiene el enlace a `/sign-up`. La página de registro (`/sign-up`) ya existe como estructura base y será modificada para agregar los campos de nombre y apellido.
 - La validación de contraseñas se limita a longitud mínima de 6 caracteres, sin requisitos adicionales de complejidad (mayúsculas, números, caracteres especiales).
-- El rate limiting de intentos de registro ya existe o se apoya en la infraestructura de rate limiting existente del backend.
+- La protección contra abuso de intentos de registro se implementará en una futura iteración de infraestructura backend.
 - Las páginas de términos de servicio y política de privacidad están fuera del alcance de esta especificación.

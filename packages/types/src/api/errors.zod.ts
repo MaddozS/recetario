@@ -1,12 +1,11 @@
 import { z } from "zod";
-import { DOMAIN_ERROR_REASONS } from "./reasons.js";
-import type { ApiErrorParsed } from "./errors.js";
+import { DOMAIN_ERROR_REASONS } from "./reasons";
+import type { ApiErrorParsed } from "./errors";
 
 export const ApiErrorCodeSchema = z.enum([
   "UNAUTHENTICATED",
   "FORBIDDEN",
   "NOT_FOUND",
-  "RATE_LIMITED",
   "VALIDATION_ERROR",
   "INTERNAL",
   "DOMAIN_ERROR",
@@ -21,7 +20,6 @@ export const ApiErrorResponseSchema = z.object({
     issues: z.array(z.any()).optional(),
     reason: z.string().optional(),
     traceId: z.string().optional(),
-    retryAfterMs: z.number().int().nonnegative().optional(),
   }),
 });
 

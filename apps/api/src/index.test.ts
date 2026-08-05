@@ -1,5 +1,54 @@
-import { describe, it, expect, beforeAll } from "vitest";
-import { createTestEnv } from "./test-utils/index.js";
+import { describe, it, expect, vi, beforeAll, beforeEach } from "vitest";
+import { createTestEnv } from "./test-utils/index";
+
+const mocks = vi.hoisted(() => ({
+  getSubscriptionPlanByStripePriceId: vi.fn(),
+  getSubscriptionByStripeId: vi.fn(),
+  upsertSubscription: vi.fn(),
+  updateSubscription: vi.fn(),
+  verifyWebhookSignature: vi.fn(),
+  retrieveSubscription: vi.fn(),
+  createCheckoutSession: vi.fn(),
+  createPortalSession: vi.fn(),
+}));
+
+vi.mock("@recetario/auth/server", () => ({
+  auth: {
+    api: {
+      getSession: vi.fn().mockResolvedValue(null),
+      requestPasswordReset: vi.fn(),
+      changeEmail: vi.fn(),
+      changePassword: vi.fn(),
+    },
+    handler: vi.fn(),
+  },
+  validateCsrf: vi.fn().mockReturnValue(true),
+  validatePassword: vi.fn().mockReturnValue({ valid: true, errors: [] }),
+  validatePasswordResetToken: vi.fn().mockResolvedValue({ valid: false }),
+  markTokenAsUsed: vi.fn(),
+  getRemainingSeconds: vi.fn().mockResolvedValue(0),
+  formatTime: vi.fn().mockReturnValue("0 min"),
+  hashPassword: vi.fn(),
+}));
+
+vi.mock("@recetario/db", () => ({
+  logAuditEvent: vi.fn(),
+  updateAccountPassword: vi.fn(),
+  updateUserName: vi.fn(),
+  getSubscriptionPlanByStripePriceId: mocks.getSubscriptionPlanByStripePriceId,
+  getSubscriptionByStripeId: mocks.getSubscriptionByStripeId,
+  upsertSubscription: mocks.upsertSubscription,
+  updateSubscription: mocks.updateSubscription,
+  getStripeCustomerId: vi.fn(),
+}));
+
+vi.mock("@recetario/stripe/server", () => ({
+  createCustomer: vi.fn(),
+  createCheckoutSession: mocks.createCheckoutSession,
+  createPortalSession: mocks.createPortalSession,
+  retrieveSubscription: mocks.retrieveSubscription,
+  verifyWebhookSignature: mocks.verifyWebhookSignature,
+}));
 
 beforeAll(() => {
   process.env.DATABASE_URL = "postgres://test:test@localhost:5432/test";
@@ -17,8 +66,12 @@ beforeAll(() => {
 });
 
 describe("health endpoint", () => {
+  beforeEach(() => {
+    for (const mock of Object.values(mocks)) mock.mockReset();
+  });
+
   it("returns 200 and ok body", async () => {
-    const { default: app } = await import("./index.js");
+    const { default: app } = await import("./index");
     const res = await app.request(
       "/health",
       {},
@@ -28,5 +81,74 @@ describe("health endpoint", () => {
     const body = (await res.json()) as { ok: boolean; service: string };
     expect(body.ok).toBe(true);
     expect(body.service).toBe("recetario-api");
+  });
+
+  it("resolves subscription updates from the Stripe price ID", async () => {
+    const { default: app } = await import("./index");
+    mocks.verifyWebhookSignature.mockReturnValue({
+      type: "customer.subscription.updated",
+      data: {
+        object: {
+          id: "sub_123",
+          customer: "cus_123",
+          status: "active",
+          current_period_start: 1735689600,
+          current_period_end: 1767225600,
+          cancel_at_period_end: false,
+          trial_end: null,
+          items: { data: [{ price: { id: "price_pro_monthly" } }] },
+        },
+      },
+    });
+    mocks.getSubscriptionPlanByStripePriceId.mockResolvedValueOnce({ id: "pro_monthly" });
+    mocks.getSubscriptionByStripeId.mockResolvedValueOnce({ userId: "user-1" });
+
+    const response = await app.request(
+      "/api/stripe/webhook",
+      { method: "POST", headers: { "stripe-signature": "sig" }, body: "{}" },
+      createTestEnv() as unknown as Record<string, unknown>,
+    );
+
+    expect(response.status).toBe(200);
+    expect(mocks.getSubscriptionPlanByStripePriceId).toHaveBeenCalledWith("price_pro_monthly");
+    expect(mocks.upsertSubscription).toHaveBeenCalledWith(
+      "sub_123",
+      expect.objectContaining({ planId: "pro_monthly", userId: "user-1", status: "active" }),
+    );
+  });
+
+  it("uses web app origin for checkout success and cancel redirect URLs", async () => {
+    const { default: app } = await import("./index");
+    const { auth } = await import("@recetario/auth/server");
+    (auth.api.getSession as unknown as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      user: { id: "user-1", email: "user@test.local" },
+      session: { id: "sess-1", userId: "user-1" },
+    });
+    const { getStripeCustomerId } = await import("@recetario/db");
+    (getStripeCustomerId as unknown as ReturnType<typeof vi.fn>).mockResolvedValueOnce("cus_123");
+    mocks.getSubscriptionPlanByStripePriceId.mockResolvedValueOnce({ id: "plan_123" });
+    mocks.createCheckoutSession.mockResolvedValueOnce({ url: "https://checkout.stripe.com/test" });
+
+    const response = await app.request(
+      "/api/stripe/checkout",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Origin: "http://localhost:4321" },
+        body: JSON.stringify({
+          priceId: "price_123",
+          successUrl: "http://localhost:4321/settings/billing?success=1",
+          cancelUrl: "http://localhost:4321/pricing?canceled=1",
+        }),
+      },
+      createTestEnv() as unknown as Record<string, unknown>,
+    );
+
+    expect(response.status).toBe(200);
+    expect(mocks.createCheckoutSession).toHaveBeenCalledWith(
+      expect.objectContaining({
+        successUrl: "http://localhost:4321/settings/billing?success=1",
+        cancelUrl: "http://localhost:4321/pricing?canceled=1",
+      }),
+    );
   });
 });

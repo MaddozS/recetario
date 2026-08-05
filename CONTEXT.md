@@ -2,6 +2,41 @@
 
 Project-specific terminology for the KitchCalc monorepo (Recetario).
 
+## Data layer
+
+**CRUD method**:
+A function in `packages/db` that performs a single persistence operation (get/create/update/delete/upsert/duplicate) against Prisma and returns raw rows or a result object. CRUD methods are the only way `apps/api` and `packages/billing` touch tenant data; they centralize `ownerId` scoping.
+
+_Avoid_: "db helper", "repository" (implies patterns this codebase does not use).
+
+**Data layer boundary**:
+The rule that `packages/db` is pure persistence (no validation, no shaping) and `apps/api` owns validation (Zod) plus response shaping. `apps/api` never imports `prisma`; `packages/auth` keeps the raw client for the Better Auth adapter. See [ADR-0005](./docs/adr/0005-data-layer-boundary.md).
+
+_Avoid_: "ORM layer", "data access layer" (overloaded).
+
+**Raw row**:
+A Prisma result returned unmodified by a CRUD method (Dates as `Date`, camelCase fields). The API maps raw rows into `@recetario/types` DTOs before responding.
+
+_Avoid_: "model", "record" (ambiguous with schema).
+
+## Billing & Stripe
+
+**Stripe domain logic**:
+Code in `packages/stripe` that talks to the Stripe API or owns subscription/plan domain rules: the `stripe` singleton, `listPrices()`, checkout/portal helpers, webhook signature verification, `TIER_CONFIG`, `buildPricingPlans`, feature-gating helpers (`hasFeature`, `isPro`, `isPaid`, `canCreateRecipe`, `canCreateIngredient`, `getRemaining*`), `getDefaultSubscription`, and `UserSubscription`/`PricingPlan` shaping.
+
+**Stripe price sync**:
+The process of reconciling `SubscriptionPlan` rows with Stripe's active prices. `packages/stripe` fetches (`listPrices`) and maps to a minimal `SyncPlanInput`; `packages/db` persists (`syncPlans`) with pure upsert+deactivate. The db package never imports `stripe`; the tier whitelist and `featuresJson` are produced by stripe, not db.
+
+**Plans seed script**:
+`packages/db/prisma/seed-plans.ts` — the one place the db package imports `@recetario/stripe`. It calls `listPrices()` then `syncPlans()` and is run as a command (dev) and in the API deploy workflow (prod), not at runtime. Contrast with `packages/db/prisma/seed.ts` (ingredients/recipes dev seed).
+
+_Avoid_: "plan bootstrap", "runtime plan sync" (runtime auto-seed is removed).
+
+**Plan persistence method**:
+A CRUD method in `packages/db` that reads/writes `Subscription`/`SubscriptionPlan` rows (`getSubscriptionPlans`, `getSubscriptionByUserId`, `upsertSubscriptionPlan`, `upsertSubscription`, `updateSubscription`, `deactivatePlansNotIn`, `getStripeCustomerId`). Pure persistence, no Stripe API.
+
+_Avoid_: "billing method" (the Stripe logic lives in `packages/stripe`).
+
 ## Auth
 
 **Auth callback**:
@@ -65,3 +100,30 @@ _Contrast with_: Runtime secret (previous).
 `scripts/secrets-map.json` — committed declarative mapping of which runtime secrets go to which Cloudflare product (`workers`, `pages`, `both`) and how our canonical environment names (`staging`, `production`) translate to Cloudflare-native names (Workers: `--env development`/`production`, Pages: `--branch dev`/`master`).
 
 _See also_: [ADR-0004](./docs/adr/0004-secrets-propagation-strategy.md).
+
+## Navigation
+
+**Soft navigation**:
+An in-app page change that keeps the app shell mounted and swaps main content after the next page is ready. Distinct from a full browser load.
+
+_Avoid_: "SPA navigation" (implies a client-owned shell we do not have), "page transition" (ambiguous with animation only).
+
+**Navigation pending feedback**:
+The immediate proof that a soft-navigation click registered: a top progress bar plus a generic main-content skeleton, shown with no delay gate. Last click wins if the user picks another target mid-load.
+
+_Avoid_: "loading state" (too generic), "page loader" / "full-page overlay" (reserved for heavier flows).
+
+**Mutation pending feedback**:
+The immediate proof that a save/delete/duplicate (or similar submit) registered. Inline saves keep the form visible with a busy control; redirect-heavy actions may use a blocking overlay.
+
+_Avoid_: "navigation pending feedback" (GET page changes only), "disabled form" (too narrow).
+
+**Navigation soft fail**:
+When a soft navigation fails for a non-auth reason, pending UI clears, the user stays on the current page, and an error is shown.
+
+_Contrast with_: Session-expired redirect (next).
+
+**Session-expired redirect**:
+When a soft navigation (or equivalent request) fails because the session is invalid or expired, the user is sent to sign-in with a visible banner explaining why.
+
+_Avoid_: "soft fail" (stays on page), "silent re-auth".

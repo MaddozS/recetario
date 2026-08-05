@@ -4,17 +4,15 @@ import { env } from "cloudflare:workers";
 import { syncEnvBindings } from "@recetario/config/env";
 import { clientIp, setSecurityHeaders } from "@recetario/config/request";
 import { generateToken, getCsrfCookie } from "@recetario/auth";
-import { resolveSubscription } from "@recetario/billing";
+import { getDefaultSubscription } from "@recetario/stripe";
 import {
   apiFetch,
   ApiError as ApiClientError,
   setApiBinding,
 } from "@/lib/api-client";
 import {
-  credentialStatusResponseSchema,
   sessionResponseSchema,
   type SessionResponse,
-  subscriptionResponseSchema,
 } from "@recetario/types";
 
 const SIGN_IN_PATHS = ["/sign-in/email", "/sign-in/social"];
@@ -44,8 +42,20 @@ function detectSignInEvent(
   ).catch(() => {});
 }
 
+function getRuntimeEnv(): Record<string, unknown> {
+  try {
+    const cfEnv = env as Record<string, unknown>;
+    if (cfEnv && typeof cfEnv === "object") {
+      return cfEnv;
+    }
+  } catch {
+    // ignore
+  }
+  return {};
+}
+
 export const onRequest = defineMiddleware(async (context, next) => {
-  const bindings = env as Record<string, unknown>;
+  const bindings = getRuntimeEnv();
   syncEnvBindings(bindings);
   // ponytail: service binding is not wired to the API worker's wrangler dev
   // process in dev (separate miniflare instances). Skip it and let apiFetch
@@ -54,15 +64,23 @@ export const onRequest = defineMiddleware(async (context, next) => {
     setApiBinding((bindings as { API?: ApiServiceBinding }).API);
   }
 
-  // ── 0. Relay: /api/auth/* must reach the API worker (the web app does
-  //       not own the Better Auth instance). In production we forward via
+  // ── 0. Relay: /api/* must reach the API worker (the web app does
+  //       not own the API worker instance). In production we forward via
   //       the `API` service binding; in dev the Vite proxy in
   //       `astro.config.mjs` handles this before the request ever hits
   //       the middleware.
-  if (context.url.pathname.startsWith("/api/auth/")) {
-    const api = (env as { API?: ApiServiceBinding }).API;
+  if (context.url.pathname.startsWith("/api/")) {
+    const api = (bindings as { API?: ApiServiceBinding }).API;
     if (api) {
-      return api.fetch(context.request);
+      try {
+        return await api.fetch(context.request.clone());
+      } catch (err) {
+        console.error("[/api relay] Service binding fetch failed:", err);
+        return new Response(
+          JSON.stringify({ error: "API service request failed" }),
+          { status: 500, headers: { "content-type": "application/json" } },
+        );
+      }
     }
     return new Response("API service binding not configured", { status: 500 });
   }
@@ -85,26 +103,12 @@ export const onRequest = defineMiddleware(async (context, next) => {
     session = null;
   }
 
-  if (session) {
-    const { user: sessionUser } = session;
+  if (session && session.subscription) {
+    const { user: sessionUser, subscription } = session;
+    const hasPasswordAuth = session.hasPasswordAuth ?? false;
 
-    // ── 2. User: build AppUser from session data + check credential account ───
     const userName =
       sessionUser.name || sessionUser.email?.split("@")[0] || "Usuario";
-
-    let hasPasswordAuth = false;
-    try {
-      const credentialStatus = await apiFetch(
-        "/api/auth/credential-status",
-        { schema: credentialStatusResponseSchema },
-        context,
-      );
-      hasPasswordAuth = credentialStatus.hasPasswordAuth;
-    } catch (err) {
-      if (!(err instanceof ApiClientError) || err.status !== 401) {
-        console.error("[/api/auth/credential-status] error:", err);
-      }
-    }
 
     const appUser: AppUser = {
       id: sessionUser.id,
@@ -119,25 +123,47 @@ export const onRequest = defineMiddleware(async (context, next) => {
 
     context.locals.user = appUser;
     context.locals.session = { user: appUser };
+    context.locals.subscription = subscription;
 
-    // ── 3. Audit: log sign-in events ──────────────────────────────────────────
+    // ── 3. Preferences: populate locals & sync cookies ─────────────────────────
+    const prefsTheme = (session.preferences?.theme ??
+      context.cookies.get("kitchcalc-theme")?.value ??
+      "system") as "system" | "light" | "dark";
+    const prefsAccent = (session.preferences?.accentColor ??
+      context.cookies.get("kitchcalc-accent")?.value ??
+      "coral") as
+      | "indigo"
+      | "violet"
+      | "blue"
+      | "emerald"
+      | "rose"
+      | "amber"
+      | "coral";
+
+    const userPrefs = {
+      userId: sessionUser.id,
+      theme: prefsTheme,
+      accentColor: prefsAccent,
+    };
+    context.locals.preferences = userPrefs;
+
+    context.cookies.set("kitchcalc-theme", userPrefs.theme, {
+      path: "/",
+      sameSite: "lax",
+      httpOnly: false,
+      maxAge: 31536000,
+    });
+    context.cookies.set("kitchcalc-accent", userPrefs.accentColor, {
+      path: "/",
+      sameSite: "lax",
+      httpOnly: false,
+      maxAge: 31536000,
+    });
+
+    // ── 4. Audit: log sign-in events ──────────────────────────────────────────
     detectSignInEvent(context.url.pathname, sessionUser.id, context);
 
-    // ── 4. Billing: resolve subscription with cache ──────────────────────
-    try {
-      const sub = await apiFetch(
-        "/api/billing/subscription",
-        { schema: subscriptionResponseSchema },
-        context,
-      );
-      context.locals.subscription = sub;
-    } catch (err) {
-      if (!(err instanceof ApiClientError) || err.code !== "NOT_FOUND")
-        throw err;
-      context.locals.subscription = resolveSubscription(null);
-    }
-
-    // ── 5. CSRF: get-or-create per-session token ─────────────────────────────
+    // ── 6. CSRF: get-or-create per-session token ─────────────────────────────
     const existingToken = context.cookies.get(getCsrfCookie())?.value;
     const csrfToken = existingToken ?? generateToken();
     context.locals.csrfToken = csrfToken;
@@ -152,11 +178,16 @@ export const onRequest = defineMiddleware(async (context, next) => {
     // ── Unauthenticated: set all locals to null / defaults ──────────────────
     context.locals.user = null;
     context.locals.session = null;
-    context.locals.subscription = resolveSubscription(null);
+    context.locals.preferences = {
+      userId: "",
+      theme: (context.cookies.get("kitchcalc-theme")?.value as "system" | "light" | "dark") ?? "system",
+      accentColor: (context.cookies.get("kitchcalc-accent")?.value as "coral") ?? "coral",
+    };
+    context.locals.subscription = getDefaultSubscription();
     context.locals.csrfToken = null;
   }
 
-  // ── 6. Response: apply security headers to every response ───────────────────
+  // ── 7. Response: apply security headers to every response ───────────────────
   const response = await next();
   setSecurityHeaders(response);
   return response;

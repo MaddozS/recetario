@@ -1,29 +1,32 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { Hono } from "hono";
-import { envelope } from "../envelope.js";
-import { errorHandler } from "../error-handler.js";
+import { envelope } from "../envelope";
+import { errorHandler } from "../error-handler";
 
-const { mockGetSession, mockAuth, mockGetRecipeById, mockUpdateRecipe } = vi.hoisted(() => {
+const { mockGetSession, mockAuth, mockGetRecipe, mockUpdateRecipe } = vi.hoisted(() => {
   const mockGetSession = vi.fn();
   const mockAuth = { api: { getSession: (...args: unknown[]) => mockGetSession(...args) } };
-  const mockGetRecipeById = vi.fn();
+  const mockGetRecipe = vi.fn();
   const mockUpdateRecipe = vi.fn();
-  return { mockGetSession, mockAuth, mockGetRecipeById, mockUpdateRecipe };
+  return { mockGetSession, mockAuth, mockGetRecipe, mockUpdateRecipe };
 });
 
 vi.mock("@recetario/auth/server", () => ({
-  createAuth: () => mockAuth,
+  auth: mockAuth,
 }));
 
 vi.mock("@recetario/db", () => ({
-  createPrismaClient: () => ({}),
-  getRecipeById: (id: number, ownerId: string, _db: unknown) =>
-    mockGetRecipeById(id, ownerId),
-  updateRecipe: (id: number, input: unknown, ownerId: string, db: unknown) =>
-    mockUpdateRecipe(id, input, ownerId, db),
+  getRecipe: (id: number, ownerId: string) => mockGetRecipe(id, ownerId),
+  updateRecipe: (
+    id: number,
+    input: unknown,
+    ownerId: string,
+    ingredients: unknown,
+    recipeFixedCosts?: unknown,
+  ) => mockUpdateRecipe(id, input, ownerId, ingredients, recipeFixedCosts),
 }));
 
-const { recipesUpdateHandler } = await import("./update.js");
+const { recipesUpdateHandler } = await import("./update");
 
 const sessionFixture = {
   user: { id: "user-1", email: "ada@example.com" },
@@ -38,10 +41,25 @@ function buildApp() {
   return app;
 }
 
+function recipeFixture(id: number) {
+  return {
+    id,
+    name: "Tarta",
+    category: null,
+    instructions: null,
+    desiredMargin: 30,
+    fixedCostsPercentage: 10,
+    updatedAt: new Date("2026-01-01T00:00:00Z"),
+    recipeIngredients: [],
+    presentations: [],
+    recipeFixedCosts: [],
+  };
+}
+
 describe("recipesUpdateHandler", () => {
   beforeEach(() => {
     mockGetSession.mockReset();
-    mockGetRecipeById.mockReset();
+    mockGetRecipe.mockReset();
     mockUpdateRecipe.mockReset();
   });
 
@@ -53,15 +71,9 @@ describe("recipesUpdateHandler", () => {
 
   it("updates a recipe and returns the new detail", async () => {
     mockGetSession.mockResolvedValueOnce(sessionFixture);
-    mockGetRecipeById.mockResolvedValueOnce({ id: 1 });
+    mockGetRecipe.mockResolvedValueOnce(recipeFixture(1));
     mockUpdateRecipe.mockResolvedValueOnce(undefined);
-    mockGetRecipeById.mockResolvedValueOnce({
-      id: 1,
-      name: "Tarta v2",
-      ingredients: [],
-      presentations: [],
-      recipeFixedCosts: [],
-    });
+    mockGetRecipe.mockResolvedValueOnce(recipeFixture(1));
 
     const res = await buildApp().request("/api/recipes/1", {
       method: "PATCH",
@@ -75,28 +87,25 @@ describe("recipesUpdateHandler", () => {
     });
     expect(res.status).toBe(200);
     const body = (await res.json()) as { name: string };
-    expect(body.name).toBe("Tarta v2");
+    expect(body.name).toBe("Tarta");
     expect(mockUpdateRecipe).toHaveBeenCalledWith(
       1,
       {
         name: "Tarta v2",
+        category: null,
+        instructions: null,
         desiredMargin: 30,
         fixedCostsPercentage: 10,
-        ingredients: [
-          { ingredientId: 1, quantity: 200, unit: "g", comment: null },
-        ],
-        category: undefined,
-        instructions: undefined,
-        recipeFixedCosts: undefined,
       },
       "user-1",
-      expect.anything(),
+      [{ ingredientId: 1, quantity: 200, unit: "g", comment: null }],
+      undefined,
     );
   });
 
   it("returns 404 when the recipe does not belong to the user", async () => {
     mockGetSession.mockResolvedValueOnce(sessionFixture);
-    mockGetRecipeById.mockResolvedValueOnce(null);
+    mockGetRecipe.mockResolvedValueOnce(null);
 
     const res = await buildApp().request("/api/recipes/42", {
       method: "PATCH",

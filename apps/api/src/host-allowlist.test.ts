@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { Hono } from "hono";
-import { hostAllowlist } from "./host-allowlist.js";
-import { envelope } from "./envelope.js";
-import { errorHandler } from "./error-handler.js";
+import { hostAllowlist } from "./host-allowlist";
+import { envelope } from "./envelope";
+import { errorHandler } from "./error-handler";
 
 function makeEnv(overrides: Record<string, string | undefined> = {}): Record<string, unknown> {
   return { INTERNAL_API_HOST: "api.recetario.app", ...overrides };

@@ -66,7 +66,7 @@ T1–T4 are independent and can run in parallel. T6, T7, T8 are independent of e
 - API test: see `apps/api/src/recipes/fixed-costs.test.ts` for the canonical Vitest pattern (Hono `app.get/post/etc`, no real DB, mock the session).
 - Web apiFetch: see `apps/web/src/lib/api-client.ts`. Callers pass `Astro.request` so cookies/CSRF are forwarded. Errors throw `ApiError` with `code`, `status`, `message`.
 - The existing `audit.ts` (`packages/db/src/audit.ts`) uses `db.auditLog.create({ data: { userId, action, ipAddress, userAgent } })`. The action enum is `AuditAction` in the generated Prisma client; current callers use `"sign_in"`. Schema: `auditLog` model in `packages/db/prisma/schema.prisma`.
-- For `getPricingPlans` post-processing (TIER_CONFIG + formatCurrency): see `packages/billing/src/billing.ts:149-231`. The DB fetch is a 5-line findMany; the rest is pure formatting.
+- For `getPricingPlans` post-processing (TIER_CONFIG + formatCurrency): see `packages/stripe/src/billing.ts:149-231`. The DB fetch is a 5-line findMany; the rest is pure formatting.
 
 ---
 
@@ -590,14 +590,14 @@ git commit -m "#85: migrate web middleware to API (audit + credential-status)"
 ## Task 6: Migrate `getPricingPlans` call sites (4 pages)
 
 **Files:**
-- Modify: `packages/billing/src/billing.ts` (split fetch from post-processing)
-- Modify: `packages/billing/src/index.ts` (export the new helper)
+- Modify: `packages/stripe/src/billing.ts` (split fetch from post-processing)
+- Modify: `packages/stripe/src/index.ts` (export the new helper)
 - Modify: `apps/web/src/pages/index.astro`
 - Modify: `apps/web/src/pages/pricing.astro`
 - Modify: `apps/web/src/pages/settings.astro`
 - Modify: `apps/web/src/pages/settings/billing.astro`
 
-- [ ] **Step 1: Split `getPricingPlans` into a pure post-processor** in `packages/billing/src/billing.ts`. Replace the existing function with two functions:
+- [ ] **Step 1: Split `getPricingPlans` into a pure post-processor** in `packages/stripe/src/billing.ts`. Replace the existing function with two functions:
 
 ```ts
 import type { Plan } from "@recetario/types";
@@ -629,26 +629,26 @@ export function buildPricingPlans(rawPlans: Plan[]): PricingPlan[] {
 
 `getPricingPlans(db)` keeps the existing body but calls `buildPricingPlans(plans)` instead of inlining the loop. The `db` arg is preserved (used internally for the findMany + seed fallback) so the API can still call it if needed.
 
-- [ ] **Step 2: Export `buildPricingPlans`** from `packages/billing/src/index.ts`:
+- [ ] **Step 2: Export `buildPricingPlans`** from `packages/stripe/src/index.ts`:
 
 ```ts
 export { buildPricingPlans, getPricingPlans /* ... */ } from "./billing.js";
 ```
 
-- [ ] **Step 3: Run `pnpm --filter @recetario/billing build && pnpm --filter @recetario/types build && pnpm --filter @recetario/api test`**. Expected: build OK, existing API tests still pass (`getPricingPlans` API contract unchanged).
+- [ ] **Step 3: Run `pnpm --filter @recetario/stripe build && pnpm --filter @recetario/types build && pnpm --filter @recetario/api test`**. Expected: build OK, existing API tests still pass (`getPricingPlans` API contract unchanged).
 
 - [ ] **Step 4: Migrate `apps/web/src/pages/index.astro`** (lines 10, 13):
 
 Before:
 ```ts
-import { getPricingPlans } from "@recetario/billing";
+import { getPricingPlans } from "@recetario/stripe";
 // ...
 const plans = await getPricingPlans();
 ```
 
 After:
 ```ts
-import { buildPricingPlans } from "@recetario/billing";
+import { buildPricingPlans } from "@recetario/stripe";
 import { apiFetch } from "@/lib/api-client";
 import { planSchema } from "@recetario/types";
 import { z } from "zod";
@@ -672,7 +672,7 @@ const plans = buildPricingPlans(rawPlans);
 - [ ] **Step 8: Commit**
 
 ```bash
-git add packages/billing packages/web/src/pages/index.astro apps/web/src/pages/pricing.astro apps/web/src/pages/settings.astro apps/web/src/pages/settings/billing.astro
+git add packages/stripe packages/web/src/pages/index.astro apps/web/src/pages/pricing.astro apps/web/src/pages/settings.astro apps/web/src/pages/settings/billing.astro
 git commit -m "#86: route getPricingPlans through /api/billing/plans in web"
 ```
 

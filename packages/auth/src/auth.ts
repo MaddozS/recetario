@@ -1,26 +1,23 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
-import type { PrismaClient } from "@recetario/db";
-import { createPrismaClient } from "@recetario/db";
-import { sendEmail } from "./email.js";
+import { prisma } from "@recetario/db";
+import { sendEmail } from "./email";
 import { createAuthMiddleware, APIError } from "better-auth/api";
-import { validatePassword } from "./password-validation.js";
-import { lazyInit } from "@recetario/config/lazy";
+import { validatePassword } from "./password-validation";
 import {
   createPasswordResetToken,
   getResetPasswordEmailHtml,
-} from "./password-reset.js";
-import { createResetPasswordCallback } from "./reset-password-callback.js";
-import { createVerificationEmailCallback } from "./verification-email-callback.js";
+} from "./password-reset";
+import { createResetPasswordCallback } from "./reset-password-callback";
+import { createVerificationEmailCallback } from "./verification-email-callback";
 
 // ponytail: WEB_ORIGIN defaults to localhost:4321 (dev) so trustedOrigins
 // and errorURL don't need to be hardcoded. In prod, set
 // WEB_ORIGIN=https://app.kitchcalc.com in apps/api env.
-const WEB_ORIGIN = process.env.WEB_ORIGIN ?? "http://localhost:4321";
-const API_ORIGIN = process.env.BETTER_AUTH_URL ?? "http://localhost:8787";
+export function createAuth(): any {
+  const webOrigin = process.env.WEB_ORIGIN ?? "http://localhost:4321";
+  const apiOrigin = process.env.BETTER_AUTH_URL ?? "http://localhost:8787";
 
-// ponytail: any type to bypass generic mismatch with inferred config
-export function createAuth(prisma: PrismaClient): any {
   const googleClientId = process.env.GOOGLE_CLIENT_ID;
   if (!googleClientId) {
     throw new Error("GOOGLE_CLIENT_ID environment variable is not set");
@@ -31,6 +28,7 @@ export function createAuth(prisma: PrismaClient): any {
   }
 
   return betterAuth({
+    baseURL: webOrigin,
     database: prismaAdapter(prisma, {
       provider: "postgresql",
     }),
@@ -44,7 +42,6 @@ export function createAuth(prisma: PrismaClient): any {
       enabled: true,
       requireEmailVerification: true,
       sendResetPassword: createResetPasswordCallback(
-          prisma,
           sendEmail,
           createPasswordResetToken,
           getResetPasswordEmailHtml,
@@ -54,7 +51,7 @@ export function createAuth(prisma: PrismaClient): any {
       sendVerificationEmail: createVerificationEmailCallback(sendEmail),
       sendOnSignUp: true,
       sendOnSignIn: true,
-      expiresIn: 3600,
+      expiresIn: 86400,
     },
     socialProviders: {
       google: {
@@ -81,7 +78,17 @@ export function createAuth(prisma: PrismaClient): any {
       }),
     },
     onAPIError: {
-      errorURL: `${WEB_ORIGIN}/sign-in`,
+      onError(error: unknown) {
+        const err = error as Record<string, unknown> | null | undefined;
+        console.error("[Better Auth Error Details]", {
+          name: err?.name,
+          message: err?.message,
+          code: err?.code,
+          meta: err?.meta,
+          stack: err?.stack,
+        });
+      },
+      errorURL: `${webOrigin}/sign-in`,
     },
     session: {
       cookieCache: {
@@ -91,15 +98,27 @@ export function createAuth(prisma: PrismaClient): any {
     },
     // ponytail: both dev origins (API + web). For prod, set
     // BETTER_AUTH_URL and WEB_ORIGIN to the prod API and web URLs.
-    trustedOrigins: [API_ORIGIN, WEB_ORIGIN],
+    trustedOrigins: [apiOrigin, webOrigin],
   });
 }
 
-// ponytail: backward-compat singleton — used by the rest of apps/api
-// (recipes, preferences, etc.) where a fresh pool per request isn't
-// worth the latency. The /api/auth/* handler in apps/api uses
-// createAuth(createPrismaClient()) per request to dodge the pg.Pool
-// wedge documented in memory #63.
-export const auth = lazyInit("auth", () =>
-  createAuth(createPrismaClient()),
-) as ReturnType<typeof betterAuth>;
+let authInstance: any = null;
+
+export function getAuth(): any {
+  if (!authInstance) {
+    authInstance = createAuth();
+  }
+  return authInstance;
+}
+
+export const auth = new Proxy({} as any, {
+  get(_target, prop) {
+    const instance = getAuth();
+    const value = Reflect.get(instance, prop);
+    if (typeof value === "function") {
+      return value.bind(instance);
+    }
+    return value;
+  },
+});
+

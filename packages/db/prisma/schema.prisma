@@ -4,15 +4,15 @@ datasource db {
 
 generator client {
   provider = "prisma-client"
-  output   = "../generated/prisma"
-  runtime  = "workerd"
+  output   = "./generated"
+  runtime  = "cloudflare"
 }
 
-generator apiClient {
+generator nodeClient {
   provider = "prisma-client"
-  output   = "../../../apps/api/generated/prisma"
-  runtime  = "workerd"
+  output   = "./generated-node"
 }
+
 
 model Ingredient {
   id               Int                 @id @default(autoincrement())
@@ -110,10 +110,25 @@ model PresentationFixedCost {
   @@map("presentation_fixed_costs")
 }
 
+enum Theme {
+  system
+  light
+  dark
+}
+enum AccentColor {
+  indigo
+  violet
+  blue
+  emerald
+  rose
+  amber
+  coral
+}
+
 model UserPreferences {
   userId      String    @id @map("user_id")
-  theme       String
-  accentColor String    @map("accent_color")
+  theme       Theme
+  accentColor AccentColor    @map("accent_color")
   updatedAt   DateTime? @map("updated_at") @db.Timestamptz()
 
   @@map("user_preferences")
@@ -194,7 +209,7 @@ model Account {
 }
 
 model Verification {
-  id         String   @id
+  id         String   @id @default(uuid())
   identifier String
   value      String
   expiresAt  DateTime @map("expires_at")
@@ -220,17 +235,6 @@ model Subscription {
 
   @@index([userId, status])
   @@map("subscriptions")
-}
-
-model RateLimitEntry {
-  id        String   @id @default(uuid())
-  key       String   @unique
-  count     Int      @default(0)
-  resetAt   BigInt   @map("reset_at")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  @@map("rate_limit_entries")
 }
 
 model CacheEntry {

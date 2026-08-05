@@ -1,37 +1,39 @@
-import { PrismaClient } from "../generated/prisma/client.js";
-import { PrismaPg } from "@prisma/adapter-pg";
-import pg from "pg";
-import { lazyInit } from "@recetario/config/lazy";
+import { PrismaClient } from "../prisma/generated/client";
+import { withAccelerate } from "@prisma/extension-accelerate";
 
-export type { PrismaClient };
+let prismaInstance: ReturnType<typeof createPrismaClientInternal> | null = null;
 
-// ponytail: lazy init — avoids crashing at import time when DATABASE_URL
-// isn't in process.env yet (Vite SSR doesn't load .env into process.env).
-// pg.Pool works on Cloudflare Pages because wrangler.jsonc enables
-// nodejs_compat (which provides net, tls, dns — what pg needs).
-function initPrisma(): PrismaClient {
-  const client = createPrismaClient();
-  if (process.env.NODE_ENV !== "production") {
-    (globalThis as unknown as { prisma: PrismaClient }).prisma = client;
-  }
-  return client;
-}
-
-export function createPrismaClient(): PrismaClient {
-  const connectionString = process.env.DATABASE_URL;
-  if (!connectionString) {
+function createPrismaClientInternal() {
+  const accelerateUrl = process.env.DATABASE_URL;
+  if (!accelerateUrl) {
     throw new Error("DATABASE_URL environment variable is not set");
   }
 
-  const pool = new pg.Pool({
-    connectionString,
-    max: 3,
-    idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 10000,
-  });
-
-  const adapter = new PrismaPg(pool);
-  return new PrismaClient({ adapter });
+  return new PrismaClient({
+    accelerateUrl,
+    log: [{ emit: "event", level: "query" }],
+  }).$extends(withAccelerate());
 }
 
-export const prisma = lazyInit("prisma", initPrisma);
+export function createPrismaClient() {
+  return createPrismaClientInternal();
+}
+
+export function getPrisma() {
+  if (!prismaInstance) {
+    prismaInstance = createPrismaClientInternal();
+  }
+  return prismaInstance;
+}
+
+export const prisma = new Proxy({} as ReturnType<typeof createPrismaClientInternal>, {
+  get(_target, prop) {
+    const instance = getPrisma();
+    const value = Reflect.get(instance, prop);
+    if (typeof value === "function") {
+      return value.bind(instance);
+    }
+    return value;
+  },
+});
+

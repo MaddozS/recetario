@@ -13,28 +13,25 @@
     "lint": "eslint .",
     "type-check": "astro check",
     "test": "vitest run",
-    "postinstall": "$npm_execpath --filter @recetario/db exec prisma generate",
     "cloudflare-build": "$npm_execpath --filter @recetario/db exec prisma generate && $npm_execpath --filter @recetario/db exec prisma migrate deploy && astro build"
   },
   "dependencies": {
-    "@astrojs/cloudflare": "14.1.5",
-    "@iconify-json/lucide": "1.2.107",
+    "@astrojs/cloudflare": "14.1.7",
+    "@lucide/astro": "^1.28.0",
     "@recetario/auth": "workspace:^",
-    "@recetario/billing": "workspace:^",
     "@recetario/config": "workspace:^",
+    "@recetario/stripe": "workspace:^",
     "@recetario/types": "workspace:^",
-    "@recetario/ui": "workspace:^",
     "@tailwindcss/vite": "4.3.0",
-    "astro": "7.1.4",
-    "astro-icon": "1.1.5",
+    "astro": "7.1.6",
     "dotenv": "17.4.2",
     "tailwindcss": "4.3.0",
     "zod": "3.25.76"
   },
   "devDependencies": {
-    "@astrojs/check": "0.9.9",
-    "@astrojs/node": "^11.0.2",
-    "@astrojs/ts-plugin": "^1.10.10",
+    "@astrojs/check": "0.9.10",
+    "@astrojs/node": "11.0.2",
+    "@astrojs/ts-plugin": "1.10.10",
     "@eslint/js": "10.0.1",
     "@playwright/test": "^1.60.0",
     "@types/node": "25.8.0",
@@ -46,8 +43,9 @@
     "prettier": "3.8.3",
     "prettier-plugin-astro": "0.14.1",
     "prettier-plugin-tailwindcss": "^0.8.0",
-    "typescript": "6.0.3",
+    "typescript": "6.0.2",
     "typescript-eslint": "8.59.3",
-    "vitest": "^3.0.0"
+    "vitest": "^3.0.0",
+    "wrangler": "4.118.0"
   }
 }

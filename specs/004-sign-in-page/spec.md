@@ -79,7 +79,7 @@ Usuario que ya tiene sesión iniciada no puede acceder a la página de inicio de
 - Usuario cierra el popup de Google OAuth sin completar: el botón se re-habilita y puede reintentar.
 - Usuario con cuenta no verificada solicita reenvío de verificación: se muestra feedback de éxito o error del reenvío.
 - Conexión de red interrumpida durante el inicio de sesión: se muestra mensaje de error genérico.
-- Usuario intenta fuerza bruta: la capa de rate limiting del backend (ya existente) limita intentos repetidos.
+- Usuario intenta fuerza bruta: la protección contra abuso de autenticación queda diferida hasta diseñar un rate limiter backend adecuado.
 - Parámetro `redirect` con URL externa o maliciosa: el sistema ignora el parámetro y redirige a `/recipes` por seguridad.
 
 ## Requirements _(mandatory)_
@@ -127,7 +127,7 @@ Usuario que ya tiene sesión iniciada no puede acceder a la página de inicio de
 ## Assumptions
 
 - El sistema de autenticación Better Auth ya está configurado y funcionando con proveedor Google OAuth.
-- El rate limiting de intentos de inicio de sesión ya existe a nivel de backend (implementado en `src/lib/sign-in.ts`).
+- La protección contra fuerza bruta de inicio de sesión se implementará en una futura iteración de infraestructura backend.
 - La página de recuperación de contraseña (`/forgot-password`) y la página de registro (`/sign-up`) ya existen o se implementarán en specs separadas.
 - La configuración de Google OAuth en Better Auth permite distinguir entre cuentas nuevas y existentes (o se puede configurar para rechazar creación de nuevas cuentas).
 - El middleware ya verifica sesiones activas y redirige apropiadamente (definido en `src/middleware.ts`).

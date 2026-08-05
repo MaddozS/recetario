@@ -1,4 +1,4 @@
-export { auth, createAuth } from "./auth.js";
+export { auth, createAuth } from "./auth";
 export {
   generateToken,
   getCsrfCookie,
@@ -6,15 +6,14 @@ export {
   getCsrfFormField,
   setCsrfCookieHeader,
   validateCsrf,
-} from "./csrf.js";
-export { rateLimitCheck } from "./rate-limiter.js";
+} from "./csrf";
 export {
   validatePassword,
   getRuleResults,
   PASSWORD_RULES,
   PASSWORD_REGEX,
-} from "./password-validation.js";
-export type { PasswordRule, RuleResult } from "./password-validation.js";
+} from "./password-validation";
+export type { PasswordRule, RuleResult } from "./password-validation";
 export {
   getResetPasswordEmailHtml,
   createPasswordResetToken,
@@ -22,18 +21,23 @@ export {
   markTokenAsUsed,
   getRemainingSeconds,
   formatTime,
-} from "./password-reset.js";
+} from "./password-reset";
 export type {
   ResetPasswordTemplateData,
   TokenValidationResult,
-} from "./password-reset.js";
-export { sendEmail } from "./email.js";
-export type { EmailPayload } from "./email.js";
-export type { SendEmailFn } from "./email.js";
+} from "./password-reset";
+export { sendEmail } from "./email";
+export type { EmailPayload } from "./email";
+export type { SendEmailFn } from "./email";
 export {
   createResetPasswordCallback,
-} from "./reset-password-callback.js";
-export { hashPassword } from "./hash-password.js";
+} from "./reset-password-callback";
+export { hashPassword } from "./hash-password";
 export {
   createVerificationEmailCallback,
-} from "./verification-email-callback.js";
+  getVerificationEmailHtml,
+} from "./verification-email-callback";
+export type {
+  VerificationEmailTemplateData,
+} from "./verification-email-callback";
+

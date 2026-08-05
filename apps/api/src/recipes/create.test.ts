@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { Hono } from "hono";
-import { envelope } from "../envelope.js";
-import { errorHandler } from "../error-handler.js";
+import { envelope } from "../envelope";
+import { errorHandler } from "../error-handler";
 
 const { mockGetSession, mockAuth, mockCreateRecipe } = vi.hoisted(() => {
   const mockGetSession = vi.fn();
@@ -11,16 +11,15 @@ const { mockGetSession, mockAuth, mockCreateRecipe } = vi.hoisted(() => {
 });
 
 vi.mock("@recetario/auth/server", () => ({
-  createAuth: () => mockAuth,
+  auth: mockAuth,
 }));
 
 vi.mock("@recetario/db", () => ({
-  createPrismaClient: () => ({}),
-  createRecipe: (ownerId: string, input: unknown, db: unknown) =>
-    mockCreateRecipe(ownerId, input, db),
+  createRecipe: (ownerId: string, input: unknown, ...rest: unknown[]) =>
+    mockCreateRecipe(ownerId, input, ...rest),
 }));
 
-const { recipesCreateHandler } = await import("./create.js");
+const { recipesCreateHandler } = await import("./create");
 
 const sessionFixture = {
   user: { id: "user-1", email: "ada@example.com" },
@@ -33,6 +32,21 @@ function buildApp() {
   app.use("*", envelope());
   app.post("/api/recipes", recipesCreateHandler());
   return app;
+}
+
+function recipeFixture(id: number) {
+  return {
+    id,
+    name: "Tarta",
+    category: null,
+    instructions: null,
+    desiredMargin: 30,
+    fixedCostsPercentage: 10,
+    updatedAt: new Date("2026-01-01T00:00:00Z"),
+    recipeIngredients: [],
+    presentations: [],
+    recipeFixedCosts: [],
+  };
 }
 
 describe("recipesCreateHandler", () => {
@@ -50,7 +64,7 @@ describe("recipesCreateHandler", () => {
 
   it("creates a recipe with the given name and scopes to the user", async () => {
     mockGetSession.mockResolvedValueOnce(sessionFixture);
-    mockCreateRecipe.mockResolvedValueOnce({ id: 99, name: "Tarta" });
+    mockCreateRecipe.mockResolvedValueOnce(recipeFixture(99));
 
     const res = await buildApp().request("/api/recipes", {
       method: "POST",
@@ -60,7 +74,17 @@ describe("recipesCreateHandler", () => {
     expect(res.status).toBe(201);
     const body = (await res.json()) as { id: number; name: string };
     expect(body.id).toBe(99);
-    expect(mockCreateRecipe).toHaveBeenCalledWith("user-1", { name: "Tarta" }, expect.anything());
+    expect(mockCreateRecipe).toHaveBeenCalledWith(
+      "user-1",
+      {
+        name: "Tarta",
+        category: null,
+        desiredMargin: 0,
+        fixedCostsPercentage: 0,
+      },
+      undefined,
+      undefined,
+    );
   });
 
   it("returns 400 on invalid input", async () => {
@@ -77,7 +101,7 @@ describe("recipesCreateHandler", () => {
 
   it("accepts an empty body and creates a default recipe", async () => {
     mockGetSession.mockResolvedValueOnce(sessionFixture);
-    mockCreateRecipe.mockResolvedValueOnce({ id: 1, name: "Nueva Receta" });
+    mockCreateRecipe.mockResolvedValueOnce(recipeFixture(1));
 
     const res = await buildApp().request("/api/recipes", {
       method: "POST",
@@ -85,6 +109,16 @@ describe("recipesCreateHandler", () => {
       body: JSON.stringify({}),
     });
     expect(res.status).toBe(201);
-    expect(mockCreateRecipe).toHaveBeenCalledWith("user-1", {}, expect.anything());
+    expect(mockCreateRecipe).toHaveBeenCalledWith(
+      "user-1",
+      {
+        name: "Nueva Receta",
+        category: null,
+        desiredMargin: 0,
+        fixedCostsPercentage: 0,
+      },
+      undefined,
+      undefined,
+    );
   });
 });

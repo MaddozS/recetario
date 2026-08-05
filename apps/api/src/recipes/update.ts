@@ -1,53 +1,71 @@
 import type { Handler } from "hono";
-import { getRecipeById, updateRecipe } from "@recetario/db";
+import { getRecipe, updateRecipe } from "@recetario/db";
+import { auth } from "@recetario/auth/server";
 import { recipeUpdateSchema } from "@recetario/types";
-import { ApiError } from "../errors.js";
-import { withFreshDb } from "../fresh-db.js";
+import { ApiError } from "../errors";
 
 export function recipesUpdateHandler(): Handler {
-  return async (c) =>
-    withFreshDb(c, async (prisma, auth) => {
-      const session = await auth.api.getSession({ headers: c.req.raw.headers });
-      if (!session?.user) {
-        throw new ApiError("UNAUTHENTICATED", "Authentication required");
-      }
+  return async (c) => {
+    const session = await auth.api.getSession({ headers: c.req.raw.headers });
+    if (!session?.user) {
+      throw new ApiError("UNAUTHENTICATED", "Authentication required");
+    }
 
-      const idParam = c.req.param("id");
-      const id = Number(idParam);
-      if (!Number.isFinite(id)) {
-        throw new ApiError("NOT_FOUND", "Recipe not found");
-      }
+    const idParam = c.req.param("id");
+    const id = Number(idParam);
+    if (!Number.isFinite(id)) {
+      throw new ApiError("NOT_FOUND", "Recipe not found");
+    }
 
-      let body: unknown;
-      try {
-        body = await c.req.json();
-      } catch {
-        throw new ApiError("VALIDATION_ERROR", "Invalid JSON body");
-      }
+    let body: unknown;
+    try {
+      body = await c.req.json();
+    } catch {
+      throw new ApiError("VALIDATION_ERROR", "Invalid JSON body");
+    }
 
-      const parsed = recipeUpdateSchema.safeParse(body);
-      if (!parsed.success) {
-        throw new ApiError("VALIDATION_ERROR", "Invalid recipe input");
-      }
+    const parsed = recipeUpdateSchema.safeParse(body);
+    if (!parsed.success) {
+      throw new ApiError("VALIDATION_ERROR", "Invalid recipe input");
+    }
 
-      const existing = await getRecipeById(id, session.user.id, prisma);
-      if (!existing) {
-        throw new ApiError("NOT_FOUND", "Recipe not found");
-      }
+    const existing = await getRecipe(id, session.user.id);
+    if (!existing) {
+      throw new ApiError("NOT_FOUND", "Recipe not found");
+    }
 
-      const updateInput = {
-        ...parsed.data,
-        ingredients: parsed.data.ingredients.map((ing) => ({
-          ingredientId: ing.ingredientId,
-          quantity: ing.quantity,
-          unit: ing.unit,
-          comment: ing.comment ?? null,
-        })),
-      };
+    const updateInput = {
+      name: parsed.data.name,
+      category: parsed.data.category ?? null,
+      instructions: parsed.data.instructions ?? null,
+      desiredMargin: parsed.data.desiredMargin,
+      fixedCostsPercentage: parsed.data.fixedCostsPercentage,
+    };
 
-      await updateRecipe(id, updateInput, session.user.id, prisma);
+    const ingredients = parsed.data.ingredients.map((ing) => ({
+      ingredientId: ing.ingredientId,
+      quantity: ing.quantity,
+      unit: ing.unit,
+      comment: ing.comment ?? null,
+    }));
 
-      const updated = await getRecipeById(id, session.user.id, prisma);
-      return c.json(updated);
-    });
+    const recipeFixedCosts = parsed.data.recipeFixedCosts?.map((fc) => ({
+      name: fc.name ?? "Costo Fijo",
+      type: fc.type,
+      base: fc.base,
+      value: fc.value,
+      hours: fc.hours ?? null,
+    }));
+
+    await updateRecipe(
+      id,
+      updateInput,
+      session.user.id,
+      ingredients,
+      recipeFixedCosts,
+    );
+
+    const updated = await getRecipe(id, session.user.id);
+    return c.json(updated);
+  };
 }
