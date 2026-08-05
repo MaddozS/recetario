@@ -73,7 +73,7 @@ describe("stripeCheckoutHandler", () => {
       {},
     );
     expect(res.status).toBe(403);
-    const data = await res.json();
+    const data = (await res.json()) as any;
     expect(data.error).toBe("CSRF validation failed");
   });
 
@@ -88,7 +88,7 @@ describe("stripeCheckoutHandler", () => {
       {},
     );
     expect(res.status).toBe(400);
-    const data = await res.json();
+    const data = (await res.json()) as any;
     expect(data.error).toBe("Invalid request body");
   });
 
@@ -103,7 +103,7 @@ describe("stripeCheckoutHandler", () => {
       {},
     );
     expect(res.status).toBe(400);
-    const data = await res.json();
+    const data = (await res.json()) as any;
     expect(data.error).toBe("Missing priceId");
   });
 
@@ -120,7 +120,7 @@ describe("stripeCheckoutHandler", () => {
       {},
     );
     expect(res.status).toBe(400);
-    const data = await res.json();
+    const data = (await res.json()) as any;
     expect(data.error).toBe("Invalid price ID");
   });
 

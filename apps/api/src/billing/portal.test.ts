@@ -59,7 +59,7 @@ describe("stripePortalHandler", () => {
       {},
     );
     expect(res.status).toBe(403);
-    const data = await res.json();
+    const data = (await res.json()) as any;
     expect(data.error).toBe("CSRF validation failed");
   });
 
@@ -71,7 +71,7 @@ describe("stripePortalHandler", () => {
       {},
     );
     expect(res.status).toBe(404);
-    const data = await res.json();
+    const data = (await res.json()) as any;
     expect(data.error).toBe("No subscription found");
   });
 

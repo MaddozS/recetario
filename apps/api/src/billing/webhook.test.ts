@@ -58,7 +58,7 @@ describe("stripeWebhookHandler", () => {
       {},
     );
     expect(res.status).toBe(400);
-    const body = await res.json();
+    const body = (await res.json()) as any;
     expect(body.error.code).toBe("VALIDATION_ERROR");
   });
 
@@ -77,7 +77,7 @@ describe("stripeWebhookHandler", () => {
       {},
     );
     expect(res.status).toBe(400);
-    const body = await res.json();
+    const body = (await res.json()) as any;
     expect(body.error.code).toBe("VALIDATION_ERROR");
   });
 
