@@ -3,7 +3,7 @@ import Layout from "@/layouts/Layout.astro";
 import { ACCENT_FAMILIES, type AccentFamily } from "@/lib/accent-colors";
 import { validateCsrf } from "@recetario/auth";
 import { apiFetch } from "@/lib/api-client";
-import { subscriptionResponseSchema } from "@recetario/types";
+import { userSubscriptionInfoSchema } from "@recetario/types";
 import SettingsContent from "@/components/templates/settings/SettingsContent.astro";
 
 if (!Astro.locals.session || !Astro.locals.user) {
@@ -28,7 +28,7 @@ const isCanceled = Astro.url.searchParams.get("canceled") === "1";
 let subscription = Astro.locals.subscription;
 if (activeTab === "billing" || sessionId || isSuccess || isCanceled) {
   try {
-    const freshSub = await apiFetch("/api/billing/subscription", { schema: subscriptionResponseSchema }, Astro);
+    const freshSub = await apiFetch("/api/billing/subscription", { schema: userSubscriptionInfoSchema }, Astro);
     if (freshSub) {
       subscription = freshSub;
     }

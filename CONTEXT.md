@@ -22,7 +22,10 @@ _Avoid_: "model", "record" (ambiguous with schema).
 ## Billing & Stripe
 
 **Stripe domain logic**:
-Code in `packages/stripe` that talks to the Stripe API or owns subscription/plan domain rules: the `stripe` singleton, `listPrices()`, checkout/portal helpers, webhook signature verification, `TIER_CONFIG`, `buildPricingPlans`, feature-gating helpers (`hasFeature`, `isPro`, `isPaid`, `canCreateRecipe`, `canCreateIngredient`, `getRemaining*`), `getDefaultSubscription`, and `UserSubscription`/`PricingPlan` shaping.
+Code in `packages/stripe` that talks to the Stripe API or owns subscription/plan domain rules: the `stripe` singleton, `listPrices()`, checkout/portal helpers, webhook signature verification, `TIER_CONFIG`, `buildPricingPlans`, feature-gating helpers (`hasFeature`, `isPro`, `isPaid`, `canCreateRecipe`, `canCreateIngredient`, `getRemaining*`), `getDefaultSubscription`, and `UserSubscriptionInfo`/`PricingPlan` shaping.
+
+**Subscription reconcile**:
+The read/reconcile/shape engine in `packages/stripe` (`subscription-reconcile.ts`): reads the user's `Subscription` row, reconciles it against live Stripe (status/period/cancel drift + scheduled downgrades), persists drift, and shapes `UserSubscriptionInfo` via `userSubscriptionInfoSchema`. Both the session and `/api/billing/subscription` handlers call it; `null` means "no subscription" (session falls back to `getDefaultSubscription()`, the endpoint 404s). Tested through `reconcileSubscriptionWith(deps)` factory fakes; `reconcileSubscription` is the pre-wired default. See [ADR-0007](./docs/adr/0007-subscription-reconcile-module.md).
 
 **Stripe price sync**:
 The process of reconciling `SubscriptionPlan` rows with Stripe's active prices. `packages/stripe` fetches (`listPrices`) and maps to a minimal `SyncPlanInput`; `packages/db` persists (`syncPlans`) with pure upsert+deactivate. The db package never imports `stripe`; the tier whitelist and `featuresJson` are produced by stripe, not db.

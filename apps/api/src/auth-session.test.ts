@@ -8,8 +8,8 @@ const {
   mockAuth,
   mockGetUserPreferences,
   mockCreateUserPreferences,
-  mockGetSubscriptionByUserId,
   mockGetCredentialAccount,
+  mockReconcileSubscription,
 } = vi.hoisted(() => {
   const mockGetSession = vi.fn();
   const mockAuth = {
@@ -17,15 +17,15 @@ const {
   };
   const mockGetUserPreferences = vi.fn();
   const mockCreateUserPreferences = vi.fn();
-  const mockGetSubscriptionByUserId = vi.fn();
   const mockGetCredentialAccount = vi.fn();
+  const mockReconcileSubscription = vi.fn();
   return {
     mockGetSession,
     mockAuth,
     mockGetUserPreferences,
     mockCreateUserPreferences,
-    mockGetSubscriptionByUserId,
     mockGetCredentialAccount,
+    mockReconcileSubscription,
   };
 });
 
@@ -37,12 +37,11 @@ vi.mock("@recetario/db", () => ({
   getUserPreferences: (userId: string) => mockGetUserPreferences(userId),
   createUserPreferences: (userId: string, prefs: unknown) =>
     mockCreateUserPreferences(userId, prefs),
-  getSubscriptionByUserId: (userId: string, statusFilter: unknown) =>
-    mockGetSubscriptionByUserId(userId, statusFilter),
   getCredentialAccount: (userId: string) => mockGetCredentialAccount(userId),
-  getStripeCustomerId: vi.fn().mockResolvedValue(null),
-  getSubscriptionPlanByStripePriceId: vi.fn().mockResolvedValue(null),
-  upsertSubscription: vi.fn().mockResolvedValue(null),
+}));
+
+vi.mock("@recetario/stripe/server", () => ({
+  reconcileSubscription: (userId: string) => mockReconcileSubscription(userId),
 }));
 
 const { authSessionHandler } = await import("./auth-session");
@@ -62,6 +61,22 @@ const sessionFixture = {
   },
 };
 
+const infoFixture = {
+  tier: "pro",
+  status: "active",
+  recipesLimit: null,
+  ingredientsLimit: null,
+  features: { recipe_duplicate: true, pdf_export: true },
+  priceCents: 1999,
+  currency: "mxn",
+  billingInterval: "monthly",
+  currentPeriodEnd: "2030-01-01T00:00:00.000Z",
+  cancelAtPeriodEnd: false,
+  isTrial: false,
+  trialEnd: null,
+  scheduledChange: null,
+};
+
 function buildApp() {
   const app = new Hono();
   app.onError(errorHandler());
@@ -75,7 +90,8 @@ describe("authSessionHandler", () => {
     mockGetSession.mockReset();
     mockGetUserPreferences.mockReset();
     mockCreateUserPreferences.mockReset();
-    mockGetSubscriptionByUserId.mockReset();
+    mockGetCredentialAccount.mockReset();
+    mockReconcileSubscription.mockReset();
   });
 
   it("returns the session with preferences and subscription when the cookie is valid", async () => {
@@ -85,7 +101,7 @@ describe("authSessionHandler", () => {
       theme: "dark",
       accentColor: "emerald",
     });
-    mockGetSubscriptionByUserId.mockResolvedValueOnce(null);
+    mockReconcileSubscription.mockResolvedValueOnce(infoFixture);
 
     const res = await buildApp().request("/api/auth/session", {
       headers: { cookie: "better-auth.session_token=valid" },
@@ -104,9 +120,30 @@ describe("authSessionHandler", () => {
       theme: "dark",
       accentColor: "emerald",
     });
-    expect(body.subscription.tier).toBe("free");
+    expect(body.subscription).toEqual(infoFixture);
     expect(mockGetSession).toHaveBeenCalledTimes(1);
     expect(mockGetUserPreferences).toHaveBeenCalledWith("user-1");
+    expect(mockReconcileSubscription).toHaveBeenCalledWith("user-1");
+  });
+
+  it("falls back to the free default subscription when reconcile returns null", async () => {
+    mockGetSession.mockResolvedValueOnce(sessionFixture);
+    mockGetUserPreferences.mockResolvedValueOnce({
+      userId: "user-1",
+      theme: "dark",
+      accentColor: "emerald",
+    });
+    mockReconcileSubscription.mockResolvedValueOnce(null);
+
+    const res = await buildApp().request("/api/auth/session", {
+      headers: { cookie: "better-auth.session_token=valid" },
+    });
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as {
+      subscription: { tier: string; status: string | null };
+    };
+    expect(body.subscription.tier).toBe("free");
+    expect(body.subscription.status).toBeNull();
   });
 
   it("creates default preferences if none exist for user", async () => {
