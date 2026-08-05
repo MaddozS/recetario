@@ -1,26 +1,15 @@
 import type { Handler } from "hono";
 import { getUserPreferences, createUserPreferences } from "@recetario/db";
 import { preferencesResponseSchema } from "@recetario/types";
-import * as cache from "../cache";
 import { getAuthUser } from "../middleware/auth";
 
-const CACHE_TTL_MS = 60_000;
 const DEFAULT_THEME = "system" as const;
 const DEFAULT_ACCENT = "coral" as const;
-
-function cacheKey(userId: string): string {
-  return `prefs:${userId}`;
-}
 
 export function preferencesGetHandler(): Handler {
   return async (c) => {
     const user = await getAuthUser(c);
     const userId = user.id;
-
-    const cached = cache.get<unknown>(cacheKey(userId));
-    if (cached !== undefined) {
-      return c.json(cached);
-    }
 
     const existing = await getUserPreferences(userId);
     const data =
@@ -36,7 +25,6 @@ export function preferencesGetHandler(): Handler {
       accentColor: data.accentColor,
     });
 
-    cache.set(cacheKey(userId), validated, CACHE_TTL_MS);
     return c.json(validated);
   };
 }

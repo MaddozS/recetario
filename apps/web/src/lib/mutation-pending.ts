@@ -118,6 +118,20 @@ export function startMutationPending(
   };
 }
 
+export function clearNavProgressBar(): void {
+  if (typeof document === "undefined") return;
+  const bar = document.getElementById("nav-progress-bar");
+  if (bar) {
+    bar.style.width = "100%";
+    setTimeout(() => {
+      bar.style.opacity = "0";
+      setTimeout(() => {
+        bar.style.width = "0%";
+      }, 300);
+    }, 150);
+  }
+}
+
 export function setupGlobalFormSubmitListener(): void {
   if (typeof document === "undefined") return;
   if (document.documentElement.dataset.globalSubmitBound === "1") return;
@@ -125,7 +139,7 @@ export function setupGlobalFormSubmitListener(): void {
 
   document.addEventListener("submit", (e) => {
     const form = e.target as HTMLFormElement | null;
-    if (!form) return;
+    if (!form || e.defaultPrevented) return;
 
     const method = (form.getAttribute("method") || "GET").toUpperCase();
     if (method === "GET") {
@@ -139,7 +153,6 @@ export function setupGlobalFormSubmitListener(): void {
     }
 
     if (method !== "POST") return;
-    if (e.defaultPrevented) return;
 
     const submitter =
       (e.submitter as HTMLButtonElement | HTMLInputElement | null) ||

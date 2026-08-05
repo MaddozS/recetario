@@ -12,12 +12,6 @@ const { mockGetSession, mockGetSubscriptionByUserId } = vi.hoisted(() => ({
 vi.mock("@recetario/auth/server", () => ({ auth: { api: { getSession: (...args: unknown[]) => mockGetSession(...args) } } }));
 vi.mock("@recetario/db", () => ({ getSubscriptionByUserId: (...args: unknown[]) => mockGetSubscriptionByUserId(...args) }));
 
-const cacheStore = new Map<string, { value: unknown; expiresAt: number }>();
-vi.mock("../cache", () => ({
-  get: (key: string) => cacheStore.get(key)?.value,
-  set: (key: string, value: unknown, ttlMs: number) => cacheStore.set(key, { value, expiresAt: Date.now() + ttlMs }),
-}));
-
 const { subscriptionHandler } = await import("./subscription");
 const sessionFixture = { user: { id: "user-1", email: "ada@example.com" }, session: { id: "sess-1", userId: "user-1" } };
 const dbSubFixture = {
@@ -28,7 +22,7 @@ const dbSubFixture = {
 function buildApp() { const app = new Hono(); app.onError(errorHandler()); app.use("*", envelope()); app.use("*", hostAllowlist()); app.get("/api/billing/subscription", subscriptionHandler()); return app; }
 
 describe("subscriptionHandler", () => {
-  beforeEach(() => { mockGetSession.mockReset(); mockGetSubscriptionByUserId.mockReset(); cacheStore.clear(); });
+  beforeEach(() => { mockGetSession.mockReset(); mockGetSubscriptionByUserId.mockReset(); });
   it("returns the Zod-shaped subscription", async () => {
     mockGetSession.mockResolvedValueOnce(sessionFixture); mockGetSubscriptionByUserId.mockResolvedValueOnce(dbSubFixture);
     const res = await buildApp().request("/api/billing/subscription", {}, {});
@@ -44,10 +38,5 @@ describe("subscriptionHandler", () => {
     mockGetSession.mockResolvedValueOnce(null);
     expect((await buildApp().request("/api/billing/subscription", {}, {})).status).toBe(401);
     expect(mockGetSubscriptionByUserId).not.toHaveBeenCalled();
-  });
-  it("caches the shaped response", async () => {
-    mockGetSession.mockResolvedValue(sessionFixture); mockGetSubscriptionByUserId.mockResolvedValue(dbSubFixture);
-    const app = buildApp(); await app.request("/api/billing/subscription", {}, {}); await app.request("/api/billing/subscription", {}, {});
-    expect(mockGetSubscriptionByUserId).toHaveBeenCalledTimes(1);
   });
 });

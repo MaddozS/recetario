@@ -31,7 +31,7 @@ export default defineConfig({
         ignored: ["!**/packages/**"],
       },
       proxy: {
-        "/api/auth": {
+        "/api": {
           // eslint-disable-next-line no-undef
           target: process.env.INTERNAL_API_URL ?? "http://localhost:8787",
           changeOrigin: true,

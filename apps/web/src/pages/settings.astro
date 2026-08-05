@@ -4,7 +4,6 @@ import { ACCENT_FAMILIES, type AccentFamily } from "@/lib/accent-colors";
 import { validateCsrf } from "@recetario/auth";
 import { apiFetch } from "@/lib/api-client";
 import SettingsContent from "@/components/templates/settings/SettingsContent.astro";
-import SettingsSkeleton from "@/components/templates/settings/SettingsSkeleton.astro";
 
 if (!Astro.locals.session || !Astro.locals.user) {
   return Astro.redirect("/sign-in");
@@ -83,7 +82,6 @@ const feedbackMessage = Astro.url.searchParams.get("message");
   breadcrumbs={[{ label: "Configuración" }]}
 >
   <SettingsContent
-    server:defer
     user={user}
     preferences={Astro.locals.preferences}
     subscription={subscription}
@@ -91,7 +89,5 @@ const feedbackMessage = Astro.url.searchParams.get("message");
     feedbackType={feedbackType}
     feedbackMessage={feedbackMessage}
     csrfToken={Astro.locals.csrfToken || ""}
-  >
-    <SettingsSkeleton slot="fallback" />
-  </SettingsContent>
+  />
 </Layout>

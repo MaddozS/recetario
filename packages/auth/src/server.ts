@@ -35,4 +35,9 @@ export {
 export { hashPassword } from "./hash-password";
 export {
   createVerificationEmailCallback,
+  getVerificationEmailHtml,
 } from "./verification-email-callback";
+export type {
+  VerificationEmailTemplateData,
+} from "./verification-email-callback";
+

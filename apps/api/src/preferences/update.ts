@@ -2,10 +2,7 @@ import type { Handler } from "hono";
 import { auth } from "@recetario/auth/server";
 import { getUserPreferences, upsertUserPreferences } from "@recetario/db";
 import { preferencesResponseSchema, preferencesUpdateSchema } from "@recetario/types";
-import * as cache from "../cache";
 import { ApiError } from "../errors";
-
-const CACHE_TTL_MS = 60_000;
 
 export function preferencesUpdateHandler(): Handler {
   return async (c) => {
@@ -58,7 +55,6 @@ export function preferencesUpdateHandler(): Handler {
       accentColor: data.accentColor,
     });
 
-    cache.set(`prefs:${userId}`, validated, CACHE_TTL_MS);
     return c.json(validated);
   };
 }

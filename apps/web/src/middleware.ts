@@ -64,20 +64,20 @@ export const onRequest = defineMiddleware(async (context, next) => {
     setApiBinding((bindings as { API?: ApiServiceBinding }).API);
   }
 
-  // ── 0. Relay: /api/auth/* must reach the API worker (the web app does
-  //       not own the Better Auth instance). In production we forward via
+  // ── 0. Relay: /api/* must reach the API worker (the web app does
+  //       not own the API worker instance). In production we forward via
   //       the `API` service binding; in dev the Vite proxy in
   //       `astro.config.mjs` handles this before the request ever hits
   //       the middleware.
-  if (context.url.pathname.startsWith("/api/auth/")) {
+  if (context.url.pathname.startsWith("/api/")) {
     const api = (bindings as { API?: ApiServiceBinding }).API;
     if (api) {
       try {
         return await api.fetch(context.request.clone());
       } catch (err) {
-        console.error("[/api/auth relay] Service binding fetch failed:", err);
+        console.error("[/api relay] Service binding fetch failed:", err);
         return new Response(
-          JSON.stringify({ error: "Auth service request failed" }),
+          JSON.stringify({ error: "API service request failed" }),
           { status: 500, headers: { "content-type": "application/json" } },
         );
       }

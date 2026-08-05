@@ -82,19 +82,45 @@ function getPeriod(obj: unknown, field: string): number {
   return 0;
 }
 
+function getAppOrigin(c: { req: { header: (name: string) => string | undefined; url: string }; env?: unknown }): string {
+  const bindings = (c.env ?? {}) as Record<string, string | undefined>;
+  const envOrigin =
+    bindings.PUBLIC_APP_URL ||
+    bindings.WEB_ORIGIN ||
+    process.env.PUBLIC_APP_URL ||
+    process.env.WEB_ORIGIN;
+  if (envOrigin) {
+    return envOrigin.replace(/\/$/, "");
+  }
+
+  const originHeader = c.req.header("origin") || c.req.header("referer");
+  if (originHeader) {
+    try {
+      return new URL(originHeader).origin;
+    } catch {
+      // ignore
+    }
+  }
+
+  return new URL(c.req.url).origin;
+}
+
 function safeRedirectUrl(
   input: string | undefined,
   fallback: string,
   appOrigin: string,
 ): string {
   if (!input) return fallback;
-  if (input.startsWith("/") && !input.startsWith("//")) return input;
+
+  if (input.startsWith("/") && !input.startsWith("//")) {
+    return `${appOrigin}${input}`;
+  }
 
   try {
     const parsed = new URL(input);
     if (parsed.origin === appOrigin) return input;
   } catch {
-    if (input.startsWith("/") && !input.startsWith("//")) return input;
+    // ignore
   }
 
   return fallback;
@@ -138,7 +164,7 @@ app.post("/api/auth/forgot-password", async (c) => {
     await auth.api.requestPasswordReset({
       body: {
         email,
-        redirectTo: `${new URL(c.req.url).origin}/reset-password`,
+        redirectTo: `${getAppOrigin(c)}/reset-password`,
       },
     });
   } catch (error) {
@@ -418,7 +444,7 @@ app.post("/api/stripe/checkout", async (c) => {
     const plan = await getSubscriptionPlanByStripePriceId(priceId);
     if (!plan) return c.json({ error: "Invalid price ID" }, 400);
 
-    const appOrigin = new URL(c.req.url).origin;
+    const appOrigin = getAppOrigin(c);
     const userId = user.id;
     const existingCustomerId = await getStripeCustomerId(userId);
     const customerId = existingCustomerId ?? (await createCustomer({ email: user.email ?? undefined, userId })).id;
@@ -439,7 +465,8 @@ app.post("/api/stripe/portal", async (c) => {
 
     const customerId = await getStripeCustomerId(user.id);
     if (!customerId) return c.json({ error: "No subscription found" }, 404);
-    const portalSession = await createPortalSession(customerId, `${new URL(c.req.url).origin}/settings/billing`);
+    const appOrigin = getAppOrigin(c);
+    const portalSession = await createPortalSession(customerId, `${appOrigin}/settings/billing`);
     return c.json({ url: portalSession.url });
   });
 
@@ -448,14 +475,15 @@ app.post("/api/stripe/webhook", async (c) => {
     const signature = c.req.header("stripe-signature");
     if (!signature) return c.text("Missing stripe-signature header", 400);
 
-    let event: ReturnType<typeof verifyWebhookSignature>;
+    let event: Awaited<ReturnType<typeof verifyWebhookSignature>>;
     try {
-      event = verifyWebhookSignature(
-        payload,
-        signature,
-        (c.env as Record<string, string | undefined>).STRIPE_WEBHOOK_SECRET ?? process.env.STRIPE_WEBHOOK_SECRET ?? "",
-      );
-    } catch {
+      const webhookSecret =
+        (c.env as Record<string, string | undefined>).STRIPE_WEBHOOK_SECRET ??
+        process.env.STRIPE_WEBHOOK_SECRET ??
+        "";
+      event = await verifyWebhookSignature(payload, signature, webhookSecret);
+    } catch (err) {
+      console.error("[Stripe Webhook Error] Signature verification failed:", err);
       return c.text("Invalid signature", 400);
     }
 
@@ -499,12 +527,21 @@ app.post("/api/stripe/webhook", async (c) => {
         await writeSubscription({ stripeSubscriptionId: obj.id as string, stripeCustomerId: typeof obj.customer === "string" ? obj.customer : "", priceId, userId: null, planId: null, status: obj.status as string, currentPeriodStart: new Date(getPeriod(obj, "current_period_start") * 1000), currentPeriodEnd: new Date(getPeriod(obj, "current_period_end") * 1000), cancelAtPeriodEnd: Boolean(obj.cancel_at_period_end), trialEnd: getPeriod(obj, "trial_end") ? new Date(getPeriod(obj, "trial_end") * 1000) : null });
         break;
       }
-      case "customer.subscription.deleted":
-        if (await getSubscriptionByStripeId(obj.id as string)) await updateSubscription(obj.id as string, { status: "canceled", cancelAtPeriodEnd: true });
+      case "customer.subscription.deleted": {
+        const dbSub = await getSubscriptionByStripeId(obj.id as string);
+        if (dbSub) {
+          await updateSubscription(obj.id as string, { status: "canceled", cancelAtPeriodEnd: true });
+        }
         break;
+      }
       case "invoice.payment_failed": {
         const subscriptionId = typeof obj.subscription === "string" ? obj.subscription : null;
-        if (subscriptionId && await getSubscriptionByStripeId(subscriptionId)) await updateSubscription(subscriptionId, { status: "past_due" });
+        if (subscriptionId) {
+          const dbSub = await getSubscriptionByStripeId(subscriptionId);
+          if (dbSub) {
+            await updateSubscription(subscriptionId, { status: "past_due" });
+          }
+        }
         break;
       }
     }
