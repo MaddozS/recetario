@@ -73,7 +73,7 @@ const isCanceled = Astro.url.searchParams.get("canceled") === "1";
     <Button
       variant="secondary"
       icon="arrow-left"
-      href="/settings/billing"
+      href="/settings?tab=billing"
       size="sm"
       class="mb-6"
     >
@@ -314,7 +314,7 @@ const isCanceled = Astro.url.searchParams.get("canceled") === "1";
           return;
         }
 
-        const successUrl = `${window.location.origin}/settings/billing?success=1`;
+        const successUrl = `${window.location.origin}/settings?tab=billing&success=1`;
         const cancelUrl = `${window.location.origin}/pricing?canceled=1`;
 
         btn.disabled = true;

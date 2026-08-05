@@ -5,8 +5,11 @@ import {
   createUserPreferences,
   getSubscriptionByUserId,
   getCredentialAccount,
+  upsertSubscription,
+  getSubscriptionPlanByStripePriceId,
 } from "@recetario/db";
 import { getDefaultSubscription } from "@recetario/stripe";
+import { retrieveSubscription, stripe } from "@recetario/stripe/server";
 import {
   subscriptionResponseSchema,
   type UserSubscriptionInfo,
@@ -31,25 +34,110 @@ function parseFeatures(raw: string | null | undefined): Record<string, boolean> 
 async function resolveUserSubscription(
   userId: string,
 ): Promise<UserSubscriptionInfo> {
-  const dbSub = await getSubscriptionByUserId(userId, ["active", "trialing"]);
+  const dbSub = await getSubscriptionByUserId(userId, [
+    "active",
+    "trialing",
+    "canceled",
+    "past_due",
+  ]);
 
   if (!dbSub) {
     return getDefaultSubscription();
   }
 
+  let status = dbSub.status;
+  let cancelAtPeriodEnd = dbSub.cancelAtPeriodEnd || dbSub.status === "canceled";
+  let currentPeriodEnd = dbSub.currentPeriodEnd;
+  let scheduledChange: UserSubscriptionInfo["scheduledChange"] = null;
+
+  if (dbSub.stripeSubscriptionId) {
+    try {
+      const liveSub = await retrieveSubscription(dbSub.stripeSubscriptionId);
+      const liveCancel =
+        Boolean(liveSub.cancel_at_period_end) ||
+        Boolean(liveSub.cancel_at) ||
+        liveSub.status === "canceled";
+
+      if (
+        liveSub.status !== dbSub.status ||
+        liveCancel !== dbSub.cancelAtPeriodEnd
+      ) {
+        status = liveSub.status;
+        cancelAtPeriodEnd = liveCancel;
+        const subData = liveSub as unknown as { current_period_end?: number };
+        if (subData.current_period_end) {
+          currentPeriodEnd = new Date(subData.current_period_end * 1000);
+        }
+        await upsertSubscription(dbSub.stripeSubscriptionId, {
+          id: dbSub.stripeSubscriptionId,
+          userId,
+          stripeCustomerId: dbSub.stripeCustomerId,
+          planId: dbSub.planId,
+          status,
+          currentPeriodStart: dbSub.currentPeriodStart,
+          currentPeriodEnd: currentPeriodEnd ?? dbSub.currentPeriodEnd,
+          cancelAtPeriodEnd: liveCancel,
+          trialEnd: dbSub.trialEnd,
+        });
+      }
+
+      if (liveSub.schedule) {
+        const scheduleId =
+          typeof liveSub.schedule === "string"
+            ? liveSub.schedule
+            : liveSub.schedule.id;
+        const scheduleObj =
+          await stripe.subscriptionSchedules.retrieve(scheduleId);
+        if (scheduleObj.phases.length > 1) {
+          const nextPhase = scheduleObj.phases[1];
+          const nextPriceId =
+            typeof nextPhase.items[0]?.price === "string"
+              ? nextPhase.items[0].price
+              : nextPhase.items[0]?.price?.id;
+          if (nextPriceId) {
+            const nextPlan =
+              await getSubscriptionPlanByStripePriceId(nextPriceId);
+            if (nextPlan) {
+              scheduledChange = {
+                targetTier: nextPlan.tier as any,
+                targetPlanName: nextPlan.name,
+                targetInterval: nextPlan.billingInterval as any,
+                effectiveDate: new Date(
+                  nextPhase.start_date * 1000,
+                ).toISOString(),
+              };
+            }
+          }
+        }
+      }
+    } catch {
+      // Fallback
+    }
+  }
+
+  const now = new Date();
+  if (
+    status === "canceled" &&
+    currentPeriodEnd &&
+    currentPeriodEnd <= now
+  ) {
+    return getDefaultSubscription();
+  }
+
   return subscriptionResponseSchema.parse({
     tier: dbSub.plan?.tier ?? "free",
-    status: dbSub.status,
+    status,
     recipesLimit: dbSub.plan?.recipesLimit ?? null,
     ingredientsLimit: dbSub.plan?.ingredientsLimit ?? null,
     features: parseFeatures(dbSub.plan?.featuresJson),
     priceCents: dbSub.plan?.priceCents ?? null,
     currency: dbSub.plan?.currency ?? null,
     billingInterval: dbSub.plan?.billingInterval ?? null,
-    currentPeriodEnd: dbSub.currentPeriodEnd?.toISOString() ?? null,
-    cancelAtPeriodEnd: dbSub.cancelAtPeriodEnd,
-    isTrial: dbSub.status === "trialing",
+    currentPeriodEnd: currentPeriodEnd?.toISOString() ?? null,
+    cancelAtPeriodEnd,
+    isTrial: status === "trialing",
     trialEnd: dbSub.trialEnd?.toISOString() ?? null,
+    scheduledChange,
   });
 }
 

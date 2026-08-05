@@ -3,6 +3,7 @@ import Layout from "@/layouts/Layout.astro";
 import { ACCENT_FAMILIES, type AccentFamily } from "@/lib/accent-colors";
 import { validateCsrf } from "@recetario/auth";
 import { apiFetch } from "@/lib/api-client";
+import { subscriptionResponseSchema } from "@recetario/types";
 import SettingsContent from "@/components/templates/settings/SettingsContent.astro";
 
 if (!Astro.locals.session || !Astro.locals.user) {
@@ -10,8 +11,31 @@ if (!Astro.locals.session || !Astro.locals.user) {
 }
 
 const user = Astro.locals.user;
-const subscription = Astro.locals.subscription;
 const activeTab = Astro.url.searchParams.get("tab") || "profile";
+const sessionId = Astro.url.searchParams.get("session_id");
+
+if (sessionId) {
+  try {
+    await apiFetch("/api/stripe/sync-session", { method: "POST", body: { sessionId } }, Astro);
+  } catch {
+    // best effort sync
+  }
+}
+
+const isSuccess = Astro.url.searchParams.get("success") === "1";
+const isCanceled = Astro.url.searchParams.get("canceled") === "1";
+
+let subscription = Astro.locals.subscription;
+if (activeTab === "billing" || sessionId || isSuccess || isCanceled) {
+  try {
+    const freshSub = await apiFetch("/api/billing/subscription", { schema: subscriptionResponseSchema }, Astro);
+    if (freshSub) {
+      subscription = freshSub;
+    }
+  } catch {
+    // fallback to middleware subscription
+  }
+}
 
 type Feedback = { type: "success" | "error"; message: string };
 let feedback: Feedback | null = null;
@@ -89,5 +113,7 @@ const feedbackMessage = Astro.url.searchParams.get("message");
     feedbackType={feedbackType}
     feedbackMessage={feedbackMessage}
     csrfToken={Astro.locals.csrfToken || ""}
+    isSuccess={isSuccess}
+    isCanceled={isCanceled}
   />
 </Layout>

@@ -36,11 +36,11 @@ Better Auth via `src/lib/auth.ts` (server singleton) + `src/lib/auth-client.ts` 
 
 ### Pages & routing
 
-- **Protected** (`Astro.locals.session` required): `/recipes`, `/recipes/[recipe]`, `/ingredients`, `/settings`, `/settings/billing`, `/produccion`
+- **Protected** (`Astro.locals.session` required): `/recipes`, `/recipes/[recipe]`, `/ingredients`, `/settings`, `/produccion` (`/settings/billing` redirects 301 to `/settings?tab=billing`)
 - On protected pages, if `Astro.locals.session` is null, return `Astro.redirect("/sign-in")` at the top of the frontmatter.
 - **Public**: `/sign-in`, `/sign-up`, `/pricing`
 - `/produccion` also gated behind `production_planner` feature flag
-- If the `production_planner` flag is false, redirect to `/settings/billing` with an upgrade prompt.
+- If the `production_planner` flag is false, redirect to `/settings?tab=billing` with an upgrade prompt.
 - Layout: `Layout` (app shell + sidebar) or `LandingLayout` (marketing). `currentPage` prop: `recipes | ingredients | settings | production`.
 
 ### Data layer

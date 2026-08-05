@@ -28,7 +28,12 @@ describe("subscriptionHandler", () => {
     const res = await buildApp().request("/api/billing/subscription", {}, {});
     expect(res.status).toBe(200);
     expect(await res.json()).toMatchObject({ tier: "pro", status: "active", priceCents: 1999, currentPeriodEnd: "2030-01-01T00:00:00.000Z" });
-    expect(mockGetSubscriptionByUserId).toHaveBeenCalledWith("user-1", ["active", "trialing"]);
+    expect(mockGetSubscriptionByUserId).toHaveBeenCalledWith("user-1", [
+      "active",
+      "trialing",
+      "canceled",
+      "past_due",
+    ]);
   });
   it("returns 404 when no active subscription exists", async () => {
     mockGetSession.mockResolvedValueOnce(sessionFixture); mockGetSubscriptionByUserId.mockResolvedValueOnce(null);

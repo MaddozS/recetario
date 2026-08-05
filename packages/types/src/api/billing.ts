@@ -33,6 +33,15 @@ export const userSubscriptionInfoSchema = z.object({
   cancelAtPeriodEnd: z.boolean(),
   isTrial: z.boolean(),
   trialEnd: z.string().nullable(),
+  scheduledChange: z
+    .object({
+      targetTier: subscriptionTierSchema,
+      targetPlanName: z.string(),
+      targetInterval: billingIntervalSchema,
+      effectiveDate: z.string(),
+    })
+    .nullable()
+    .optional(),
 });
 
 export const userSubscriptionSchema = z.object({
