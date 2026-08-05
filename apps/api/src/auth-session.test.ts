@@ -40,6 +40,9 @@ vi.mock("@recetario/db", () => ({
   getSubscriptionByUserId: (userId: string, statusFilter: unknown) =>
     mockGetSubscriptionByUserId(userId, statusFilter),
   getCredentialAccount: (userId: string) => mockGetCredentialAccount(userId),
+  getStripeCustomerId: vi.fn().mockResolvedValue(null),
+  getSubscriptionPlanByStripePriceId: vi.fn().mockResolvedValue(null),
+  upsertSubscription: vi.fn().mockResolvedValue(null),
 }));
 
 const { authSessionHandler } = await import("./auth-session");

@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { Hono } from "hono";
 import { envelope } from "../envelope";
 import { errorHandler } from "../error-handler";
-import * as cache from "../cache";
 
 const { mockGetSession, mockAuth, mockUpsertUserPreferences } = vi.hoisted(() => {
   const mockGetSession = vi.fn();
@@ -56,7 +55,6 @@ describe("preferencesUpdateHandler", () => {
   beforeEach(() => {
     mockGetSession.mockReset();
     mockUpsertUserPreferences.mockReset();
-    cache.set(`prefs:user-prefs-2`, { stale: true }, 60_000);
   });
 
   it("returns 401 when there is no session", async () => {
@@ -68,20 +66,29 @@ describe("preferencesUpdateHandler", () => {
     expect(mockUpsertUserPreferences).not.toHaveBeenCalled();
   });
 
-  it("returns 400 VALIDATION_ERROR with issues on invalid body", async () => {
+  it("returns 400 on non-JSON body", async () => {
     mockGetSession.mockResolvedValueOnce(sessionFixture);
-    const res = await putJson("user-prefs-2", { theme: "neon", accentColor: 42 });
+    const res = await buildApp().request("/api/preferences", {
+      method: "PUT",
+      headers: { cookie: "session=user-prefs-2", "content-type": "text/plain" },
+      body: "not-json",
+    });
     expect(res.status).toBe(400);
-    const body = (await res.json()) as {
-      error: { code: string; issues?: unknown[] };
-    };
+    const body = (await res.json()) as { error: { code: string } };
     expect(body.error.code).toBe("VALIDATION_ERROR");
-    expect(Array.isArray(body.error.issues)).toBe(true);
+  });
+
+  it("returns 400 on invalid payload shape", async () => {
+    mockGetSession.mockResolvedValueOnce(sessionFixture);
+    const res = await putJson("user-prefs-2", { theme: "invalid-theme" });
+    expect(res.status).toBe(400);
+    const body = (await res.json()) as { error: { code: string; issues: unknown } };
+    expect(body.error.code).toBe("VALIDATION_ERROR");
     expect((body.error.issues as unknown[]).length).toBeGreaterThan(0);
     expect(mockUpsertUserPreferences).not.toHaveBeenCalled();
   });
 
-  it("upserts and refreshes the cache on valid body", async () => {
+  it("upserts user preferences on valid body", async () => {
     mockGetSession.mockResolvedValueOnce(sessionFixture);
     mockUpsertUserPreferences.mockResolvedValueOnce({
       userId: "user-prefs-2",
@@ -98,12 +105,5 @@ describe("preferencesUpdateHandler", () => {
     expect(body.theme).toBe("dark");
     expect(body.accentColor).toBe("indigo");
     expect(mockUpsertUserPreferences).toHaveBeenCalledTimes(1);
-
-    const cached = cache.get<{ theme: string; accentColor: string }>(
-      "prefs:user-prefs-2",
-    );
-    expect(cached).toBeDefined();
-    expect(cached?.theme).toBe("dark");
-    expect(cached?.accentColor).toBe("indigo");
   });
 });

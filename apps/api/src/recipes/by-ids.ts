@@ -2,11 +2,9 @@ import type { Handler } from "hono";
 import { getRecipesByIds } from "@recetario/db";
 import { auth } from "@recetario/auth/server";
 import { recipeWithIngredientsSchema } from "@recetario/types";
-import * as cache from "../cache";
 import { ApiError } from "../errors";
 
 const MAX_IDS = 100;
-const CACHE_TTL_MS = 60_000;
 
 function parseIds(raw: string | undefined): number[] {
   if (!raw) return [];
@@ -14,10 +12,6 @@ function parseIds(raw: string | undefined): number[] {
     .split(",")
     .map((s) => Number(s.trim()))
     .filter((n) => Number.isInteger(n) && n > 0);
-}
-
-function cacheKey(userId: string, ids: number[]): string {
-  return `recipes-by-ids:${userId}:${[...ids].sort((a, b) => a - b).join(",")}`;
 }
 
 export function recipesByIdsHandler(): Handler {
@@ -41,15 +35,8 @@ export function recipesByIdsHandler(): Handler {
       );
     }
 
-    const key = cacheKey(session.user.id, ids);
-    const cached = cache.get<unknown>(key);
-    if (cached !== undefined) {
-      return c.json(cached);
-    }
-
     const recipes = await getRecipesByIds(ids, session.user.id);
     const shaped = recipes.map((r) => recipeWithIngredientsSchema.parse(shapeRecipeDetail(r)));
-    cache.set(key, shaped, CACHE_TTL_MS);
     return c.json(shaped);
   };
 }

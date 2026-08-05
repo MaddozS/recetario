@@ -11,11 +11,9 @@ import {
   subscriptionResponseSchema,
   type UserSubscriptionInfo,
 } from "@recetario/types";
-import * as cache from "./cache";
 
 const DEFAULT_THEME = "system" as const;
 const DEFAULT_ACCENT = "coral" as const;
-const CACHE_TTL_MS = 60_000;
 
 function parseFeatures(raw: string | null | undefined): Record<string, boolean> {
   try {
@@ -33,18 +31,13 @@ function parseFeatures(raw: string | null | undefined): Record<string, boolean> 
 async function resolveUserSubscription(
   userId: string,
 ): Promise<UserSubscriptionInfo> {
-  const cacheKey = `sub:${userId}`;
-  const cached = cache.get<UserSubscriptionInfo>(cacheKey);
-  if (cached !== undefined) return cached;
-
   const dbSub = await getSubscriptionByUserId(userId, ["active", "trialing"]);
+
   if (!dbSub) {
-    const defaultSub = getDefaultSubscription();
-    cache.set(cacheKey, defaultSub, CACHE_TTL_MS);
-    return defaultSub;
+    return getDefaultSubscription();
   }
 
-  const subscription = subscriptionResponseSchema.parse({
+  return subscriptionResponseSchema.parse({
     tier: dbSub.plan?.tier ?? "free",
     status: dbSub.status,
     recipesLimit: dbSub.plan?.recipesLimit ?? null,
@@ -58,9 +51,6 @@ async function resolveUserSubscription(
     isTrial: dbSub.status === "trialing",
     trialEnd: dbSub.trialEnd?.toISOString() ?? null,
   });
-
-  cache.set(cacheKey, subscription, CACHE_TTL_MS);
-  return subscription;
 }
 
 export function authSessionHandler(): Handler {

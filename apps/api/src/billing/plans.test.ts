@@ -11,22 +11,6 @@ vi.mock("@recetario/stripe/server", () => ({
   getPricingPlans: mockGetPricingPlans,
 }));
 
-const cacheStore = new Map<string, { value: unknown; expiresAt: number }>();
-vi.mock("../cache", () => ({
-  get: (key: string) => {
-    const entry = cacheStore.get(key);
-    if (!entry) return undefined;
-    if (entry.expiresAt <= Date.now()) {
-      cacheStore.delete(key);
-      return undefined;
-    }
-    return entry.value;
-  },
-  set: (key: string, value: unknown, ttlMs: number) => {
-    cacheStore.set(key, { value, expiresAt: Date.now() + ttlMs });
-  },
-}));
-
 const { plansHandler } = await import("./plans");
 
 const planFixture = [
@@ -86,7 +70,6 @@ function buildApp() {
 describe("plansHandler", () => {
   beforeEach(() => {
     mockGetPricingPlans.mockReset();
-    cacheStore.clear();
   });
 
   it("returns the enriched pricing plan response", async () => {
@@ -104,14 +87,6 @@ describe("plansHandler", () => {
     const res = await buildApp().request("/api/billing/plans", {}, {});
     expect(res.status).toBe(200);
     expect(await res.json()).toEqual([]);
-  });
-
-  it("serves cached plans on the second call", async () => {
-    mockGetPricingPlans.mockResolvedValueOnce(planFixture);
-    const app = buildApp();
-    await app.request("/api/billing/plans", {}, {});
-    await app.request("/api/billing/plans", {}, {});
-    expect(mockGetPricingPlans).toHaveBeenCalledTimes(1);
   });
 
   it("rejects requests with the wrong Host header", async () => {

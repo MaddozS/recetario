@@ -2,10 +2,7 @@ import type { Handler } from "hono";
 import { getSubscriptionByUserId } from "@recetario/db";
 import { subscriptionResponseSchema } from "@recetario/types";
 import { ApiError } from "../errors";
-import * as cache from "../cache";
 import { getAuthUser } from "../middleware/auth";
-
-const CACHE_TTL_MS = 60_000;
 
 function parseFeatures(raw: string | null | undefined): Record<string, boolean> {
   try {
@@ -21,10 +18,6 @@ function parseFeatures(raw: string | null | undefined): Record<string, boolean> 
 export function subscriptionHandler(): Handler {
   return async (c) => {
     const user = await getAuthUser(c);
-
-    const cacheKey = `sub:${user.id}`;
-    const cached = cache.get<unknown>(cacheKey);
-    if (cached !== undefined) return c.json(cached);
 
     const dbSub = await getSubscriptionByUserId(user.id, ["active", "trialing"]);
     if (!dbSub) throw new ApiError("NOT_FOUND", "No active subscription");
@@ -43,7 +36,6 @@ export function subscriptionHandler(): Handler {
       isTrial: dbSub.status === "trialing",
       trialEnd: dbSub.trialEnd?.toISOString() ?? null,
     });
-    cache.set(cacheKey, subscription, CACHE_TTL_MS);
     return c.json(subscription);
   };
 }
