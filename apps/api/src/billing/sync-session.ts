@@ -54,14 +54,19 @@ export function syncCheckoutSessionHandler(): Handler<{ Variables: AuthVariables
 
       if (!planId || !userId) return c.json({ ok: false });
 
+      const subData = sub as unknown as {
+        current_period_start?: number;
+        current_period_end?: number;
+      };
+
       const startTs =
-        typeof sub.current_period_start === "number" &&
-        sub.current_period_start > 0
-          ? sub.current_period_start
+        typeof subData.current_period_start === "number" &&
+        subData.current_period_start > 0
+          ? subData.current_period_start
           : 0;
       const endTs =
-        typeof sub.current_period_end === "number" && sub.current_period_end > 0
-          ? sub.current_period_end
+        typeof subData.current_period_end === "number" && subData.current_period_end > 0
+          ? subData.current_period_end
           : 0;
 
       const currentPeriodStart =

@@ -79,6 +79,11 @@ export function stripeCheckoutHandler(): Handler<{ Variables: AuthVariables }> {
         isTrialing,
       });
 
+      const updatedSubData = updatedStripeSub as unknown as {
+        current_period_start?: number;
+        current_period_end?: number;
+      };
+
       await upsertSubscription(currentSub.stripeSubscriptionId, {
         id: currentSub.stripeSubscriptionId,
         userId,
@@ -86,14 +91,14 @@ export function stripeCheckoutHandler(): Handler<{ Variables: AuthVariables }> {
         planId: plan.id,
         status: updatedStripeSub.status,
         currentPeriodStart:
-          typeof updatedStripeSub.current_period_start === "number" &&
-          updatedStripeSub.current_period_start > 1000000000
-            ? new Date(updatedStripeSub.current_period_start * 1000)
+          typeof updatedSubData.current_period_start === "number" &&
+          updatedSubData.current_period_start > 1000000000
+            ? new Date(updatedSubData.current_period_start * 1000)
             : new Date(),
         currentPeriodEnd:
-          typeof updatedStripeSub.current_period_end === "number" &&
-          updatedStripeSub.current_period_end > 1000000000
-            ? new Date(updatedStripeSub.current_period_end * 1000)
+          typeof updatedSubData.current_period_end === "number" &&
+          updatedSubData.current_period_end > 1000000000
+            ? new Date(updatedSubData.current_period_end * 1000)
             : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
         cancelAtPeriodEnd: Boolean(updatedStripeSub.cancel_at_period_end),
         trialEnd: updatedStripeSub.trial_end

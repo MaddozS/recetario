@@ -48,14 +48,15 @@ export function subscriptionHandler(): Handler {
           Boolean(liveSub.cancel_at) ||
           liveSub.status === "canceled";
 
+        const liveSubData = liveSub as unknown as { current_period_end?: number };
         if (
           liveSub.status !== dbSub.status ||
           liveCancel !== dbSub.cancelAtPeriodEnd
         ) {
           status = liveSub.status;
           cancelAtPeriodEnd = liveCancel;
-          if (liveSub.current_period_end) {
-            currentPeriodEnd = new Date(liveSub.current_period_end * 1000);
+          if (liveSubData.current_period_end) {
+            currentPeriodEnd = new Date(liveSubData.current_period_end * 1000);
           }
           await upsertSubscription(dbSub.stripeSubscriptionId, {
             id: dbSub.stripeSubscriptionId,

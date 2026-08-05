@@ -64,8 +64,9 @@ async function resolveUserSubscription(
       ) {
         status = liveSub.status;
         cancelAtPeriodEnd = liveCancel;
-        if (liveSub.current_period_end) {
-          currentPeriodEnd = new Date(liveSub.current_period_end * 1000);
+        const subData = liveSub as unknown as { current_period_end?: number };
+        if (subData.current_period_end) {
+          currentPeriodEnd = new Date(subData.current_period_end * 1000);
         }
         await upsertSubscription(dbSub.stripeSubscriptionId, {
           id: dbSub.stripeSubscriptionId,
