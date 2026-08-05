@@ -148,7 +148,7 @@ const themeOptions = [
                 class="h-full w-full rounded-2xl object-cover"
               />
             ) : (
-              userInitial
+              <span id="profile-user-initial">{userInitial}</span>
             )
           }
         </div>
@@ -158,13 +158,12 @@ const themeOptions = [
           >
             {user.hasPasswordAuth ? "Cuenta de email" : "Sesion de Google"}
           </p>
-          <h2 class="text-foreground mt-1 truncate text-xl font-bold">
-            {userFirstName}
-            {userLastName}
+          <h2 id="profile-user-name" class="text-foreground mt-1 truncate text-xl font-bold">
+            {userFirstName} {userLastName}
           </h2>
           {
             userEmail && (
-              <p class="text-muted-foreground mt-0.5 truncate text-sm">
+              <p id="profile-user-email" class="text-muted-foreground mt-0.5 truncate text-sm">
                 {userEmail}
               </p>
             )
@@ -184,7 +183,7 @@ const themeOptions = [
         class="mt-4 hidden rounded-xl border px-4 py-3 text-sm font-semibold"
       >
       </div>
-      <form id="change-name-form" class="mt-4 max-w-sm space-y-4">
+      <form id="change-name-form" method="POST" class="mt-4 max-w-sm space-y-4">
         <div>
           <label
             for="first-name"
@@ -233,50 +232,6 @@ const themeOptions = [
     {
       user.hasPasswordAuth && (
         <>
-          {/* Change Email */}
-          <Card padding="lg">
-            <h2 class="text-foreground text-lg font-bold">Cambiar email</h2>
-            <p class="text-muted-foreground mt-1 text-sm">
-              Actualiza la dirección de correo electrónico asociada a tu cuenta.
-            </p>
-            <div
-              id="change-email-feedback"
-              class="mt-4 hidden rounded-xl border px-4 py-3 text-sm font-semibold"
-            />
-            <form id="change-email-form" class="mt-4 max-w-sm space-y-4">
-              <div>
-                <label
-                  for="new-email"
-                  class="text-muted-foreground mb-2 block text-xs font-bold tracking-wider uppercase"
-                >
-                  Nuevo email
-                </label>
-                <input
-                  id="new-email"
-                  type="email"
-                  required
-                  class="border-border bg-background text-foreground placeholder:text-subtle-foreground focus:border-accent-300 focus:ring-accent-500/20 w-full rounded-xl border px-4 py-3 text-sm transition outline-none focus:ring-2"
-                  placeholder="nuevo@email.com"
-                  autocomplete="email"
-                />
-              </div>
-              <PasswordInput
-                id="email-current-password"
-                label="Contraseña actual"
-                autocomplete="current-password"
-                required
-              />
-              <Button
-                variant="primary"
-                type="submit"
-                icon="mail"
-                id="change-email-btn"
-              >
-                Cambiar email
-              </Button>
-            </form>
-          </Card>
-
           {/* Change Password */}
           <Card padding="lg">
             <h2 class="text-foreground text-lg font-bold">
@@ -289,7 +244,7 @@ const themeOptions = [
               id="change-password-feedback"
               class="mt-4 hidden rounded-xl border px-4 py-3 text-sm font-semibold"
             />
-            <form id="change-password-form" class="mt-4 max-w-sm space-y-4">
+            <form id="change-password-form" method="POST" class="mt-4 max-w-sm space-y-4">
               <PasswordInput
                 id="current-password"
                 label="Contraseña actual"
@@ -460,6 +415,7 @@ const themeOptions = [
 
 <script>
   import { getAccentCssVars } from "@/lib/accent-colors";
+  import { clearNavProgressBar } from "@/lib/mutation-pending";
 
   function getEffectiveTheme(pref: string): string {
     if (pref === "system") {
@@ -473,7 +429,325 @@ const themeOptions = [
     return pref;
   }
 
+  function showFeedback(
+    container: HTMLElement | null,
+    type: "success" | "error",
+    message: string,
+  ) {
+    if (!container) return;
+    container.textContent = message;
+    container.className =
+      "mt-4 rounded-xl border px-4 py-3 text-sm font-semibold " +
+      (type === "success"
+        ? "border-success-border bg-success-bg text-success"
+        : "border-danger-border bg-danger-bg text-danger");
+    container.classList.remove("hidden");
+  }
+
+  function setButtonLoading(
+    btn: HTMLButtonElement,
+    loading: boolean,
+    defaultText: string,
+  ) {
+    btn.disabled = loading;
+    btn.setAttribute("aria-busy", loading ? "true" : "false");
+    if (loading) {
+      btn.innerHTML = `<span class="flex items-center gap-2"><svg class="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>${defaultText}</span>`;
+    } else {
+      btn.textContent = defaultText;
+    }
+  }
+
   function setupSettings() {
+    // ── Tab switching ──────────────────────────────────────────────────────────
+    const tabLinks = document.querySelectorAll<HTMLAnchorElement>("[data-tab]");
+    const tabContents =
+      document.querySelectorAll<HTMLElement>("[data-tab-content]");
+
+    tabLinks.forEach((link) => {
+      if (link.dataset.tabBound === "1") return;
+      link.dataset.tabBound = "1";
+
+      link.addEventListener("click", (e) => {
+        const targetTab = link.dataset.tab;
+        if (!targetTab) return;
+
+        e.preventDefault();
+
+        tabLinks.forEach((l) => {
+          const isActive = l.dataset.tab === targetTab;
+          l.className = `-mb-px inline-flex items-center gap-1.5 border-b-2 px-4 py-2.5 text-sm font-semibold transition-colors ${
+            isActive
+              ? "border-accent-600 text-accent-600"
+              : "text-muted-foreground hover:text-secondary-foreground hover:border-muted-foreground/30 border-transparent"
+          }`;
+        });
+
+        tabContents.forEach((content) => {
+          if (content.dataset.tabContent === targetTab) {
+            content.classList.remove("hidden");
+          } else {
+            content.classList.add("hidden");
+          }
+        });
+
+        const url = new URL(window.location.href);
+        if (targetTab === "profile") {
+          url.searchParams.delete("tab");
+        } else {
+          url.searchParams.set("tab", targetTab);
+        }
+        window.history.pushState({}, "", url.toString());
+      });
+    });
+
+    // ── Profile: Change Name Form ──────────────────────────────────────────────
+    const changeNameForm = document.getElementById("change-name-form");
+    const changeNameBtn = document.getElementById(
+      "change-name-btn",
+    ) as HTMLButtonElement | null;
+    const changeNameFeedback = document.getElementById("change-name-feedback");
+
+    if (changeNameForm && !changeNameForm.dataset.bound) {
+      changeNameForm.dataset.bound = "1";
+      changeNameForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        if (!changeNameBtn) return;
+
+        const formData = new FormData(changeNameForm as HTMLFormElement);
+        const firstName = (formData.get("firstName") as string)?.trim();
+        const lastName = (formData.get("lastName") as string)?.trim();
+
+        if (!firstName || !lastName) {
+          showFeedback(
+            changeNameFeedback,
+            "error",
+            "Por favor completa todos los campos requeridos.",
+          );
+          return;
+        }
+
+        setButtonLoading(changeNameBtn, true, "Guardando...");
+
+        try {
+          const res = await fetch("/api/account/update-name", {
+            method: "POST",
+            body: formData,
+          });
+
+          if (res.ok) {
+            const fullName = `${firstName} ${lastName}`;
+            const initial = firstName.charAt(0).toUpperCase();
+
+            const nameEl = document.getElementById("profile-user-name");
+            if (nameEl) nameEl.textContent = fullName;
+
+            const initialEl = document.getElementById("profile-user-initial");
+            if (initialEl) initialEl.textContent = initial;
+
+            showFeedback(
+              changeNameFeedback,
+              "success",
+              "Nombre actualizado correctamente.",
+            );
+          } else {
+            const errText = await res.text();
+            showFeedback(
+              changeNameFeedback,
+              "error",
+              errText || "Error al actualizar el nombre.",
+            );
+          }
+        } catch {
+          showFeedback(
+            changeNameFeedback,
+            "error",
+            "Error de conexión al actualizar el nombre.",
+          );
+        } finally {
+          setButtonLoading(changeNameBtn, false, "Guardar nombre");
+          clearNavProgressBar();
+        }
+      });
+    }
+
+    // ── Profile: Change Email Form ─────────────────────────────────────────────
+    const changeEmailForm = document.getElementById("change-email-form");
+    const changeEmailBtn = document.getElementById(
+      "change-email-btn",
+    ) as HTMLButtonElement | null;
+    const changeEmailFeedback = document.getElementById(
+      "change-email-feedback",
+    );
+
+    if (changeEmailForm && !changeEmailForm.dataset.bound) {
+      changeEmailForm.dataset.bound = "1";
+      changeEmailForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        if (!changeEmailBtn) return;
+
+        const newEmailEl = document.getElementById(
+          "new-email",
+        ) as HTMLInputElement | null;
+        const passwordEl = document.getElementById(
+          "email-current-password",
+        ) as HTMLInputElement | null;
+
+        const newEmail = newEmailEl?.value?.trim();
+        const currentPassword = passwordEl?.value;
+
+        if (!newEmail || !currentPassword) {
+          showFeedback(
+            changeEmailFeedback,
+            "error",
+            "Por favor completa todos los campos.",
+          );
+          return;
+        }
+
+        setButtonLoading(changeEmailBtn, true, "Cambiando email...");
+
+        try {
+          const bodyData = new FormData();
+          bodyData.append("newEmail", newEmail);
+          bodyData.append("currentPassword", currentPassword);
+
+          const res = await fetch("/api/account/change-email", {
+            method: "POST",
+            body: bodyData,
+          });
+
+          if (res.ok) {
+            const emailEl = document.getElementById("profile-user-email");
+            if (emailEl) emailEl.textContent = newEmail;
+
+            showFeedback(
+              changeEmailFeedback,
+              "success",
+              "Email actualizado correctamente.",
+            );
+            if (newEmailEl) newEmailEl.value = "";
+            if (passwordEl) passwordEl.value = "";
+          } else {
+            const errText = await res.text();
+            showFeedback(
+              changeEmailFeedback,
+              "error",
+              errText || "Error al cambiar el email.",
+            );
+          }
+        } catch {
+          showFeedback(
+            changeEmailFeedback,
+            "error",
+            "Error de conexión al cambiar el email.",
+          );
+        } finally {
+          setButtonLoading(changeEmailBtn, false, "Cambiar email");
+          clearNavProgressBar();
+        }
+      });
+    }
+
+    // ── Profile: Change Password Form ──────────────────────────────────────────
+    const changePasswordForm = document.getElementById("change-password-form");
+    const changePasswordBtn = document.getElementById(
+      "change-password-btn",
+    ) as HTMLButtonElement | null;
+    const changePasswordFeedback = document.getElementById(
+      "change-password-feedback",
+    );
+
+    if (changePasswordForm && !changePasswordForm.dataset.bound) {
+      changePasswordForm.dataset.bound = "1";
+      changePasswordForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        if (!changePasswordBtn) return;
+
+        const currentPasswordEl = document.getElementById(
+          "current-password",
+        ) as HTMLInputElement | null;
+        const newPasswordEl = document.getElementById(
+          "new-password",
+        ) as HTMLInputElement | null;
+        const confirmPasswordEl = document.getElementById(
+          "confirm-new-password",
+        ) as HTMLInputElement | null;
+
+        const currentPassword = currentPasswordEl?.value;
+        const newPassword = newPasswordEl?.value;
+        const confirmPassword = confirmPasswordEl?.value;
+
+        if (!currentPassword || !newPassword || !confirmPassword) {
+          showFeedback(
+            changePasswordFeedback,
+            "error",
+            "Por favor completa todos los campos.",
+          );
+          return;
+        }
+
+        if (newPassword.length < 6) {
+          showFeedback(
+            changePasswordFeedback,
+            "error",
+            "La nueva contraseña debe tener al menos 6 caracteres.",
+          );
+          return;
+        }
+
+        if (newPassword !== confirmPassword) {
+          showFeedback(
+            changePasswordFeedback,
+            "error",
+            "Las contraseñas no coinciden.",
+          );
+          return;
+        }
+
+        setButtonLoading(changePasswordBtn, true, "Cambiando contraseña...");
+
+        try {
+          const bodyData = new FormData();
+          bodyData.append("currentPassword", currentPassword);
+          bodyData.append("newPassword", newPassword);
+
+          const res = await fetch("/api/account/change-password", {
+            method: "POST",
+            body: bodyData,
+          });
+
+          if (res.ok) {
+            showFeedback(
+              changePasswordFeedback,
+              "success",
+              "Contraseña actualizada correctamente.",
+            );
+            if (currentPasswordEl) currentPasswordEl.value = "";
+            if (newPasswordEl) newPasswordEl.value = "";
+            if (confirmPasswordEl) confirmPasswordEl.value = "";
+          } else {
+            const errText = await res.text();
+            showFeedback(
+              changePasswordFeedback,
+              "error",
+              errText || "Error al cambiar la contraseña.",
+            );
+          }
+        } catch {
+          showFeedback(
+            changePasswordFeedback,
+            "error",
+            "Error de conexión al cambiar la contraseña.",
+          );
+        } finally {
+          setButtonLoading(changePasswordBtn, false, "Cambiar contraseña");
+          clearNavProgressBar();
+        }
+      });
+    }
+
+    // ── Preferences: Theme & Accent ────────────────────────────────────────────
     const themeInput = document.getElementById("theme-input");
     const accentInput = document.getElementById("accent-input");
     const prefsForm = document.getElementById("preferences-form");
