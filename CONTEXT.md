@@ -35,6 +35,16 @@ The process of reconciling `SubscriptionPlan` rows with Stripe's active prices. 
 
 _Avoid_: "plan bootstrap", "runtime plan sync" (runtime auto-seed is removed).
 
+**Checkout intent**:
+A durable correlation created before redirecting a user to Stripe Checkout. It binds the authenticated user, Stripe Checkout Session, Stripe Customer, and selected Stripe Price. Stripe metadata may corroborate this correlation but cannot override it. A Checkout intent moves from pending to consumed and retains the resulting Stripe Subscription identity so repeated completion events are idempotent.
+
+_Avoid_: "checkout metadata" (untrusted corroboration), "pending subscription" (a Subscription does not exist yet).
+
+**Stripe event attempt**:
+A durable record of one processing attempt for a Stripe event. Attempts preserve delivery history and enforce idempotency and Subscription event ordering: processing is serialized by Stripe event and Subscription identity, an applied or ignored attempt is terminal for that event, and older events cannot overwrite newer Subscription state. A valid event is acknowledged only after an applied or ignored attempt is persisted atomically with any Subscription mutation.
+
+_Avoid_: "webhook log" (an attempt enforces processing invariants), "event cache" (attempts are durable evidence), "Stripe event receipt" (one event may have multiple attempts).
+
 **Plan persistence method**:
 A CRUD method in `packages/db` that reads/writes `Subscription`/`SubscriptionPlan` rows (`getSubscriptionPlans`, `getSubscriptionByUserId`, `upsertSubscriptionPlan`, `upsertSubscription`, `updateSubscription`, `deactivatePlansNotIn`, `getStripeCustomerId`). Pure persistence, no Stripe API.
 
