@@ -1,18 +1,21 @@
 import type Stripe from "stripe";
 import {
   getSubscriptionByUserId,
-  upsertSubscription,
   getSubscriptionPlanByStripePriceId,
 } from "@recetario/db";
 import type {
   SubscriptionGetPayload,
-  SubscriptionUncheckedCreateInput,
 } from "@recetario/db/prisma/generated/models";
 import {
   userSubscriptionInfoSchema,
   type UserSubscriptionInfo,
 } from "@recetario/types";
 import { retrieveSubscription, stripe } from "./stripe-api";
+import { subscriptionIngestion } from "./subscription-ingestion";
+import type {
+  StripeSubscriptionSnapshot,
+  SnapshotIngestResult,
+} from "./subscription-ingestion";
 
 /** Subscription statuses considered live and worth reconciling against Stripe. */
 export enum ReconcileStatus {
@@ -29,14 +32,20 @@ const RECONCILE_STATUSES: string[] = [
   ReconcileStatus.PastDue,
 ];
 
+/** Statuses with defined entitlement semantics. Unknown statuses fail closed. */
+const RECOGNIZED_STATUSES = new Set<string>([
+  "active",
+  "trialing",
+  "canceled",
+  "past_due",
+  "unpaid",
+  "incomplete",
+]);
+
 type DbSubscription = SubscriptionGetPayload<{
   include: { plan: true };
 }>;
 type DbPlan = NonNullable<DbSubscription["plan"]>;
-type UpsertSubscriptionInput = Omit<
-  SubscriptionUncheckedCreateInput,
-  "stripeSubscriptionId"
->;
 
 export interface ReconcileDeps {
   db: {
@@ -44,10 +53,6 @@ export interface ReconcileDeps {
       userId: string,
       statuses?: string[],
     ): Promise<DbSubscription | null>;
-    upsertSubscription(
-      stripeSubscriptionId: string,
-      input: UpsertSubscriptionInput,
-    ): Promise<unknown>;
     getSubscriptionPlanByStripePriceId(
       stripePriceId: string,
     ): Promise<DbPlan | null>;
@@ -58,6 +63,12 @@ export interface ReconcileDeps {
       scheduleId: string,
     ): Promise<Stripe.SubscriptionSchedule>;
   };
+  /** Delegate drift writes through canonical snapshot ingestion. */
+  ingestSnapshot: (
+    snapshot: StripeSubscriptionSnapshot,
+    metadata: Record<string, string> | null,
+    context: { authority: "authenticated-user"; userId: string },
+  ) => Promise<SnapshotIngestResult>;
   log?: (message: string, error: unknown) => void;
 }
 
@@ -104,17 +115,18 @@ export function reconcileSubscriptionWith(deps: ReconcileDeps) {
           if (subData.current_period_end) {
             currentPeriodEnd = new Date(subData.current_period_end * 1000);
           }
-          await db.upsertSubscription(stripeSubscriptionId, {
-            id: stripeSubscriptionId,
-            userId,
-            stripeCustomerId: dbSub.stripeCustomerId,
-            planId: dbSub.planId,
-            status,
-            currentPeriodStart: dbSub.currentPeriodStart,
-            currentPeriodEnd: currentPeriodEnd ?? dbSub.currentPeriodEnd,
-            cancelAtPeriodEnd: liveCancel,
-            trialEnd: dbSub.trialEnd,
-          });
+          const snapshot = snapshotFromSubscription(
+            liveSub,
+            dbSub.stripeCustomerId ?? "",
+          );
+          const result = await deps.ingestSnapshot(
+            snapshot,
+            null,
+            { authority: "authenticated-user", userId },
+          );
+          if (!result.ok) {
+            throw new Error(`Subscription drift ingestion failed: ${result.error}`);
+          }
         }
 
         scheduledChange = await extractScheduledChange(
@@ -206,27 +218,59 @@ function shapeInfo(
     scheduledChange: UserSubscriptionInfo["scheduledChange"];
   },
 ): UserSubscriptionInfo {
+  // Unknown statuses fail closed: the raw status is observable but no paid
+  // entitlement is derived from the plan row until the status is supported.
+  const recognized = RECOGNIZED_STATUSES.has(reconciled.status);
+  const tier = recognized ? (dbSub.plan?.tier ?? "free") : "free";
+  const features = recognized
+    ? parseFeatures(dbSub.plan?.featuresJson)
+    : {};
   return userSubscriptionInfoSchema.parse({
-    tier: dbSub.plan?.tier ?? "free",
+    tier,
     status: reconciled.status,
-    recipesLimit: dbSub.plan?.recipesLimit ?? null,
-    ingredientsLimit: dbSub.plan?.ingredientsLimit ?? null,
-    features: parseFeatures(dbSub.plan?.featuresJson),
-    priceCents: dbSub.plan?.priceCents ?? null,
-    currency: dbSub.plan?.currency ?? null,
-    billingInterval: dbSub.plan?.billingInterval ?? null,
+    recipesLimit: recognized ? (dbSub.plan?.recipesLimit ?? null) : null,
+    ingredientsLimit: recognized ? (dbSub.plan?.ingredientsLimit ?? null) : null,
+    features,
+    priceCents: recognized ? (dbSub.plan?.priceCents ?? null) : null,
+    currency: recognized ? (dbSub.plan?.currency ?? null) : null,
+    billingInterval: recognized ? (dbSub.plan?.billingInterval ?? null) : null,
     currentPeriodEnd: reconciled.currentPeriodEnd?.toISOString() ?? null,
     cancelAtPeriodEnd: reconciled.cancelAtPeriodEnd,
     isTrial: reconciled.status === "trialing",
     trialEnd: dbSub.trialEnd?.toISOString() ?? null,
-    scheduledChange: reconciled.scheduledChange,
+    scheduledChange: recognized ? reconciled.scheduledChange : null,
   });
+}
+
+function snapshotFromSubscription(
+  sub: Stripe.Subscription,
+  stripeCustomerId: string,
+): StripeSubscriptionSnapshot {
+  const raw = sub as unknown as {
+    current_period_start?: number;
+    current_period_end?: number;
+    cancel_at?: number | null;
+  };
+  return {
+    stripeSubscriptionId: sub.id,
+    stripeCustomerId,
+    status: sub.status,
+    priceId:
+      typeof sub.items?.data?.[0]?.price === "string"
+        ? sub.items.data[0].price
+        : (sub.items?.data?.[0]?.price?.id ?? null),
+    currentPeriodStart: raw.current_period_start ?? null,
+    currentPeriodEnd: raw.current_period_end ?? null,
+    cancelAtPeriodEnd: Boolean(sub.cancel_at_period_end),
+    cancelAt: raw.cancel_at ?? null,
+    trialEnd: sub.trial_end ?? null,
+    raw: sub,
+  };
 }
 
 export const reconcileSubscription = reconcileSubscriptionWith({
   db: {
     getSubscriptionByUserId,
-    upsertSubscription,
     getSubscriptionPlanByStripePriceId,
   },
   stripe: {
@@ -234,4 +278,10 @@ export const reconcileSubscription = reconcileSubscriptionWith({
     getSubscriptionSchedules: (scheduleId) =>
       stripe.subscriptionSchedules.retrieve(scheduleId),
   },
+  ingestSnapshot: (snapshot, metadata, context) =>
+    subscriptionIngestion.ingestSubscriptionSnapshot({
+      snapshot,
+      metadata,
+      context,
+    }),
 });

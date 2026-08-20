@@ -81,4 +81,5 @@ The module shapes via `userSubscriptionInfoSchema` (the canonical schema). The D
 - Plan-drift reconciliation (live price → planId on drift).
 - Reading live `trial_end` / `current_period_start` into the shape.
 - Subscription-row replacement / id cross-check (live sub id ≠ DB row id).
-- The Stripe webhook's `writeSubscription` stays in `apps/api/src/billing/webhook.ts`, unchanged.
+
+> **Superseded**: The Stripe webhook's independent `writeSubscription` (with its `getPeriod`/`parsePeriodDate` synthetic-date parser) and the checkout/sync direct Subscription writes were removed when all Stripe-originated writes moved through the subscription ingestion module — see [ADR-0008](./0008-stripe-subscription-ingestion-module.md).

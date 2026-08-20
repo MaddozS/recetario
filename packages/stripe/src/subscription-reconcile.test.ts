@@ -72,7 +72,6 @@ function makeSub(overrides: Partial<SubRow> = {}): SubRow {
 
 type DbMocks = {
   getSubscriptionByUserId: ReturnType<typeof vi.fn>;
-  upsertSubscription: ReturnType<typeof vi.fn>;
   getSubscriptionPlanByStripePriceId: ReturnType<typeof vi.fn>;
 };
 
@@ -84,21 +83,21 @@ type StripeMocks = {
 function makeDeps() {
   const db: DbMocks = {
     getSubscriptionByUserId: vi.fn().mockResolvedValue(null),
-    upsertSubscription: vi.fn().mockResolvedValue(undefined),
     getSubscriptionPlanByStripePriceId: vi.fn().mockResolvedValue(null),
   };
   const stripe: StripeMocks = {
     retrieveSubscription: vi.fn().mockResolvedValue(null),
     getSubscriptionSchedules: vi.fn().mockResolvedValue(null),
   };
+  const ingestSnapshot = vi.fn().mockResolvedValue({ ok: true });
   const log = vi.fn();
-  return { db, stripe, log };
+  return { db, stripe, ingestSnapshot, log };
 }
 
 describe("reconcileSubscriptionWith", () => {
   it("returns null when no DB row exists", async () => {
-    const { db, stripe, log } = makeDeps();
-    const reconcile = reconcileSubscriptionWith({ db, stripe, log });
+    const { db, stripe, ingestSnapshot, log } = makeDeps();
+    const reconcile = reconcileSubscriptionWith({ db, stripe, ingestSnapshot, log });
 
     db.getSubscriptionByUserId.mockResolvedValue(null);
     const result = await reconcile("user-1");
@@ -115,8 +114,8 @@ describe("reconcileSubscriptionWith", () => {
   });
 
   it("shapes from the DB row alone when there is no Stripe id", async () => {
-    const { db, stripe, log } = makeDeps();
-    const reconcile = reconcileSubscriptionWith({ db, stripe, log });
+    const { db, stripe, ingestSnapshot, log } = makeDeps();
+    const reconcile = reconcileSubscriptionWith({ db, stripe, ingestSnapshot, log });
     db.getSubscriptionByUserId.mockResolvedValue(makeSub({ stripeSubscriptionId: null }));
 
     const result = await reconcile("user-1");
@@ -139,12 +138,13 @@ describe("reconcileSubscriptionWith", () => {
     expect(stripe.retrieveSubscription).not.toHaveBeenCalled();
   });
 
-  it("detects status drift and writes the exact upsert + live status", async () => {
-    const { db, stripe, log } = makeDeps();
-    const reconcile = reconcileSubscriptionWith({ db, stripe, log });
+  it("detects status drift and delegates ingestion with the live snapshot", async () => {
+    const { db, stripe, ingestSnapshot, log } = makeDeps();
+    const reconcile = reconcileSubscriptionWith({ db, stripe, ingestSnapshot, log });
     const sub = makeSub();
     db.getSubscriptionByUserId.mockResolvedValue(sub);
     stripe.retrieveSubscription.mockResolvedValue({
+      id: "sub_123",
       status: "past_due",
       cancel_at_period_end: false,
       cancel_at: null,
@@ -153,17 +153,15 @@ describe("reconcileSubscriptionWith", () => {
 
     const result = await reconcile("user-1");
 
-    expect(db.upsertSubscription).toHaveBeenCalledWith("sub_123", {
-      id: "sub_123",
-      userId: "user-1",
-      stripeCustomerId: "cus_123",
-      planId: "pro_monthly",
-      status: "past_due",
-      currentPeriodStart: new Date("2025-01-01T00:00:00Z"),
-      currentPeriodEnd: new Date("2030-01-01T00:00:00.000Z"),
-      cancelAtPeriodEnd: false,
-      trialEnd: null,
-    });
+    expect(ingestSnapshot).toHaveBeenCalledWith(
+      expect.objectContaining({
+        stripeSubscriptionId: "sub_123",
+        status: "past_due",
+        stripeCustomerId: "cus_123",
+      }),
+      null,
+      { authority: "authenticated-user", userId: "user-1" },
+    );
     expect(result?.status).toBe("past_due");
     expect(result?.currentPeriodEnd).toBe("2030-01-01T00:00:00.000Z");
     expect(result?.cancelAtPeriodEnd).toBe(false);
@@ -171,8 +169,8 @@ describe("reconcileSubscriptionWith", () => {
   });
 
   it("does not write when status and cancel match the DB", async () => {
-    const { db, stripe, log } = makeDeps();
-    const reconcile = reconcileSubscriptionWith({ db, stripe, log });
+    const { db, stripe, ingestSnapshot, log } = makeDeps();
+    const reconcile = reconcileSubscriptionWith({ db, stripe, ingestSnapshot, log });
     const sub = makeSub();
     db.getSubscriptionByUserId.mockResolvedValue(sub);
     stripe.retrieveSubscription.mockResolvedValue({
@@ -183,14 +181,14 @@ describe("reconcileSubscriptionWith", () => {
 
     const result = await reconcile("user-1");
 
-    expect(db.upsertSubscription).not.toHaveBeenCalled();
+    expect(ingestSnapshot).not.toHaveBeenCalled();
     expect(result?.status).toBe("active");
     expect(result?.currentPeriodEnd).toBe("2030-01-01T00:00:00.000Z");
   });
 
   it("detects cancel drift and sets cancelAtPeriodEnd from live data", async () => {
-    const { db, stripe, log } = makeDeps();
-    const reconcile = reconcileSubscriptionWith({ db, stripe, log });
+    const { db, stripe, ingestSnapshot, log } = makeDeps();
+    const reconcile = reconcileSubscriptionWith({ db, stripe, ingestSnapshot, log });
     const sub = makeSub();
     db.getSubscriptionByUserId.mockResolvedValue(sub);
     stripe.retrieveSubscription.mockResolvedValue({
@@ -201,13 +199,13 @@ describe("reconcileSubscriptionWith", () => {
 
     const result = await reconcile("user-1");
 
-    expect(db.upsertSubscription).toHaveBeenCalledTimes(1);
+    expect(ingestSnapshot).toHaveBeenCalledTimes(1);
     expect(result?.cancelAtPeriodEnd).toBe(true);
   });
 
   it("treats a live cancel_at signal as cancel drift", async () => {
-    const { db, stripe, log } = makeDeps();
-    const reconcile = reconcileSubscriptionWith({ db, stripe, log });
+    const { db, stripe, ingestSnapshot, log } = makeDeps();
+    const reconcile = reconcileSubscriptionWith({ db, stripe, ingestSnapshot, log });
     const sub = makeSub();
     db.getSubscriptionByUserId.mockResolvedValue(sub);
     stripe.retrieveSubscription.mockResolvedValue({
@@ -218,13 +216,13 @@ describe("reconcileSubscriptionWith", () => {
 
     const result = await reconcile("user-1");
 
-    expect(db.upsertSubscription).toHaveBeenCalledTimes(1);
+    expect(ingestSnapshot).toHaveBeenCalledTimes(1);
     expect(result?.cancelAtPeriodEnd).toBe(true);
   });
 
   it("populates scheduledChange from the schedule happy path", async () => {
-    const { db, stripe, log } = makeDeps();
-    const reconcile = reconcileSubscriptionWith({ db, stripe, log });
+    const { db, stripe, ingestSnapshot, log } = makeDeps();
+    const reconcile = reconcileSubscriptionWith({ db, stripe, ingestSnapshot, log });
     db.getSubscriptionByUserId.mockResolvedValue(makeSub());
     stripe.retrieveSubscription.mockResolvedValue({
       status: "active",
@@ -250,12 +248,12 @@ describe("reconcileSubscriptionWith", () => {
       targetInterval: "monthly",
       effectiveDate: "2030-01-01T00:00:00.000Z",
     });
-    expect(db.upsertSubscription).not.toHaveBeenCalled();
+    expect(ingestSnapshot).not.toHaveBeenCalled();
   });
 
   it("returns null scheduledChange when the next plan price does not resolve", async () => {
-    const { db, stripe, log } = makeDeps();
-    const reconcile = reconcileSubscriptionWith({ db, stripe, log });
+    const { db, stripe, ingestSnapshot, log } = makeDeps();
+    const reconcile = reconcileSubscriptionWith({ db, stripe, ingestSnapshot, log });
     db.getSubscriptionByUserId.mockResolvedValue(makeSub());
     stripe.retrieveSubscription.mockResolvedValue({
       status: "active",
@@ -276,8 +274,8 @@ describe("reconcileSubscriptionWith", () => {
   });
 
   it("returns null scheduledChange when the schedule has a single phase", async () => {
-    const { db, stripe, log } = makeDeps();
-    const reconcile = reconcileSubscriptionWith({ db, stripe, log });
+    const { db, stripe, ingestSnapshot, log } = makeDeps();
+    const reconcile = reconcileSubscriptionWith({ db, stripe, ingestSnapshot, log });
     db.getSubscriptionByUserId.mockResolvedValue(makeSub());
     stripe.retrieveSubscription.mockResolvedValue({
       status: "active",
@@ -294,8 +292,8 @@ describe("reconcileSubscriptionWith", () => {
   });
 
   it("returns null scheduledChange and still shapes when the schedule read fails", async () => {
-    const { db, stripe, log } = makeDeps();
-    const reconcile = reconcileSubscriptionWith({ db, stripe, log });
+    const { db, stripe, ingestSnapshot, log } = makeDeps();
+    const reconcile = reconcileSubscriptionWith({ db, stripe, ingestSnapshot, log });
     db.getSubscriptionByUserId.mockResolvedValue(makeSub());
     stripe.retrieveSubscription.mockResolvedValue({
       status: "active",
@@ -312,8 +310,8 @@ describe("reconcileSubscriptionWith", () => {
   });
 
   it("propagates DB plan-lookup errors instead of falling back", async () => {
-    const { db, stripe, log } = makeDeps();
-    const reconcile = reconcileSubscriptionWith({ db, stripe, log });
+    const { db, stripe, ingestSnapshot, log } = makeDeps();
+    const reconcile = reconcileSubscriptionWith({ db, stripe, ingestSnapshot, log });
     db.getSubscriptionByUserId.mockResolvedValue(makeSub());
     stripe.retrieveSubscription.mockResolvedValue({
       status: "active",
@@ -335,8 +333,8 @@ describe("reconcileSubscriptionWith", () => {
   });
 
   it("falls back to DB state and logs when the Stripe read fails", async () => {
-    const { db, stripe, log } = makeDeps();
-    const reconcile = reconcileSubscriptionWith({ db, stripe, log });
+    const { db, stripe, ingestSnapshot, log } = makeDeps();
+    const reconcile = reconcileSubscriptionWith({ db, stripe, ingestSnapshot, log });
     const sub = makeSub();
     db.getSubscriptionByUserId.mockResolvedValue(sub);
     stripe.retrieveSubscription.mockRejectedValue(new Error("network"));
@@ -354,12 +352,12 @@ describe("reconcileSubscriptionWith", () => {
       "Subscription reconcile failed; falling back to DB state",
       expect.any(Error),
     );
-    expect(db.upsertSubscription).not.toHaveBeenCalled();
+    expect(ingestSnapshot).not.toHaveBeenCalled();
   });
 
   it("returns null for a canceled subscription past its period end (after writing drift)", async () => {
-    const { db, stripe, log } = makeDeps();
-    const reconcile = reconcileSubscriptionWith({ db, stripe, log });
+    const { db, stripe, ingestSnapshot, log } = makeDeps();
+    const reconcile = reconcileSubscriptionWith({ db, stripe, ingestSnapshot, log });
     const sub = makeSub({
       status: "active",
       cancelAtPeriodEnd: false,
@@ -376,12 +374,12 @@ describe("reconcileSubscriptionWith", () => {
     const result = await reconcile("user-1");
 
     expect(result).toBeNull();
-    expect(db.upsertSubscription).toHaveBeenCalledTimes(1);
+    expect(ingestSnapshot).toHaveBeenCalledTimes(1);
   });
 
   it("keeps returning a canceled subscription within its grace period", async () => {
-    const { db, stripe, log } = makeDeps();
-    const reconcile = reconcileSubscriptionWith({ db, stripe, log });
+    const { db, stripe, ingestSnapshot, log } = makeDeps();
+    const reconcile = reconcileSubscriptionWith({ db, stripe, ingestSnapshot, log });
     const sub = makeSub({
       status: "canceled",
       cancelAtPeriodEnd: true,
@@ -397,8 +395,8 @@ describe("reconcileSubscriptionWith", () => {
   });
 
   it("does not treat a canceled row with a null period end as expired", async () => {
-    const { db, stripe, log } = makeDeps();
-    const reconcile = reconcileSubscriptionWith({ db, stripe, log });
+    const { db, stripe, ingestSnapshot, log } = makeDeps();
+    const reconcile = reconcileSubscriptionWith({ db, stripe, ingestSnapshot, log });
     const sub = makeSub({
       status: "canceled",
       cancelAtPeriodEnd: true,
@@ -414,8 +412,8 @@ describe("reconcileSubscriptionWith", () => {
   });
 
   it("derives isTrial from the reconciled status", async () => {
-    const { db, stripe, log } = makeDeps();
-    const reconcile = reconcileSubscriptionWith({ db, stripe, log });
+    const { db, stripe, ingestSnapshot, log } = makeDeps();
+    const reconcile = reconcileSubscriptionWith({ db, stripe, ingestSnapshot, log });
     db.getSubscriptionByUserId.mockResolvedValue(makeSub({ status: "trialing" }));
 
     const result = await reconcile("user-1");
@@ -425,8 +423,8 @@ describe("reconcileSubscriptionWith", () => {
   });
 
   it("shapes as free-tier when the plan row is missing", async () => {
-    const { db, stripe, log } = makeDeps();
-    const reconcile = reconcileSubscriptionWith({ db, stripe, log });
+    const { db, stripe, ingestSnapshot, log } = makeDeps();
+    const reconcile = reconcileSubscriptionWith({ db, stripe, ingestSnapshot, log });
     db.getSubscriptionByUserId.mockResolvedValue(
       makeSub({ plan: null, planId: "missing_plan" }),
     );
@@ -445,15 +443,40 @@ describe("reconcileSubscriptionWith", () => {
     });
   });
 
+  it("fails closed on unknown statuses: raw status observable, no paid entitlement", async () => {
+    const { db, stripe, ingestSnapshot, log } = makeDeps();
+    const reconcile = reconcileSubscriptionWith({ db, stripe, ingestSnapshot, log });
+    db.getSubscriptionByUserId.mockResolvedValue(
+      makeSub({ status: "weird_future_status" }),
+    );
+
+    const result = await reconcile("user-1");
+
+    expect(result).toMatchObject({
+      tier: "free",
+      status: "weird_future_status",
+      recipesLimit: null,
+      ingredientsLimit: null,
+      features: {},
+      priceCents: null,
+      currency: null,
+      billingInterval: null,
+      isTrial: false,
+      scheduledChange: null,
+    });
+    expect(ingestSnapshot).not.toHaveBeenCalled();
+  });
+
   it("falls back to the DB period end when the live one is missing on drift", async () => {
-    const { db, stripe, log } = makeDeps();
-    const reconcile = reconcileSubscriptionWith({ db, stripe, log });
+    const { db, stripe, ingestSnapshot, log } = makeDeps();
+    const reconcile = reconcileSubscriptionWith({ db, stripe, ingestSnapshot, log });
     const sub = makeSub({
       status: "active",
       currentPeriodEnd: new Date("2030-01-01T00:00:00Z"),
     });
     db.getSubscriptionByUserId.mockResolvedValue(sub);
     stripe.retrieveSubscription.mockResolvedValue({
+      id: "sub_123",
       status: "past_due",
       cancel_at_period_end: false,
       cancel_at: null,
@@ -462,29 +485,32 @@ describe("reconcileSubscriptionWith", () => {
 
     const result = await reconcile("user-1");
 
-    expect(db.upsertSubscription).toHaveBeenCalledWith(
-      "sub_123",
+    expect(ingestSnapshot).toHaveBeenCalledWith(
       expect.objectContaining({
-        currentPeriodEnd: new Date("2030-01-01T00:00:00Z"),
+        stripeSubscriptionId: "sub_123",
+        status: "past_due",
+        currentPeriodEnd: null,
       }),
+      null,
+      { authority: "authenticated-user", userId: "user-1" },
     );
     expect(result?.currentPeriodEnd).toBe("2030-01-01T00:00:00.000Z");
   });
 
   it("propagates DB read errors instead of falling back", async () => {
-    const { db, stripe, log } = makeDeps();
-    const reconcile = reconcileSubscriptionWith({ db, stripe, log });
+    const { db, stripe, ingestSnapshot, log } = makeDeps();
+    const reconcile = reconcileSubscriptionWith({ db, stripe, ingestSnapshot, log });
     db.getSubscriptionByUserId.mockRejectedValue(new Error("db down"));
 
     await expect(reconcile("user-1")).rejects.toThrow("db down");
     expect(log).not.toHaveBeenCalled();
   });
 
-  it("propagates DB write errors instead of falling back", async () => {
-    const { db, stripe, log } = makeDeps();
-    const reconcile = reconcileSubscriptionWith({ db, stripe, log });
+  it("propagates ingestion write errors instead of falling back", async () => {
+    const { db, stripe, ingestSnapshot, log } = makeDeps();
+    const reconcile = reconcileSubscriptionWith({ db, stripe, ingestSnapshot, log });
     db.getSubscriptionByUserId.mockResolvedValue(makeSub());
-    db.upsertSubscription.mockRejectedValue(new Error("write failed"));
+    ingestSnapshot.mockRejectedValue(new Error("write failed"));
     stripe.retrieveSubscription.mockResolvedValue({
       status: "past_due",
       cancel_at_period_end: false,

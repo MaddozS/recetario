@@ -1,85 +1,8 @@
 import type { Handler } from "hono";
 import {
-  getSubscriptionPlanByStripePriceId,
-  getSubscriptionByStripeId,
-  upsertSubscription,
-  updateSubscription,
-} from "@recetario/db";
-import {
-  retrieveSubscription,
   verifyWebhookSignature,
+  subscriptionIngestion,
 } from "@recetario/stripe/server";
-import { createSubscriptionInputSchema } from "@recetario/types";
-
-function getPeriod(obj: unknown, field: string): number {
-  if (!obj || typeof obj !== "object") return 0;
-  const rec = obj as Record<string, unknown>;
-
-  if (field in rec && typeof rec[field] === "number" && (rec[field] as number) > 0) {
-    return rec[field] as number;
-  }
-
-  if ("items" in rec && rec.items && typeof rec.items === "object") {
-    const itemsObj = rec.items as Record<string, unknown>;
-    const data = itemsObj.data;
-    if (Array.isArray(data) && data.length > 0 && data[0] && typeof data[0] === "object") {
-      const item = data[0] as Record<string, unknown>;
-      if (field in item && typeof item[field] === "number" && (item[field] as number) > 0) {
-        return item[field] as number;
-      }
-    }
-  }
-
-  return 0;
-}
-
-function parsePeriodDate(ts: number, isEnd = false): Date {
-  if (ts > 1000000000) {
-    return new Date(ts * 1000);
-  }
-  return isEnd
-    ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-    : new Date();
-}
-
-async function writeSubscription(input: {
-  stripeSubscriptionId: string;
-  stripeCustomerId: string;
-  priceId: string | null;
-  userId: string | null;
-  planId: string | null;
-  status: string;
-  currentPeriodStart: Date;
-  currentPeriodEnd: Date;
-  cancelAtPeriodEnd: boolean;
-  trialEnd: Date | null;
-}): Promise<void> {
-  const validated = createSubscriptionInputSchema.parse(input);
-  let planId = validated.planId;
-  let userId = validated.userId;
-  if (!planId && input.priceId) {
-    planId =
-      (await getSubscriptionPlanByStripePriceId(input.priceId))?.id ?? null;
-  }
-  if (!userId) {
-    userId =
-      (await getSubscriptionByStripeId(input.stripeSubscriptionId))?.userId ??
-      null;
-  }
-  if (!planId || !userId) return;
-
-  await upsertSubscription(validated.stripeSubscriptionId, {
-    id: validated.stripeSubscriptionId,
-    userId,
-    stripeCustomerId: validated.stripeCustomerId,
-    planId,
-    status: validated.status,
-    currentPeriodStart: validated.currentPeriodStart,
-    currentPeriodEnd: validated.currentPeriodEnd,
-    cancelAtPeriodEnd: validated.cancelAtPeriodEnd,
-    trialEnd: validated.trialEnd ?? null,
-  });
-}
 
 export function stripeWebhookHandler(): Handler {
   return async (c) => {
@@ -103,91 +26,16 @@ export function stripeWebhookHandler(): Handler {
       return c.text("Invalid signature", 400);
     }
 
-    const obj = event.data.object as unknown as Record<string, unknown>;
+    const result = await subscriptionIngestion.processStripeEvent({
+      event: event as never,
+    });
 
-    switch (event.type) {
-      case "checkout.session.completed": {
-        const metadata = obj.metadata as Record<string, string> | undefined;
-        const subscriptionId =
-          typeof obj.subscription === "string" ? obj.subscription : null;
-        const customerId =
-          typeof obj.customer === "string" ? obj.customer : null;
-        if (!subscriptionId || !customerId) break;
-        const sub = await retrieveSubscription(subscriptionId);
-        const items = sub.items?.data;
-        const priceId = items?.[0]?.price?.id ?? null;
-        await writeSubscription({
-          stripeSubscriptionId: subscriptionId,
-          stripeCustomerId: customerId,
-          priceId,
-          userId: metadata?.userId ?? null,
-          planId: metadata?.planId ?? null,
-          status: sub.status,
-          currentPeriodStart: parsePeriodDate(
-            getPeriod(sub, "current_period_start"),
-            false,
-          ),
-          currentPeriodEnd: parsePeriodDate(
-            getPeriod(sub, "current_period_end"),
-            true,
-          ),
-          cancelAtPeriodEnd: Boolean(sub.cancel_at_period_end),
-          trialEnd: getPeriod(sub, "trial_end")
-            ? new Date(getPeriod(sub, "trial_end") * 1000)
-            : null,
-        });
-        break;
-      }
-      case "customer.subscription.updated": {
-        const items = obj.items as
-          | { data?: Array<{ price?: { id?: string } }> }
-          | undefined;
-        const priceId = items?.data?.[0]?.price?.id ?? null;
-        await writeSubscription({
-          stripeSubscriptionId: obj.id as string,
-          stripeCustomerId:
-            typeof obj.customer === "string" ? obj.customer : "",
-          priceId,
-          userId: null,
-          planId: null,
-          status: obj.status as string,
-          currentPeriodStart: parsePeriodDate(
-            getPeriod(obj, "current_period_start"),
-            false,
-          ),
-          currentPeriodEnd: parsePeriodDate(
-            getPeriod(obj, "current_period_end"),
-            true,
-          ),
-          cancelAtPeriodEnd: Boolean(obj.cancel_at_period_end),
-          trialEnd: getPeriod(obj, "trial_end")
-            ? new Date(getPeriod(obj, "trial_end") * 1000)
-            : null,
-        });
-        break;
-      }
-      case "customer.subscription.deleted": {
-        const dbSub = await getSubscriptionByStripeId(obj.id as string);
-        if (dbSub) {
-          await updateSubscription(obj.id as string, {
-            status: "canceled",
-            cancelAtPeriodEnd: true,
-          });
-        }
-        break;
-      }
-      case "invoice.payment_failed": {
-        const subscriptionId =
-          typeof obj.subscription === "string" ? obj.subscription : null;
-        if (subscriptionId) {
-          const dbSub = await getSubscriptionByStripeId(subscriptionId);
-          if (dbSub) {
-            await updateSubscription(subscriptionId, { status: "past_due" });
-          }
-        }
-        break;
-      }
+    if (!result.ok) {
+      // Retryable failure: Stripe will redeliver.
+      return c.text(result.error, 500);
     }
+
+    // Applied, idempotent duplicate, stale, or unsupported event: 200.
     return c.text("OK");
   };
 }

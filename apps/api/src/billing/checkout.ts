@@ -4,13 +4,11 @@ import {
   getSubscriptionPlanByStripePriceId,
   getStripeCustomerId,
   getSubscriptionByUserId,
-  upsertSubscription,
 } from "@recetario/db";
 import {
   createCustomer,
-  createCheckoutSession,
-  updateStripeSubscription,
   isUpgrade,
+  subscriptionIngestion,
 } from "@recetario/stripe/server";
 import type { AuthVariables } from "../middleware/auth";
 import { getAppOrigin, safeRedirectUrl } from "../url-utils";
@@ -70,41 +68,29 @@ export function stripeCheckoutHandler(): Handler<{ Variables: AuthVariables }> {
         { tier: plan.tier, billingInterval: plan.billingInterval },
       );
 
-      const isTrialing = currentSub.status === "trialing";
-
-      const updatedStripeSub = await updateStripeSubscription({
+      const change = await subscriptionIngestion.changePlanIfNeeded({
         subscriptionId: currentSub.stripeSubscriptionId,
         priceId,
         isUpgrade: isUpgradePlan,
-        isTrialing,
+        isTrialing: currentSub.status === "trialing",
       });
+      if (!change.ok) {
+        return c.json({ error: change.error }, 500);
+      }
 
-      const updatedSubData = updatedStripeSub as unknown as {
-        current_period_start?: number;
-        current_period_end?: number;
-      };
-
-      await upsertSubscription(currentSub.stripeSubscriptionId, {
-        id: currentSub.stripeSubscriptionId,
-        userId,
-        stripeCustomerId: currentSub.stripeCustomerId,
-        planId: plan.id,
-        status: updatedStripeSub.status,
-        currentPeriodStart:
-          typeof updatedSubData.current_period_start === "number" &&
-          updatedSubData.current_period_start > 1000000000
-            ? new Date(updatedSubData.current_period_start * 1000)
-            : new Date(),
-        currentPeriodEnd:
-          typeof updatedSubData.current_period_end === "number" &&
-          updatedSubData.current_period_end > 1000000000
-            ? new Date(updatedSubData.current_period_end * 1000)
-            : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-        cancelAtPeriodEnd: Boolean(updatedStripeSub.cancel_at_period_end),
-        trialEnd: updatedStripeSub.trial_end
-          ? new Date(updatedStripeSub.trial_end * 1000)
-          : null,
-      });
+      // Local ingestion is not atomic with the Stripe mutation; ingest the
+      // retrieved snapshot so local state reflects Stripe's active Price.
+      const ingestResult =
+        await subscriptionIngestion.ingestSubscriptionSnapshot({
+          snapshot: subscriptionIngestion.snapshotFromSubscription(
+            change.subscription,
+            currentSub.stripeCustomerId ?? "",
+          ),
+          context: { authority: "authenticated-user", userId },
+        });
+      if (!ingestResult.ok) {
+        return c.json({ error: ingestResult.error }, 500);
+      }
 
       return c.json({ url: redirectSuccessUrl });
     }
@@ -117,7 +103,7 @@ export function stripeCheckoutHandler(): Handler<{ Variables: AuthVariables }> {
     const priorSub = await getSubscriptionByUserId(userId);
     const trialPeriodDays = priorSub ? undefined : 14;
 
-    const checkoutSession = await createCheckoutSession({
+    const result = await subscriptionIngestion.createTrustedCheckoutSession({
       customerId,
       priceId,
       successUrl: redirectSuccessUrl,
@@ -126,6 +112,9 @@ export function stripeCheckoutHandler(): Handler<{ Variables: AuthVariables }> {
       planId: plan.id,
       trialPeriodDays,
     });
-    return c.json({ url: checkoutSession.url });
+    if (!result.ok) {
+      return c.json({ error: result.error }, 500);
+    }
+    return c.json({ url: result.url });
   };
 }

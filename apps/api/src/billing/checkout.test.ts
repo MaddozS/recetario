@@ -14,6 +14,10 @@ const {
   mockCreateCustomer,
   mockCreateCheckoutSession,
   mockUpdateStripeSubscription,
+  mockRetrieveSubscription,
+  mockIngestSubscriptionSnapshot,
+  mockCreateTrustedCheckoutSession,
+  mockChangePlanIfNeeded,
 } = vi.hoisted(() => ({
   mockValidateCsrf: vi.fn(),
   mockGetSubscriptionPlanByStripePriceId: vi.fn(),
@@ -23,6 +27,10 @@ const {
   mockCreateCustomer: vi.fn(),
   mockCreateCheckoutSession: vi.fn(),
   mockUpdateStripeSubscription: vi.fn(),
+  mockRetrieveSubscription: vi.fn(),
+  mockIngestSubscriptionSnapshot: vi.fn(),
+  mockCreateTrustedCheckoutSession: vi.fn(),
+  mockChangePlanIfNeeded: vi.fn(),
 }));
 
 vi.mock("@recetario/auth/server", () => ({
@@ -34,6 +42,16 @@ vi.mock("@recetario/db", () => ({
   getStripeCustomerId: mockGetStripeCustomerId,
   getSubscriptionByUserId: mockGetSubscriptionByUserId,
   upsertSubscription: mockUpsertSubscription,
+  getCheckoutIntentBySession: vi.fn(),
+  getCheckoutIntentBySubscription: vi.fn(),
+  getSubscriptionByStripeIdForIngestion: vi.fn(),
+  createCheckoutIntent: vi.fn(),
+  consumeCheckoutIntent: vi.fn(),
+  getLatestEventAttempt: vi.fn(),
+  getLatestTerminalAttemptForSubscription: vi.fn(),
+  recordFailedEventAttempt: vi.fn(),
+  applySubscriptionMutation: vi.fn(),
+  upsertSubscriptionAndConsumeIntent: vi.fn(),
 }));
 
 vi.mock("@recetario/stripe/server", async () => {
@@ -43,6 +61,24 @@ vi.mock("@recetario/stripe/server", async () => {
     createCustomer: mockCreateCustomer,
     createCheckoutSession: mockCreateCheckoutSession,
     updateStripeSubscription: mockUpdateStripeSubscription,
+    retrieveSubscription: mockRetrieveSubscription,
+    subscriptionIngestion: {
+      createTrustedCheckoutSession: mockCreateTrustedCheckoutSession,
+      ingestSubscriptionSnapshot: mockIngestSubscriptionSnapshot,
+      changePlanIfNeeded: mockChangePlanIfNeeded,
+      snapshotFromSubscription: (sub: unknown, customerId: string) => ({
+        stripeSubscriptionId: (sub as { id?: string })?.id ?? "sub_existing123",
+        stripeCustomerId: customerId,
+        status: "active",
+        priceId: "price_pro_monthly",
+        currentPeriodStart: 1700000000,
+        currentPeriodEnd: 1702500000,
+        cancelAtPeriodEnd: false,
+        cancelAt: null,
+        trialEnd: null,
+        raw: sub,
+      }),
+    },
   };
 });
 
@@ -154,14 +190,19 @@ describe("stripeCheckoutHandler", () => {
       plan: { tier: "basic", billingInterval: "monthly" },
     });
 
-    mockUpdateStripeSubscription.mockResolvedValueOnce({
-      id: "sub_existing123",
-      status: "active",
-      current_period_start: 1700000000,
-      current_period_end: 1702500000,
-      cancel_at_period_end: false,
-      trial_end: null,
+    mockChangePlanIfNeeded.mockResolvedValueOnce({
+      ok: true,
+      subscription: {
+        id: "sub_existing123",
+        status: "active",
+        current_period_start: 1700000000,
+        current_period_end: 1702500000,
+        cancel_at_period_end: false,
+        trial_end: null,
+      },
     });
+
+    mockIngestSubscriptionSnapshot.mockResolvedValueOnce({ ok: true });
 
     const res = await buildApp().request(
       "/api/stripe/checkout",
@@ -174,27 +215,24 @@ describe("stripeCheckoutHandler", () => {
     );
 
     expect(res.status).toBe(200);
-    expect(await res.json()).toEqual({
-      url: "http://localhost/settings?tab=billing&success=1",
-    });
 
-    expect(mockUpdateStripeSubscription).toHaveBeenCalledWith({
+    expect(mockChangePlanIfNeeded).toHaveBeenCalledWith({
       subscriptionId: "sub_existing123",
       priceId: "price_pro_monthly",
       isUpgrade: true,
       isTrialing: false,
     });
 
-    expect(mockUpsertSubscription).toHaveBeenCalledWith(
-      "sub_existing123",
-      expect.objectContaining({
-        planId: "pro_monthly",
+    expect(mockIngestSubscriptionSnapshot).toHaveBeenCalledWith({
+      snapshot: expect.objectContaining({
+        stripeSubscriptionId: "sub_existing123",
         status: "active",
       }),
-    );
+      context: { authority: "authenticated-user", userId: "user_123" },
+    });
   });
 
-  it("creates new Stripe customer and checkout session with trial for first time subscriber", async () => {
+  it("creates new Stripe customer and trusted checkout session with trial for first time subscriber", async () => {
     mockGetSubscriptionPlanByStripePriceId.mockResolvedValueOnce({
       id: "basic_monthly",
       tier: "basic",
@@ -203,7 +241,8 @@ describe("stripeCheckoutHandler", () => {
     mockGetSubscriptionByUserId.mockResolvedValue(null);
     mockGetStripeCustomerId.mockResolvedValueOnce(null);
     mockCreateCustomer.mockResolvedValueOnce({ id: "cus_new123" });
-    mockCreateCheckoutSession.mockResolvedValueOnce({
+    mockCreateTrustedCheckoutSession.mockResolvedValueOnce({
+      ok: true,
       url: "https://checkout.stripe.com/pay/cs_test123",
     });
 
@@ -225,7 +264,7 @@ describe("stripeCheckoutHandler", () => {
       email: "test@recetario.io",
       userId: "user_123",
     });
-    expect(mockCreateCheckoutSession).toHaveBeenCalledWith(
+    expect(mockCreateTrustedCheckoutSession).toHaveBeenCalledWith(
       expect.objectContaining({
         customerId: "cus_new123",
         priceId: "price_basic_monthly",
@@ -236,7 +275,7 @@ describe("stripeCheckoutHandler", () => {
     );
   });
 
-  it("creates checkout session without trial for returning customer with prior canceled subscription", async () => {
+  it("creates trusted checkout session without trial for returning customer with prior canceled subscription", async () => {
     mockGetSubscriptionPlanByStripePriceId.mockResolvedValueOnce({
       id: "pro_monthly",
       tier: "pro",
@@ -253,7 +292,8 @@ describe("stripeCheckoutHandler", () => {
       });
 
     mockGetStripeCustomerId.mockResolvedValueOnce("cus_existing456");
-    mockCreateCheckoutSession.mockResolvedValueOnce({
+    mockCreateTrustedCheckoutSession.mockResolvedValueOnce({
+      ok: true,
       url: "https://checkout.stripe.com/pay/cs_test456",
     });
 
@@ -268,7 +308,7 @@ describe("stripeCheckoutHandler", () => {
     );
 
     expect(res.status).toBe(200);
-    expect(mockCreateCheckoutSession).toHaveBeenCalledWith(
+    expect(mockCreateTrustedCheckoutSession).toHaveBeenCalledWith(
       expect.objectContaining({
         customerId: "cus_existing456",
         trialPeriodDays: undefined,

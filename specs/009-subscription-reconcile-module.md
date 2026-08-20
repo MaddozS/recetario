@@ -55,16 +55,17 @@ Extract the reconcile into one deep module in `packages/stripe` — a small inte
 
 ## Out of Scope
 
-- The Stripe webhook's write path (`writeSubscription`) — stays in `apps/api/src/billing/webhook.ts`, unchanged; its `getPeriod`/`parsePeriodDate` defensive parser is a separate candidate (raw-shape adapter).
+- The Stripe webhook's write path (`writeSubscription`) — **superseded**: removed when all Stripe-originated writes moved through the subscription ingestion module (ADR-0008).
 - Plan-drift reconciliation (live price → planId on drift) — documented follow-up.
 - Reading live `trial_end` / `current_period_start` into the shape — documented follow-up.
 - Subscription-row replacement / id cross-check (live sub id ≠ DB row id) — documented follow-up.
-- The `checkout`, `sync-session`, `portal`, and `plans` handlers — untouched.
+- The `checkout`, `sync-session`, `portal`, and `plans` handlers — untouched at the time; checkout/sync now delegate writes through ingestion (ADR-0008).
 - `getPlanByStripePriceId` / `getStripeCustomerId` in `packages/stripe` — untouched.
 
 ## Further Notes
 
 - The module follows ADR-0006 (Stripe domain logic lives in `packages/stripe`; db stays pure persistence). It does not contradict or reopen it — the webhook switch stays in the API; only the duplicated read/reconcile/shape engine moves.
+- **Superseded by ADR-0008**: subscription reconcile now delegates its drift writes through snapshot ingestion; the webhook switch still lives in the API but dispatch is `processStripeEvent`.
 - The current handlers' tests mock `@recetario/db` but never exercise the reconcile branches — this is the exact gap the factory seam closes.
 - The recent scheduled-downgrades commit (1c6ed26) added the duplicate reconcile block to both handlers in one commit — this module is the locality fix for that.
 - The `subscriptionResponseSchema` alias is load-bearing for the web (`settings.astro` apiFetch schema, `auth.ts` session schema), but since it's a pure alias of `userSubscriptionInfoSchema`, replacing the alias everywhere is a safe mechanical rename.
