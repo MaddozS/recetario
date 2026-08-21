@@ -1,23 +1,27 @@
 # `@recetario/db` — Database layer
 
-Prisma ORM wrapper for PostgreSQL. Provides the Prisma client singleton, database query helpers, and cache primitives used across KitchCalc.
+Prisma ORM wrapper for PostgreSQL (via Accelerate). Provides the Prisma client singleton, database query helpers, and Accelerate edge-cache invalidation used across KitchCalc.
 
 ## What's inside
 
-- `prisma` — singleton PrismaClient with `@prisma/adapter-pg` (pg.Pool max 3, 30s idle)
-- `cacheGet / cacheSet` — simple subscription-cache using `globalThis.__RECETARIO_CACHE`
+- `prisma` — singleton PrismaClient with `@prisma/extension-accelerate` (`accelerateUrl`)
+- `invalidateAccelerateCache(tags)` — best-effort Accelerate edge-cache invalidation by tag
 - `logAuditEvent` — audit-log insert for sign-in events and sensitive actions
 - Query helpers for ingredients, recipes, presentations, user preferences, and billing (legacy — most billing moved to `@recetario/stripe`)
 
 ## Usage
 
 ```ts
-import { prisma, cacheGet, cacheSet } from "@recetario/db";
+import { prisma, invalidateAccelerateCache } from "@recetario/db";
 
 const recipes = await prisma.recipe.findMany({
   where: { ownerId: user.id },
 });
 ```
+
+## Caching
+
+Session-path reads (`getSubscriptionByUserId`, `getUserPreferences`, `getCredentialAccount`) set `cacheStrategy: { ttl: 60, swr: 120, tags: ["user:<id>"] }` so Accelerate serves the edge cache. Write helpers that mutate those rows call `invalidateAccelerateCache(["user:<id>"])` so the next read is fresh.
 
 ## Generated client
 

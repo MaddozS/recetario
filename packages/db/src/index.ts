@@ -1,4 +1,4 @@
-export { prisma } from "./prisma";
+export { prisma, invalidateAccelerateCache } from "./prisma";
 export * from "./audit";
 export * from "./billing";
 export * from "./billing-ingestion";

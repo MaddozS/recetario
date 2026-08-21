@@ -1,4 +1,4 @@
-import { prisma } from "./prisma";
+import { prisma, invalidateAccelerateCache, userCacheTag } from "./prisma";
 import type {
   SubscriptionUncheckedCreateInput,
   SubscriptionUncheckedUpdateInput,
@@ -57,6 +57,11 @@ export async function getSubscriptionByUserId(
     where: { userId, ...(statuses ? { status: { in: statuses } } : {}) },
     include: { plan: true },
     orderBy: { createdAt: "desc" },
+    cacheStrategy: {
+      ttl: 60,
+      swr: 120,
+      tags: [userCacheTag(userId)],
+    },
   });
   if (rows.length === 0) return null;
 
@@ -76,21 +81,25 @@ export async function upsertSubscription(
   stripeSubscriptionId: string,
   input: Omit<SubscriptionUncheckedCreateInput, "stripeSubscriptionId">,
 ) {
-  return prisma.subscription.upsert({
+  const data = await prisma.subscription.upsert({
     where: { stripeSubscriptionId },
     update: input,
     create: { stripeSubscriptionId, ...input },
   });
+  await invalidateAccelerateCache([userCacheTag(data.userId)]);
+  return data;
 }
 
 export async function updateSubscription(
   stripeSubscriptionId: string,
   input: SubscriptionUncheckedUpdateInput,
 ) {
-  return prisma.subscription.update({
+  const data = await prisma.subscription.update({
     where: { stripeSubscriptionId },
     data: input,
   });
+  await invalidateAccelerateCache([userCacheTag(data.userId)]);
+  return data;
 }
 
 export async function getStripeCustomerId(userId: string): Promise<string | null> {

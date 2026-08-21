@@ -29,10 +29,15 @@ const mocks = vi.hoisted(() => {
       findUnique: vi.fn(),
     },
   };
-  return { prisma, tx };
+  const invalidateAccelerateCache = vi.fn();
+  return { prisma, tx, invalidateAccelerateCache };
 });
 
-vi.mock("./prisma", () => ({ prisma: mocks.prisma }));
+vi.mock("./prisma", () => ({
+  prisma: mocks.prisma,
+  invalidateAccelerateCache: mocks.invalidateAccelerateCache,
+  userCacheTag: (userId: string) => `user_${userId}`,
+}));
 
 import {
   createCheckoutIntent,
@@ -79,6 +84,7 @@ beforeEach(() => {
       }
     }
   }
+  mocks.invalidateAccelerateCache.mockReset();
 });
 
 describe("checkout intent persistence", () => {
@@ -134,6 +140,7 @@ describe("applySubscriptionMutation", () => {
     expect(mocks.tx.stripeEventAttempt.create).toHaveBeenCalledWith({
       data: { ...attempt, outcome: "applied" },
     });
+    expect(mocks.invalidateAccelerateCache).toHaveBeenCalledWith(["user_user-1"]);
   });
 
   it("consumes a Checkout intent to the resulting subscription in the same transaction", async () => {
@@ -157,6 +164,7 @@ describe("applySubscriptionMutation", () => {
         consumedAt: expect.any(Date),
       },
     });
+    expect(mocks.invalidateAccelerateCache).toHaveBeenCalledWith(["user_user-1"]);
   });
 
   it("records an ignored duplicate when a terminal attempt already exists", async () => {
@@ -219,6 +227,7 @@ describe("snapshot upsert with intent consumption", () => {
         consumedAt: expect.any(Date),
       },
     });
+    expect(mocks.invalidateAccelerateCache).toHaveBeenCalledWith(["user_user-1"]);
   });
 });
 

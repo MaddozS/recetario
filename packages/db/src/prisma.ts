@@ -37,3 +37,25 @@ export const prisma = new Proxy({} as ReturnType<typeof createPrismaClientIntern
   },
 });
 
+/**
+ * Build an Accelerate cache tag for a user. Accelerate only allows
+ * alphanumeric characters and underscores in tag values — user ids are
+ * UUIDs with hyphens, so they must be normalized.
+ */
+export function userCacheTag(userId: string): string {
+  return `user_${userId.replace(/[^a-zA-Z0-9_]/g, "_")}`;
+}
+
+/**
+ * Invalidate Accelerate's edge cache for the given tags. Best-effort: a
+ * failure to reach the Accelerate API is swallowed so writes never fail
+ * because of cache bookkeeping.
+ */
+export async function invalidateAccelerateCache(tags: string[]): Promise<void> {
+  try {
+    await getPrisma().$accelerate.invalidate({ tags });
+  } catch {
+    // best-effort invalidation; stale entries expire via ttl/swr
+  }
+}
+

@@ -1,4 +1,4 @@
-import { prisma } from "./prisma";
+import { prisma, invalidateAccelerateCache, userCacheTag } from "./prisma";
 import type {
   CheckoutIntentUncheckedCreateInput,
   SubscriptionUncheckedCreateInput,
@@ -93,13 +93,26 @@ export type ApplyResult =
  * - A failed attempt never advances the terminal cursor and never blocks a
  *   later retry.
  */
+/**
+ * Interactive-transaction budget for Stripe ingestion. The default 5s timeout
+ * is too tight for serverless DB round-trips under load; Stripe retries
+ * deliveries and the apply path is idempotent, so a generous budget is safe.
+ * Accelerate caps interactive-transaction timeouts at 15000ms (P6005 if
+ * exceeded); that cap is the ceiling we use.
+ */
+const INGESTION_TRANSACTION_OPTIONS = {
+  maxWait: 10_000,
+  timeout: 15_000,
+} as const;
+
 export async function applySubscriptionMutation(
   stripeSubscriptionId: string,
   mutation: SubscriptionMutation,
   attempt: EventAttemptInput,
   checkoutIntentId?: string | null,
 ): Promise<ApplyResult> {
-  return prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(
+    async (tx): Promise<ApplyResult> => {
     await tx.$executeRawUnsafe(
       "SELECT pg_advisory_xact_lock($1)",
       BigInt(hashString(stripeSubscriptionId)),
@@ -169,7 +182,14 @@ export async function applySubscriptionMutation(
     }
 
     return { applied: true };
-  });
+    },
+    INGESTION_TRANSACTION_OPTIONS,
+  );
+
+  if (result.applied) {
+    await invalidateAccelerateCache([userCacheTag(mutation.userId)]);
+  }
+  return result;
 }
 
 /**
@@ -182,7 +202,8 @@ export async function upsertSubscriptionAndConsumeIntent(
   mutation: SubscriptionMutation,
   checkoutIntentId?: string | null,
 ) {
-  return prisma.$transaction(async (tx) => {
+  const row = await prisma.$transaction(
+    async (tx) => {
     const row = await tx.subscription.upsert({
       where: { stripeSubscriptionId },
       update: mutation,
@@ -203,7 +224,12 @@ export async function upsertSubscriptionAndConsumeIntent(
       });
     }
     return row;
-  });
+    },
+    INGESTION_TRANSACTION_OPTIONS,
+  );
+
+  await invalidateAccelerateCache([userCacheTag(mutation.userId)]);
+  return row;
 }
 
 /** Stable FNV-1a hash used to derive advisory-lock keys from Stripe IDs. */
