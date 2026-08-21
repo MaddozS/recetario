@@ -598,13 +598,14 @@ const formatIngredientLabel = (i: { name?: string | null; brand?: string | null 
 const hasCookingMode = hasFeature(Astro.locals.subscription, "cooking_mode");
 
 const isEditMode = Astro.url.searchParams.get('edit') === 'true';
-const allIngredients = isEditMode
-  ? await apiFetch(
-      "/api/ingredients",
-      { schema: z.array(ingredientSchema) },
-      Astro,
-    )
-  : [];
+// The ingredient list is always fetched so the client-side edit toggle can
+// render the ingredient picker instantly (no extra request when entering edit).
+const allIngredients = await apiFetch(
+  "/api/ingredients",
+  { schema: z.array(ingredientSchema) },
+  Astro,
+);
+const ingredientsDataJson = JSON.stringify(allIngredients);
 const discoveredUnitOptions = [
   ...allIngredients.map((ingredient) => ingredient.unit),
   ...recipeIngredients.map((ingredient) => ingredient.unit),
@@ -817,77 +818,70 @@ const financialEditFields = buildFinancialEditFields();
 ---
 
 <Layout currentRecipe={id} showSideBar={true} currentPage="recipes" breadcrumbs={[{ label: "Recetas", href: "/recipes" }, { label: name }]}>
-  <div transition:animate="slide" class="w-full">
-    <div class="px-1 sm:px-2 lg:px-8 py-4">
+  <div transition:animate="none" class="w-full">
+    <div class="px-1 sm:px-2 lg:px-8 py-4" id="recipe-page-root" data-edit-state={isEditMode ? "edit" : "view"}>
+      <script type="application/json" id="ingredients-data" is:inline set:html={ingredientsDataJson}></script>
+
       {feedbackType && feedbackMessage && (
         <FeedbackAlert type={feedbackType} message={feedbackMessage} />
       )}
 
-      {isEditMode && (
-        <form id={recipeEditFormId} method="POST" action={Astro.url.pathname} class="hidden" data-astro-reload>
-          <input type="hidden" name="action" value="update_recipe" />
-          <input type="hidden" name="_csrf" value={Astro.locals.csrfToken || ""} />
-          <input type="hidden" name="instructions" value={instructions || ""} data-hidden-ta />
-        </form>
-      )}
+      <form id={recipeEditFormId} method="POST" action={Astro.url.pathname} class="hidden" data-astro-reload>
+        <input type="hidden" name="action" value="update_recipe" />
+        <input type="hidden" name="_csrf" value={Astro.locals.csrfToken || ""} />
+        <input type="hidden" name="instructions" value={instructions || ""} data-hidden-ta />
+      </form>
 
       <!-- Header: Row 1 - Title + Actions (desktop right side) -->
       <div class="flex items-start justify-between gap-3 pb-3">
         <!-- Title (left) -->
         <div class="flex-1">
-          {isEditMode ? (
-            <>
+          <h1 id="recipe-title-view" data-edit-toggle="view" hidden={isEditMode} class="text-3xl sm:text-4xl leading-tight font-black text-foreground">{name}</h1>
+          <div data-edit-toggle="edit" hidden="">
+            <input
+              id="recipe-name-input"
+              name="recipeName"
+              form={recipeEditFormId}
+              type="text"
+              class="w-full text-3xl sm:text-4xl leading-tight font-black bg-background border border-border rounded-xl p-2 text-foreground focus:ring-2 focus:ring-accent-500/20"
+              value={name}
+            />
+            <div class="mt-2">
               <input
-                id="recipe-name-input"
-                name="recipeName"
-                form={recipeEditFormId}
                 type="text"
-                class="w-full text-3xl sm:text-4xl leading-tight font-black bg-background border border-border rounded-xl p-2 text-foreground focus:ring-2 focus:ring-accent-500/20"
-                value={name}
+                name="category"
+                form={recipeEditFormId}
+                class="w-full max-w-xs bg-background border border-border rounded-xl p-2 text-sm text-secondary-foreground focus:ring-2 focus:ring-accent-500/20"
+                value={category || ''}
+                placeholder="Categoría (ej. Panes, Galletas, Pasteles)"
               />
-              <div class="mt-2">
-                <input
-                  type="text"
-                  name="category"
-                  form={recipeEditFormId}
-                  class="w-full max-w-xs bg-background border border-border rounded-xl p-2 text-sm text-secondary-foreground focus:ring-2 focus:ring-accent-500/20"
-                  value={category || ''}
-                  placeholder="Categoría (ej. Panes, Galletas, Pasteles)"
-                />
-              </div>
-            </>
-          ) : (
-            <h1 class="text-3xl sm:text-4xl leading-tight font-black text-foreground">{name}</h1>
-          )}
+            </div>
+          </div>
         </div>
 
-        <!-- Right side: Mezclas (desktop) + Menu button -->
-        <div class="flex items-center gap-2">
+        <!-- Right side: Mezclas (desktop) + Menu button (view mode only) -->
+        <div data-edit-toggle="view" hidden={isEditMode} class="flex items-center gap-2">
           <!-- Mezclas counter (hidden on mobile, shown on sm+) -->
-          {!isEditMode && (
-            <form method="get" data-astro-reload class:list={[
-              "hidden sm:flex w-full items-center justify-between gap-2 rounded-xl border px-2 py-1.5 shadow-sm sm:w-auto sm:justify-start transition-colors",
-              showAdjustedQuantity ? "border-accent-200 bg-accent-50/30" : "border-border bg-card"
-            ]}>
-              <span class="text-[10px] font-black uppercase tracking-widest text-subtle-foreground px-2">Mezclas</span>
-              <div class="flex items-center gap-1 bg-background rounded-full p-1 border border-border-light">
-                <a href={multiplierDownHref} data-astro-reload class="w-6 h-6 flex items-center justify-center rounded-full hover:bg-hover-muted text-muted-foreground font-bold transition-colors active:scale-95">-</a>
-                <input type="number" name="multiplier" value={multiplier} step="0.0001" min="0.0001" class="w-10 bg-transparent text-center font-mono font-semibold text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 p-0 border-none text-sm tabular-nums" onchange="this.form.submit()" aria-label="Multiplicador" />
-                <a href={multiplierUpHref} data-astro-reload class="w-6 h-6 flex items-center justify-center rounded-full hover:bg-hover-muted text-muted-foreground font-bold transition-colors active:scale-95">+</a>
-              </div>
-            </form>
-          )}
+          <form method="get" data-astro-reload class:list={[
+            "hidden sm:flex w-full items-center justify-between gap-2 rounded-xl border px-2 py-1.5 shadow-sm sm:w-auto sm:justify-start transition-colors",
+            showAdjustedQuantity ? "border-accent-200 bg-accent-50/30" : "border-border bg-card"
+          ]}>
+            <span class="text-[10px] font-black uppercase tracking-widest text-subtle-foreground px-2">Mezclas</span>
+            <div class="flex items-center gap-1 bg-background rounded-full p-1 border border-border-light">
+              <a href={multiplierDownHref} data-astro-reload class="w-6 h-6 flex items-center justify-center rounded-full hover:bg-hover-muted text-muted-foreground font-bold transition-colors active:scale-95">-</a>
+              <input type="number" name="multiplier" value={multiplier} step="0.0001" min="0.0001" class="w-10 bg-transparent text-center font-mono font-semibold text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 p-0 border-none text-sm tabular-nums" onchange="this.form.submit()" aria-label="Multiplicador" />
+              <a href={multiplierUpHref} data-astro-reload class="w-6 h-6 flex items-center justify-center rounded-full hover:bg-hover-muted text-muted-foreground font-bold transition-colors active:scale-95">+</a>
+            </div>
+          </form>
 
-          <!-- Menu button (always visible) -->
-          {!isEditMode && (
-            <RecipeActionsMenu
-              recipeId={id}
-              editHref={`${Astro.url.pathname}?edit=true`}
-              canDuplicate={hasFeature(subscription, "recipe_duplicate")}
-              canDelete={true}
-              variant="page"
-            />
-          )}
+          <!-- Menu button (always visible in view) -->
+          <RecipeActionsMenu
+            recipeId={id}
+            editHref={`${Astro.url.pathname}?edit=true`}
+            canDuplicate={hasFeature(subscription, "recipe_duplicate")}
+            canDelete={true}
+            variant="page"
+          />
         </div>
       </div>
 
@@ -906,44 +900,49 @@ const financialEditFields = buildFinancialEditFields();
         </div>
 
         <!-- Edit mode: Guardar/Cancelar -->
-        {isEditMode && (
-          <div class="flex items-center gap-2 self-end">
-            <Button variant="primary" icon="save" type="submit" form={recipeEditFormId} size="sm">
-              Guardar
-            </Button>
-            <form method="get" action={Astro.url.pathname} data-astro-reload class="contents">
-              <Button variant="ghost" icon="x" type="submit" size="sm">
-                Cancelar
-              </Button>
-            </form>
-          </div>
-        )}
+        <div id="recipe-save-bar" data-edit-toggle="edit" class="flex items-center gap-2 self-end" hidden="">
+          <Button variant="primary" icon="save" type="submit" form={recipeEditFormId} size="sm">
+            Guardar
+          </Button>
+          <Button variant="ghost" icon="x" type="button" id="recipe-cancel-edit" size="sm">
+            Cancelar
+          </Button>
+        </div>
       </div>
 
       <!-- Header: Row 1b - Mezclas counter (mobile only) -->
-      {!isEditMode && (
-        <form method="get" data-astro-reload class:list={[
-          "flex sm:hidden mb-4 w-full items-center justify-between gap-2 rounded-xl border px-2 py-1.5 shadow-sm transition-colors",
-          showAdjustedQuantity ? "border-accent-200 bg-accent-50/30" : "border-border bg-card"
-        ]}>
-          <span class="text-[10px] font-black uppercase tracking-widest text-subtle-foreground px-2">Mezclas</span>
-          <div class="flex items-center gap-1 bg-background rounded-full p-1 border border-border-light">
-            <a href={multiplierDownHref} data-astro-reload class="w-6 h-6 flex items-center justify-center rounded-full hover:bg-hover-muted text-muted-foreground font-bold transition-colors active:scale-95">-</a>
-            <input type="number" name="multiplier" value={multiplier} step="0.0001" min="0.0001" class="w-10 bg-transparent text-center font-mono font-semibold text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 p-0 border-none text-sm tabular-nums" onchange="this.form.submit()" aria-label="Multiplicador" />
-            <a href={multiplierUpHref} data-astro-reload class="w-6 h-6 flex items-center justify-center rounded-full hover:bg-hover-muted text-muted-foreground font-bold transition-colors active:scale-95">+</a>
-          </div>
-        </form>
-      )}
+      <form method="get" data-astro-reload data-edit-toggle="view" hidden={isEditMode} class:list={[
+        "flex sm:hidden mb-4 w-full items-center justify-between gap-2 rounded-xl border px-2 py-1.5 shadow-sm transition-colors",
+        showAdjustedQuantity ? "border-accent-200 bg-accent-50/30" : "border-border bg-card"
+      ]}>
+        <span class="text-[10px] font-black uppercase tracking-widest text-subtle-foreground px-2">Mezclas</span>
+        <div class="flex items-center gap-1 bg-background rounded-full p-1 border border-border-light">
+          <a href={multiplierDownHref} data-astro-reload class="w-6 h-6 flex items-center justify-center rounded-full hover:bg-hover-muted text-muted-foreground font-bold transition-colors active:scale-95">-</a>
+          <input type="number" name="multiplier" value={multiplier} step="0.0001" min="0.0001" class="w-10 bg-transparent text-center font-mono font-semibold text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 p-0 border-none text-sm tabular-nums" onchange="this.form.submit()" aria-label="Multiplicador" />
+          <a href={multiplierUpHref} data-astro-reload class="w-6 h-6 flex items-center justify-center rounded-full hover:bg-hover-muted text-muted-foreground font-bold transition-colors active:scale-95">+</a>
+        </div>
+      </form>
 
       <!-- Financial Summary -->
       <div class="py-6 sm:py-8">
-        <FinancialSummary
-          rows={financialRows}
-          highlightRow={financialHighlightIndex}
-          isEditMode={isEditMode}
-          editFormId={recipeEditFormId}
-          editFields={financialEditFields}
-        />
+        <div data-edit-toggle="view" hidden={isEditMode}>
+          <FinancialSummary
+            rows={financialRows}
+            highlightRow={financialHighlightIndex}
+            isEditMode={false}
+            editFormId={recipeEditFormId}
+            editFields={financialEditFields}
+          />
+        </div>
+        <div data-edit-toggle="edit" hidden="">
+          <FinancialSummary
+            rows={financialRows}
+            highlightRow={financialHighlightIndex}
+            isEditMode={true}
+            editFormId={recipeEditFormId}
+            editFields={financialEditFields}
+          />
+        </div>
       </div>
 
       <!-- Tabs -->
@@ -995,8 +994,7 @@ const financialEditFields = buildFinancialEditFields();
             </label>
           </div>
 
-          {isEditMode ? (
-            <div class="px-5 py-5 sm:px-6 lg:px-8">
+          <div data-edit-toggle="edit" class="px-5 py-5 sm:px-6 lg:px-8" hidden="">
               <div class="hidden md:grid md:grid-cols-[minmax(0,2.4fr)_11rem_minmax(0,1fr)_3rem] md:gap-4 md:px-1 md:pb-3 text-[10px] uppercase font-bold text-subtle-foreground">
                 <span>Ingrediente</span>
                 <span class="text-center">Cantidad</span>
@@ -1082,9 +1080,8 @@ const financialEditFields = buildFinancialEditFields();
                 </Button>
               </div>
             </div>
-          ) : (
-            <>
-              <div class="md:hidden divide-y divide-border-light">
+
+          <div data-edit-toggle="view" hidden={isEditMode} class="md:hidden divide-y divide-border-light">
                 {
                 recipeIngredients.map(ri => {
                   return (
@@ -1133,7 +1130,7 @@ const financialEditFields = buildFinancialEditFields();
                 })}
               </div>
 
-              <div class="hidden md:block overflow-x-auto">
+              <div data-edit-toggle="view" hidden={isEditMode} class="hidden md:block overflow-x-auto">
                 <table class="w-full table-auto text-left overflow-x-auto">
                   <thead class="bg-background text-subtle-foreground text-[10px] uppercase font-bold">
                     <tr>
@@ -1188,8 +1185,6 @@ const financialEditFields = buildFinancialEditFields();
                   </tbody>
                 </table>
               </div>
-            </>
-          )}
         </Card>
 
       </div>
@@ -1199,7 +1194,6 @@ const financialEditFields = buildFinancialEditFields();
         <RecipeFixedCosts
           recipeFixedCosts={recipe.recipeFixedCosts}
           recipeId={id}
-          isEditing={isEditMode}
         />
       </div>
 
@@ -1207,14 +1201,16 @@ const financialEditFields = buildFinancialEditFields();
       <div id="panel-presentaciones" role="tabpanel" aria-labelledby="tab-presentaciones" class="tab-panel" hidden>
         <div class="flex items-start justify-between gap-3 py-6 px-1">
           <SectionHeading icon="tag" title="Presentaciones de Venta" subtitle="Define cuantas piezas salen por mezcla" />
-          <Button
-            variant="primary"
-            icon="plus"
-            data-open-create-presentation-dialog={createPresentationDialogId}
-          >
-            <span class="sm:hidden">Nueva</span>
-            <span class="hidden sm:inline">Nueva Presentación</span>
-          </Button>
+          <span data-edit-toggle="edit" hidden="">
+            <Button
+              variant="primary"
+              icon="plus"
+              data-open-create-presentation-dialog={createPresentationDialogId}
+            >
+              <span class="sm:hidden">Nueva</span>
+              <span class="hidden sm:inline">Nueva Presentación</span>
+            </Button>
+          </span>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
@@ -1341,14 +1337,16 @@ const financialEditFields = buildFinancialEditFields();
       </div>
       <!-- Preparación -->
       <div id="panel-preparacion" role="tabpanel" aria-labelledby="tab-preparacion" class="tab-panel" hidden>
-        {isEditMode ? (
+        <div data-edit-toggle="edit" hidden="">
           <InstructionsEditor
             recipeEditFormId={recipeEditFormId}
             instructions={instructions}
             ingredients={ingredients}
             recipeIngredientIds={recipeIngredients.map(ri => ri.ingredientId)}
           />
-        ) : instructions ? (
+        </div>
+        <div data-edit-toggle="view" hidden={isEditMode}>
+        {instructions ? (
           <RecipeInstructions
             instructions={instructions}
             ingredients={ingredients}
@@ -1365,6 +1363,7 @@ const financialEditFields = buildFinancialEditFields();
             </div>
           </div>
         )}
+        </div>
       </div>
     </div>
   </div>
@@ -1374,6 +1373,108 @@ const financialEditFields = buildFinancialEditFields();
 
   const KEY = 'recetario.showComments';
   const presentationDialogId = 'create-presentation-dialog';
+
+  const initEditToggle = () => {
+    const root = document.getElementById('recipe-page-root');
+    if (!root || root.dataset.editToggleBound === '1') return;
+    root.dataset.editToggleBound = '1';
+
+    // Snapshot of the original edit-form state (SSR values) so Cancel restores
+    // the inputs even after the user edits them client-side.
+    const nameInput = document.getElementById('recipe-name-input') as HTMLInputElement | null;
+    const categoryInput = document.querySelector<HTMLInputElement>('input[name="category"]');
+    const tbody = document.getElementById('edit-ingredients-tbody');
+    const originalName = nameInput?.value ?? '';
+    const originalCategory = categoryInput?.value ?? '';
+    const originalRows: Array<{ id: string; qty: string; unit: string; comment: string; label: string }> = [];
+    tbody?.querySelectorAll<HTMLElement>('.edit-ingredient-row').forEach((row) => {
+      const select = row.querySelector<HTMLSelectElement>('select[name="ingredientId"]');
+      const qty = row.querySelector<HTMLInputElement>('.quantity-input');
+      const unit = row.querySelector<HTMLSelectElement>('.unit-select');
+      const comment = row.querySelector<HTMLInputElement>('.comment-input');
+      const search = row.querySelector<HTMLInputElement>('.ingredient-search-input');
+      originalRows.push({
+        id: select?.value ?? '',
+        qty: qty?.value ?? '',
+        unit: unit?.value ?? '',
+        comment: comment?.value ?? '',
+        label: search?.value ?? '',
+      });
+    });
+
+    const setEditMode = (edit: boolean) => {
+      root.querySelectorAll<HTMLElement>('[data-edit-toggle]').forEach((el) => {
+        const isEdit = el.dataset.editToggle === 'edit';
+        el.hidden = edit ? !isEdit : isEdit;
+      });
+      const form = document.getElementById('recipe-edit-form');
+      if (form) form.classList.toggle('hidden', !edit);
+      const commentsCheckbox = document.getElementById('toggle-comments');
+      if (commentsCheckbox instanceof HTMLInputElement) commentsCheckbox.disabled = edit;
+      root.dataset.editState = edit ? 'edit' : 'view';
+    };
+
+    const syncUrl = (edit: boolean) => {
+      const url = new URL(window.location.href);
+      if (edit) url.searchParams.set('edit', 'true');
+      else url.searchParams.delete('edit');
+      history.pushState({}, '', url.toString());
+    };
+
+    const resetEditForm = () => {
+      if (nameInput) nameInput.value = originalName;
+      if (categoryInput) categoryInput.value = originalCategory;
+      if (tbody) {
+        // Rebuild the original rows from the template (discards added rows).
+        const template = document.getElementById('ingredient-row-template');
+        if (template instanceof HTMLTemplateElement) {
+          tbody.innerHTML = '';
+          originalRows.forEach((row) => {
+            const clone = template.content.cloneNode(true) as DocumentFragment;
+            const select = clone.querySelector<HTMLSelectElement>('select[name="ingredientId"]');
+            const qty = clone.querySelector<HTMLInputElement>('.quantity-input');
+            const unit = clone.querySelector<HTMLSelectElement>('.unit-select');
+            const comment = clone.querySelector<HTMLInputElement>('.comment-input');
+            const search = clone.querySelector<HTMLInputElement>('.ingredient-search-input');
+            const clear = clone.querySelector<HTMLElement>('.ingredient-picker-clear');
+            if (select) select.value = row.id;
+            if (qty) qty.value = row.qty;
+            if (unit) unit.value = row.unit;
+            if (comment) comment.value = row.comment;
+            if (search) search.value = row.label;
+            if (clear) clear.classList.toggle('hidden', !row.id);
+            tbody.appendChild(clone);
+          });
+        }
+      }
+    };
+
+    const toggleEdit = (edit: boolean) => {
+      setEditMode(edit);
+      syncUrl(edit);
+      if (edit) {
+        nameInput?.focus();
+        (window as unknown as { __setupInstructionsEditor?: () => void }).__setupInstructionsEditor?.();
+      } else {
+        resetEditForm();
+      }
+    };
+
+    // Initial state from URL (deep-link / reload with ?edit=true)
+    const initialEdit = new URLSearchParams(window.location.search).get('edit') === 'true';
+    setEditMode(initialEdit);
+    if (initialEdit) {
+      (window as unknown as { __setupInstructionsEditor?: () => void }).__setupInstructionsEditor?.();
+    }
+
+    document.addEventListener('recipe:edit-toggle', () => {
+      const next = root.dataset.editState !== 'edit';
+      toggleEdit(next);
+    });
+
+    const cancelBtn = document.getElementById('recipe-cancel-edit');
+    cancelBtn?.addEventListener('click', () => toggleEdit(false));
+  };
 
   const updateCommentControls = (show: boolean) => {
     const checkbox = document.getElementById('toggle-comments');
@@ -1575,11 +1676,14 @@ const financialEditFields = buildFinancialEditFields();
   document.addEventListener('astro:after-swap', setupCreatePresentationDialog);
   document.addEventListener('astro:page-load', setupTabs);
   document.addEventListener('astro:after-swap', setupTabs);
+  document.addEventListener('astro:page-load', initEditToggle);
+  document.addEventListener('astro:after-swap', initEditToggle);
 
 </script>
 
-{isEditMode && (
-  <template id="ingredient-row-template">
+{/* The template and editor script are always present so the client-side
+    edit toggle can clone rows / initialize the picker instantly. */}
+<template id="ingredient-row-template">
     <div class="edit-ingredient-row grid grid-cols-1 gap-3 rounded-2xl border border-border bg-background/50 p-3 md:grid-cols-[minmax(0,2.4fr)_minmax(0,13rem)_minmax(0,1fr)_3rem] md:items-center md:bg-card md:p-0 md:border-0 md:rounded-none md:border-b md:border-border-light md:pb-3">
       <div class="space-y-1 min-w-0">
         <label class="text-[10px] uppercase font-bold text-subtle-foreground md:hidden">Ingrediente</label>
@@ -1807,6 +1911,5 @@ const financialEditFields = buildFinancialEditFields();
     document.addEventListener('astro:after-swap', setupRecipeEditor);
     setupRecipeEditor();
   </script>
-)}
 
 </Layout>

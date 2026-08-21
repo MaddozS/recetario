@@ -820,4 +820,9 @@ const recipeIngredientIdsJson = JSON.stringify(recipeIngredientIds);
 
   document.addEventListener("astro:page-load", setupInstructionsEditor);
   document.addEventListener("astro:after-swap", setupInstructionsEditor);
+
+  // Exposed for dynamic mount (client-side edit toggle): the editor can be
+  // cloned into the DOM after page load, which does not fire astro:page-load.
+  (window as unknown as Record<string, unknown>).__setupInstructionsEditor =
+    setupInstructionsEditor;
 </script>
