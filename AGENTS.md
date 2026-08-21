@@ -36,11 +36,11 @@ Better Auth via `src/lib/auth.ts` (server singleton) + `src/lib/auth-client.ts` 
 
 ### Pages & routing
 
-- **Protected** (`Astro.locals.session` required): `/recipes`, `/recipes/[recipe]`, `/ingredients`, `/settings`, `/settings/billing`, `/produccion`
+- **Protected** (`Astro.locals.session` required): `/recipes`, `/recipes/[recipe]`, `/ingredients`, `/settings`, `/produccion` (`/settings/billing` redirects 301 to `/settings?tab=billing`)
 - On protected pages, if `Astro.locals.session` is null, return `Astro.redirect("/sign-in")` at the top of the frontmatter.
 - **Public**: `/sign-in`, `/sign-up`, `/pricing`
 - `/produccion` also gated behind `production_planner` feature flag
-- If the `production_planner` flag is false, redirect to `/settings/billing` with an upgrade prompt.
+- If the `production_planner` flag is false, redirect to `/settings?tab=billing` with an upgrade prompt.
 - Layout: `Layout` (app shell + sidebar) or `LandingLayout` (marketing). `currentPage` prop: `recipes | ingredients | settings | production`.
 
 ### Data layer
@@ -78,7 +78,7 @@ If a new feature needs data access from a web page, add the endpoint in `apps/ap
 #### Operational gotchas
 
 - **Forms**: no Astro Actions. POST to the same page, read `Astro.request.formData()`, then redirect. Spanish locale: `parseNumberInput()` converts comma to dot.
-- **Subscription cache**: middleware caches subscription state for 60s via `src/lib/cache.ts`.
+- **Subscription cache**: session-path reads (`getSubscriptionByUserId`, `getUserPreferences`, `getCredentialAccount`) use Accelerate edge caching (`cacheStrategy` with `ttl: 60`, `swr: 120`, tagged `user:<id>`); writes invalidate via `invalidateAccelerateCache` in `@recetario/db`.
 - **pnpm allowed builds**: only `esbuild`, `sharp`, `@prisma/engines`, `prisma` are allowed in `pnpm-workspace.yaml`.
 - **Cloudflare ephemeral**: `DATABASE_URL` is not auto-injected — set per-environment via `wrangler secret put` or the dashboard. Local dev: `pnpm dev` runs `scripts/sync-cloudflare-dev-vars.mjs` which copies root `.env` to `apps/web/.dev.vars` and `apps/api/.dev.vars`.
 - **Feedback + reload**: `showFeedback()` is client-side DOM; `window.location.reload()` after it erases feedback, so prefer DOM updates for in-page state.
@@ -116,22 +116,29 @@ API version: `2026-04-22.dahlia`.
 
 ## UI conventions
 
-- **ALWAYS** use `Button`, `Input`, `Dialog`, `Icon` (astro-icon, lucide:\*), `Badge`, `Card`, `FeedbackAlert`, `SectionHeading`, `FinancialSummary` from `@/components/ui` barrel.
+- **ALWAYS** use `Button`, `Input`, `Dialog`, `Badge`, `Card`, `FeedbackAlert`, `SectionHeading`, `FinancialSummary` from `@/components/ui` barrel. Icons: import named components from `@recetario/ui/icons/<Name>.astro` or use `DynamicIcon` from `@recetario/ui/DynamicIcon.astro` for dynamic resolution.
 - **ALWAYS** use semantic tokens (`bg-card`, `text-foreground`, `border-border`, `accent-*`). Never hardcoded colors.
 - **Dialog backdrops**: use `backdrop:bg-backdrop/50`, never `backdrop:bg-slate-900/50`.
 
-### astro-icon whitelist
+### Icon components
 
-`astro-icon` uses an **explicit allowlist** in `astro.config.mjs` → `integrations[].include.lucide` array. Icons NOT in this array will fail at build time with: `Unable to locate "lucide:<name>" icon!`
+Per-icon `.astro` components live in `packages/ui/src/icons/<Name>.astro`. Import directly:
 
-**Before using any `lucide:*` icon:**
+```astro
+import Check from "@recetario/ui/icons/Check.astro";
+<Check size={18} class="text-success" />
+```
 
-1. Verify the icon name exists at https://lucide.dev/icons (names are exact — `chevrons-right` ≠ `chevron-right`)
-2. Check if the icon is already in `astro.config.mjs` → `include.lucide` array
-3. If missing, add it **alphabetically** to the array
-4. Report any new icon additions in your task output so the reviewer can verify
+Missing an icon? Drop a new `.astro` file into `packages/ui/src/icons/` and import it. TypeScript catches typos at the import line — no allowlist, no central registry.
 
-Current whitelist location: `astro.config.mjs` lines 28-90.
+For dynamic icon names (resolved at runtime), use `DynamicIcon`:
+
+```astro
+import DynamicIcon from "@recetario/ui/DynamicIcon.astro";
+<DynamicIcon name="lucide:check" size={16} />
+```
+
+`DynamicIcon` strips the `lucide:` prefix automatically.
 
 ### Responsive state enumeration
 
@@ -205,19 +212,7 @@ The goal is to eliminate the need for a dedicated fix-ESLint task after validati
 ### Parallel Execution Notes
 When a plan dispatches 2+ tasks in parallel, include a "Parallel Execution Notes" section listing any files touched by multiple tasks. State whether the overlap is expected conflict-free (different sections of the same file) or needs coordination.
 
-## Troubleshooting
 
-### `exports is not defined` at startup (cookie package)
-
-pnpm version mismatch with `cookie@1.1.1` (CJS-only). Fix:
-
-```bash
-corepack enable
-corepack prepare pnpm@11.1.2 --activate
-rm -rf node_modules pnpm-lock.yaml
-pnpm install
-pnpm dev
-```
 
 
 ## graphify

@@ -16,7 +16,6 @@ export default defineConfig({
   output: "server",
   adapter: cloudflare(),
   prefetch: false,
-
   vite: {
     resolve: {
       alias: [

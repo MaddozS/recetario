@@ -47,9 +47,6 @@ const ingredientUsage = recipes.length > 0
 const categoryCount = new Set(recipes.filter((r) => r.category).map((r) => r.category)).size;
 const usedIngredientCount = Object.keys(ingredientUsage).length;
 
-const filteredRecipes = selectedCategory !== null
-  ? recipes.filter((r) => (r.category ?? null) === (selectedCategory || null))
-  : recipes;
 const recipesJson = JSON.stringify(recipes);
 
 const incompleteRecipes = recipes.filter((r) => r.ingredientCount === 0).length;
@@ -260,19 +257,26 @@ const recentRecipes = recipes
 
           <div id="filtered-grid-wrapper" class="mt-4">
             {
-              filteredRecipes && filteredRecipes.length > 0 ? (
+              recipes.length > 0 ? (
                 <div id="filtered-grid" class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                  {filteredRecipes.map((r, i) => (
-                    <div style={`--stagger-index:${i}`}>
-                      <RecipeGridCard
-                        id={r.id}
-                        name={r.name}
-                        category={r.category ?? undefined}
-                        ingredientCount={r.ingredientCount}
-                        canDuplicate={hasFeature(subscription, "recipe_duplicate")}
-                      />
-                    </div>
-                  ))}
+                  {recipes.map((r, i) => {
+                    const matchesInitialFilter = selectedCategory === null ||
+                      (r.category ?? "") === (selectedCategory || "");
+                    return (
+                      <div
+                        style={`--stagger-index:${i}${matchesInitialFilter ? "" : "; display:none"}`}
+                        class="snc-card"
+                      >
+                        <RecipeGridCard
+                          id={r.id}
+                          name={r.name}
+                          category={r.category ?? undefined}
+                          ingredientCount={r.ingredientCount}
+                          canDuplicate={hasFeature(subscription, "recipe_duplicate")}
+                        />
+                      </div>
+                    );
+                  })}
                 </div>
               ) : (
                 <Card padding="lg" class="p-8 text-center">
@@ -288,21 +292,32 @@ const recentRecipes = recipes
 </div>
 
 <script>
-  function setupRecipeFilters() {
+  declare global {
+    interface Window {
+      __recipesPopstateBound?: boolean;
+      __recipesFilterApi?: {
+        setCategory: (cat: string | null) => void;
+      };
+    }
+  }
+
+  // Devuelve true si el grid ya estaba disponible (inicializó o ya estaba bound);
+  // false si el island server:defer aún no ha inyectado su HTML.
+  function setupRecipeFilters(): boolean {
     const dataEl = document.getElementById("recipes-data");
     const searchInput = document.getElementById("recipeSearch");
     const pills = document.querySelectorAll<HTMLElement>(".filter-btn");
     const clearBtn = document.getElementById("clear-filter-btn");
     const gridWrapper = document.getElementById("filtered-grid-wrapper");
 
-    if (!dataEl || !dataEl.textContent || !gridWrapper) return;
-    if (gridWrapper.dataset.filterBound === "1") return;
+    if (!dataEl || !dataEl.textContent || !gridWrapper) return false;
+    if (gridWrapper.dataset.filterBound === "1") return true;
     gridWrapper.dataset.filterBound = "1";
 
     const recipesData: { id: number; name: string; category: string | null; ingredientCount: number }[] = JSON.parse(dataEl.textContent);
 
     let activeSearchTerm = "";
-    let activeCategory: string | null = null;
+    let activeCategory: string | null = new URLSearchParams(window.location.search).get("category");
 
     const activeClasses = ["bg-accent-600", "text-white"];
     const inactiveClasses = {
@@ -335,7 +350,9 @@ const recentRecipes = recipes
         }
 
         const isVisible = matchesCategory && matchesSearch;
-        cardEl.style.display = isVisible ? "" : "none";
+        // El SSR pre-oculta el wrapper .snc-card; el JS controla ese mismo wrapper
+        const wrapper = cardEl.closest<HTMLElement>(".snc-card") ?? cardEl;
+        wrapper.style.display = isVisible ? "" : "none";
         if (isVisible) visibleCount++;
       });
 
@@ -423,9 +440,48 @@ const recentRecipes = recipes
         history.pushState({}, "", "/recipes");
       });
     }
+
+    // Sincroniza estado inicial con la URL (pills + tarjetas pre-ocultadas por SSR)
+    if (activeCategory !== null) updatePillStyles(activeCategory);
+    updateGrid();
+
+    // Botón atrás/adelante: refleja el filtro de la URL en el estado client-side.
+    // El handler se registra una sola vez y delega en el estado del grid actual.
+    if (!window.__recipesPopstateBound) {
+      window.__recipesPopstateBound = true;
+      window.addEventListener("popstate", () => {
+        const api = window.__recipesFilterApi;
+        if (!api) return;
+        api.setCategory(new URLSearchParams(window.location.search).get("category"));
+      });
+    }
+
+    window.__recipesFilterApi = {
+      setCategory(cat: string | null) {
+        activeCategory = cat;
+        updatePillStyles(cat);
+        updateGrid();
+      },
+    };
+
+    return true;
   }
 
-  document.addEventListener("astro:page-load", setupRecipeFilters);
-  document.addEventListener("astro:after-swap", setupRecipeFilters);
+  document.addEventListener("astro:page-load", () => setupRecipeFilters());
+  document.addEventListener("astro:after-swap", () => setupRecipeFilters());
+
+  // El componente es un server island (server:defer): su HTML se inyecta de forma
+  // asíncrona DESPUÉS de que astro:page-load / astro:after-swap ya se dispararon.
+  // Un observer permanente detecta la aparición del grid en cada navegación y
+  // ejecuta el setup (idempotente gracias al guard filterBound del gridWrapper).
+  const gridObserver = new MutationObserver(() => {
+    const dataEl = document.getElementById("recipes-data");
+    const gridWrapper = document.getElementById("filtered-grid-wrapper");
+    if (dataEl && dataEl.textContent && gridWrapper) {
+      setupRecipeFilters();
+    }
+  });
+  gridObserver.observe(document.documentElement, { childList: true, subtree: true });
+
   setupRecipeFilters();
 </script>

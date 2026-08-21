@@ -39,15 +39,21 @@ const priceDisplay =
     : null;
 const currencyLabel = subscription.currency?.toUpperCase() ?? "";
 
-const trialEndDate = subscription.trialEnd
+const rawTrialEnd = subscription.trialEnd
   ? new Date(subscription.trialEnd)
   : subscription.currentPeriodEnd
     ? new Date(subscription.currentPeriodEnd)
     : null;
-const currentPeriodEnd = subscription.currentPeriodEnd
+const trialEndDate =
+  rawTrialEnd && rawTrialEnd.getFullYear() >= 2025 ? rawTrialEnd : null;
+
+const rawPeriodEnd = subscription.currentPeriodEnd
   ? new Date(subscription.currentPeriodEnd)
   : null;
-const isTrialEndValid = trialEndDate && trialEndDate.getFullYear() >= 2025;
+const currentPeriodEnd =
+  rawPeriodEnd && rawPeriodEnd.getFullYear() >= 2025 ? rawPeriodEnd : null;
+
+const isTrialEndValid = trialEndDate != null;
 ---
 
 <section class="mx-auto max-w-3xl space-y-6">
@@ -143,9 +149,15 @@ const isTrialEndValid = trialEndDate && trialEndDate.getFullYear() >= 2025;
           {
             subscription.tier === "free"
               ? "Gratis para siempre"
-              : subscription.isTrial
-                ? "En periodo de prueba de 14 dias"
-                : "Renovacion recurrente"
+              : subscription.scheduledChange && currentPeriodEnd
+                ? `Cambiará a ${subscription.scheduledChange.targetPlanName} el ${currentPeriodEnd.toLocaleDateString("es-MX")}`
+                : subscription.cancelAtPeriodEnd && currentPeriodEnd
+                  ? `Se cancelará el ${currentPeriodEnd.toLocaleDateString("es-MX")}`
+                  : subscription.isTrial && trialEndDate
+                    ? `Prueba hasta el ${trialEndDate.toLocaleDateString("es-MX")}`
+                    : currentPeriodEnd
+                      ? `Se renueva el ${currentPeriodEnd.toLocaleDateString("es-MX")}`
+                      : "Renovación recurrente"
           }
         </p>
       </div>
@@ -161,7 +173,14 @@ const isTrialEndValid = trialEndDate && trialEndDate.getFullYear() >= 2025;
           )
         }
         {
-          subscription.cancelAtPeriodEnd && (
+          subscription.scheduledChange && (
+            <Badge variant="status" color="warning" class="mt-1">
+              Cambio programado
+            </Badge>
+          )
+        }
+        {
+          subscription.cancelAtPeriodEnd && !subscription.scheduledChange && (
             <Badge variant="status" color="warning" class="mt-1">
               Cancelado
             </Badge>
@@ -177,6 +196,23 @@ const isTrialEndValid = trialEndDate && trialEndDate.getFullYear() >= 2025;
       </div>
     </div>
 
+    {
+      subscription.scheduledChange && currentPeriodEnd && (
+        <div class="mt-3 rounded-xl border border-warning-border bg-warning-bg/50 p-3 text-xs font-semibold text-warning">
+          <div class="flex items-center gap-2 font-bold">
+            <Icon name="lucide:clock" class="h-4 w-4 shrink-0 text-warning-solid" />
+            <span>Cambio de plan programado</span>
+          </div>
+          <p class="mt-1 font-normal leading-relaxed text-warning/90">
+            Tu plan <strong>{subscription.tier.toUpperCase()}</strong> estará activo hasta el{" "}
+            <strong>{currentPeriodEnd.toLocaleDateString("es-MX")}</strong> y cambiará a{" "}
+            <strong>{subscription.scheduledChange.targetPlanName}</strong> a partir del{" "}
+            <strong>{currentPeriodEnd.toLocaleDateString("es-MX")}</strong>.
+          </p>
+        </div>
+      )
+    }
+
     <div
       id="billing-error"
       class="border-danger-border bg-danger-bg text-danger mt-3 hidden rounded-xl border p-3 text-sm font-semibold"
@@ -186,19 +222,21 @@ const isTrialEndValid = trialEndDate && trialEndDate.getFullYear() >= 2025;
     </div>
 
     <div class="mt-6 flex flex-wrap gap-3">
+      <Button
+        variant="primary"
+        icon="arrow-up-circle"
+        data-open-pricing-modal
+      >
+        {
+          subscription.tier === "free"
+            ? "Suscribirse"
+            : subscription.tier === "basic"
+              ? "Actualizar a Pro"
+              : "Cambiar plan"
+        }
+      </Button>
       {
-        subscription.tier !== "pro" && (
-          <Button
-            variant="primary"
-            icon="arrow-up-circle"
-            data-open-pricing-modal
-          >
-            {subscription.tier === "free" ? "Suscribirse" : "Actualizar a Pro"}
-          </Button>
-        )
-      }
-      {
-        isPaid(subscription) && !subscription.cancelAtPeriodEnd && (
+        isPaid(subscription) && (
           <Button
             variant="secondary"
             icon="credit-card"
@@ -209,6 +247,7 @@ const isTrialEndValid = trialEndDate && trialEndDate.getFullYear() >= 2025;
         )
       }
     </div>
+
   </Card>
 
   <div class="grid grid-cols-1 gap-4 md:grid-cols-2">

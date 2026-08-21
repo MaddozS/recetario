@@ -30,10 +30,8 @@ pnpm-debug.log*
 .dev.vars
 apps/*/.dev.vars
 
-# local databases
-data/dev.db
-data/dev.db-shm
-data/dev.db-wal
+# local data and databases
+data/
 
 # macOS-specific files
 .DS_Store

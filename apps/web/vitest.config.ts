@@ -9,6 +9,12 @@ const testConfig = {
   test: {
     include: ["src/**/*.test.{ts,astro}"],
   },
+  server: {
+    port: 4321,
+    hmr: {
+      clientPort: 4321
+    }
+  },
 } as Parameters<typeof getViteConfig>[0];
 
 export default getViteConfig(testConfig, {

@@ -28,6 +28,8 @@ interface Props {
   feedbackType?: string | null;
   feedbackMessage?: string | null;
   csrfToken?: string;
+  isSuccess?: boolean;
+  isCanceled?: boolean;
 }
 
 const {
@@ -38,6 +40,8 @@ const {
   feedbackType = null,
   feedbackMessage = null,
   csrfToken = "",
+  isSuccess = false,
+  isCanceled = false,
 } = Astro.props;
 
 const userFirstName = user.firstName || "";
@@ -409,6 +413,8 @@ const themeOptions = [
       {ingredientCount}
       {remainingRecipes}
       {remainingIngredients}
+      {isSuccess}
+      {isCanceled}
     />
   </div>
 </section>

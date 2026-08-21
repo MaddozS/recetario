@@ -22,7 +22,10 @@ _Avoid_: "model", "record" (ambiguous with schema).
 ## Billing & Stripe
 
 **Stripe domain logic**:
-Code in `packages/stripe` that talks to the Stripe API or owns subscription/plan domain rules: the `stripe` singleton, `listPrices()`, checkout/portal helpers, webhook signature verification, `TIER_CONFIG`, `buildPricingPlans`, feature-gating helpers (`hasFeature`, `isPro`, `isPaid`, `canCreateRecipe`, `canCreateIngredient`, `getRemaining*`), `getDefaultSubscription`, and `UserSubscription`/`PricingPlan` shaping.
+Code in `packages/stripe` that talks to the Stripe API or owns subscription/plan domain rules: the `stripe` singleton, `listPrices()`, checkout/portal helpers, webhook signature verification, `TIER_CONFIG`, `buildPricingPlans`, feature-gating helpers (`hasFeature`, `isPro`, `isPaid`, `canCreateRecipe`, `canCreateIngredient`, `getRemaining*`), `getDefaultSubscription`, and `UserSubscriptionInfo`/`PricingPlan` shaping.
+
+**Subscription reconcile**:
+The read/reconcile/shape engine in `packages/stripe` (`subscription-reconcile.ts`): reads the user's `Subscription` row, reconciles it against live Stripe (status/period/cancel drift + scheduled downgrades), persists drift, and shapes `UserSubscriptionInfo` via `userSubscriptionInfoSchema`. Both the session and `/api/billing/subscription` handlers call it; `null` means "no subscription" (session falls back to `getDefaultSubscription()`, the endpoint 404s). Tested through `reconcileSubscriptionWith(deps)` factory fakes; `reconcileSubscription` is the pre-wired default. See [ADR-0007](./docs/adr/0007-subscription-reconcile-module.md).
 
 **Stripe price sync**:
 The process of reconciling `SubscriptionPlan` rows with Stripe's active prices. `packages/stripe` fetches (`listPrices`) and maps to a minimal `SyncPlanInput`; `packages/db` persists (`syncPlans`) with pure upsert+deactivate. The db package never imports `stripe`; the tier whitelist and `featuresJson` are produced by stripe, not db.
@@ -31,6 +34,16 @@ The process of reconciling `SubscriptionPlan` rows with Stripe's active prices. 
 `packages/db/prisma/seed-plans.ts` — the one place the db package imports `@recetario/stripe`. It calls `listPrices()` then `syncPlans()` and is run as a command (dev) and in the API deploy workflow (prod), not at runtime. Contrast with `packages/db/prisma/seed.ts` (ingredients/recipes dev seed).
 
 _Avoid_: "plan bootstrap", "runtime plan sync" (runtime auto-seed is removed).
+
+**Checkout intent**:
+A durable correlation created before redirecting a user to Stripe Checkout. It binds the authenticated user, Stripe Checkout Session, Stripe Customer, and selected Stripe Price. Stripe metadata may corroborate this correlation but cannot override it. A Checkout intent moves from pending to consumed and retains the resulting Stripe Subscription identity so repeated completion events are idempotent.
+
+_Avoid_: "checkout metadata" (untrusted corroboration), "pending subscription" (a Subscription does not exist yet).
+
+**Stripe event attempt**:
+A durable record of one processing attempt for a Stripe event. Attempts preserve delivery history and enforce idempotency and Subscription event ordering: processing is serialized by Stripe event and Subscription identity, an applied or ignored attempt is terminal for that event, and older events cannot overwrite newer Subscription state. A valid event is acknowledged only after an applied or ignored attempt is persisted atomically with any Subscription mutation.
+
+_Avoid_: "webhook log" (an attempt enforces processing invariants), "event cache" (attempts are durable evidence), "Stripe event receipt" (one event may have multiple attempts).
 
 **Plan persistence method**:
 A CRUD method in `packages/db` that reads/writes `Subscription`/`SubscriptionPlan` rows (`getSubscriptionPlans`, `getSubscriptionByUserId`, `upsertSubscriptionPlan`, `upsertSubscription`, `updateSubscription`, `deactivatePlansNotIn`, `getStripeCustomerId`). Pure persistence, no Stripe API.

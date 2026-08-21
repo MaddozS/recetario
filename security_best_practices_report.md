@@ -153,18 +153,6 @@ The manual approach works for the current scope but is fragile — a missed boun
 
 ---
 
-### [M-03] In-Memory Cache Without Size Limits
-
-**Rule ID:** General
-**Severity:** Medium
-**Location:** `src/lib/cache.ts:1`
-
-**Evidence:** The cache uses an unbounded `Map<string, { value, expiresAt }>` with no maximum size. While keys are user-scoped and TTL is short (60 seconds for data, shorter for subscriptions), there is no eviction policy beyond TTL expiration. In Vercel's serverless environment, each function instance has limited memory. Under heavy traffic, the cache could grow unexpectedly large if many users make requests within the same instance lifetime.
-
-**Fix:** Add a `maxSize` parameter with LRU eviction (e.g., limit to 1000 entries). Consider using a distributed cache (Vercel KV) if running multiple concurrent instances.
-
----
-
 ### [M-04] External Service Error Details Logged Verbatim
 
 **Rule IDs:** NEXT-LOG-001, EXPRESS-ERROR-001

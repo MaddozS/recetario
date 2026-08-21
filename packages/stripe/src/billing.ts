@@ -1,32 +1,12 @@
-import { getSubscriptionPlans, getSubscriptionByUserId, getSubscriptionPlanByStripePriceId, getStripeCustomerId as getStripeCustomerIdFromDb } from "@recetario/db";
-import { pricingPlanSchema, userSubscriptionSchema, type PricingPlan, type UserSubscription } from "@recetario/types";
+import { getSubscriptionPlans, getSubscriptionPlanByStripePriceId, getStripeCustomerId as getStripeCustomerIdFromDb } from "@recetario/db";
+import { pricingPlanSchema, type PricingPlan } from "@recetario/types";
 import { TIER_CONFIG } from "./plans-config";
 
-export type { PricingPlan, UserSubscription } from "@recetario/types";
+export type { PricingPlan } from "@recetario/types";
 
 export async function getPricingPlans(): Promise<PricingPlan[]> {
   const rows = await getSubscriptionPlans(true);
   return buildPricingPlans(rows.filter((row) => row.tier !== "free"));
-}
-
-export async function getUserSubscription(userId: string): Promise<UserSubscription | null> {
-  const data = await getSubscriptionByUserId(userId, ["active", "trialing"]);
-  if (!data) return null;
-  return userSubscriptionSchema.parse({
-    ...data,
-    stripeSubscriptionId: data.stripeSubscriptionId,
-    tier: data.plan?.tier ?? "free",
-    recipesLimit: data.plan?.recipesLimit ?? null,
-    ingredientsLimit: data.plan?.ingredientsLimit ?? null,
-    features: parseFeaturesJson(data.plan?.featuresJson ?? "{}"),
-    priceCents: data.plan?.priceCents ?? null,
-    currency: data.plan?.currency ?? null,
-    billingInterval: data.plan?.billingInterval ?? null,
-    currentPeriodStart: data.currentPeriodStart?.toISOString() ?? null,
-    currentPeriodEnd: data.currentPeriodEnd?.toISOString() ?? null,
-    trialEnd: data.trialEnd?.toISOString() ?? null,
-    createdAt: data.createdAt.toISOString(),
-  });
 }
 
 export async function getPlanByStripePriceId(stripePriceId: string) {
@@ -61,13 +41,3 @@ export function buildPricingPlans(rawPlans: Array<{ id: string; stripePriceId: s
   });
 }
 
-function parseFeaturesJson(raw: string | Record<string, unknown>): Record<string, boolean> {
-  try {
-    const parsed = typeof raw === "string" ? JSON.parse(raw) : raw;
-    return parsed && typeof parsed === "object"
-      ? Object.fromEntries(Object.entries(parsed).map(([key, value]) => [key, Boolean(value)]))
-      : {};
-  } catch {
-    return {};
-  }
-}

@@ -247,6 +247,53 @@ model CacheEntry {
   @@map("cache_entries")
 }
 
+enum CheckoutIntentState {
+  pending
+  consumed
+}
+
+model CheckoutIntent {
+  id                       String             @id @default(uuid())
+  userId                   String             @map("user_id")
+  checkoutSessionId        String             @unique @map("checkout_session_id")
+  stripeCustomerId         String             @map("stripe_customer_id")
+  priceId                  String             @map("price_id")
+  state                    CheckoutIntentState @default(pending)
+  stripeSubscriptionId     String?            @unique @map("stripe_subscription_id")
+  createdAt                DateTime           @default(now()) @map("created_at")
+  expiresAt                DateTime           @map("expires_at")
+  consumedAt               DateTime?          @map("consumed_at")
+
+  @@index([userId, state])
+  @@index([expiresAt])
+  @@index([stripeSubscriptionId])
+  @@map("checkout_intents")
+}
+
+enum StripeEventAttemptOutcome {
+  applied
+  ignored
+  failed
+}
+
+model StripeEventAttempt {
+  id                 String                   @id @default(uuid())
+  stripeEventId      String                   @map("stripe_event_id")
+  attemptNumber      Int                      @map("attempt_number")
+  eventType          String                   @map("event_type")
+  stripeCreated      BigInt                   @map("stripe_created")
+  stripeSubscriptionId String?                @map("stripe_subscription_id")
+  outcome            StripeEventAttemptOutcome
+  ignoredReason      String?                  @map("ignored_reason")
+  failureMessage     String?                  @map("failure_message")
+  processedAt        DateTime                 @default(now()) @map("processed_at")
+  createdAt          DateTime                 @default(now()) @map("created_at")
+
+  @@unique([stripeEventId, attemptNumber])
+  @@index([stripeSubscriptionId, stripeCreated, id])
+  @@map("stripe_event_attempts")
+}
+
 enum AuditAction {
   sign_in
   sign_up

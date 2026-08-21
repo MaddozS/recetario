@@ -1,4 +1,4 @@
-import { prisma } from "./prisma";
+import { prisma, invalidateAccelerateCache, userCacheTag } from "./prisma";
 import type {
   SubscriptionUncheckedCreateInput,
   SubscriptionUncheckedUpdateInput,
@@ -53,12 +53,24 @@ export async function getSubscriptionByUserId(
   userId: string,
   statuses?: string[],
 ): Promise<SubscriptionGetPayload<{ include: { plan: true } }> | null> {
-  const row = await prisma.subscription.findFirst({
+  const rows = await prisma.subscription.findMany({
     where: { userId, ...(statuses ? { status: { in: statuses } } : {}) },
     include: { plan: true },
     orderBy: { createdAt: "desc" },
+    cacheStrategy: {
+      ttl: 60,
+      swr: 120,
+      tags: [userCacheTag(userId)],
+    },
   });
-  return row as SubscriptionGetPayload<{ include: { plan: true } }> | null;
+  if (rows.length === 0) return null;
+
+  const activeOrTrialing = rows.find(
+    (s) => s.status === "active" || s.status === "trialing",
+  );
+  return (activeOrTrialing ?? rows[0]) as SubscriptionGetPayload<{
+    include: { plan: true };
+  }> | null;
 }
 
 export async function getSubscriptionByStripeId(stripeSubscriptionId: string) {
@@ -69,21 +81,25 @@ export async function upsertSubscription(
   stripeSubscriptionId: string,
   input: Omit<SubscriptionUncheckedCreateInput, "stripeSubscriptionId">,
 ) {
-  return prisma.subscription.upsert({
+  const data = await prisma.subscription.upsert({
     where: { stripeSubscriptionId },
     update: input,
     create: { stripeSubscriptionId, ...input },
   });
+  await invalidateAccelerateCache([userCacheTag(data.userId)]);
+  return data;
 }
 
 export async function updateSubscription(
   stripeSubscriptionId: string,
   input: SubscriptionUncheckedUpdateInput,
 ) {
-  return prisma.subscription.update({
+  const data = await prisma.subscription.update({
     where: { stripeSubscriptionId },
     data: input,
   });
+  await invalidateAccelerateCache([userCacheTag(data.userId)]);
+  return data;
 }
 
 export async function getStripeCustomerId(userId: string): Promise<string | null> {

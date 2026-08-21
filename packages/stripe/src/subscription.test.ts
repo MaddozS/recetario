@@ -8,6 +8,7 @@ import {
   hasFeature,
   isPaid,
   isPro,
+  isUpgrade,
 } from "./subscription";
 
 describe("subscription helpers", () => {
@@ -35,4 +36,16 @@ describe("subscription helpers", () => {
     expect(isPro(basic)).toBe(false);
     expect(isPro(pro)).toBe(true);
   });
+
+  it("correctly identifies upgrades and downgrades", () => {
+    expect(isUpgrade({ tier: "basic", billingInterval: "monthly" }, { tier: "basic", billingInterval: "yearly" })).toBe(true);
+    expect(isUpgrade({ tier: "basic", billingInterval: "monthly" }, { tier: "pro", billingInterval: "monthly" })).toBe(true);
+    expect(isUpgrade({ tier: "pro", billingInterval: "monthly" }, { tier: "basic", billingInterval: "yearly" })).toBe(true);
+    expect(isUpgrade({ tier: "basic", billingInterval: "yearly" }, { tier: "pro", billingInterval: "monthly" })).toBe(false);
+    expect(isUpgrade({ tier: "pro", billingInterval: "monthly" }, { tier: "pro", billingInterval: "yearly" })).toBe(true);
+    expect(isUpgrade({ tier: "pro", billingInterval: "yearly" }, { tier: "pro", billingInterval: "monthly" })).toBe(false);
+    expect(isUpgrade({ tier: "pro", billingInterval: "monthly" }, { tier: "basic", billingInterval: "monthly" })).toBe(false);
+    expect(isUpgrade({ tier: "pro", billingInterval: "yearly" }, { tier: "basic", billingInterval: "yearly" })).toBe(false);
+  });
 });
+

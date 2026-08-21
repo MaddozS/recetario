@@ -53,6 +53,7 @@ export function createAuth(): any {
       sendOnSignIn: true,
       expiresIn: 86400,
     },
+    rateLimit: { enabled: process.env.NODE_ENV === "production" },
     socialProviders: {
       google: {
         clientId: googleClientId,

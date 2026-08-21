@@ -3,6 +3,7 @@ import Icon from "@/components/atoms/Icon.astro";
 import Button from "@/components/atoms/Button.astro";
 import Badge from "@/components/atoms/Badge.astro";
 import Card from "@/components/molecules/shared/Card.astro";
+import ConfirmPlanChangeModal from "./ConfirmPlanChangeModal.astro";
 import type { PricingPlan } from "@recetario/types";
 import type { UserSubscriptionInfo } from "@recetario/types";
 
@@ -13,6 +14,14 @@ interface Props {
 
 const { plans, subscription } = Astro.props;
 const currentTier = subscription.tier;
+const currentInterval = subscription.billingInterval || "monthly";
+const currentPeriodEndFormatted = subscription.currentPeriodEnd
+  ? new Date(subscription.currentPeriodEnd).toLocaleDateString("es-MX", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    })
+  : null;
 ---
 
 <dialog
@@ -69,6 +78,8 @@ const currentTier = subscription.tier;
           if (isCurrent) buttonLabel = "Plan actual";
           else if (plan.id === "pro" && currentTier === "basic")
             buttonLabel = "Actualizar a Pro";
+          else if (plan.id === "basic" && currentTier === "pro")
+            buttonLabel = "Cambiar a Basic";
           else if (plan.id === "free") buttonLabel = "Plan actual";
 
           return (
@@ -151,8 +162,14 @@ const currentTier = subscription.tier;
                   size="sm"
                   data-subscribe-btn
                   data-plan={plan.id}
+                  data-plan-name={plan.name}
                   data-price-id-monthly={plan.monthlyPriceId ?? ""}
                   data-price-id-yearly={plan.yearlyPriceId ?? ""}
+                  data-monthly-display={plan.monthlyDisplay ?? ""}
+                  data-yearly-display={plan.yearlyDisplay ?? ""}
+                  data-current-tier={currentTier}
+                  data-current-interval={currentInterval}
+                  data-current-period-end={currentPeriodEndFormatted || ""}
                   disabled={isCurrent || isFree}
                   class="w-full"
                 >
@@ -202,17 +219,50 @@ const currentTier = subscription.tier;
   </div>
 </dialog>
 
+<ConfirmPlanChangeModal />
+
 <script>
   import { bindDialogBackdrop } from "@/lib/dialog";
+
+  function checkIsUpgrade(
+    currentTier: string,
+    currentInterval: string,
+    targetTier: string,
+    targetInterval: string,
+  ): boolean {
+    const curTier = currentTier || "free";
+    const tarTier = targetTier || "free";
+    const curInt = currentInterval || "monthly";
+    const tarInt = targetInterval || "monthly";
+
+    if (curInt === "monthly" && tarInt === "yearly") {
+      return true;
+    }
+
+    if (curInt === "yearly" && tarInt === "monthly") {
+      return false;
+    }
+
+    const TIER_RANKS: Record<string, number> = { free: 0, basic: 1, pro: 2 };
+    const curRank = TIER_RANKS[curTier] ?? 0;
+    const tarRank = TIER_RANKS[tarTier] ?? 0;
+
+    return tarRank > curRank;
+  }
 
   function setupPricingModal() {
     const modal = document.getElementById("pricing-modal");
     const openBtns = document.querySelectorAll("[data-open-pricing-modal]");
     const closeBtns = document.querySelectorAll("[data-close-pricing-modal]");
+    const confirmDialog = document.getElementById("confirm-plan-change-dialog");
+    const confirmBtn = document.getElementById("confirm-plan-change-btn");
+    const closeConfirmBtns = document.querySelectorAll("[data-close-confirm-modal]");
 
     if (!(modal instanceof HTMLDialogElement)) return;
 
     let activePeriod: "monthly" | "yearly" = "monthly";
+    let pendingCheckoutPayload: { priceId: string; successUrl: string; cancelUrl: string } | null = null;
+    let pendingSubscribeBtn: HTMLButtonElement | null = null;
 
     const toggle = document.getElementById("pricing-modal-toggle");
 
@@ -244,6 +294,33 @@ const currentTier = subscription.tier;
           el.classList.remove("hidden");
         } else {
           el.classList.add("hidden");
+        }
+      });
+
+      document.querySelectorAll("#pricing-modal [data-subscribe-btn]").forEach((btn) => {
+        if (!(btn instanceof HTMLButtonElement)) return;
+        const plan = btn.dataset.plan;
+        if (plan === "free") {
+          btn.disabled = true;
+          btn.textContent = "Plan actual";
+          return;
+        }
+
+        const currentTier = btn.dataset.currentTier || "free";
+        const currentInterval = btn.dataset.currentInterval || "monthly";
+        const targetPlan = plan || "free";
+        const isSamePlan = currentTier === targetPlan && currentInterval === activePeriod;
+        const isUpgradePlan = checkIsUpgrade(currentTier, currentInterval, targetPlan, activePeriod);
+
+        if (isSamePlan) {
+          btn.disabled = true;
+          btn.textContent = "Plan actual";
+        } else if (isUpgradePlan) {
+          btn.disabled = false;
+          btn.textContent = plan === "pro" ? "Actualizar a Pro" : "Actualizar a Basic";
+        } else {
+          btn.disabled = false;
+          btn.textContent = plan === "pro" ? "Cambiar a Pro Mensual" : "Cambiar a Basic";
         }
       });
     }
@@ -288,7 +365,28 @@ const currentTier = subscription.tier;
       });
     });
 
+    closeConfirmBtns.forEach((btn) => {
+      if (!(btn instanceof HTMLButtonElement)) return;
+      if (btn.dataset.confirmCloseBound === "1") return;
+      btn.dataset.confirmCloseBound = "1";
+      btn.addEventListener("click", () => {
+        if (
+          confirmDialog instanceof HTMLDialogElement &&
+          (confirmDialog.dataset.submitting === "1" ||
+            confirmDialog.getAttribute("aria-busy") === "true")
+        ) {
+          return;
+        }
+        if (confirmDialog instanceof HTMLDialogElement && confirmDialog.open) {
+          confirmDialog.close();
+        }
+      });
+    });
+
     bindDialogBackdrop(modal);
+    if (confirmDialog instanceof HTMLDialogElement) {
+      bindDialogBackdrop(confirmDialog);
+    }
 
     document
       .querySelectorAll("#pricing-modal [data-subscribe-btn]")
@@ -313,56 +411,166 @@ const currentTier = subscription.tier;
             return;
           }
 
-          const successUrl = `${window.location.origin}/settings/billing?success=1`;
-          const cancelUrl = `${window.location.origin}/settings/billing?canceled=1`;
+          const successUrl = `${window.location.origin}/settings?tab=billing&success=1`;
+          const cancelUrl = `${window.location.origin}/settings?tab=billing&canceled=1`;
 
-          btn.disabled = true;
-          modal.dataset.submitting = "1";
-          modal.setAttribute("aria-busy", "true");
-          const originalText = btn.textContent;
-          btn.textContent = "Redirigiendo...";
+          const currentTier = btn.dataset.currentTier || "free";
+          const currentInterval = btn.dataset.currentInterval || "monthly";
+          const targetPlan = plan || "free";
 
-          try {
-            const csrfToken = document.cookie
-              .split("; ")
-              .find((row) => row.startsWith("csrf_token="))
-              ?.split("=")[1];
+          if (confirmDialog instanceof HTMLDialogElement) {
+            const currentPlanNameEl = document.getElementById("confirm-current-plan-name");
+            const targetPlanNameEl = document.getElementById("confirm-target-plan-name");
+            const container = document.getElementById("confirm-change-type-container");
+            const titleEl = document.getElementById("confirm-change-type-title");
+            const descEl = document.getElementById("confirm-change-type-desc");
+            const detailsEl = document.getElementById("confirm-charge-details");
+            const errorEl = document.getElementById("confirm-modal-error");
 
-            const headers: Record<string, string> = {
-              "Content-Type": "application/json",
-            };
-            if (csrfToken) headers["x-csrf-token"] = csrfToken;
+            if (errorEl) errorEl.classList.add("hidden");
 
-            const res = await fetch("/api/stripe/checkout", {
-              method: "POST",
-              headers,
-              body: JSON.stringify({ priceId, successUrl, cancelUrl }),
-            });
+            const isUpgrade = checkIsUpgrade(
+              currentTier,
+              currentInterval,
+              targetPlan,
+              activePeriod,
+            );
+            const targetPlanName = `${btn.dataset.planName || "KitchCalc"} ${activePeriod === "yearly" ? "Anual" : "Mensual"}`;
+            const currentPlanName = `${currentTier.toUpperCase()} ${currentInterval === "yearly" ? "Anual" : "Mensual"}`;
+            const effectiveDate = btn.dataset.currentPeriodEnd || "el final del periodo actual";
 
-            const data = await res.json();
-            if (data.url) {
-              window.location.href = data.url;
-            } else {
-              throw new Error(data.error || "Error desconocido");
+            if (currentPlanNameEl) currentPlanNameEl.textContent = currentPlanName;
+            if (targetPlanNameEl) targetPlanNameEl.textContent = targetPlanName;
+
+            if (container && titleEl && descEl && detailsEl) {
+              if (isUpgrade) {
+                container.className = "rounded-xl p-3 border border-accent-300 bg-accent-50/50 text-accent-700 text-xs space-y-1.5";
+                titleEl.textContent = "Cambio inmediato (Upgrade)";
+                descEl.textContent = `Tu suscripción se actualizará de forma inmediata al plan ${targetPlanName}. Se aplicará el prorrateo ajustado de tus días restantes.`;
+                detailsEl.textContent = "Se procesará el cobro inmediato correspondiente a la actualización en Stripe.";
+              } else {
+                container.className = "rounded-xl p-3 border border-warning-border bg-warning-bg/50 text-warning text-xs space-y-1.5";
+                titleEl.textContent = "Cambio programado (Downgrade)";
+                descEl.textContent = `Tu plan actual (${currentPlanName}) seguirá activo con todas sus funciones hasta ${effectiveDate}. El nuevo plan (${targetPlanName}) comenzará a partir de esa fecha.`;
+                detailsEl.textContent = `No se realizará ningún cobro el día de hoy. El cobro del nuevo plan se aplicará cuando inicie el próximo periodo de facturación (${effectiveDate}).`;
+              }
             }
-          } catch (err) {
-            btn.disabled = false;
-            delete modal.dataset.submitting;
-            modal.removeAttribute("aria-busy");
-            btn.textContent = originalText;
-            const errorEl = document.getElementById("pricing-modal-error");
-            const errorMsg = document.getElementById("pricing-modal-error-msg");
-            if (errorEl && errorMsg) {
-              errorMsg.textContent =
-                err instanceof Error
-                  ? err.message
-                  : "No se pudo iniciar el pago";
-              errorEl.classList.remove("hidden");
-              setTimeout(() => errorEl.classList.add("hidden"), 6000);
-            }
+
+            pendingCheckoutPayload = { priceId, successUrl, cancelUrl };
+            pendingSubscribeBtn = btn;
+            confirmDialog.showModal();
+            return;
           }
+
+          executeCheckout(btn, { priceId, successUrl, cancelUrl });
         });
       });
+
+    if (confirmBtn instanceof HTMLButtonElement) {
+      if (confirmBtn.dataset.bound !== "1") {
+        confirmBtn.dataset.bound = "1";
+        confirmBtn.addEventListener("click", () => {
+          if (pendingSubscribeBtn && pendingCheckoutPayload) {
+            executeCheckout(pendingSubscribeBtn, pendingCheckoutPayload);
+          }
+        });
+      }
+    }
+
+    async function executeCheckout(
+      btn: HTMLButtonElement,
+      payload: { priceId: string; successUrl: string; cancelUrl: string },
+    ) {
+      const cancelBtns = confirmDialog?.querySelectorAll("[data-close-confirm-modal]") || [];
+      const confirmBtnEl = document.getElementById("confirm-plan-change-btn") as HTMLButtonElement | null;
+      const originalConfirmHTML = confirmBtnEl?.innerHTML || "Confirmar cambio";
+
+      if (confirmDialog instanceof HTMLDialogElement) {
+        confirmDialog.dataset.submitting = "1";
+        confirmDialog.setAttribute("aria-busy", "true");
+      }
+      if (modal instanceof HTMLDialogElement) {
+        modal.dataset.submitting = "1";
+        modal.setAttribute("aria-busy", "true");
+      }
+
+      btn.disabled = true;
+      if (confirmBtnEl) {
+        confirmBtnEl.disabled = true;
+        confirmBtnEl.innerHTML = `<svg class="h-4 w-4 animate-[sp_0.7s_linear_infinite]" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg><span>Procesando...</span>`;
+      }
+      cancelBtns.forEach((cBtn) => {
+        if (cBtn instanceof HTMLButtonElement) cBtn.disabled = true;
+      });
+
+      const errorEl = document.getElementById("confirm-modal-error");
+      const errorMsg = document.getElementById("confirm-modal-error-msg");
+      if (errorEl) errorEl.classList.add("hidden");
+
+      try {
+        const csrfToken = document.cookie
+          .split("; ")
+          .find((row) => row.startsWith("csrf_token="))
+          ?.split("=")[1];
+
+        const headers: Record<string, string> = {
+          "Content-Type": "application/json",
+        };
+        if (csrfToken) headers["x-csrf-token"] = csrfToken;
+
+        const res = await fetch("/api/stripe/checkout", {
+          method: "POST",
+          headers,
+          body: JSON.stringify(payload),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.error || "No se pudo procesar el cambio de plan");
+        }
+
+        if (data.url) {
+          window.location.href = data.url;
+        } else {
+          if (confirmDialog instanceof HTMLDialogElement && confirmDialog.open) {
+            delete confirmDialog.dataset.submitting;
+            confirmDialog.removeAttribute("aria-busy");
+            confirmDialog.close();
+          }
+          if (modal instanceof HTMLDialogElement && modal.open) {
+            delete modal.dataset.submitting;
+            modal.removeAttribute("aria-busy");
+            modal.close();
+          }
+          window.location.href = `${window.location.origin}/settings?tab=billing&success=1`;
+        }
+      } catch (err) {
+        if (confirmDialog instanceof HTMLDialogElement) {
+          delete confirmDialog.dataset.submitting;
+          confirmDialog.removeAttribute("aria-busy");
+        }
+        if (modal instanceof HTMLDialogElement) {
+          delete modal.dataset.submitting;
+          modal.removeAttribute("aria-busy");
+        }
+
+        btn.disabled = false;
+        if (confirmBtnEl) {
+          confirmBtnEl.disabled = false;
+          confirmBtnEl.innerHTML = originalConfirmHTML;
+        }
+        cancelBtns.forEach((cBtn) => {
+          if (cBtn instanceof HTMLButtonElement) cBtn.disabled = false;
+        });
+
+        if (errorEl && errorMsg) {
+          errorMsg.textContent =
+            err instanceof Error ? err.message : "No se pudo iniciar el cambio de plan";
+          errorEl.classList.remove("hidden");
+        }
+      }
+    }
   }
 
   document.addEventListener("astro:page-load", setupPricingModal);
