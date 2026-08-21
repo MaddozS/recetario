@@ -70,7 +70,7 @@ Key findings from `analysis-20260620-1718-monorepo-refactor.md` and `task-202606
 1. **Phase 0 — Foundation**: Move to `apps/web/`, add `pnpm-workspace.yaml` packages, install Turborepo, configure Vercel root. Verify deploy.
 2. **Phase 1 — UI spike**: Extract `Button.astro` to `packages/ui/` as proof-of-concept. Validate it compiles + renders correctly. If success → Phase 2-3 extract all UI. If fail → skip `packages/ui/`, keep UI in `apps/web/`.
 3. **Phase 2 — Config + types packages**: Create `packages/config/` (tsconfig base, eslint base, prettier base) and `packages/types/` (empty initially, populate incrementally).
-4. **Phase 3 — DB package**: Move `prisma/` to `packages/db/prisma/`. Move `src/lib/prisma.ts` + `src/lib/db/*` (except `billing.ts`) + `src/lib/cache.ts` to `packages/db/src/`. Update all imports. Update Prisma output path.
+4. **Phase 3 — DB package**: Move `prisma/` to `packages/db/prisma/`. Move `src/lib/prisma.ts` + `src/lib/db/*` (except `billing.ts`) to `packages/db/src/`. Update all imports. Update Prisma output path.
 5. **Phase 4 — Auth package**: Move `src/lib/{auth, auth-client, csrf, csrf-client, password-validation, password-reset, sign-in, sign-out}.ts` to `packages/auth/src/`. Wire `apps/web/middleware.ts` to import from `@recetario/auth`. API abuse protection is deferred to a future design.
 6. **Phase 5 — Billing package**: Move `src/lib/{stripe, subscription, plans-config, formatters}.ts` + `src/lib/db/billing.ts` to `packages/stripe/src/`. Update 4 import sites (middleware, checkout, portal, webhook).
 
@@ -212,13 +212,13 @@ For every flow affected by the refactor, the spec traces the actual code:
 **Before** (`src/middleware.ts:1-100`):
 1. Imports: `auth`, `db/billing`, `subscription`, `cache`, `csrf`, `audit`, `prisma` (7 modules from `src/lib/`)
 2. `onRequest` populates `Astro.locals.{user, session, subscription, csrfToken}` for every request
-3. Cache check on subscription: 60s TTL via `cacheGet('subscription:...')` → `cacheSet(...)` if miss
+3. Subscription state resolved via the API session endpoint (Accelerate edge-cached)
 4. Audit log on auth events
 
 **After** (Phase 4 complete, `apps/web/src/middleware.ts:1-100`):
-1. Imports: `@recetario/auth` (betterAuth, csrf helpers), `@recetario/stripe` (getUserSubscription, seedSubscriptionPlans), `@recetario/db` (audit, cache) — same 7 logical concerns, but from packages
+1. Imports: `@recetario/auth` (betterAuth, csrf helpers), `@recetario/stripe` (getUserSubscription, seedSubscriptionPlans), `@recetario/db` (audit) — same 7 logical concerns, but from packages
 2. Same `onRequest` logic, identical Astro.locals population
-3. Cache still Prisma-backed (in `@recetario/db`), accessed via `@recetario/db`
+3. Cache via Accelerate `cacheStrategy` (in `@recetario/db`), invalidated on writes
 4. Same audit logging
 
 **Design implication**: Middleware becomes a thin orchestration layer. Each package owns one concern. Easier to test middleware in isolation with package mocks.
@@ -283,7 +283,7 @@ The refactor touches these parallel entry points (each must update):
 3. `apps/web/src/pages/api/stripe/portal.ts:3` — `import { getUserSubscription } from "@/lib/db/billing"` → `@recetario/stripe`
 4. `apps/web/src/pages/api/stripe/webhook.ts:4-9` — `import { createOrUpdateSubscription, cancelSubscription, markSubscriptionPastDue, seedSubscriptionPlans } from "@/lib/db/billing"` → `@recetario/stripe`
 
-**Cache consumers (5 sites importing from `@/lib/cache`)**:
+**Cache consumers (previously importing from `@/lib/cache`, now via Accelerate `cacheStrategy` in `@recetario/db`)**:
 1. `src/lib/db/recipes.ts` → `@recetario/db`
 2. `src/lib/db/ingredients.ts` → `@recetario/db`
 3. `src/lib/db/presentations.ts` → `@recetario/db`
@@ -292,10 +292,8 @@ The refactor touches these parallel entry points (each must update):
 
 **Prisma direct imports (currently bypasses barrel, will be normalized)**:
 1. `src/lib/auth.ts:4` — `import { prisma } from "@/lib/prisma"` → `import { prisma } from "@recetario/db"`
-2. `src/lib/cache.ts` — moves to `@recetario/db/src/cache.ts`
-3. API rate limiting is deferred until a replacement abuse-protection design is approved.
-4. `src/lib/password-reset.ts` — moves to `@recetario/auth/src/password-reset.ts`, imports prisma from `@recetario/db`
-5. `src/pages/api/auth/update-name.ts` — direct prisma import, update to `@recetario/db`
+2. `src/lib/password-reset.ts` — moves to `@recetario/auth/src/password-reset.ts`, imports prisma from `@recetario/db`
+3. `src/pages/api/auth/update-name.ts` — direct prisma import, update to `@recetario/db`
 
 **UI components (8 files in `src/components/ui/`)**:
 1. Button.astro — imports `Icon` from `astro-icon/components` (Astro-specific)
@@ -417,7 +415,7 @@ The refactor MUST preserve these invariants (per AGENTS.md and explore findings)
 
 6. **Feature flag tiers preserved**: `FREE_FEATURES` (12 keys, all false), Basic enables 5, Pro enables all 12. Logic unchanged. Code moves from `src/lib/subscription.ts` to `@recetario/stripe/src/subscription.ts`.
 
-7. **Cache TTL unchanged**: 60s for subscription cache (`src/lib/cache.ts` semantics preserved in `@recetario/db/src/cache.ts`).
+7. **Cache behavior unchanged**: 60s subscription cache semantics preserved, now via Accelerate `cacheStrategy` (`ttl: 60`, `swr: 120`) in `@recetario/db`.
 
 8. **CSRF token format unchanged**: hidden `_csrf` input on every form, validated server-side.
 

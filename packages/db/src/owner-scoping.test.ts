@@ -94,10 +94,15 @@ const mocks = vi.hoisted(() => {
     user: { update: vi.fn() },
     auditLog: { create: vi.fn() },
   };
-  return { prisma, tx };
+  const invalidateAccelerateCache = vi.fn();
+  return { prisma, tx, invalidateAccelerateCache };
 });
 
-vi.mock("./prisma", () => ({ prisma: mocks.prisma }));
+vi.mock("./prisma", () => ({
+  prisma: mocks.prisma,
+  invalidateAccelerateCache: mocks.invalidateAccelerateCache,
+  userCacheTag: (userId: string) => `user_${userId}`,
+}));
 
 import {
   getRecipeSummaries,
@@ -151,6 +156,7 @@ beforeEach(() => {
       }
     }
   }
+  mocks.invalidateAccelerateCache.mockReset();
 });
 
 describe("recipes ownerId scoping", () => {
@@ -413,6 +419,7 @@ describe("infra ownerId scoping", () => {
     const arg = mocks.prisma.account.updateMany.mock.calls[0]?.[0] as { where: { userId: string; providerId: string } };
     expect(arg.where.userId).toBe("user-1");
     expect(arg.where.providerId).toBe("credential");
+    expect(mocks.invalidateAccelerateCache).toHaveBeenCalledWith(["user_user-1"]);
   });
 
   it("updateUserName updates by userId", async () => {
@@ -420,5 +427,6 @@ describe("infra ownerId scoping", () => {
     await updateUserName("user-1", { firstName: "Ada", lastName: "Lovelace" });
     const arg = mocks.prisma.user.update.mock.calls[0]?.[0] as { where: { id: string } };
     expect(arg.where.id).toBe("user-1");
+    expect(mocks.invalidateAccelerateCache).toHaveBeenCalledWith(["user_user-1"]);
   });
 });

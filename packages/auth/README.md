@@ -19,7 +19,7 @@ import { validateCsrf, generateToken } from "@recetario/auth";
 | Variable | Runtime | Description |
 |---|---|---|
 | `BETTER_AUTH_SECRET` | Server (`process.env`) | Better Auth encryption secret (min 32 chars) |
-| `BETTER_AUTH_URL` | Server (`process.env`) | Base URL (e.g. `https://kitchcalc.com`) |
+| `BETTER_AUTH_URL` | Server (`process.env`) | Base URL (e.g. `https://app.kitchcalc.com` for prod, `http://localhost:4321` for dev) |
 | `GOOGLE_CLIENT_ID` | Server (`process.env`) | Google OAuth client ID |
 | `GOOGLE_CLIENT_SECRET` | Server (`process.env`) | Google OAuth client secret |
 | `RESEND_API_KEY` | Server (`process.env`) | Resend API key for transactional emails |

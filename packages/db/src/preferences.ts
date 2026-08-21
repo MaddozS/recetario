@@ -1,4 +1,4 @@
-import { prisma } from "./prisma";
+import { prisma, invalidateAccelerateCache, userCacheTag } from "./prisma";
 import type {
   UserPreferencesUncheckedCreateInput,
   UserPreferencesUncheckedUpdateInput
@@ -8,6 +8,11 @@ import { Theme, AccentColor } from "../prisma/generated/enums";
 export async function getUserPreferences(userId: string) {
   const data = await prisma.userPreferences.findUnique({
     where: { userId },
+    cacheStrategy: {
+      ttl: 60,
+      swr: 120,
+      tags: [userCacheTag(userId)],
+    },
   });
 
   return data
@@ -23,6 +28,7 @@ export async function createUserPreferences(userId: string, prefs: Omit<UserPref
     },
   });
 
+  await invalidateAccelerateCache([userCacheTag(userId)]);
   return data
 }
 
@@ -46,5 +52,6 @@ export async function upsertUserPreferences(userId: string, prefs: Omit<UserPref
     },
   });
 
+  await invalidateAccelerateCache([userCacheTag(userId)]);
   return data
 }

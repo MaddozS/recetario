@@ -1,8 +1,17 @@
 import { z } from "zod";
 
 export const subscriptionTierSchema = z.enum(["free", "basic", "pro"]);
+export const KNOWN_SUBSCRIPTION_STATUSES = [
+  "active",
+  "trialing",
+  "canceled",
+  "past_due",
+  "unpaid",
+  "incomplete",
+] as const;
+/** Raw Stripe statuses; unknown future statuses pass through raw and observable. */
 export const subscriptionStatusSchema = z
-  .enum(["active", "trialing", "canceled", "past_due", "unpaid", "incomplete"])
+  .union([z.enum(KNOWN_SUBSCRIPTION_STATUSES), z.string()])
   .nullable();
 export const billingIntervalSchema = z.enum(["monthly", "yearly"]).nullable();
 
@@ -44,39 +53,6 @@ export const userSubscriptionInfoSchema = z.object({
     .optional(),
 });
 
-export const userSubscriptionSchema = z.object({
-  id: z.string(),
-  userId: z.string(),
-  stripeCustomerId: z.string().nullable(),
-  stripeSubscriptionId: z.string().nullable(),
-  planId: z.string(),
-  status: z.string(),
-  tier: z.string(),
-  recipesLimit: z.number().int().nullable(),
-  ingredientsLimit: z.number().int().nullable(),
-  features: z.record(z.boolean()),
-  priceCents: z.number().int().nullable(),
-  currency: z.string().nullable(),
-  billingInterval: z.string().nullable(),
-  currentPeriodStart: z.string().nullable(),
-  currentPeriodEnd: z.string().nullable(),
-  cancelAtPeriodEnd: z.boolean(),
-  trialEnd: z.string().nullable(),
-  createdAt: z.string(),
-});
-
-export const createSubscriptionInputSchema = z.object({
-  stripeSubscriptionId: z.string(),
-  stripeCustomerId: z.string(),
-  userId: z.string().nullable(),
-  planId: z.string().nullable(),
-  status: z.string(),
-  currentPeriodStart: z.date(),
-  currentPeriodEnd: z.date(),
-  cancelAtPeriodEnd: z.boolean(),
-  trialEnd: z.date().nullable().optional(),
-});
-
 export const syncPlanInputSchema = z.object({
   id: z.string(),
   tier: z.string(),
@@ -110,15 +86,11 @@ export const plansListResponseSchema = z.array(pricingPlanSchema);
 export const planSchema = syncPlanInputSchema.extend({
   features: z.record(z.boolean()),
 });
-export const subscriptionResponseSchema = userSubscriptionInfoSchema;
 
 export type SubscriptionTier = z.infer<typeof subscriptionTierSchema>;
 export type UserSubscriptionInfo = z.infer<typeof userSubscriptionInfoSchema>;
-export type UserSubscription = z.infer<typeof userSubscriptionSchema>;
-export type CreateSubscriptionInput = z.infer<typeof createSubscriptionInputSchema>;
 export type SyncPlanInput = z.infer<typeof syncPlanInputSchema>;
 export type PlanFeature = z.infer<typeof planFeatureSchema>;
 export type TierConfig = z.infer<typeof tierConfigSchema>;
 export type PricingPlan = z.infer<typeof pricingPlanSchema>;
 export type Plan = z.infer<typeof planSchema>;
-export type SubscriptionResponse = z.infer<typeof subscriptionResponseSchema>;

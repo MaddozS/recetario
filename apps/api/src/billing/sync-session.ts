@@ -1,11 +1,11 @@
 import type { Handler } from "hono";
 import {
-  getSubscriptionPlanByStripePriceId,
-  upsertSubscription,
+  getCheckoutIntentBySession,
 } from "@recetario/db";
 import {
   retrieveCheckoutSession,
   retrieveSubscription,
+  subscriptionIngestion,
 } from "@recetario/stripe/server";
 import { getAuthUser } from "../middleware/auth";
 import type { AuthVariables } from "../middleware/auth";
@@ -31,6 +31,16 @@ export function syncCheckoutSessionHandler(): Handler<{ Variables: AuthVariables
         return c.json({ ok: false });
       }
 
+      // Ownership authority: the authenticated user plus a trusted Checkout
+      // intent. Metadata can corroborate but never override.
+      const intent = await getCheckoutIntentBySession(session.id ?? sessionId);
+      if (!intent || intent.userId !== user.id) {
+        return c.json({ ok: false }, 409);
+      }
+      if (intent.state === "pending" && intent.expiresAt < new Date()) {
+        return c.json({ ok: false }, 409);
+      }
+
       const subscriptionId =
         typeof session.subscription === "string"
           ? session.subscription
@@ -40,53 +50,24 @@ export function syncCheckoutSessionHandler(): Handler<{ Variables: AuthVariables
           ? session.customer
           : session.customer?.id ?? "";
 
-      const metadata = session.metadata;
+      // Retrieve the current Stripe state; the local plan resolves from the
+      // Checkout intent, never from the requested Price alone.
       const sub = await retrieveSubscription(subscriptionId);
-      const items = sub.items?.data;
-      const priceId = items?.[0]?.price?.id ?? null;
+      const snapshot = subscriptionIngestion.snapshotFromSubscription(
+        sub,
+        customerId,
+      );
 
-      const planId =
-        metadata?.planId ??
-        (priceId
-          ? (await getSubscriptionPlanByStripePriceId(priceId))?.id
-          : null);
-      const userId = metadata?.userId ?? user.id;
+      const ingestResult =
+        await subscriptionIngestion.ingestSubscriptionSnapshot({
+          snapshot,
+          metadata: (session.metadata as Record<string, string> | null) ?? null,
+          context: { authority: "checkout-intent", intent },
+        });
 
-      if (!planId || !userId) return c.json({ ok: false });
-
-      const subData = sub as unknown as {
-        current_period_start?: number;
-        current_period_end?: number;
-      };
-
-      const startTs =
-        typeof subData.current_period_start === "number" &&
-        subData.current_period_start > 0
-          ? subData.current_period_start
-          : 0;
-      const endTs =
-        typeof subData.current_period_end === "number" && subData.current_period_end > 0
-          ? subData.current_period_end
-          : 0;
-
-      const currentPeriodStart =
-        startTs > 0 ? new Date(startTs * 1000) : new Date();
-      const currentPeriodEnd =
-        endTs > 0
-          ? new Date(endTs * 1000)
-          : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
-
-      await upsertSubscription(subscriptionId, {
-        id: subscriptionId,
-        userId,
-        stripeCustomerId: customerId,
-        planId,
-        status: sub.status,
-        currentPeriodStart,
-        currentPeriodEnd,
-        cancelAtPeriodEnd: Boolean(sub.cancel_at_period_end),
-        trialEnd: sub.trial_end ? new Date(sub.trial_end * 1000) : null,
-      });
+      if (!ingestResult.ok) {
+        return c.json({ ok: false }, 500);
+      }
 
       return c.json({ ok: true });
     } catch (err) {

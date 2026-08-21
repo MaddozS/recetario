@@ -14,10 +14,9 @@ interface PresentationFixedCostLine {
 interface Props {
   presentationFixedCosts: PresentationFixedCostLine[];
   presentationId: number;
-  isEditing: boolean;
 }
 
-const { presentationFixedCosts, presentationId, isEditing } = Astro.props;
+const { presentationFixedCosts, presentationId } = Astro.props;
 ---
 
 <section
@@ -27,18 +26,16 @@ const { presentationFixedCosts, presentationId, isEditing } = Astro.props;
 >
   <div class="flex items-center justify-between gap-3">
     <h3 class="text-foreground text-sm font-bold">Costos Fijos</h3>
-    {
-      isEditing && (
-        <Button
-          variant="secondary"
-          icon="plus"
-          size="sm"
-          data-open-presentation-fc-create={presentationId}
-        >
-          Agregar
-        </Button>
-      )
-    }
+    <span data-edit-toggle="edit" hidden>
+      <Button
+        variant="secondary"
+        icon="plus"
+        size="sm"
+        data-open-presentation-fc-create={presentationId}
+      >
+        Agregar
+      </Button>
+    </span>
   </div>
 
   <div class="flex flex-col gap-2" data-presentation-fc-list>

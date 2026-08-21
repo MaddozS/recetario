@@ -24,7 +24,10 @@
       "Shell(gh:*)",
       "Shell(gh issue create:*)",
       "Shell(lsof:*)",
-      "Shell(mkdir:*)"
+      "Shell(mkdir:*)",
+      "Shell(open:*)",
+      "Shell(cat:*)",
+      "Shell(sed:*)"
     ],
     "deny": [],
     "defaultMode": "default"

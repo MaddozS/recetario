@@ -40,12 +40,12 @@ Worked example: `GET /api/billing/subscription`.
    `packages/types/src/api/billing.ts`:
 
    ```ts
-   export const subscriptionResponseSchema = z.object({
+   export const userSubscriptionInfoSchema = z.object({
      tier: z.enum(["free", "basic", "pro"]),
      status: z.enum(["active", "trialing", "canceled", "past_due", "unpaid", "incomplete"]).nullable(),
      // …
    });
-   export type SubscriptionResponse = z.infer<typeof subscriptionResponseSchema>;
+   export type UserSubscriptionInfo = z.infer<typeof userSubscriptionInfoSchema>;
    ```
 
    Re-export from `packages/types/src/index.ts` if the file is new.
@@ -56,7 +56,7 @@ Worked example: `GET /api/billing/subscription`.
    import type { Handler } from "hono";
    import { auth } from "@recetario/auth/server";
    import { getSubscriptionByUserId } from "@recetario/db";
-   import { subscriptionResponseSchema } from "@recetario/types";
+   import { userSubscriptionInfoSchema } from "@recetario/types";
    import { ApiError } from "../errors";
    import * as cache from "../cache";
 
@@ -74,7 +74,7 @@ Worked example: `GET /api/billing/subscription`.
        const dbSub = await getSubscriptionByUserId(session.user.id, ["active", "trialing"]);
        if (!dbSub) throw new ApiError("NOT_FOUND", "No active subscription");
 
-       const response = subscriptionResponseSchema.parse({
+       const response = userSubscriptionInfoSchema.parse({
          tier: dbSub.plan?.tier ?? "free",
          status: dbSub.status,
          recipesLimit: dbSub.plan?.recipesLimit ?? null,
@@ -112,7 +112,7 @@ Worked example: `GET /api/billing/subscription`.
    ```ts
    const sub = await apiFetch(
      "/api/billing/subscription",
-     { schema: subscriptionResponseSchema },
+      { schema: userSubscriptionInfoSchema },
      Astro.request,
    );
    ```

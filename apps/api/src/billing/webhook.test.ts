@@ -6,30 +6,17 @@ import { hostAllowlist } from "../host-allowlist";
 
 const {
   mockVerifyWebhookSignature,
-  mockRetrieveSubscription,
-  mockGetSubscriptionPlanByStripePriceId,
-  mockGetSubscriptionByStripeId,
-  mockUpsertSubscription,
-  mockUpdateSubscription,
+  mockProcessStripeEvent,
 } = vi.hoisted(() => ({
   mockVerifyWebhookSignature: vi.fn(),
-  mockRetrieveSubscription: vi.fn(),
-  mockGetSubscriptionPlanByStripePriceId: vi.fn(),
-  mockGetSubscriptionByStripeId: vi.fn(),
-  mockUpsertSubscription: vi.fn(),
-  mockUpdateSubscription: vi.fn(),
+  mockProcessStripeEvent: vi.fn(),
 }));
 
 vi.mock("@recetario/stripe/server", () => ({
   verifyWebhookSignature: mockVerifyWebhookSignature,
-  retrieveSubscription: mockRetrieveSubscription,
-}));
-
-vi.mock("@recetario/db", () => ({
-  getSubscriptionPlanByStripePriceId: mockGetSubscriptionPlanByStripePriceId,
-  getSubscriptionByStripeId: mockGetSubscriptionByStripeId,
-  upsertSubscription: mockUpsertSubscription,
-  updateSubscription: mockUpdateSubscription,
+  subscriptionIngestion: {
+    processStripeEvent: mockProcessStripeEvent,
+  },
 }));
 
 const { stripeWebhookHandler } = await import("./webhook");
@@ -81,24 +68,23 @@ describe("stripeWebhookHandler", () => {
     expect(body.error.code).toBe("VALIDATION_ERROR");
   });
 
-  it("handles checkout.session.completed event and upserts subscription", async () => {
+  it("delegates verified events to the ingestion module and returns 200 on applied", async () => {
     const eventObj = {
+      id: "evt_1",
       type: "checkout.session.completed",
+      created: 1700000000,
       data: {
         object: {
+          id: "cs_123",
           subscription: "sub_123",
           customer: "cus_123",
-          metadata: { userId: "usr_1", planId: "plan_pro" },
         },
       },
     };
     mockVerifyWebhookSignature.mockResolvedValueOnce(eventObj);
-    mockRetrieveSubscription.mockResolvedValueOnce({
-      status: "active",
-      items: { data: [{ price: { id: "price_pro_m" } }] },
-      current_period_start: 1600000000,
-      current_period_end: 1602500000,
-      cancel_at_period_end: false,
+    mockProcessStripeEvent.mockResolvedValueOnce({
+      ok: true,
+      outcome: "applied",
     });
 
     const res = await buildApp().request(
@@ -113,39 +99,55 @@ describe("stripeWebhookHandler", () => {
 
     expect(res.status).toBe(200);
     expect(await res.text()).toBe("OK");
-    expect(mockUpsertSubscription).toHaveBeenCalledWith(
-      "sub_123",
-      expect.objectContaining({
-        id: "sub_123",
-        userId: "usr_1",
-        stripeCustomerId: "cus_123",
-        planId: "plan_pro",
-        status: "active",
-      }),
-    );
+    expect(mockProcessStripeEvent).toHaveBeenCalledWith({
+      event: expect.objectContaining({ id: "evt_1", type: "checkout.session.completed" }),
+    });
   });
 
-  it("handles customer.subscription.updated event", async () => {
+  it("returns 200 for ignored (duplicate/stale/unsupported) outcomes", async () => {
     const eventObj = {
-      type: "customer.subscription.updated",
+      id: "evt_2",
+      type: "charge.succeeded",
+      created: 1700000000,
+      data: { object: { id: "ch_1" } },
+    };
+    mockVerifyWebhookSignature.mockResolvedValueOnce(eventObj);
+    mockProcessStripeEvent.mockResolvedValueOnce({
+      ok: true,
+      outcome: "ignored",
+    });
+
+    const res = await buildApp().request(
+      "/api/stripe/webhook",
+      {
+        method: "POST",
+        headers: { "stripe-signature": "sig_valid" },
+        body: JSON.stringify(eventObj),
+      },
+      {},
+    );
+
+    expect(res.status).toBe(200);
+    expect(await res.text()).toBe("OK");
+  });
+
+  it("returns 500 (non-2xx) when ingestion reports a retryable failure", async () => {
+    const eventObj = {
+      id: "evt_3",
+      type: "checkout.session.completed",
+      created: 1700000000,
       data: {
         object: {
-          id: "sub_123",
+          id: "cs_123",
+          subscription: "sub_123",
           customer: "cus_123",
-          status: "active",
-          items: { data: [{ price: { id: "price_pro_m" } }] },
-          current_period_start: 1600000000,
-          current_period_end: 1602500000,
-          cancel_at_period_end: false,
         },
       },
     };
     mockVerifyWebhookSignature.mockResolvedValueOnce(eventObj);
-    mockGetSubscriptionPlanByStripePriceId.mockResolvedValueOnce({
-      id: "plan_pro",
-    });
-    mockGetSubscriptionByStripeId.mockResolvedValueOnce({
-      userId: "usr_existing",
+    mockProcessStripeEvent.mockResolvedValueOnce({
+      ok: false,
+      error: "No Checkout intent for session",
     });
 
     const res = await buildApp().request(
@@ -158,74 +160,8 @@ describe("stripeWebhookHandler", () => {
       {},
     );
 
-    expect(res.status).toBe(200);
-    expect(await res.text()).toBe("OK");
-    expect(mockUpsertSubscription).toHaveBeenCalledWith(
-      "sub_123",
-      expect.objectContaining({
-        id: "sub_123",
-        userId: "usr_existing",
-        planId: "plan_pro",
-      }),
-    );
-  });
-
-  it("handles customer.subscription.deleted event", async () => {
-    const eventObj = {
-      type: "customer.subscription.deleted",
-      data: {
-        object: {
-          id: "sub_123",
-        },
-      },
-    };
-    mockVerifyWebhookSignature.mockResolvedValueOnce(eventObj);
-    mockGetSubscriptionByStripeId.mockResolvedValueOnce({ id: "sub_123" });
-
-    const res = await buildApp().request(
-      "/api/stripe/webhook",
-      {
-        method: "POST",
-        headers: { "stripe-signature": "sig_valid" },
-        body: JSON.stringify(eventObj),
-      },
-      {},
-    );
-
-    expect(res.status).toBe(200);
-    expect(mockUpdateSubscription).toHaveBeenCalledWith("sub_123", {
-      status: "canceled",
-      cancelAtPeriodEnd: true,
-    });
-  });
-
-  it("handles invoice.payment_failed event", async () => {
-    const eventObj = {
-      type: "invoice.payment_failed",
-      data: {
-        object: {
-          subscription: "sub_failed_1",
-        },
-      },
-    };
-    mockVerifyWebhookSignature.mockResolvedValueOnce(eventObj);
-    mockGetSubscriptionByStripeId.mockResolvedValueOnce({
-      id: "sub_failed_1",
-    });
-
-    const res = await buildApp().request(
-      "/api/stripe/webhook",
-      {
-        method: "POST",
-        headers: { "stripe-signature": "sig_valid" },
-        body: JSON.stringify(eventObj),
-      },
-      {},
-    );
-
-    expect(res.status).toBe(200);
-    expect(mockUpdateSubscription).toHaveBeenCalledWith("sub_failed_1", {
-      status: "past_due",
-    });
+    expect(res.status).toBe(500);
+    const body = (await res.json()) as any;
+    expect(body.error.code).toBe("INTERNAL");
   });
 });

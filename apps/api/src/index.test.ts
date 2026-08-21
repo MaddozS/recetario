@@ -11,6 +11,8 @@ const mocks = vi.hoisted(() => ({
   retrieveSubscription: vi.fn(),
   createCheckoutSession: vi.fn(),
   createPortalSession: vi.fn(),
+  processStripeEvent: vi.fn(),
+  createTrustedCheckoutSession: vi.fn(),
 }));
 
 vi.mock("@recetario/auth/server", () => ({
@@ -42,6 +44,16 @@ vi.mock("@recetario/db", () => ({
   upsertSubscription: mocks.upsertSubscription,
   updateSubscription: mocks.updateSubscription,
   getStripeCustomerId: vi.fn(),
+  getCheckoutIntentBySession: vi.fn(),
+  getCheckoutIntentBySubscription: vi.fn(),
+  getSubscriptionByStripeIdForIngestion: vi.fn(),
+  createCheckoutIntent: vi.fn(),
+  consumeCheckoutIntent: vi.fn(),
+  getLatestEventAttempt: vi.fn(),
+  getLatestTerminalAttemptForSubscription: vi.fn(),
+  recordFailedEventAttempt: vi.fn(),
+  applySubscriptionMutation: vi.fn(),
+  upsertSubscriptionAndConsumeIntent: vi.fn(),
 }));
 
 vi.mock("@recetario/stripe/server", () => ({
@@ -50,6 +62,11 @@ vi.mock("@recetario/stripe/server", () => ({
   createPortalSession: mocks.createPortalSession,
   retrieveSubscription: mocks.retrieveSubscription,
   verifyWebhookSignature: mocks.verifyWebhookSignature,
+  subscriptionIngestion: {
+    processStripeEvent: mocks.processStripeEvent,
+    createTrustedCheckoutSession: mocks.createTrustedCheckoutSession,
+    ingestSubscriptionSnapshot: vi.fn().mockResolvedValue({ ok: true }),
+  },
 }));
 
 beforeAll(() => {
@@ -88,6 +105,8 @@ describe("health endpoint", () => {
   it("resolves subscription updates from the Stripe price ID", async () => {
     const { default: app } = await import("./index");
     mocks.verifyWebhookSignature.mockReturnValue({
+      id: "evt_1",
+      created: 1700000000,
       type: "customer.subscription.updated",
       data: {
         object: {
@@ -102,8 +121,10 @@ describe("health endpoint", () => {
         },
       },
     });
-    mocks.getSubscriptionPlanByStripePriceId.mockResolvedValueOnce({ id: "pro_monthly" });
-    mocks.getSubscriptionByStripeId.mockResolvedValueOnce({ userId: "user-1" });
+    mocks.processStripeEvent.mockResolvedValueOnce({
+      ok: true,
+      outcome: "applied",
+    });
 
     const response = await app.request(
       "/api/stripe/webhook",
@@ -112,11 +133,9 @@ describe("health endpoint", () => {
     );
 
     expect(response.status).toBe(200);
-    expect(mocks.getSubscriptionPlanByStripePriceId).toHaveBeenCalledWith("price_pro_monthly");
-    expect(mocks.upsertSubscription).toHaveBeenCalledWith(
-      "sub_123",
-      expect.objectContaining({ planId: "pro_monthly", userId: "user-1", status: "active" }),
-    );
+    expect(mocks.processStripeEvent).toHaveBeenCalledWith({
+      event: expect.objectContaining({ id: "evt_1", type: "customer.subscription.updated" }),
+    });
   });
 
   it("uses web app origin for checkout success and cancel redirect URLs", async () => {
@@ -129,7 +148,10 @@ describe("health endpoint", () => {
     const { getStripeCustomerId } = await import("@recetario/db");
     (getStripeCustomerId as unknown as ReturnType<typeof vi.fn>).mockResolvedValueOnce("cus_123");
     mocks.getSubscriptionPlanByStripePriceId.mockResolvedValueOnce({ id: "plan_123" });
-    mocks.createCheckoutSession.mockResolvedValueOnce({ url: "https://checkout.stripe.com/test" });
+    mocks.createTrustedCheckoutSession.mockResolvedValueOnce({
+      ok: true,
+      url: "https://checkout.stripe.com/test",
+    });
 
     const response = await app.request(
       "/api/stripe/checkout",
@@ -146,7 +168,7 @@ describe("health endpoint", () => {
     );
 
     expect(response.status).toBe(200);
-    expect(mocks.createCheckoutSession).toHaveBeenCalledWith(
+    expect(mocks.createTrustedCheckoutSession).toHaveBeenCalledWith(
       expect.objectContaining({
         successUrl: "http://localhost:4321/settings?tab=billing&success=1",
         cancelUrl: "http://localhost:4321/pricing?canceled=1",

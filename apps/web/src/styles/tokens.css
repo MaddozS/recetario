@@ -60,7 +60,7 @@
 
 /* Light mode variable defaults */
 :root {
-  color-scheme: light dark;
+  color-scheme: light;
   --tw-bg: #f8fafc;
   --tw-card: #ffffff;
   --tw-muted: #f1f5f9;
@@ -100,6 +100,7 @@
 
 /* Dark mode variable overrides */
 .dark {
+  color-scheme: dark;
   --tw-bg: oklch(0.176 0.008 258);
   --tw-card: oklch(0.208 0.008 258);
   --tw-muted: oklch(0.208 0.008 258);
