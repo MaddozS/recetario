@@ -3,6 +3,7 @@ import type Stripe from "stripe";
 import {
   ReconcileStatus,
   reconcileSubscriptionWith,
+  getSubscriptionInfoWith,
 } from "./subscription-reconcile";
 import type { UserSubscriptionInfo } from "@recetario/types";
 
@@ -519,5 +520,105 @@ describe("reconcileSubscriptionWith", () => {
 
     await expect(reconcile("user-1")).rejects.toThrow("write failed");
     expect(log).not.toHaveBeenCalled();
+  });
+});
+
+describe("getSubscriptionInfoWith", () => {
+  function makeInfoDeps() {
+    return {
+      db: {
+        getSubscriptionByUserId: vi.fn().mockResolvedValue(null),
+      },
+    };
+  }
+
+  it("returns null when no DB row exists", async () => {
+    const { db } = makeInfoDeps();
+    const getInfo = getSubscriptionInfoWith({ db });
+
+    const result = await getInfo("user-1");
+
+    expect(result).toBeNull();
+    expect(db.getSubscriptionByUserId).toHaveBeenCalledWith("user-1", [
+      ReconcileStatus.Active,
+      ReconcileStatus.Trialing,
+      ReconcileStatus.Canceled,
+      ReconcileStatus.PastDue,
+    ]);
+  });
+
+  it("shapes from the DB row without any Stripe call", async () => {
+    const { db } = makeInfoDeps();
+    const getInfo = getSubscriptionInfoWith({ db });
+    db.getSubscriptionByUserId.mockResolvedValue(
+      makeSub({ cancelAtPeriodEnd: true }),
+    );
+
+    const result = await getInfo("user-1");
+
+    expect(result).toMatchObject({
+      tier: "pro",
+      status: "active",
+      recipesLimit: null,
+      ingredientsLimit: null,
+      features: { recipe_duplicate: true, pdf_export: true },
+      priceCents: 1999,
+      currency: "mxn",
+      billingInterval: "monthly",
+      cancelAtPeriodEnd: true,
+      isTrial: false,
+      scheduledChange: null,
+    });
+  });
+
+  it("returns null when canceled and the period has ended", async () => {
+    const { db } = makeInfoDeps();
+    const getInfo = getSubscriptionInfoWith({ db });
+    db.getSubscriptionByUserId.mockResolvedValue(
+      makeSub({
+        status: "canceled",
+        cancelAtPeriodEnd: true,
+        currentPeriodEnd: new Date("2020-01-01T00:00:00Z"),
+      }),
+    );
+
+    expect(await getInfo("user-1")).toBeNull();
+  });
+
+  it("keeps canceled entitlement while the period is still active", async () => {
+    const { db } = makeInfoDeps();
+    const getInfo = getSubscriptionInfoWith({ db });
+    db.getSubscriptionByUserId.mockResolvedValue(
+      makeSub({
+        status: "canceled",
+        cancelAtPeriodEnd: true,
+        currentPeriodEnd: new Date("2030-01-01T00:00:00Z"),
+      }),
+    );
+
+    const result = await getInfo("user-1");
+
+    expect(result).toMatchObject({
+      tier: "pro",
+      status: "canceled",
+      cancelAtPeriodEnd: true,
+    });
+  });
+
+  it("fails closed on unknown statuses", async () => {
+    const { db } = makeInfoDeps();
+    const getInfo = getSubscriptionInfoWith({ db });
+    db.getSubscriptionByUserId.mockResolvedValue(
+      makeSub({ status: "weird_future_status" }),
+    );
+
+    const result = await getInfo("user-1");
+
+    expect(result).toMatchObject({
+      tier: "free",
+      status: "weird_future_status",
+      features: {},
+      scheduledChange: null,
+    });
   });
 });

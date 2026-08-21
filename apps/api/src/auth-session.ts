@@ -6,14 +6,14 @@ import {
   getCredentialAccount,
 } from "@recetario/db";
 import { getDefaultSubscription } from "@recetario/stripe";
-import { reconcileSubscription } from "@recetario/stripe/server";
+import { getSubscriptionInfo } from "@recetario/stripe/server";
 
 const DEFAULT_THEME = "system" as const;
 const DEFAULT_ACCENT = "coral" as const;
 
 async function resolveUserSubscription(userId: string) {
   return (
-    (await reconcileSubscription(userId)) ?? getDefaultSubscription()
+    (await getSubscriptionInfo(userId)) ?? getDefaultSubscription()
   );
 }
 

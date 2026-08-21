@@ -156,6 +156,53 @@ export function reconcileSubscriptionWith(deps: ReconcileDeps) {
   };
 }
 
+export interface SubscriptionInfoDeps {
+  db: {
+    getSubscriptionByUserId(
+      userId: string,
+      statuses?: string[],
+    ): Promise<DbSubscription | null>;
+  };
+}
+
+/**
+ * Read-only subscription shaping for the request path: resolves entitlement
+ * state from the webhook-ingested DB row without any live Stripe calls.
+ * `scheduledChange` is only available via the live reconcile path.
+ */
+export function getSubscriptionInfoWith(deps: SubscriptionInfoDeps) {
+  return async function getSubscriptionInfo(
+    userId: string,
+  ): Promise<UserSubscriptionInfo | null> {
+    const dbSub = await deps.db.getSubscriptionByUserId(
+      userId,
+      RECONCILE_STATUSES,
+    );
+    if (!dbSub) return null;
+
+    const status = dbSub.status;
+    const cancelAtPeriodEnd =
+      dbSub.cancelAtPeriodEnd || dbSub.status === "canceled";
+    const currentPeriodEnd = dbSub.currentPeriodEnd;
+
+    const now = new Date();
+    if (
+      status === "canceled" &&
+      currentPeriodEnd &&
+      currentPeriodEnd <= now
+    ) {
+      return null;
+    }
+
+    return shapeInfo(dbSub, {
+      status,
+      cancelAtPeriodEnd,
+      currentPeriodEnd,
+      scheduledChange: null,
+    });
+  };
+}
+
 async function extractScheduledChange(
   liveSub: Stripe.Subscription,
   stripe: ReconcileDeps["stripe"],
@@ -284,4 +331,8 @@ export const reconcileSubscription = reconcileSubscriptionWith({
       metadata,
       context,
     }),
+});
+
+export const getSubscriptionInfo = getSubscriptionInfoWith({
+  db: { getSubscriptionByUserId },
 });

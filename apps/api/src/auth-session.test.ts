@@ -9,7 +9,7 @@ const {
   mockGetUserPreferences,
   mockCreateUserPreferences,
   mockGetCredentialAccount,
-  mockReconcileSubscription,
+  mockGetSubscriptionInfo,
 } = vi.hoisted(() => {
   const mockGetSession = vi.fn();
   const mockAuth = {
@@ -18,14 +18,14 @@ const {
   const mockGetUserPreferences = vi.fn();
   const mockCreateUserPreferences = vi.fn();
   const mockGetCredentialAccount = vi.fn();
-  const mockReconcileSubscription = vi.fn();
+  const mockGetSubscriptionInfo = vi.fn();
   return {
     mockGetSession,
     mockAuth,
     mockGetUserPreferences,
     mockCreateUserPreferences,
     mockGetCredentialAccount,
-    mockReconcileSubscription,
+    mockGetSubscriptionInfo,
   };
 });
 
@@ -41,7 +41,7 @@ vi.mock("@recetario/db", () => ({
 }));
 
 vi.mock("@recetario/stripe/server", () => ({
-  reconcileSubscription: (userId: string) => mockReconcileSubscription(userId),
+  getSubscriptionInfo: (userId: string) => mockGetSubscriptionInfo(userId),
 }));
 
 const { authSessionHandler } = await import("./auth-session");
@@ -91,7 +91,7 @@ describe("authSessionHandler", () => {
     mockGetUserPreferences.mockReset();
     mockCreateUserPreferences.mockReset();
     mockGetCredentialAccount.mockReset();
-    mockReconcileSubscription.mockReset();
+    mockGetSubscriptionInfo.mockReset();
   });
 
   it("returns the session with preferences and subscription when the cookie is valid", async () => {
@@ -101,7 +101,7 @@ describe("authSessionHandler", () => {
       theme: "dark",
       accentColor: "emerald",
     });
-    mockReconcileSubscription.mockResolvedValueOnce(infoFixture);
+    mockGetSubscriptionInfo.mockResolvedValueOnce(infoFixture);
 
     const res = await buildApp().request("/api/auth/session", {
       headers: { cookie: "better-auth.session_token=valid" },
@@ -123,17 +123,17 @@ describe("authSessionHandler", () => {
     expect(body.subscription).toEqual(infoFixture);
     expect(mockGetSession).toHaveBeenCalledTimes(1);
     expect(mockGetUserPreferences).toHaveBeenCalledWith("user-1");
-    expect(mockReconcileSubscription).toHaveBeenCalledWith("user-1");
+    expect(mockGetSubscriptionInfo).toHaveBeenCalledWith("user-1");
   });
 
-  it("falls back to the free default subscription when reconcile returns null", async () => {
+  it("falls back to the free default subscription when getSubscriptionInfo returns null", async () => {
     mockGetSession.mockResolvedValueOnce(sessionFixture);
     mockGetUserPreferences.mockResolvedValueOnce({
       userId: "user-1",
       theme: "dark",
       accentColor: "emerald",
     });
-    mockReconcileSubscription.mockResolvedValueOnce(null);
+    mockGetSubscriptionInfo.mockResolvedValueOnce(null);
 
     const res = await buildApp().request("/api/auth/session", {
       headers: { cookie: "better-auth.session_token=valid" },
