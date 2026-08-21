@@ -4,8 +4,8 @@ KitchCalc runs on two Cloudflare Workers (web on Pages, api on Workers) backed b
 
 | Worker | Type | URL |
 |---|---|---|
-| `recetario-web` | Astro SSR via `@astrojs/cloudflare` | `https://recetario-web.axel-ana25.workers.dev` |
-| `recetario-api` | Hono on Workers | `https://recetario-api.axel-ana25.workers.dev` |
+| `recetario-web` | Astro SSR via `@astrojs/cloudflare` | `https://app.kitchcalc.com` |
+| `recetario-api` | Hono on Workers | `https://api.kitchcalc.com` |
 | Database | Prisma Postgres (free tier) | via `DATABASE_URL` |
 
 ## Prerequisites
@@ -161,7 +161,7 @@ Logs are also available in the Cloudflare dashboard under Workers → Logs.
 Point the Stripe dashboard webhook to:
 
 ```
-https://recetario-api.axel-ana25.workers.dev/api/stripe/webhook
+https://api.kitchcalc.com/api/stripe/webhook
 ```
 
 Events handled (see `apps/api/src/index.ts`): `checkout.session.completed`, `invoice.paid`, `invoice.payment_failed`, `customer.subscription.deleted`, `customer.subscription.updated`. The webhook verifies the `Stripe-Signature` header against `STRIPE_WEBHOOK_SECRET`.
