@@ -14,8 +14,26 @@ import {
   sessionResponseSchema,
   type SessionResponse,
 } from "@recetario/types";
+import { ACCENT_FAMILIES, type AccentFamily } from "@/lib/accent-colors";
 
 const SIGN_IN_PATHS = ["/sign-in/email", "/sign-in/social"];
+
+const VALID_THEMES = ["system", "light", "dark"] as const;
+type ThemePref = (typeof VALID_THEMES)[number];
+
+function resolveTheme(raw: string | undefined, fallback: string): ThemePref {
+  if (raw && (VALID_THEMES as readonly string[]).includes(raw)) return raw as ThemePref;
+  return (VALID_THEMES as readonly string[]).includes(fallback)
+    ? (fallback as ThemePref)
+    : "system";
+}
+
+function resolveAccent(raw: string | undefined, fallback: string): AccentFamily {
+  if (raw && (ACCENT_FAMILIES as readonly string[]).includes(raw)) return raw as AccentFamily;
+  return (ACCENT_FAMILIES as readonly string[]).includes(fallback)
+    ? (fallback as AccentFamily)
+    : "coral";
+}
 
 type ApiServiceBinding = {
   fetch: (input: string | URL | Request, init?: RequestInit) => Promise<Response>;
@@ -125,20 +143,14 @@ export const onRequest = defineMiddleware(async (context, next) => {
     context.locals.session = { user: appUser };
     context.locals.subscription = subscription;
 
-    // ── 3. Preferences: populate locals & sync cookies ─────────────────────────
-    const prefsTheme = (session.preferences?.theme ??
-      context.cookies.get("kitchcalc-theme")?.value ??
-      "system") as "system" | "light" | "dark";
-    const prefsAccent = (session.preferences?.accentColor ??
-      context.cookies.get("kitchcalc-accent")?.value ??
-      "coral") as
-      | "indigo"
-      | "violet"
-      | "blue"
-      | "emerald"
-      | "rose"
-      | "amber"
-      | "coral";
+    // ── 3. Preferences: cookie-first (client source of truth), session as seed ──
+    const cookieTheme = context.cookies.get("kitchcalc-theme")?.value;
+    const cookieAccent = context.cookies.get("kitchcalc-accent")?.value;
+    const prefsTheme = resolveTheme(cookieTheme, session.preferences?.theme ?? "system");
+    const prefsAccent = resolveAccent(
+      cookieAccent,
+      session.preferences?.accentColor ?? "coral",
+    );
 
     const userPrefs = {
       userId: sessionUser.id,
@@ -180,8 +192,8 @@ export const onRequest = defineMiddleware(async (context, next) => {
     context.locals.session = null;
     context.locals.preferences = {
       userId: "",
-      theme: (context.cookies.get("kitchcalc-theme")?.value as "system" | "light" | "dark") ?? "system",
-      accentColor: (context.cookies.get("kitchcalc-accent")?.value as "coral") ?? "coral",
+      theme: resolveTheme(context.cookies.get("kitchcalc-theme")?.value, "system"),
+      accentColor: resolveAccent(context.cookies.get("kitchcalc-accent")?.value, "coral"),
     };
     context.locals.subscription = getDefaultSubscription();
     context.locals.csrfToken = null;
