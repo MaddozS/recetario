@@ -1,5 +1,4 @@
 ---
-import Button from "@/components/atoms/Button.astro";
 import SectionHeading from "@/components/atoms/SectionHeading.astro";
 import { apiFetch } from "@/lib/api-client";
 import { z } from "zod";
@@ -7,21 +6,13 @@ import {
   recipeSummarySchema,
   recipeWithIngredientsSchema,
 } from "@recetario/types";
-import type { RecipeWithIngredients } from "@recetario/types";
 import { isPro } from "@recetario/stripe";
 import type { UserSubscriptionInfo } from "@recetario/stripe";
 import { PRODUCTION_BASIC_RECIPE_LIMIT } from "@/lib/constants";
-import { calculateProduction } from "@/lib/production-calculator";
-import type {
-  ProductionRecipeSelection,
-  ConsolidatedIngredient,
-  ProductionSummary,
-} from "@/lib/production-types";
+import type { ProductionRecipeSelection } from "@/lib/production-types";
 import UpgradePrompt from "@/components/molecules/shared/UpgradePrompt.astro";
 import ProductionRecipeSelector from "@/components/molecules/production/ProductionRecipeSelector.astro";
-import ProductionIngredientsTable from "@/components/organisms/production/ProductionIngredientsTable.astro";
-import ProductionFinancialSummary from "@/components/molecules/production/ProductionFinancialSummary.astro";
-import ProductionRecipeBreakdown from "@/components/organisms/production/ProductionRecipeBreakdown.astro";
+import Button from "@/components/atoms/Button.astro";
 
 interface Props {
   subscription: UserSubscriptionInfo;
@@ -45,12 +36,6 @@ const isProUser = isPro(subscription);
 const maxRecipes = isProUser ? Infinity : PRODUCTION_BASIC_RECIPE_LIMIT;
 
 let selections: ProductionRecipeSelection[] = [];
-let results: {
-  consolidatedIngredients: ConsolidatedIngredient[];
-  summary: ProductionSummary;
-} | null = null;
-
-let recipePresentations = new Map<number, { id: number; name: string }[]>();
 
 if (canAccess && recipeIdsParam && batchesParam) {
   const ids = recipeIdsParam.split(",").map(Number).filter(Number.isFinite);
@@ -63,33 +48,6 @@ if (canAccess && recipeIdsParam && batchesParam) {
     batches: batchVals[i] || 1,
     presentationId: Number.isFinite(presVals[i]) ? presVals[i] : undefined,
   }));
-
-  if (selections.length > 0) {
-    const recipeIds = selections.map((s) => s.recipeId);
-    const allRecipesById = await apiFetch(
-      `/api/recipes/by-ids?ids=${recipeIds.join(",")}`,
-      { schema: z.array(recipeWithIngredientsSchema) },
-      Astro,
-    );
-    const recipeMap = new Map(allRecipesById.map((r) => [r.id, r]));
-    const validSelections = selections.filter((s) => recipeMap.has(s.recipeId));
-    const validRecipes = validSelections.map((s) => recipeMap.get(s.recipeId)!);
-
-    if (!isProUser && validSelections.length > PRODUCTION_BASIC_RECIPE_LIMIT) {
-      validSelections.length = PRODUCTION_BASIC_RECIPE_LIMIT;
-    }
-
-    results = calculateProduction(
-      validSelections.slice(
-        0,
-        isProUser ? undefined : PRODUCTION_BASIC_RECIPE_LIMIT,
-      ),
-      validRecipes.slice(
-        0,
-        isProUser ? undefined : PRODUCTION_BASIC_RECIPE_LIMIT,
-      ) as RecipeWithIngredients[],
-    );
-  }
 }
 
 const allRecipes = canAccess
@@ -108,6 +66,7 @@ const allRecipeData =
       )
     : [];
 
+const recipePresentations = new Map<number, { id: number; name: string }[]>();
 for (const r of allRecipeData) {
   if (r && r.presentations.length > 0) {
     recipePresentations.set(
@@ -126,7 +85,7 @@ const recipeDataJson = JSON.stringify(allRecipeData.filter(Boolean));
       <UpgradePrompt
         tier="basic"
         feature="Planificador de producción"
-        description="Planifica hasta 3 recetas simultáneas y obtén costos consolidados, ingredientes totales y hoja de producción imprimible."
+        description="Planifica hasta 3 recetas simultáneas y obtén costos consolidados, insumos totales y hoja de producción imprimible."
       />
     </div>
   ) : !isProUser &&
@@ -140,108 +99,136 @@ const recipeDataJson = JSON.stringify(allRecipeData.filter(Boolean));
       />
     </div>
   ) : (
-    <div class="animate-fade-in mx-auto max-w-5xl space-y-6 pb-12">
+    <div
+      class="animate-fade-in mx-auto max-w-5xl space-y-6 pb-12"
+      id="production-root"
+      data-stage={selections.length > 0 ? "results" : "select"}
+    >
       <SectionHeading
         icon="factory"
         title="Planificador de Producción"
+        subtitle="Elige las recetas, define cuántas mezclas de cada una y obtén al instante los insumos y costos de tu producción."
         level="h1"
       />
 
-      <ProductionRecipeSelector
-        recipes={allRecipes}
-        selections={selections}
-        recipePresentations={recipePresentations}
-        maxRecipes={maxRecipes}
+      <div
+        id="production-selector-stage"
+        class:list={["space-y-6", selections.length > 0 ? "hidden" : ""]}
+      >
+        <ProductionRecipeSelector
+          recipes={allRecipes}
+          selections={selections}
+          recipePresentations={recipePresentations}
+          maxRecipes={maxRecipes}
+        />
+      </div>
+
+      <div
+        id="production-results-stage"
+        class:list={["space-y-6", selections.length > 0 ? "" : "hidden"]}
+      >
+        <div
+          id="results-toolbar"
+          class="border-border bg-card/95 sticky top-0 z-10 flex items-center justify-between gap-3 rounded-2xl border px-4 py-3 shadow-sm backdrop-blur"
+        >
+          <span
+            class="text-foreground text-sm font-bold"
+            id="results-selection-count"
+          >
+            0 recetas
+          </span>
+          <Button variant="secondary" id="edit-selection-btn" icon="arrow-left">
+            Editar selección
+          </Button>
+        </div>
+        <div id="production-results" class="space-y-6" />
+      </div>
+
+      <script
+        is:inline
+        type="application/json"
+        id="production-data"
+        set:html={recipeDataJson}
       />
 
-      <div id="production-results" class="space-y-6">
-        {results && (
-          <>
-            <ProductionIngredientsTable
-              ingredients={results.consolidatedIngredients}
+      <template id="tmpl-ingredients-sheet">
+        <div class="production-sheet ingredients-table border-border bg-card overflow-hidden rounded-2xl border shadow-sm">
+          <div class="border-border border-b px-5 py-4 sm:px-6">
+            <h2 class="text-foreground text-lg font-bold">Insumos totales</h2>
+            <p
+              class="text-muted-foreground mt-0.5 text-sm"
+              data-summary-count
             />
-            <ProductionFinancialSummary summary={results.summary} />
-            <ProductionRecipeBreakdown recipes={results.summary.perRecipe} />
-            <div class="no-print flex justify-center">
-              <Button
-                variant="secondary"
-                icon="printer"
-                onclick="window.print()"
-              >
-                Imprimir hoja de producción
-              </Button>
-            </div>
-          </>
-        )}
-      </div>
+          </div>
+          <div class="border-border bg-background text-muted-foreground hidden gap-4 border-b px-6 py-3 text-[10px] font-black tracking-wider uppercase md:grid md:grid-cols-[minmax(0,2.2fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.4fr)]">
+            <span>Insumo</span>
+            <span>Cantidad</span>
+            <span>Costo x Unidad</span>
+            <span>Costo total</span>
+            <span>Recetas</span>
+          </div>
+          <div data-tbody class="divide-border-light divide-y" />
+        </div>
+      </template>
+
+      <template id="tmpl-financial-summary">
+        <div class="production-sheet financial-summary bg-card border-border rounded-2xl border p-5 shadow-sm sm:p-6">
+          <h2 class="text-muted-foreground mb-1.5 text-[10px] font-black tracking-wider uppercase">
+            Resumen financiero
+          </h2>
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2" data-grid />
+        </div>
+      </template>
+
+      <template id="tmpl-recipe-breakdown">
+        <div class="production-sheet recipe-breakdown space-y-4">
+          <h2 class="text-foreground flex items-center gap-2 text-lg font-bold">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="text-accent-600"
+            >
+              <path d="M3 7v6a4 4 0 0 0 4 4h10a4 4 0 0 0 4-4V7" />
+              <path d="M12 3v16" />
+              <path d="m8 11 4-4 4 4" />
+            </svg>
+            Desglose por receta
+          </h2>
+          <div class="space-y-4" data-items />
+        </div>
+      </template>
+
+      <template id="tmpl-print-button">
+        <div class="no-print flex justify-center">
+          <button
+            onclick="window.print()"
+            class="border-border bg-card text-muted-foreground hover:bg-background inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-xl border px-6 py-3 text-sm font-bold transition-colors"
+          >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <polyline points="6 9 6 2 18 2 18 9" />
+              <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+              <rect x="6" y="14" width="12" height="8" />
+            </svg>
+            Imprimir hoja de producción
+          </button>
+        </div>
+      </template>
     </div>
   )
 }
-
-<script
-  type="application/json"
-  id="production-data"
-  is:inline
-  set:html={recipeDataJson}
-/>
-
-<template id="tmpl-ingredients-sheet">
-  <div class="production-sheet ingredients-table border-border bg-card overflow-hidden rounded-2xl border shadow-sm">
-    <div class="border-border border-b px-6 py-4">
-      <h2 class="text-foreground text-lg font-bold">Ingredientes consolidados</h2>
-      <p class="text-muted-foreground mt-0.5 text-sm" data-summary-count></p>
-    </div>
-    <div class="overflow-x-auto">
-      <table class="min-w-full text-left table-fixed">
-        <thead class="bg-background text-muted-foreground text-[11px] font-bold tracking-[0.16em] uppercase">
-          <tr>
-            <th class="px-6 py-4 w-[35%]">Ingrediente</th>
-            <th class="px-6 py-4 w-[17%]" colspan="2">Cantidad total</th>
-            <th class="px-6 py-4 w-[13%]">Costo unitario</th>
-            <th class="px-6 py-4 w-[13%]">Costo total</th>
-            <th class="px-6 py-4 w-[22%]">Recetas</th>
-          </tr>
-        </thead>
-        <tbody class="divide-border-light divide-y" data-tbody></tbody>
-      </table>
-    </div>
-  </div>
-</template>
-
-<template id="tmpl-financial-summary">
-  <div class="production-sheet financial-summary">
-    <div class="bg-card rounded-2xl border border-border shadow-sm p-5 sm:p-6">
-      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2" data-grid></div>
-    </div>
-  </div>
-</template>
-
-<template id="tmpl-recipe-breakdown">
-  <div class="production-sheet recipe-breakdown space-y-4">
-    <h2 class="text-foreground flex items-center gap-2 text-lg font-bold">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-accent-600">
-        <path d="M3 7v6a4 4 0 0 0 4 4h10a4 4 0 0 0 4-4V7"/>
-        <path d="M12 3v16"/>
-        <path d="m8 11 4-4 4 4"/>
-      </svg>
-      Desglose por receta
-    </h2>
-    <div class="space-y-4" data-items></div>
-  </div>
-</template>
-
-<template id="tmpl-print-button">
-  <div class="flex justify-center no-print">
-    <button onclick="window.print()" class="border-border bg-card text-muted-foreground hover:bg-background inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border px-6 py-3 text-sm font-bold transition-colors">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <polyline points="6 9 6 2 18 2 18 9"/>
-        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
-        <rect x="6" y="14" width="12" height="8"/>
-      </svg>
-      Imprimir hoja de producción
-    </button>
-  </div>
-</template>
 
 <script>
   import { calculateProduction } from "@/lib/production-calculator";
@@ -255,6 +242,7 @@ const recipeDataJson = JSON.stringify(allRecipeData.filter(Boolean));
 
   let recipeData: RecipeWithIngredients[] = [];
   let debounceTimer: ReturnType<typeof setTimeout> | undefined;
+  const DEBOUNCE_MS = 60;
   const BASIC_LIMIT = 3;
   const formatCurrency = (value: number): string => `$${value.toFixed(2)}`;
 
@@ -290,6 +278,12 @@ const recipeDataJson = JSON.stringify(allRecipeData.filter(Boolean));
     return tmpl.content.firstElementChild!.cloneNode(true) as HTMLElement;
   }
 
+  const cellLabel = (text: string) =>
+    `<span class="text-subtle-foreground block text-[10px] font-black tracking-wider uppercase md:hidden">${text}</span>`;
+
+  const rowGridCls =
+    "prod-row grid grid-cols-1 gap-1.5 px-5 py-4 sm:px-6 md:grid-cols-[minmax(0,2.2fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.4fr)] md:items-center md:gap-4";
+
   function renderIngredientsTable(
     ingredients: ConsolidatedIngredient[],
   ): HTMLElement | null {
@@ -297,35 +291,44 @@ const recipeDataJson = JSON.stringify(allRecipeData.filter(Boolean));
     const sheet = getTemplate("tmpl-ingredients-sheet");
     const countEl = sheet.querySelector("[data-summary-count]");
     if (countEl) {
-      countEl.textContent = `${ingredients.length} ingrediente${ingredients.length !== 1 ? "s" : ""} en total`;
+      countEl.textContent = `${ingredients.length} insumo${ingredients.length !== 1 ? "s" : ""} en total`;
     }
     const tbody = sheet.querySelector("[data-tbody]");
     if (tbody) {
       tbody.innerHTML = ingredients
         .map(
           (ing) => `
-        <tr class="hover:bg-hover-muted transition-colors dark:hover:bg-hover-muted">
-          <td class="px-6 py-4 break-words">
-            <div>
-              <p class="text-foreground font-semibold">${escHtml(ing.name)}</p>
-              ${ing.brand ? `<p class="text-subtle-foreground mt-0.5 text-xs">${escHtml(ing.brand)}${ing.supplier ? " · " + escHtml(ing.supplier) : ""}</p>` : ""}
-            </div>
-          </td>
-          <td class="text-secondary-foreground px-6 py-4 font-mono font-semibold whitespace-nowrap tabular-nums" colspan="2">${smartQty(ing.totalQuantity, ing.unit)}</td>
-          <td class="text-secondary-foreground px-6 py-4 font-mono text-sm tabular-nums whitespace-nowrap">${formatCurrency(ing.unitCost)}/${ing.unit}</td>
-          <td class="text-foreground px-6 py-4 font-mono font-semibold tabular-nums whitespace-nowrap">${formatCurrency(ing.totalCost)}</td>
-          <td class="px-6 py-4 break-words">
+        <div class="${rowGridCls}">
+          <div class="min-w-0">
+            ${cellLabel("Insumo")}
+            <p class="text-foreground break-words font-semibold">${escHtml(ing.name)}</p>
+            ${ing.brand ? `<p class="text-subtle-foreground mt-0.5 text-xs">${escHtml(ing.brand)}${ing.supplier ? " · " + escHtml(ing.supplier) : ""}</p>` : ""}
+          </div>
+          <div>
+            ${cellLabel("Cantidad")}
+            <p class="text-secondary-foreground font-mono font-semibold tabular-nums">${smartQty(ing.totalQuantity, ing.unit)}</p>
+          </div>
+          <div>
+            ${cellLabel("Costo x Unidad")}
+            <p class="text-secondary-foreground font-mono text-sm tabular-nums">${formatCurrency(ing.unitCost)}/${ing.unit}</p>
+          </div>
+          <div>
+            ${cellLabel("Costo total")}
+            <p class="text-foreground font-mono font-semibold tabular-nums">${formatCurrency(ing.totalCost)}</p>
+          </div>
+          <div class="min-w-0">
+            ${cellLabel("Recetas")}
             <div class="flex flex-wrap gap-1.5">${ing.sourceRecipes
               .map(
                 (src) => `
               <span class="bg-muted text-secondary-foreground inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium">
-                <span class="truncate max-w-[20ch]">${escHtml(src.recipeName)}</span>
+                <span class="max-w-[16ch] truncate">${escHtml(src.recipeName)}</span>
                 <span class="text-subtle-foreground shrink-0">(${src.quantity < 1 ? src.quantity.toFixed(2) : Number.isInteger(src.quantity) ? src.quantity : src.quantity.toFixed(1)} ${ing.unit})</span>
               </span>`,
               )
               .join("")}</div>
-          </td>
-        </tr>`,
+          </div>
+        </div>`,
         )
         .join("");
     }
@@ -362,7 +365,7 @@ const recipeDataJson = JSON.stringify(allRecipeData.filter(Boolean));
       return `<div class="flex flex-col justify-between border-l-[3px] py-1 pl-3 sm:pl-4 ${borderCls}">
         <p class="text-subtle-foreground mb-1.5 text-[10px] font-black tracking-wider uppercase">${label}</p>
         <div>
-          <p class="truncate font-mono text-2xl leading-none font-semibold tabular-nums text-foreground 2xl:text-3xl" title="${value}">${value}</p>
+          <p class="text-foreground truncate font-mono text-2xl leading-none font-semibold tabular-nums 2xl:text-3xl" title="${value}">${value}</p>
           <p class="text-subtle-foreground mt-1.5 line-clamp-1 text-[11px] font-semibold">${sub}</p>
           ${secondary}
         </div>
@@ -373,10 +376,36 @@ const recipeDataJson = JSON.stringify(allRecipeData.filter(Boolean));
     const grid = sheet.querySelector("[data-grid]");
     if (grid) {
       grid.innerHTML = [
-        financialRow("danger", "Costo Insumos", formatCurrency(totalIngredientsCost), "Insumos de todas las recetas", ""),
-        financialRow("muted", "Costo Operativo", formatCurrency(totalOperationalCost), "Servicios, labor, etc.", ""),
-        financialRow("accent", "Ingresos Proyectados", noRevenue ? "N/A" : formatCurrency(projectedRevenue), noRevenue ? "Sin precios de venta configurados" : "Ventas totales proyectadas", ""),
-        financialRow("success", "Ganancia Estimada", noRevenue ? "Sin datos" : formatCurrency(estimatedProfit) + " (" + effectiveMargin.toFixed(1) + "%)", noRevenue ? "" : "Margen de ganancia estimado", ""),
+        financialRow(
+          "danger",
+          "Costo Insumos",
+          formatCurrency(totalIngredientsCost),
+          "Materiales de todas las recetas",
+          "",
+        ),
+        financialRow(
+          "muted",
+          "Gastos Operativos",
+          formatCurrency(totalOperationalCost),
+          "Servicios, labor, etc.",
+          "",
+        ),
+        financialRow(
+          "accent",
+          "Ingresos Proyectados",
+          noRevenue ? "Sin datos" : formatCurrency(projectedRevenue),
+          noRevenue
+            ? "Configura precios de venta en las presentaciones"
+            : "Ventas totales proyectadas",
+          "",
+        ),
+        financialRow(
+          "success",
+          "Ganancia Estimada",
+          noRevenue ? "Sin datos" : formatCurrency(estimatedProfit),
+          noRevenue ? "" : "Margen de ganancia estimado",
+          noRevenue ? "" : `${effectiveMargin.toFixed(1)}%`,
+        ),
       ].join("");
     }
     return sheet;
@@ -389,6 +418,9 @@ const recipeDataJson = JSON.stringify(allRecipeData.filter(Boolean));
     const sheet = getTemplate("tmpl-recipe-breakdown");
     const itemsContainer = sheet.querySelector("[data-items]");
     if (!itemsContainer) return sheet;
+
+    const presRowGridCls =
+      "prod-row grid grid-cols-1 gap-1.5 px-4 py-3 sm:px-5 md:grid-cols-[minmax(0,1.8fr)_repeat(5,minmax(0,0.9fr))] md:items-center md:gap-4";
 
     itemsContainer.innerHTML = recipes
       .map((r) => {
@@ -409,36 +441,42 @@ const recipeDataJson = JSON.stringify(allRecipeData.filter(Boolean));
                 : null;
             const isSel = p.id === r.selectedPresentationId;
             const isBest = p.id === bestId;
-            return `<tr class="hover:bg-hover-muted dark:hover:bg-hover-muted${isSel ? " bg-accent-50/50" : ""}">
-          <td class="text-foreground px-4 py-3 font-medium align-top">
-            <div class="text-foreground font-medium">${escHtml(p.name)}</div>
+            return `<div class="${presRowGridCls}${isSel ? " bg-accent-50/40" : ""}">
+          <div class="min-w-0">
+            ${cellLabel("Presentación")}
+            <p class="text-foreground break-words font-medium">${escHtml(p.name)}</p>
             <div class="mt-1 flex flex-wrap gap-1">${isSel ? '<span class="bg-accent-100 text-accent-700 border-accent-200 inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-bold whitespace-nowrap">Seleccionada</span>' : ""}${isBest && margin !== null ? '<span class="bg-success-bg text-success border-success-border inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-bold whitespace-nowrap">Más rentable</span>' : ""}</div>
-          </td>
-          <td class="text-secondary-foreground px-4 py-3 font-mono tabular-nums">${p.totalUnits}</td>
-          <td class="text-secondary-foreground px-4 py-3 font-mono tabular-nums">${formatCurrency(p.unitCost)}</td>
-          <td class="px-4 py-3 font-mono tabular-nums">${p.salePrice ? `<span class="text-secondary-foreground">${formatCurrency(p.salePrice)}</span>` : '<span class="text-warning">Sin precio</span>'}</td>
-          <td class="text-foreground px-4 py-3 font-mono font-semibold tabular-nums">${p.revenue > 0 ? formatCurrency(p.revenue) : '<span class="text-warning">Sin precio</span>'}</td>
-          <td class="px-4 py-3 font-mono font-semibold tabular-nums">${margin !== null ? `<span class="${marginColor(margin)}">${margin.toFixed(1)}%</span>` : '<span class="text-muted-foreground">—</span>'}</td>
-        </tr>`;
+          </div>
+          <div>${cellLabel("Unidades")}<p class="text-secondary-foreground font-mono tabular-nums">${p.totalUnits}</p></div>
+          <div>${cellLabel("Costo unitario")}<p class="text-secondary-foreground font-mono tabular-nums">${formatCurrency(p.unitCost)}</p></div>
+          <div>${cellLabel("Precio Venta")}<p class="font-mono tabular-nums">${p.salePrice ? `<span class="text-secondary-foreground">${formatCurrency(p.salePrice)}</span>` : '<span class="text-warning">Sin precio</span>'}</p></div>
+          <div>${cellLabel("Ingreso")}<p class="text-foreground font-mono font-semibold tabular-nums">${p.revenue > 0 ? formatCurrency(p.revenue) : '<span class="text-warning">Sin precio</span>'}</p></div>
+          <div>${cellLabel("Margen")}<p class="font-mono font-semibold tabular-nums">${margin !== null ? `<span class="${marginColor(margin)}">${margin.toFixed(1)}%</span>` : '<span class="text-muted-foreground">—</span>'}</p></div>
+        </div>`;
           })
           .join("");
 
         return `<details class="border-border bg-card overflow-hidden rounded-2xl border shadow-sm">
-    <summary class="hover:bg-muted flex cursor-pointer items-center justify-between gap-4 px-6 py-4 transition-colors">
-      <div class="min-w-0"><div class="flex items-center gap-2"><h3 class="text-foreground truncate text-base font-bold">${escHtml(r.recipeName)}</h3>${r.category ? `<span class="bg-muted text-muted-foreground border-border shrink-0 rounded-full border px-2.5 py-0.5 text-[11px] font-semibold">${escHtml(r.category)}</span>` : ""}</div>
-        <p class="text-muted-foreground mt-0.5 text-xs">${r.batches} batch${r.batches !== 1 ? "es" : ""} · Insumos: ${formatCurrency(r.ingredientsCost)} · Operativo: ${formatCurrency(r.operationalCost)} · Total: ${formatCurrency(r.totalCost)}</p>
+    <summary class="hover:bg-muted flex cursor-pointer items-center justify-between gap-4 px-5 py-4 transition-colors sm:px-6">
+      <div class="min-w-0">
+        <div class="flex flex-wrap items-center gap-2">
+          <h3 class="text-foreground truncate text-base font-bold">${escHtml(r.recipeName)}</h3>
+          ${r.category ? `<span class="bg-muted text-muted-foreground border-border shrink-0 rounded-full border px-2.5 py-0.5 text-[11px] font-semibold">${escHtml(r.category)}</span>` : ""}
+        </div>
+        <p class="text-muted-foreground mt-0.5 text-xs">${r.batches} mezcla${r.batches !== 1 ? "s" : ""} · Costo total: ${formatCurrency(r.totalCost)}</p>
       </div>
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-subtle-foreground shrink-0"><polyline points="6 9 12 15 18 9"/></svg>
     </summary>
-    <div class="space-y-6 px-6 pb-6">
-       <div><h4 class="text-muted-foreground mb-3 text-xs font-bold tracking-[0.16em] uppercase">Costos</h4>
-         <div class="grid grid-cols-3 gap-3">
+    <div class="space-y-5 px-5 pb-5 sm:px-6 sm:pb-6">
+       <div>
+         <h4 class="text-muted-foreground mb-3 text-[10px] font-black tracking-wider uppercase">Costos</h4>
+         <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
            <div class="bg-muted/40 rounded-xl p-3 border-l-[3px] border-l-danger-solid/60"><p class="text-muted-foreground text-[11px] font-semibold">Insumos</p><p class="text-foreground mt-1 text-lg font-bold tabular-nums">${formatCurrency(r.ingredientsCost)}</p></div>
-           <div class="bg-muted/40 rounded-xl p-3 border-l-[3px] border-l-muted-foreground/30"><p class="text-muted-foreground text-[11px] font-semibold">Operativo</p><p class="text-foreground mt-1 text-lg font-bold tabular-nums">${formatCurrency(r.operationalCost)}</p></div>
+           <div class="bg-muted/40 rounded-xl p-3 border-l-[3px] border-l-muted-foreground/30"><p class="text-muted-foreground text-[11px] font-semibold">Gastos operativos</p><p class="text-foreground mt-1 text-lg font-bold tabular-nums">${formatCurrency(r.operationalCost)}</p></div>
            <div class="bg-muted/40 rounded-xl p-3 border-l-[3px] border-l-accent-400/60"><p class="text-muted-foreground text-[11px] font-semibold">Total</p><p class="text-foreground mt-1 text-lg font-bold tabular-nums">${formatCurrency(r.totalCost)}</p></div>
          </div>
        </div>
-       ${r.presentations.length > 0 ? `<div><h4 class="text-muted-foreground mb-3 text-xs font-bold tracking-[0.16em] uppercase">Presentaciones</h4><div class="border-border overflow-x-auto rounded-xl border"><table class="min-w-full text-left text-sm"><thead class="bg-background text-muted-foreground text-[11px] font-bold tracking-[0.16em] uppercase"><tr><th class="px-4 py-3">Presentación</th><th class="px-4 py-3">Unidades totales</th><th class="px-4 py-3">Costo unitario</th><th class="px-4 py-3">Precio venta</th><th class="px-4 py-3">Ingreso</th><th class="px-4 py-3">Margen</th></tr></thead><tbody class="divide-border-light divide-y">${presRows}</tbody></table></div></div>` : '<div class="bg-muted rounded-xl p-4 text-center"><p class="text-muted-foreground text-sm">Sin presentaciones configuradas</p></div>'}
+       ${r.presentations.length > 0 ? `<div><h4 class="text-muted-foreground mb-3 text-[10px] font-black tracking-wider uppercase">Presentaciones</h4><div class="border-border grid hidden gap-4 border-b bg-background px-5 py-3 text-[10px] font-black tracking-wider text-muted-foreground uppercase md:grid-cols-[minmax(0,1.8fr)_repeat(5,minmax(0,0.9fr))]"><span>Presentación</span><span>Unidades</span><span>Costo unitario</span><span>Precio Venta</span><span>Ingreso</span><span>Margen</span></div><div class="border-border overflow-hidden rounded-xl border"><div class="divide-border-light divide-y">${presRows}</div></div></div>` : '<div class="bg-muted rounded-xl p-4 text-center"><p class="text-muted-foreground text-sm">Sin presentaciones configuradas</p></div>'}
     </div>
   </details>`;
       })
@@ -476,6 +514,10 @@ const recipeDataJson = JSON.stringify(allRecipeData.filter(Boolean));
   }
 
   function updateURL(selections: ProductionRecipeSelection[]) {
+    if (selections.length === 0) {
+      history.replaceState(null, "", "/produccion");
+      return;
+    }
     const p = new URLSearchParams();
     p.set("recipes", selections.map((s) => s.recipeId).join(","));
     p.set("batches", selections.map((s) => s.batches).join(","));
@@ -491,6 +533,160 @@ const recipeDataJson = JSON.stringify(allRecipeData.filter(Boolean));
     if (el) el.textContent = String(count);
   }
 
+  function updateResultsCount(sel: ProductionRecipeSelection[]) {
+    const el = document.getElementById("results-selection-count");
+    if (!el) return;
+    const totalBatches = sel.reduce((acc, s) => acc + (s.batches || 1), 0);
+    const recipeLabel = `${sel.length} receta${sel.length !== 1 ? "s" : ""}`;
+    const batchLabel = `${totalBatches} mezcla${totalBatches !== 1 ? "s" : ""}`;
+    el.textContent = `${recipeLabel} · ${batchLabel}`;
+  }
+
+  function setStage(stage: "select" | "results") {
+    const root = document.getElementById("production-root");
+    const selectorStage = document.getElementById("production-selector-stage");
+    const resultsStage = document.getElementById("production-results-stage");
+    if (!root || !selectorStage || !resultsStage) return;
+    root.dataset.stage = stage;
+    selectorStage.classList.toggle("hidden", stage === "results");
+    resultsStage.classList.toggle("hidden", stage === "select");
+  }
+
+  function normalizeText(text: string): string {
+    return text
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
+  }
+
+  function bindSearch() {
+    const input = document.getElementById(
+      "recipe-search",
+    ) as HTMLInputElement | null;
+    if (!input || input.dataset.searchBound === "1") return;
+    input.dataset.searchBound = "1";
+
+    const applySearchFilter = () => {
+      const query = normalizeText(input.value.trim());
+      const emptyEl = document.getElementById("recipe-search-empty");
+      const groups = document.querySelectorAll<HTMLElement>(
+        "#recipe-groups fieldset",
+      );
+      const rows = document.querySelectorAll<HTMLElement>(
+        "#recipe-groups [data-recipe-row]",
+      );
+      let visible = 0;
+      rows.forEach((row) => {
+        const cb = row.querySelector<HTMLInputElement>(
+          'input[name="recipe_id"]',
+        );
+        const name = normalizeText(row.dataset.name || "");
+        // Siempre deja visible lo que ya está seleccionado, aunque no
+        // coincida con la búsqueda, para no perder de vista la selección.
+        const matches = !query || name.includes(query) || cb?.checked;
+        row.style.display = matches ? "" : "none";
+        if (matches) visible++;
+      });
+      groups.forEach((group) => {
+        const anyVisible = Array.from(
+          group.querySelectorAll<HTMLElement>("[data-recipe-row]"),
+        ).some((row) => row.style.display !== "none");
+        group.style.display = anyVisible ? "" : "none";
+      });
+      if (emptyEl) emptyEl.classList.toggle("hidden", visible > 0);
+    };
+
+    input.addEventListener("input", applySearchFilter);
+
+    // Re-evalúa el filtro al cambiar la selección: al marcar/desmarcar con
+    // búsqueda activa, las filas seleccionadas siguen visibles.
+    document.addEventListener("change", (e) => {
+      const t = e.target as HTMLElement;
+      if (t.matches('input[name="recipe_id"]')) applySearchFilter();
+    });
+  }
+
+  function bindSelectAll(form: HTMLElement) {
+    const selectAll = document.getElementById(
+      "select-all-recipes",
+    ) as HTMLInputElement | null;
+    if (!selectAll || selectAll.dataset.selectAllBound === "1") return;
+    selectAll.dataset.selectAllBound = "1";
+
+    const isPro = !form.hasAttribute("data-basic-limit");
+
+    const updateSelectAllState = () => {
+      const cbs = Array.from(
+        form.querySelectorAll<HTMLInputElement>('input[name="recipe_id"]'),
+      );
+      const checked = cbs.filter((cb) => cb.checked).length;
+      selectAll.checked = cbs.length > 0 && checked === cbs.length;
+      selectAll.indeterminate = checked > 0 && checked < cbs.length;
+      selectAll.disabled = !isPro && cbs.length > BASIC_LIMIT;
+    };
+
+    selectAll.addEventListener("change", () => {
+      const checkboxes = form.querySelectorAll<HTMLInputElement>(
+        'input[name="recipe_id"]',
+      );
+      const shouldCheck = selectAll.checked;
+      checkboxes.forEach((cb) => {
+        cb.checked = shouldCheck;
+        cb.disabled = !isPro && shouldCheck && checkboxes.length > BASIC_LIMIT;
+        const row = cb.closest("[data-recipe-row]") as HTMLElement | null;
+        const controls = row?.querySelector(
+          ".recipe-controls",
+        ) as HTMLElement | null;
+        if (row) {
+          row.classList.toggle("bg-accent-50", shouldCheck);
+          row.classList.toggle("ring-accent-200", shouldCheck);
+          row.classList.toggle("ring-1", shouldCheck);
+          row.classList.toggle("hover:bg-muted", !shouldCheck);
+        }
+        if (controls) controls.classList.toggle("hidden", !shouldCheck);
+      });
+      if (!isPro) syncDisabledStates(form);
+      // Deja que el handler de change del form (debounced) recalcule.
+      const evt = new Event("change", { bubbles: true });
+      checkboxes.forEach((cb) => cb.dispatchEvent(evt));
+      updateSelectAllState();
+    });
+
+    // Sincroniza el estado del checkbox tras cambios manuales.
+    form.addEventListener("change", (e) => {
+      const t = e.target as HTMLElement;
+      if (t.matches('input[name="recipe_id"]')) updateSelectAllState();
+    });
+
+    updateSelectAllState();
+  }
+
+  function syncDisabledStates(form: HTMLElement) {
+    if (!form.hasAttribute("data-basic-limit")) return;
+    const checkboxes = form.querySelectorAll<HTMLInputElement>(
+      'input[name="recipe_id"]',
+    );
+    const checkedCount = form.querySelectorAll<HTMLInputElement>(
+      'input[name="recipe_id"]:checked',
+    ).length;
+    const atLimit = checkedCount >= BASIC_LIMIT;
+    checkboxes.forEach((cb) => {
+      if (!cb.checked) {
+        cb.disabled = atLimit;
+        const row = cb.closest("[data-recipe-row]");
+        if (row) {
+          if (atLimit) row.classList.add("opacity-40");
+          else row.classList.remove("opacity-40");
+        }
+      }
+    });
+    const banner = document.getElementById("upgrade-banner");
+    if (banner) {
+      if (atLimit) banner.classList.remove("hidden");
+      else banner.classList.add("hidden");
+    }
+  }
+
   function recalculate() {
     const isPro = !document.querySelector("[data-basic-limit]");
     const sel = readSelections(isPro);
@@ -502,24 +698,31 @@ const recipeDataJson = JSON.stringify(allRecipeData.filter(Boolean));
     if (!resultsEl) return;
 
     if (sel.length === 0 || recipes.length === 0) {
-      resultsEl.innerHTML = "";
+      resultsEl.replaceChildren();
       updateURL(sel);
       updateCounter(0);
+      updateResultsCount(sel);
       return;
     }
 
     const result = calculateProduction(sel, recipes);
     resultsEl.replaceChildren();
+
     const ingSheet = renderIngredientsTable(result.consolidatedIngredients);
     if (ingSheet) resultsEl.appendChild(ingSheet);
+
     const finSheet = renderFinancialSummary(result.summary);
-    if (finSheet) resultsEl.appendChild(finSheet);
+    resultsEl.appendChild(finSheet);
+
     const bdSheet = renderRecipeBreakdown(result.summary.perRecipe);
     if (bdSheet) resultsEl.appendChild(bdSheet);
+
     const printBtn = getTemplate("tmpl-print-button");
     resultsEl.appendChild(printBtn);
+
     updateURL(sel);
     updateCounter(sel.length);
+    updateResultsCount(sel);
   }
 
   function bindEvents() {
@@ -529,34 +732,57 @@ const recipeDataJson = JSON.stringify(allRecipeData.filter(Boolean));
     form.addEventListener("submit", (e) => e.preventDefault());
 
     const calcBtn = document.getElementById("calc-production-btn");
-    if (calcBtn) calcBtn.addEventListener("click", () => recalculate());
-
-    const isPro = !form.hasAttribute("data-basic-limit");
-    function onChange() {
-      clearTimeout(debounceTimer);
-      debounceTimer = setTimeout(recalculate, 150);
-    }
-
-    function syncDisabledStates() {
-      if (isPro || !form) return;
-      const checkboxes = form.querySelectorAll<HTMLInputElement>(
-        'input[name="recipe_id"]',
-      );
-      const checkedCount = form.querySelectorAll<HTMLInputElement>(
-        'input[name="recipe_id"]:checked',
-      ).length;
-      const atLimit = checkedCount >= BASIC_LIMIT;
-      checkboxes.forEach((cb) => {
-        if (!cb.checked) {
-          cb.disabled = atLimit;
-          const row = cb.closest("[data-recipe-row]");
-          if (row) {
-            if (atLimit) row.classList.add("opacity-40");
-            else row.classList.remove("opacity-40");
-          }
+    if (calcBtn) {
+      calcBtn.addEventListener("click", () => {
+        recalculate();
+        const sel = readSelections(!form.hasAttribute("data-basic-limit"));
+        if (sel.length > 0) {
+          setStage("results");
+          document
+            .getElementById("production-results-stage")
+            ?.scrollIntoView({ behavior: "smooth", block: "start" });
         }
       });
     }
+
+    const editBtn = document.getElementById("edit-selection-btn");
+    if (editBtn) {
+      editBtn.addEventListener("click", () => {
+        setStage("select");
+        document
+          .getElementById("production-selector-stage")
+          ?.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    }
+
+    bindSearch();
+    bindSelectAll(form);
+
+    // Stepper de mezclas (− / +) delegado al form
+    form.addEventListener("click", (e) => {
+      const t = e.target as HTMLElement;
+      const btn = t.closest<HTMLButtonElement>("[data-batch-step]");
+      if (!btn) return;
+      const input = btn
+        .closest(".batch-stepper")
+        ?.querySelector<HTMLInputElement>('input[name="batches"]');
+      if (!input) return;
+      const dir = Number(btn.dataset.batchStep);
+      const next = Math.max(
+        0.5,
+        Math.round((Number(input.value) + dir) * 2) / 2,
+      );
+      input.value = String(next);
+      input.dispatchEvent(new Event("change", { bubbles: true }));
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+
+    function onChange() {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(recalculate, DEBOUNCE_MS);
+    }
+
+    const isPro = !form.hasAttribute("data-basic-limit");
 
     form.addEventListener("change", (e) => {
       const t = e.target as HTMLElement;
@@ -581,10 +807,10 @@ const recipeDataJson = JSON.stringify(allRecipeData.filter(Boolean));
             row?.classList.remove("bg-accent-50", "ring-accent-200", "ring-1");
             row?.classList.add("hover:bg-muted");
             controls?.classList.add("hidden");
-            syncDisabledStates();
+            syncDisabledStates(form);
             return;
           }
-          syncDisabledStates();
+          syncDisabledStates(form);
         }
         onChange();
       } else if (
@@ -598,21 +824,44 @@ const recipeDataJson = JSON.stringify(allRecipeData.filter(Boolean));
       const t = e.target as HTMLElement;
       if (t.matches('input[name="batches"]')) onChange();
     });
+    syncDisabledStates(form);
   }
 
-  function init() {
+  // Devuelve true si el formulario + datos ya están disponibles (inicializó o ya
+  // estaba bound); false si el island server:defer aún no ha inyectado su HTML.
+  function init(): boolean {
     const dataEl = document.getElementById("production-data");
-    if (dataEl) {
-      try {
-        recipeData = JSON.parse(dataEl.textContent || "[]");
-      } catch {
-        recipeData = [];
-      }
+    const form = document.getElementById("recipe-selector-form");
+    if (!dataEl || !form) return false;
+    if (form.dataset.calcBound === "1") return true;
+    try {
+      recipeData = JSON.parse(dataEl.textContent || "[]");
+    } catch {
+      recipeData = [];
     }
     bindEvents();
+    recalculate();
+    const root = document.getElementById("production-root");
+    if (root && root.dataset.stage === "results") {
+      setStage("results");
+    }
+    return true;
   }
 
-  document.addEventListener("astro:page-load", init);
-  document.addEventListener("astro:after-swap", init);
-  if (document.readyState !== "loading") init();
+  document.addEventListener("astro:page-load", () => init());
+  document.addEventListener("astro:after-swap", () => init());
+
+  // El componente es un server island (server:defer): su HTML se inyecta de forma
+  // asíncrona DESPUÉS de que astro:page-load / astro:after-swap ya se dispararon.
+  // Un observer permanente detecta la aparición del formulario + datos en cada
+  // navegación y ejecuta init (idempotente gracias al guard calcBound del form).
+  const productionObserver = new MutationObserver(() => {
+    init();
+  });
+  productionObserver.observe(document.documentElement, {
+    childList: true,
+    subtree: true,
+  });
+
+  init();
 </script>

@@ -1011,31 +1011,21 @@ dialog[data-animated][open]::backdrop {
     padding: 0;
   }
 
-  .production-sheet table {
-    width: 100%;
-    border-collapse: collapse;
-    page-break-inside: auto;
+  /* El resumen financiero arranca en una página nueva. */
+  .production-sheet .financial-summary {
+    page-break-before: always;
   }
 
-  .production-sheet th,
-  .production-sheet td {
-    border: 1px solid #ccc;
-    padding: 4px 8px;
-    text-align: left;
-    font-size: 9pt;
-  }
-
-  .production-sheet th {
-    background: #f5f5f5 !important;
-    font-weight: 700;
-  }
-
-  .production-sheet tr {
+  /* Las filas reemplazan a la antigua tabla: borde y sin cortes. */
+  .production-sheet .prod-row {
+    display: grid !important;
+    border-bottom: 1px solid #ccc;
+    padding: 5px 0;
     page-break-inside: avoid;
   }
 
-  .production-sheet .financial-summary {
-    page-break-before: always;
+  .production-sheet .prod-row:last-child {
+    border-bottom: 0;
   }
 }
 
