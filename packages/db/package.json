@@ -24,6 +24,7 @@
     "seed": "tsx prisma/seed.ts",
     "seed:plans": "tsx prisma/seed-plans.ts",
     "seed:fixed-costs": "tsx prisma/seed-fixed-costs.ts",
+    "seed:test-users": "tsx prisma/seed-test-users.ts",
     "test": "vitest run"
   },
   "dependencies": {
