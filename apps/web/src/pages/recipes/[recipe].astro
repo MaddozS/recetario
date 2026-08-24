@@ -20,12 +20,9 @@ import PresentationCard from "../../components/organisms/recipes/PresentationCar
 import { apiFetch, ApiError } from "@/lib/api-client";
 import { hasFeature } from '@recetario/stripe';
 import { parseNumberInput } from '@/lib/form-utils';
-import { sanitizeHtml } from '@/lib/html-sanitizer';
 import { validateCsrf } from '@recetario/auth';
 import { UNIT_OPTIONS } from '@/lib/constants';
 import FeedbackAlert from '../../components/molecules/shared/FeedbackAlert.astro';
-import RecipeInstructions from '../../components/organisms/recipes/RecipeInstructions.astro';
-import InstructionsEditor from '../../components/organisms/recipes/InstructionsEditor.astro';
 import Button from "../../components/atoms/Button.astro";
 import Badge from "../../components/atoms/Badge.astro";
 import FinancialSummary from "../../components/organisms/shared/FinancialSummary.astro";
@@ -322,8 +319,6 @@ if (Astro.request.method === 'POST') {
         : (currentRecipe?.fixedCostsPercentage ?? 0);
 
       const category = String(formData.get('category') || '').trim() || null;
-      const rawInstructions = String(formData.get('instructions') || '').trim();
-      const instructions = rawInstructions ? sanitizeHtml(rawInstructions) : undefined;
 
       try {
         await apiFetch(`/api/recipes/${recipeIdNumber}`, {
@@ -331,7 +326,6 @@ if (Astro.request.method === 'POST') {
           body: {
             name,
             category,
-            instructions,
             desiredMargin,
             fixedCostsPercentage,
             ingredients: ingredientsToSave,
@@ -591,11 +585,9 @@ try {
   throw error;
 }
 
-const { ingredients: recipeIngredients, name, category, instructions, id, desiredMargin, fixedCostsPercentage, presentations, updatedAt } = recipe;
-const ingredients = recipeIngredients.map((ri) => ({ id: ri.ingredient.id, name: ri.ingredient.name }));
+const { ingredients: recipeIngredients, name, category, id, desiredMargin, fixedCostsPercentage, presentations, updatedAt } = recipe;
 const formatIngredientLabel = (i: { name?: string | null; brand?: string | null }) =>
   i.brand && i.name ? `${i.name} (${i.brand})` : (i.name ?? '');
-const hasCookingMode = hasFeature(Astro.locals.subscription, "cooking_mode");
 
 const isEditMode = Astro.url.searchParams.get('edit') === 'true';
 // The ingredient list is always fetched so the client-side edit toggle can
@@ -829,7 +821,6 @@ const financialEditFields = buildFinancialEditFields();
       <form id={recipeEditFormId} method="POST" action={Astro.url.pathname} class="hidden" data-astro-reload>
         <input type="hidden" name="action" value="update_recipe" />
         <input type="hidden" name="_csrf" value={Astro.locals.csrfToken || ""} />
-        <input type="hidden" name="instructions" value={instructions || ""} data-hidden-ta />
       </form>
 
       <!-- Header: Row 1 - Title + Actions (desktop right side) -->
@@ -976,9 +967,6 @@ const financialEditFields = buildFinancialEditFields();
           data-tab="presentaciones"
         >
           Presentaciones
-        </button>
-        <button role="tab" id="tab-preparacion" class="tab-btn px-4 py-2.5 text-sm font-bold border-b-2 -mb-px transition-colors" aria-selected="false" aria-controls="panel-preparacion" data-tab="preparacion">
-          Preparación
         </button>
       </div>
 
@@ -1335,36 +1323,6 @@ const financialEditFields = buildFinancialEditFields();
           </form>
         </dialog>
       </div>
-      <!-- Preparación -->
-      <div id="panel-preparacion" role="tabpanel" aria-labelledby="tab-preparacion" class="tab-panel" hidden>
-        <div data-edit-toggle="edit" hidden="">
-          <InstructionsEditor
-            recipeEditFormId={recipeEditFormId}
-            instructions={instructions}
-            ingredients={ingredients}
-            recipeIngredientIds={recipeIngredients.map(ri => ri.ingredientId)}
-          />
-        </div>
-        <div data-edit-toggle="view" hidden={isEditMode}>
-        {instructions ? (
-          <RecipeInstructions
-            instructions={instructions}
-            ingredients={ingredients}
-            isPro={hasCookingMode}
-          />
-        ) : (
-          <div class="bg-card border-border mx-1 mt-6 overflow-hidden rounded-2xl border shadow-sm sm:mx-2 lg:mx-8">
-            <div class="border-border-light flex items-center gap-3 border-b px-5 py-5 sm:px-6 lg:px-8">
-              <h2 class="text-foreground flex items-center gap-2 text-sm font-bold">Preparación</h2>
-            </div>
-            <div class="px-5 py-12 sm:px-6 lg:px-8 text-center">
-              <p class="text-muted-foreground text-sm">No hay instrucciones todavía.</p>
-              <p class="text-subtle-foreground mt-2 text-xs">Haz clic en <strong>Editar</strong> para agregar la preparación de esta receta.</p>
-            </div>
-          </div>
-        )}
-        </div>
-      </div>
     </div>
   </div>
 
@@ -1454,7 +1412,6 @@ const financialEditFields = buildFinancialEditFields();
       syncUrl(edit);
       if (edit) {
         nameInput?.focus();
-        (window as unknown as { __setupInstructionsEditor?: () => void }).__setupInstructionsEditor?.();
       } else {
         resetEditForm();
       }
@@ -1463,9 +1420,6 @@ const financialEditFields = buildFinancialEditFields();
     // Initial state from URL (deep-link / reload with ?edit=true)
     const initialEdit = new URLSearchParams(window.location.search).get('edit') === 'true';
     setEditMode(initialEdit);
-    if (initialEdit) {
-      (window as unknown as { __setupInstructionsEditor?: () => void }).__setupInstructionsEditor?.();
-    }
 
     document.addEventListener('recipe:edit-toggle', () => {
       const next = root.dataset.editState !== 'edit';
@@ -1633,7 +1587,7 @@ const financialEditFields = buildFinancialEditFields();
         const currentTab = document.activeElement as HTMLButtonElement;
         if (!currentTab?.classList.contains('tab-btn')) return;
 
-        const tabIds = ['ingredientes', 'costos-fijos', 'presentaciones', 'preparacion'];
+        const tabIds = ['ingredientes', 'costos-fijos', 'presentaciones'];
         const currentIndex = tabIds.indexOf(currentTab.dataset.tab || '');
         let nextIndex = -1;
 
@@ -1659,7 +1613,7 @@ const financialEditFields = buildFinancialEditFields();
       if (!currentTabs.length) return;
 
       const hash = window.location.hash?.replace('#', '') || 'ingredientes';
-      if (['ingredientes', 'costos-fijos', 'presentaciones', 'preparacion'].includes(hash)) {
+      if (['ingredientes', 'costos-fijos', 'presentaciones'].includes(hash)) {
         activateTab(hash);
       }
     };
