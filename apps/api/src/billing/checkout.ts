@@ -36,9 +36,10 @@ export function stripeCheckoutHandler(): Handler<{ Variables: AuthVariables }> {
     const appOrigin = getAppOrigin(c);
     const userId = user.id;
 
+    const baseSuccessUrl = `${appOrigin}/settings?tab=billing&success=1`;
     const redirectSuccessUrl = safeRedirectUrl(
       successUrl,
-      `${appOrigin}/settings?tab=billing&success=1`,
+      baseSuccessUrl,
       appOrigin,
     );
     const redirectCancelUrl = safeRedirectUrl(
@@ -92,6 +93,8 @@ export function stripeCheckoutHandler(): Handler<{ Variables: AuthVariables }> {
         return c.json({ error: ingestResult.error }, 500);
       }
 
+      // No Checkout Session here: local state was ingested synchronously
+      // above, so the redirect needs no session_id-based sync.
       return c.json({ url: redirectSuccessUrl });
     }
 
@@ -103,10 +106,16 @@ export function stripeCheckoutHandler(): Handler<{ Variables: AuthVariables }> {
     const priorSub = await getSubscriptionByUserId(userId);
     const trialPeriodDays = priorSub ? undefined : 14;
 
+    // `{CHECKOUT_SESSION_ID}` is substituted by Stripe on redirect, so the
+    // settings page can run the post-payment sync-session flow.
+    const checkoutSuccessUrl = `${redirectSuccessUrl}${
+      redirectSuccessUrl.includes("?") ? "&" : "?"
+    }session_id={CHECKOUT_SESSION_ID}`;
+
     const result = await subscriptionIngestion.createTrustedCheckoutSession({
       customerId,
       priceId,
-      successUrl: redirectSuccessUrl,
+      successUrl: checkoutSuccessUrl,
       cancelUrl: redirectCancelUrl,
       userId,
       planId: plan.id,

@@ -170,7 +170,7 @@ describe("health endpoint", () => {
     expect(response.status).toBe(200);
     expect(mocks.createTrustedCheckoutSession).toHaveBeenCalledWith(
       expect.objectContaining({
-        successUrl: "http://localhost:4321/settings?tab=billing&success=1",
+        successUrl: "http://localhost:4321/settings?tab=billing&success=1&session_id={CHECKOUT_SESSION_ID}",
         cancelUrl: "http://localhost:4321/pricing?canceled=1",
       }),
     );
