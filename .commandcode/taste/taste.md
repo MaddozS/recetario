@@ -22,6 +22,7 @@ See [workflow/taste.md](workflow/taste.md)
 - Do not add the assistant (CommandCodeBot) as a commit co-author via `Co-authored-by:` trailers. User prefers clean authorship. Confidence: 0.90
 - When asked to commit changes, proactively scan the entire working tree for related uncommitted changes — don't limit to only the files from the most recent conversation turn. The user expects thoroughness. Confidence: 0.60
 - Before committing, proactively scan the staged changes for sensitive data (API keys, tokens, secrets, credentials, DB URLs) and confirm none are included before creating the commit. Confidence: 0.85
+- When asked to commit changes, group them into multiple logical/thematic commits separated by concern (one per feature/fix/refactor/chore) rather than a single combined commit — the user explicitly requests the changes be "separados de forma correcta". Use Conventional Commits format (`type(scope): subject`). Confidence: 0.70
 
 # communication
 - Prefers direct, unfiltered, "brutalism honest" feedback — do not soften or sugar-coat criticism of code, architecture, or decisions. The user values candor over diplomacy when evaluating the quality of their work. Confidence: 0.75
