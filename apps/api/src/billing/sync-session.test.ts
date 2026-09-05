@@ -85,8 +85,8 @@ const pendingIntent = {
   priceId: "price_pro_monthly",
   state: "pending",
   stripeSubscriptionId: null,
-  createdAt: new Date("2026-08-01T00:00:00Z"),
-  expiresAt: new Date("2026-09-02T00:00:00Z"),
+  createdAt: new Date(Date.now() - 60 * 60 * 1000),
+  expiresAt: new Date(Date.now() + 60 * 60 * 1000),
   consumedAt: null,
 };
 

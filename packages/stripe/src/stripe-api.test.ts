@@ -171,5 +171,38 @@ describe("stripe-api", () => {
       ]),
     }));
   });
+
+  it("starts a fresh schedule when the existing schedule is canceled on downgrade", async () => {
+    retrieveSubscription.mockResolvedValue({
+      id: "sub_123",
+      items: { data: [{ id: "item_123", price: { id: "price_pro" } }] },
+      current_period_end: 1789689600,
+      schedule: "sched_stale",
+    });
+    retrieveSchedule.mockResolvedValueOnce({
+      id: "sched_stale",
+      status: "canceled",
+      phases: [],
+    });
+    createSchedule.mockResolvedValueOnce({
+      id: "sched_fresh",
+      status: "active",
+      phases: [{ start_date: 1750000000, end_date: 1789689600, items: [{ price: "price_pro" }] }],
+    });
+    updateSchedule.mockResolvedValueOnce({ id: "sched_fresh" });
+
+    await updateStripeSubscription({
+      subscriptionId: "sub_123",
+      priceId: "price_basic",
+      isUpgrade: false,
+      isTrialing: false,
+    });
+
+    expect(retrieveSchedule).toHaveBeenCalledWith("sched_stale");
+    expect(createSchedule).toHaveBeenCalledWith({ from_subscription: "sub_123" });
+    expect(updateSchedule).toHaveBeenCalledWith("sched_fresh", expect.objectContaining({
+      end_behavior: "release",
+    }));
+  });
 });
 

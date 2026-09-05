@@ -21,7 +21,9 @@ const recipes = await prisma.recipe.findMany({
 
 ## Caching
 
-Session-path reads (`getSubscriptionByUserId`, `getUserPreferences`, `getCredentialAccount`) set `cacheStrategy: { ttl: 60, swr: 120, tags: ["user:<id>"] }` so Accelerate serves the edge cache. Write helpers that mutate those rows call `invalidateAccelerateCache(["user:<id>"])` so the next read is fresh.
+`getUserPreferences` and `getCredentialAccount` (session-path reads) set `cacheStrategy: { ttl: 60, swr: 120, tags: ["user:<id>"] }` so Accelerate serves the edge cache. Write helpers that mutate those rows call `invalidateAccelerateCache(["user:<id>"])` so the next read is fresh (best-effort; failures are logged).
+
+`getSubscriptionByUserId` is **not cached**: it backs the subscription shown on every authenticated page, and a stale entitlement after a plan change is worse than a cheap indexed query.
 
 ## Generated client
 

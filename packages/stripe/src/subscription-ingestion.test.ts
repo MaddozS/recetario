@@ -644,6 +644,7 @@ describe("changePlanIfNeeded", () => {
       }),
     );
     stripe.getSubscriptionSchedules.mockResolvedValue({
+      status: "active",
       phases: [
         { items: [{ price: "price_basic_monthly" }], start_date: 1767225600 },
         { items: [{ price: "price_pro_monthly" }], start_date: 1769817600 },
@@ -682,5 +683,33 @@ describe("changePlanIfNeeded", () => {
       isUpgrade: true,
       isTrialing: false,
     });
+  });
+
+  it("issues the Stripe mutation when the schedule is canceled even though it lists the target price", async () => {
+    const { stripe, ingestion } = makeDeps();
+    stripe.retrieveSubscription.mockResolvedValue(
+      makeSub({
+        items: { data: [{ price: { id: "price_basic_monthly" } }] },
+        schedule: "sub_sched_1",
+      }),
+    );
+    stripe.getSubscriptionSchedules.mockResolvedValue({
+      status: "canceled",
+      phases: [
+        { items: [{ price: "price_basic_monthly" }], start_date: 1767225600 },
+        { items: [{ price: "price_pro_monthly" }], start_date: 1769817600 },
+      ],
+    });
+    stripe.updateStripeSubscription.mockResolvedValue(makeSub());
+
+    const result = await ingestion.changePlanIfNeeded({
+      subscriptionId: "sub_123",
+      priceId: "price_pro_monthly",
+      isUpgrade: true,
+      isTrialing: false,
+    });
+
+    expect(result).toEqual({ ok: true, subscription: expect.anything() });
+    expect(stripe.updateStripeSubscription).toHaveBeenCalled();
   });
 });

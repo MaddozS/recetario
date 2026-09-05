@@ -24,11 +24,9 @@ const { recipeFixedCosts, recipeId } = Astro.props;
 <section class="space-y-4" data-recipe-id={recipeId}>
   <div class="flex items-start justify-between gap-3">
     <SectionHeading title="Costos Fijos de la Receta" />
-    <span data-edit-toggle="edit" hidden>
-      <Button variant="primary" icon="plus" data-open-recipe-fixed-dialog="1">
-        Agregar Costo Fijo
-      </Button>
-    </span>
+    <Button variant="primary" icon="plus" data-open-recipe-fixed-dialog="1">
+      Agregar Costo Fijo
+    </Button>
   </div>
 
   <div class="grid grid-cols-1 gap-3" data-recipe-fixed-costs-container="1">
@@ -59,6 +57,10 @@ const { recipeFixedCosts, recipeId } = Astro.props;
 </section>
 
 <script>
+  // Ensure the fixed-cost-card custom element is registered even when the
+  // recipe has no persisted fixed costs (dynamically inserted create cards).
+  import "@/lib/fixed-cost-card";
+
   const setupAddFixedCostButton = () => {
     const buttons = document.querySelectorAll<HTMLButtonElement>(
       "[data-open-recipe-fixed-dialog]",
@@ -82,14 +84,12 @@ const { recipeFixedCosts, recipeId } = Astro.props;
           document.querySelector<HTMLInputElement>('input[name="_csrf"]')
             ?.value || "";
 
-        const cardHtml = `<fixed-cost-card class="bg-card border-border flex flex-col rounded-2xl border p-5 shadow-sm transition-all" data-mode="create" data-owner-type="recipe">
-<form method="post" class="flex flex-col">
+        const cardHtml = `<fixed-cost-card class="bg-card border-border flex flex-col rounded-2xl border p-5 shadow-sm transition-all" data-mode="create" data-owner-type="recipe"><form method="post" class="flex flex-col">
 <input type="hidden" name="action" value="create_recipe_fixed_cost" />
 <input type="hidden" name="recipeId" value="${recipeId}" />
 <input type="hidden" name="ownerId" value="${recipeId}" />
 <input type="hidden" name="ownerType" value="recipe" />
 <input type="hidden" name="_csrf" value="${csrfToken}" />
-<div class="display-content hidden flex flex-wrap items-center gap-3"><div class="flex min-w-0 flex-1 flex-wrap items-center gap-2"></div></div>
 <div class="edit-content space-y-4">
 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
 <div class="flex flex-col gap-1"><label class="text-subtle-foreground text-[11px] font-bold tracking-[0.16em] uppercase">Nombre</label><input name="name" type="text" class="fixed-cost-name-input border-border bg-background text-foreground focus:ring-accent-500/20 rounded-xl border px-3 py-2 text-sm transition-all focus:ring-2 focus:outline-none" value="Costo Fijo" required /></div>
@@ -97,7 +97,7 @@ const { recipeFixedCosts, recipeId } = Astro.props;
 <div class="flex flex-col gap-1"><label class="text-subtle-foreground text-[11px] font-bold tracking-[0.16em] uppercase">Base</label><select name="base" class="fixed-cost-base-select border-border bg-background text-foreground focus:ring-accent-500/20 rounded-xl border px-3 py-2 text-sm transition-all focus:ring-2 focus:outline-none"><option value="PER_BATCH">Por Mezcla</option><option value="PER_UNIT">Por Unidad</option><option value="PER_HOUR">Por Hora</option></select></div>
 </div>
 <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
-<div class="flex flex-col gap-1"><label class="text-subtle-foreground text-[11px] font-bold tracking-[0.16em] uppercase">Valor</label><input name="value" type="text" inputmode="decimal" class="fixed-cost-value-input border-border bg-background text-foreground focus:ring-accent-500/20 font-mono rounded-xl border px-3 py-2 text-sm transition-all focus:ring-2 focus:outline-none" value="0" required /></div>
+<div class="flex flex-col gap-1"><label class="text-subtle-foreground text-[11px] font-bold tracking-[0.16em] uppercase">Valor</label><input name="value" type="text" inputmode="decimal" class="fixed-cost-value-input border-border bg-background text-foreground focus:ring-accent-500/20 font-mono rounded-xl border px-3 py-2 text-sm transition-all focus:ring-2 focus:outline-none" value="" required /></div>
 <div class="hours-field flex flex-col gap-1" style="display:none"><label class="text-subtle-foreground text-[11px] font-bold tracking-[0.16em] uppercase">Horas</label><input name="hours" type="text" inputmode="decimal" class="fixed-cost-hours-input border-border bg-background text-foreground focus:ring-accent-500/20 font-mono rounded-xl border px-3 py-2 text-sm transition-all focus:ring-2 focus:outline-none" value="1" /></div>
 <div class="hidden sm:block"></div>
 </div>

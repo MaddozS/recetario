@@ -742,13 +742,20 @@ export function createSubscriptionIngestionWith(deps: IngestionDeps) {
           : current.schedule.id;
       try {
         const schedule = await stripe.getSubscriptionSchedules(scheduleId);
-        const alreadyScheduled = schedule.phases.some((phase) =>
-          phase.items.some((item) => {
-            const price =
-              typeof item.price === "string" ? item.price : item.price?.id;
-            return price === input.priceId;
-          }),
-        );
+        // Only an active/not_started schedule is a live plan change. A stale
+        // (canceled/released/completed) schedule no longer applies its phases,
+        // so its contents must not suppress a fresh mutation.
+        const isLive =
+          schedule.status === "not_started" || schedule.status === "active";
+        const alreadyScheduled =
+          isLive &&
+          schedule.phases.some((phase) =>
+            phase.items.some((item) => {
+              const price =
+                typeof item.price === "string" ? item.price : item.price?.id;
+              return price === input.priceId;
+            }),
+          );
         if (alreadyScheduled) {
           return { ok: true, subscription: current };
         }

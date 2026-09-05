@@ -81,6 +81,14 @@ export async function updateStripeSubscription(input: {
     let schedule: Stripe.SubscriptionSchedule;
     if (typeof subscription.schedule === "string" && subscription.schedule) {
       schedule = await stripe.subscriptionSchedules.retrieve(subscription.schedule);
+      // Stripe only allows updating schedules in `not_started` or `active`.
+      // A stale (canceled/released/completed) schedule no longer manages the
+      // subscription, so start a fresh schedule from it instead.
+      if (schedule.status !== "not_started" && schedule.status !== "active") {
+        schedule = await stripe.subscriptionSchedules.create({
+          from_subscription: input.subscriptionId,
+        });
+      }
     } else {
       schedule = await stripe.subscriptionSchedules.create({
         from_subscription: input.subscriptionId,

@@ -78,7 +78,7 @@ If a new feature needs data access from a web page, add the endpoint in `apps/ap
 #### Operational gotchas
 
 - **Forms**: no Astro Actions. POST to the same page, read `Astro.request.formData()`, then redirect. Spanish locale: `parseNumberInput()` converts comma to dot.
-- **Subscription cache**: session-path reads (`getSubscriptionByUserId`, `getUserPreferences`, `getCredentialAccount`) use Accelerate edge caching (`cacheStrategy` with `ttl: 60`, `swr: 120`, tagged `user:<id>`); writes invalidate via `invalidateAccelerateCache` in `@recetario/db`.
+- **Subscription cache**: `getSubscriptionByUserId` (the hot path behind `/api/auth/session` and every authenticated page) is deliberately **uncached** — entitlements must never be stale. Only `getUserPreferences` and `getCredentialAccount` still use Accelerate edge caching (`cacheStrategy` with `ttl: 60`, `swr: 120`, tagged `user:<id>`); writes invalidate via `invalidateAccelerateCache` in `@recetario/db` (best-effort; failures are logged).
 - **pnpm allowed builds**: only `esbuild`, `sharp`, `@prisma/engines`, `prisma` are allowed in `pnpm-workspace.yaml`.
 - **Cloudflare ephemeral**: `DATABASE_URL` is not auto-injected — set per-environment via `wrangler secret put` or the dashboard. Local dev: `pnpm dev` runs `scripts/sync-cloudflare-dev-vars.mjs` which copies root `.env` to `apps/web/.dev.vars` and `apps/api/.dev.vars`.
 - **Feedback + reload**: `showFeedback()` is client-side DOM; `window.location.reload()` after it erases feedback, so prefer DOM updates for in-page state.
