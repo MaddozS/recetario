@@ -185,12 +185,6 @@ const fixedCostsJson = JSON.stringify(presentationFixedCosts);
             value={defaultSalePrice.toFixed(2)}
             readonly
           />
-          <span
-            aria-hidden="true"
-            class="presentation-price-measure pointer-events-none invisible absolute top-0 left-0 font-mono text-[20px] font-semibold whitespace-pre tabular-nums"
-          >
-            {defaultSalePrice.toFixed(2)}
-          </span>
         </div>
       </div>
     </div>
@@ -304,7 +298,6 @@ const fixedCostsJson = JSON.stringify(presentationFixedCosts);
     inputName: HTMLInputElement | null = null;
     inputUnits: HTMLInputElement | null = null;
     inputPrice: HTMLInputElement | null = null;
-    priceMeasure: HTMLSpanElement | null = null;
     yieldValue: HTMLSpanElement | null = null;
     unitCostDisplay: HTMLParagraphElement | null = null;
     recommendedPriceDisplay: HTMLSpanElement | null = null;
@@ -343,7 +336,6 @@ const fixedCostsJson = JSON.stringify(presentationFixedCosts);
       this.inputName = this.querySelector(".presentation-name");
       this.inputUnits = this.querySelector(".presentation-units");
       this.inputPrice = this.querySelector(".presentation-price");
-      this.priceMeasure = this.querySelector(".presentation-price-measure");
       this.yieldValue = this.querySelector(".yield-value");
       this.unitCostDisplay = this.querySelector(".unit-cost-display");
       this.recommendedPriceDisplay = this.querySelector(
@@ -781,19 +773,15 @@ const fixedCostsJson = JSON.stringify(presentationFixedCosts);
     }
 
     syncPriceWidth(value = this.inputPrice?.value ?? "") {
-      if (!this.inputPrice || !this.priceMeasure) {
-        return;
-      }
+      if (!this.inputPrice) return;
 
       const measuredValue = value.trim().length > 0 ? value.trim() : "0.00";
 
-      requestAnimationFrame(() => {
-        if (!this.priceMeasure || !this.inputPrice) return;
-        this.priceMeasure.textContent = measuredValue;
-        const measuredWidth = this.priceMeasure.scrollWidth;
-        const nextWidth = Math.max(Math.ceil(measuredWidth + 4), 28);
-        this.inputPrice.style.width = `${nextWidth}px`;
-      });
+      // JetBrains Mono is monospaced and tabular-nums, so the width can be
+      // derived exactly from the character count. `ch` keeps it correct
+      // even before/after the webfont swaps in.
+      const nextWidth = Math.max(measuredValue.length + 1, 4);
+      this.inputPrice.style.width = `${nextWidth}ch`;
     }
 
     calculate() {
