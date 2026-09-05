@@ -415,7 +415,7 @@ The refactor MUST preserve these invariants (per AGENTS.md and explore findings)
 
 6. **Feature flag tiers preserved**: `FREE_FEATURES` (12 keys, all false), Basic enables 5, Pro enables all 12. Logic unchanged. Code moves from `src/lib/subscription.ts` to `@recetario/stripe/src/subscription.ts`.
 
-7. **Cache behavior unchanged**: 60s subscription cache semantics preserved, now via Accelerate `cacheStrategy` (`ttl: 60`, `swr: 120`) in `@recetario/db`.
+7. **Cache behavior**: `getSubscriptionByUserId` is deliberately uncached (entitlements must never be stale) in `@recetario/db`; `getUserPreferences` and `getCredentialAccount` keep Accelerate `cacheStrategy` (`ttl: 60`, `swr: 120`) with `user:<id>` tags. `invalidateAccelerateCache` is best-effort and logs failures.
 
 8. **CSRF token format unchanged**: hidden `_csrf` input on every form, validated server-side.
 

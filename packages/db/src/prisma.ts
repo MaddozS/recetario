@@ -54,8 +54,11 @@ export function userCacheTag(userId: string): string {
 export async function invalidateAccelerateCache(tags: string[]): Promise<void> {
   try {
     await getPrisma().$accelerate.invalidate({ tags });
-  } catch {
-    // best-effort invalidation; stale entries expire via ttl/swr
+  } catch (err) {
+    // Best-effort invalidation: stale entries expire via ttl/swr, but a
+    // silent failure would leave reads serving old data (e.g. an entitlements
+    // change) with no trace. Surface it so operational bugs are observable.
+    console.error("[accelerate] cache invalidation failed for tags:", tags, err);
   }
 }
 

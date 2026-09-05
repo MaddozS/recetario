@@ -53,15 +53,13 @@ export async function getSubscriptionByUserId(
   userId: string,
   statuses?: string[],
 ): Promise<SubscriptionGetPayload<{ include: { plan: true } }> | null> {
+  // Hot path (session / every authenticated page): deliberately uncached.
+  // A 60–120s stale cache on entitlements causes inconsistent UI after a
+  // plan change; the query is a cheap indexed read, so correctness wins.
   const rows = await prisma.subscription.findMany({
     where: { userId, ...(statuses ? { status: { in: statuses } } : {}) },
     include: { plan: true },
     orderBy: { createdAt: "desc" },
-    cacheStrategy: {
-      ttl: 60,
-      swr: 120,
-      tags: [userCacheTag(userId)],
-    },
   });
   if (rows.length === 0) return null;
 
