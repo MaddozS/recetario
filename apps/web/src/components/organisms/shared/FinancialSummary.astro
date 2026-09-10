@@ -52,6 +52,7 @@ const colorAccentMap: Record<string, string> = {
           : "border-l-transparent";
         return (
           <div
+            data-financial-row={row.label}
             class:list={[
               "flex flex-col justify-between border-l-[3px] py-1 pl-3 sm:border-l-[3px] sm:px-1 sm:pl-4",
               leftBorder,
@@ -100,6 +101,7 @@ const colorAccentMap: Record<string, string> = {
                 </div>
               ) : (
                 <p
+                  data-financial-value
                   class:list={[
                     "truncate font-mono text-2xl leading-none font-semibold tabular-nums 2xl:text-3xl",
                     isHighlight ? "text-accent-600" : "text-foreground",
@@ -120,7 +122,7 @@ const colorAccentMap: Record<string, string> = {
                 </p>
               )}
               {row.secondaryValue && !isEditMode && (
-                <p class="text-subtle-foreground mt-0.5 font-mono text-[11px] font-semibold">
+                <p data-financial-secondary class="text-subtle-foreground mt-0.5 font-mono text-[11px] font-semibold">
                   {row.secondaryValue}
                 </p>
               )}

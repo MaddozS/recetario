@@ -1,5 +1,51 @@
 import { bindDialogBackdrop } from "@/lib/dialog";
 import { parseNumberInput } from "@/lib/form-utils";
+import { startMutationPending } from "@/lib/mutation-pending";
+
+/**
+ * Actualiza las filas del FinancialSummary (cabecera de la receta) tras
+ * guardar/eliminar un costo fijo, sin recargar la página. Las filas se
+ * identifican por su etiqueta (data-financial-row) y existe una instancia
+ * por modo (view/edit); se actualizan todas.
+ */
+function applyFinancialSummary(
+  summary: Array<{ label: string; value: string; secondaryValue?: string }>,
+) {
+  const rows = document.querySelectorAll<HTMLElement>("[data-financial-row]");
+  for (const rowEl of rows) {
+    const row = summary.find((s) => s.label === rowEl.dataset.financialRow);
+    if (!row) continue;
+    const valueEl = rowEl.querySelector<HTMLElement>("[data-financial-value]");
+    if (valueEl) {
+      valueEl.textContent = row.value;
+      valueEl.setAttribute("title", row.value);
+    }
+    const secondaryEl = rowEl.querySelector<HTMLElement>(
+      "[data-financial-secondary]",
+    );
+    if (secondaryEl) {
+      secondaryEl.textContent = row.secondaryValue ?? "";
+      secondaryEl.classList.toggle("hidden", !row.secondaryValue);
+    }
+  }
+}
+
+function showSuccessToast(message: string) {
+  document.querySelectorAll(".fc-success-toast").forEach((el) => el.remove());
+  const toast = document.createElement("div");
+  toast.className = "fc-success-toast";
+  toast.setAttribute("role", "status");
+  toast.style.cssText =
+    "position:fixed;bottom:1rem;left:50%;transform:translateX(-50%);z-index:10000;" +
+    "background:var(--color-success-bg,#ecfdf5);color:var(--color-success,#047857);" +
+    "border:1px solid var(--color-success-border,#a7f3d0);" +
+    "border-radius:1rem;padding:0.75rem 1.5rem;font-size:0.875rem;font-weight:600;" +
+    "box-shadow:0 4px 16px rgba(0,0,0,0.1);max-width:90vw;text-align:center";
+  toast.textContent = message;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+}
+
 
 /**
  * FixedCostCard custom element. Each card manages its own persistence:
@@ -180,9 +226,11 @@ export class FixedCostCard extends HTMLElement {
       const submitBtn = this.form.querySelector<HTMLButtonElement>(
         'button[type="submit"]',
       );
+      const originalSubmitHTML = submitBtn?.innerHTML ?? "";
       if (submitBtn) {
         submitBtn.disabled = true;
         submitBtn.classList.add("opacity-75", "cursor-not-allowed");
+        submitBtn.innerHTML = `<svg class="animate-spin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="32"><animate attributeName="stroke-dashoffset" values="32;0" dur="0.8s" repeatCount="indefinite" /></circle></svg> Guardando...`;
       }
 
       try {
@@ -226,6 +274,8 @@ export class FixedCostCard extends HTMLElement {
         } else {
           this.applyFixedCost(payload.fixedCost);
           this.toggleEdit(true);
+          if (payload.summary) applyFinancialSummary(payload.summary);
+          showSuccessToast('Costo fijo guardado.');
         }
         this.clearError();
       } catch (error) {
@@ -239,6 +289,7 @@ export class FixedCostCard extends HTMLElement {
         if (submitBtn) {
           submitBtn.disabled = false;
           submitBtn.classList.remove("opacity-75", "cursor-not-allowed");
+          submitBtn.innerHTML = originalSubmitHTML;
         }
       }
     });
@@ -445,6 +496,12 @@ export class FixedCostCard extends HTMLElement {
   async deleteFixedCost() {
     if (!this.form) return;
 
+    const stopPending = startMutationPending(this.btnDeleteConfirm, {
+      overlay: true,
+      message: "Eliminando costo fijo…",
+      buttonText: "Eliminando…",
+    });
+
     if (this.deleteDialog) {
       this.deleteDialog.dataset.submitting = "1";
       this.deleteDialog.setAttribute("aria-busy", "true");
@@ -486,6 +543,8 @@ export class FixedCostCard extends HTMLElement {
         throw new Error("La respuesta del servidor no fue válida.");
       }
 
+      if (payload.summary) applyFinancialSummary(payload.summary);
+      showSuccessToast('Costo fijo eliminado.');
       this.remove();
     } catch (error) {
       console.error(error);
@@ -495,6 +554,7 @@ export class FixedCostCard extends HTMLElement {
           : "Hubo un error al eliminar el costo fijo.";
       this.showError(message);
     } finally {
+      stopPending();
       if (this.deleteDialog) {
         delete this.deleteDialog.dataset.submitting;
         this.deleteDialog.removeAttribute("aria-busy");

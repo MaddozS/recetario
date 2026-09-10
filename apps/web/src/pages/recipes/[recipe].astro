@@ -10,6 +10,7 @@ import {
   recipeFixedCostSchema,
   presentationFixedCostSchema,
   ingredientSchema,
+  recipeWithIngredientsSchema,
 } from '@recetario/types';
 import Icon from "@/components/atoms/Icon.astro";
 import Layout from "../../layouts/Layout.astro";
@@ -126,7 +127,41 @@ const getPresentationFormErrorMessage = (error: unknown, fallback: string) => {
   }
 };
 
-
+// Recalcula las filas del FinancialSummary tras una mutación de costos
+// fijos, para que la cabecera se actualice sin recargar la página.
+// Best-effort: si falla, se omite el resumen y el guardado no se rompe.
+const buildRecipeSummaryRows = async (recipeId: number) => {
+  try {
+    const detail = await apiFetch(
+      `/api/recipes/${recipeId}`,
+      { schema: recipeWithIngredientsSchema },
+      Astro,
+    );
+    const multiplierValue = Math.max(
+      parseFloat(Astro.url.searchParams.get('multiplier') ?? '1') || 1,
+      0.01,
+    );
+    const clampPct = (value: number, max = Number.POSITIVE_INFINITY) =>
+      !Number.isFinite(value) ? 0 : Math.min(max, Math.max(0, value));
+    const directCost = calcularCostoDirecto(detail.ingredients, multiplierValue);
+    const { rows } = buildRecipeFinancialRows({
+      hasAdvancedCosts: hasFeature(subscription, 'advanced_costs'),
+      costoDirectoTotal: directCost,
+      recipeFixedCosts: detail.recipeFixedCosts ?? [],
+      multiplier: multiplierValue,
+      fixedCostsPercentageValue: clampPct(detail.fixedCostsPercentage),
+      desiredMarginValue: clampPct(detail.desiredMargin, 99.99),
+    });
+    return rows.map((row) => ({
+      label: row.label,
+      value: row.value,
+      secondaryValue: row.secondaryValue,
+    }));
+  } catch (error) {
+    console.error('No se pudo recalcular el resumen financiero:', error);
+    return [];
+  }
+};
 
 if (Astro.request.method === 'POST') {
   const formData = await Astro.request.formData();
@@ -415,6 +450,7 @@ if (Astro.request.method === 'POST') {
           value: created.value,
           hours: created.hours,
         },
+        summary: await buildRecipeSummaryRows(fcRecipeId),
       });
     } catch (error) {
       if (error instanceof ApiError && error.status === 404) {
@@ -489,8 +525,10 @@ if (Astro.request.method === 'POST') {
         return new Response('El valor debe ser un número mayor o igual a 0', { status: 400 });
       }
 
+      const targetRecipeId =
+        Number(formData.get('recipeId') || formData.get('ownerId')) || recipeIdNumber;
+
       if (ownerType === 'recipe') {
-        const targetRecipeId = Number(formData.get('recipeId') || formData.get('ownerId')) || recipeIdNumber;
         if (!Number.isFinite(targetRecipeId)) {
           return new Response('Invalid request', { status: 400 });
         }
@@ -521,6 +559,7 @@ if (Astro.request.method === 'POST') {
 
       return jsonResponse({
         fixedCost: { name, type, base, value, hours: ownerType === 'recipe' ? hours : null },
+        ...(ownerType === 'recipe' && { summary: await buildRecipeSummaryRows(targetRecipeId) }),
       });
     } catch (error) {
       if (error instanceof ApiError && error.status === 404) {
@@ -538,8 +577,10 @@ if (Astro.request.method === 'POST') {
       return new Response('Invalid request', { status: 400 });
     }
     try {
+      const targetRecipeId =
+        Number(formData.get('recipeId') || formData.get('ownerId')) || recipeIdNumber;
+
       if (ownerType === 'recipe') {
-        const targetRecipeId = Number(formData.get('recipeId') || formData.get('ownerId')) || recipeIdNumber;
         if (!Number.isFinite(targetRecipeId)) {
           return new Response('Invalid request', { status: 400 });
         }
@@ -560,7 +601,10 @@ if (Astro.request.method === 'POST') {
         );
       }
 
-      return jsonResponse({ deleted: true });
+      return jsonResponse({
+        deleted: true,
+        ...(ownerType === 'recipe' && { summary: await buildRecipeSummaryRows(targetRecipeId) }),
+      });
     } catch (error) {
       if (error instanceof ApiError && error.status === 404) {
         return new Response('Fixed cost not found', { status: 404 });
