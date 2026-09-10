@@ -1,0 +1,4 @@
+# Local, gitignored configuration that every Command Code worktree needs.
+# Copied by the worktree tool at creation time; never committed as content.
+.env
+.env.cloudflare
