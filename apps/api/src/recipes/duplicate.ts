@@ -1,8 +1,8 @@
 import type { Handler } from "hono";
 import { duplicateRecipe } from "@recetario/db";
 import { auth } from "@recetario/auth/server";
-import { recipeWithIngredientsSchema } from "@recetario/types";
 import { ApiError } from "../errors";
+import { shapeRecipeDetail } from "./shape";
 
 export function recipesDuplicateHandler(): Handler {
   return async (c) => {
@@ -20,6 +20,6 @@ export function recipesDuplicateHandler(): Handler {
     if (!duplicated) {
       throw new ApiError("NOT_FOUND", "Recipe not found");
     }
-    return c.json(recipeWithIngredientsSchema.parse(duplicated), 201);
+    return c.json(shapeRecipeDetail(duplicated), 201);
   };
 }

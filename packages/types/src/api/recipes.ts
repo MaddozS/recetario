@@ -33,7 +33,7 @@ export const recipeFixedCostSchema = z.object({
   type: fixedCostTypeSchema,
   base: fixedCostBaseSchema,
   value: z.number(),
-  hours: z.number().optional(),
+  hours: z.number().nullable().optional(),
 });
 
 export const presentationFixedCostSchema = z.object({
