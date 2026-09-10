@@ -1,9 +1,6 @@
 ---
 import type {
   RecipeWithIngredients,
-  Ingredient,
-  RecipeIngredientWithData,
-  RecipeIngredient,
   RecipePresentation,
 } from '@recetario/types';
 import { z } from 'zod';
@@ -22,6 +19,13 @@ import { hasFeature } from '@recetario/stripe';
 import { parseNumberInput } from '@/lib/form-utils';
 import { validateCsrf } from '@recetario/auth';
 import { UNIT_OPTIONS } from '@/lib/constants';
+import {
+  aplicarRedondeoUnidadPequena,
+  buildFinancialRows as buildRecipeFinancialRows,
+  calcularCostoDirecto,
+  calcularSubtotalIngrediente,
+  computeFixedCostAmount,
+} from '@/lib/recipe-financials';
 import FeedbackAlert from '../../components/molecules/shared/FeedbackAlert.astro';
 import Button from "../../components/atoms/Button.astro";
 import Badge from "../../components/atoms/Badge.astro";
@@ -660,19 +664,7 @@ const feedbackTypeParam = Astro.url.searchParams.get('type');
 const feedbackType = (feedbackTypeParam === 'error' || feedbackTypeParam === 'success') ? feedbackTypeParam : null;
 const feedbackMessage = Astro.url.searchParams.get('message');
 
-// Redondeo contable para unidades pequeñas (g/ml)
-const roundHalfUp = (value: number) => {
-  return value >= 0 ? Math.floor(value + 0.5) : Math.ceil(value - 0.5);
-};
-
-const aplicarRedondeoUnidadPequena = (cantidad: number, unidad: string) => {
-  const u = unidad.toLowerCase();
-  if (u === 'g' || u === 'ml') {
-    return roundHalfUp(cantidad);
-  }
-  return cantidad;
-};
-
+// Redondeo contable para unidades pequeñas (g/ml) — ver lib/recipe-financials
 const formatCantidad = (cantidad: number, unidad: string) => {
   const ajustada = aplicarRedondeoUnidadPequena(cantidad, unidad);
   const u = unidad.toLowerCase();
@@ -681,50 +673,14 @@ const formatCantidad = (cantidad: number, unidad: string) => {
 
 // --- Helpers de Cálculo ---
 
-const getCostoBaseCompra = (insumo: Ingredient) => {
-  if (insumo.purchaseQuantity === 0) return 0;
-  return insumo.price / insumo.purchaseQuantity;
-};
-
-const calcularSubtotalIngrediente = (ri: RecipeIngredient, insumo: Ingredient) => {
-  if (!insumo) return 0;
-
-  let cantidadAjustada = aplicarRedondeoUnidadPequena(ri.quantity * multiplier, ri.unit);
-  const unidadInsumo = insumo.unit.toLowerCase();
-  const unidadReceta = ri.unit.toLowerCase();
-
-  // Conversión inteligente: si el insumo es kg/lt y la receta usa g/ml
-  if ((unidadInsumo === 'kg' || unidadInsumo === 'lt') &&
-      (unidadReceta === 'g' || unidadReceta === 'ml')) {
-    cantidadAjustada = cantidadAjustada / 1000;
-  }
-
-  return getCostoBaseCompra(insumo) * cantidadAjustada;
-};
-
-const calcularCostoDirecto = (ingredients: RecipeIngredientWithData[]) => {
-  return ingredients.reduce((total, ri) => {
-    return total + calcularSubtotalIngrediente(ri, ri.ingredient!);
-  }, 0);
-};
-
-const costoDirectoTotal = calcularCostoDirecto(recipeIngredients);
+const costoDirectoTotal = calcularCostoDirecto(recipeIngredients, multiplier);
 const costoOperativo = costoDirectoTotal * (fixedCostsPercentageValue / 100);
 
 // --- Advanced Cost Calculations ---
 const hasAdvancedCosts = hasFeature(subscription, 'advanced_costs');
 
-const computeFixedCostAmount = (fc: { type: string; base: string; value: number; hours?: number | null }): number => {
-  if (fc.type === 'AMOUNT') {
-    if (fc.base === 'PER_HOUR') return fc.value * (fc.hours ?? 1);
-    return fc.value * multiplier;
-  }
-  // PERCENTAGE
-  return costoDirectoTotal * (fc.value / 100);
-};
-
 const recipeFixedCostsTotal = recipe.recipeFixedCosts?.reduce(
-  (sum, fc) => sum + computeFixedCostAmount(fc), 0
+  (sum, fc) => sum + computeFixedCostAmount(fc, costoDirectoTotal, multiplier), 0
 ) ?? 0;
 
 const recipeBatchCost = costoDirectoTotal + (hasAdvancedCosts ? recipeFixedCostsTotal : costoOperativo);
@@ -748,53 +704,15 @@ void respondRecipeError;
 void getPresentationFormErrorMessage;
 
 // --- FinancialSummary rows ---
-const buildFinancialRows = () => {
-  if (hasAdvancedCosts) {
-    const baseRows: Array<{ label: string; value: string; subtitle?: string; secondaryValue?: string; color?: string }> = [
-      { label: "Costo Insumos", value: `$${costoDirectoTotal.toFixed(2)}`, subtitle: "Costo base de materiales", color: "danger" },
-    ];
-
-    // Total fixed costs summary row
-    baseRows.push({
-      label: "Total Costos Fijos",
-      value: `$${recipeFixedCostsTotal.toFixed(2)}`,
-      subtitle: "Suma de costos fijos de la receta",
-      color: "muted" as const,
-    });
-
-    // Total recipe cost
-    baseRows.push({
-      label: "Costo Total Receta",
-      value: `$${recipeBatchCost.toFixed(2)}`,
-      subtitle: "Insumos + Costos Fijos",
-      color: "accent" as const,
-    });
-
-    // Desired margin
-    baseRows.push({
-      label: "Margen Deseado",
-      value: `${desiredMarginValue}%`,
-      subtitle: "Objetivo de ganancia",
-      color: "success" as const,
-    });
-
-    return { rows: baseRows, highlightIndex: 2, editRowIndices: [3] };
-  }
-
-  // Legacy mode
-  return {
-    rows: [
-      { label: "Costo Insumos", value: `$${costoDirectoTotal.toFixed(2)}`, subtitle: "Costo base de materiales", color: "danger" as const },
-      { label: "Gastos Operativos", value: `${fixedCostsPercentageValue}%`, subtitle: "Servicios, labor, etc.", secondaryValue: `+$${costoOperativo.toFixed(2)}`, color: "muted" as const },
-      { label: "Costo Total Real", value: `$${recipeBatchCost.toFixed(2)}`, subtitle: "Insumos + Operativos", color: "accent" as const },
-      { label: "Margen Utilidad", value: `${desiredMarginValue}%`, subtitle: "Objetivo de ganancia", color: "success" as const },
-    ],
-    highlightIndex: 2,
-    editRowIndices: hasAdvancedCosts ? [] : [1, 3],
-  };
-};
-
-const { rows: financialRows, highlightIndex: financialHighlightIndex } = buildFinancialRows();
+const { rows: financialRows, highlightIndex: financialHighlightIndex } =
+  buildRecipeFinancialRows({
+    hasAdvancedCosts,
+    costoDirectoTotal,
+    recipeFixedCosts: recipe.recipeFixedCosts ?? [],
+    multiplier,
+    fixedCostsPercentageValue,
+    desiredMarginValue,
+  });
 
 const buildFinancialEditFields = () => {
   if (hasAdvancedCosts) {
@@ -1090,7 +1008,7 @@ const financialEditFields = buildFinancialEditFields();
                         <div class="text-right whitespace-nowrap">
                           <p class="text-[10px] font-bold uppercase tracking-wider text-subtle-foreground">Costo</p>
                           <p class="font-mono font-semibold text-secondary-foreground">
-                            ${calcularSubtotalIngrediente(ri, ri.ingredient!).toFixed(2)}
+                            ${calcularSubtotalIngrediente(ri, ri.ingredient!, multiplier).toFixed(2)}
                           </p>
                         </div>
                       </div>
@@ -1165,7 +1083,7 @@ const financialEditFields = buildFinancialEditFields();
                             </div>
                           </td>
                           <td class="px-6 lg:px-8 py-4 text-right font-mono font-semibold text-muted-foreground">
-                            ${calcularSubtotalIngrediente(ri, ri.ingredient!).toFixed(2)}
+                            ${calcularSubtotalIngrediente(ri, ri.ingredient!, multiplier).toFixed(2)}
                           </td>
                         </tr>
                       );
