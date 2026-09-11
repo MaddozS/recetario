@@ -1,26 +1,9 @@
 {
-  "extends": "astro/tsconfigs/base",
-  "compilerOptions": {
-    "moduleResolution": "bundler",
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"],
-      "@recetario/*": ["../../packages/*/src"],
-      "@recetario/config/*": ["../../packages/config/dist/src/*"]
-    },
-    "plugins": [
-      {
-        "name": "@astrojs/ts-plugin"
-      }
-    ]
-  },
-  "include": [".astro/types.d.ts", "**/*"],
-  "exclude": [
-    "dist",
-    ".agent/**",
-    ".astro/**",
-    "node_modules/**",
-    "../../packages/**/node_modules",
-    "../../packages/**/dist"
+  "files": [],
+  "references": [
+    { "path": "./.nuxt/tsconfig.app.json" },
+    { "path": "./.nuxt/tsconfig.server.json" },
+    { "path": "./.nuxt/tsconfig.shared.json" },
+    { "path": "./.nuxt/tsconfig.node.json" }
   ]
 }

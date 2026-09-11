@@ -1,12 +1,45 @@
 import pluginJs from "@eslint/js";
+import pluginVue from "eslint-plugin-vue";
 import tseslint from "typescript-eslint";
-import pluginAstro from "eslint-plugin-astro";
 
 export default [
+  {
+    ignores: [
+      "dist/",
+      ".astro/",
+      ".nuxt/",
+      ".output/",
+      ".wrangler/",
+      "node_modules/",
+      "generated/",
+      "test-results/",
+      "playwright-report/",
+      // Árbol Astro: referencia hasta la Task 13, fuera de build/lint/type-check.
+      "src/",
+    ],
+  },
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
-  ...pluginAstro.configs.recommended,
+  ...pluginVue.configs["flat/recommended"],
   {
-    ignores: ["dist/", ".astro/", "node_modules/", "generated/"],
+    files: ["**/*.vue"],
+    languageOptions: {
+      parserOptions: { parser: tseslint.parser },
+    },
+    rules: {
+      // Los auto-imports de Nuxt no están declarados en el scope del módulo.
+      // vue-tsc ya detecta identificadores inexistentes.
+      "no-undef": "off",
+      // El vocabulario visual del proyecto (Button, Card, Dialog…) es el contrato.
+      "vue/multi-word-component-names": "off",
+      // Prettier es dueño del formato de las plantillas: estas reglas de
+      // `flat/recommended` reescriben lo que `pnpm format` vuelve a escribir.
+      "vue/singleline-html-element-content-newline": "off",
+      "vue/max-attributes-per-line": "off",
+      "vue/html-self-closing": "off",
+      // No entiende `defineProps<T>()`: una prop opcional tipada (`foo?: T`)
+      // ya es `undefined` por defecto.
+      "vue/require-default-prop": "off",
+    },
   },
 ];
