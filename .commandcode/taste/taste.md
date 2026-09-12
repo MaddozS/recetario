@@ -27,6 +27,7 @@ See [workflow/taste.md](workflow/taste.md)
 # communication
 - Prefers direct, unfiltered, "brutalism honest" feedback — do not soften or sugar-coat criticism of code, architecture, or decisions. The user values candor over diplomacy when evaluating the quality of their work. Confidence: 0.75
 - Communicates in Spanish — expects replies, commit messages, PR titles/bodies, and summaries in Spanish. Confidence: 0.70
+- The project's working artifacts are Spanish-language: code comments (including in config files like nuxt.config.ts, eslint.config.mjs, wrangler.jsonc), task/todo labels, and in-repo notes (AGENTS.md banners) are written in Spanish, not English. Confidence: 0.6
 - When asked for the recommended solution to a problem, prefers a clear, structured description of what will be done — separating durable code fixes from one-off cleanup and infrastructure/config decisions — and expects to approve the approach before any changes are applied (not jumping straight into implementation). Confidence: 0.70
 
 # ux
