@@ -1,4 +1,10 @@
 <script setup lang="ts">
+definePageMeta({
+  layout: "private",
+  middleware: "auth",
+  breadcrumbs: [{ label: "Planificador de Producción" }],
+});
+
 useHead({
   title: "Planificador de producción | KitchCalc",
   meta: [{ name: "robots", content: "noindex, nofollow" }],

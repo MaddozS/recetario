@@ -1,4 +1,10 @@
 <script setup lang="ts">
+definePageMeta({
+  layout: "private",
+  middleware: "auth",
+  breadcrumbs: [{ label: "Ingredientes" }],
+});
+
 useHead({
   title: "Ingredientes | KitchCalc",
   meta: [{ name: "robots", content: "noindex, nofollow" }],

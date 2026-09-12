@@ -1,4 +1,13 @@
 <script setup lang="ts">
+definePageMeta({
+  layout: "private",
+  middleware: "auth",
+  breadcrumbs: [
+    { label: "Configuración", href: "/settings" },
+    { label: "Facturación" },
+  ],
+});
+
 useHead({
   title: "Facturación | KitchCalc",
   meta: [{ name: "robots", content: "noindex, nofollow" }],

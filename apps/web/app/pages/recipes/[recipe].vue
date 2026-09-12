@@ -6,6 +6,13 @@ const route = useRoute();
 // Placeholder: sólo comprueba que el segmento dinámico llega a la página.
 const recipeId = computed(() => String(route.params.recipe ?? ""));
 
+// Task 9 reemplaza la etiqueta estática por el nombre real de la receta.
+definePageMeta({
+  layout: "private",
+  middleware: "auth",
+  breadcrumbs: [{ label: "Recetas", href: "/recipes" }, { label: "Receta" }],
+});
+
 useHead({
   title: "Receta | KitchCalc",
   meta: [{ name: "robots", content: "noindex, nofollow" }],
