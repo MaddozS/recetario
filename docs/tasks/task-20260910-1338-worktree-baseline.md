@@ -13,7 +13,7 @@ Plan de sesión: `~/.commandcode/plans/recetario-nuxt-task-01-worktree-baseline.
 | Elemento | Valor |
 |---|---|
 | Baseline fijado | `bf802c52a143033db3c67e41c1b5ac14fc4f8d2d` |
-| Worktree | `/Users/maddozs/.commandcode/worktrees/recetario-be7daeb1070b/nuxt-rework` |
+| Worktree | `/Users/maddozs/personal-projects/recetario-nuxt-rework` — **movido en la Task 2** desde `~/.commandcode/worktrees/recetario-be7daeb1070b/nuxt-rework` (ver Desviación 0 de `task-20260911-1758-nuxt-platform-ui.md`) |
 | Rama de migración | `worktree-nuxt-rework` |
 | Checkout principal | intacto: `refactor/recipe-ui-actions-financials` @ `bf802c52`, árbol limpio |
 | Entorno | Node `v22.23.1`, pnpm `11.1.2` (pins de `package.json`) |

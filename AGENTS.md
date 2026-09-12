@@ -1,5 +1,7 @@
 # AGENTS.md — Recetario
 
+> **Migración Nuxt en curso.** `apps/web` se está reescribiendo de Astro a Nuxt 4 + Vue en el worktree `worktree-nuxt-rework`, hoy en `/Users/maddozs/personal-projects/recetario-nuxt-rework` (fuera de `~/.commandcode/` para no disparar prompts de permiso). El árbol Astro (`apps/web/src/**`) queda como referencia fuera de build/lint/type-check hasta la Task 13. Decisión en `docs/adr/0009-nuxt-frontend-rework.md`; estado por task en `docs/tasks/` (última: `task-20260911-1758-nuxt-platform-ui.md`).
+
 ## Stack
 
 **Astro 6** SSR via `@astrojs/cloudflare` (Cloudflare Pages). Two apps: `apps/web` (Astro Pages) + `apps/api` (Hono Worker). **pnpm 11.1.2** (package-manager locked). **Node >= 22.23.1**.
