@@ -2,6 +2,7 @@ import type { Handler } from "hono";
 import { createIngredient } from "@recetario/db";
 import { auth } from "@recetario/auth/server";
 import { ApiError } from "../errors";
+import { requireIngredientCapacity } from "../entitlements";
 import { ingredientCreateSchema, ingredientSchema } from "@recetario/types";
 
 function toResponse(row: {
@@ -40,6 +41,8 @@ export function ingredientsCreateHandler(): Handler {
     if (!parsed.success) {
       throw new ApiError("VALIDATION_ERROR", "Invalid ingredient input");
     }
+
+    await requireIngredientCapacity(session.user.id);
 
     const data = await createIngredient(parsed.data, session.user.id);
 
