@@ -1,4 +1,11 @@
 import { expect, test } from "@nuxt/test-utils/playwright";
+import { url } from "@nuxt/test-utils/e2e";
+import { warmUpSsr } from "./support/warmup";
+
+test.beforeAll(async () => {
+  // Ver `support/warmup.ts`: bug conocido de arranque en frío del SSR.
+  await warmUpSsr(url("/"));
+});
 
 const MOBILE = { width: 375, height: 800 };
 const DESKTOP = { width: 1280, height: 800 };
@@ -64,19 +71,18 @@ test("el diálogo portado abre, cierra con Escape y bloquea el backdrop ocupado"
   await expect(dialog).toBeHidden();
 });
 
-test("una ruta privada placeholder responde 200 con noindex y lee el parámetro", async ({
-  page,
-  goto,
+test("una ruta privada sin sesión redirige a sign-in antes de renderizar", async ({
+  request,
 }) => {
-  const response = await goto("/recipes/brownie-123", {
-    waitUntil: "hydration",
+  // Task 4 conectó el shell privado: el SSR corta con un 302 explicado en vez
+  // de renderizar el placeholder (el caso autenticado vive en shell.spec.ts).
+  const response = await request.get(url("/recipes/brownie-123"), {
+    maxRedirects: 0,
   });
-  expect(response?.status()).toBe(200);
 
-  await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
-    "content",
-    "noindex, nofollow",
-  );
-  await expect(page.locator("h1")).toHaveText("Detalle de receta");
-  await expect(page.getByText("id: brownie-123")).toBeVisible();
+  expect(response.status()).toBe(302);
+  const location = new URL(response.headers().location ?? "", url("/"));
+  expect(location.pathname).toBe("/sign-in");
+  expect(location.searchParams.get("redirect")).toBe("/recipes/brownie-123");
+  expect(location.searchParams.get("reason")).toBe("auth_required");
 });
