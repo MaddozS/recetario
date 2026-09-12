@@ -106,4 +106,26 @@ describe("preferencesUpdateHandler", () => {
     expect(body.accentColor).toBe("indigo");
     expect(mockUpsertUserPreferences).toHaveBeenCalledTimes(1);
   });
+
+  it("returns the persisted row on a partial update", async () => {
+    mockGetSession.mockResolvedValueOnce(sessionFixture);
+    mockUpsertUserPreferences.mockResolvedValueOnce({
+      userId: "user-prefs-2",
+      theme: "dark",
+      accentColor: "coral",
+    });
+
+    const res = await putJson("user-prefs-2", { theme: "dark" });
+
+    expect(res.status).toBe(200);
+    expect(await res.json()).toEqual({
+      userId: "user-prefs-2",
+      theme: "dark",
+      accentColor: "coral",
+    });
+    expect(mockUpsertUserPreferences).toHaveBeenCalledWith("user-prefs-2", {
+      theme: "dark",
+      accentColor: undefined,
+    });
+  });
 });
