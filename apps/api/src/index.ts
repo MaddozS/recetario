@@ -20,6 +20,7 @@ import { requireAuth, type AuthVariables } from "./middleware/auth";
 import { envelope } from "./envelope";
 import { errorHandler } from "./error-handler";
 import { hostAllowlist } from "./host-allowlist";
+import { csrfProtection } from "./middleware/csrf";
 import { authSessionHandler } from "./auth-session";
 import { recipesListHandler } from "./recipes/list";
 import { recipesByIdsHandler } from "./recipes/by-ids";
@@ -75,6 +76,7 @@ app.use("*", async (c, next) => {
 });
 app.use("*", envelope());
 app.use("*", hostAllowlist());
+app.use("*", csrfProtection());
 
 app.use("*", async (c, next) => {
   const started = Date.now();

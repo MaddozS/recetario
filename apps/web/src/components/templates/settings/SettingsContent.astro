@@ -464,6 +464,14 @@ const themeOptions = [
     }
   }
 
+  function csrfHeaders(): Record<string, string> {
+    const token = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("csrf_token="))
+      ?.split("=")[1];
+    return token ? { "x-csrf-token": token } : {};
+  }
+
   function setupSettings() {
     // ── Tab switching ──────────────────────────────────────────────────────────
     const tabLinks = document.querySelectorAll<HTMLAnchorElement>("[data-tab]");
@@ -538,6 +546,7 @@ const themeOptions = [
         try {
           const res = await fetch("/api/account/update-name", {
             method: "POST",
+            headers: csrfHeaders(),
             body: formData,
           });
 
@@ -620,6 +629,7 @@ const themeOptions = [
 
           const res = await fetch("/api/account/change-email", {
             method: "POST",
+            headers: csrfHeaders(),
             body: bodyData,
           });
 
@@ -720,6 +730,7 @@ const themeOptions = [
 
           const res = await fetch("/api/account/change-password", {
             method: "POST",
+            headers: csrfHeaders(),
             body: bodyData,
           });
 
