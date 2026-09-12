@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "nuxt dev",
+    "dev": "node ../../scripts/sync-cloudflare-dev-vars.mjs && nuxt dev --port 4321",
     "build": "nuxt build",
     "preview": "nuxt preview",
     "deploy": "wrangler deploy",

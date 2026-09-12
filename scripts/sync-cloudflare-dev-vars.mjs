@@ -22,13 +22,14 @@ function ensure(content, key, value) {
     : `${content}${key}=${value}\n`;
 }
 
-// ponytail: Vite/Astro's dep-optimizer cache goes stale when the dev
-// server is killed mid-flight (e.g., wrangler rebundle crashing the
-// process). The stale cache then 500s with
-// "The file does not exist at .../node_modules/.vite/deps_ssr/...".
-// Wiping on every dev start is cheap (~50ms) and prevents the loop
-// of "fix the cache, hit another stale entry, fix again".
-const viteCache = resolve(root, "apps/web/node_modules/.vite");
+// ponytail: Vite's dep-optimizer cache goes stale when the dev server is
+// killed mid-flight (e.g., wrangler rebundle crashing the process). The
+// stale cache then 500s with
+// "The file does not exist at .../deps_ssr/...". Wiping on every dev start
+// is cheap (~50ms) and prevents the loop of "fix the cache, hit another
+// stale entry, fix again". Nuxt keeps the cache outside node_modules
+// (`vite.cacheDir` en `nuxt.config.ts`) para sobrevivir a pnpm install.
+const viteCache = resolve(root, "apps/web/.vite-cache/web");
 const astroCache = resolve(root, "apps/web/node_modules/.astro");
 for (const dir of [viteCache, astroCache]) {
   if (existsSync(dir)) {
@@ -54,5 +55,5 @@ for (const { path: target, url } of targets) {
 }
 
 console.log(
-  "[dev-vars] cleared Vite/Astro cache; synced .env to apps/web/.dev.vars and apps/api/.dev.vars (with INTERNAL_API_URL / INTERNAL_API_HOST defaults)",
+  "[dev-vars] cleared the Nuxt/Vite cache; synced .env to apps/web/.dev.vars and apps/api/.dev.vars (with INTERNAL_API_URL / INTERNAL_API_HOST defaults)",
 );

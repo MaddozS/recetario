@@ -42,4 +42,18 @@ export default [
       "vue/require-default-prop": "off",
     },
   },
+  {
+    // Utilidades de test que corren en Node (stub del API, setup de Playwright).
+    files: ["test/e2e/support/**/*.{ts,mjs}", "playwright.config.ts"],
+    languageOptions: {
+      globals: {
+        Buffer: "readonly",
+        URL: "readonly",
+        console: "readonly",
+        fetch: "readonly",
+        process: "readonly",
+        setTimeout: "readonly",
+      },
+    },
+  },
 ];
