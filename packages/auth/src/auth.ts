@@ -10,13 +10,14 @@ import {
 } from "./password-reset";
 import { createResetPasswordCallback } from "./reset-password-callback";
 import { createVerificationEmailCallback } from "./verification-email-callback";
+import { getTrustedOrigins } from "./csrf";
+import { recordSignInAudit } from "./session-audit";
 
 // ponytail: WEB_ORIGIN defaults to localhost:4321 (dev) so trustedOrigins
 // and errorURL don't need to be hardcoded. In prod, set
 // WEB_ORIGIN=https://app.kitchcalc.com in apps/api env.
 export function createAuth(): any {
   const webOrigin = process.env.WEB_ORIGIN ?? "http://localhost:4321";
-  const apiOrigin = process.env.BETTER_AUTH_URL ?? "http://localhost:8787";
 
   const googleClientId = process.env.GOOGLE_CLIENT_ID;
   if (!googleClientId) {
@@ -78,6 +79,16 @@ export function createAuth(): any {
         }
       }),
     },
+    // Every new session means a successful authentication happened here, so
+    // the audit row is written at the auth boundary instead of inferring it
+    // from request paths in the web app.
+    databaseHooks: {
+      session: {
+        create: {
+          after: recordSignInAudit,
+        },
+      },
+    },
     onAPIError: {
       onError(error: unknown) {
         const err = error as Record<string, unknown> | null | undefined;
@@ -98,8 +109,9 @@ export function createAuth(): any {
       },
     },
     // ponytail: both dev origins (API + web). For prod, set
-    // BETTER_AUTH_URL and WEB_ORIGIN to the prod API and web URLs.
-    trustedOrigins: [apiOrigin, webOrigin],
+    // BETTER_AUTH_URL and WEB_ORIGIN to the prod API and web URLs. The CSRF
+    // policy in apps/api reads the same helper, so both layers agree.
+    trustedOrigins: getTrustedOrigins(),
   });
 }
 

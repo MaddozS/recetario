@@ -2,7 +2,7 @@ import { defineMiddleware } from "astro:middleware";
 import { env } from "cloudflare:workers";
 // ── Orchestration imports (thin delegation to @recetario/* packages) ──────────
 import { syncEnvBindings } from "@recetario/config/env";
-import { clientIp, setSecurityHeaders } from "@recetario/config/request";
+import { setSecurityHeaders } from "@recetario/config/request";
 import { generateToken, getCsrfCookie } from "@recetario/auth";
 import { getDefaultSubscription } from "@recetario/stripe";
 import {
@@ -15,8 +15,6 @@ import {
   type SessionResponse,
 } from "@recetario/types";
 import { ACCENT_FAMILIES, type AccentFamily } from "@/lib/accent-colors";
-
-const SIGN_IN_PATHS = ["/sign-in/email", "/sign-in/social"];
 
 const VALID_THEMES = ["system", "light", "dark"] as const;
 type ThemePref = (typeof VALID_THEMES)[number];
@@ -38,27 +36,6 @@ function resolveAccent(raw: string | undefined, fallback: string): AccentFamily 
 type ApiServiceBinding = {
   fetch: (input: string | URL | Request, init?: RequestInit) => Promise<Response>;
 };
-
-function detectSignInEvent(
-  path: string,
-  userId: string,
-  context: { request: Request; locals?: { user?: { id?: string | null } | null } },
-): void {
-  if (!SIGN_IN_PATHS.some((p) => path.includes(p))) return;
-  // ponytail: best-effort; never block the request
-  apiFetch(
-    "/api/audit/log",
-    {
-      method: "POST",
-      body: {
-        action: "sign_in",
-        ipAddress: clientIp(context.request),
-        userAgent: context.request.headers.get("user-agent") ?? null,
-      },
-    },
-    context,
-  ).catch(() => {});
-}
 
 function getRuntimeEnv(): Record<string, unknown> {
   try {
@@ -172,10 +149,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
       maxAge: 31536000,
     });
 
-    // ── 4. Audit: log sign-in events ──────────────────────────────────────────
-    detectSignInEvent(context.url.pathname, sessionUser.id, context);
-
-    // ── 6. CSRF: get-or-create per-session token ─────────────────────────────
+    // ── 4. CSRF: get-or-create per-session token ─────────────────────────────
     const existingToken = context.cookies.get(getCsrfCookie())?.value;
     const csrfToken = existingToken ?? generateToken();
     context.locals.csrfToken = csrfToken;
