@@ -9,6 +9,7 @@ import {
 } from "@recetario/stripe/server";
 import { getAuthUser } from "../middleware/auth";
 import type { AuthVariables } from "../middleware/auth";
+import { ApiError } from "../errors";
 
 export function syncCheckoutSessionHandler(): Handler<{ Variables: AuthVariables }> {
   return async (c) => {
@@ -17,12 +18,12 @@ export function syncCheckoutSessionHandler(): Handler<{ Variables: AuthVariables
     try {
       body = await c.req.json();
     } catch {
-      return c.json({ error: "Invalid request body" }, 400);
+      throw new ApiError("VALIDATION_ERROR", "Invalid request body");
     }
 
     const { sessionId } = body;
     if (!sessionId || typeof sessionId !== "string") {
-      return c.json({ error: "Missing sessionId" }, 400);
+      throw new ApiError("VALIDATION_ERROR", "Missing sessionId");
     }
 
     try {

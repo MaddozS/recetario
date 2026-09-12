@@ -125,6 +125,8 @@ describe("syncCheckoutSessionHandler", () => {
       {},
     );
     expect(res.status).toBe(400);
+    const data = (await res.json()) as { error: { code: string } };
+    expect(data.error.code).toBe("VALIDATION_ERROR");
   });
 
   it("returns ok:false when the session has no subscription yet", async () => {
