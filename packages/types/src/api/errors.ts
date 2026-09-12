@@ -6,7 +6,9 @@ export type ApiErrorCode =
   | "NOT_FOUND"
   | "VALIDATION_ERROR"
   | "INTERNAL"
-  | "DOMAIN_ERROR";
+  | "DOMAIN_ERROR"
+  | "PLAN_LIMIT"
+  | "FEATURE_REQUIRED";
 
 export type ApiErrorResponse = {
   error: {

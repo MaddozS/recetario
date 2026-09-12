@@ -9,6 +9,8 @@ export const ApiErrorCodeSchema = z.enum([
   "VALIDATION_ERROR",
   "INTERNAL",
   "DOMAIN_ERROR",
+  "PLAN_LIMIT",
+  "FEATURE_REQUIRED",
 ]);
 
 export const DomainErrorReasonSchema = z.enum(DOMAIN_ERROR_REASONS);
