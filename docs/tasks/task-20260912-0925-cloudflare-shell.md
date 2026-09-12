@@ -56,6 +56,7 @@ Plan de sesión: `~/.commandcode/plans/recetario-nuxt-task-04-cloudflare-shell.m
 | 9 | `eslint.config.mjs` gana un bloque con globales de Node para `test/e2e/support/**` y `playwright.config.ts` | El stub y el setup global corren en Node y `no-undef` los marcaba |
 | 10 | Ids/`data-variant` nuevos en componentes del shell (`#sidebar-nav`, `#bottom-nav`, `data-variant` en breadcrumbs) | Anclas estables para los e2e; no cambian el render visible |
 | 11 | Se probó `nitro.experimental.asyncContext: true` y `externals.inline: ["@lucide/vue"]` | Ninguno arregló el hallazgo 2; se revirtieron para no cargar un flag experimental (documentado en Nitro como "might be broken on non-Node.js environments") ni engordar el bundle servidor |
+| 12 | El smoke workerd corrió con `INTERNAL_API_HOST=127.0.0.1:4322` (el host público del worker web) | El service binding **conserva el `Host` original**: con el valor por defecto (`localhost:8787`) el API responde `FORBIDDEN: Host not allowed: 127.0.0.1:4322`. Es comportamiento de plataforma y aplica igual en producción: `INTERNAL_API_HOST` debe coincidir con el host público del worker web en cada entorno (o quedar sin definir). Se documenta como nota operativa, no se cambia el código |
 
 ## Verificación
 
@@ -69,7 +70,8 @@ Plan de sesión: `~/.commandcode/plans/recetario-nuxt-task-04-cloudflare-shell.m
 | 6 | `pnpm --filter @recetario/web wrangler:dry-run` | 789.87 KiB (200.43 KiB gzip), bindings `API`, `ASSETS`, `NODE_ENV` |
 | 7 | `grep` del bundle cliente | sin `prisma`, `@prisma`, Stripe SDK, `better-auth` ni `node:crypto` (única coincidencia `stripePriceId`, campo de un schema Zod) |
 | 8 | `pnpm lint && pnpm type-check && pnpm test && pnpm build` (raíz) | lint 6/6 · type-check 7/7 · test 10/10 (web 112, api 201, auth 31, stripe 66, db 39) · build 7/7 |
-| 9 | `git status` | sólo archivos de esta Task; `.output/`, `.nuxt/`, `.wrangler/`, `test-results/` ignorados |
+| 9 | Smoke workerd: `pnpm --filter @recetario/web build` + API `wrangler dev` + web `wrangler dev --config wrangler.nuxt.jsonc --port 4322` | Binding `API` `local [connected]`; `/api/billing/plans` relaya la respuesta real del API (200); `/api/auth/session` llega al API desde el worker (`[API] GET /api/auth/session -> 200`); ruta privada anónima 302 con `cache-control: private, no-store` y `x-robots-tag: noindex, nofollow`. Procesos detenidos y puertos liberados |
+| 10 | `git status` | sólo archivos de esta Task; `.output/`, `.nuxt/`, `.wrangler/`, `test-results/` ignorados |
 
 ### Casos bloqueantes del roadmap
 
