@@ -85,6 +85,13 @@ If a new feature needs data access from a web page, add the endpoint in `apps/ap
 - **Cloudflare ephemeral**: `DATABASE_URL` is not auto-injected — set per-environment via `wrangler secret put` or the dashboard. Local dev: `pnpm dev` runs `scripts/sync-cloudflare-dev-vars.mjs` which copies root `.env` to `apps/web/.dev.vars` and `apps/api/.dev.vars`.
 - **Feedback + reload**: `showFeedback()` is client-side DOM; `window.location.reload()` after it erases feedback, so prefer DOM updates for in-page state.
 
+#### Autoridad de mutaciones (Hono)
+
+- **CSRF**: `csrfProtection()` en `apps/api/src/middleware/csrf.ts` cubre todo `POST|PUT|PATCH|DELETE`. Exige `Origin`/`Referer` confiable y, si la petición viene de navegador con cookies, doble-submit (`x-csrf-token` o `_csrf` contra la cookie `csrf_token`). Exentos: `POST /api/stripe/webhook` y `/api/auth/**` (Better Auth valida su propio origen). Las peticiones sin `Origin` (service binding, SSR) pasan por diseño.
+- **Límites de plan**: `requireRecipeCapacity`, `requireIngredientCapacity` y `requireFeature` en `apps/api/src/entitlements.ts`; sin fila de suscripción se aplica el plan free (fail-closed). Al agotarse lanzan `PLAN_LIMIT` / `FEATURE_REQUIRED` (403): la UI sólo muestra CTA de upgrade con `PLAN_LIMIT`.
+- **Auditoría de sign-in**: `recordSignInAudit` corre en `databaseHooks.session.create.after` de Better Auth (`packages/auth/src/auth.ts`); el middleware web no inspecciona paths.
+- **Preferencias**: la respuesta validada de `GET/PUT /api/preferences` (y `session.preferences`) es la fuente; las cookies de tema/acento son sólo una réplica visual.
+
 #### Known bugs
 
 - **Tsconfig exclude**: this is a known bug. Do NOT modify it unless explicitly asked. If asked, split it into separate array entries: `["dist", ".agent/**", ".astro/**", "node_modules/**"]`.

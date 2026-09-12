@@ -18,6 +18,8 @@ On the positive side, the authorization model (ownerId scoping on every DB query
 
 ### [C-01] CSRF Protection Completely Missing on All State-Changing Endpoints
 
+**Status (2026-09-11):** Resolved in the Nuxt rework, Task 3 (`docs/tasks/task-20260911-1823-api-authority.md`). `apps/api` now enforces a global `csrfProtection()` middleware: trusted `Origin`/`Referer` on every mutation plus a double-submit token (`x-csrf-token`/`_csrf` against the `csrf_token` cookie) for browser requests that carry cookies, with explicit exemptions for `/api/auth/**` (Better Auth origin check) and the Stripe webhook (signature). The paragraph below is kept as the historical finding.
+
 **Rule IDs:** NEXT-CSRF-001, EXPRESS-CSRF-001, REACT-CSRF-001
 **Severity:** Critical
 **Impact:** An attacker can trick an authenticated user into performing destructive actions (delete recipes, modify ingredients, change settings, trigger billing sessions) simply by visiting a malicious website that auto-submits a form targeting the app's origin.

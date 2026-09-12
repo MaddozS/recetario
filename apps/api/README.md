@@ -28,6 +28,17 @@ that mutates user data or hits Stripe goes here.
 - **Host allowlist** — `src/host-allowlist.ts` rejects requests whose
   `Host` header doesn't match `INTERNAL_API_HOST` (production tier only;
   dev leaves the allowlist empty).
+- **CSRF** — `src/middleware/csrf.ts` guards every `POST|PUT|PATCH|DELETE`:
+  trusted `Origin`/`Referer` when present, plus a double-submit token
+  (`x-csrf-token` header or `_csrf` form field against the `csrf_token`
+  cookie) for browser requests that carry cookies. Exempt: `/api/auth/**`
+  (Better Auth checks its own origin) and the signature-authenticated
+  `POST /api/stripe/webhook`.
+- **Entitlements** — `src/entitlements.ts` (`requireRecipeCapacity`,
+  `requireIngredientCapacity`, `requireFeature`) is the authoritative gate
+  for plan limits and feature flags; it throws `PLAN_LIMIT` /
+  `FEATURE_REQUIRED` (403) and fails closed to the free plan when the user
+  has no subscription row.
 - **Envelope** — `src/envelope.ts` wraps every error response in the
   canonical `{ error: { code, message, … } }` shape so the web's
   `apiFetch` can parse it via `parseApiError` from `@recetario/types`.
