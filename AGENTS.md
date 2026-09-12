@@ -1,6 +1,12 @@
 # AGENTS.md — Recetario
 
-> **Migración Nuxt en curso.** `apps/web` se está reescribiendo de Astro a Nuxt 4 + Vue en el worktree `worktree-nuxt-rework`, hoy en `/Users/maddozs/personal-projects/recetario-nuxt-rework` (fuera de `~/.commandcode/` para no disparar prompts de permiso). El árbol Astro (`apps/web/src/**`) queda como referencia fuera de build/lint/type-check hasta la Task 13. Decisión en `docs/adr/0009-nuxt-frontend-rework.md`; estado por task en `docs/tasks/` (última: `task-20260911-1758-nuxt-platform-ui.md`).
+> **Migración Nuxt en curso.** `apps/web` se está reescribiendo de Astro a Nuxt 4 + Vue en el worktree `worktree-nuxt-rework`, hoy en `/Users/maddozs/personal-projects/recetario-nuxt-rework` (fuera de `~/.commandcode/` para no disparar prompts de permiso). El árbol Astro (`apps/web/src/**`) queda como referencia fuera de build/lint/type-check hasta la Task 13. Decisión en `docs/adr/0009-nuxt-frontend-rework.md`; estado por task en `docs/tasks/` (última: `task-20260912-0925-cloudflare-shell.md`).
+>
+> **Task 4 (relay, sesión y shell) ya está en la rama.** Detalles operativos:
+> - `pnpm dev` en `apps/web` sincroniza `.dev.vars` y limpia `.vite-cache/web`, y sirve en `localhost:4321` (el API confía en `WEB_ORIGIN`). El API sigue en `localhost:8787`: en dev el relay cae a HTTP contra `INTERNAL_API_URL`.
+> - `apps/web/server/**` es Nitro: relay `/api/**`, bootstrap de sesión y cabeceras privadas. El estado de sesión lo resuelve `useAuth().resolveSession()` (contexto del request → `GET /api/auth/session`).
+> - Preferir `useApi()` y `@recetario/stripe/subscription` en el código nuevo; el barrel de `@recetario/stripe` arrastra el SDK.
+> - **Bug conocido (bloqueante para el corte):** el primer render SSR tras arrancar el proceso falla si la página usa íconos (`useLucideProps`/`inject`). Reproducción y análisis en `docs/tasks/task-20260912-0925-cloudflare-shell.md` (Follow-up 1); los e2e lo absorben con `test/e2e/support/warmup.ts`.
 
 ## Stack
 

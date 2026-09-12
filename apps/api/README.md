@@ -205,23 +205,25 @@ mocking the named export keeps the seam clean.
 
 ## 8. Service binding in prod, `INTERNAL_API_URL` in dev
 
-The web app's `apiFetch` (see `apps/web/src/lib/api-client.ts`) prefers
-the `API` service binding declared in `apps/web/wrangler.jsonc`:
+The web app's transport (see `apps/web/server/utils/api-transport.ts`)
+prefers the `API` service binding declared in `apps/web/wrangler.jsonc`:
 
 ```jsonc
 "services": [{ "binding": "API", "service": "recetario-api" }]
 ```
 
-In dev there's no service binding; `apiFetch` falls back to
-`import.meta.env.INTERNAL_API_URL` (defaults to `http://localhost:8787`).
+In dev there's no service binding; the transport falls back to
+`INTERNAL_API_URL` (platform `.dev.vars` → `process.env` →
+`runtimeConfig`, default `http://localhost:8787`).
 `sync-cloudflare-dev-vars.mjs` keeps the root `.env` and
 `apps/{web,api}/.dev.vars` in sync, so the dev server starts on the
 right port automatically.
 
-In production the web middleware relays `/api/auth/*` through the same
-binding (see `apps/web/src/middleware.ts:0`); in dev the Vite proxy in
-`apps/web/astro.config.mjs` handles it before the request reaches the
-middleware.
+In production the `/api/**` relay is a Nitro route
+(`apps/web/server/routes/api/[...path].ts`) that forwards the raw
+request through the binding, preserving cookies, origin and every
+`Set-Cookie`. In dev it goes over HTTP. The Astro tree keeps its own
+relay in `apps/web/src/middleware.ts` as reference until Task 13.
 
 ## 9. Endpoint inventory
 

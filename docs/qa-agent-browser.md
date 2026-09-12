@@ -10,6 +10,13 @@ Producción y Configuración.
 > (`npm i -g agent-browser && agent-browser install`) y el dev server corriendo
 > (`pnpm dev` → web en `localhost:4321`, API en `localhost:8787`).
 
+> **Nota (Task 4)**: el shell privado ya es Nuxt. `pnpm dev` en `apps/web`
+> sincroniza `.dev.vars`, limpia `.vite-cache/web` y sirve en `localhost:4321`;
+> el `/sign-in` de la UI todavía es placeholder (Task 6), así que para el QA
+> autenticado entra por el relay:
+> `agent-browser eval "(async () => (await fetch('/api/auth/sign-in/email', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ email: 'qa@example.com', password: 'Temporal123!' }) })).status)()"`.
+> Los server islands (`server:defer`) ya no existen en las rutas privadas.
+
 ---
 
 ## 0. Conceptos clave
