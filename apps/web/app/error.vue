@@ -1,12 +1,18 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import type { NuxtError } from "#app";
+import { NOT_FOUND_SEO } from "#shared/utils/seo";
 
 const props = defineProps<{ error: NuxtError }>();
 
-useHead({ meta: [{ name: "robots", content: "noindex, nofollow" }] });
-
 const isNotFound = computed(() => props.error.statusCode === 404);
+
+// El 404 es SSR con status real y sin canonical indexable.
+useSeoMeta({
+  title: NOT_FOUND_SEO.title,
+  description: NOT_FOUND_SEO.description,
+  robots: "noindex, nofollow",
+});
 </script>
 
 <template>
