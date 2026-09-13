@@ -1,12 +1,19 @@
 # AGENTS.md — Recetario
 
-> **Migración Nuxt en curso.** `apps/web` se está reescribiendo de Astro a Nuxt 4 + Vue en el worktree `worktree-nuxt-rework`, hoy en `/Users/maddozs/personal-projects/recetario-nuxt-rework` (fuera de `~/.commandcode/` para no disparar prompts de permiso). El árbol Astro (`apps/web/src/**`) queda como referencia fuera de build/lint/type-check hasta la Task 13. Decisión en `docs/adr/0009-nuxt-frontend-rework.md`; estado por task en `docs/tasks/` (última: `task-20260912-0925-cloudflare-shell.md`).
+> **Migración Nuxt en curso.** `apps/web` se está reescribiendo de Astro a Nuxt 4 + Vue en el worktree `worktree-nuxt-rework`, hoy en `/Users/maddozs/personal-projects/recetario-nuxt-rework` (fuera de `~/.commandcode/` para no disparar prompts de permiso). El árbol Astro (`apps/web/src/**`) queda como referencia fuera de build/lint/type-check hasta la Task 13. Decisión en `docs/adr/0009-nuxt-frontend-rework.md`; estado por task en `docs/tasks/` (última: `task-20260912-2321-public-seo.md`).
 >
 > **Task 4 (relay, sesión y shell) ya está en la rama.** Detalles operativos:
 > - `pnpm dev` en `apps/web` sincroniza `.dev.vars` y limpia `.vite-cache/web`, y sirve en `localhost:4321` (el API confía en `WEB_ORIGIN`). El API sigue en `localhost:8787`: en dev el relay cae a HTTP contra `INTERNAL_API_URL`.
 > - `apps/web/server/**` es Nitro: relay `/api/**`, bootstrap de sesión y cabeceras privadas. El estado de sesión lo resuelve `useAuth().resolveSession()` (contexto del request → `GET /api/auth/session`).
 > - Preferir `useApi()` y `@recetario/stripe/subscription` en el código nuevo; el barrel de `@recetario/stripe` arrastra el SDK.
 > - **Íconos:** `Icon.vue` compone el `<svg>` desde los datos de lucide (`app/utils/icon-registry.ts` → `__iconData`), **no** desde sus componentes: son funcionales y usan `inject()`, que perdía la instancia de Vue en el primer render SSR dentro del `Suspense` de un layout (500 en la primera petición de cada proceso). No reintroducir componentes de `@lucide/vue` en el render; el contrato de markup está en `test/nuxt/icon-parity.spec.ts`.
+>
+> **Task 5 (SEO y páginas públicas) ya está en la rama.** Detalles operativos:
+> - Las cuatro rutas indexables son `/`, `/pricing`, `/privacy` y `/terms` (`shared/utils/seo.ts`): layout `public.vue`, metadata vía `usePageSeo()` y `robots.txt`/`sitemap.xml` como rutas de Nitro.
+> - **Indexación fail-closed:** sin `NUXT_PUBLIC_INDEXABLE=true` las públicas emiten `noindex,nofollow` y `robots.txt` bloquea el sitio completo. Producción la activa al desplegar (Task 13); staging la deja sin definir. `NUXT_PUBLIC_SITE_URL` fija el canonical absoluto (default `https://app.kitchcalc.com`).
+> - `/pricing` es pública: el anónimo ve el catálogo y su CTA pasa por `/sign-in?redirect=…`; el checkout sigue exigiendo sesión y CSRF en Hono.
+> - El landing no porta la maquinaria de Astro: `useTheme()` unificado (sin `landing_theme` ni localStorage), `v-reveal` (directiva con un observer compartido y cleanup) y estado Vue para drawer, lightbox, scroll-spy y precios. El acento de las públicas es coral (`app.vue`).
+> - Tests de referencia: `test/unit/seo.spec.ts`, `test/nuxt/public-ui.spec.ts` y `test/e2e/public.spec.ts` (metadata SSR, robots/sitemap, 404, checkout con el stub del API).
 
 ## Stack
 
