@@ -76,6 +76,7 @@ import { __iconData as trendingUpIcon } from "@lucide/vue/dist/esm/icons/trendin
 import { __iconData as userIcon } from "@lucide/vue/dist/esm/icons/user.mjs";
 import { __iconData as xIcon } from "@lucide/vue/dist/esm/icons/x.mjs";
 import { __iconData as zapIcon } from "@lucide/vue/dist/esm/icons/zap.mjs";
+import { __iconData as zoomInIcon } from "@lucide/vue/dist/esm/icons/zoom-in.mjs";
 
 export const ICON_REGISTRY: Record<string, LucideIconData> = {
   "alert-triangle": triangleAlertIcon,
@@ -134,6 +135,7 @@ export const ICON_REGISTRY: Record<string, LucideIconData> = {
   "user": userIcon,
   "x": xIcon,
   "zap": zapIcon,
+  "zoom-in": zoomInIcon,
 };
 
 /** Resuelve el ícono ignorando el prefijo `lucide:`. */
