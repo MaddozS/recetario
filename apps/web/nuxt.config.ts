@@ -1,10 +1,17 @@
 import tailwindcss from "@tailwindcss/vite";
+import { SITE_URL_DEFAULT } from "./shared/utils/seo";
 
 export default defineNuxtConfig({
   compatibilityDate: "2026-08-01",
   devtools: { enabled: false },
   css: ["~/assets/css/global.css"],
-  components: [{ path: "~/components/ui", pathPrefix: false }],
+  components: [
+    { path: "~/components/ui", pathPrefix: false },
+    // `prefix` (no `pathPrefix`): los archivos viven en la raíz del dir, así que
+    // el prefijo por ruta relativa sería vacío. `landing/Navbar.vue` →
+    // `<LandingNavbar>`.
+    { path: "~/components/landing", prefix: "landing" },
+  ],
   nitro: {
     preset: "cloudflare_module",
     // Sin `deployConfig`: evitaría `.wrangler/deploy/config.json`, que Wrangler
@@ -21,6 +28,14 @@ export default defineNuxtConfig({
   // (instancias separadas de miniflare). El relay reenvía a esta URL.
   runtimeConfig: {
     internalApiUrl: process.env.INTERNAL_API_URL ?? "http://localhost:8787",
+    public: {
+      // Canonical absoluto, sitemap y `og:url`. Se sobrescribe por entorno con
+      // `NUXT_PUBLIC_SITE_URL` (Nitro parsea los valores del runtime con destr).
+      siteUrl: process.env.NUXT_PUBLIC_SITE_URL ?? SITE_URL_DEFAULT,
+      // Fail-closed: sin `NUXT_PUBLIC_INDEXABLE=true` las cuatro públicas emiten
+      // `noindex,nofollow` y `robots.txt` bloquea el sitio completo (staging).
+      indexable: process.env.NUXT_PUBLIC_INDEXABLE === "true",
+    },
   },
   // Los paquetes workspace se consumen como TS crudo (sin build propio).
   build: {
@@ -50,6 +65,9 @@ export default defineNuxtConfig({
       // `dark` y las variables del acento los gobierna `app.vue` de forma
       // reactiva; aquí sólo queda el idioma base.
       htmlAttrs: { lang: "es" },
+      // Título de respaldo: cada página declara el suyo (`usePageSeo` en las
+      // públicas).
+      title: "KitchCalc | Costeo de recetas, ingredientes y producción",
       link: [
         { rel: "icon", type: "image/svg+xml", href: "/kitchcalc_logo.svg" },
         { rel: "icon", type: "image/png", href: "/favicon.png" },
@@ -66,6 +84,10 @@ export default defineNuxtConfig({
         },
       ],
       meta: [
+        // Fail-closed: cualquier ruta que no declare su propio `robots` queda
+        // fuera de índices; `usePageSeo` lo sobrescribe en las públicas cuando
+        // la indexación está habilitada.
+        { name: "robots", content: "noindex, nofollow" },
         {
           name: "description",
           content:

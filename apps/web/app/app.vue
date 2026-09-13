@@ -1,13 +1,25 @@
 <script setup lang="ts">
-const { theme, accent, isDark, accentCssVars } = useTheme();
+import { isPublicMarketingPath } from "#shared/utils/seo";
+import { getAccentCssVars } from "~/utils/accent-colors";
 
-// Único dueño de los atributos de `<html>`: preferencia (`data-theme`),
-// acento (`data-accent`), clase `dark` y las variables CSS del acento. El
-// script anti-FOUC sólo resuelve la clase antes del primer paint.
+const route = useRoute();
+const { theme, accent, isDark } = useTheme();
+
+// Las rutas públicas de marketing siempre son coral (paridad con el
+// `data-accent="coral"` del `LandingLayout` de Astro); el resto usa la
+// preferencia del usuario. `<html>` sigue teniendo un único dueño: `app.vue`.
+const effectiveAccent = computed(() =>
+  isPublicMarketingPath(route.path) ? "coral" : accent.value,
+);
+
+const accentCssVars = computed(() =>
+  getAccentCssVars(effectiveAccent.value, isDark.value ? "dark" : "light"),
+);
+
 useHead({
   htmlAttrs: {
     "data-theme": theme,
-    "data-accent": accent,
+    "data-accent": effectiveAccent,
     class: computed(() => (isDark.value ? "dark" : "")),
     style: accentCssVars,
   },
