@@ -1,13 +1,17 @@
 import { describe, expect, it } from "vitest";
 import {
+  AUTH_PAGES,
   INDEX_ROBOTS,
   NOINDEX_ROBOTS,
   NOT_FOUND_SEO,
   PUBLIC_PAGES,
   SITE_URL_DEFAULT,
+  authPageTitleFor,
   buildRobotsTxt,
   buildSitemapXml,
   canonicalUrl,
+  isAuthPath,
+  isCoralAccentPath,
   isPublicMarketingPath,
   pageSeoFor,
   robotsMetaContent,
@@ -59,6 +63,55 @@ describe("isPublicMarketingPath", () => {
   });
 });
 
+describe("AUTH_PAGES", () => {
+  it("declara las cinco rutas de auth sin solaparse con las indexables", () => {
+    expect(AUTH_PAGES.map((page) => page.path)).toEqual([
+      "/sign-in",
+      "/sign-up",
+      "/forgot-password",
+      "/reset-password",
+      "/verify-email",
+    ]);
+    for (const page of AUTH_PAGES) {
+      expect(isPublicMarketingPath(page.path)).toBe(false);
+    }
+  });
+
+  it("tiene títulos únicos no vacíos y resolubles por path", () => {
+    const titles = AUTH_PAGES.map((page) => page.title);
+    expect(titles.every((title) => title.length > 0)).toBe(true);
+    expect(new Set(titles).size).toBe(titles.length);
+
+    expect(authPageTitleFor("/sign-in")).toBe("Iniciar sesión | KitchCalc");
+    expect(authPageTitleFor("/reset-password")).toBe(
+      "Nueva contraseña | KitchCalc",
+    );
+  });
+
+  it("queda fuera del sitemap y del allow de robots", () => {
+    const sitemap = buildSitemapXml(SITE);
+    const robots = buildRobotsTxt({ siteUrl: SITE, indexable: true });
+
+    for (const page of AUTH_PAGES) {
+      expect(sitemap).not.toContain(page.path);
+      expect(robots).not.toContain(`Allow: ${page.path}`);
+    }
+    expect(robots).toContain("Disallow: /");
+  });
+});
+
+describe("isAuthPath / isCoralAccentPath", () => {
+  it("el acento coral cubre públicas y auth, no las privadas", () => {
+    for (const page of [...PUBLIC_PAGES, ...AUTH_PAGES]) {
+      expect(isCoralAccentPath(page.path)).toBe(true);
+    }
+    expect(isAuthPath("/sign-in")).toBe(true);
+    expect(isAuthPath("/recipes")).toBe(false);
+    expect(isCoralAccentPath("/recipes")).toBe(false);
+    expect(isCoralAccentPath("/settings?tab=billing")).toBe(false);
+  });
+});
+
 describe("canonicalUrl", () => {
   it("compone URLs absolutas y conserva la barra final de la home", () => {
     expect(canonicalUrl(SITE, "/")).toBe(`${SITE}/`);
@@ -77,11 +130,17 @@ describe("robotsMetaContent", () => {
 describe("buildSitemapXml", () => {
   it("lista exactamente las cuatro rutas públicas", () => {
     const xml = buildSitemapXml(SITE);
-    const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
+    const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(
+      (match) => match[1],
+    );
 
-    expect(locs).toEqual(PUBLIC_PAGES.map((page) => canonicalUrl(SITE, page.path)));
+    expect(locs).toEqual(
+      PUBLIC_PAGES.map((page) => canonicalUrl(SITE, page.path)),
+    );
     expect(xml.startsWith('<?xml version="1.0" encoding="UTF-8"?>')).toBe(true);
-    expect(xml).toContain('xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"');
+    expect(xml).toContain(
+      'xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"',
+    );
   });
 
   it("no filtra rutas privadas ni de autenticación", () => {
