@@ -328,6 +328,20 @@ test("reset-password: el countdown agotado muestra la vista expirada", async ({
   });
 });
 
+test("reset-password: el enlace expirado lleva el email al formulario", async ({
+  page,
+  goto,
+}) => {
+  await goto("/reset-password?token=reset-expired&email=qa%40example.com", {
+    waitUntil: "hydration",
+  });
+
+  await page.getByRole("link", { name: "Solicitar nuevo enlace" }).click();
+  await page.waitForURL(/\/forgot-password\?email=qa%40example\.com$/);
+
+  await expect(page.locator("#forgot-email")).toHaveValue("qa@example.com");
+});
+
 test("verify-email: éxito con callback seguro, token inválido y ausente", async ({
   page,
   goto,

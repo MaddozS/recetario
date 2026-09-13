@@ -34,6 +34,14 @@ const confirmation = ref("");
 const ruleResults = computed(() => getRuleResults(password.value));
 const successMessage = ref("Tu contraseña ha sido restablecida correctamente.");
 
+// El CTA de la vista expirada lleva el email para que el formulario llegue
+// prellenado (la nota del original lo promete).
+const forgotHref = computed(() =>
+  props.email
+    ? `/forgot-password?email=${encodeURIComponent(props.email)}`
+    : "/forgot-password",
+);
+
 function showExpired(): void {
   view.value = "expired";
   tokenStatus.value = "El enlace ha expirado";
@@ -189,7 +197,7 @@ async function submit(): Promise<void> {
         Este enlace ha expirado. Solicita uno nuevo para continuar.
       </p>
       <div class="mt-6">
-        <Button variant="primary" href="/forgot-password" class="w-full">
+        <Button variant="primary" :href="forgotHref" class="w-full">
           Solicitar nuevo enlace
         </Button>
       </div>

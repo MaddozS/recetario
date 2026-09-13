@@ -7,11 +7,16 @@ import { useAuthApi } from "./useAuthApi";
  *
  * El API responde siempre igual (exista o no el email) para no enumerar
  * cuentas, así que la UI muestra el mismo mensaje verde también ante un fallo de
- * red: mismo contrato que el original.
+ * red: mismo contrato que el original. Acepta `?email=` para prellenar el campo
+ * cuando se llega desde el enlace expirado de `/reset-password`.
  */
+const props = withDefaults(defineProps<{ email?: string | null }>(), {
+  email: null,
+});
+
 const { requestPasswordReset } = useAuthApi();
 
-const email = ref("");
+const email = ref(props.email ?? "");
 const feedback = ref<string | null>(null);
 const pending = ref(false);
 

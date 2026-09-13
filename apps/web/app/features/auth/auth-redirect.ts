@@ -1,5 +1,5 @@
 /**
- * Redirects locales seguros de los flujos de auth.
+ * Query params y redirects locales de los flujos de auth.
  *
  * Módulo puro (sin imports ni aliases) para poder cubrirlo en `test/unit`.
  * Paridad con `packages/auth/src/sign-in.ts` (`getSafeRedirect`) y con el
@@ -36,4 +36,13 @@ export function getSafeRedirect(raw: unknown): string {
 export function safeCallbackPath(raw: unknown): string {
   const value = queryString(raw);
   return value && value !== "/" && isLocalPath(value) ? value : "/sign-in";
+}
+
+/**
+ * Email de `?email=` para prellenar el formulario de recuperación. Se descarta
+ * lo que no tenga forma de email para no prometer un prellenado inexistente.
+ */
+export function queryEmail(raw: unknown): string | null {
+  const value = queryString(raw);
+  return value && value.includes("@") ? value : null;
 }

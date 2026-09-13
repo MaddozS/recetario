@@ -1,6 +1,7 @@
 import { mountSuspended, mockNuxtImport } from "@nuxt/test-utils/runtime";
 import { flushPromises } from "@vue/test-utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import ForgotPasswordForm from "~/features/auth/ForgotPasswordForm.vue";
 import ResetPasswordForm from "~/features/auth/ResetPasswordForm.vue";
 import SignInForm from "~/features/auth/SignInForm.vue";
 import SignUpForm from "~/features/auth/SignUpForm.vue";
@@ -204,6 +205,23 @@ describe("ResetPasswordForm", () => {
     expect(wrapper.text()).toContain(
       "Te redirigimos al formulario con tu email prellenado.",
     );
+    // El CTA lleva el email para que el formulario llegue prellenado.
+    expect(wrapper.find("[data-reset-expired] a").attributes("href")).toBe(
+      "/forgot-password?email=qa%40example.com",
+    );
+  });
+
+  it("sin email, el CTA de la vista expirada no añade query", async () => {
+    api.respond = async () => ({ valid: false, code: "NOT_FOUND" });
+
+    const wrapper = await mountSuspended(ResetPasswordForm, {
+      props: { token: "reset-malo" },
+    });
+    await flushPromises();
+
+    expect(wrapper.find("[data-reset-expired] a").attributes("href")).toBe(
+      "/forgot-password",
+    );
   });
 
   it("con token válido cuenta atrás y se limpia al desmontar", async () => {
@@ -278,6 +296,33 @@ describe("ResetPasswordForm", () => {
       password: "Temporal123!",
     });
     expect(wrapper.find("[data-reset-success]").exists()).toBe(true);
+  });
+});
+
+describe("ForgotPasswordForm", () => {
+  it("prellena el email de `?email=` y lo envía", async () => {
+    const wrapper = await mountSuspended(ForgotPasswordForm, {
+      props: { email: "qa@example.com" },
+    });
+
+    const input = wrapper.find("#forgot-email");
+    expect((input.element as HTMLInputElement).value).toBe("qa@example.com");
+
+    await wrapper.find("form").trigger("submit");
+    await flushPromises();
+
+    expect(api.calls[0]?.path).toBe("/api/auth/forgot-password");
+    expect(api.calls[0]?.body).toEqual({ email: "qa@example.com" });
+  });
+
+  it("sin `?email=` el campo arranca vacío", async () => {
+    const wrapper = await mountSuspended(ForgotPasswordForm, {
+      props: { email: null },
+    });
+
+    expect(
+      (wrapper.find("#forgot-email").element as HTMLInputElement).value,
+    ).toBe("");
   });
 });
 

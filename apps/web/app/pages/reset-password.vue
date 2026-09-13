@@ -3,17 +3,17 @@ import { computed } from "vue";
 import { authPageTitleFor } from "#shared/utils/seo";
 import AuthCard from "~/features/auth/AuthCard.vue";
 import ResetPasswordForm from "~/features/auth/ResetPasswordForm.vue";
-import { queryString } from "~/features/auth/auth-redirect";
+import { queryEmail, queryString } from "~/features/auth/auth-redirect";
 
 definePageMeta({ layout: "auth" });
 
 useNoindexSeo(authPageTitleFor("/reset-password"));
 
 const route = useRoute();
-// El token viaja en la query (nunca a metadata); `?email=` sólo añade la nota
-// del original en la vista expirada.
+// El token viaja en la query (nunca a metadata); `?email=` prellena el
+// formulario de recuperación al que apunta la vista expirada.
 const token = computed(() => queryString(route.query.token));
-const email = computed(() => queryString(route.query.email));
+const email = computed(() => queryEmail(route.query.email));
 </script>
 
 <template>
