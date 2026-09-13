@@ -40,6 +40,7 @@ describe("icon-registry", () => {
     const withPrefix = getIcon("lucide:plus");
     expect(withPrefix).not.toBeNull();
     expect(getIcon("plus")).toBe(withPrefix);
+    expect(getIcon("lucide:plus")?.name).toBe("plus");
   });
 
   it("devuelve null para un nombre desconocido", () => {
@@ -47,10 +48,16 @@ describe("icon-registry", () => {
     expect(getIcon("lucide:")).toBeNull();
   });
 
-  it("usa claves kebab-case y componentes de Vue", () => {
-    for (const [name, component] of Object.entries(ICON_REGISTRY)) {
+  it("usa claves kebab-case y datos de ícono de lucide", () => {
+    for (const [name, data] of Object.entries(ICON_REGISTRY)) {
       expect(name, `clave "${name}"`).toMatch(/^[a-z0-9]+(-[a-z0-9]+)*$/);
-      expect(typeof component, `componente de "${name}"`).toBe("function");
+      expect(typeof data.name, `nombre de "${name}"`).toBe("string");
+      expect(Array.isArray(data.node), `nodos de "${name}"`).toBe(true);
+      expect(data.node.length, `nodos de "${name}"`).toBeGreaterThan(0);
+      for (const [tag, attrs] of data.node) {
+        expect(typeof tag, `tag de "${name}"`).toBe("string");
+        expect(typeof attrs, `atributos de "${name}"`).toBe("object");
+      }
     }
   });
 

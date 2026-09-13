@@ -1,6 +1,5 @@
 import { expect, test } from "@nuxt/test-utils/playwright";
 import { url } from "@nuxt/test-utils/e2e";
-import { warmUpSsr } from "./support/warmup";
 
 /**
  * Bootstrap de sesión y shell autenticado contra el stub del API: verifica el
@@ -9,11 +8,6 @@ import { warmUpSsr } from "./support/warmup";
  */
 
 const SESSION_COOKIE = "better-auth.session_token=stub-session-token";
-
-test.beforeAll(async () => {
-  // Ver `support/warmup.ts`: bug conocido de arranque en frío del SSR.
-  await warmUpSsr(url("/"));
-});
 const MOBILE = { width: 375, height: 800 };
 const DESKTOP = { width: 1280, height: 800 };
 

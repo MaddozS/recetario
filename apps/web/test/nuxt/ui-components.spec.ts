@@ -39,6 +39,33 @@ describe("Icon", () => {
     expect(svg.attributes("aria-hidden")).toBe("true");
     expect(svg.classes()).toContain("text-accent-600");
   });
+
+  it("mantiene el markup y las clases de lucide", async () => {
+    const wrapper = await mountSuspended(Icon, {
+      props: { name: "lucide:settings", size: 20 },
+    });
+    const svg = wrapper.find("svg");
+
+    expect(svg.classes()).toContain("lucide");
+    expect(svg.classes()).toContain("lucide-settings");
+    expect(svg.attributes("viewBox")).toBe("0 0 24 24");
+    expect(svg.attributes("fill")).toBe("none");
+    expect(svg.attributes("stroke")).toBe("currentColor");
+    expect(svg.attributes("stroke-width")).toBe("2");
+    expect(svg.attributes("aria-hidden")).toBe("true");
+    expect(wrapper.findAll("path").length + wrapper.findAll("circle").length)
+      .toBeGreaterThan(0);
+  });
+
+  it("omite aria-hidden cuando el llamador declara un prop de accesibilidad", async () => {
+    const wrapper = await mountSuspended(Icon, {
+      props: { name: "lucide:settings" },
+      attrs: { role: "img", "aria-label": "Configuración" },
+    });
+    const svg = wrapper.find("svg");
+    expect(svg.attributes("aria-hidden")).toBeUndefined();
+    expect(svg.attributes("role")).toBe("img");
+  });
 });
 
 describe("Button", () => {
