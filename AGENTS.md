@@ -1,6 +1,6 @@
 # AGENTS.md — Recetario
 
-> **Migración Nuxt en curso.** `apps/web` se está reescribiendo de Astro a Nuxt 4 + Vue en el worktree `worktree-nuxt-rework`, hoy en `/Users/maddozs/personal-projects/recetario-nuxt-rework` (fuera de `~/.commandcode/` para no disparar prompts de permiso). El árbol Astro (`apps/web/src/**`) queda como referencia fuera de build/lint/type-check hasta la Task 13. Decisión en `docs/adr/0009-nuxt-frontend-rework.md`; estado por task en `docs/tasks/` (última: `task-20260912-2321-public-seo.md`).
+> **Migración Nuxt en curso.** `apps/web` se está reescribiendo de Astro a Nuxt 4 + Vue en el worktree `worktree-nuxt-rework`, hoy en `/Users/maddozs/personal-projects/recetario-nuxt-rework` (fuera de `~/.commandcode/` para no disparar prompts de permiso). El árbol Astro (`apps/web/src/**`) queda como referencia fuera de build/lint/type-check hasta la Task 13. Decisión en `docs/adr/0009-nuxt-frontend-rework.md`; estado por task en `docs/tasks/` (última: `task-20260913-1325-auth.md`).
 >
 > **Task 4 (relay, sesión y shell) ya está en la rama.** Detalles operativos:
 > - `pnpm dev` en `apps/web` sincroniza `.dev.vars` y limpia `.vite-cache/web`, y sirve en `localhost:4321` (el API confía en `WEB_ORIGIN`). El API sigue en `localhost:8787`: en dev el relay cae a HTTP contra `INTERNAL_API_URL`.
@@ -14,6 +14,15 @@
 > - `/pricing` es pública: el anónimo ve el catálogo y su CTA pasa por `/sign-in?redirect=…`; el checkout sigue exigiendo sesión y CSRF en Hono.
 > - El landing no porta la maquinaria de Astro: `useTheme()` unificado (sin `landing_theme` ni localStorage), `v-reveal` (directiva con un observer compartido y cleanup) y estado Vue para drawer, lightbox, scroll-spy y precios. El acento de las públicas es coral (`app.vue`).
 > - Tests de referencia: `test/unit/seo.spec.ts`, `test/nuxt/public-ui.spec.ts` y `test/e2e/public.spec.ts` (metadata SSR, robots/sitemap, 404, checkout con el stub del API).
+>
+> **Task 6 (flujos de autenticación) ya está en la rama.** Detalles operativos:
+> - Las cinco rutas (`/sign-in`, `/sign-up`, `/forgot-password`, `/reset-password`, `/verify-email`) usan `layouts/auth.vue`, `useNoindexSeo()` (title + `noindex,nofollow`, **sin** canonical ni OG) y viven en `shared/utils/seo.ts` → `AUTH_PAGES`/`isAuthPath()`. Junto con las públicas indexables son las rutas de acento coral (`isCoralAccentPath()` en `app.vue`).
+> - `server/middleware/10.auth.ts` aplica `cache-control: private, no-store` + `x-robots-tag: noindex, nofollow` a las rutas de auth (llevan token en la query). `PUBLIC_PAGES` sigue con 4 rutas: ni `robots.txt` ni `sitemap.xml` cambian.
+> - **Transporte propio, sin `better-auth` en el bundle**: `app/features/auth/useAuthApi.ts` sobre `useRequestFetch()` + Zod (`auth-contracts.ts`) + `toAuthApiError()` (entiende el envelope de Hono, los errores de Better Auth `{message, code}` y las rutas custom `{error, code, errors}`). No importar `@recetario/auth/client` ni el barrel `@recetario/auth` en la web: arrastran `createAuthClient`; para las reglas de contraseña existe el subpath `@recetario/auth/password`.
+> - Los formularios son componentes montables (`app/features/auth/*Form.vue`) con props desde la query; las páginas sólo leen la query, declaran layout/`guest` y SEO. Tras un sign-in correcto se navega con **carga completa** (`navigateTo(..., { external: true })`) para que el SSR vuelva a resolver la sesión.
+> - `useCountdown` (reset) limpia el intervalo al desmontar; `PasswordRules` alimenta las 5 reglas desde `getRuleResults`.
+> - Tests de referencia: `test/unit/auth-{redirect,messages,error}.spec.ts`, `test/nuxt/auth-ui.spec.ts` y `test/e2e/auth.spec.ts` (el stub del API cubre credenciales inválidas, email sin verificar, reset válido/expirado y verify).
+> - **QA funcional en dev:** el relay lee `INTERNAL_API_URL` de `.dev.vars` (proxy de wrangler) antes que `process.env`; para apuntar el dev server al stub de los e2e hay que levantarlo en `8787` (`STUB_API_PORT=8787 node test/e2e/support/stub-api.mjs`).
 
 ## Stack
 
