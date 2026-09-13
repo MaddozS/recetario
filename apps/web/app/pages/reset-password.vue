@@ -1,25 +1,27 @@
 <script setup lang="ts">
-useHead({
-  title: "Nueva contraseña | KitchCalc",
-  meta: [{ name: "robots", content: "noindex, nofollow" }],
-});
+import { computed } from "vue";
+import { authPageTitleFor } from "#shared/utils/seo";
+import AuthCard from "~/features/auth/AuthCard.vue";
+import ResetPasswordForm from "~/features/auth/ResetPasswordForm.vue";
+import { queryString } from "~/features/auth/auth-redirect";
+
+definePageMeta({ layout: "auth" });
+
+useNoindexSeo(authPageTitleFor("/reset-password"));
+
+const route = useRoute();
+// El token viaja en la query (nunca a metadata); `?email=` sólo añade la nota
+// del original en la vista expirada.
+const token = computed(() => queryString(route.query.token));
+const email = computed(() => queryString(route.query.email));
 </script>
 
 <template>
-  <div>
-    <SectionHeading
-      icon="lock"
-      title="Nueva contraseña"
-      subtitle="Slice pendiente: Task 6."
-      level="h1"
-    />
-    <Card class="mt-6">
-      <div class="flex flex-wrap items-center gap-3">
-        <Badge color="warning"> Pendiente </Badge>
-        <p class="text-muted-foreground text-sm">
-          Esta ruta se implementa en la Task 6 (flujos de autenticación).
-        </p>
-      </div>
-    </Card>
-  </div>
+  <AuthCard
+    icon="lock"
+    title="Nueva contraseña"
+    subtitle="Elige una nueva contraseña para tu cuenta"
+  >
+    <ResetPasswordForm :token="token" :email="email" />
+  </AuthCard>
 </template>

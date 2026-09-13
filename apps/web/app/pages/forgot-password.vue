@@ -1,25 +1,19 @@
 <script setup lang="ts">
-useHead({
-  title: "Recuperar contraseña | KitchCalc",
-  meta: [{ name: "robots", content: "noindex, nofollow" }],
-});
+import { authPageTitleFor } from "#shared/utils/seo";
+import AuthCard from "~/features/auth/AuthCard.vue";
+import ForgotPasswordForm from "~/features/auth/ForgotPasswordForm.vue";
+
+definePageMeta({ layout: "auth" });
+
+useNoindexSeo(authPageTitleFor("/forgot-password"));
 </script>
 
 <template>
-  <div>
-    <SectionHeading
-      icon="mail-check"
-      title="Recuperar contraseña"
-      subtitle="Slice pendiente: Task 6."
-      level="h1"
-    />
-    <Card class="mt-6">
-      <div class="flex flex-wrap items-center gap-3">
-        <Badge color="warning"> Pendiente </Badge>
-        <p class="text-muted-foreground text-sm">
-          Esta ruta se implementa en la Task 6 (flujos de autenticación).
-        </p>
-      </div>
-    </Card>
-  </div>
+  <AuthCard
+    icon="key-round"
+    title="Restablecer contraseña"
+    subtitle="Ingresa tu email y te enviaremos un enlace"
+  >
+    <ForgotPasswordForm />
+  </AuthCard>
 </template>
