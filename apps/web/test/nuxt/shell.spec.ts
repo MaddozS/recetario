@@ -57,7 +57,8 @@ describe("AppSidebar", () => {
 
     const active = wrapper.find('a[aria-current="page"]');
     expect(active.text()).toBe("Ingredientes");
-    expect(active.classes()).toContain("bg-accent-600");
+    expect(active.classes()).toContain("bg-accent-700");
+    expect(active.classes()).toContain("text-text-on-accent");
   });
 
   it("oculta Producción sin la feature del plan", async () => {
@@ -130,7 +131,8 @@ describe("AppBottomNav", () => {
 
     const active = wrapper.find('a[aria-current="page"]');
     expect(active.text()).toContain("Producción");
-    expect(active.classes()).toContain("bg-accent-600");
+    expect(active.classes()).toContain("bg-accent-700");
+    expect(active.classes()).toContain("text-text-on-accent");
   });
 });
 

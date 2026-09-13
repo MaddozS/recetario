@@ -27,7 +27,7 @@ const isActive = (page: AppPage) => props.currentPage === page;
         class="flex min-h-11 flex-col items-center justify-center gap-0.5 rounded-xl text-[11px] font-bold transition-colors sm:text-xs"
         :class="
           isActive(item.page)
-            ? 'bg-accent-600 text-white'
+            ? 'bg-accent-700 text-text-on-accent'
             : 'text-muted-foreground hover:bg-muted'
         "
         :aria-current="isActive(item.page) ? 'page' : undefined"

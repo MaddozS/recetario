@@ -43,7 +43,8 @@ function isCurrent(plan: PricingPlan): boolean {
 
 function buttonLabel(plan: PricingPlan): string {
   if (isCurrent(plan)) return "Plan actual";
-  if (plan.id === "pro" && currentTier.value === "basic") return "Actualizar a Pro";
+  if (plan.id === "pro" && currentTier.value === "basic")
+    return "Actualizar a Pro";
   if (!isFree(plan)) return "Suscribirse";
   return "Plan actual";
 }
@@ -62,13 +63,15 @@ function buttonClass(plan: PricingPlan): string {
     return `${base} border-border bg-background text-subtle-foreground cursor-not-allowed border`;
   }
   if (plan.id === "pro") {
-    return `${base} bg-accent-600 hover:bg-accent-700 text-white`;
+    return `${base} bg-accent-700 text-text-on-accent hover:bg-accent-800`;
   }
   return `${base} border-border bg-card text-muted-foreground hover:bg-background border`;
 }
 
 function signInHref(plan: PricingPlan): string {
-  return isFree(plan) ? "/sign-in?redirect=/recipes" : "/sign-in?redirect=/pricing";
+  return isFree(plan)
+    ? "/sign-in?redirect=/recipes"
+    : "/sign-in?redirect=/pricing";
 }
 
 async function subscribe(plan: PricingPlan): Promise<void> {
@@ -159,7 +162,9 @@ async function subscribe(plan: PricingPlan): Promise<void> {
         :data-plan="plan.id"
         class="bg-card flex flex-col rounded-2xl border p-6 shadow-sm"
         :class="
-          plan.id === 'pro' ? 'border-accent-300 ring-accent-200 ring-1' : 'border-border'
+          plan.id === 'pro'
+            ? 'border-accent-300 ring-accent-200 ring-1'
+            : 'border-border'
         "
       >
         <Badge

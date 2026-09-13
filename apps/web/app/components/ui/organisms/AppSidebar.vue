@@ -26,7 +26,9 @@ const isActive = (page: AppPage) => props.currentPage === page;
 <template>
   <div class="bg-card relative flex h-full flex-col">
     <!-- Cabecera móvil: cerrar + plan (o marca si no hay sesión) -->
-    <div class="border-border flex flex-none items-center gap-3 border-b p-4 md:hidden">
+    <div
+      class="border-border flex flex-none items-center gap-3 border-b p-4 md:hidden"
+    >
       <button
         id="close-sidebar-btn"
         type="button"
@@ -40,11 +42,15 @@ const isActive = (page: AppPage) => props.currentPage === page;
         <Badge variant="tier" color="accent">{{ planLabel }}</Badge>
       </div>
       <template v-else>
-        <div class="bg-accent-600 shadow-accent-100 rounded-xl p-2 text-white shadow-md">
+        <div
+          class="bg-accent-700 text-text-on-accent shadow-accent-100 rounded-xl p-2 shadow-md"
+        >
           <Icon name="lucide:chef-hat" :size="20" />
         </div>
         <div>
-          <p class="text-foreground text-base leading-tight font-bold">KitchCalc</p>
+          <p class="text-foreground text-base leading-tight font-bold">
+            KitchCalc
+          </p>
           <p class="text-muted-foreground text-[10px] font-medium">
             Costeo Inteligente
           </p>
@@ -65,7 +71,7 @@ const isActive = (page: AppPage) => props.currentPage === page;
         class="sidebar-link flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors"
         :class="[
           isActive(item.page)
-            ? 'bg-accent-600 text-white'
+            ? 'bg-accent-700 text-text-on-accent'
             : 'text-muted-foreground hover:text-secondary-foreground hover:bg-muted',
           isCollapsed ? 'md:justify-center md:gap-0 md:px-0' : '',
         ]"
@@ -98,11 +104,7 @@ const isActive = (page: AppPage) => props.currentPage === page;
           :title="isCollapsed ? 'Expandir sidebar' : 'Colapsar sidebar'"
           @click="emit('toggleCollapse')"
         >
-          <Icon
-            v-if="isCollapsed"
-            name="lucide:chevron-right"
-            :size="18"
-          />
+          <Icon v-if="isCollapsed" name="lucide:chevron-right" :size="18" />
           <Icon v-else name="lucide:chevron-left" :size="18" />
         </button>
       </div>

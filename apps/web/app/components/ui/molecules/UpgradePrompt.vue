@@ -46,7 +46,7 @@ const price = computed(() => (props.tier === "pro" ? "$10/mes" : "$5/mes"));
       </button>
       <a
         :href="`/pricing?plan=${tier}`"
-        class="bg-accent-600 hover:bg-accent-700 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-bold text-white transition-colors"
+        class="bg-accent-700 text-text-on-accent hover:bg-accent-800 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-bold transition-colors"
       >
         <Icon name="lucide:arrow-up-circle" :size="16" />
         Suscribirse a {{ tierLabel }}

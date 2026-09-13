@@ -91,7 +91,7 @@
                 </div>
                 <div class="flex items-center justify-between">
                   <span
-                    class="text-accent-600/80 text-xs font-semibold tracking-widest uppercase"
+                    class="text-accent-700 text-xs font-semibold tracking-widest uppercase"
                   >
                     Margen 50%
                   </span>
@@ -129,7 +129,11 @@
         </div>
 
         <div class="hidden items-center justify-end lg:flex">
-          <div v-reveal="'scale'" class="relative" style="transition-delay: 150ms">
+          <div
+            v-reveal="'scale'"
+            class="relative"
+            style="transition-delay: 150ms"
+          >
             <div
               class="shadow-accent-tint bg-accent-500/35 absolute -inset-10 rounded-[3rem] blur-3xl"
             />

@@ -53,8 +53,9 @@ describe("Icon", () => {
     expect(svg.attributes("stroke")).toBe("currentColor");
     expect(svg.attributes("stroke-width")).toBe("2");
     expect(svg.attributes("aria-hidden")).toBe("true");
-    expect(wrapper.findAll("path").length + wrapper.findAll("circle").length)
-      .toBeGreaterThan(0);
+    expect(
+      wrapper.findAll("path").length + wrapper.findAll("circle").length,
+    ).toBeGreaterThan(0);
   });
 
   it("omite aria-hidden cuando el llamador declara un prop de accesibilidad", async () => {
@@ -73,7 +74,8 @@ describe("Button", () => {
     const wrapper = await mountSuspended(Button, { slots: { default: "OK" } });
     const button = wrapper.find("button");
     expect(button.attributes("type")).toBe("button");
-    expect(button.classes()).toContain("bg-accent-600");
+    expect(button.classes()).toContain("bg-accent-700");
+    expect(button.classes()).toContain("text-text-on-accent");
     expect(button.classes()).toContain("min-h-11");
   });
 

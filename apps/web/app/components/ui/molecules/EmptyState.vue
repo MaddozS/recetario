@@ -42,7 +42,7 @@ const emit = defineEmits<{ action: [] }>();
         <a
           v-if="actionHref"
           :href="actionHref"
-          class="bg-accent-600 hover:bg-accent-700 mt-5 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-bold text-white transition-colors"
+          class="bg-accent-700 text-text-on-accent hover:bg-accent-800 mt-5 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-bold transition-colors"
         >
           <Icon name="lucide:plus" :size="18" />
           {{ actionLabel }}
@@ -50,7 +50,7 @@ const emit = defineEmits<{ action: [] }>();
         <button
           v-else
           type="button"
-          class="bg-accent-600 hover:bg-accent-700 mt-5 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-bold text-white transition-colors lg:hidden"
+          class="bg-accent-700 text-text-on-accent hover:bg-accent-800 mt-5 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-bold transition-colors lg:hidden"
           @click="emit('action')"
         >
           <Icon name="lucide:plus" :size="18" />

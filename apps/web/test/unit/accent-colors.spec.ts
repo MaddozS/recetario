@@ -41,11 +41,23 @@ describe("accent-colors", () => {
   });
 
   it("en dark mapea a los shades profundos", () => {
-    // 50 → 950, 600 → 500, 700 → 400
+    // 50 → 950, 600 → 500, 700 → 400, 800 → 300
     const css = getAccentCssVars("indigo", "dark");
     expect(css).toContain("--aw-accent-50:#1e1b4b");
     expect(css).toContain("--aw-accent-600:#6366f1");
     expect(css).toContain("--aw-accent-700:#818cf8");
+    expect(css).toContain("--aw-accent-800:#a5b4fc");
+  });
+
+  it("expone el shade 800 de acción (hover del botón primario)", () => {
+    // En light es el único tono que sostiene AA con `text-on-accent` en hover;
+    // en dark, el mapeo aclara para que el hover se note con texto oscuro.
+    expect(getAccentCssVars("coral", "light")).toContain(
+      "--aw-accent-800:#b33a46",
+    );
+    expect(getAccentCssVars("coral", "dark")).toContain(
+      "--aw-accent-800:#faa898",
+    );
   });
 
   it("trata `system` como light y sólo `dark` activa el mapeo oscuro", () => {

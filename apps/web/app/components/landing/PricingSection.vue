@@ -62,7 +62,9 @@ function ctaLabel(plan: PricingPlan): string {
       />
 
       <div class="relative mx-auto mt-12 max-w-5xl">
-        <div class="pricing-scroll flex snap-x snap-mandatory gap-4 overflow-x-auto py-5 sm:gap-6 lg:overflow-visible xl:gap-8">
+        <div
+          class="pricing-scroll flex snap-x snap-mandatory gap-4 overflow-x-auto py-5 sm:gap-6 lg:overflow-visible xl:gap-8"
+        >
           <template v-if="pending && plans.length === 0">
             <div
               v-for="index in 3"
@@ -115,7 +117,7 @@ function ctaLabel(plan: PricingPlan): string {
               class="mt-6 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl px-5 text-center text-sm font-bold transition-all active:scale-[0.97]"
               :class="
                 plan.id === 'pro'
-                  ? 'bg-accent-600 hover:bg-accent-700 shadow-accent-tint text-text-on-accent'
+                  ? 'bg-accent-700 text-text-on-accent hover:bg-accent-800 shadow-accent-tint'
                   : 'border-border bg-card text-secondary-foreground hover:bg-background border'
               "
             >
@@ -133,7 +135,10 @@ function ctaLabel(plan: PricingPlan): string {
           />
         </div>
 
-        <p v-if="showEmptyState" class="text-muted-foreground mt-6 text-center text-sm">
+        <p
+          v-if="showEmptyState"
+          class="text-muted-foreground mt-6 text-center text-sm"
+        >
           No hay planes disponibles por ahora.
         </p>
       </div>

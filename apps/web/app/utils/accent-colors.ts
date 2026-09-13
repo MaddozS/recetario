@@ -27,6 +27,9 @@ export const ACCENT_SHADES = [
   "500",
   "600",
   "700",
+  // Sólo lo usa el hover de las acciones con texto: en light necesita un tono
+  // más oscuro que el 700 para mantener AA con `text-on-accent`.
+  "800",
 ] as const;
 
 export type AccentShade = (typeof ACCENT_SHADES)[number];
@@ -35,7 +38,10 @@ export type AccentShade = (typeof ACCENT_SHADES)[number];
 type AccentBaseShade = AccentShade | "800" | "900" | "950";
 
 /** Tonos base de cada familia (light mode usa 50-700 directamente). */
-const accentBaseColors: Record<AccentFamily, Record<AccentBaseShade, string>> = {
+const accentBaseColors: Record<
+  AccentFamily,
+  Record<AccentBaseShade, string>
+> = {
   indigo: {
     "50": "#eef2ff",
     "100": "#e0e7ff",
@@ -153,6 +159,8 @@ const darkShadeMap: Record<AccentShade, AccentBaseShade> = {
   "500": "600",
   "600": "500",
   "700": "400",
+  // Hover de acciones en dark: aclara en vez de oscurecer.
+  "800": "300",
 };
 
 /**

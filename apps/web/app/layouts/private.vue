@@ -11,7 +11,9 @@ const route = useRoute();
 const { hasFeature } = useAuth();
 
 const currentPage = computed(() => pageKeyFromPath(route.path));
-const breadcrumbs = computed<BreadcrumbItem[]>(() => route.meta.breadcrumbs ?? []);
+const breadcrumbs = computed<BreadcrumbItem[]>(
+  () => route.meta.breadcrumbs ?? [],
+);
 const showSidebar = computed(() => route.meta.sidebar !== false);
 const showProduction = computed(() => hasFeature("production_planner"));
 
@@ -58,7 +60,7 @@ useHead({
 
     <a
       href="#main-content"
-      class="focus:bg-accent-600 sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-100 focus:rounded-xl focus:px-4 focus:py-2 focus:text-white focus:outline-none"
+      class="focus:bg-accent-700 focus:text-text-on-accent sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-100 focus:rounded-xl focus:px-4 focus:py-2 focus:outline-none"
     >
       Saltar al contenido
     </a>
@@ -86,7 +88,9 @@ useHead({
           :class="[
             // En escritorio la sidebar es fija: el `-translate-x-full` del
             // drawer móvil se neutraliza con `md:translate-x-0`.
-            sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0',
+            sidebarOpen
+              ? 'translate-x-0'
+              : '-translate-x-full md:translate-x-0',
             collapsed ? 'md:w-16' : 'md:w-[220px]',
           ]"
         >

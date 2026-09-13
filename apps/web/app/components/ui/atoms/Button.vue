@@ -40,8 +40,12 @@ const BASE_CLASSES =
 
 const VARIANT_CLASSES: Record<Variant, { solid: string; iconOnly: string }> = {
   primary: {
-    solid: "bg-accent-600 text-white hover:bg-accent-700 rounded-xl shadow-sm",
-    iconOnly: "bg-accent-600 text-white hover:bg-accent-700 rounded-full",
+    // `accent-700` + `text-on-accent` sostiene AA en ambos temas: en light el
+    // 600 con blanco daba 3.72:1 y en dark el 600 con blanco 2.95:1.
+    solid:
+      "bg-accent-700 text-text-on-accent hover:bg-accent-800 rounded-xl shadow-sm",
+    iconOnly:
+      "bg-accent-700 text-text-on-accent hover:bg-accent-800 rounded-full",
   },
   secondary: {
     solid:
