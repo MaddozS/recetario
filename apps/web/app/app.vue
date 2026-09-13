@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { isPublicMarketingPath } from "#shared/utils/seo";
+import { isCoralAccentPath } from "#shared/utils/seo";
 import { getAccentCssVars } from "~/utils/accent-colors";
 
 const route = useRoute();
 const { theme, accent, isDark } = useTheme();
 
-// Las rutas públicas de marketing siempre son coral (paridad con el
-// `data-accent="coral"` del `LandingLayout` de Astro); el resto usa la
+// Las rutas públicas de marketing y las de auth siempre son coral (paridad con
+// el `data-accent="coral"` del `LandingLayout` de Astro); el resto usa la
 // preferencia del usuario. `<html>` sigue teniendo un único dueño: `app.vue`.
 const effectiveAccent = computed(() =>
-  isPublicMarketingPath(route.path) ? "coral" : accent.value,
+  isCoralAccentPath(route.path) ? "coral" : accent.value,
 );
 
 const accentCssVars = computed(() =>

@@ -10,6 +10,7 @@ import {
 } from "#shared/utils/preferences";
 import { buildAnonymousAuthState } from "#shared/types/auth";
 import { isPrivatePath } from "#shared/utils/navigation";
+import { isAuthPath } from "#shared/utils/seo";
 import { getCloudflareEnv } from "../utils/api-transport";
 import {
   buildAuthenticatedAuthState,
@@ -39,7 +40,9 @@ const PRIVATE_HEADERS = {
 
 export default defineEventHandler(async (event) => {
   const { pathname } = getRequestURL(event);
-  if (isPrivatePath(pathname)) {
+  // Las rutas de auth llevan token/email en la query: tampoco se cachean ni se
+  // indexan, aunque su layout sea público.
+  if (isPrivatePath(pathname) || isAuthPath(pathname)) {
     setHeaders(event, PRIVATE_HEADERS);
   }
 
@@ -87,13 +90,18 @@ export default defineEventHandler(async (event) => {
   });
 
   const csrfCookie = getCsrfCookie();
-  setCookie(event, csrfCookie, getCookie(event, csrfCookie) ?? generateToken(), {
-    path: "/",
-    sameSite: "strict",
-    httpOnly: false,
-    secure,
-    maxAge: CSRF_COOKIE_MAX_AGE,
-  });
+  setCookie(
+    event,
+    csrfCookie,
+    getCookie(event, csrfCookie) ?? generateToken(),
+    {
+      path: "/",
+      sameSite: "strict",
+      httpOnly: false,
+      secure,
+      maxAge: CSRF_COOKIE_MAX_AGE,
+    },
+  );
 
   event.context.auth = buildAuthenticatedAuthState(session, preferences);
 });

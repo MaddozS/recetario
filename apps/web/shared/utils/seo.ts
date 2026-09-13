@@ -51,6 +51,46 @@ export const NOT_FOUND_SEO = {
   description: "La página que buscas no existe o fue movida.",
 } as const;
 
+/**
+ * Rutas de autenticación: `noindex,nofollow`, sin canonical ni OG. El token y el
+ * email viajan en la query de `/reset-password` y `/verify-email`, así que nunca
+ * pueden entrar en metadata ni en el sitemap.
+ */
+export const AUTH_PAGES = [
+  { path: "/sign-in", title: "Iniciar sesión | KitchCalc" },
+  { path: "/sign-up", title: "Crear cuenta | KitchCalc" },
+  { path: "/forgot-password", title: "Recuperar contraseña | KitchCalc" },
+  { path: "/reset-password", title: "Nueva contraseña | KitchCalc" },
+  { path: "/verify-email", title: "Verificar correo | KitchCalc" },
+] as const satisfies readonly { path: string; title: string }[];
+
+export type AuthPagePath = (typeof AUTH_PAGES)[number]["path"];
+
+export function authPageTitleFor(path: AuthPagePath): string {
+  const page = AUTH_PAGES.find((entry) => entry.path === path);
+  if (!page) {
+    throw new Error(`Sin SEO definido para ${path}`);
+  }
+  return page.title;
+}
+
+export function isAuthPath(path: string): boolean {
+  return AUTH_PAGES.some((page) => page.path === path);
+}
+
+/** Rutas del landing público (acento coral y layout propio). */
+export function isPublicMarketingPath(path: string): boolean {
+  return PUBLIC_PAGES.some((page) => page.path === path);
+}
+
+/**
+ * Rutas con acento coral: las públicas indexables y las de autenticación
+ * (paridad con el `data-accent="coral"` del `LandingLayout` de Astro).
+ */
+export function isCoralAccentPath(path: string): boolean {
+  return isPublicMarketingPath(path) || isAuthPath(path);
+}
+
 export const OG_IMAGE_PATH = "/kitchcalc_logo.webp";
 
 export function pageSeoFor(path: PublicPagePath): PublicPageSeo {
@@ -59,11 +99,6 @@ export function pageSeoFor(path: PublicPagePath): PublicPageSeo {
     throw new Error(`Sin SEO definido para ${path}`);
   }
   return page;
-}
-
-/** Las rutas del landing público (acento coral y layout propio). */
-export function isPublicMarketingPath(path: string): boolean {
-  return PUBLIC_PAGES.some((page) => page.path === path);
 }
 
 /** Canonical absoluto, sin query ni hash. La home conserva la barra final. */
@@ -100,7 +135,10 @@ export interface RobotsTxtOptions {
  * Sin indexación (staging, dev, e2e sin flag) se bloquea todo; con indexación
  * sólo se permiten las cuatro rutas públicas y el resto queda fuera.
  */
-export function buildRobotsTxt({ siteUrl, indexable }: RobotsTxtOptions): string {
+export function buildRobotsTxt({
+  siteUrl,
+  indexable,
+}: RobotsTxtOptions): string {
   if (!indexable) {
     return "User-agent: *\nDisallow: /\n";
   }
