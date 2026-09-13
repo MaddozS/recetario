@@ -4,7 +4,7 @@ import { url } from "@nuxt/test-utils/e2e";
 const MOBILE = { width: 375, height: 800 };
 const DESKTOP = { width: 1280, height: 800 };
 
-test("la landing responde 200, hidrata sin errores y muestra el design system", async ({
+test("la landing responde 200, hidrata sin errores y muestra sus secciones", async ({
   page,
   goto,
 }) => {
@@ -17,52 +17,33 @@ test("la landing responde 200, hidrata sin errores y muestra el design system", 
   const response = await goto("/", { waitUntil: "hydration" });
   expect(response?.status()).toBe(200);
 
-  await expect(page.locator("h1")).toHaveText("KitchCalc");
-  await expect(page.getByText("Button · variantes")).toBeVisible();
+  await expect(page.locator("h1")).toHaveText(
+    "Calcula el costo real de tus recetas",
+  );
 
-  // Sin omisión de información en móvil: mismas variantes y etiquetas.
+  // Paridad móvil/desktop: la navegación cambia de forma, no de información.
   await page.setViewportSize(MOBILE);
-  for (const label of ["Primario", "Secundario", "Peligro", "Ghost"]) {
-    await expect(
-      page.getByRole("button", { name: label, exact: true }),
-    ).toBeVisible();
-  }
-  for (const label of ["sm", "md", "lg"]) {
-    await expect(
-      page.getByRole("button", { name: label, exact: true }),
-    ).toBeVisible();
-  }
-  for (const label of ["accent", "success", "danger", "warning", "neutral"]) {
-    await expect(page.getByText(label, { exact: true })).toBeVisible();
-  }
-
-  // El CTA sin actionHref es `lg:hidden` (paridad con Astro).
-  await expect(
-    page.getByRole("button", { name: "Nueva receta" }),
-  ).toBeVisible();
+  await expect(page.getByRole("button", { name: "Abrir menú" })).toBeVisible();
+  await expect(page.locator("#features").getByRole("heading", { level: 2 })).toHaveText(
+    "Todo lo que necesitas para costear",
+  );
 
   await page.setViewportSize(DESKTOP);
-  await expect(page.getByText("Button · tamaños y estados")).toBeVisible();
-  await expect(page.getByRole("button", { name: "Nueva receta" })).toBeHidden();
+  await expect(page.locator("nav").getByRole("link", { name: "Precios" })).toBeVisible();
+  await expect(page.locator("#how-it-works").getByRole("heading", { level: 2 })).toHaveText(
+    "Del ingrediente al precio final",
+  );
+  await expect(page.locator("#pricing").getByRole("heading", { level: 2 })).toHaveText(
+    "Planes y precios",
+  );
+
+  // El CTA del navbar distingue sesión (anónimo → sign-in).
+  await expect(page.locator("nav").getByRole("link", { name: "Comenzar gratis" })).toHaveAttribute(
+    "href",
+    "/sign-in",
+  );
 
   expect(consoleErrors).toEqual([]);
-});
-
-test("el diálogo portado abre, cierra con Escape y bloquea el backdrop ocupado", async ({
-  page,
-  goto,
-}) => {
-  await goto("/", { waitUntil: "hydration" });
-
-  const dialog = page.locator("#qa-dialog");
-  await expect(dialog).toBeHidden();
-
-  await page.getByRole("button", { name: "Abrir diálogo" }).click();
-  await expect(dialog).toBeVisible();
-  await expect(dialog.getByText("Contenido de ejemplo")).toBeVisible();
-
-  await page.keyboard.press("Escape");
-  await expect(dialog).toBeHidden();
 });
 
 test("una ruta privada sin sesión redirige a sign-in antes de renderizar", async ({

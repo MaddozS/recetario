@@ -70,6 +70,58 @@ function parseCookies(header) {
   return cookies;
 }
 
+/** Catálogo determinista para las vistas de planes (mismo shape que Hono). */
+const PLANS = [
+  {
+    id: "free",
+    tier: "free",
+    name: "Free",
+    description: "Para empezar a costear",
+    badge: null,
+    currency: "MXN",
+    monthlyPriceId: null,
+    monthlyDisplay: null,
+    yearlyPriceId: null,
+    yearlyDisplay: null,
+    yearlyPerMonthDisplay: null,
+    features: [
+      { text: "Hasta 10 recetas", included: true },
+      { text: "Duplicar recetas", included: false },
+    ],
+  },
+  {
+    id: "basic",
+    tier: "basic",
+    name: "Basic",
+    description: "Para negocios en crecimiento",
+    badge: { text: "Recomendado", class: "bg-success-bg text-success" },
+    currency: "MXN",
+    monthlyPriceId: "price_basic_monthly",
+    monthlyDisplay: "$9.99",
+    yearlyPriceId: "price_basic_yearly",
+    yearlyDisplay: "$95.90",
+    yearlyPerMonthDisplay: "$7.99",
+    features: [
+      { text: "Hasta 75 recetas", included: true },
+      { text: "Exportar a PDF", included: false, status: "coming_soon" },
+    ],
+  },
+  {
+    id: "pro",
+    tier: "pro",
+    name: "Pro",
+    description: "Para profesionales",
+    badge: { text: "Mas popular", class: "bg-accent-600 text-white" },
+    currency: "MXN",
+    monthlyPriceId: "price_pro_monthly",
+    monthlyDisplay: "$19.99",
+    yearlyPriceId: "price_pro_yearly",
+    yearlyDisplay: "$191.90",
+    yearlyPerMonthDisplay: "$15.99",
+    features: [{ text: "Recetas ilimitadas", included: true }],
+  },
+];
+
 function sessionPayload({ plan }) {
   const isPro = plan !== "free";
   return {
@@ -127,6 +179,30 @@ const server = createServer(async (req, res) => {
         "set-cookie": "better-auth.session_token=; Path=/; Max-Age=0; SameSite=Lax",
       },
     );
+  }
+
+  // ── Planes públicos y checkout ────────────────────────────────────────────
+  if (pathname === "/api/billing/plans" && req.method === "GET") {
+    return sendJson(res, 200, PLANS);
+  }
+
+  if (pathname === "/api/stripe/checkout" && req.method === "POST") {
+    // Hono exige auth + doble-submit CSRF: el stub rechaza sin `x-csrf-token`
+    // para que el e2e falle si el cliente no lo envía.
+    if (!req.headers["x-csrf-token"]) {
+      return sendJson(res, 403, {
+        error: { code: "FORBIDDEN", message: "CSRF validation failed" },
+      });
+    }
+
+    const payload = JSON.parse(body || "{}");
+    if (!payload.priceId) {
+      return sendJson(res, 400, {
+        error: { code: "VALIDATION_ERROR", message: "priceId required" },
+      });
+    }
+
+    return sendJson(res, 200, { url: "/pricing?success=1" });
   }
 
   // ── Casos del relay ───────────────────────────────────────────────────────

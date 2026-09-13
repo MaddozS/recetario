@@ -29,8 +29,9 @@ export default defineConfig<ConfigOptions>({
       nuxtConfig: { nitro: { preset: "node-server" } },
       // El fixture arranca el server con NODE_ENV=test, que hace que Vue
       // resuelva su build de desarrollo (SSR inestable). Se alinea con el
-      // entorno real de despliegue.
-      env: { NODE_ENV: "production" },
+      // entorno real de despliegue. `NUXT_PUBLIC_INDEXABLE` reproduce la rama
+      // indexable de producción (canonical + allow en robots.txt).
+      env: { NODE_ENV: "production", NUXT_PUBLIC_INDEXABLE: "true" },
       setupTimeout: 180_000,
     },
   },
