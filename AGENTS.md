@@ -6,7 +6,7 @@
 > - `pnpm dev` en `apps/web` sincroniza `.dev.vars` y limpia `.vite-cache/web`, y sirve en `localhost:4321` (el API confía en `WEB_ORIGIN`). El API sigue en `localhost:8787`: en dev el relay cae a HTTP contra `INTERNAL_API_URL`.
 > - `apps/web/server/**` es Nitro: relay `/api/**`, bootstrap de sesión y cabeceras privadas. El estado de sesión lo resuelve `useAuth().resolveSession()` (contexto del request → `GET /api/auth/session`).
 > - Preferir `useApi()` y `@recetario/stripe/subscription` en el código nuevo; el barrel de `@recetario/stripe` arrastra el SDK.
-> - **Bug conocido (bloqueante para el corte):** el primer render SSR tras arrancar el proceso falla si la página usa íconos (`useLucideProps`/`inject`). Reproducción y análisis en `docs/tasks/task-20260912-0925-cloudflare-shell.md` (Follow-up 1); los e2e lo absorben con `test/e2e/support/warmup.ts`.
+> - **Íconos:** `Icon.vue` compone el `<svg>` desde los datos de lucide (`app/utils/icon-registry.ts` → `__iconData`), **no** desde sus componentes: son funcionales y usan `inject()`, que perdía la instancia de Vue en el primer render SSR dentro del `Suspense` de un layout (500 en la primera petición de cada proceso). No reintroducir componentes de `@lucide/vue` en el render; el contrato de markup está en `test/nuxt/icon-parity.spec.ts`.
 
 ## Stack
 

@@ -16,10 +16,10 @@ Plan de sesión: `~/.commandcode/plans/recetario-nuxt-task-04-cloudflare-shell.m
 | Elemento | Valor |
 |---|---|
 | Worktree | `/Users/maddozs/personal-projects/recetario-nuxt-rework` |
-| Tests web | **112** (unit 49, nuxt 63) — antes 62 |
+| Tests web | **117** (unit 49, nuxt 68) — antes 62 |
 | E2E web | **22** (relay 10, shell 10, smoke 2) |
 | Checks raíz | lint 6/6 · type-check 7/7 · test 10/10 · build 7/7 |
-| Bundle Nitro | `.output/server/index.mjs` + `.output/public`; dry-run 789.87 KiB (200.43 KiB gzip), bindings `API`, `ASSETS`, `NODE_ENV` |
+| Bundle Nitro | `.output/server/index.mjs` + `.output/public`; dry-run 704.98 KiB (175.25 KiB gzip), bindings `API`, `ASSETS`, `NODE_ENV` |
 | Bundle cliente | 460 kB; **sin** Prisma, `@recetario/db`, Stripe SDK, `better-auth` ni `node:crypto` |
 
 ## Pasos ejecutados
@@ -39,7 +39,7 @@ Plan de sesión: `~/.commandcode/plans/recetario-nuxt-task-04-cloudflare-shell.m
 | # | Hallazgo | Estado |
 |---|---|---|
 | 1 | **Sidebar fuera de pantalla en escritorio**: el `-translate-x-full` del drawer móvil no se neutralizaba en `md`, así que la sidebar 220px quedaba en `x = -64..-220` en desktop. Lo detectó el e2e de colapso (el botón quedaba "outside of the viewport"). | **Arreglado** en esta Task (`md:translate-x-0` + `md:max-w-none`) |
-| 2 | **Primer render SSR tras arrancar el proceso falla**: `Cannot destructure property 'size' of 'useLucideProps(...)'` — los componentes de `@lucide/vue` llaman a `inject()` y en esa primera pasada no encuentran instancia de Vue. Afecta a cualquier página con íconos (incluida la de error y el design system de Task 2), desaparece a partir de la 3ª petición y **no** se arregla con `NODE_ENV=production`, `@lucide/vue` inline ni `nitro.experimental.asyncContext`. | **Follow-up bloqueante** (ver abajo); la suite lo absorbe con `test/e2e/support/warmup.ts` |
+| 2 | **Primer render SSR tras arrancar el proceso fallaba**: `Cannot destructure property 'size' of 'useLucideProps(...)'`. Los componentes de `@lucide/vue` son componentes funcionales que leen su contexto con `inject()`; cuando el ícono se renderiza dentro del `Suspense` de un **layout**, esa primera pasada no encuentra la instancia de Vue y devuelve 500. Se reprodujo de forma determinista (primer request a una ruta con layout) y se acotó por bisección: ícono en página → 200; ícono en layout → 500; cualquier otro componente funcional con `inject` en el layout → 200. | **Arreglado**: los íconos se componen desde los datos de lucide (`__iconData`) con un renderer propio, sin componentes ni `inject` (ver Desviación 13). El e2e corre en frío sin warm-up |
 
 ## Desviaciones respecto del plan
 
@@ -55,6 +55,7 @@ Plan de sesión: `~/.commandcode/plans/recetario-nuxt-task-04-cloudflare-shell.m
 | 8 | `guest.ts` se entrega sin adjuntar a ninguna página | Las páginas de auth son de la Task 6; el archivo queda listo con su contrato documentado |
 | 9 | `eslint.config.mjs` gana un bloque con globales de Node para `test/e2e/support/**` y `playwright.config.ts` | El stub y el setup global corren en Node y `no-undef` los marcaba |
 | 10 | Ids/`data-variant` nuevos en componentes del shell (`#sidebar-nav`, `#bottom-nav`, `data-variant` en breadcrumbs) | Anclas estables para los e2e; no cambian el render visible |
+| 13 | Los íconos se renderizan desde los **datos** de lucide (`@lucide/vue/dist/esm/icons/*.mjs` → `__iconData`) con un renderer propio en `Icon.vue`, no desde sus componentes | Es el arreglo del hallazgo 2: elimina la dependencia de `inject()` en el render (el `Suspense` del layout perdía la instancia de Vue en el primer render). Mantiene clases `lucide lucide-<nombre>`, atributos y `aria-hidden` de lucide, con test de paridad de markup en `test/nuxt/icon-parity.spec.ts`; de paso el bundle del worker baja de 789.87 KiB a 704.98 KiB |
 | 11 | Se probó `nitro.experimental.asyncContext: true` y `externals.inline: ["@lucide/vue"]` | Ninguno arregló el hallazgo 2; se revirtieron para no cargar un flag experimental (documentado en Nitro como "might be broken on non-Node.js environments") ni engordar el bundle servidor |
 | 12 | El smoke workerd corrió con `INTERNAL_API_HOST=127.0.0.1:4322` (el host público del worker web) | El service binding **conserva el `Host` original**: con el valor por defecto (`localhost:8787`) el API responde `FORBIDDEN: Host not allowed: 127.0.0.1:4322`. Es comportamiento de plataforma y aplica igual en producción: `INTERNAL_API_HOST` debe coincidir con el host público del worker web en cada entorno (o quedar sin definir). Se documenta como nota operativa, no se cambia el código |
 
@@ -64,10 +65,10 @@ Plan de sesión: `~/.commandcode/plans/recetario-nuxt-task-04-cloudflare-shell.m
 |---|---|---|
 | 1 | `pnpm --filter @recetario/web lint` | 0 errores, 0 warnings |
 | 2 | `pnpm --filter @recetario/web type-check` | `nuxt typecheck` sin errores |
-| 3 | `pnpm --filter @recetario/web test` | 9 archivos, **112 tests verdes** (unit 49, nuxt 63) |
-| 4 | `pnpm --filter @recetario/web test:e2e` | **22/22** (relay 10, shell 10, smoke 2) sobre build de nodo con stub del API |
+| 3 | `pnpm --filter @recetario/web test` | 10 archivos, **117 tests verdes** (unit 49, nuxt 68), incluida la paridad de markup de íconos |
+| 4 | `pnpm --filter @recetario/web test:e2e` | **22/22** (relay 10, shell 10, smoke 2) sobre build de nodo con stub del API, **en frío y sin warm-up** |
 | 5 | `pnpm --filter @recetario/web build` | `.output/server/index.mjs` + `.output/public` |
-| 6 | `pnpm --filter @recetario/web wrangler:dry-run` | 789.87 KiB (200.43 KiB gzip), bindings `API`, `ASSETS`, `NODE_ENV` |
+| 6 | `pnpm --filter @recetario/web wrangler:dry-run` | 704.98 KiB (175.25 KiB gzip), bindings `API`, `ASSETS`, `NODE_ENV` |
 | 7 | `grep` del bundle cliente | sin `prisma`, `@prisma`, Stripe SDK, `better-auth` ni `node:crypto` (única coincidencia `stripePriceId`, campo de un schema Zod) |
 | 8 | `pnpm lint && pnpm type-check && pnpm test && pnpm build` (raíz) | lint 6/6 · type-check 7/7 · test 10/10 (web 112, api 201, auth 31, stripe 66, db 39) · build 7/7 |
 | 9 | Smoke workerd: `pnpm --filter @recetario/web build` + API `wrangler dev` + web `wrangler dev --config wrangler.nuxt.jsonc --port 4322` | Binding `API` `local [connected]`; `/api/billing/plans` relaya la respuesta real del API (200); `/api/auth/session` llega al API desde el worker (`[API] GET /api/auth/session -> 200`); ruta privada anónima 302 con `cache-control: private, no-store` y `x-robots-tag: noindex, nofollow`. Procesos detenidos y puertos liberados |
@@ -129,12 +130,12 @@ Rama `worktree-nuxt-rework`, sin trailer de co-autor, separados por tema:
 | `feat(web): portar el shell autenticado a Vue` | componentes del shell, `layouts/private.vue`, `app.vue`, composables, plugins, middlewares, páginas privadas |
 | `test(web): cubrir el relay, el shell y el arranque` | unit, nuxt, e2e + stub + config de Playwright + warm-up |
 | `chore(web): dev tooling y lint para la etapa Nuxt` | `scripts/sync-cloudflare-dev-vars.mjs`, `package.json`, `eslint.config.mjs` |
+| `fix(web): componer los íconos desde los datos de lucide` | `icon-registry.ts`, `Icon.vue`, `app/types/{icons.ts,lucide-icon.d.ts}`, test de paridad, retiro del warm-up |
 | `docs(nuxt): registrar la task 04` | este task file, `AGENTS.md`, `apps/api/README.md`, `docs/qa-agent-browser.md` |
 
 ## Follow-ups para las próximas sesiones
 
-1. **BLOQUEANTE para el corte — arranque en frío del SSR.** El primer render tras arrancar el proceso falla con `Cannot destructure property 'size' of 'useLucideProps(...)'` (cualquier página con íconos, incluida `error.vue` → un 404 puede devolver 500). Reproducción: `pnpm build` (node-server o cloudflare) + arrancar el server + primera petición. Es preexistente (Task 2) y no se resolvió con `NODE_ENV=production`, inlining de `@lucide/vue`, `nitro.experimental.asyncContext` ni lecturas de cookie por cabecera. Candidatos a explorar: `ssrRenderVNode` con componentes funcionales que usan `inject()` (patrón `Icon.vue` + registry), o renderizar los íconos con un wrapper propio que no dependa del contexto de instancia. **Quitar `test/e2e/support/warmup.ts` cuando se arregle.**
-2. **Task 5**: layout público y SEO; debe consumir `useTheme`/`useAuth` sin duplicar el mecanismo de tema/acento. Ojo: el `noindex` de `/` (Task 2) se retira ahí.
+1. **Task 5**: layout público y SEO; debe consumir `useTheme`/`useAuth` sin duplicar el mecanismo de tema/acento. Ojo: el `noindex` de `/` (Task 2) se retira ahí.
 3. **Task 6**: renderizar `?reason=auth_required|session_expired` en `/sign-in`, validar `redirect` con `getSafeRedirect` y adjuntar `app/middleware/guest.ts` a las rutas de auth.
 4. **Task 9**: breadcrumb dinámico con el nombre de la receta. Extensión prevista: resolverlo en un middleware de ruta de Nitro y sembrarlo en `event.context`/`useState` (el payload transporta estado SSR sin mismatch).
 5. **Task 11**: `setTheme`/`setAccent` de `useTheme` + `PUT /api/preferences`; las cookies se escriben sólo desde la respuesta confirmada (patrón de `useSidebarCollapsed` para escritura cliente).
