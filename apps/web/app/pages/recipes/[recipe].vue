@@ -24,15 +24,15 @@ useHead({
     <SectionHeading
       icon="chef-hat"
       title="Detalle de receta"
-      :subtitle="`Slice pendiente: Tasks 8 y 9 · id: ${recipeId}`"
+      :subtitle="`Slice pendiente: Task 9 · id: ${recipeId}`"
       level="h1"
     />
     <Card class="mt-6">
       <div class="flex flex-wrap items-center gap-3">
         <Badge color="warning"> Pendiente </Badge>
         <p class="text-muted-foreground text-sm">
-          Esta ruta se implementa en las Tasks 8 y 9 (listado y detalle de
-          recetas).
+          Esta ruta se implementa en la Task 9 (detalle y edición base de
+          receta).
         </p>
       </div>
     </Card>
