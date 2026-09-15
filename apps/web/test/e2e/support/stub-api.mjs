@@ -123,20 +123,39 @@ const PLANS = [
 ];
 
 function sessionPayload({ plan }) {
-  const isPro = plan !== "free";
+  const tier = plan === "free" ? "free" : plan === "basic" ? "basic" : "pro";
+  const limits = {
+    free: { recipes: 10, ingredients: 30 },
+    basic: { recipes: 75, ingredients: null },
+    pro: { recipes: null, ingredients: null },
+  }[tier];
+  const features = {
+    free: {
+      production_planner: false,
+      recipe_duplicate: false,
+      advanced_costs: false,
+    },
+    basic: {
+      production_planner: true,
+      recipe_duplicate: true,
+      advanced_costs: true,
+    },
+    pro: {
+      production_planner: true,
+      recipe_duplicate: true,
+      advanced_costs: true,
+    },
+  }[tier];
+
   return {
     ...SESSION_PAYLOAD,
     subscription: {
       ...SESSION_PAYLOAD.subscription,
-      tier: isPro ? "pro" : "free",
-      recipesLimit: isPro ? null : 10,
-      ingredientsLimit: isPro ? null : 30,
-      priceCents: isPro ? 1999 : null,
-      features: {
-        production_planner: isPro,
-        recipe_duplicate: isPro,
-        advanced_costs: isPro,
-      },
+      tier,
+      recipesLimit: limits.recipes,
+      ingredientsLimit: limits.ingredients,
+      priceCents: tier === "free" ? null : tier === "basic" ? 999 : 1999,
+      features,
     },
   };
 }
@@ -211,6 +230,82 @@ function toIngredientResponse(item) {
     ...(item.brand ? { brand: item.brand } : {}),
     ...(item.supplier ? { supplier: item.supplier } : {}),
   };
+}
+
+/** ── Recetas (Task 8): estado en memoria, sin BD ───────────────────────── */
+
+const SEED_RECIPES = [
+  {
+    id: 1,
+    name: "Tarta de Chocolate",
+    category: "Postres",
+    ingredientCount: 3,
+    updatedAt: "2026-09-14T10:00:00.000Z",
+  },
+  {
+    id: 2,
+    name: "Pan de Masa Madre",
+    category: "Panes",
+    ingredientCount: 2,
+    updatedAt: "2026-09-13T10:00:00.000Z",
+  },
+  {
+    id: 3,
+    name: "Brownie Clásico",
+    category: null,
+    ingredientCount: 0,
+    updatedAt: "2026-09-15T09:00:00.000Z",
+  },
+];
+
+function createRecipeState(seed = {}) {
+  return {
+    recipes: (seed.recipes ?? SEED_RECIPES).map((item) => ({ ...item })),
+    postAttempts: 0,
+    deleteAttempts: 0,
+  };
+}
+
+let recipeState = createRecipeState();
+
+function readRecipeState() {
+  return {
+    recipes: recipeState.recipes.map((item) => ({ ...item })),
+    postAttempts: recipeState.postAttempts,
+    deleteAttempts: recipeState.deleteAttempts,
+  };
+}
+
+/** Como Hono: las categorías nulas se omiten en la respuesta. */
+function toRecipeSummaryResponse(recipe) {
+  return {
+    id: recipe.id,
+    name: recipe.name,
+    ...(recipe.category ? { category: recipe.category } : {}),
+    ingredientCount: recipe.ingredientCount,
+    ...(recipe.updatedAt ? { updatedAt: recipe.updatedAt } : {}),
+  };
+}
+
+/** Detalle completo que devuelven crear y duplicar (`recipeWithIngredientsSchema`). */
+function toRecipeDetailResponse(recipe) {
+  return {
+    ...toRecipeSummaryResponse(recipe),
+    desiredMargin: 0,
+    fixedCostsPercentage: 0,
+    ingredients: [],
+    presentations: [],
+    recipeFixedCosts: [],
+  };
+}
+
+/** Igual que Hono: el nombre del duplicado se prefija y se recorta a 120. */
+function duplicatedName(sourceName) {
+  const maxNameLength = 120;
+  const name = `Copia de ${sourceName}`;
+  return name.length > maxNameLength
+    ? `${name.slice(0, maxNameLength - 1)}\u2026`
+    : name;
 }
 
 const server = createServer(async (req, res) => {
@@ -571,6 +666,122 @@ const server = createServer(async (req, res) => {
     return sendJson(res, 200, {
       recipes: ingredientState.usage[String(id)] ?? [],
     });
+  }
+
+  // ── Recetas (Task 8) ──────────────────────────────────────────────────────
+  const isRecipePath =
+    pathname === "/api/recipes" || pathname.startsWith("/api/recipes/");
+
+  if (isRecipePath && cookies["better-auth.session_token"] !== SESSION_TOKEN) {
+    return sendJson(res, 401, {
+      error: { code: "UNAUTHENTICATED", message: "Authentication required" },
+    });
+  }
+
+  if (pathname === "/api/recipes" && req.method === "GET") {
+    return sendJson(res, 200, recipeState.recipes.map(toRecipeSummaryResponse));
+  }
+
+  if (pathname === "/api/recipes" && req.method === "POST") {
+    recipeState.postAttempts += 1;
+    const payload = JSON.parse(body || "{}");
+
+    // `qa-plan=free` reproduce el límite real de 10 recetas.
+    if (cookies["qa-plan"] === "free" && recipeState.recipes.length >= 10) {
+      return sendJson(res, 403, {
+        error: {
+          code: "PLAN_LIMIT",
+          message: "Recipe limit reached for your plan (10)",
+        },
+      });
+    }
+
+    // Sentinela para cubrir el camino de error genérico sin CTA de upgrade.
+    if (payload.name === "Fallo simulado") {
+      return sendJson(res, 500, {
+        error: { code: "INTERNAL", message: "Fallo simulado del servidor" },
+      });
+    }
+
+    if (!payload.name || typeof payload.name !== "string") {
+      return sendJson(res, 400, {
+        error: { code: "VALIDATION_ERROR", message: "Invalid recipe input" },
+      });
+    }
+
+    const created = {
+      id: Math.max(0, ...recipeState.recipes.map((item) => item.id)) + 1,
+      name: payload.name,
+      category: null,
+      ingredientCount: 0,
+      updatedAt: new Date().toISOString(),
+    };
+    recipeState.recipes.push(created);
+
+    return sendJson(res, 201, toRecipeDetailResponse(created));
+  }
+
+  const recipeDuplicateMatch = pathname.match(
+    /^\/api\/recipes\/(\d+)\/duplicate$/,
+  );
+
+  if (recipeDuplicateMatch && req.method === "POST") {
+    if (cookies["qa-plan"] === "free") {
+      return sendJson(res, 403, {
+        error: {
+          code: "FEATURE_REQUIRED",
+          message: "Feature not available in your plan: recipe_duplicate",
+        },
+      });
+    }
+
+    const id = Number(recipeDuplicateMatch[1]);
+    const source = recipeState.recipes.find((item) => item.id === id);
+
+    if (!source) {
+      return sendJson(res, 404, {
+        error: { code: "NOT_FOUND", message: "Recipe not found" },
+      });
+    }
+
+    const copy = {
+      id: Math.max(0, ...recipeState.recipes.map((item) => item.id)) + 1,
+      name: duplicatedName(source.name),
+      category: source.category,
+      ingredientCount: source.ingredientCount,
+      updatedAt: new Date().toISOString(),
+    };
+    recipeState.recipes.push(copy);
+
+    return sendJson(res, 201, toRecipeDetailResponse(copy));
+  }
+
+  const recipeMatch = pathname.match(/^\/api\/recipes\/(\d+)$/);
+
+  if (recipeMatch && req.method === "DELETE") {
+    recipeState.deleteAttempts += 1;
+    const id = Number(recipeMatch[1]);
+    const index = recipeState.recipes.findIndex((item) => item.id === id);
+
+    if (index === -1) {
+      return sendJson(res, 404, {
+        error: { code: "NOT_FOUND", message: "Recipe not found" },
+      });
+    }
+
+    recipeState.recipes.splice(index, 1);
+    res.writeHead(204);
+    return res.end();
+  }
+
+  // ── Fixtures QA de recetas (deterministas por test) ───────────────────────
+  if (pathname === "/api/__qa/recipes/reset" && req.method === "POST") {
+    recipeState = createRecipeState(JSON.parse(body || "{}"));
+    return sendJson(res, 200, readRecipeState());
+  }
+
+  if (pathname === "/api/__qa/recipes/state" && req.method === "GET") {
+    return sendJson(res, 200, readRecipeState());
   }
 
   // ── Fixtures QA de ingredientes (deterministas por test) ──────────────────
