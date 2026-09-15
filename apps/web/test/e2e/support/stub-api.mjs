@@ -232,36 +232,77 @@ function toIngredientResponse(item) {
   };
 }
 
-/** ── Recetas (Task 8): estado en memoria, sin BD ───────────────────────── */
+/** ── Recetas (Tasks 8 y 9): estado en memoria, sin BD ───────────────────── */
 
+/**
+ * Cada receta guarda su detalle (Task 9): `ingredients` son filas
+ * `RecipeIngredient` que se unen con `ingredientState` al responder. La Tarta
+ * repite la harina (0.5 kg + 100 g) para cubrir el ingrediente repetido y su
+ * costo directo es $33.00 con los precios sembrados.
+ */
 const SEED_RECIPES = [
   {
     id: 1,
     name: "Tarta de Chocolate",
     category: "Postres",
-    ingredientCount: 3,
+    desiredMargin: 30,
+    fixedCostsPercentage: 10,
+    recipeFixedCosts: [],
     updatedAt: "2026-09-14T10:00:00.000Z",
+    ingredients: [
+      { ingredientId: 1, quantity: 0.5, unit: "kg", comment: "Para la masa" },
+      { ingredientId: 2, quantity: 2, unit: "kg" },
+      { ingredientId: 1, quantity: 100, unit: "g" },
+    ],
   },
   {
     id: 2,
     name: "Pan de Masa Madre",
     category: "Panes",
-    ingredientCount: 2,
+    desiredMargin: 25,
+    fixedCostsPercentage: 5,
+    recipeFixedCosts: [],
     updatedAt: "2026-09-13T10:00:00.000Z",
+    ingredients: [
+      { ingredientId: 1, quantity: 1, unit: "kg" },
+      { ingredientId: 2, quantity: 0.5, unit: "kg" },
+    ],
   },
   {
     id: 3,
     name: "Brownie Clásico",
     category: null,
-    ingredientCount: 0,
+    desiredMargin: 30,
+    fixedCostsPercentage: 0,
+    recipeFixedCosts: [],
     updatedAt: "2026-09-15T09:00:00.000Z",
+    ingredients: [],
   },
 ];
 
+/**
+ * Normaliza cada receta sembrada: los seeds de la Task 8 traían sólo el resumen
+ * (`ingredientCount`), así que se conserva ese valor y se rellena el detalle.
+ * Un fallo aquí tumba el proceso entero y con él todos los specs.
+ */
+function normalizeRecipe(recipe) {
+  const ingredients = clone(recipe.ingredients ?? []);
+
+  return {
+    ...recipe,
+    desiredMargin: recipe.desiredMargin ?? 0,
+    fixedCostsPercentage: recipe.fixedCostsPercentage ?? 0,
+    recipeFixedCosts: clone(recipe.recipeFixedCosts ?? []),
+    ingredients,
+    ingredientCount: recipe.ingredientCount ?? ingredients.length,
+  };
+}
+
 function createRecipeState(seed = {}) {
   return {
-    recipes: (seed.recipes ?? SEED_RECIPES).map((item) => ({ ...item })),
+    recipes: clone(seed.recipes ?? SEED_RECIPES).map(normalizeRecipe),
     postAttempts: 0,
+    patchAttempts: 0,
     deleteAttempts: 0,
   };
 }
@@ -270,8 +311,9 @@ let recipeState = createRecipeState();
 
 function readRecipeState() {
   return {
-    recipes: recipeState.recipes.map((item) => ({ ...item })),
+    recipes: clone(recipeState.recipes),
     postAttempts: recipeState.postAttempts,
+    patchAttempts: recipeState.patchAttempts,
     deleteAttempts: recipeState.deleteAttempts,
   };
 }
@@ -282,20 +324,42 @@ function toRecipeSummaryResponse(recipe) {
     id: recipe.id,
     name: recipe.name,
     ...(recipe.category ? { category: recipe.category } : {}),
-    ingredientCount: recipe.ingredientCount,
+    ingredientCount:
+      recipe.ingredientCount ?? (recipe.ingredients ?? []).length,
     ...(recipe.updatedAt ? { updatedAt: recipe.updatedAt } : {}),
   };
 }
 
-/** Detalle completo que devuelven crear y duplicar (`recipeWithIngredientsSchema`). */
+/**
+ * Detalle completo (`recipeWithIngredientsSchema`): igual que Hono, los campos
+ * opcionales nulos se omiten y cada fila trae su ingrediente anidado.
+ */
 function toRecipeDetailResponse(recipe) {
   return {
-    ...toRecipeSummaryResponse(recipe),
-    desiredMargin: 0,
-    fixedCostsPercentage: 0,
-    ingredients: [],
+    id: recipe.id,
+    name: recipe.name,
+    ...(recipe.category ? { category: recipe.category } : {}),
+    desiredMargin: recipe.desiredMargin ?? 0,
+    fixedCostsPercentage: recipe.fixedCostsPercentage ?? 0,
+    ...(recipe.updatedAt ? { updatedAt: recipe.updatedAt } : {}),
+    ingredients: recipe.ingredients
+      .map((row) => {
+        const ingredient = ingredientState.ingredients.find(
+          (item) => item.id === row.ingredientId,
+        );
+        if (!ingredient) return null;
+
+        return {
+          ingredientId: row.ingredientId,
+          quantity: row.quantity,
+          unit: row.unit,
+          ...(row.comment ? { comment: row.comment } : {}),
+          ingredient: toIngredientResponse(ingredient),
+        };
+      })
+      .filter(Boolean),
     presentations: [],
-    recipeFixedCosts: [],
+    recipeFixedCosts: recipe.recipeFixedCosts ?? [],
   };
 }
 
@@ -668,7 +732,7 @@ const server = createServer(async (req, res) => {
     });
   }
 
-  // ── Recetas (Task 8) ──────────────────────────────────────────────────────
+  // ── Recetas (Tasks 8 y 9) ────────────────────────────────────────────────
   const isRecipePath =
     pathname === "/api/recipes" || pathname.startsWith("/api/recipes/");
 
@@ -713,8 +777,12 @@ const server = createServer(async (req, res) => {
       id: Math.max(0, ...recipeState.recipes.map((item) => item.id)) + 1,
       name: payload.name,
       category: null,
-      ingredientCount: 0,
+      desiredMargin: 0,
+      fixedCostsPercentage: 0,
+      recipeFixedCosts: [],
       updatedAt: new Date().toISOString(),
+      ingredients: [],
+      ingredientCount: 0,
     };
     recipeState.recipes.push(created);
 
@@ -748,8 +816,12 @@ const server = createServer(async (req, res) => {
       id: Math.max(0, ...recipeState.recipes.map((item) => item.id)) + 1,
       name: duplicatedName(source.name),
       category: source.category,
-      ingredientCount: source.ingredientCount,
+      desiredMargin: source.desiredMargin,
+      fixedCostsPercentage: source.fixedCostsPercentage,
+      recipeFixedCosts: clone(source.recipeFixedCosts ?? []),
       updatedAt: new Date().toISOString(),
+      ingredients: clone(source.ingredients ?? []),
+      ingredientCount: source.ingredientCount ?? 0,
     };
     recipeState.recipes.push(copy);
 
@@ -757,6 +829,70 @@ const server = createServer(async (req, res) => {
   }
 
   const recipeMatch = pathname.match(/^\/api\/recipes\/(\d+)$/);
+
+  if (recipeMatch && req.method === "GET") {
+    const id = Number(recipeMatch[1]);
+    const recipe = recipeState.recipes.find((item) => item.id === id);
+
+    if (!recipe) {
+      return sendJson(res, 404, {
+        error: { code: "NOT_FOUND", message: "Recipe not found" },
+      });
+    }
+
+    return sendJson(res, 200, toRecipeDetailResponse(recipe));
+  }
+
+  if (recipeMatch && req.method === "PATCH") {
+    recipeState.patchAttempts += 1;
+
+    const id = Number(recipeMatch[1]);
+    const recipe = recipeState.recipes.find((item) => item.id === id);
+
+    if (!recipe) {
+      return sendJson(res, 404, {
+        error: { code: "NOT_FOUND", message: "Recipe not found" },
+      });
+    }
+
+    const payload = JSON.parse(body || "{}");
+
+    // Sentinela para cubrir el error genérico de guardado sin CTA de plan.
+    if (payload.name === "Fallo simulado") {
+      return sendJson(res, 500, {
+        error: { code: "INTERNAL", message: "Fallo simulado del servidor" },
+      });
+    }
+
+    if (
+      typeof payload.name !== "string" ||
+      !Array.isArray(payload.ingredients)
+    ) {
+      return sendJson(res, 400, {
+        error: { code: "VALIDATION_ERROR", message: "Invalid recipe input" },
+      });
+    }
+
+    // Igual que Hono: el guardado reemplaza la lista de ingredientes completa.
+    recipe.name = payload.name;
+    recipe.category = payload.category ? String(payload.category) : null;
+    recipe.desiredMargin = Number(
+      payload.desiredMargin ?? recipe.desiredMargin,
+    );
+    recipe.fixedCostsPercentage = Number(
+      payload.fixedCostsPercentage ?? recipe.fixedCostsPercentage,
+    );
+    recipe.ingredients = payload.ingredients.map((row) => ({
+      ingredientId: Number(row.ingredientId),
+      quantity: Number(row.quantity),
+      unit: String(row.unit ?? "unidad"),
+      ...(row.comment ? { comment: String(row.comment) } : {}),
+    }));
+    recipe.ingredientCount = recipe.ingredients.length;
+    recipe.updatedAt = new Date().toISOString();
+
+    return sendJson(res, 200, toRecipeDetailResponse(recipe));
+  }
 
   if (recipeMatch && req.method === "DELETE") {
     recipeState.deleteAttempts += 1;

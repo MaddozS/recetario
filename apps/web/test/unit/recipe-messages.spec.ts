@@ -106,4 +106,16 @@ describe("resolveRecipeMutationError", () => {
       resolveRecipeMutationError(undefined, { action: "delete", limit: null }),
     ).toEqual({ message: "No se pudo eliminar la receta." });
   });
+
+  it("trata la receta desaparecida al guardar como eliminada", () => {
+    expect(
+      resolveRecipeMutationError(NOT_FOUND, { action: "update", limit: 10 }),
+    ).toEqual({ message: DELETED_RECIPE_MESSAGE });
+  });
+
+  it("cae al mensaje de guardado cuando el error no es reconocible", () => {
+    expect(
+      resolveRecipeMutationError(undefined, { action: "update", limit: null }),
+    ).toEqual({ message: "No se pudo actualizar la receta." });
+  });
 });
