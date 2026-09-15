@@ -18,7 +18,7 @@ Plan de sesión: `~/.commandcode/plans/recetario-nuxt-task-07-ingredients.md`
 | Tests web      | **240** (unit 120, nuxt 120) — antes 175                                                                                           |
 | E2E web        | **65/65** (ingredientes 10)                                                                                                        |
 | Checks raíz    | lint 6/6 · type-check 7/7 · test 10/10 (web 240, api 201, stripe 66, auth 31, db 39) · build 7/7                                   |
-| Bundle Nitro   | dry-run **901.28 KiB** (218.53 KiB gzip); build 837 kB (274 kB gzip)                                                               |
+| Bundle Nitro   | dry-run **901.32 KiB** (218.56 KiB gzip); build 837 kB (274 kB gzip)                                                               |
 | Bundle cliente | sin `better-auth`, Prisma, `@recetario/db`, `node:crypto` ni SDK de Stripe (único match de `stripe`: el campo Zod `stripePriceId`) |
 | QA visual      | 8 capturas 375/1280 × claro/oscuro en `apps/web/test-results/qa/` (gitignored)                                                     |
 
@@ -61,7 +61,7 @@ Plan de sesión: `~/.commandcode/plans/recetario-nuxt-task-07-ingredients.md`
 | 5   | El conflicto de borrado se resuelve del mapa `usage` local, con `GET /:id/usage` sólo si viniera vacío                           | Astro re-consultaba siempre porque el 409 descarta `recipes` al parsear el envelope; el dato ya está en la instantánea                                                                                |
 | 6   | Se añadió `refresh-cw` al registro de íconos                                                                                     | Botón “Reintentar” del error de carga (mejora de soft-fail, no existía en Astro)                                                                                                                      |
 | 7   | El título de la página es `Ingredientes \| KitchCalc` (Astro: `KitchCalc - Inventario`)                                          | Convención de títulos de Tasks 5/6                                                                                                                                                                    |
-| 8   | Copy del límite conservado **verbatim** (sin tildes: “limite”, “mas”)                                                            | Fidelidad al texto actual compartido con recetas; la corrección de copy es follow-up                                                                                                                  |
+| 8   | Copy del límite con tildes (Astro conserva “limite”/“mas”)                                                                       | Deuda detectada y **corregida tras la sesión** (ver “Detalles atendidos”); recetas debe usar el mismo texto                                                                                           |
 
 ## Verificación
 
@@ -73,7 +73,7 @@ Plan de sesión: `~/.commandcode/plans/recetario-nuxt-task-07-ingredients.md`
 | 4   | `pnpm --filter @recetario/web test`                                   | 22 archivos, **240 tests verdes** (unit 120, nuxt 120)                                                 |
 | 5   | `pnpm --filter @recetario/web test:e2e`                               | **65/65** (ingredientes 10)                                                                            |
 | 6   | `pnpm --filter @recetario/web build`                                  | 837 kB (274 kB gzip)                                                                                   |
-| 7   | `pnpm --filter @recetario/web wrangler:dry-run`                       | 901.28 KiB (218.53 KiB gzip); bindings `API`, `ASSETS`, `NODE_ENV`                                     |
+| 7   | `pnpm --filter @recetario/web wrangler:dry-run`                       | 901.32 KiB (218.56 KiB gzip); bindings `API`, `ASSETS`, `NODE_ENV`                                     |
 | 8   | `env -u WEB_ORIGIN … pnpm lint && type-check && test && build` (raíz) | lint 6/6 · type-check 7/7 · test 10/10 · build 7/7                                                     |
 | 9   | `grep` del bundle cliente                                             | sin `better-auth`, Prisma, `@recetario/db`, `node:crypto`, `@stripe/`                                  |
 | 10  | QA visual (agent-browser 0.27.0, dev contra el stub en 8787)          | 8 capturas 375/1280 × claro/oscuro                                                                     |
@@ -110,6 +110,16 @@ Dev server contra el stub del API (`STUB_API_PORT=8787`), `agent-browser` 0.27.0
 
 Verificado además por `eval`: contador `(N)` actualizado tras crear/eliminar, `postAttempts: 0` en el límite, `dialogFits` en móvil, `tableScrolls` en 375 y `theme`/`dark`/`accent` tras cambiar la cookie. El estado **pending** (overlay “Agregando insumo…” + botón con spinner) no se capturó por ser instantáneo contra el stub local: queda cubierto por los tests nuxt (`aria-busy`, texto “Agregando…”) y por el e2e (submit deshabilitado + éxito).
 
+## Detalles atendidos tras la sesión
+
+| #   | Detalle                                                                                                       | Decisión y resultado                                                                                                                                                                                                 |
+| --- | ------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | El pill de “Costo x Unidad” partía los datos en dos líneas en la tabla de 1280 (`$25.00 /` + `kg`, 104×58 px) | **Arreglado**: `whitespace-nowrap` en el pill → 118×38 px, una sola línea. Medido antes/después: la tabla no gana scroll (979 px en ambos casos)                                                                     |
+| 2   | El encabezado “Costo x Unidad” también envuelve a dos líneas                                                  | **No se toca**: `nowrap` en los encabezados lleva la tabla a 1020 px contra 979 disponibles (aparece scroll horizontal de 41 px). Es un rótulo, no un dato, y es el comportamiento heredado                          |
+| 3   | Copy del límite sin tildes (“limite”, “mas”)                                                                  | **Arreglado**: `ingredientLimitMessage()` usa “límite”/“más” y los tres specs (unit, nuxt y e2e) lo verifican. Recetas debe portar este mismo texto en Task 8 (el árbol Astro lo conserva sin tildes hasta el corte) |
+| 4   | Tabla con scroll horizontal en móvil, con las acciones fuera de la vista inicial                              | **Se mantiene la paridad aprobada**: las cards móviles siguen como follow-up (decisión 3), no se bundlean en la migración                                                                                            |
+| 5   | Evidencia de QA                                                                                               | Regenerada completa (8 capturas, mismos nombres) tras la corrida de e2e; los dos arreglos se verificaron además con `eval` (`pillsOneLine`, altura 38 px, `postAttempts: 0`)                                         |
+
 ## Riesgos y rollback
 
 | Riesgo                                          | Estado                                                                                       |
@@ -141,7 +151,6 @@ Rama `worktree-nuxt-rework`, sin trailer de co-autor, separados por tema:
 ## Follow-ups para las próximas sesiones
 
 1. **Cards móviles para la lista de ingredientes** (mejora registrada, no bundleada): hoy es la tabla de Astro con scroll horizontal.
-2. **Copy del límite:** unificar tildes (“límite”, “más”) en ingredientes y recetas cuando se haga una pasada de copy.
-3. **Task 8/9:** reutilizar `UNIT_OPTIONS`/`parseIngredientNumber`; si aparece un `<select>` reutilizable, evaluar promover un átomo `Select` al kit (y entonces mover las unidades a `shared/`).
-4. **Micro-detalle visual:** en la tabla de 1280 el pill de costo unitario y el encabezado “Costo x Unidad” envuelven a dos líneas (mismo comportamiento que Astro). Un `whitespace-nowrap` en el pill lo evitaría; fuera del alcance de paridad.
-5. `graphify` no se usó (preferencia vigente lo prohíbe).
+2. **Task 8 (recetas):** usar el copy con tildes del límite (`límite`/`más`) y reutilizar `UNIT_OPTIONS`/`parseIngredientNumber`; si aparece un `<select>` reutilizable, evaluar promover un átomo `Select` al kit (y entonces mover las unidades a `shared/`).
+3. **Encabezados de la tabla:** si en Task 8 se toca la tabla de recetas, revisar ahí el `nowrap` de encabezados (hoy el de ingredientes mantiene el wrap por ancho disponible).
+4. `graphify` no se usó (preferencia vigente lo prohíbe).
