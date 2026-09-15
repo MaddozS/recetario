@@ -6,7 +6,7 @@
  * de upgrade únicamente cuando la causa real es el plan; `FEATURE_REQUIRED`
  * (duplicar en plan Free) nunca lo ofrece, igual que en Astro.
  */
-export type RecipeMutationAction = "create" | "duplicate" | "delete";
+export type RecipeMutationAction = "create" | "duplicate" | "delete" | "update";
 
 export type RecipeMutationFailure = {
   message: string;
@@ -33,6 +33,7 @@ const FALLBACK_MESSAGES: Record<RecipeMutationAction, string> = {
   create: "No se pudo crear la receta.",
   duplicate: "Error al duplicar la receta.",
   delete: "No se pudo eliminar la receta.",
+  update: "No se pudo actualizar la receta.",
 };
 
 function asErrorLike(error: unknown): ErrorLike | null {
@@ -70,14 +71,15 @@ export function resolveRecipeMutationError(
   }
 
   if (candidate?.status === 404) {
-    return {
-      message:
-        action === "duplicate"
-          ? RECIPE_NOT_FOUND_MESSAGE
-          : action === "delete"
-            ? DELETED_RECIPE_MESSAGE
-            : FALLBACK_MESSAGES[action],
-    };
+    if (action === "duplicate") {
+      return { message: RECIPE_NOT_FOUND_MESSAGE };
+    }
+
+    if (action === "delete" || action === "update") {
+      return { message: DELETED_RECIPE_MESSAGE };
+    }
+
+    return { message: FALLBACK_MESSAGES[action] };
   }
 
   if (
