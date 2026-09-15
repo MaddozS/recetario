@@ -582,4 +582,31 @@ describe("Dialog", () => {
     expect(showModal).toHaveBeenCalledTimes(1);
     expect(close).toHaveBeenCalledTimes(1);
   });
+
+  it("sin size ni scroll mantiene el panel original", async () => {
+    const wrapper = await mountSuspended(Dialog, { props: { id: "d8" } });
+
+    expect(wrapper.find("dialog").classes()).toContain("max-w-md");
+    const panel = wrapper.find("dialog > div");
+    expect(panel.classes()).not.toContain("overflow-y-auto");
+  });
+
+  it("size y scroll ajustan el ancho y el scroll interno del panel", async () => {
+    const wrapper = await mountSuspended(Dialog, {
+      props: { id: "d9", size: "lg", scroll: true },
+    });
+
+    expect(wrapper.find("dialog").classes()).toContain("max-w-lg");
+    const panel = wrapper.find("dialog > div");
+    expect(panel.classes()).toContain("overflow-y-auto");
+    expect(panel.classes()).toContain("max-h-[min(82vh,44rem)]");
+  });
+
+  it("size xl usa el ancho de los formularios de edición", async () => {
+    const wrapper = await mountSuspended(Dialog, {
+      props: { id: "d10", size: "xl" },
+    });
+
+    expect(wrapper.find("dialog").classes()).toContain("max-w-xl");
+  });
 });

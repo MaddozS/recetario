@@ -141,6 +141,78 @@ function sessionPayload({ plan }) {
   };
 }
 
+/** ── Ingredientes (Task 7): estado en memoria, sin BD ─────────────────────── */
+
+const SEED_INGREDIENTS = [
+  {
+    id: 1,
+    name: "Harina de trigo",
+    unit: "kg",
+    price: 25,
+    purchaseQuantity: 1,
+    brand: "Del Campo",
+    supplier: "Casa Santos",
+  },
+  {
+    id: 2,
+    name: "Plátano",
+    unit: "kg",
+    price: 18,
+    purchaseQuantity: 2,
+    brand: null,
+    supplier: null,
+  },
+];
+
+const SEED_USAGE = { 1: [{ id: 10, name: "Tarta de Chocolate" }] };
+
+/** Copia profunda por JSON: el stub sólo maneja datos serializables. */
+function clone(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
+function createIngredientState(seed = {}) {
+  return {
+    ingredients: (seed.ingredients ?? SEED_INGREDIENTS).map((item) => ({
+      ...item,
+    })),
+    usage: clone(seed.usage ?? SEED_USAGE),
+    postAttempts: 0,
+  };
+}
+
+let ingredientState = createIngredientState();
+
+function readIngredientState() {
+  return {
+    ingredients: ingredientState.ingredients.map((item) => ({ ...item })),
+    usage: clone(ingredientState.usage),
+    postAttempts: ingredientState.postAttempts,
+  };
+}
+
+function ingredientUsageMap() {
+  return Object.fromEntries(
+    Object.entries(ingredientState.usage).map(([id, recipes]) => [
+      id,
+      recipes.map((recipe) => recipe.name),
+    ]),
+  );
+}
+
+/** Igual que Hono: los nulos de marca/proveedor se omiten en la respuesta. */
+function toIngredientResponse(item) {
+  return {
+    id: item.id,
+    name: item.name,
+    unit: item.unit,
+    price: item.price,
+    purchaseQuantity: item.purchaseQuantity,
+    ...(item.brand ? { brand: item.brand } : {}),
+    ...(item.supplier ? { supplier: item.supplier } : {}),
+  };
+}
+
 const server = createServer(async (req, res) => {
   const url = new URL(req.url ?? "/", `http://${HOST}:${PORT}`);
   const cookies = parseCookies(req.headers.cookie);
@@ -340,6 +412,175 @@ const server = createServer(async (req, res) => {
     }
 
     return sendJson(res, 200, { url: "/pricing?success=1" });
+  }
+
+  // ── Ingredientes (Task 7) ─────────────────────────────────────────────────
+  if (
+    pathname.startsWith("/api/ingredients") ||
+    pathname === "/api/usage-counts"
+  ) {
+    if (cookies["better-auth.session_token"] !== SESSION_TOKEN) {
+      return sendJson(res, 401, {
+        error: { code: "UNAUTHENTICATED", message: "Authentication required" },
+      });
+    }
+  }
+
+  if (pathname === "/api/usage-counts" && req.method === "GET") {
+    return sendJson(res, 200, {
+      recipes: 2,
+      ingredients: ingredientState.ingredients.length,
+    });
+  }
+
+  if (pathname === "/api/ingredients/usage" && req.method === "GET") {
+    return sendJson(res, 200, ingredientUsageMap());
+  }
+
+  if (pathname === "/api/ingredients" && req.method === "GET") {
+    return sendJson(
+      res,
+      200,
+      ingredientState.ingredients.map(toIngredientResponse),
+    );
+  }
+
+  if (pathname === "/api/ingredients" && req.method === "POST") {
+    ingredientState.postAttempts += 1;
+    const payload = JSON.parse(body || "{}");
+
+    // `qa-plan=free` reproduce el límite real de 30 ingredientes.
+    if (
+      cookies["qa-plan"] === "free" &&
+      ingredientState.ingredients.length >= 30
+    ) {
+      return sendJson(res, 403, {
+        error: {
+          code: "PLAN_LIMIT",
+          message: "Ingredient limit reached for your plan (30)",
+        },
+      });
+    }
+
+    // Sentinela para cubrir el camino de error genérico sin CTA de upgrade.
+    if (payload.name === "Fallo simulado") {
+      return sendJson(res, 500, {
+        error: { code: "INTERNAL", message: "Fallo simulado del servidor" },
+      });
+    }
+
+    if (
+      !payload.name ||
+      !Number.isFinite(payload.price) ||
+      !(payload.purchaseQuantity > 0)
+    ) {
+      return sendJson(res, 400, {
+        error: {
+          code: "VALIDATION_ERROR",
+          message: "Invalid ingredient input",
+        },
+      });
+    }
+
+    const created = {
+      id:
+        Math.max(0, ...ingredientState.ingredients.map((item) => item.id)) + 1,
+      name: payload.name,
+      unit: payload.unit ?? "kg",
+      price: payload.price,
+      purchaseQuantity: payload.purchaseQuantity,
+      brand: payload.brand ?? null,
+      supplier: payload.supplier ?? null,
+    };
+    ingredientState.ingredients.push(created);
+    return sendJson(res, 201, toIngredientResponse(created));
+  }
+
+  const ingredientMatch = pathname.match(/^\/api\/ingredients\/(\d+)$/);
+
+  if (ingredientMatch && req.method === "PATCH") {
+    const id = Number(ingredientMatch[1]);
+    const payload = JSON.parse(body || "{}");
+    const target = ingredientState.ingredients.find((item) => item.id === id);
+
+    if (!target) {
+      return sendJson(res, 404, {
+        error: { code: "NOT_FOUND", message: "Ingredient not found" },
+      });
+    }
+
+    Object.assign(target, {
+      name: payload.name ?? target.name,
+      unit: payload.unit ?? target.unit,
+      price: payload.price ?? target.price,
+      purchaseQuantity: payload.purchaseQuantity ?? target.purchaseQuantity,
+      brand: payload.brand ?? null,
+      supplier: payload.supplier ?? null,
+    });
+
+    return sendJson(res, 200, toIngredientResponse(target));
+  }
+
+  if (ingredientMatch && req.method === "DELETE") {
+    const id = Number(ingredientMatch[1]);
+    const index = ingredientState.ingredients.findIndex(
+      (item) => item.id === id,
+    );
+
+    if (index === -1) {
+      return sendJson(res, 404, {
+        error: { code: "NOT_FOUND", message: "Ingredient not found" },
+      });
+    }
+
+    const recipes = ingredientState.usage[String(id)] ?? [];
+    if (recipes.length > 0) {
+      // Como Hono: `recipes` viaja fuera del envelope de error.
+      return sendJson(res, 409, {
+        error: {
+          code: "DOMAIN_ERROR",
+          message: "Ingredient is in use by existing recipes",
+          reason: "ingredient_in_use",
+        },
+        recipes: recipes.map((recipe) => ({
+          id: recipe.id,
+          name: recipe.name,
+        })),
+      });
+    }
+
+    ingredientState.ingredients.splice(index, 1);
+    res.writeHead(204);
+    return res.end();
+  }
+
+  const ingredientUsageMatch = pathname.match(
+    /^\/api\/ingredients\/(\d+)\/usage$/,
+  );
+
+  if (ingredientUsageMatch && req.method === "GET") {
+    const id = Number(ingredientUsageMatch[1]);
+    const target = ingredientState.ingredients.find((item) => item.id === id);
+
+    if (!target) {
+      return sendJson(res, 404, {
+        error: { code: "NOT_FOUND", message: "Ingredient not found" },
+      });
+    }
+
+    return sendJson(res, 200, {
+      recipes: ingredientState.usage[String(id)] ?? [],
+    });
+  }
+
+  // ── Fixtures QA de ingredientes (deterministas por test) ──────────────────
+  if (pathname === "/api/__qa/ingredients/reset" && req.method === "POST") {
+    ingredientState = createIngredientState(JSON.parse(body || "{}"));
+    return sendJson(res, 200, readIngredientState());
+  }
+
+  if (pathname === "/api/__qa/ingredients/state" && req.method === "GET") {
+    return sendJson(res, 200, readIngredientState());
   }
 
   // ── Casos del relay ───────────────────────────────────────────────────────
