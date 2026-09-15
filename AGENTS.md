@@ -1,14 +1,16 @@
 # AGENTS.md — Recetario
 
-> **Migración Nuxt en curso.** `apps/web` se está reescribiendo de Astro a Nuxt 4 + Vue en el worktree `worktree-nuxt-rework`, hoy en `/Users/maddozs/personal-projects/recetario-nuxt-rework` (fuera de `~/.commandcode/` para no disparar prompts de permiso). El árbol Astro (`apps/web/src/**`) queda como referencia fuera de build/lint/type-check hasta la Task 13. Decisión en `docs/adr/0009-nuxt-frontend-rework.md`; estado por task en `docs/tasks/` (última: `task-20260915-0950-recipes-list.md`).
+> **Migración Nuxt en curso.** `apps/web` se está reescribiendo de Astro a Nuxt 4 + Vue en el worktree `worktree-nuxt-rework`, hoy en `/Users/maddozs/personal-projects/recetario-nuxt-rework` (fuera de `~/.commandcode/` para no disparar prompts de permiso). El árbol Astro (`apps/web/src/**`) queda como referencia fuera de build/lint/type-check hasta la Task 13. Decisión en `docs/adr/0009-nuxt-frontend-rework.md`; estado por task en `docs/tasks/` (última: `task-20260915-1139-recipe-detail.md`).
 >
 > **Task 4 (relay, sesión y shell) ya está en la rama.** Detalles operativos:
+>
 > - `pnpm dev` en `apps/web` sincroniza `.dev.vars` y limpia `.vite-cache/web`, y sirve en `localhost:4321` (el API confía en `WEB_ORIGIN`). El API sigue en `localhost:8787`: en dev el relay cae a HTTP contra `INTERNAL_API_URL`.
 > - `apps/web/server/**` es Nitro: relay `/api/**`, bootstrap de sesión y cabeceras privadas. El estado de sesión lo resuelve `useAuth().resolveSession()` (contexto del request → `GET /api/auth/session`).
 > - Preferir `useApi()` y `@recetario/stripe/subscription` en el código nuevo; el barrel de `@recetario/stripe` arrastra el SDK.
 > - **Íconos:** `Icon.vue` compone el `<svg>` desde los datos de lucide (`app/utils/icon-registry.ts` → `__iconData`), **no** desde sus componentes: son funcionales y usan `inject()`, que perdía la instancia de Vue en el primer render SSR dentro del `Suspense` de un layout (500 en la primera petición de cada proceso). No reintroducir componentes de `@lucide/vue` en el render; el contrato de markup está en `test/nuxt/icon-parity.spec.ts`.
 >
 > **Task 5 (SEO y páginas públicas) ya está en la rama.** Detalles operativos:
+>
 > - Las cuatro rutas indexables son `/`, `/pricing`, `/privacy` y `/terms` (`shared/utils/seo.ts`): layout `public.vue`, metadata vía `usePageSeo()` y `robots.txt`/`sitemap.xml` como rutas de Nitro.
 > - **Indexación fail-closed:** sin `NUXT_PUBLIC_INDEXABLE=true` las públicas emiten `noindex,nofollow` y `robots.txt` bloquea el sitio completo. Producción la activa al desplegar (Task 13); staging la deja sin definir. `NUXT_PUBLIC_SITE_URL` fija el canonical absoluto (default `https://app.kitchcalc.com`).
 > - `/pricing` es pública: el anónimo ve el catálogo y su CTA pasa por `/sign-in?redirect=…`; el checkout sigue exigiendo sesión y CSRF en Hono.
@@ -16,6 +18,7 @@
 > - Tests de referencia: `test/unit/seo.spec.ts`, `test/nuxt/public-ui.spec.ts` y `test/e2e/public.spec.ts` (metadata SSR, robots/sitemap, 404, checkout con el stub del API).
 >
 > **Task 6 (flujos de autenticación) ya está en la rama.** Detalles operativos:
+>
 > - Las cinco rutas (`/sign-in`, `/sign-up`, `/forgot-password`, `/reset-password`, `/verify-email`) usan `layouts/auth.vue`, `useNoindexSeo()` (title + `noindex,nofollow`, **sin** canonical ni OG) y viven en `shared/utils/seo.ts` → `AUTH_PAGES`/`isAuthPath()`. Junto con las públicas indexables son las rutas de acento coral (`isCoralAccentPath()` en `app.vue`).
 > - `server/middleware/10.auth.ts` aplica `cache-control: private, no-store` + `x-robots-tag: noindex, nofollow` a las rutas de auth (llevan token en la query). `PUBLIC_PAGES` sigue con 4 rutas: ni `robots.txt` ni `sitemap.xml` cambian.
 > - **Transporte propio, sin `better-auth` en el bundle**: `app/features/auth/useAuthApi.ts` sobre `useRequestFetch()` + Zod (`auth-contracts.ts`) + `toAuthApiError()` (entiende el envelope de Hono, los errores de Better Auth `{message, code}` y las rutas custom `{error, code, errors}`). No importar `@recetario/auth/client` ni el barrel `@recetario/auth` en la web: arrastran `createAuthClient`; para las reglas de contraseña existe el subpath `@recetario/auth/password`.
@@ -25,6 +28,7 @@
 > - **QA funcional en dev:** el relay lee `INTERNAL_API_URL` de `.dev.vars` (proxy de wrangler) antes que `process.env`; para apuntar el dev server al stub de los e2e hay que levantarlo en `8787` (`STUB_API_PORT=8787 node test/e2e/support/stub-api.mjs`).
 
 > **Task 7 (slice de ingredientes) ya está en la rama.** Detalles operativos:
+>
 > - `app/features/ingredients/**` es el patrón del slice vertical: piezas puras sin aliases (`ingredient-form`, `ingredient-search`, `ingredient-messages`, `ingredient-state`, `ingredient-units`), `useIngredients()` y los componentes de la feature. Las mutaciones van directo a Hono y la lista/contadores se actualizan en sitio con los reducers puros (`withCreated`/`withUpdated`/`withRemoved`): **sin recarga y sin query params de feedback**.
 > - `UNIT_OPTIONS`/`parseIngredientNumber`/`formatUnitCost` viven en la feature (no en `shared/`) porque el proyecto `unit` de Vitest no resuelve el alias `#shared`; se promueven a `shared/utils/` cuando recetas o producción los necesiten. Los tipos del API se derivan del schema (`IngredientRecord = z.infer<typeof ingredientSchema>`) para no duplicar el contrato.
 > - **Límite de plan:** se anticipa con `canCreateIngredient` sobre los contadores SSR y el `PLAN_LIMIT` de Hono se mapea al mismo mensaje; el CTA “Actualizar plan” aparece **sólo** en ese caso (`planLimit: true`), nunca en errores genéricos.
@@ -33,13 +37,27 @@
 > - **Nota de tests:** con `mountSuspended`, `wrapper.emitted()` y `findComponent(Component).emitted()` están vacíos (el wrapper es el del `Suspense`). Para assertar eventos usa listeners espía en `attrs` (`"onUpdate:open"`, `onEdit`, …).
 
 > **Task 8 (listado de recetas) ya está en la rama.** Detalles operativos:
-> - `app/features/recipes/**` sigue el patrón del slice: piezas puras sin aliases (`recipe-form`, `recipe-filters`, `recipe-messages`, `recipe-stats`, `recipe-state`), `useRecipes()` y los componentes de la feature. Crear/duplicar/eliminar mutan con `withCreated`/`withRemoved` y **después** navegan o dejan feedback: `useAsyncData` con key fija no refetchea al volver, así que el reducer antes de salir es lo que mantiene la lista correcta.
+>
+> - `app/features/recipes/**` sigue el patrón del slice: piezas puras sin aliases (`recipe-form`, `recipe-filters`, `recipe-messages`, `recipe-stats`, `recipe-state`), `useRecipes()` y los componentes de la feature. Crear/duplicar/eliminar mutan con `withCreated`/`withRemoved` y **después** navegan o dejan feedback: la mutación previa deja la lista correcta sin esperar al viaje de vuelta (el refetch al remontar lo aclaró la Task 9: `purgeCachedData` es `true`).
 > - **El filtro por categoría vive en la URL** (`?category=`; `""` = sin categoría, ausente = todas) y se resuelve con `navigateTo`: el back/forward y el deep link salen gratis y una navegación solo-query no remonta la página ni pierde la búsqueda.
 > - **Contratos retirados:** `?type=`, `?message=` y `?upgrade=1` (los generaba el redirect de Astro). El límite de plan ahora sólo muestra la alerta inline con «Actualizar plan», igual que la Task 7.
 > - **`@recetario/stripe/formatters`** (subpath nuevo) expone `timeAgo`/`formatCurrency` sin arrastrar el SDK; usar ese subpath en lugar del barrel.
 > - **Los componentes de una feature no están auto-registrados** (el escaneo es solo de `~/components/ui` y `~/components/landing`): hay que importar siempre los de `app/features/**`. Si falta el import, el componente se renderiza como nada y `nuxt typecheck` no lo detecta (lo cazan los tests nuxt).
 > - Tests de referencia: `test/unit/recipe-*.spec.ts`, `test/nuxt/recipes-ui.spec.ts` y `test/e2e/recipes.spec.ts`; el stub expone `/api/__qa/recipes/reset|state` y `qa-plan=free|basic|pro` con los límites y features reales de `plans-config.ts`.
 > - **Hallazgos abiertos con dueño:** el task file de la Task 8 cierra con «Hallazgos abiertos y quién los atiende», una tabla que mapea cada pendiente a la Task que lo cierra (9, 11, 12 o 13) y distingue los que se resuelven _de paso_ de los que exigen trabajo explícito. Leerla antes de planear la Task 9 (detalle) o la 12 (producción).
+
+> **Task 9 (detalle y edición base de receta) ya está en la rama.** Detalles operativos:
+>
+> - `/recipes/[id]` es el slice real: header (título/categoría, badge, «Actualizado», Mezclas), tabs con hash (`#ingredientes|#costos-fijos|#presentaciones`), lista de ingredientes en cards móvil / tabla desktop con «Ver notas», editor con picker y `FinancialSummary` base. `useRecipeDetail()` es el composable; la página sólo compone.
+> - **`PATCH /api/recipes/:id` ahora responde shapeado** (`shapeRecipeDetail`, igual que el GET): antes devolvía la fila cruda de Prisma y no validaba contra `recipeWithIngredientsSchema`. El detalle usa la respuesta validada como estado nuevo.
+> - **El composable es `async` y espera su `useAsyncData`**: sin esperar, el servidor renderiza el formulario vacío y el cliente lo hidrata lleno («Hydration completed but contains mismatches», que en producción no dice nada — se diagnostica en dev). Los hooks de ciclo de vida (`onMounted`) van **antes** del primer `await`.
+> - **`refreshNuxtData` desde otra página es un no-op**: `useAsyncData` desregistra su hook al desmontar y `experimental.purgeCachedData` es `true`, así que el listado se remonta y refetchea solo al volver. No hay que refrescarlo a mano (corrige el handoff de la Task 8).
+> - **Contratos de URL:** `?edit=true` (entrar empuja, cancelar/salir usan `replace`), `?multiplier=` (reactivo, sin recargas) y los hashes de tab. Retirados `?type=`/`?message=`/`_fc`.
+> - **`shared/` es la fuente de las piezas compartidas**: `UNIT_OPTIONS`/`DEFAULT_UNIT` (`#shared/utils/units`) y `normalizeSearchText` (`#shared/utils/search`); el proyecto `unit` de Vitest resuelve `#shared` desde esta Task.
+> - Costos Fijos y Presentaciones muestran «Pendiente: Task 10»; `FinancialSummary` ya calcula con los `recipeFixedCosts` reales. El menú de acciones tiene variante `page` con Escape + gestión de foco.
+> - Tests de referencia: `test/unit/recipe-detail-*.spec.ts`, `test/unit/recipe-financials.spec.ts`, `test/nuxt/recipe-detail-ui.spec.ts` y `test/e2e/recipe-detail.spec.ts`; el stub cubre `GET`/`PATCH /api/recipes/:id`, `patchAttempts` y la sentinela `Fallo simulado`.
+> - **Notas de tests:** las vistas ocultas cuentan igual y `getByText` resuelve al nodo más profundo: acotar por contenedor (`table`, `[data-multiplier='desktop|mobile']`). El stub es **un único proceso** para toda la suite: un error en un handler tumba todos los specs con fallos en cascada. `request.get` de Playwright sigue redirects salvo `maxRedirects: 0`.
+> - **Formato:** `pnpm format` de la raíz no funciona (prettier sólo existe en `apps/web`); usar `pnpm --filter @recetario/web exec prettier --write <paths>`.
 
 ## Stack
 
@@ -194,8 +212,8 @@ When a UI component behaves differently across breakpoints or page states, analy
 
 **Required format** (use in analysis reports and task files):
 
-| Condition | Mobile (< md) | Desktop (≥ md) |
-|-----------|---------------|-----------------|
+| Condition | Mobile (< md)  | Desktop (≥ md) |
+| --------- | -------------- | -------------- |
 | [state 1] | [what renders] | [what renders] |
 | [state 2] | [what renders] | [what renders] |
 
@@ -217,20 +235,24 @@ This goes beyond `pnpm astro check` — that only verifies types, not visual cor
 ## Process Conventions
 
 ### Task File Convention
+
 Plans reference task files — they don't embed them. Each subagent task gets its own file at `docs/tasks/task-YYYYMMDD-HHmm-<agent>.md`. The plan's Tasks section lists summaries; the task file has full technical steps.
 
 ### Task Dependency Convention
+
 Plans MUST include a `## Task Dependencies` table before the `## Tasks` section:
 
 ```markdown
 ## Task Dependencies
-| Task | Depends On | Parallel-Safe |
-|------|------------|---------------|
-| Task 1 | — | yes |
-| Task 2 | Task 1 | no |
+
+| Task   | Depends On | Parallel-Safe |
+| ------ | ---------- | ------------- |
+| Task 1 | —          | yes           |
+| Task 2 | Task 1     | no            |
 ```
 
 Each task in the plan MUST specify:
+
 - **Scope**: `new` | `extends-existing` | `fix` — what type of work
 - **Pre-existing**: list components/files already implemented that this task builds on
 - **Dependencies**: which tasks must complete first
@@ -238,6 +260,7 @@ Each task in the plan MUST specify:
 This prevents task scope ambiguity where a builder discovers work already done.
 
 ### Pre-Flight Checks
+
 Before dispatching builder tasks, the orchestrator should verify tool dependencies:
 
 ```bash
@@ -248,6 +271,7 @@ $(cat graphify-out/.graphify_python 2>/dev/null || echo python3) -c "import netw
 If dependencies are missing, document the gap in the task file's guardrails so the builder knows to use the fallback procedure (grep/glob instead of graphify).
 
 ### ESLint Cleanup
+
 Unused imports and variables should be cleaned before validation, not after. Options:
 
 1. **Pre-commit hook** (recommended): Add `pnpm eslint . --fix` to a pre-commit hook via `husky` + `lint-staged` to auto-remove unused imports on commit.
@@ -256,12 +280,9 @@ Unused imports and variables should be cleaned before validation, not after. Opt
 
 The goal is to eliminate the need for a dedicated fix-ESLint task after validation.
 
-
 ### Parallel Execution Notes
+
 When a plan dispatches 2+ tasks in parallel, include a "Parallel Execution Notes" section listing any files touched by multiple tasks. State whether the overlap is expected conflict-free (different sections of the same file) or needs coordination.
-
-
-
 
 ## graphify
 
@@ -270,6 +291,7 @@ This project has a knowledge graph at graphify-out/ with god nodes, community st
 When the user types `/graphify`, invoke the `skill` tool with `skill: "graphify"` before doing anything else.
 
 Rules:
+
 - For codebase questions, first run `graphify query "<question>"` when graphify-out/graph.json exists. Use `graphify path "<A>" "<B>"` for relationships and `graphify explain "<concept>"` for focused concepts. These return a scoped subgraph, usually much smaller than GRAPH_REPORT.md or raw grep output.
 - Dirty graphify-out/ files are expected after hooks or incremental updates; dirty graph files are not a reason to skip graphify. Only skip graphify if the task is about stale or incorrect graph output, or the user explicitly says not to use it.
 - If graphify-out/wiki/index.md exists, use it for broad navigation instead of raw source browsing.
