@@ -59,6 +59,16 @@
 > - **Notas de tests:** las vistas ocultas cuentan igual y `getByText` resuelve al nodo más profundo: acotar por contenedor (`table`, `[data-multiplier='desktop|mobile']`). El stub es **un único proceso** para toda la suite: un error en un handler tumba todos los specs con fallos en cascada. `request.get` de Playwright sigue redirects salvo `maxRedirects: 0`.
 > - **Formato:** `pnpm format` de la raíz no funciona (prettier sólo existe en `apps/web`); usar `pnpm --filter @recetario/web exec prettier --write <paths>`.
 
+> **Task 10 (presentaciones, costos fijos y finanzas) ya está en la rama.** Detalles operativos:
+>
+> - `app/features/recipes/{recipe-fixed-costs,recipe-presentations}.ts` son las piezas puras (draft, validación, payloads, reducers y las métricas por pieza); `recipe-financials.ts` expone además `computeRecipeFixedCostsTotal`, `computeRecipeBatchCost` y `computeSuggestedBatchPrice`. `useRecipeFinancials` es el composable de las subsecciones.
+> - **Un solo escritor del detalle:** `useRecipeDetail` expone `applyRecipe(next)`. Las mutaciones de costos fijos y presentaciones aplican la respuesta del API ahí, y el resumen financiero, el costo de mezcla y los importes por pieza se recalculan solos (`computed`). No hay recargas ni parche de DOM (el baseline recargaba al crear un costo fijo).
+> - **CRUD autónomo del modo de edición de receta** (mandato del roadmap): «Nueva Presentación» y «Agregar Costo Fijo» están siempre visibles, aunque el baseline escondía el primero detrás de `?edit=true`.
+> - **`salePrice` es opcional con semántica propia:** el input muestra el guardado o el sugerido; guardar sin tocarlo **omite** la clave (`priceDirty`) y vaciarlo envía `null`. El `PATCH` de presentación responde **sin** `fixedCosts`: `mergePresentationResponse` los conserva.
+> - **Tokens:** `turmeric`/`herb`/`chili` del baseline no existen en el design system; los badges usan `warning`/`success`/`danger`/`accent`. Los FCs por presentación siguen sin UI (paridad), aunque el cálculo los soporte.
+> - Tests de referencia: `test/unit/recipe-{fixed-costs,presentations,financials,messages}.spec.ts`, `test/nuxt/recipe-financials-ui.spec.ts` y `test/e2e/recipe-financials.spec.ts`; el stub expone los CRUD reales, `fixedCostAttempts`/`presentationAttempts` y `lastPresentationPatch`.
+> - **Notas de tests:** un `button[type=submit]` **no** dispara el submit con `trigger("click")` en el entorno de test (`form.trigger("submit")`); los dialogs de confirmación están siempre montados, así que hay que acotar los selectores (`data-fc-cancel`, `data-presentation-*`); los valores de un `<input>` no son `textContent` (usar `toHaveValue`). Para QA con `agent-browser`: `cookies set --url http://localhost:4321` y el tema real se cambia con la cookie `kitchcalc-theme`, no tocando la clase `dark`.
+
 ## Stack
 
 **Astro 6** SSR via `@astrojs/cloudflare` (Cloudflare Pages). Two apps: `apps/web` (Astro Pages) + `apps/api` (Hono Worker). **pnpm 11.1.2** (package-manager locked). **Node >= 22.23.1**.
