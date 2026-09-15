@@ -15,15 +15,15 @@ const CONFLICT = {
 };
 
 describe("ingredientLimitMessage", () => {
-  it("conserva el copy heredado (sin tildes) con el límite del plan", () => {
+  it("incluye el límite del plan en el mensaje", () => {
     expect(ingredientLimitMessage(30)).toBe(
-      "Has alcanzado el limite de 30 ingredientes de tu plan Free. Actualiza tu plan para crear mas.",
+      "Has alcanzado el límite de 30 ingredientes de tu plan Free. Actualiza tu plan para crear más.",
     );
   });
 
   it("omite el rango cuando el plan es ilimitado (defensivo)", () => {
     expect(ingredientLimitMessage(null)).toBe(
-      "Has alcanzado el limite de ingredientes de tu plan Free. Actualiza tu plan para crear mas.",
+      "Has alcanzado el límite de ingredientes de tu plan Free. Actualiza tu plan para crear más.",
     );
   });
 });

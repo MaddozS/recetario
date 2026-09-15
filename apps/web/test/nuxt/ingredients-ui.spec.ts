@@ -195,7 +195,7 @@ describe("IngredientCreateCard", () => {
       async (): Promise<MutationOutcome> => ({
         ok: false,
         message:
-          "Has alcanzado el limite de 30 ingredientes de tu plan Free. Actualiza tu plan para crear mas.",
+          "Has alcanzado el límite de 30 ingredientes de tu plan Free. Actualiza tu plan para crear más.",
         planLimit: true,
       }),
     );

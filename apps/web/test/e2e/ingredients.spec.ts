@@ -333,7 +333,7 @@ test("límite de plan: alerta con CTA de upgrade y sin llamar al API", async ({
   await form.getByRole("button", { name: "Agregar Insumo" }).click();
 
   await expect(page.getByRole("alert")).toContainText(
-    "Has alcanzado el limite de 30 ingredientes de tu plan Free. Actualiza tu plan para crear mas.",
+    "Has alcanzado el límite de 30 ingredientes de tu plan Free. Actualiza tu plan para crear más.",
   );
   await expect(
     page.getByRole("link", { name: "Actualizar plan" }),

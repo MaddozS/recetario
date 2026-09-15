@@ -51,13 +51,17 @@ export function isIngredientInUse(error: unknown): boolean {
   );
 }
 
-/** Copy verbatim de Astro (sin tildes); el rango se omite si el plan es ilimitado. */
+/**
+ * Copy del límite de plan. Corrige las tildes que arrastraba el texto de Astro
+ * ("limite"/"mas"); cuando recetas porte su mensaje debe usar este mismo texto.
+ * El rango se omite si el plan es ilimitado (caso defensivo).
+ */
 export function ingredientLimitMessage(limit: number | null): string {
   if (limit === null) {
-    return "Has alcanzado el limite de ingredientes de tu plan Free. Actualiza tu plan para crear mas.";
+    return "Has alcanzado el límite de ingredientes de tu plan Free. Actualiza tu plan para crear más.";
   }
 
-  return `Has alcanzado el limite de ${limit} ingredientes de tu plan Free. Actualiza tu plan para crear mas.`;
+  return `Has alcanzado el límite de ${limit} ingredientes de tu plan Free. Actualiza tu plan para crear más.`;
 }
 
 export function resolveIngredientMutationError(
