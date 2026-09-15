@@ -37,8 +37,9 @@
 > - **El filtro por categoría vive en la URL** (`?category=`; `""` = sin categoría, ausente = todas) y se resuelve con `navigateTo`: el back/forward y el deep link salen gratis y una navegación solo-query no remonta la página ni pierde la búsqueda.
 > - **Contratos retirados:** `?type=`, `?message=` y `?upgrade=1` (los generaba el redirect de Astro). El límite de plan ahora sólo muestra la alerta inline con «Actualizar plan», igual que la Task 7.
 > - **`@recetario/stripe/formatters`** (subpath nuevo) expone `timeAgo`/`formatCurrency` sin arrastrar el SDK; usar ese subpath en lugar del barrel.
-> - **Los componentes de `app/features/**` NO están auto-registrados** (sólo `~/components/ui` y `~/components/landing`): hay que importarlos siempre. Si falta el import, el componente se renderiza como nada y `nuxt typecheck` no lo detecta (lo cazan los tests nuxt).
+> - **Los componentes de una feature no están auto-registrados** (el escaneo es solo de `~/components/ui` y `~/components/landing`): hay que importar siempre los de `app/features/**`. Si falta el import, el componente se renderiza como nada y `nuxt typecheck` no lo detecta (lo cazan los tests nuxt).
 > - Tests de referencia: `test/unit/recipe-*.spec.ts`, `test/nuxt/recipes-ui.spec.ts` y `test/e2e/recipes.spec.ts`; el stub expone `/api/__qa/recipes/reset|state` y `qa-plan=free|basic|pro` con los límites y features reales de `plans-config.ts`.
+> - **Hallazgos abiertos con dueño:** el task file de la Task 8 cierra con «Hallazgos abiertos y quién los atiende», una tabla que mapea cada pendiente a la Task que lo cierra (9, 11, 12 o 13) y distingue los que se resuelven _de paso_ de los que exigen trabajo explícito. Leerla antes de planear la Task 9 (detalle) o la 12 (producción).
 
 ## Stack
 
