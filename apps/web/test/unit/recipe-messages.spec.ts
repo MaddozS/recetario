@@ -2,8 +2,11 @@ import { describe, expect, it } from "vitest";
 import {
   DELETED_RECIPE_MESSAGE,
   DUPLICATE_FEATURE_MESSAGE,
+  FIXED_COST_NOT_FOUND_MESSAGE,
+  PRESENTATION_NOT_FOUND_MESSAGE,
   RECIPE_NOT_FOUND_MESSAGE,
   recipeLimitMessage,
+  resolveRecipeFinancialsError,
   resolveRecipeMutationError,
 } from "../../app/features/recipes/recipe-messages";
 
@@ -117,5 +120,71 @@ describe("resolveRecipeMutationError", () => {
     expect(
       resolveRecipeMutationError(undefined, { action: "update", limit: null }),
     ).toEqual({ message: "No se pudo actualizar la receta." });
+  });
+});
+
+describe("resolveRecipeFinancialsError", () => {
+  it("traduce el 404 según el recurso", () => {
+    expect(
+      resolveRecipeFinancialsError(NOT_FOUND, { action: "update-fixed-cost" }),
+    ).toEqual({ message: FIXED_COST_NOT_FOUND_MESSAGE });
+    expect(
+      resolveRecipeFinancialsError(NOT_FOUND, {
+        action: "delete-presentation",
+      }),
+    ).toEqual({ message: PRESENTATION_NOT_FOUND_MESSAGE });
+  });
+
+  it("nunca ofrece upgrade: ni costos fijos ni presentaciones están gateados", () => {
+    const planLimit = resolveRecipeFinancialsError(PLAN_LIMIT, {
+      action: "create-presentation",
+    });
+    const feature = resolveRecipeFinancialsError(FEATURE_REQUIRED, {
+      action: "create-fixed-cost",
+    });
+
+    expect(planLimit.planLimit).toBeUndefined();
+    expect(feature.planLimit).toBeUndefined();
+  });
+
+  it("usa el mensaje del API cuando es un error de respuesta", () => {
+    expect(
+      resolveRecipeFinancialsError(
+        {
+          status: 500,
+          code: "INTERNAL",
+          message: "Fallo simulado del servidor",
+        },
+        { action: "create-fixed-cost" },
+      ),
+    ).toEqual({ message: "Fallo simulado del servidor" });
+  });
+
+  it("cae al mensaje en español por acción", () => {
+    expect(
+      resolveRecipeFinancialsError(new Error("fetch failed"), {
+        action: "update-fixed-cost",
+      }),
+    ).toEqual({ message: "No se pudo guardar el costo fijo." });
+    expect(
+      resolveRecipeFinancialsError(undefined, {
+        action: "delete-fixed-cost",
+      }),
+    ).toEqual({ message: "No se pudo eliminar el costo fijo." });
+    expect(
+      resolveRecipeFinancialsError(undefined, {
+        action: "create-presentation",
+      }),
+    ).toEqual({ message: "No se pudo crear la presentación." });
+    expect(
+      resolveRecipeFinancialsError(undefined, {
+        action: "update-presentation",
+      }),
+    ).toEqual({ message: "No se pudo actualizar la presentación." });
+    expect(
+      resolveRecipeFinancialsError(undefined, {
+        action: "delete-presentation",
+      }),
+    ).toEqual({ message: "No se pudo eliminar la presentación." });
   });
 });

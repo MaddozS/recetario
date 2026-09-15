@@ -128,9 +128,7 @@ test("SSR: detalle, ingredientes repetidos, notas ocultas y cabeceras privadas",
   expect(html).toContain("Presentaciones");
 });
 
-test("Free: filas operativas y % editable; el tab de Task 10 avisa", async ({
-  request,
-}) => {
+test("Free: filas operativas y % editable", async ({ request }) => {
   await resetRecipes(request);
 
   const response = await request.get(url("/recipes/1"), {
@@ -166,13 +164,13 @@ test("tabs: click con hash, deep link y teclado", async ({
   await expect(page.locator("#panel-costos-fijos")).toBeVisible();
   await expect(page.locator("#panel-ingredientes")).toBeHidden();
   await expect(page.locator("#panel-costos-fijos")).toContainText(
-    "Pendiente: Task 10",
+    "Costos Fijos de la Receta",
   );
 
   await page.locator("#tab-presentaciones").click();
   await expect(page).toHaveURL(/#presentaciones$/);
   await expect(page.locator("#panel-presentaciones")).toContainText(
-    "Pendiente: Task 10",
+    "Presentaciones de Venta",
   );
 
   // Navegación por teclado: flecha izquierda vuelve a costos fijos.

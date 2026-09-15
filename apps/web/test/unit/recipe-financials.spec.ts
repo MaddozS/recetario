@@ -5,6 +5,9 @@ import {
   calcularCostoDirecto,
   calcularSubtotalIngrediente,
   computeFixedCostAmount,
+  computeRecipeBatchCost,
+  computeRecipeFixedCostsTotal,
+  computeSuggestedBatchPrice,
   getCostoBaseCompra,
 } from "../../app/features/recipes/recipe-financials";
 import type {
@@ -186,5 +189,77 @@ describe("buildFinancialRows", () => {
     expect(rows[3]?.value).toBe("30%");
     expect(highlightIndex).toBe(2);
     expect(editRowIndices).toEqual([3]);
+  });
+});
+
+const RECIPE_FIXED_COSTS = [
+  { type: "AMOUNT", base: "PER_BATCH", value: 10 },
+  { type: "AMOUNT", base: "PER_HOUR", value: 50, hours: 2 },
+  { type: "PERCENTAGE", base: "PER_BATCH", value: 10 },
+];
+
+describe("computeRecipeFixedCostsTotal", () => {
+  it("suma montos por mezcla, por hora y porcentajes del costo directo", () => {
+    // 10 por mezcla + 50 × 2 h + 10 % de 100.
+    expect(computeRecipeFixedCostsTotal(RECIPE_FIXED_COSTS, 100, 1)).toBe(120);
+    // Las horas no escalan con las mezclas: 20 + 100 + 10.
+    expect(computeRecipeFixedCostsTotal(RECIPE_FIXED_COSTS, 100, 2)).toBe(130);
+  });
+
+  it("sin costos fijos es 0", () => {
+    expect(computeRecipeFixedCostsTotal([], 100, 1)).toBe(0);
+  });
+});
+
+describe("computeRecipeBatchCost", () => {
+  it("sin advanced_costs usa el porcentaje de gastos operativos", () => {
+    expect(
+      computeRecipeBatchCost({
+        hasAdvancedCosts: false,
+        costoDirectoTotal: 33,
+        recipeFixedCosts: RECIPE_FIXED_COSTS,
+        multiplier: 1,
+        fixedCostsPercentageValue: 10,
+      }),
+    ).toBe(36.3);
+  });
+
+  it("con advanced_costs usa los costos fijos explícitos", () => {
+    expect(
+      computeRecipeBatchCost({
+        hasAdvancedCosts: true,
+        costoDirectoTotal: 33,
+        recipeFixedCosts: [
+          { type: "AMOUNT", base: "PER_BATCH", value: 10 },
+          { type: "PERCENTAGE", base: "PER_BATCH", value: 10 },
+        ],
+        multiplier: 1,
+        fixedCostsPercentageValue: 99,
+      }),
+    ).toBe(46.3);
+  });
+
+  it("escala los montos con el multiplicador", () => {
+    // El costo directo ya llega escalado por quien llama: aquí sólo escalan los FC.
+    expect(
+      computeRecipeBatchCost({
+        hasAdvancedCosts: true,
+        costoDirectoTotal: 33,
+        recipeFixedCosts: [{ type: "AMOUNT", base: "PER_BATCH", value: 10 }],
+        multiplier: 2,
+        fixedCostsPercentageValue: 0,
+      }),
+    ).toBe(53);
+  });
+});
+
+describe("computeSuggestedBatchPrice", () => {
+  it("despeja el precio con el margen deseado", () => {
+    expect(computeSuggestedBatchPrice(70, 30)).toBeCloseTo(100, 10);
+    expect(computeSuggestedBatchPrice(33, 0)).toBe(33);
+  });
+
+  it("con el margen al límite (99.99) no divide entre cero", () => {
+    expect(computeSuggestedBatchPrice(33, 99.99)).toBeCloseTo(330000, 6);
   });
 });

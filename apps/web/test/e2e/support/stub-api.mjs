@@ -293,6 +293,7 @@ function normalizeRecipe(recipe) {
     desiredMargin: recipe.desiredMargin ?? 0,
     fixedCostsPercentage: recipe.fixedCostsPercentage ?? 0,
     recipeFixedCosts: clone(recipe.recipeFixedCosts ?? []),
+    presentations: clone(recipe.presentations ?? []),
     ingredients,
     ingredientCount: recipe.ingredientCount ?? ingredients.length,
   };
@@ -304,6 +305,9 @@ function createRecipeState(seed = {}) {
     postAttempts: 0,
     patchAttempts: 0,
     deleteAttempts: 0,
+    fixedCostAttempts: 0,
+    presentationAttempts: 0,
+    lastPresentationPatch: null,
   };
 }
 
@@ -315,6 +319,9 @@ function readRecipeState() {
     postAttempts: recipeState.postAttempts,
     patchAttempts: recipeState.patchAttempts,
     deleteAttempts: recipeState.deleteAttempts,
+    fixedCostAttempts: recipeState.fixedCostAttempts,
+    presentationAttempts: recipeState.presentationAttempts,
+    lastPresentationPatch: clone(recipeState.lastPresentationPatch),
   };
 }
 
@@ -327,6 +334,62 @@ function toRecipeSummaryResponse(recipe) {
     ingredientCount:
       recipe.ingredientCount ?? (recipe.ingredients ?? []).length,
     ...(recipe.updatedAt ? { updatedAt: recipe.updatedAt } : {}),
+  };
+}
+
+/**
+ * Presentación tal como la devuelve el detalle (`presentationSchema`): con sus
+ * costos fijos anidados. El listado de presentaciones y el PATCH no los traen.
+ */
+function toPresentationDetail(presentation) {
+  return {
+    id: presentation.id,
+    name: presentation.name,
+    unitsPerBatch: Number(presentation.unitsPerBatch),
+    salePrice:
+      presentation.salePrice === null || presentation.salePrice === undefined
+        ? null
+        : Number(presentation.salePrice),
+    fixedCosts: clone(presentation.fixedCosts ?? []),
+  };
+}
+
+function toPresentationResponse(recipeId, presentation) {
+  return {
+    id: presentation.id,
+    recipeId,
+    name: presentation.name,
+    unitsPerBatch: Number(presentation.unitsPerBatch),
+    salePrice:
+      presentation.salePrice === null || presentation.salePrice === undefined
+        ? null
+        : Number(presentation.salePrice),
+  };
+}
+
+/** Costo fijo dentro del detalle: `recipeFixedCostSchema` exige `recipeId`. */
+function toFixedCostDetail(recipeId, fixedCost) {
+  return {
+    id: fixedCost.id,
+    recipeId,
+    name: fixedCost.name,
+    type: fixedCost.type,
+    base: fixedCost.base,
+    value: Number(fixedCost.value),
+    hours: fixedCost.hours ?? null,
+  };
+}
+
+/** Costo fijo tal como lo devuelven crear/actualizar en Hono. */
+function toFixedCostResponse(recipeId, fixedCost) {
+  return {
+    id: fixedCost.id,
+    recipeId,
+    name: fixedCost.name,
+    type: fixedCost.type,
+    base: fixedCost.base,
+    value: Number(fixedCost.value),
+    hours: fixedCost.hours ?? null,
   };
 }
 
@@ -358,8 +421,10 @@ function toRecipeDetailResponse(recipe) {
         };
       })
       .filter(Boolean),
-    presentations: [],
-    recipeFixedCosts: recipe.recipeFixedCosts ?? [],
+    presentations: (recipe.presentations ?? []).map(toPresentationDetail),
+    recipeFixedCosts: (recipe.recipeFixedCosts ?? []).map((fixedCost) =>
+      toFixedCostDetail(recipe.id, fixedCost),
+    ),
   };
 }
 
@@ -906,6 +971,250 @@ const server = createServer(async (req, res) => {
     }
 
     recipeState.recipes.splice(index, 1);
+    res.writeHead(204);
+    return res.end();
+  }
+
+  // ── Costos fijos de receta y presentaciones (Task 10) ────────────────────
+  const SENTINEL_NAME = "Fallo simulado";
+
+  function recipeById(id) {
+    return recipeState.recipes.find((recipe) => recipe.id === id);
+  }
+
+  const fixedCostCreateMatch = pathname.match(
+    /^\/api\/recipes\/(\d+)\/fixed-costs$/,
+  );
+
+  if (fixedCostCreateMatch && req.method === "POST") {
+    recipeState.fixedCostAttempts += 1;
+    const recipeId = Number(fixedCostCreateMatch[1]);
+    const recipe = recipeById(recipeId);
+
+    if (!recipe) {
+      return sendJson(res, 404, {
+        error: { code: "NOT_FOUND", message: "Recipe not found" },
+      });
+    }
+
+    const payload = JSON.parse(body || "{}");
+
+    if (payload.name === SENTINEL_NAME) {
+      return sendJson(res, 500, {
+        error: { code: "INTERNAL", message: "Fallo simulado del servidor" },
+      });
+    }
+
+    const value = Number(payload.value);
+    if (!Number.isFinite(value) || value <= 0) {
+      return sendJson(res, 400, {
+        error: {
+          code: "VALIDATION_ERROR",
+          message: "Invalid fixed cost input",
+        },
+      });
+    }
+
+    const created = {
+      id: Math.max(0, ...recipe.recipeFixedCosts.map((fc) => fc.id)) + 1,
+      name: payload.name ?? "Costo Fijo",
+      type: payload.type ?? "AMOUNT",
+      base: payload.base ?? "PER_BATCH",
+      value,
+      hours: payload.hours ?? null,
+    };
+    recipe.recipeFixedCosts.push(created);
+
+    return sendJson(res, 201, toFixedCostResponse(recipeId, created));
+  }
+
+  const fixedCostItemMatch = pathname.match(
+    /^\/api\/recipes\/(\d+)\/fixed-costs\/(\d+)$/,
+  );
+
+  if (fixedCostItemMatch && req.method === "PATCH") {
+    recipeState.fixedCostAttempts += 1;
+    const recipeId = Number(fixedCostItemMatch[1]);
+    const fixedCostId = Number(fixedCostItemMatch[2]);
+    const recipe = recipeById(recipeId);
+    const target = recipe?.recipeFixedCosts.find(
+      (fixedCost) => fixedCost.id === fixedCostId,
+    );
+
+    if (!recipe || !target) {
+      return sendJson(res, 404, {
+        error: { code: "NOT_FOUND", message: "Fixed cost not found" },
+      });
+    }
+
+    const payload = JSON.parse(body || "{}");
+
+    if (payload.name === SENTINEL_NAME) {
+      return sendJson(res, 500, {
+        error: { code: "INTERNAL", message: "Fallo simulado del servidor" },
+      });
+    }
+
+    const value = Number(payload.value);
+    if (!Number.isFinite(value) || value <= 0) {
+      return sendJson(res, 400, {
+        error: {
+          code: "VALIDATION_ERROR",
+          message: "Invalid fixed cost input",
+        },
+      });
+    }
+
+    // Igual que Hono: sólo se aplican las claves presentes en el payload.
+    if (payload.name !== undefined) target.name = payload.name;
+    if (payload.type !== undefined) target.type = payload.type;
+    if (payload.base !== undefined) target.base = payload.base;
+    target.value = value;
+    if (payload.hours !== undefined) target.hours = payload.hours;
+
+    return sendJson(res, 200, toFixedCostResponse(recipeId, target));
+  }
+
+  if (fixedCostItemMatch && req.method === "DELETE") {
+    recipeState.fixedCostAttempts += 1;
+    const recipeId = Number(fixedCostItemMatch[1]);
+    const fixedCostId = Number(fixedCostItemMatch[2]);
+    const recipe = recipeById(recipeId);
+    const index =
+      recipe?.recipeFixedCosts.findIndex((fc) => fc.id === fixedCostId) ?? -1;
+
+    if (!recipe || index === -1) {
+      return sendJson(res, 404, {
+        error: { code: "NOT_FOUND", message: "Fixed cost not found" },
+      });
+    }
+
+    recipe.recipeFixedCosts.splice(index, 1);
+    res.writeHead(204);
+    return res.end();
+  }
+
+  const presentationsMatch = pathname.match(
+    /^\/api\/recipes\/(\d+)\/presentations$/,
+  );
+
+  if (presentationsMatch && req.method === "POST") {
+    recipeState.presentationAttempts += 1;
+    const recipeId = Number(presentationsMatch[1]);
+    const recipe = recipeById(recipeId);
+
+    if (!recipe) {
+      return sendJson(res, 404, {
+        error: { code: "NOT_FOUND", message: "Recipe not found" },
+      });
+    }
+
+    const payload = JSON.parse(body || "{}");
+
+    if (payload.name === SENTINEL_NAME) {
+      return sendJson(res, 500, {
+        error: { code: "INTERNAL", message: "Fallo simulado del servidor" },
+      });
+    }
+
+    const unitsPerBatch = Number(payload.unitsPerBatch);
+    if (
+      !payload.name ||
+      !Number.isFinite(unitsPerBatch) ||
+      unitsPerBatch <= 0
+    ) {
+      return sendJson(res, 400, {
+        error: {
+          code: "VALIDATION_ERROR",
+          message: "Invalid presentation input",
+        },
+      });
+    }
+
+    const created = {
+      id: Math.max(0, ...recipe.presentations.map((item) => item.id)) + 1,
+      name: payload.name,
+      unitsPerBatch,
+      salePrice:
+        payload.salePrice === undefined || payload.salePrice === null
+          ? null
+          : Number(payload.salePrice),
+      fixedCosts: [],
+    };
+    recipe.presentations.push(created);
+
+    return sendJson(res, 201, toPresentationResponse(recipeId, created));
+  }
+
+  const presentationItemMatch = pathname.match(
+    /^\/api\/recipes\/(\d+)\/presentations\/(\d+)$/,
+  );
+
+  if (presentationItemMatch && req.method === "PATCH") {
+    recipeState.presentationAttempts += 1;
+    const recipeId = Number(presentationItemMatch[1]);
+    const presentationId = Number(presentationItemMatch[2]);
+    const recipe = recipeById(recipeId);
+    const target = recipe?.presentations.find(
+      (presentation) => presentation.id === presentationId,
+    );
+
+    if (!recipe || !target) {
+      return sendJson(res, 404, {
+        error: { code: "NOT_FOUND", message: "Presentation not found" },
+      });
+    }
+
+    const payload = JSON.parse(body || "{}");
+    recipeState.lastPresentationPatch = payload;
+
+    if (payload.name === SENTINEL_NAME) {
+      return sendJson(res, 500, {
+        error: { code: "INTERNAL", message: "Fallo simulado del servidor" },
+      });
+    }
+
+    const unitsPerBatch = Number(payload.unitsPerBatch ?? target.unitsPerBatch);
+    if (
+      !payload.name ||
+      !Number.isFinite(unitsPerBatch) ||
+      unitsPerBatch <= 0
+    ) {
+      return sendJson(res, 400, {
+        error: {
+          code: "VALIDATION_ERROR",
+          message: "Invalid presentation input",
+        },
+      });
+    }
+
+    target.name = payload.name;
+    target.unitsPerBatch = unitsPerBatch;
+    // Igual que Hono: la clave ausente deja el precio como estaba.
+    if (payload.salePrice !== undefined) {
+      target.salePrice =
+        payload.salePrice === null ? null : Number(payload.salePrice);
+    }
+
+    return sendJson(res, 200, toPresentationResponse(recipeId, target));
+  }
+
+  if (presentationItemMatch && req.method === "DELETE") {
+    recipeState.presentationAttempts += 1;
+    const recipeId = Number(presentationItemMatch[1]);
+    const presentationId = Number(presentationItemMatch[2]);
+    const recipe = recipeById(recipeId);
+    const index =
+      recipe?.presentations.findIndex((item) => item.id === presentationId) ??
+      -1;
+
+    if (!recipe || index === -1) {
+      return sendJson(res, 404, {
+        error: { code: "NOT_FOUND", message: "Presentation not found" },
+      });
+    }
+
+    recipe.presentations.splice(index, 1);
     res.writeHead(204);
     return res.end();
   }
