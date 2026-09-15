@@ -126,6 +126,52 @@ export function computeFixedCostAmount(
   return costoDirectoTotal * (fc.value / 100);
 }
 
+/** Suma de los costos fijos de la receta para el costo directo y el multiplicador dados. */
+export function computeRecipeFixedCostsTotal(
+  recipeFixedCosts: FinancialRowsInput["recipeFixedCosts"],
+  costoDirectoTotal: number,
+  multiplier: number,
+): number {
+  return recipeFixedCosts.reduce(
+    (sum, fc) =>
+      sum + computeFixedCostAmount(fc, costoDirectoTotal, multiplier),
+    0,
+  );
+}
+
+export type RecipeBatchCostInput = {
+  hasAdvancedCosts: boolean;
+  costoDirectoTotal: number;
+  recipeFixedCosts: FinancialRowsInput["recipeFixedCosts"];
+  multiplier: number;
+  fixedCostsPercentageValue: number;
+};
+
+/**
+ * Costo de una mezcla: insumos más los costos fijos explícitos con
+ * `advanced_costs`, o más el porcentaje de gastos operativos sin la feature.
+ * Es la base del precio sugerido de las presentaciones.
+ */
+export function computeRecipeBatchCost(input: RecipeBatchCostInput): number {
+  const indirectCosts = input.hasAdvancedCosts
+    ? computeRecipeFixedCostsTotal(
+        input.recipeFixedCosts,
+        input.costoDirectoTotal,
+        input.multiplier,
+      )
+    : input.costoDirectoTotal * (input.fixedCostsPercentageValue / 100);
+
+  return input.costoDirectoTotal + indirectCosts;
+}
+
+/** Precio de venta sugerido de la mezcla para el margen deseado (0-99.99). */
+export function computeSuggestedBatchPrice(
+  batchCost: number,
+  desiredMarginValue: number,
+): number {
+  return batchCost / (1 - desiredMarginValue / 100);
+}
+
 /**
  * Filas del resumen financiero. Con `advanced_costs` la receta usa costos fijos
  * explícitos; sin la feature, un porcentaje de gastos operativos.
@@ -143,10 +189,10 @@ export function buildFinancialRows(
   } = input;
 
   if (hasAdvancedCosts) {
-    const recipeFixedCostsTotal = recipeFixedCosts.reduce(
-      (sum, fc) =>
-        sum + computeFixedCostAmount(fc, costoDirectoTotal, multiplier),
-      0,
+    const recipeFixedCostsTotal = computeRecipeFixedCostsTotal(
+      recipeFixedCosts,
+      costoDirectoTotal,
+      multiplier,
     );
 
     return {
