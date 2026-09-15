@@ -1,12 +1,14 @@
 /**
  * Búsqueda y filtro por categoría del listado de recetas.
  *
- * Módulo puro y sin aliases: cubierto en `test/unit`. La normalización NFD
- * (quitar diacríticos) es requisito: "clasico" debe encontrar "Brownie Clásico".
- *
- * `normalizeSearchText` es la misma que la de `ingredient-search.ts`; se
- * promueve a `shared/utils/` cuando aparezca un tercer consumidor (producción).
+ * Módulo puro: cubierto en `test/unit`. La normalización NFD (quitar
+ * diacríticos) vive en `shared/utils/search.ts` y es la misma que usan
+ * ingredientes y el picker del detalle.
  */
+import { normalizeSearchText } from "#shared/utils/search";
+
+export { normalizeSearchText };
+
 export type RecipeSearchSource = {
   name: string;
 };
@@ -29,14 +31,6 @@ export type RecipeCategoryOption = {
 };
 
 export const UNCATEGORIZED_LABEL = "Sin categoría";
-
-export function normalizeSearchText(value: string): string {
-  return value
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .trim();
-}
 
 export function matchesRecipeSearch(
   recipe: RecipeSearchSource,

@@ -1,22 +1,18 @@
 /**
  * Búsqueda accent y case-insensitive de la lista de ingredientes.
  *
- * Módulo puro y sin aliases: cubierto en `test/unit`. La normalización NFD
- * (quitar diacríticos) es requisito: "platano" debe encontrar "Plátano".
+ * Módulo puro: cubierto en `test/unit`. La normalización NFD (quitar
+ * diacríticos) vive en `shared/utils/search.ts`: "platano" encuentra "Plátano".
  */
+import { normalizeSearchText } from "#shared/utils/search";
+
+export { normalizeSearchText };
+
 export type IngredientSearchSource = {
   name: string;
   supplier?: string | null;
   brand?: string | null;
 };
-
-export function normalizeSearchText(value: string): string {
-  return value
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .trim();
-}
 
 export function matchesIngredientSearch(
   ingredient: IngredientSearchSource,
