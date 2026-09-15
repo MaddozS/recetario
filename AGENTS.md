@@ -1,6 +1,6 @@
 # AGENTS.md — Recetario
 
-> **Migración Nuxt en curso.** `apps/web` se está reescribiendo de Astro a Nuxt 4 + Vue en el worktree `worktree-nuxt-rework`, hoy en `/Users/maddozs/personal-projects/recetario-nuxt-rework` (fuera de `~/.commandcode/` para no disparar prompts de permiso). El árbol Astro (`apps/web/src/**`) queda como referencia fuera de build/lint/type-check hasta la Task 13. Decisión en `docs/adr/0009-nuxt-frontend-rework.md`; estado por task en `docs/tasks/` (última: `task-20260915-0811-ingredients.md`).
+> **Migración Nuxt en curso.** `apps/web` se está reescribiendo de Astro a Nuxt 4 + Vue en el worktree `worktree-nuxt-rework`, hoy en `/Users/maddozs/personal-projects/recetario-nuxt-rework` (fuera de `~/.commandcode/` para no disparar prompts de permiso). El árbol Astro (`apps/web/src/**`) queda como referencia fuera de build/lint/type-check hasta la Task 13. Decisión en `docs/adr/0009-nuxt-frontend-rework.md`; estado por task en `docs/tasks/` (última: `task-20260915-0950-recipes-list.md`).
 >
 > **Task 4 (relay, sesión y shell) ya está en la rama.** Detalles operativos:
 > - `pnpm dev` en `apps/web` sincroniza `.dev.vars` y limpia `.vite-cache/web`, y sirve en `localhost:4321` (el API confía en `WEB_ORIGIN`). El API sigue en `localhost:8787`: en dev el relay cae a HTTP contra `INTERNAL_API_URL`.
@@ -31,6 +31,14 @@
 > - `Dialog` del kit acepta `size` (`md|lg|xl`) y `scroll` (defaults = comportamiento anterior); los dialogs de feature reciben la mutación como **function prop** para resetear/cerrar sólo en éxito.
 > - Tests de referencia: `test/unit/ingredient-*.spec.ts`, `test/nuxt/ingredients-ui.spec.ts` y `test/e2e/ingredients.spec.ts`; el stub expone `POST /api/__qa/ingredients/reset` y `GET /api/__qa/ingredients/state` para que cada test sea determinista.
 > - **Nota de tests:** con `mountSuspended`, `wrapper.emitted()` y `findComponent(Component).emitted()` están vacíos (el wrapper es el del `Suspense`). Para assertar eventos usa listeners espía en `attrs` (`"onUpdate:open"`, `onEdit`, …).
+
+> **Task 8 (listado de recetas) ya está en la rama.** Detalles operativos:
+> - `app/features/recipes/**` sigue el patrón del slice: piezas puras sin aliases (`recipe-form`, `recipe-filters`, `recipe-messages`, `recipe-stats`, `recipe-state`), `useRecipes()` y los componentes de la feature. Crear/duplicar/eliminar mutan con `withCreated`/`withRemoved` y **después** navegan o dejan feedback: `useAsyncData` con key fija no refetchea al volver, así que el reducer antes de salir es lo que mantiene la lista correcta.
+> - **El filtro por categoría vive en la URL** (`?category=`; `""` = sin categoría, ausente = todas) y se resuelve con `navigateTo`: el back/forward y el deep link salen gratis y una navegación solo-query no remonta la página ni pierde la búsqueda.
+> - **Contratos retirados:** `?type=`, `?message=` y `?upgrade=1` (los generaba el redirect de Astro). El límite de plan ahora sólo muestra la alerta inline con «Actualizar plan», igual que la Task 7.
+> - **`@recetario/stripe/formatters`** (subpath nuevo) expone `timeAgo`/`formatCurrency` sin arrastrar el SDK; usar ese subpath en lugar del barrel.
+> - **Los componentes de `app/features/**` NO están auto-registrados** (sólo `~/components/ui` y `~/components/landing`): hay que importarlos siempre. Si falta el import, el componente se renderiza como nada y `nuxt typecheck` no lo detecta (lo cazan los tests nuxt).
+> - Tests de referencia: `test/unit/recipe-*.spec.ts`, `test/nuxt/recipes-ui.spec.ts` y `test/e2e/recipes.spec.ts`; el stub expone `/api/__qa/recipes/reset|state` y `qa-plan=free|basic|pro` con los límites y features reales de `plans-config.ts`.
 
 ## Stack
 
