@@ -28,7 +28,10 @@ const lastUpdatedLabel = computed(() =>
         Recetas por completar
       </div>
       <div v-if="incompleteCount > 0" class="mt-2">
-        <p class="text-foreground font-bold">{{ incompleteCount }} recetas</p>
+        <p class="text-foreground font-bold">
+          {{ incompleteCount }}
+          {{ incompleteCount === 1 ? "receta" : "recetas" }}
+        </p>
         <p class="text-muted-foreground text-sm">sin ingredientes asignados</p>
       </div>
       <p v-else class="text-success mt-2 text-sm font-medium">
@@ -43,7 +46,8 @@ const lastUpdatedLabel = computed(() =>
       </div>
       <div v-if="withoutCategoryCount > 0" class="mt-2">
         <p class="text-foreground font-bold">
-          {{ withoutCategoryCount }} recetas
+          {{ withoutCategoryCount }}
+          {{ withoutCategoryCount === 1 ? "receta" : "recetas" }}
         </p>
         <p class="text-muted-foreground text-sm">sin categoría asignada</p>
       </div>

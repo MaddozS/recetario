@@ -108,6 +108,21 @@ describe("RecipesInsights", () => {
     expect(wrapper.text()).toContain("hace 2 h");
   });
 
+  it("usa el singular cuando hay una sola receta pendiente", async () => {
+    const wrapper = await mountSuspended(RecipesInsights, {
+      props: {
+        incompleteCount: 1,
+        withoutCategoryCount: 1,
+        lastUpdatedAt: TWO_HOURS_AGO,
+      },
+    });
+
+    // Los contadores son su propio párrafo: el texto concatenado del componente
+    // pega «1 receta» con el texto siguiente y daría falsos positivos.
+    const amounts = wrapper.findAll("p").map((node) => node.text());
+    expect(amounts).toContain("1 receta");
+  });
+
   it("celebra cuando no hay pendientes y sin actividad sin fechas", async () => {
     const wrapper = await mountSuspended(RecipesInsights, {
       props: {
