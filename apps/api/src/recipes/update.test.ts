@@ -1,15 +1,19 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { Hono } from "hono";
+import { recipeWithIngredientsSchema } from "@recetario/types";
 import { envelope } from "../envelope";
 import { errorHandler } from "../error-handler";
 
-const { mockGetSession, mockAuth, mockGetRecipe, mockUpdateRecipe } = vi.hoisted(() => {
-  const mockGetSession = vi.fn();
-  const mockAuth = { api: { getSession: (...args: unknown[]) => mockGetSession(...args) } };
-  const mockGetRecipe = vi.fn();
-  const mockUpdateRecipe = vi.fn();
-  return { mockGetSession, mockAuth, mockGetRecipe, mockUpdateRecipe };
-});
+const { mockGetSession, mockAuth, mockGetRecipe, mockUpdateRecipe } =
+  vi.hoisted(() => {
+    const mockGetSession = vi.fn();
+    const mockAuth = {
+      api: { getSession: (...args: unknown[]) => mockGetSession(...args) },
+    };
+    const mockGetRecipe = vi.fn();
+    const mockUpdateRecipe = vi.fn();
+    return { mockGetSession, mockAuth, mockGetRecipe, mockUpdateRecipe };
+  });
 
 vi.mock("@recetario/auth/server", () => ({
   auth: mockAuth,
@@ -53,6 +57,39 @@ function recipeFixture(id: number) {
     recipeIngredients: [],
     presentations: [],
     recipeFixedCosts: [],
+  };
+}
+
+/** Detalle con nulos en los campos opcionales: el shape debe omitirlos. */
+function recipeFixtureWithRelations(id: number) {
+  return {
+    ...recipeFixture(id),
+    recipeIngredients: [
+      {
+        ingredientId: 7,
+        quantity: 200,
+        unit: "g",
+        comment: null,
+        ingredient: {
+          id: 7,
+          name: "Harina de trigo",
+          unit: "kg",
+          price: 25,
+          purchaseQuantity: 1,
+          brand: null,
+          supplier: null,
+        },
+      },
+    ],
+    presentations: [
+      {
+        id: 3,
+        name: "Caja de 6",
+        unitsPerBatch: 6,
+        salePrice: null,
+        fixedCosts: [],
+      },
+    ],
   };
 }
 
@@ -101,6 +138,54 @@ describe("recipesUpdateHandler", () => {
       [{ ingredientId: 1, quantity: 200, unit: "g", comment: null }],
       undefined,
     );
+  });
+
+  it("responde con el detalle shapeado, listo para el cliente", async () => {
+    mockGetSession.mockResolvedValueOnce(sessionFixture);
+    mockGetRecipe.mockResolvedValueOnce(recipeFixture(1));
+    mockUpdateRecipe.mockResolvedValueOnce(undefined);
+    mockGetRecipe.mockResolvedValueOnce(recipeFixtureWithRelations(1));
+
+    const res = await buildApp().request("/api/recipes/1", {
+      method: "PATCH",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        name: "Tarta v2",
+        desiredMargin: 30,
+        fixedCostsPercentage: 10,
+        ingredients: [{ ingredientId: 7, quantity: 200, unit: "g" }],
+      }),
+    });
+
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as Record<string, unknown>;
+
+    // Igual que `GET /api/recipes/:id`: los nulos opcionales se omiten y la
+    // respuesta entera valida contra el schema compartido.
+    expect("category" in body).toBe(false);
+    expect("instructions" in body).toBe(false);
+    expect(body.updatedAt).toBe("2026-01-01T00:00:00.000Z");
+    expect(
+      recipeWithIngredientsSchema.safeParse(body).success,
+      JSON.stringify(recipeWithIngredientsSchema.safeParse(body).error),
+    ).toBe(true);
+    expect(body.ingredients).toEqual([
+      {
+        ingredientId: 7,
+        quantity: 200,
+        unit: "g",
+        ingredient: {
+          id: 7,
+          name: "Harina de trigo",
+          unit: "kg",
+          price: 25,
+          purchaseQuantity: 1,
+        },
+      },
+    ]);
+    expect(body.presentations).toEqual([
+      { id: 3, name: "Caja de 6", unitsPerBatch: 6, fixedCosts: [] },
+    ]);
   });
 
   it("returns 404 when the recipe does not belong to the user", async () => {
