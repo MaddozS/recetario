@@ -83,8 +83,7 @@ function subtotal(
               }}</span>
               <span
                 class="text-muted-foreground text-xs font-semibold uppercase"
-                >{{ item.unit }}</span
-              >
+              >{{ item.unit }}</span>
             </p>
           </div>
           <div
@@ -168,8 +167,7 @@ function subtotal(
                     }}</span>
                     <span
                       class="text-muted-foreground text-xs font-semibold uppercase"
-                      >{{ item.unit }}</span
-                    >
+                    >{{ item.unit }}</span>
                   </p>
                 </div>
                 <div
@@ -187,8 +185,7 @@ function subtotal(
                     }}</span>
                     <span
                       class="text-accent-500 text-xs font-semibold uppercase"
-                      >{{ item.unit }}</span
-                    >
+                    >{{ item.unit }}</span>
                   </p>
                 </div>
               </div>

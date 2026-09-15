@@ -104,6 +104,7 @@ async function confirmDuplicate(recipeId: number): Promise<MutationOutcome> {
         :recipe-id="recipe.id"
         :name="form.name"
         :category="form.category"
+        :saved-category="recipe.category ?? ''"
         :edit-mode="isEditMode"
         :saving="saving"
         :updated-text="updatedText"

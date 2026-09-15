@@ -67,7 +67,7 @@ const BUSY_OUTCOME: MutationOutcome = {
   message: "Ya hay una operación en curso. Espera a que termine.",
 };
 
-export function useRecipeDetail() {
+export async function useRecipeDetail() {
   const api = useApi();
   const route = useRoute();
   const { subscription, hasFeature } = useAuth();
@@ -75,7 +75,32 @@ export function useRecipeDetail() {
 
   const recipeId = computed(() => String(route.params.recipe ?? ""));
 
-  const { data, refresh } = useAsyncData<RecipeDetailPageData>(
+  // ── Notas de ingredientes ───────────────────────────────────────────────
+  // El hook se registra antes del `await`: después de un `await` en un setup
+  // asíncrono ya no hay instancia de componente a la que asociarlo.
+  const showComments = ref(false);
+
+  function setCommentsVisible(visible: boolean): void {
+    showComments.value = visible;
+    try {
+      localStorage.setItem(COMMENTS_STORAGE_KEY, visible ? "1" : "0");
+    } catch {
+      /* localStorage puede no estar disponible */
+    }
+  }
+
+  onMounted(() => {
+    try {
+      showComments.value = localStorage.getItem(COMMENTS_STORAGE_KEY) === "1";
+    } catch {
+      showComments.value = false;
+    }
+  });
+
+  // Se espera la carga para poder sembrar el formulario de forma determinista:
+  // con un `watch` immediate el servidor renderizaba el formulario vacío (los
+  // datos aún no estaban) y el cliente lo hidrataba lleno.
+  const { data, refresh } = await useAsyncData<RecipeDetailPageData>(
     `recipe:${recipeId.value}`,
     async () => {
       try {
@@ -128,14 +153,10 @@ export function useRecipeDetail() {
     Object.assign(form, formFromDetail(current, nextRowKey));
   }
 
-  // Al llegar el detalle (SSR) el formulario queda listo para entrar a editar.
-  watch(
-    recipe,
-    (current) => {
-      if (current) resetForm();
-    },
-    { immediate: true },
-  );
+  // Siembra sincrónica con los datos ya resueltos: el formulario arranca igual
+  // en servidor y cliente, así que `?edit=true` se hidrata sin diferencias.
+  // Se resiembra al entrar o cancelar la edición y tras guardar.
+  resetForm();
 
   // ── Modo de edición (?edit=true) ─────────────────────────────────────────
   const isEditMode = computed(() => route.query.edit === "true");
@@ -187,26 +208,6 @@ export function useRecipeDetail() {
     if (id === activeTab.value) return;
     await navigateTo({ hash: `#${id}` }, { replace: true });
   }
-
-  // ── Notas de ingredientes ───────────────────────────────────────────────
-  const showComments = ref(false);
-
-  function setCommentsVisible(visible: boolean): void {
-    showComments.value = visible;
-    try {
-      localStorage.setItem(COMMENTS_STORAGE_KEY, visible ? "1" : "0");
-    } catch {
-      /* localStorage puede no estar disponible */
-    }
-  }
-
-  onMounted(() => {
-    try {
-      showComments.value = localStorage.getItem(COMMENTS_STORAGE_KEY) === "1";
-    } catch {
-      showComments.value = false;
-    }
-  });
 
   // ── Derivados de la vista ───────────────────────────────────────────────
   const unitOptions = computed(() =>
@@ -317,6 +318,9 @@ export function useRecipeDetail() {
         recipe: updated,
         ingredients: ingredientCatalog.value,
       };
+
+      // El formulario queda igual al estado del servidor.
+      resetForm();
 
       await exitEdit({ replace: true });
       feedback.value = SAVED_FEEDBACK;

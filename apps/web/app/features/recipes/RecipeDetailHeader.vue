@@ -11,7 +11,10 @@ import RecipeMultiplier from "./RecipeMultiplier.vue";
 defineProps<{
   recipeId: number;
   name: string;
+  /** Valor editable del formulario (input de categoría). */
   category: string;
+  /** Categoría guardada: la del badge, como en Astro (no cambia al teclear). */
+  savedCategory: string;
   editMode: boolean;
   saving: boolean;
   updatedText: string;
@@ -73,7 +76,7 @@ const emit = defineEmits<{
       </div>
 
       <div v-if="!editMode" class="flex items-center gap-2">
-        <div class="hidden sm:block">
+        <div class="hidden sm:block" data-multiplier="desktop">
           <RecipeMultiplier
             :multiplier="multiplier"
             @change="emit('multiplier', $event)"
@@ -104,7 +107,7 @@ const emit = defineEmits<{
           class="gap-1.5 px-3 py-1 font-black tracking-wider uppercase"
         >
           <Icon name="lucide:tag" :size="12" />
-          {{ category || "Sin categoría" }}
+          {{ savedCategory || "Sin categoría" }}
         </Badge>
         <span
           v-if="updatedText"
@@ -139,7 +142,7 @@ const emit = defineEmits<{
     </div>
 
     <!-- Fila 1b: multiplicador en móvil -->
-    <div v-if="!editMode" class="mb-4 sm:hidden">
+    <div v-if="!editMode" class="mb-4 sm:hidden" data-multiplier="mobile">
       <RecipeMultiplier
         :multiplier="multiplier"
         @change="emit('multiplier', $event)"
