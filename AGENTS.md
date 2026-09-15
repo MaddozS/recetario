@@ -1,6 +1,6 @@
 # AGENTS.md — Recetario
 
-> **Migración Nuxt en curso.** `apps/web` se está reescribiendo de Astro a Nuxt 4 + Vue en el worktree `worktree-nuxt-rework`, hoy en `/Users/maddozs/personal-projects/recetario-nuxt-rework` (fuera de `~/.commandcode/` para no disparar prompts de permiso). El árbol Astro (`apps/web/src/**`) queda como referencia fuera de build/lint/type-check hasta la Task 13. Decisión en `docs/adr/0009-nuxt-frontend-rework.md`; estado por task en `docs/tasks/` (última: `task-20260913-1325-auth.md`).
+> **Migración Nuxt en curso.** `apps/web` se está reescribiendo de Astro a Nuxt 4 + Vue en el worktree `worktree-nuxt-rework`, hoy en `/Users/maddozs/personal-projects/recetario-nuxt-rework` (fuera de `~/.commandcode/` para no disparar prompts de permiso). El árbol Astro (`apps/web/src/**`) queda como referencia fuera de build/lint/type-check hasta la Task 13. Decisión en `docs/adr/0009-nuxt-frontend-rework.md`; estado por task en `docs/tasks/` (última: `task-20260915-0811-ingredients.md`).
 >
 > **Task 4 (relay, sesión y shell) ya está en la rama.** Detalles operativos:
 > - `pnpm dev` en `apps/web` sincroniza `.dev.vars` y limpia `.vite-cache/web`, y sirve en `localhost:4321` (el API confía en `WEB_ORIGIN`). El API sigue en `localhost:8787`: en dev el relay cae a HTTP contra `INTERNAL_API_URL`.
@@ -23,6 +23,14 @@
 > - `useCountdown` (reset) limpia el intervalo al desmontar; `PasswordRules` alimenta las 5 reglas desde `getRuleResults`.
 > - Tests de referencia: `test/unit/auth-{redirect,messages,error}.spec.ts`, `test/nuxt/auth-ui.spec.ts` y `test/e2e/auth.spec.ts` (el stub del API cubre credenciales inválidas, email sin verificar, reset válido/expirado y verify).
 > - **QA funcional en dev:** el relay lee `INTERNAL_API_URL` de `.dev.vars` (proxy de wrangler) antes que `process.env`; para apuntar el dev server al stub de los e2e hay que levantarlo en `8787` (`STUB_API_PORT=8787 node test/e2e/support/stub-api.mjs`).
+
+> **Task 7 (slice de ingredientes) ya está en la rama.** Detalles operativos:
+> - `app/features/ingredients/**` es el patrón del slice vertical: piezas puras sin aliases (`ingredient-form`, `ingredient-search`, `ingredient-messages`, `ingredient-state`, `ingredient-units`), `useIngredients()` y los componentes de la feature. Las mutaciones van directo a Hono y la lista/contadores se actualizan en sitio con los reducers puros (`withCreated`/`withUpdated`/`withRemoved`): **sin recarga y sin query params de feedback**.
+> - `UNIT_OPTIONS`/`parseIngredientNumber`/`formatUnitCost` viven en la feature (no en `shared/`) porque el proyecto `unit` de Vitest no resuelve el alias `#shared`; se promueven a `shared/utils/` cuando recetas o producción los necesiten. Los tipos del API se derivan del schema (`IngredientRecord = z.infer<typeof ingredientSchema>`) para no duplicar el contrato.
+> - **Límite de plan:** se anticipa con `canCreateIngredient` sobre los contadores SSR y el `PLAN_LIMIT` de Hono se mapea al mismo mensaje; el CTA “Actualizar plan” aparece **sólo** en ese caso (`planLimit: true`), nunca en errores genéricos.
+> - `Dialog` del kit acepta `size` (`md|lg|xl`) y `scroll` (defaults = comportamiento anterior); los dialogs de feature reciben la mutación como **function prop** para resetear/cerrar sólo en éxito.
+> - Tests de referencia: `test/unit/ingredient-*.spec.ts`, `test/nuxt/ingredients-ui.spec.ts` y `test/e2e/ingredients.spec.ts`; el stub expone `POST /api/__qa/ingredients/reset` y `GET /api/__qa/ingredients/state` para que cada test sea determinista.
+> - **Nota de tests:** con `mountSuspended`, `wrapper.emitted()` y `findComponent(Component).emitted()` están vacíos (el wrapper es el del `Suspense`). Para assertar eventos usa listeners espía en `attrs` (`"onUpdate:open"`, `onEdit`, …).
 
 ## Stack
 
