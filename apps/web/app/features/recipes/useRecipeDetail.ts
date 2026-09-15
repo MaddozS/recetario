@@ -135,6 +135,19 @@ export async function useRecipeDetail() {
   const loadFailed = computed(() => data.value.status === "failed");
   const notFound = computed(() => data.value.status === "notFound");
 
+  /**
+   * Único escritor del detalle: lo usan el guardado de la receta y las
+   * mutaciones de sus subsecciones (Task 10), que así no duplican el armado del
+   * estado ni pierden el catálogo de ingredientes.
+   */
+  function applyRecipe(next: RecipeDetailRecord): void {
+    data.value = {
+      status: "ready",
+      recipe: next,
+      ingredients: ingredientCatalog.value,
+    };
+  }
+
   /** Contador local de claves de fila (`v-for` estable). */
   let rowSequence = 0;
   const nextRowKey = () => `row-${++rowSequence}`;
@@ -313,15 +326,10 @@ export async function useRecipeDetail() {
         },
       );
 
-      data.value = {
-        status: "ready",
-        recipe: updated,
-        ingredients: ingredientCatalog.value,
-      };
+      applyRecipe(updated);
 
       // El formulario queda igual al estado del servidor.
       resetForm();
-
       await exitEdit({ replace: true });
       feedback.value = SAVED_FEEDBACK;
     } catch (cause) {
@@ -398,8 +406,12 @@ export async function useRecipeDetail() {
     loadFailed,
     notFound,
     refresh,
+    applyRecipe,
     ingredientCatalog,
     multiplier,
+    costoDirectoTotal,
+    desiredMarginValue,
+    fixedCostsPercentageValue,
     adjusted,
     setMultiplier,
     stepMultiplier,

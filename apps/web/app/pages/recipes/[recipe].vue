@@ -1,22 +1,27 @@
 <script setup lang="ts">
 import type { MutationOutcome } from "~/features/recipes/useRecipes";
+import { useRecipeFinancials } from "~/features/recipes/useRecipeFinancials";
 import { toRecipeSummary } from "~/features/recipes/recipe-state";
 import {
   RECIPE_TABS,
   useRecipeDetail,
 } from "~/features/recipes/useRecipeDetail";
 import FinancialSummary from "~/features/recipes/FinancialSummary.vue";
+import PresentationsPanel from "~/features/recipes/PresentationsPanel.vue";
 import RecipeDeleteDialog from "~/features/recipes/RecipeDeleteDialog.vue";
 import RecipeDetailHeader from "~/features/recipes/RecipeDetailHeader.vue";
 import RecipeDuplicateDialog from "~/features/recipes/RecipeDuplicateDialog.vue";
 import RecipeErrorAlert from "~/features/recipes/RecipeErrorAlert.vue";
+import RecipeFixedCostsPanel from "~/features/recipes/RecipeFixedCostsPanel.vue";
 import RecipeIngredientsPanel from "~/features/recipes/RecipeIngredientsPanel.vue";
 import RecipeTabs from "~/features/recipes/RecipeTabs.vue";
 
 /**
  * Detalle y edición base de receta: página coordinadora delgada. Los datos, el
  * estado de edición (`?edit=true`), el multiplicador (`?multiplier=`) y las
- * mutaciones viven en `useRecipeDetail`; aquí sólo se compone.
+ * mutaciones viven en `useRecipeDetail`; los costos fijos y las presentaciones
+ * (Task 10) en `useRecipeFinancials`, que reutiliza el detalle para recalcular
+ * el resumen y los importes por pieza sin recargar.
  */
 definePageMeta({
   layout: "private",
@@ -26,9 +31,11 @@ definePageMeta({
 
 const {
   recipe,
+  recipeId,
   loadFailed,
   notFound,
   refresh,
+  applyRecipe,
   ingredientCatalog,
   multiplier,
   setMultiplier,
@@ -50,12 +57,44 @@ const {
   selectTab,
   financialRows,
   financialEditFields,
+  hasAdvancedCosts,
+  costoDirectoTotal,
+  desiredMarginValue,
+  fixedCostsPercentageValue,
   updatedText,
   invalidRowKeys,
   addRow,
   removeRow,
   patchRow,
 } = await useRecipeDetail();
+
+const {
+  presentations,
+  recipeFixedCosts,
+  recipeBatchCost,
+  suggestedBatchPrice,
+  feedback: financialFeedback,
+  createFixedCost,
+  updateFixedCost,
+  deleteFixedCost,
+  createPresentation,
+  updatePresentation,
+  deletePresentation,
+} = useRecipeFinancials({
+  recipeId,
+  recipe,
+  applyRecipe,
+  multiplier,
+  costoDirectoTotal,
+  desiredMarginValue,
+  fixedCostsPercentageValue,
+  hasAdvancedCosts,
+});
+
+/** Última mutación con éxito; recetas y finanzas comparten el espacio. */
+const successMessage = computed(
+  () => financialFeedback.value ?? feedback.value,
+);
 
 // Paridad con Astro: una receta inexistente (o de otro usuario) vuelve al listado.
 if (notFound.value) {
@@ -88,8 +127,8 @@ async function confirmDuplicate(recipeId: number): Promise<MutationOutcome> {
 
 <template>
   <div class="animate-fade-in" :data-edit-state="isEditMode ? 'edit' : 'view'">
-    <div v-if="feedback" class="mb-6">
-      <FeedbackAlert type="success" :message="feedback" />
+    <div v-if="successMessage" class="mb-6">
+      <FeedbackAlert type="success" :message="successMessage" />
     </div>
 
     <Card v-if="loadFailed" padding="lg">
@@ -169,15 +208,12 @@ async function confirmDuplicate(recipeId: number): Promise<MutationOutcome> {
         aria-labelledby="tab-costos-fijos"
         :hidden="activeTab !== 'costos-fijos'"
       >
-        <Card padding="lg">
-          <div class="flex flex-wrap items-center gap-3">
-            <Badge color="warning">Pendiente: Task 10</Badge>
-            <p class="text-muted-foreground text-sm">
-              Los costos fijos de la receta se implementan en la Task 10
-              (presentaciones, costos fijos y finanzas).
-            </p>
-          </div>
-        </Card>
+        <RecipeFixedCostsPanel
+          :recipe-fixed-costs="recipeFixedCosts"
+          :create-fixed-cost="createFixedCost"
+          :update-fixed-cost="updateFixedCost"
+          :delete-fixed-cost="deleteFixedCost"
+        />
       </div>
 
       <div
@@ -186,15 +222,15 @@ async function confirmDuplicate(recipeId: number): Promise<MutationOutcome> {
         aria-labelledby="tab-presentaciones"
         :hidden="activeTab !== 'presentaciones'"
       >
-        <Card padding="lg">
-          <div class="flex flex-wrap items-center gap-3">
-            <Badge color="warning">Pendiente: Task 10</Badge>
-            <p class="text-muted-foreground text-sm">
-              Las presentaciones de venta se implementan en la Task 10
-              (presentaciones, costos fijos y finanzas).
-            </p>
-          </div>
-        </Card>
+        <PresentationsPanel
+          :presentations="presentations"
+          :multiplier="multiplier"
+          :recipe-batch-cost="recipeBatchCost"
+          :suggested-batch-price="suggestedBatchPrice"
+          :create-presentation="createPresentation"
+          :update-presentation="updatePresentation"
+          :delete-presentation="deletePresentation"
+        />
       </div>
 
       <RecipeDeleteDialog
