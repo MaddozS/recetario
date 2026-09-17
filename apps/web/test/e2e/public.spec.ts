@@ -290,7 +290,8 @@ test("/pricing autenticado respeta el plan actual y completa el checkout", async
 
   await page.locator('[data-plan="basic"] button').click();
 
-  // El stub exige `x-csrf-token` y devuelve la URL de retorno.
-  await expect(page).toHaveURL(/success=1/);
-  await expect(page.getByText("Suscripción activada")).toBeVisible();
+  // El stub exige `x-csrf-token` y devuelve el `successUrl` que mandó el
+  // cliente: el flujo real aterriza en el tab de facturación de Settings.
+  await expect(page).toHaveURL(/\/settings\?tab=billing&success=1/);
+  await expect(page.getByText("Pago exitoso")).toBeVisible();
 });

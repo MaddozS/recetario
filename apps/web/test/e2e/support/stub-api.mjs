@@ -122,7 +122,7 @@ const PLANS = [
   },
 ];
 
-function sessionPayload({ plan }) {
+function sessionPayload({ plan, cookies = {} }) {
   const tier = plan === "free" ? "free" : plan === "basic" ? "basic" : "pro";
   const limits = {
     free: { recipes: 10, ingredients: 30 },
@@ -149,15 +149,133 @@ function sessionPayload({ plan }) {
 
   return {
     ...SESSION_PAYLOAD,
-    subscription: {
-      ...SESSION_PAYLOAD.subscription,
-      tier,
-      recipesLimit: limits.recipes,
-      ingredientsLimit: limits.ingredients,
-      priceCents: tier === "free" ? null : tier === "basic" ? 999 : 1999,
-      features,
+    user: {
+      ...SESSION_PAYLOAD.user,
+      firstName: settingsState.firstName,
+      lastName: settingsState.lastName,
+      name: `${settingsState.firstName} ${settingsState.lastName}`,
     },
+    preferences: {
+      userId: "qa-user",
+      theme: settingsState.preferences.theme,
+      accentColor: settingsState.preferences.accentColor,
+    },
+    subscription: subscriptionFor(
+      {
+        ...SESSION_PAYLOAD.subscription,
+        tier,
+        recipesLimit: limits.recipes,
+        ingredientsLimit: limits.ingredients,
+        priceCents: tier === "free" ? null : tier === "basic" ? 999 : 1999,
+        currency: tier === "free" ? null : "MXN",
+        billingInterval: tier === "free" ? null : "monthly",
+        features,
+      },
+      cookies,
+    ),
   };
+}
+
+/** ── Cuenta, preferencias y billing (Task 11): estado en memoria ─────────── */
+
+/**
+ * Un único estado para cuenta/preferencias/billing; cada spec lo resetea con
+ * `POST /api/__qa/settings/reset` para ser determinista. Las suscripciones se
+ * controlan con cookies: `qa-plan` (free|basic|pro) y `qa-subscription`
+ * (trial|canceled|scheduled).
+ */
+function createSettingsState() {
+  return {
+    firstName: "QA",
+    lastName: "Prueba",
+    preferences: { theme: "dark", accentColor: "emerald" },
+    nameAttempts: 0,
+    passwordAttempts: 0,
+    preferencesPutAttempts: 0,
+    portalAttempts: 0,
+    syncAttempts: 0,
+    checkoutAttempts: 0,
+    lastCheckout: null,
+    synced: false,
+  };
+}
+
+let settingsState = createSettingsState();
+
+function readSettingsState() {
+  return clone(settingsState);
+}
+
+/** Escenarios de suscripción por cookie, compartidos por sesión y billing. */
+function subscriptionFor(base, cookies = {}) {
+  const scenario = cookies["qa-subscription"];
+
+  if (scenario === "trial") {
+    return {
+      ...base,
+      status: "trialing",
+      isTrial: true,
+      trialEnd: "2026-10-01T12:00:00.000Z",
+      currentPeriodEnd: "2026-10-01T12:00:00.000Z",
+    };
+  }
+
+  if (scenario === "canceled") {
+    return {
+      ...base,
+      cancelAtPeriodEnd: true,
+      currentPeriodEnd: "2026-10-15T12:00:00.000Z",
+    };
+  }
+
+  if (scenario === "scheduled") {
+    return { ...base, currentPeriodEnd: "2026-10-15T12:00:00.000Z" };
+  }
+
+  return base;
+}
+
+function subscriptionResponse(plan, cookies) {
+  const base = sessionPayload({ plan }).subscription;
+  const scheduled =
+    cookies["qa-subscription"] === "scheduled"
+      ? {
+          targetTier: "basic",
+          targetPlanName: "KitchCalc Basic Mensual",
+          targetInterval: "monthly",
+          effectiveDate: "2026-10-15T12:00:00.000Z",
+        }
+      : null;
+
+  return {
+    ...subscriptionFor(
+      { ...base, currentPeriodEnd: "2026-10-15T12:00:00.000Z" },
+      cookies,
+    ),
+    scheduledChange: scheduled,
+  };
+}
+
+/**
+ * Doble-submit del CSRF como Hono: una petición de navegador (con `Origin`)
+ * necesita el header; las internas sin `Origin` (SSR por el relay) pasan por
+ * diseño. Así el stub falla si el cliente olvida el token.
+ */
+function csrfAllowed(req) {
+  if (!req.headers.origin) return true;
+  return Boolean(req.headers["x-csrf-token"]);
+}
+
+function unauthorized(res) {
+  return sendJson(res, 401, {
+    error: { code: "UNAUTHENTICATED", message: "Authentication required" },
+  });
+}
+
+function forbiddenCsrf(res) {
+  return sendJson(res, 403, {
+    error: { code: "FORBIDDEN", message: "CSRF validation failed" },
+  });
 }
 
 /** ── Ingredientes (Task 7): estado en memoria, sin BD ─────────────────────── */
@@ -451,7 +569,9 @@ const server = createServer(async (req, res) => {
     return sendJson(
       res,
       200,
-      authenticated ? sessionPayload({ plan: cookies["qa-plan"] }) : null,
+      authenticated
+        ? sessionPayload({ plan: cookies["qa-plan"], cookies })
+        : null,
     );
   }
 
@@ -620,9 +740,9 @@ const server = createServer(async (req, res) => {
   }
 
   if (pathname === "/api/stripe/checkout" && req.method === "POST") {
-    // Hono exige auth + doble-submit CSRF: el stub rechaza sin `x-csrf-token`
-    // para que el e2e falle si el cliente no lo envía.
-    if (!req.headers["x-csrf-token"]) {
+    // Hono exige auth + doble-submit CSRF: el stub rechaza una petición de
+    // navegador sin `x-csrf-token` para que el e2e falle si el cliente lo omite.
+    if (!csrfAllowed(req)) {
       return sendJson(res, 403, {
         error: { code: "FORBIDDEN", message: "CSRF validation failed" },
       });
@@ -635,7 +755,177 @@ const server = createServer(async (req, res) => {
       });
     }
 
-    return sendJson(res, 200, { url: "/pricing?success=1" });
+    settingsState.checkoutAttempts += 1;
+    settingsState.lastCheckout = payload;
+
+    // Flujo real: Stripe redirige al `successUrl` que mandó el cliente.
+    return sendJson(res, 200, {
+      url: payload.successUrl ?? "/pricing?success=1",
+    });
+  }
+
+  // ── Cuenta y preferencias (Task 11) ───────────────────────────────────────
+  if (
+    pathname.startsWith("/api/account") ||
+    pathname === "/api/preferences" ||
+    pathname === "/api/billing/subscription" ||
+    pathname === "/api/stripe/portal" ||
+    pathname === "/api/stripe/sync-session"
+  ) {
+    if (cookies["better-auth.session_token"] !== SESSION_TOKEN) {
+      return unauthorized(res);
+    }
+  }
+
+  if (pathname === "/api/account/update-name" && req.method === "POST") {
+    if (!csrfAllowed(req)) return forbiddenCsrf(res);
+
+    settingsState.nameAttempts += 1;
+    const payload = JSON.parse(body || "{}");
+    const firstName = String(payload.firstName ?? "").trim();
+    const lastName = String(payload.lastName ?? "").trim();
+
+    if (!firstName || !lastName) {
+      return sendJson(res, 400, {
+        error: { code: "VALIDATION_ERROR", message: "Invalid account payload" },
+      });
+    }
+
+    // Sentinela para cubrir el error genérico sin CTA de plan.
+    if (firstName === "Fallo") {
+      return sendJson(res, 500, {
+        error: { code: "INTERNAL", message: "Fallo simulado del servidor" },
+      });
+    }
+
+    settingsState.firstName = firstName;
+    settingsState.lastName = lastName;
+    return sendJson(res, 200, { firstName, lastName });
+  }
+
+  if (pathname === "/api/account/change-password" && req.method === "POST") {
+    if (!csrfAllowed(req)) return forbiddenCsrf(res);
+
+    settingsState.passwordAttempts += 1;
+    const payload = JSON.parse(body || "{}");
+
+    if (payload.currentPassword !== "Temporal123!") {
+      return sendJson(res, 400, {
+        error: {
+          code: "VALIDATION_ERROR",
+          message: "La contraseña actual es incorrecta.",
+        },
+      });
+    }
+
+    if (
+      !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/.test(
+        payload.newPassword ?? "",
+      )
+    ) {
+      return sendJson(res, 400, {
+        error: {
+          code: "VALIDATION_ERROR",
+          message:
+            "La contraseña debe tener al menos 8 caracteres, incluir mayúsculas, minúsculas, números y un carácter especial.",
+        },
+      });
+    }
+
+    return sendJson(res, 200, { ok: true });
+  }
+
+  if (pathname === "/api/preferences" && req.method === "GET") {
+    return sendJson(res, 200, {
+      userId: "qa-user",
+      ...settingsState.preferences,
+    });
+  }
+
+  if (pathname === "/api/preferences" && req.method === "PUT") {
+    if (!csrfAllowed(req)) return forbiddenCsrf(res);
+
+    settingsState.preferencesPutAttempts += 1;
+
+    // Sentinela `qa-prefs=error` para el rollback visual del formulario.
+    if (cookies["qa-prefs"] === "error") {
+      return sendJson(res, 500, {
+        error: { code: "INTERNAL", message: "Fallo simulado del servidor" },
+      });
+    }
+
+    const payload = JSON.parse(body || "{}");
+    // Como Hono: un PUT parcial conserva lo persistido y devuelve la fila.
+    if (payload.theme !== undefined)
+      settingsState.preferences.theme = payload.theme;
+    if (payload.accentColor !== undefined) {
+      settingsState.preferences.accentColor = payload.accentColor;
+    }
+
+    return sendJson(res, 200, {
+      userId: "qa-user",
+      ...settingsState.preferences,
+    });
+  }
+
+  // ── Facturación (Task 11) ─────────────────────────────────────────────────
+  if (pathname === "/api/billing/subscription" && req.method === "GET") {
+    // La sincronización del checkout simula el cambio a Basic (paridad con la
+    // ingesta real) y el plan Free responde 404 como Hono.
+    if (settingsState.synced) {
+      return sendJson(
+        res,
+        200,
+        subscriptionResponse("basic", {
+          ...cookies,
+          "qa-subscription": undefined,
+        }),
+      );
+    }
+
+    if ((cookies["qa-plan"] ?? "pro") === "free") {
+      return sendJson(res, 404, {
+        error: { code: "NOT_FOUND", message: "No active subscription" },
+      });
+    }
+
+    return sendJson(
+      res,
+      200,
+      subscriptionResponse(cookies["qa-plan"] ?? "pro", cookies),
+    );
+  }
+
+  if (pathname === "/api/stripe/portal" && req.method === "POST") {
+    if (!csrfAllowed(req)) return forbiddenCsrf(res);
+
+    settingsState.portalAttempts += 1;
+
+    if (cookies["qa-portal"] === "error") {
+      return sendJson(res, 500, {
+        error: { code: "INTERNAL", message: "No se pudo abrir el portal." },
+      });
+    }
+
+    return sendJson(res, 200, { url: "/api/health?portal=1" });
+  }
+
+  if (pathname === "/api/stripe/sync-session" && req.method === "POST") {
+    if (!csrfAllowed(req)) return forbiddenCsrf(res);
+
+    settingsState.syncAttempts += 1;
+
+    if (cookies["qa-sync"] === "error") {
+      return sendJson(res, 500, {
+        error: {
+          code: "INTERNAL",
+          message: "No se pudo sincronizar la suscripción.",
+        },
+      });
+    }
+
+    settingsState.synced = true;
+    return sendJson(res, 200, { ok: true });
   }
 
   // ── Ingredientes (Task 7) ─────────────────────────────────────────────────
@@ -651,6 +941,12 @@ const server = createServer(async (req, res) => {
   }
 
   if (pathname === "/api/usage-counts" && req.method === "GET") {
+    // `qa-usage=low` deja el remanente en los umbrales de aviso (recetas 3,
+    // ingredientes 5) para el plan Free.
+    if (cookies["qa-usage"] === "low") {
+      return sendJson(res, 200, { recipes: 9, ingredients: 29 });
+    }
+
     return sendJson(res, 200, {
       recipes: 2,
       ingredients: ingredientState.ingredients.length,
@@ -1237,6 +1533,16 @@ const server = createServer(async (req, res) => {
 
   if (pathname === "/api/__qa/ingredients/state" && req.method === "GET") {
     return sendJson(res, 200, readIngredientState());
+  }
+
+  // ── Fixture QA de cuenta, preferencias y billing (Task 11) ────────────────
+  if (pathname === "/api/__qa/settings/reset" && req.method === "POST") {
+    settingsState = createSettingsState();
+    return sendJson(res, 200, readSettingsState());
+  }
+
+  if (pathname === "/api/__qa/settings/state" && req.method === "GET") {
+    return sendJson(res, 200, readSettingsState());
   }
 
   // ── Casos del relay ───────────────────────────────────────────────────────

@@ -136,7 +136,7 @@ test("móvil: drawer, overlay y bottom nav declarativos", async ({ page, goto })
   expect(consoleErrors).toEqual([]);
 });
 
-test("escritorio: sidebar fija, sin bottom nav y breadcrumb completo", async ({
+test("escritorio: sidebar fija, sin bottom nav y breadcrumb del shell", async ({
   page,
   goto,
 }) => {
@@ -144,12 +144,12 @@ test("escritorio: sidebar fija, sin bottom nav y breadcrumb completo", async ({
     { name: "better-auth.session_token", value: "stub-session-token", url: url("/") },
   ]);
   await page.setViewportSize(DESKTOP);
-  await goto("/settings/billing");
+  // `/settings/billing` es un 301 desde Task 11: la ruta viva es la query.
+  await goto("/settings?tab=billing");
 
   await expect(page.locator("#bottom-nav")).toBeHidden();
   expect(await page.locator("#app-sidebar").getAttribute("class")).toContain("md:static");
   await expect(page.locator('nav[data-variant="desktop"]')).toContainText("Configuración");
-  await expect(page.locator('nav[data-variant="desktop"]')).toContainText("Facturación");
   await expect(page.locator('nav[data-variant="mobile"]')).toContainText("Configuración");
   await expect(page.locator("#sign-out-button")).toContainText("Cerrar sesión");
 });
