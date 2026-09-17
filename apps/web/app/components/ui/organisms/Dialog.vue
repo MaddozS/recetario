@@ -8,17 +8,19 @@ const props = withDefaults(
     description?: string;
     submitting?: boolean;
     /** Ancho del panel. `md` es el comportamiento original del kit. */
-    size?: "md" | "lg" | "xl";
+    size?: "md" | "lg" | "xl" | "5xl";
     /** Panel con scroll interno (`max-h` + `overflow-y-auto`) para formularios altos. */
     scroll?: boolean;
   }>(),
   { submitting: false, size: "md", scroll: false },
 );
 
-const SIZE_CLASSES: Record<"md" | "lg" | "xl", string> = {
+const SIZE_CLASSES: Record<"md" | "lg" | "xl" | "5xl", string> = {
   md: "max-w-md",
   lg: "max-w-lg",
   xl: "max-w-xl",
+  // Selector de planes en 3 columnas (paridad con el `max-w-5xl` del baseline).
+  "5xl": "max-w-5xl",
 };
 
 const sizeClass = computed(() => SIZE_CLASSES[props.size]);

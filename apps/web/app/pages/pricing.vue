@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import type { PricingPlan } from "@recetario/types";
 import BillingIntervalToggle from "~/features/billing/BillingIntervalToggle.vue";
 import PlanFeatureList from "~/features/billing/PlanFeatureList.vue";
@@ -16,6 +16,9 @@ usePageSeo("/pricing");
  * `/pricing` es pública: el anónimo ve el catálogo y su CTA pasa por sign-in
  * (el checkout exige sesión en Hono). El autenticado ve su plan actual y puede
  * iniciar el checkout, con pending visible y error inline.
+ *
+ * `?plan=<tier>` (el enlace de `UpgradePrompt`) resalta la card objetivo y hace
+ * scroll a ella en cliente; no dispara ningún checkout por sí solo.
  */
 const route = useRoute();
 const { plans, pending: plansPending, error: plansError } = usePricingPlans();
@@ -33,12 +36,43 @@ const currentTier = computed(() => subscription.value?.tier ?? "free");
 const showSuccessBanner = computed(() => route.query.success === "1");
 const showCanceledBanner = computed(() => route.query.canceled === "1");
 
+const highlightedPlan = computed<string | null>(() => {
+  const raw = route.query.plan;
+  if (raw !== "basic" && raw !== "pro") return null;
+  return plans.value.some((plan) => plan.id === raw) ? raw : null;
+});
+
+onMounted(() => {
+  const target = highlightedPlan.value;
+  if (!target) return;
+
+  const element = document.querySelector(`[data-plan="${target}"]`);
+  const reducedMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)",
+  ).matches;
+  element?.scrollIntoView({
+    block: "center",
+    behavior: reducedMotion ? "auto" : "smooth",
+  });
+});
+
 function isFree(plan: PricingPlan): boolean {
   return plan.id === "free";
 }
 
 function isCurrent(plan: PricingPlan): boolean {
   return plan.id === currentTier.value;
+}
+
+function cardClasses(plan: PricingPlan): string {
+  if (plan.id === highlightedPlan.value) {
+    // Destaca sobre el anillo por defecto de Pro (`?plan=` llega de
+    // `UpgradePrompt`).
+    return "border-accent-500 ring-2 ring-accent-500 ring-offset-2 ring-offset-background";
+  }
+  return plan.id === "pro"
+    ? "border-accent-300 ring-accent-200 ring-1"
+    : "border-border";
 }
 
 function buttonLabel(plan: PricingPlan): string {
@@ -160,12 +194,9 @@ async function subscribe(plan: PricingPlan): Promise<void> {
         v-for="plan in plans"
         :key="plan.id"
         :data-plan="plan.id"
+        :data-highlighted="plan.id === highlightedPlan ? '1' : undefined"
         class="bg-card flex flex-col rounded-2xl border p-6 shadow-sm"
-        :class="
-          plan.id === 'pro'
-            ? 'border-accent-300 ring-accent-200 ring-1'
-            : 'border-border'
-        "
+        :class="cardClasses(plan)"
       >
         <Badge
           v-if="plan.badge"
