@@ -11,7 +11,6 @@ import {
 import {
   logAuditEvent,
   updateAccountPassword,
-  updateUserName,
 } from "@recetario/db";
 import { syncEnvBindings } from "@recetario/config/env";
 import { clientIp, setSecurityHeaders } from "@recetario/config/request";
@@ -57,6 +56,11 @@ import { syncCheckoutSessionHandler } from "./billing/sync-session";
 import { credentialStatusHandler } from "./auth/credential-status";
 import { auditLogHandler } from "./audit/log";
 import { usageCountsHandler } from "./usage-counts";
+import {
+  accountChangeEmailHandler,
+  accountChangePasswordHandler,
+  accountUpdateNameHandler,
+} from "./account/handlers";
 import {
   presentationsFixedCostsCreateHandler,
   presentationsFixedCostsUpdateHandler,
@@ -290,84 +294,9 @@ app.get("/api/usage-counts", usageCountsHandler());
 
 app.all("/api/auth/*", async (c) => auth.handler(c.req.raw));
 
-app.post("/api/account/update-name", async (c) => {
-    const user = c.get("user");
-    const formData = await c.req.raw.formData();
-    const firstName = (formData.get("firstName") as string)?.trim() ?? "";
-    const lastName = (formData.get("lastName") as string)?.trim() ?? "";
-
-    if (!firstName || !lastName) return c.text("Missing fields", 400);
-
-    try {
-      await updateUserName(user.id, { firstName, lastName });
-      return c.body(null, 200);
-    } catch {
-      return c.text("Error updating name", 500);
-    }
-  });
-
-app.post("/api/account/change-email", async (c) => {
-    const user = c.get("user");
-    const formData = await c.req.raw.formData();
-    const newEmail = formData.get("newEmail") as string;
-    const currentPassword = formData.get("currentPassword") as string;
-
-    if (!newEmail || !currentPassword) return c.text("Missing fields", 400);
-
-    try {
-      await auth.api.changeEmail({
-        headers: c.req.raw.headers,
-        body: { newEmail },
-      });
-      await logAuditEvent({
-        userId: user.id,
-        action: "email_change",
-        ipAddress: clientIp(c.req.raw),
-        userAgent: c.req.header("user-agent") ?? null,
-      });
-      return c.body(null, 200);
-    } catch (error) {
-      return c.text(
-        (error as { message?: string })?.message ?? "Error changing email",
-        400,
-      );
-    }
-  });
-
-app.post("/api/account/change-password", async (c) => {
-    const user = c.get("user");
-    const formData = await c.req.raw.formData();
-    const currentPassword = formData.get("currentPassword") as string;
-    const newPassword = formData.get("newPassword") as string;
-
-    if (!currentPassword || !newPassword) return c.text("Missing fields", 400);
-    if (newPassword.length < 6) {
-      return c.text("Password must be at least 6 characters", 400);
-    }
-
-    try {
-      await auth.api.changePassword({
-        headers: c.req.raw.headers,
-        body: {
-          currentPassword,
-          newPassword,
-          revokeOtherSessions: false,
-        },
-      });
-      await logAuditEvent({
-        userId: user.id,
-        action: "password_change",
-        ipAddress: clientIp(c.req.raw),
-        userAgent: c.req.header("user-agent") ?? null,
-      });
-      return c.body(null, 200);
-    } catch (error) {
-      return c.text(
-        (error as { message?: string })?.message ?? "Error changing password",
-        400,
-      );
-    }
-  });
+app.post("/api/account/update-name", accountUpdateNameHandler());
+app.post("/api/account/change-email", accountChangeEmailHandler());
+app.post("/api/account/change-password", accountChangePasswordHandler());
 
 app.post("/api/stripe/checkout", stripeCheckoutHandler());
 app.post("/api/stripe/portal", stripePortalHandler());

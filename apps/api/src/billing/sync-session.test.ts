@@ -129,7 +129,7 @@ describe("syncCheckoutSessionHandler", () => {
     expect(data.error.code).toBe("VALIDATION_ERROR");
   });
 
-  it("returns ok:false when the session has no subscription yet", async () => {
+  it("returns 404 when the session has no subscription yet", async () => {
     mockRetrieveCheckoutSession.mockResolvedValue({
       id: "cs_123",
       customer: "cus_123",
@@ -143,8 +143,9 @@ describe("syncCheckoutSessionHandler", () => {
       },
       {},
     );
-    expect(res.status).toBe(200);
-    expect(await res.json()).toEqual({ ok: false });
+    expect(res.status).toBe(404);
+    const data = (await res.json()) as { error: { code: string } };
+    expect(data.error.code).toBe("NOT_FOUND");
     expect(mockIngestSubscriptionSnapshot).not.toHaveBeenCalled();
   });
 
@@ -160,6 +161,8 @@ describe("syncCheckoutSessionHandler", () => {
       {},
     );
     expect(res.status).toBe(409);
+    const data = (await res.json()) as { error: { code: string } };
+    expect(data.error.code).toBe("DOMAIN_ERROR");
     expect(mockIngestSubscriptionSnapshot).not.toHaveBeenCalled();
   });
 
@@ -178,6 +181,8 @@ describe("syncCheckoutSessionHandler", () => {
       {},
     );
     expect(res.status).toBe(409);
+    const data = (await res.json()) as { error: { code: string } };
+    expect(data.error.code).toBe("DOMAIN_ERROR");
   });
 
   it("rejects an expired intent", async () => {
@@ -195,6 +200,8 @@ describe("syncCheckoutSessionHandler", () => {
       {},
     );
     expect(res.status).toBe(409);
+    const data = (await res.json()) as { error: { code: string } };
+    expect(data.error.code).toBe("DOMAIN_ERROR");
   });
 
   it("ingests the canonical snapshot through the Checkout intent authority", async () => {
@@ -236,5 +243,7 @@ describe("syncCheckoutSessionHandler", () => {
       {},
     );
     expect(res.status).toBe(500);
+    const data = (await res.json()) as { error: { code: string } };
+    expect(data.error.code).toBe("INTERNAL");
   });
 });

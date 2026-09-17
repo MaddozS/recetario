@@ -235,15 +235,16 @@ relay in `apps/web/src/middleware.ts` as reference until Task 13.
 | POST   | `/api/auth/reset-password` | token | — | Marks token used; logs audit event. |
 | GET    | `/api/auth/session` | optional | — | Pass-through to `auth.api.getSession`. Used by `apps/web` middleware. |
 | ALL    | `/api/auth/*` | varies | — | Catch-all for Better Auth. |
-| POST   | `/api/account/update-name` | user | — | First/last name. |
-| POST   | `/api/account/change-email` | user | — | Triggers verification email. |
-| POST   | `/api/account/change-password` | user | — | Min length 6. |
+| POST   | `/api/account/update-name` | user | — | JSON `{firstName,lastName}`; returns the shaped name. |
+| POST   | `/api/account/change-email` | user | — | JSON; triggers verification email. No UI yet. |
+| POST   | `/api/account/change-password` | user | — | JSON; same policy as sign-up (`validatePassword`: 8+, mayúscula, minúscula, número, especial). |
 | GET    | `/api/preferences` | user | 60 s | Creates default if missing. |
 | PUT    | `/api/preferences` | user | invalidates `prefs:{userId}` | — |
 | GET    | `/api/billing/subscription` | user | 60 s | Resolves tier from active subscription. 404 if no subscription. |
 | GET    | `/api/billing/plans` | none | 60 s | Active plans, ordered by price. |
 | POST   | `/api/stripe/checkout` | user | — | Requires CSRF. |
 | POST   | `/api/stripe/portal` | user | — | Requires CSRF. |
+| POST   | `/api/stripe/sync-session` | user | — | Requires CSRF. `{ok:true}` o envelope (404/409/500). |
 | POST   | `/api/stripe/webhook` | sig | — | Signature-verified. |
 | GET    | `/api/recipes` | user | — | Summaries only. |
 | GET    | `/api/recipes/by-ids` | user | 60 s | Max 100 ids; order-insensitive key. |

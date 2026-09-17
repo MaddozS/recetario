@@ -29,17 +29,17 @@ export function syncCheckoutSessionHandler(): Handler<{ Variables: AuthVariables
     try {
       const session = await retrieveCheckoutSession(sessionId);
       if (!session || !session.subscription) {
-        return c.json({ ok: false });
+        throw new ApiError("NOT_FOUND", "No se encontró la sesión de pago.");
       }
 
       // Ownership authority: the authenticated user plus a trusted Checkout
       // intent. Metadata can corroborate but never override.
       const intent = await getCheckoutIntentBySession(session.id ?? sessionId);
       if (!intent || intent.userId !== user.id) {
-        return c.json({ ok: false }, 409);
+        throw new ApiError("DOMAIN_ERROR", "La sesión de pago ya no es válida.");
       }
       if (intent.state === "pending" && intent.expiresAt < new Date()) {
-        return c.json({ ok: false }, 409);
+        throw new ApiError("DOMAIN_ERROR", "La sesión de pago ya no es válida.");
       }
 
       const subscriptionId =
@@ -67,13 +67,15 @@ export function syncCheckoutSessionHandler(): Handler<{ Variables: AuthVariables
         });
 
       if (!ingestResult.ok) {
-        return c.json({ ok: false }, 500);
+        console.error("[syncCheckoutSession] ingest failed:", ingestResult.error);
+        throw new ApiError("INTERNAL", "No se pudo sincronizar la suscripción.");
       }
 
       return c.json({ ok: true });
     } catch (err) {
+      if (err instanceof ApiError) throw err;
       console.error("[syncCheckoutSession] error:", err);
-      return c.json({ ok: false }, 500);
+      throw new ApiError("INTERNAL", "No se pudo sincronizar la suscripción.");
     }
   };
 }
