@@ -1,19 +1,16 @@
 <script setup lang="ts">
-import { THEME_COOKIE } from "#shared/utils/preferences";
-import { writeDocumentCookie } from "~/utils/cookies";
-
 /**
- * Toggle de tema del landing: usa el mecanismo unificado (`useTheme`) y
- * persiste en la cookie de presentación que el SSR ya lee cookie-first. Sin
- * `localStorage` ni `window.toggleLandingTheme` (los del `LandingLayout` de
- * Astro).
+ * Toggle de tema del landing: usa el mecanismo unificado (`useTheme`) y, si hay
+ * sesión, persiste con `PUT /api/preferences` (la cookie se escribe desde la
+ * respuesta confirmada). Anónimo: la cookie es el único almacén. Sin
+ * `localStorage`, sin `window.toggleLandingTheme` y sin escrituras optimistas.
  */
-const { isDark, setTheme } = useTheme();
+const { isDark, accent } = useTheme();
+const { saveAppearance } = useAppearancePersistence();
 
 function toggleTheme(): void {
   const next = isDark.value ? "light" : "dark";
-  setTheme(next);
-  writeDocumentCookie(THEME_COOKIE, next);
+  void saveAppearance({ theme: next, accentColor: accent.value });
 }
 </script>
 

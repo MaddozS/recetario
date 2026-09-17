@@ -27,7 +27,9 @@ export function useAuth() {
     }
   }
 
-  const isAuthenticated = computed(() => state.value.status === "authenticated");
+  const isAuthenticated = computed(
+    () => state.value.status === "authenticated",
+  );
   const user = computed(() =>
     state.value.status === "authenticated" ? state.value.user : null,
   );
@@ -43,6 +45,21 @@ export function useAuth() {
       : false;
   }
 
+  /** Preferencias confirmadas por `PUT /api/preferences`. */
+  function applyPreferences(next: AuthPreferences): void {
+    state.value.preferences = { ...next };
+  }
+
+  /** Perfil confirmado por `POST /api/account/update-name`. */
+  function applyProfile(next: { firstName: string; lastName: string }): void {
+    const current = state.value;
+    if (current.status !== "authenticated") return;
+
+    current.user.firstName = next.firstName;
+    current.user.lastName = next.lastName;
+    current.user.name = `${next.firstName} ${next.lastName}`.trim();
+  }
+
   /** Sesión expirada en cliente: el request ya no es válido. */
   function expire(): void {
     state.value = buildAnonymousAuthState(state.value.preferences);
@@ -55,6 +72,8 @@ export function useAuth() {
     subscription,
     preferences,
     hasFeature,
+    applyPreferences,
+    applyProfile,
     expire,
   };
 }
