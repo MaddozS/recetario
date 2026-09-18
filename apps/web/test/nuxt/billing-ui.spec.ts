@@ -53,7 +53,7 @@ const PLANS: PricingPlan[] = [
     tier: "pro",
     name: "Pro",
     description: "Para profesionales",
-    badge: { text: "Más popular", class: "bg-accent-600 text-white" },
+    badge: { text: "Más popular", class: "bg-accent-700 text-text-on-accent" },
     currency: "MXN",
     monthlyPriceId: "price_pro_monthly",
     monthlyDisplay: "$19.99",

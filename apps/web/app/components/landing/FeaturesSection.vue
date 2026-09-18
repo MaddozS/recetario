@@ -114,7 +114,7 @@ function closeLightbox(): void {
                   height="600"
                 />
                 <span
-                  class="text-muted-foreground/60 mt-1.5 flex items-center gap-1.5 text-xs transition-opacity group-hover/lightbox:opacity-100 md:opacity-0"
+                  class="text-muted-foreground mt-1.5 flex items-center gap-1.5 text-xs transition-opacity group-hover/lightbox:opacity-100 md:opacity-0"
                 >
                   <Icon name="lucide:zoom-in" :size="14" />
                   Click para ampliar

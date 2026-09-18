@@ -68,7 +68,9 @@
   --tw-hover-muted: #e2e8f0;
   --tw-fg: #0f172a;
   --tw-secondary-fg: #334155;
-  --tw-muted-fg: #64748b;
+  /* Un punto más oscuro que slate-500: sobre `bg-muted` (#f1f5f9) el 500 daba
+     4.34:1 y no pasa AA en texto normal (Task 13a, barrido axe). */
+  --tw-muted-fg: #5f6f84;
   --tw-subtle-fg: #78716c;
   --tw-border: #e2e8f0;
   --tw-border-light: #f1f5f9;

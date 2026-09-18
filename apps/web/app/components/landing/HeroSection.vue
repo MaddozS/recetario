@@ -91,14 +91,14 @@
                 </div>
                 <div class="flex items-center justify-between">
                   <span
-                    class="text-accent-700 text-xs font-semibold tracking-widest uppercase"
+                    class="text-accent-800 text-xs font-semibold tracking-widest uppercase"
                   >
                     Margen 50%
                   </span>
                   <LandingCountUp
                     :value="1.2"
                     prefix="+$"
-                    class="text-accent-600 font-mono text-base font-bold tabular-nums"
+                    class="text-accent-800 font-mono text-base font-bold tabular-nums"
                   />
                 </div>
                 <div

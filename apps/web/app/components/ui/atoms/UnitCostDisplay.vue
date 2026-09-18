@@ -28,7 +28,7 @@ withDefaults(
         >
           {{ value }}
         </span>
-        <span class="text-accent-400 pb-1 text-sm font-semibold">
+        <span class="text-accent-800 pb-1 text-sm font-semibold">
           / <span>{{ defaultUnit }}</span>
         </span>
       </div>

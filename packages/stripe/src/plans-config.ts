@@ -107,7 +107,7 @@ export const TIER_CONFIG: Record<string, TierConfig> = {
   pro: {
     name: "Pro",
     description: "Para profesionales",
-    badge: { text: "Mas popular", class: "bg-accent-600 text-white" },
+    badge: { text: "Mas popular", class: "bg-accent-700 text-text-on-accent" },
     limits: { recipes: null, ingredients: null },
     features: [
       { text: "Recetas ilimitadas", included: true },

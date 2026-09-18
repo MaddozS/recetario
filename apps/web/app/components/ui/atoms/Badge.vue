@@ -26,8 +26,10 @@ const COLOR_CLASSES: Record<
   { bg: string; text: string; border: string }
 > = {
   accent: {
-    bg: "bg-accent-100",
-    text: "text-accent-700",
+    // AA: el 700 sobre accent-100 daba 3.8:1 en light (coral) y el tint 900 de
+    // dark es demasiado claro para cualquier shade de texto (Task 13a).
+    bg: "bg-accent-100 dark:bg-accent-50",
+    text: "text-accent-800",
     border: "border-accent-200",
   },
   success: {
