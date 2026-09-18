@@ -503,6 +503,23 @@ describe("RecipeIngredientView", () => {
     expect(wrapper.text()).toContain("$25.00");
   });
 
+  it("sin filas muestra el mensaje vacío en vez de contenedores vacíos", async () => {
+    const wrapper = await mountSuspended(RecipeIngredientView, {
+      props: {
+        ingredients: [],
+        multiplier: 1,
+        showComments: false,
+      },
+    });
+
+    expect(wrapper.find("[data-ingredients-empty]").exists()).toBe(true);
+    expect(wrapper.text()).toContain(
+      "Esta receta todavía no tiene ingredientes.",
+    );
+    expect(wrapper.findAll("article")).toHaveLength(0);
+    expect(wrapper.findAll("td")).toHaveLength(0);
+  });
+
   it("oculta las notas hasta que se piden", async () => {
     const hidden = await mountSuspended(RecipeIngredientView, {
       props: {

@@ -37,6 +37,10 @@ export default [
       "vue/singleline-html-element-content-newline": "off",
       "vue/max-attributes-per-line": "off",
       "vue/html-self-closing": "off",
+      // Prettier indenta y cierra el `>` a su manera cuando un atributo largo
+      // fuerza el salto de línea (p. ej. spans con `{{ }}` anidados).
+      "vue/html-indent": "off",
+      "vue/html-closing-bracket-newline": "off",
       // No entiende `defineProps<T>()`: una prop opcional tipada (`foo?: T`)
       // ya es `undefined` por defecto.
       "vue/require-default-prop": "off",

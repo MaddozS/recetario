@@ -26,8 +26,25 @@ function subtotal(
 
 <template>
   <div>
-    <!-- Móvil: cards -->
-    <div class="divide-border-light divide-y md:hidden">
+    <!-- Receta sin filas: mensaje explícito (antes quedaban contenedores vacíos). -->
+    <div
+      v-if="ingredients.length === 0"
+      data-ingredients-empty
+      class="px-6 py-10"
+    >
+      <EmptyState
+        icon="lucide:package-search"
+        title="Esta receta todavía no tiene ingredientes."
+        description="Agrégalos desde el modo edición para calcular su costo."
+      />
+    </div>
+
+    <!-- Móvil: cards (independiente del bloque vacío: en escritorio la tabla
+         se renderiza en paralelo y sólo el CSS decide cuál se ve). -->
+    <div
+      v-if="ingredients.length > 0"
+      class="divide-border-light divide-y md:hidden"
+    >
       <article
         v-for="(item, index) in ingredients"
         :key="`${item.ingredientId}-${index}`"
@@ -83,7 +100,8 @@ function subtotal(
               }}</span>
               <span
                 class="text-muted-foreground text-xs font-semibold uppercase"
-              >{{ item.unit }}</span>
+                >{{ item.unit }}</span
+              >
             </p>
           </div>
           <div
@@ -109,7 +127,7 @@ function subtotal(
     </div>
 
     <!-- Escritorio: tabla -->
-    <div class="hidden overflow-x-auto md:block">
+    <div v-if="ingredients.length > 0" class="hidden overflow-x-auto md:block">
       <table class="w-full table-auto overflow-x-auto text-left">
         <thead
           class="bg-background text-subtle-foreground text-[10px] font-bold uppercase"
@@ -167,7 +185,8 @@ function subtotal(
                     }}</span>
                     <span
                       class="text-muted-foreground text-xs font-semibold uppercase"
-                    >{{ item.unit }}</span>
+                      >{{ item.unit }}</span
+                    >
                   </p>
                 </div>
                 <div
@@ -185,7 +204,8 @@ function subtotal(
                     }}</span>
                     <span
                       class="text-accent-500 text-xs font-semibold uppercase"
-                    >{{ item.unit }}</span>
+                      >{{ item.unit }}</span
+                    >
                   </p>
                 </div>
               </div>
