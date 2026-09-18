@@ -64,6 +64,7 @@ import { __iconData as packageSearchIcon } from "@lucide/vue/dist/esm/icons/pack
 import { __iconData as paletteIcon } from "@lucide/vue/dist/esm/icons/palette.mjs";
 import { __iconData as pencilIcon } from "@lucide/vue/dist/esm/icons/pencil.mjs";
 import { __iconData as plusIcon } from "@lucide/vue/dist/esm/icons/plus.mjs";
+import { __iconData as printerIcon } from "@lucide/vue/dist/esm/icons/printer.mjs";
 import { __iconData as refreshCwIcon } from "@lucide/vue/dist/esm/icons/refresh-cw.mjs";
 import { __iconData as saveIcon } from "@lucide/vue/dist/esm/icons/save.mjs";
 import { __iconData as searchIcon } from "@lucide/vue/dist/esm/icons/search.mjs";
@@ -124,6 +125,7 @@ export const ICON_REGISTRY: Record<string, LucideIconData> = {
   "palette": paletteIcon,
   "pencil": pencilIcon,
   "plus": plusIcon,
+  "printer": printerIcon,
   "refresh-cw": refreshCwIcon,
   "save": saveIcon,
   "search": searchIcon,

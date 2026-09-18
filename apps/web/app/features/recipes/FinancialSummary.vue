@@ -12,6 +12,8 @@ import type { FinancialRow } from "./recipe-financials";
 const props = withDefaults(
   defineProps<{
     rows: ReadonlyArray<FinancialRow>;
+    /** Título opcional dentro de la card (lo usa el planificador). */
+    title?: string;
     highlightRow?: number;
     fields?: ReadonlyArray<FinancialEditField>;
     editable?: boolean;
@@ -60,6 +62,12 @@ function onInput(name: FinancialEditField["name"], event: Event): void {
 
 <template>
   <Card padding="lg">
+    <h2
+      v-if="title"
+      class="text-muted-foreground mb-1.5 text-[10px] font-black tracking-wider uppercase"
+    >
+      {{ title }}
+    </h2>
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
       <div
         v-for="(row, index) in rows"
