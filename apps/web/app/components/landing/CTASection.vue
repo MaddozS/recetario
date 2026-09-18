@@ -35,7 +35,7 @@
       >
         <a
           href="/sign-in"
-          class="bg-card text-accent-800 focus-visible:ring-accent-500 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-bold shadow-lg shadow-black/15 transition-all hover:brightness-90 focus-visible:ring-2 focus-visible:outline-none active:scale-[0.97] dark:bg-accent-700 dark:text-text-on-accent dark:shadow-black/30"
+          class="bg-card text-accent-800 focus-visible:ring-accent-500 dark:bg-accent-700 dark:text-text-on-accent inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-bold shadow-lg shadow-black/15 transition-all hover:brightness-90 focus-visible:ring-2 focus-visible:outline-none active:scale-[0.97] dark:shadow-black/30"
         >
           <Icon name="lucide:arrow-up-circle" :size="16" />
           Comenzar gratis

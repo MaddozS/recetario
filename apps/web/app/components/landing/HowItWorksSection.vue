@@ -90,7 +90,7 @@ const STEPS: readonly Step[] = [
                   class="bg-card border-border mt-4 inline-flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm shadow-sm"
                 >
                   <span
-                    class="bg-accent-100 text-accent-800 rounded-md px-2 py-0.5 text-xs font-bold dark:bg-accent-50"
+                    class="bg-accent-100 text-accent-800 dark:bg-accent-50 rounded-md px-2 py-0.5 text-xs font-bold"
                   >
                     {{ step.number }}
                   </span>

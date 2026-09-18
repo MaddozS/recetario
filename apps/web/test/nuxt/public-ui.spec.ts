@@ -51,7 +51,9 @@ const PLANS: PricingPlan[] = [
     yearlyPriceId: "price_basic_yearly",
     yearlyDisplay: "$95.90",
     yearlyPerMonthDisplay: "$7.99",
-    features: [{ text: "Exportar a PDF", included: false, status: "coming_soon" }],
+    features: [
+      { text: "Exportar a PDF", included: false, status: "coming_soon" },
+    ],
   },
   {
     id: "pro",
@@ -164,7 +166,9 @@ describe("LandingPricingSection", () => {
     const anonymous = await mountSuspended(LandingPricingSection, {
       props: { plans: PLANS },
     });
-    expect(anonymous.findAll("a").map((link) => link.attributes("href"))).toEqual([
+    expect(
+      anonymous.findAll("a").map((link) => link.attributes("href")),
+    ).toEqual([
       "/sign-in?redirect=/recipes",
       "/sign-in?redirect=/pricing",
       "/sign-in?redirect=/pricing",
@@ -174,11 +178,9 @@ describe("LandingPricingSection", () => {
     const authenticated = await mountSuspended(LandingPricingSection, {
       props: { plans: PLANS },
     });
-    expect(authenticated.findAll("a").map((link) => link.attributes("href"))).toEqual([
-      "/recipes",
-      "/pricing",
-      "/pricing",
-    ]);
+    expect(
+      authenticated.findAll("a").map((link) => link.attributes("href")),
+    ).toEqual(["/recipes", "/pricing", "/pricing"]);
   });
 
   it("sin planes muestra el aviso en vez de una grilla vacía", async () => {
