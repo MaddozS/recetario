@@ -343,6 +343,21 @@ describe("FinancialSummary", () => {
     expect(wrapper.find("input").exists()).toBe(false);
   });
 
+  it("pinta un título opcional dentro de la card", async () => {
+    const wrapper = await mountSuspended(FinancialSummary, {
+      props: { rows: FINANCIAL_ROWS, title: "Resumen financiero" },
+    });
+
+    const title = wrapper.find("h2");
+    expect(title.text()).toBe("Resumen financiero");
+    expect(title.classes()).toContain("uppercase");
+
+    const withoutTitle = await mountSuspended(FinancialSummary, {
+      props: { rows: FINANCIAL_ROWS },
+    });
+    expect(withoutTitle.find("h2").exists()).toBe(false);
+  });
+
   it("en edición cambia por inputs sólo las filas con campo", async () => {
     const onMargin = vi.fn();
     const onFixedCosts = vi.fn();

@@ -425,6 +425,7 @@ function createRecipeState(seed = {}) {
     deleteAttempts: 0,
     fixedCostAttempts: 0,
     presentationAttempts: 0,
+    byIdsAttempts: 0,
     lastPresentationPatch: null,
   };
 }
@@ -439,6 +440,7 @@ function readRecipeState() {
     deleteAttempts: recipeState.deleteAttempts,
     fixedCostAttempts: recipeState.fixedCostAttempts,
     presentationAttempts: recipeState.presentationAttempts,
+    byIdsAttempts: recipeState.byIdsAttempts,
     lastPresentationPatch: clone(recipeState.lastPresentationPatch),
   };
 }
@@ -1105,6 +1107,63 @@ const server = createServer(async (req, res) => {
 
   if (pathname === "/api/recipes" && req.method === "GET") {
     return sendJson(res, 200, recipeState.recipes.map(toRecipeSummaryResponse));
+  }
+
+  // Planificador de producción (Task 12): el detalle de la selección. Como Hono,
+  // exige la feature del plan y el tope de 3 recetas fuera de Pro.
+  if (pathname === "/api/recipes/by-ids" && req.method === "GET") {
+    recipeState.byIdsAttempts += 1;
+
+    const ids = (url.searchParams.get("ids") ?? "")
+      .split(",")
+      .map((value) => Number(value.trim()))
+      .filter((value) => Number.isInteger(value) && value > 0);
+
+    if (ids.length === 0) {
+      return sendJson(res, 400, {
+        error: {
+          code: "VALIDATION_ERROR",
+          message:
+            "ids query parameter must contain at least one positive integer",
+        },
+      });
+    }
+
+    if (ids.length > 100) {
+      return sendJson(res, 400, {
+        error: {
+          code: "VALIDATION_ERROR",
+          message: "ids query parameter cannot contain more than 100 ids",
+        },
+      });
+    }
+
+    if (cookies["qa-plan"] === "free") {
+      return sendJson(res, 403, {
+        error: {
+          code: "FEATURE_REQUIRED",
+          message: "Feature not available in your plan: production_planner",
+        },
+      });
+    }
+
+    if (cookies["qa-plan"] === "basic" && ids.length > 3) {
+      return sendJson(res, 403, {
+        error: {
+          code: "PLAN_LIMIT",
+          message: "Production planner supports up to 3 recipes on your plan",
+        },
+      });
+    }
+
+    return sendJson(
+      res,
+      200,
+      ids
+        .map((id) => recipeState.recipes.find((recipe) => recipe.id === id))
+        .filter(Boolean)
+        .map(toRecipeDetailResponse),
+    );
   }
 
   if (pathname === "/api/recipes" && req.method === "POST") {
