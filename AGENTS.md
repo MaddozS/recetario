@@ -79,6 +79,16 @@
 > - **Notas de tests:** los dialogs viven siempre montados: acotar los assertos con `data-plan-summary`, `data-usage-cards`, `data-plan-features` (evita strict-mode de Playwright); el stub exige CSRF sólo si hay `Origin` (las llamadas del SSR pasan, como Hono); `es-MX` no rellena con cero los días (`1/10/2026`). Diseño: el bloque del cambio programado lleva `<!-- prettier-ignore -->` porque prettier rompe el `</strong>` y ESLint lo prohíbe.
 > - **Íconos:** `lucide:palette`, `save`, `monitor`, `sun`, `moon` ya están en el registro; no hace falta añadir ninguno.
 
+> **Task 12 (planificador de producción) ya está en la rama.** Detalles operativos:
+>
+> - `/produccion` es el slice real: selector (búsqueda accent-insensitive que nunca oculta lo seleccionado, agrupado por categoría, select-all con indeterminado, stepper de 0.5, presentación por receta), resultados en sitio (insumos consolidados, resumen financiero, desglose «Seleccionada»/«Más rentable») y hoja imprimible. `app/features/production/**` con piezas puras (`production-{calculator,selection,catalog,format}.ts`) + `useProductionPlanner` + componentes.
+> - **La selección vive en la URL** (`?recipes=`, `?batches=`, `?presentations=` con `0` como slot sin presentación) y se escribe con `replace`; el *stage* (`select`/`results`) es estado local inicializado desde la query. Se retiró `?upgrade` (rama muerta del baseline).
+> - **Carga sólo de la selección:** el SSR trae el catálogo + el detalle de los ids de la query; al marcar una receta se piden por lotes (máx. 100 ids) y se cachean. `attemptedIds` distingue «no pedido» de «pedido y ausente» (borrado en carrera) para no dejar skeletons colgados. Corrige el 400 del baseline con >100 recetas.
+> - **Hono es autoridad del gate:** `GET /api/recipes/by-ids` exige `production_planner` (403 `FEATURE_REQUIRED`) y, sin Pro, rechaza más de 3 ids (403 `PLAN_LIMIT`). `PRODUCTION_BASIC_RECIPE_LIMIT` vive en `packages/stripe/src/plans-config.ts` y la web lo importa por el subpath puro `@recetario/stripe/plans-config` (no arrastra el SDK).
+> - `FinancialSummary` (features/recipes) admite `title?` y el planner lo reutiliza con `production-sheet financial-summary` para el salto de página al imprimir; las clases `production-sheet`/`prod-row`/`no-print` son el contrato de `@media print` de `global.css`.
+> - Tests de referencia: `test/unit/production-*.spec.ts`, `test/nuxt/production-{ui,planner}.spec.ts` y `test/e2e/production.spec.ts`; el stub implementa `by-ids` con el gate por `qa-plan` y expone `byIdsAttempts`.
+> - **Notas de tests:** `mountSuspended` deja instancias vivas entre tests y `useAsyncData` guarda handler/datos por clave en el app de test: en specs del composable hay que usar `enableAutoUnmount(afterEach)` y una copia reactiva de la ruta por montaje, o los montajes previos vuelven a pedir detalles y contaminan los contadores del stub. En e2e, el desglose (`<details>`) arranca colapsado y el botón de calcular puede quedar bajo el pliegue (scroll antes del clic).
+
 ## Stack
 
 **Astro 6** SSR via `@astrojs/cloudflare` (Cloudflare Pages). Two apps: `apps/web` (Astro Pages) + `apps/api` (Hono Worker). **pnpm 11.1.2** (package-manager locked). **Node >= 22.23.1**.
