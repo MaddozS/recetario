@@ -19,7 +19,6 @@ export default defineConfig<ConfigOptions>({
     new URL("./test/e2e/support/global-setup.ts", import.meta.url),
   ),
   use: {
-    ...devices["Desktop Chrome"],
     nuxt: {
       rootDir: fileURLToPath(new URL(".", import.meta.url)),
       // El output del preset `cloudflare_module` no arranca con Node. El e2e
@@ -35,4 +34,22 @@ export default defineConfig<ConfigOptions>({
       setupTimeout: 180_000,
     },
   },
+  // Chromium corre la suite completa; Firefox y WebKit hacen el smoke del
+  // recorrido crítico (Task 13a). El fixture construye un server por proyecto.
+  projects: [
+    {
+      name: "chromium",
+      use: { ...devices["Desktop Chrome"] },
+    },
+    {
+      name: "firefox-smoke",
+      testMatch: /journey\.spec\.ts/,
+      use: { ...devices["Desktop Firefox"] },
+    },
+    {
+      name: "webkit-smoke",
+      testMatch: /journey\.spec\.ts/,
+      use: { ...devices["Desktop Safari"] },
+    },
+  ],
 });

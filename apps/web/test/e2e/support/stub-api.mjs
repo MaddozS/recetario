@@ -111,7 +111,7 @@ const PLANS = [
     tier: "pro",
     name: "Pro",
     description: "Para profesionales",
-    badge: { text: "Mas popular", class: "bg-accent-600 text-white" },
+    badge: { text: "Mas popular", class: "bg-accent-700 text-text-on-accent" },
     currency: "MXN",
     monthlyPriceId: "price_pro_monthly",
     monthlyDisplay: "$19.99",
@@ -1200,6 +1200,9 @@ const server = createServer(async (req, res) => {
       desiredMargin: 0,
       fixedCostsPercentage: 0,
       recipeFixedCosts: [],
+      // Igual que los seeds: sin el array, crear una presentación sobre una
+      // receta recién creada reventaba el stub (y tumbaba la suite entera).
+      presentations: [],
       updatedAt: new Date().toISOString(),
       ingredients: [],
       ingredientCount: 0,
