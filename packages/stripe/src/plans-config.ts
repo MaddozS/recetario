@@ -37,6 +37,13 @@ export const FEATURE_FLAGS: Record<string, Record<string, boolean>> = {
   pro: PRO_FEATURES,
 };
 
+/**
+ * Recetas por plan de producción en Basic. Fuente única: la UI lo anticipa y
+ * `by-ids` de Hono lo exige (la web lo importa por el subpath puro
+ * `@recetario/stripe/plans-config`).
+ */
+export const PRODUCTION_BASIC_RECIPE_LIMIT = 3;
+
 export const FREE_FEATURES: Record<string, boolean> = {
   recipe_duplicate: false,
   recipe_photos: false,

@@ -2,12 +2,24 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { Hono } from "hono";
 import { envelope } from "../envelope";
 import { errorHandler } from "../error-handler";
+import { ApiError } from "../errors";
 
-const { mockGetSession, mockAuth, mockGetRecipesByIds } = vi.hoisted(() => {
+const {
+  mockGetSession,
+  mockAuth,
+  mockGetRecipesByIds,
+  mockRequireProductionAccess,
+} = vi.hoisted(() => {
   const mockGetSession = vi.fn();
   const mockAuth = { api: { getSession: (...args: unknown[]) => mockGetSession(...args) } };
   const mockGetRecipesByIds = vi.fn();
-  return { mockGetSession, mockAuth, mockGetRecipesByIds };
+  const mockRequireProductionAccess = vi.fn();
+  return {
+    mockGetSession,
+    mockAuth,
+    mockGetRecipesByIds,
+    mockRequireProductionAccess,
+  };
 });
 
 vi.mock("@recetario/auth/server", () => ({
@@ -18,6 +30,11 @@ vi.mock("@recetario/db", () => ({
   prisma: {},
   getRecipesByIds: (ids: number[], ownerId: string) =>
     mockGetRecipesByIds(ids, ownerId),
+}));
+
+vi.mock("../entitlements", () => ({
+  requireProductionAccess: (userId: string, recipeCount: number) =>
+    mockRequireProductionAccess(userId, recipeCount),
 }));
 
 const { recipesByIdsHandler } = await import("./by-ids");
@@ -54,6 +71,8 @@ describe("recipesByIdsHandler", () => {
   beforeEach(() => {
     mockGetSession.mockReset();
     mockGetRecipesByIds.mockReset();
+    mockRequireProductionAccess.mockReset();
+    mockRequireProductionAccess.mockResolvedValue(undefined);
   });
 
   it("returns 401 when there is no session", async () => {
@@ -125,5 +144,46 @@ describe("recipesByIdsHandler", () => {
     });
     expect(res.status).toBe(200);
     expect(mockGetRecipesByIds).toHaveBeenCalledWith([1, 2, 3], "user-1");
+    expect(mockRequireProductionAccess).toHaveBeenCalledWith("user-1", 3);
+  });
+
+  it("returns 403 when the plan does not include the production planner", async () => {
+    mockGetSession.mockResolvedValueOnce(sessionFixture);
+    mockRequireProductionAccess.mockRejectedValueOnce(
+      new ApiError(
+        "FEATURE_REQUIRED",
+        "Feature not available in your plan: production_planner",
+      ),
+    );
+
+    const res = await buildApp().request("/api/recipes/by-ids?ids=1,2");
+    expect(res.status).toBe(403);
+    const body = (await res.json()) as { error: { code: string } };
+    expect(body.error.code).toBe("FEATURE_REQUIRED");
+    expect(mockGetRecipesByIds).not.toHaveBeenCalled();
+  });
+
+  it("returns 403 when a non-Pro plan requests more than the Basic limit", async () => {
+    mockGetSession.mockResolvedValueOnce(sessionFixture);
+    mockRequireProductionAccess.mockRejectedValueOnce(
+      new ApiError(
+        "PLAN_LIMIT",
+        "Production planner supports up to 3 recipes on your plan",
+      ),
+    );
+
+    const res = await buildApp().request("/api/recipes/by-ids?ids=1,2,3,4");
+    expect(res.status).toBe(403);
+    const body = (await res.json()) as { error: { code: string } };
+    expect(body.error.code).toBe("PLAN_LIMIT");
+    expect(mockGetRecipesByIds).not.toHaveBeenCalled();
+  });
+
+  it("does not check the plan when the ids are invalid", async () => {
+    mockGetSession.mockResolvedValueOnce(sessionFixture);
+
+    const res = await buildApp().request("/api/recipes/by-ids?ids=abc");
+    expect(res.status).toBe(400);
+    expect(mockRequireProductionAccess).not.toHaveBeenCalled();
   });
 });

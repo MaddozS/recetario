@@ -8,7 +8,8 @@
     ".": "./src/index.ts",
     "./server": "./src/server.ts",
     "./subscription": "./src/subscription.ts",
-    "./formatters": "./src/formatters.ts"
+    "./formatters": "./src/formatters.ts",
+    "./plans-config": "./src/plans-config.ts"
   },
   "files": ["dist", "src"],
   "scripts": {

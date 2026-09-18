@@ -1,9 +1,11 @@
 import { countUserIngredients, countUserRecipes } from "@recetario/db";
 import {
+  PRODUCTION_BASIC_RECIPE_LIMIT,
   canCreateIngredient,
   canCreateRecipe,
   getDefaultSubscription,
   hasFeature,
+  isPro,
 } from "@recetario/stripe";
 import { getSubscriptionInfo } from "@recetario/stripe/server";
 import type { UserSubscriptionInfo } from "@recetario/types";
@@ -57,5 +59,29 @@ export async function requireFeature(
   const plan = subscription ?? (await resolveSubscription(userId));
   if (!hasFeature(plan, feature)) {
     throw new ApiError("FEATURE_REQUIRED", `Feature not available in your plan: ${feature}`);
+  }
+}
+
+/**
+ * Acceso al planificador de producción: exige la feature `production_planner` y,
+ * fuera de Pro, el tope de recetas por plan. La UI sólo anticipa el error.
+ */
+export async function requireProductionAccess(
+  userId: string,
+  recipeCount: number,
+  subscription?: UserSubscriptionInfo,
+): Promise<void> {
+  const plan = subscription ?? (await resolveSubscription(userId));
+  if (!hasFeature(plan, "production_planner")) {
+    throw new ApiError(
+      "FEATURE_REQUIRED",
+      "Feature not available in your plan: production_planner",
+    );
+  }
+  if (!isPro(plan) && recipeCount > PRODUCTION_BASIC_RECIPE_LIMIT) {
+    throw new ApiError(
+      "PLAN_LIMIT",
+      `Production planner supports up to ${PRODUCTION_BASIC_RECIPE_LIMIT} recipes on your plan`,
+    );
   }
 }
