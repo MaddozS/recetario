@@ -1,8 +1,4 @@
-import {
-  ingredientSchema,
-  recipeWithIngredientsSchema,
-} from "@recetario/types";
-import { z } from "zod";
+import { recipeWithIngredientsSchema } from "@recetario/types";
 import {
   buildFinancialEditFields,
   addIngredientRow,
@@ -17,7 +13,6 @@ import {
   INVALID_ROWS_MESSAGE,
 } from "./recipe-detail-form";
 import type {
-  IngredientRecord,
   IngredientRow,
   RecipeDetailForm,
   RecipeDetailRecord,
@@ -33,7 +28,8 @@ import {
 import { buildFinancialRows, calcularCostoDirecto } from "./recipe-financials";
 import { resolveRecipeMutationError } from "./recipe-messages";
 import type { MutationOutcome } from "./useRecipes";
-import { ApiError } from "~/utils/api-error";
+import { fetchRecipeDetailPage, recipeDetailKey } from "./recipe-detail-data";
+import type { RecipeDetailPageData } from "./recipe-detail-data";
 
 /**
  * Datos, edición y mutaciones del detalle de receta.
@@ -44,15 +40,6 @@ import { ApiError } from "~/utils/api-error";
  * sin refetch ni recarga. Guardar usa la respuesta del `PATCH` (shapeada, igual
  * que el GET) como estado nuevo; el listado se refresca solo al remontar.
  */
-export type RecipeDetailPageData =
-  | {
-      status: "ready";
-      recipe: RecipeDetailRecord;
-      ingredients: IngredientRecord[];
-    }
-  | { status: "notFound" }
-  | { status: "failed" };
-
 export const RECIPE_TABS = [
   { id: "ingredientes", label: "Ingredientes" },
   { id: "costos-fijos", label: "Costos Fijos" },
@@ -101,28 +88,8 @@ export async function useRecipeDetail() {
   // con un `watch` immediate el servidor renderizaba el formulario vacío (los
   // datos aún no estaban) y el cliente lo hidrataba lleno.
   const { data, refresh } = await useAsyncData<RecipeDetailPageData>(
-    `recipe:${recipeId.value}`,
-    async () => {
-      try {
-        const [recipe, ingredients] = await Promise.all([
-          api<RecipeDetailRecord>(`/api/recipes/${recipeId.value}`, {
-            schema: recipeWithIngredientsSchema,
-          }),
-          api<IngredientRecord[]>("/api/ingredients", {
-            schema: z.array(ingredientSchema),
-          }),
-        ]);
-
-        return { status: "ready" as const, recipe, ingredients };
-      } catch (cause) {
-        if (cause instanceof ApiError && cause.status === 404) {
-          return { status: "notFound" as const };
-        }
-
-        console.error("[recipe-detail] no se pudo cargar la receta", cause);
-        return { status: "failed" as const };
-      }
-    },
+    recipeDetailKey(recipeId.value),
+    () => fetchRecipeDetailPage(api, recipeId.value),
     { default: () => ({ status: "failed" as const }) },
   );
 

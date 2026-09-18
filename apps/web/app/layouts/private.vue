@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { breadcrumbsWithTail } from "#shared/utils/navigation";
 import type { BreadcrumbItem } from "#shared/types/navigation";
 
 /**
@@ -11,8 +12,13 @@ const route = useRoute();
 const { hasFeature } = useAuth();
 
 const currentPage = computed(() => pageKeyFromPath(route.path));
-const breadcrumbs = computed<BreadcrumbItem[]>(
-  () => route.meta.breadcrumbs ?? [],
+const breadcrumbTail = useBreadcrumbTailState();
+const breadcrumbs = computed<BreadcrumbItem[]>(() =>
+  breadcrumbsWithTail(
+    route.meta.breadcrumbs ?? [],
+    breadcrumbTail.value,
+    route.path,
+  ),
 );
 const showSidebar = computed(() => route.meta.sidebar !== false);
 const showProduction = computed(() => hasFeature("production_planner"));

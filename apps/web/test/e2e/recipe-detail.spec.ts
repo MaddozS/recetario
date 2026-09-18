@@ -126,6 +126,14 @@ test("SSR: detalle, ingredientes repetidos, notas ocultas y cabeceras privadas",
   expect(html).toContain("Ingredientes");
   expect(html).toContain("Costos Fijos");
   expect(html).toContain("Presentaciones");
+
+  // Migas: el nombre real sustituye al placeholder «Receta» (Task 13a).
+  const desktopBreadcrumb =
+    html.match(/<nav[^>]*data-variant="desktop"[^>]*>([\s\S]*?)<\/nav>/)?.[1] ??
+    "";
+  expect(desktopBreadcrumb).toContain("Recetas");
+  expect(desktopBreadcrumb).toContain("Tarta de Chocolate");
+  expect(desktopBreadcrumb).not.toMatch(/>Receta</);
 });
 
 test("Free: filas operativas y % editable", async ({ request }) => {
@@ -331,6 +339,10 @@ test("guardar sin recarga: alerta, PATCH y listado al día al volver", async ({
   await expect(page).toHaveURL(/\/recipes\/1$/);
   await expect(page.getByText("Receta guardada correctamente.")).toBeVisible();
   await expect(page.locator("#recipe-title-view")).toHaveText("Tarta v2");
+  // La miga sigue el nombre sin recargar.
+  await expect(page.locator('nav[data-variant="desktop"]')).toContainText(
+    "Tarta v2",
+  );
   await expect(page.getByText("40%").first()).toBeVisible();
 
   const state = await readRecipesState(request);

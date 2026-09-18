@@ -1,11 +1,20 @@
-import type { AppNavItem, AppPage } from "#shared/types/navigation";
+import type {
+  AppNavItem,
+  AppPage,
+  BreadcrumbItem,
+} from "#shared/types/navigation";
 
 /**
  * Fuente única de la navegación privada: la consumen la sidebar, el bottom nav
  * móvil y los tests.
  */
 export const APP_NAV_ITEMS: readonly AppNavItem[] = [
-  { page: "recipes", label: "Recetas", href: "/recipes", icon: "lucide:book-open" },
+  {
+    page: "recipes",
+    label: "Recetas",
+    href: "/recipes",
+    icon: "lucide:book-open",
+  },
   {
     page: "ingredients",
     label: "Ingredientes",
@@ -45,7 +54,27 @@ export function isPrivatePath(pathname: string): boolean {
 }
 
 export function visibleNavItems(showProduction: boolean): AppNavItem[] {
-  return APP_NAV_ITEMS.filter(
-    (item) => !item.productionOnly || showProduction,
-  );
+  return APP_NAV_ITEMS.filter((item) => !item.productionOnly || showProduction);
+}
+
+/** Migas resueltas por una página que conoce su etiqueta después del setup. */
+export type BreadcrumbTail = { path: string; label: string };
+
+/**
+ * Combina las migas declaradas por `definePageMeta` con la etiqueta dinámica
+ * que una página resuelve en tiempo de ejecución (p. ej. el nombre de la
+ * receta). El tail sólo aplica a la ruta que lo declaró y reemplaza el último
+ * ítem; sin él se conserva el fallback estático.
+ */
+export function breadcrumbsWithTail(
+  base: readonly BreadcrumbItem[],
+  tail: BreadcrumbTail | null,
+  path: string,
+): BreadcrumbItem[] {
+  const items = [...base];
+  if (!tail || tail.path !== path || tail.label.trim().length === 0) {
+    return items;
+  }
+  const label: BreadcrumbItem = { label: tail.label };
+  return items.length > 0 ? [...items.slice(0, -1), label] : [label];
 }

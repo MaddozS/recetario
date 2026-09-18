@@ -25,7 +25,9 @@ import RecipeTabs from "~/features/recipes/RecipeTabs.vue";
  */
 definePageMeta({
   layout: "private",
-  middleware: "auth",
+  // `recipe-breadcrumb` resuelve el nombre antes del render (el header del
+  // layout se pinta antes que esta página): sin él el SSR mostraba «Receta».
+  middleware: ["auth", "recipe-breadcrumb"],
   breadcrumbs: [{ label: "Recetas", href: "/recipes" }, { label: "Receta" }],
 });
 
@@ -67,6 +69,10 @@ const {
   removeRow,
   patchRow,
 } = await useRecipeDetail();
+
+// La miga «Receta» del `definePageMeta` se sustituye por el nombre real en
+// cuanto el detalle está disponible (paridad con Astro).
+useBreadcrumbTail(computed(() => recipe.value?.name));
 
 const {
   presentations,

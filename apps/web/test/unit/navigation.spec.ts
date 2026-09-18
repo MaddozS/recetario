@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   APP_NAV_ITEMS,
+  breadcrumbsWithTail,
   pageKeyFromPath,
   visibleNavItems,
 } from "../../shared/utils/navigation";
@@ -21,6 +22,54 @@ describe("pageKeyFromPath", () => {
     expect(pageKeyFromPath("/sign-in")).toBeNull();
     expect(pageKeyFromPath("/pricing")).toBeNull();
     expect(pageKeyFromPath("/recipe")).toBeNull();
+  });
+});
+
+describe("breadcrumbsWithTail", () => {
+  const base = [{ label: "Recetas", href: "/recipes" }, { label: "Receta" }];
+
+  it("reemplaza la última miga con la etiqueta dinámica de la ruta", () => {
+    expect(
+      breadcrumbsWithTail(
+        base,
+        { path: "/recipes/4", label: "Pan de prueba" },
+        "/recipes/4",
+      ),
+    ).toEqual([
+      { label: "Recetas", href: "/recipes" },
+      { label: "Pan de prueba" },
+    ]);
+  });
+
+  it("ignora la etiqueta si es de otra ruta (navegación posterior)", () => {
+    expect(
+      breadcrumbsWithTail(
+        base,
+        { path: "/recipes/4", label: "Pan de prueba" },
+        "/recipes",
+      ),
+    ).toEqual(base);
+  });
+
+  it("sin etiqueta o en blanco conserva el fallback estático", () => {
+    expect(breadcrumbsWithTail(base, null, "/recipes/4")).toEqual(base);
+    expect(
+      breadcrumbsWithTail(
+        base,
+        { path: "/recipes/4", label: "   " },
+        "/recipes/4",
+      ),
+    ).toEqual(base);
+  });
+
+  it("sin migas base usa la etiqueta como única miga", () => {
+    expect(
+      breadcrumbsWithTail(
+        [],
+        { path: "/recipes/4", label: "Pan de prueba" },
+        "/recipes/4",
+      ),
+    ).toEqual([{ label: "Pan de prueba" }]);
   });
 });
 
