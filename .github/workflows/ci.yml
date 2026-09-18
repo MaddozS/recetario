@@ -48,3 +48,55 @@ jobs:
 
       - name: Run ${{ matrix.task }}
         run: pnpm ${{ matrix.task }}
+
+  # E2E hermético (stub del API en :8788): suite completa en Chromium +
+  # recorrido crítico en Firefox y WebKit. El build web no importa Prisma
+  # (solo subpaths puros de `@recetario/auth`), así que no necesita generate.
+  e2e:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.1.2
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: pnpm --filter @recetario/web exec playwright install --with-deps chromium firefox webkit
+
+      - name: Run e2e
+        run: pnpm --filter @recetario/web test:e2e
+
+  # El artefacto real de Cloudflare: build de Nitro + dry-run de Wrangler.
+  dry-run:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.1.2
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build Nuxt
+        run: pnpm --filter @recetario/web build
+
+      - name: Wrangler dry-run
+        run: pnpm --filter @recetario/web wrangler:dry-run
