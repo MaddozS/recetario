@@ -20,6 +20,9 @@ export type RecipeDetailPageData =
       recipe: RecipeDetailRecord;
       ingredients: IngredientRecord[];
     }
+  // Todavía sin dato: es el valor inicial de `useAsyncData` con `lazy`, así la
+  // página distingue «cargando» de «falló».
+  | { status: "idle" }
   | { status: "notFound" }
   | { status: "failed" };
 

@@ -54,7 +54,7 @@ const BUSY_OUTCOME: MutationOutcome = {
   message: "Ya hay una operación en curso. Espera a que termine.",
 };
 
-export async function useRecipeDetail() {
+export function useRecipeDetail() {
   const api = useApi();
   const route = useRoute();
   const { subscription, hasFeature } = useAuth();
@@ -63,8 +63,6 @@ export async function useRecipeDetail() {
   const recipeId = computed(() => String(route.params.recipe ?? ""));
 
   // ── Notas de ingredientes ───────────────────────────────────────────────
-  // El hook se registra antes del `await`: después de un `await` en un setup
-  // asíncrono ya no hay instancia de componente a la que asociarlo.
   const showComments = ref(false);
 
   function setCommentsVisible(visible: boolean): void {
@@ -84,13 +82,14 @@ export async function useRecipeDetail() {
     }
   });
 
-  // Se espera la carga para poder sembrar el formulario de forma determinista:
-  // con un `watch` immediate el servidor renderizaba el formulario vacío (los
-  // datos aún no estaban) y el cliente lo hidrataba lleno.
-  const { data, refresh } = await useAsyncData<RecipeDetailPageData>(
+  // `lazy`: en navegación cliente la página pinta su skeleton y el detalle llega
+  // después; en SSR el render espera la promesa (y el middleware de migas
+  // comparte la clave, así que sigue siendo una sola petición). El valor inicial
+  // es `idle`, no `failed`, para poder distinguir «cargando» de «falló».
+  const { data, refresh } = useAsyncData<RecipeDetailPageData>(
     recipeDetailKey(recipeId.value),
     () => fetchRecipeDetailPage(api, recipeId.value),
-    { default: () => ({ status: "failed" as const }) },
+    { default: () => ({ status: "idle" as const }), lazy: true },
   );
 
   const recipe = computed(() =>
@@ -99,6 +98,7 @@ export async function useRecipeDetail() {
   const ingredientCatalog = computed(() =>
     data.value.status === "ready" ? data.value.ingredients : [],
   );
+  const loading = computed(() => data.value.status === "idle");
   const loadFailed = computed(() => data.value.status === "failed");
   const notFound = computed(() => data.value.status === "notFound");
 
@@ -133,10 +133,19 @@ export async function useRecipeDetail() {
     Object.assign(form, formFromDetail(current, nextRowKey));
   }
 
-  // Siembra sincrónica con los datos ya resueltos: el formulario arranca igual
-  // en servidor y cliente, así que `?edit=true` se hidrata sin diferencias.
-  // Se resiembra al entrar o cancelar la edición y tras guardar.
-  resetForm();
+  // Siembra sincrónica con el detalle disponible: en SSR/hidratación el payload
+  // ya lo trae, así que el formulario arranca igual en servidor y cliente y
+  // `?edit=true` se hidrata sin diferencias. `flush: "sync"` es necesario porque
+  // con `lazy` el dato llega después del setup y un watch diferido sembraría el
+  // formulario un tick tarde (el servidor renderizaba vacío). Se resiembra al
+  // entrar o cancelar la edición y tras guardar.
+  watch(
+    () => recipe.value?.id ?? null,
+    (id) => {
+      if (id !== null) resetForm();
+    },
+    { immediate: true, flush: "sync" },
+  );
 
   // ── Modo de edición (?edit=true) ─────────────────────────────────────────
   const isEditMode = computed(() => route.query.edit === "true");
@@ -370,6 +379,7 @@ export async function useRecipeDetail() {
     data,
     recipe,
     recipeId,
+    loading,
     loadFailed,
     notFound,
     refresh,

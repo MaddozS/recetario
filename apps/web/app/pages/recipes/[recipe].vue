@@ -10,6 +10,7 @@ import FinancialSummary from "~/features/recipes/FinancialSummary.vue";
 import PresentationsPanel from "~/features/recipes/PresentationsPanel.vue";
 import RecipeDeleteDialog from "~/features/recipes/RecipeDeleteDialog.vue";
 import RecipeDetailHeader from "~/features/recipes/RecipeDetailHeader.vue";
+import RecipeDetailSkeleton from "~/features/recipes/RecipeDetailSkeleton.vue";
 import RecipeDuplicateDialog from "~/features/recipes/RecipeDuplicateDialog.vue";
 import RecipeErrorAlert from "~/features/recipes/RecipeErrorAlert.vue";
 import RecipeFixedCostsPanel from "~/features/recipes/RecipeFixedCostsPanel.vue";
@@ -34,6 +35,7 @@ definePageMeta({
 const {
   recipe,
   recipeId,
+  loading,
   loadFailed,
   notFound,
   refresh,
@@ -68,10 +70,10 @@ const {
   addRow,
   removeRow,
   patchRow,
-} = await useRecipeDetail();
+} = useRecipeDetail();
 
 // La miga «Receta» del `definePageMeta` se sustituye por el nombre real en
-// cuanto el detalle está disponible (paridad con Astro).
+// cuanto el detalle está disponible (paridad con el baseline).
 useBreadcrumbTail(computed(() => recipe.value?.name));
 
 const {
@@ -102,10 +104,13 @@ const successMessage = computed(
   () => financialFeedback.value ?? feedback.value,
 );
 
-// Paridad con Astro: una receta inexistente (o de otro usuario) vuelve al listado.
-if (notFound.value) {
-  await navigateTo("/recipes", { replace: true });
-}
+// Paridad con el baseline: una receta inexistente (o de otro usuario) vuelve al
+// listado. En SSR lo decide el middleware de migas (que sí espera el dato); en
+// navegación cliente el detalle llega después del setup, así que se reacciona
+// al cambio.
+watch(notFound, (missing) => {
+  if (missing) void navigateTo("/recipes", { replace: true });
+});
 
 const { hasFeature } = useAuth();
 const canDuplicate = computed(() => hasFeature("recipe_duplicate"));
@@ -137,7 +142,9 @@ async function confirmDuplicate(recipeId: number): Promise<MutationOutcome> {
       <FeedbackAlert type="success" :message="successMessage" />
     </div>
 
-    <Card v-if="loadFailed" padding="lg">
+    <RecipeDetailSkeleton v-if="loading" />
+
+    <Card v-else-if="loadFailed" padding="lg">
       <FeedbackAlert type="error" message="No se pudo cargar la receta." />
       <Button variant="secondary" icon="refresh-cw" @click="refresh()">
         Reintentar

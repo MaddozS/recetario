@@ -224,7 +224,11 @@ async function mountHarness(options: { emptyFirstByIds?: boolean } = {}) {
   if (options.emptyFirstByIds) {
     state.emptyFirstByIds = true;
   }
-  return mountSuspended(Harness);
+  const wrapper = await mountSuspended(Harness);
+  // Con datos `lazy` el catálogo llega después del montaje: la navegación no
+  // espera al API y la página pinta su skeleton mientras tanto.
+  await flushPromises();
+  return wrapper;
 }
 
 describe("useProductionPlanner", () => {
@@ -414,6 +418,12 @@ describe("useProductionPlanner", () => {
     expect(harnessText(wrapper, "stage")).toBe("results");
     await wrapper.find("[data-h='edit']").trigger("click");
     expect(harnessText(wrapper, "stage")).toBe("select");
+
+    // Elegir otra receta no salta a resultados: el escenario sólo lo cambian
+    // las acciones explícitas del usuario.
+    await wrapper.find("[data-h='toggle-3']").trigger("click");
+    expect(harnessText(wrapper, "stage")).toBe("select");
+
     await wrapper.find("[data-h='calculate']").trigger("click");
     expect(harnessText(wrapper, "stage")).toBe("results");
   });

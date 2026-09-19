@@ -337,6 +337,43 @@ test("preferencias: el error revierte el preview y no escribe cookies", async ({
   expect(state.preferences.theme).toBe("dark");
 });
 
+test("preferencias: cambiar de pestaña descarta el preview sin persistir", async ({
+  page,
+  goto,
+  request,
+  context,
+}) => {
+  await resetSettings(request);
+  await signIn(page);
+  await goto("/settings?tab=preferences", { waitUntil: "hydration" });
+
+  // Preview local: el tema se aplica al documento antes de guardar.
+  await page.locator('[data-theme-option="light"]').click();
+  await expect(page.locator("html")).not.toHaveClass(/dark/);
+  await expect(page.locator("#save-btn-wrapper")).toBeVisible();
+
+  // Al dejar la pestaña se descarta el borrador y vuelve lo persistido.
+  await page.locator('[data-tab="profile"]').click();
+  await expect(page.locator("html")).toHaveClass(/dark/);
+
+  // Volver a Preferencias rellena el borrador desde lo persistido.
+  await page.locator('[data-tab="preferences"]').click();
+  await expect(page.locator("#save-btn-wrapper")).toBeHidden();
+  await expect(page.locator('[data-theme-option="dark"]')).toHaveAttribute(
+    "data-theme-active",
+    "1",
+  );
+
+  const state = await readSettingsState(request);
+  expect(state.preferencesPutAttempts).toBe(0);
+  expect(state.preferences.theme).toBe("dark");
+
+  const cookies = await context.cookies();
+  expect(
+    cookies.find((cookie) => cookie.name === "kitchcalc-theme")?.value,
+  ).toBe("dark");
+});
+
 test("el toggle del landing persiste con sesión y no con anónimo", async ({
   page,
   goto,

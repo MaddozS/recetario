@@ -36,7 +36,11 @@ export function useBreadcrumbTail(
   watch(
     source,
     (label) => {
-      const trimmed = label?.trim() ?? "";
+      // Sin dato todavía: no se pisa la etiqueta que dejó el middleware de ruta
+      // en el SSR (con datos `lazy` el detalle llega después del setup).
+      if (label === null || label === undefined) return;
+
+      const trimmed = label.trim();
       tail.value =
         trimmed.length > 0 ? { path: route.path, label: trimmed } : null;
     },

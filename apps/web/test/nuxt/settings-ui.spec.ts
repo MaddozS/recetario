@@ -7,6 +7,7 @@ import AccountNameForm from "~/features/settings/AccountNameForm.vue";
 import AccountPasswordForm from "~/features/settings/AccountPasswordForm.vue";
 import ProfileSection from "~/features/settings/ProfileSection.vue";
 import PreferencesSection from "~/features/settings/PreferencesSection.vue";
+import { useTheme } from "~/composables/useTheme";
 import { validateAccountPasswordForm } from "~/features/settings/account-form";
 import type { AccountPasswordFormValues } from "~/features/settings/account-form";
 import type { AccountOutcome } from "~/features/settings/useAccountSettings";
@@ -398,5 +399,60 @@ describe("PreferencesSection", () => {
       }),
     );
     expect(document.cookie).toContain("kitchcalc-accent=emerald");
+  });
+
+  it("descarta el preview sin guardar al desmontar la pestaña", async () => {
+    const wrapper = await mountSuspended(PreferencesSection);
+    await wrapper.find('[data-theme-option="light"]').trigger("click");
+    expect(useTheme().appearance.value.theme).toBe("light");
+
+    wrapper.unmount();
+
+    // Sin guardado no hay PUT ni cookie: la apariencia vuelve a lo persistido.
+    expect(useTheme().appearance.value.theme).toBe("system");
+    expect(state.request).not.toHaveBeenCalled();
+    expect(document.cookie).not.toContain("kitchcalc-theme=light");
+  });
+
+  it("no descarta el preview si el guardado sigue en vuelo", async () => {
+    let confirm: (value: unknown) => void = () => {};
+    state.request.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          confirm = resolve;
+        }),
+    );
+
+    const wrapper = await mountSuspended(PreferencesSection);
+    await wrapper.find('[data-theme-option="dark"]').trigger("click");
+    await wrapper.find("#save-btn-wrapper button").trigger("click");
+
+    wrapper.unmount();
+    confirm({ userId: "qa-user", theme: "dark", accentColor: "coral" });
+    await flushPromises();
+
+    // El guardado confirmado manda: el preview no se pisa al desmontar.
+    expect(useTheme().appearance.value.theme).toBe("dark");
+  });
+
+  it("conserva lo guardado al desmontar", async () => {
+    state.request.mockResolvedValueOnce({
+      userId: "qa-user",
+      theme: "dark",
+      accentColor: "coral",
+    });
+
+    const wrapper = await mountSuspended(PreferencesSection);
+    await wrapper.find('[data-theme-option="dark"]').trigger("click");
+    await wrapper.find("#save-btn-wrapper button").trigger("click");
+    await flushPromises();
+
+    wrapper.unmount();
+
+    expect(useTheme().appearance.value.theme).toBe("dark");
+    expect(state.applyPreferences).toHaveBeenCalledWith({
+      theme: "dark",
+      accentColor: "coral",
+    });
   });
 });

@@ -42,7 +42,7 @@ const {
   updateBatches,
   stepBatchesFor,
   updatePresentation,
-} = await useProductionPlanner();
+} = useProductionPlanner();
 </script>
 
 <template>

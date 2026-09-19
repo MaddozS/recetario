@@ -57,7 +57,7 @@ function isGated(cause: unknown): boolean {
   return cause instanceof ApiError && cause.code === "FEATURE_REQUIRED";
 }
 
-export async function useProductionPlanner() {
+export function useProductionPlanner() {
   const api = useApi();
   const route = useRoute();
   const { subscription, hasFeature } = useAuth();
@@ -92,7 +92,7 @@ export async function useProductionPlanner() {
     data,
     pending: loading,
     refresh,
-  } = await useAsyncData<ProductionPageData>(
+  } = useAsyncData<ProductionPageData>(
     PRODUCTION_KEY,
     async () => {
       if (!canAccess.value) return { ...emptyData(), gated: true };
@@ -119,7 +119,9 @@ export async function useProductionPlanner() {
         return { ...emptyData(), failed: true };
       }
     },
-    { default: () => emptyData() },
+    // En navegación cliente la página pinta su skeleton en vez de bloquear; el
+    // SSR espera la promesa, así que el HTML no cambia.
+    { default: () => emptyData(), lazy: true },
   );
 
   const catalog = computed(() => data.value.catalog);
@@ -293,8 +295,23 @@ export async function useProductionPlanner() {
     calculateProduction(selections.value, data.value.details),
   );
 
-  const stage = ref<"select" | "results">(
-    selections.value.length > 0 ? "results" : "select",
+  // El escenario se fija con el primer catálogo disponible y a partir de ahí sólo
+  // lo cambian las acciones del usuario: con datos `lazy` el catálogo llega
+  // después del setup, así que el valor inicial no puede capturarse antes (un
+  // deep link `?recipes=…` debe abrir en resultados). `flush: "sync"` decide en
+  // el mismo tick en que llega el dato: en SSR eso ocurre durante el render y un
+  // watcher diferido pintaría el selector en el HTML y los resultados en cliente.
+  const stage = ref<"select" | "results">("select");
+  let stageCaptured = false;
+
+  watch(
+    () => data.value.catalog.length > 0,
+    (ready) => {
+      if (!ready || stageCaptured) return;
+      stageCaptured = true;
+      stage.value = selections.value.length > 0 ? "results" : "select";
+    },
+    { immediate: true, flush: "sync" },
   );
 
   function showResults(): void {

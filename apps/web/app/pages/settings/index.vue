@@ -9,9 +9,11 @@ import { useSettingsOverview } from "~/features/settings/useSettingsOverview";
 
 /**
  * Página de Settings: coordina la pestaña activa (`?tab=`, back/forward) y los
- * datos compartidos (contadores + suscripción refrescada). Las secciones se
- * montan una sola vez y se alternan con `v-show`, igual que el baseline, para
- * no perder borradores al cambiar de pestaña.
+ * datos compartidos (contadores + suscripción refrescada). Perfil y facturación
+ * se montan una sola vez y se alternan con `v-show`, igual que el baseline, para
+ * no perder borradores al cambiar de pestaña; Preferencias se monta con `v-if`
+ * a propósito: su preview de tema/acento sólo vive mientras la pestaña está
+ * visible y se descarta —sin persistir— al dejarla.
  */
 definePageMeta({
   layout: "private",
@@ -34,7 +36,8 @@ const { counts, subscription, pending, failed, refresh } =
 
     <ProfileSection v-show="activeTab === 'profile'" />
 
-    <PreferencesSection v-show="activeTab === 'preferences'" />
+    <!-- `v-if`: el preview de apariencia muere con la pestaña. -->
+    <PreferencesSection v-if="activeTab === 'preferences'" />
 
     <BillingSection
       v-if="subscription"

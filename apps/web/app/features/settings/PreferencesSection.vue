@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, ref } from "vue";
+import { computed, nextTick, onBeforeUnmount, ref } from "vue";
 import {
   ACCENT_FAMILIES,
   ACCENT_LABELS,
@@ -16,6 +16,10 @@ import { PREFERENCES_SAVED_MESSAGE } from "./settings-messages";
  * `app.vue`), el botón sólo aparece si el borrador difiere de lo persistido y
  * `saveAppearance` escribe las cookies **desde la respuesta confirmada**. En
  * error, el preview revierte a lo persistido y se muestra el aviso.
+ *
+ * El preview vive lo que vive la pestaña (el propio montaje): al desmontarla sin
+ * guardar —cambio de pestaña o salida de Settings— la apariencia vuelve a lo
+ * persistido, igual que el borrador.
  */
 
 const THEME_OPTIONS = [
@@ -76,6 +80,15 @@ async function save(): Promise<void> {
   draft.value = { ...preferences.value };
   await showFeedback({ type: "error", message: outcome.message });
 }
+
+// Al desmontar sin guardar, el preview se descarta: ni la cookie ni la sesión
+// cambiaron. Con un guardado en vuelo no se toca nada: ese guardado confirmará
+// o revertirá por su cuenta.
+onBeforeUnmount(() => {
+  if (saving.value || !dirty.value) return;
+  setTheme(preferences.value.theme);
+  setAccent(preferences.value.accentColor);
+});
 </script>
 
 <template>
@@ -140,7 +153,7 @@ async function save(): Promise<void> {
             <span
               :class="
                 draft.accentColor === family
-                  ? 'text-accent-700'
+                  ? 'text-accent-800'
                   : 'text-muted-foreground'
               "
             >
