@@ -11,7 +11,7 @@
     "format": "prettier --write .",
     "lint": "eslint .",
     "type-check": "nuxt typecheck",
-    "test": "vitest run",
+    "test": "nuxt prepare && vitest run",
     "test:e2e": "playwright test",
     "wrangler:dry-run": "wrangler deploy --dry-run --outdir .wrangler/dry-run"
   },
