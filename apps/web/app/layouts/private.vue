@@ -3,7 +3,7 @@ import { breadcrumbsWithTail } from "#shared/utils/navigation";
 import type { BreadcrumbItem } from "#shared/types/navigation";
 
 /**
- * Shell autenticado. Sustituye a `Layout.astro` sin su maquinaria imperativa:
+ * Shell autenticado. Sustituye a `Layout` sin su maquinaria imperativa:
  * el drawer, el colapso y el estado activo son estado reactivo; el progreso de
  * navegación lo aporta `useLoadingIndicator`.
  */
@@ -62,11 +62,9 @@ useHead({
 
 <template>
   <div class="flex flex-1 flex-col md:h-dvh md:overflow-hidden">
-    <NavProgressBar />
-
     <a
       href="#main-content"
-      class="focus:bg-accent-700 focus:text-text-on-accent sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-100 focus:rounded-xl focus:px-4 focus:py-2 focus:outline-none"
+      class="focus:bg-accent-solid focus:text-text-on-accent sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-100 focus:rounded-xl focus:px-4 focus:py-2 focus:outline-none"
     >
       Saltar al contenido
     </a>

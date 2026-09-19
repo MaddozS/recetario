@@ -20,6 +20,13 @@ const apiMock = vi.hoisted(() => ({
 
 const navigateMock = vi.hoisted(() => vi.fn(async (): Promise<void> => {}));
 
+/** Destino de la navegación en curso; lo escribe el plugin `nav-pending`. */
+const navPendingMock = vi.hoisted(() => ({ path: null as string | null }));
+
+mockNuxtImport("useNavPending", () => () => ({
+  value: navPendingMock.path,
+}));
+
 mockNuxtImport("useAuth", () => () => ({
   state: { value: { status: "authenticated" } },
   isAuthenticated: computed(() => authMock.isAuthenticated),
@@ -37,6 +44,7 @@ beforeEach(() => {
   authMock.isAuthenticated = true;
   authMock.tier = "pro";
   authMock.hasFeature = vi.fn((): boolean => true);
+  navPendingMock.path = null;
   apiMock.request.mockClear();
   navigateMock.mockClear();
 });
@@ -57,7 +65,7 @@ describe("AppSidebar", () => {
 
     const active = wrapper.find('a[aria-current="page"]');
     expect(active.text()).toBe("Ingredientes");
-    expect(active.classes()).toContain("bg-accent-700");
+    expect(active.classes()).toContain("bg-accent-solid");
     expect(active.classes()).toContain("text-text-on-accent");
   });
 
@@ -91,6 +99,17 @@ describe("AppSidebar", () => {
     ]);
   });
 
+  it("muestra la marca sin subtítulo en la cabecera móvil anónima", async () => {
+    authMock.isAuthenticated = false;
+
+    const wrapper = await mountSuspended(AppSidebar, {
+      props: { currentPage: "recipes" },
+    });
+
+    expect(wrapper.text()).toContain("KitchCalc");
+    expect(wrapper.text()).not.toContain("Costeo Inteligente");
+  });
+
   it("colapsa las etiquetas y emite los eventos", async () => {
     const onClose = vi.fn();
     const onToggleCollapse = vi.fn();
@@ -107,6 +126,33 @@ describe("AppSidebar", () => {
 
     expect(onClose).toHaveBeenCalledTimes(1);
     expect(onToggleCollapse).toHaveBeenCalledTimes(1);
+  });
+
+  it("marca el destino pendiente sin pisar la sección activa", async () => {
+    navPendingMock.path = "/ingredients";
+
+    const wrapper = await mountSuspended(AppSidebar, {
+      props: { currentPage: "recipes" },
+    });
+
+    const pending = wrapper.find('a[data-pending="1"]');
+    expect(pending.text()).toBe("Ingredientes");
+    expect(pending.classes()).toContain("opacity-70");
+    expect(pending.attributes("aria-current")).toBeUndefined();
+
+    const active = wrapper.find('a[aria-current="page"]');
+    expect(active.text()).toBe("Recetas");
+    expect(active.attributes("data-pending")).toBeUndefined();
+  });
+
+  it("coincide con la sección en sus subrutas (query y detalle)", async () => {
+    navPendingMock.path = "/recipes/4?edit=true";
+
+    const wrapper = await mountSuspended(AppSidebar, {
+      props: { currentPage: "ingredients" },
+    });
+
+    expect(wrapper.find('a[data-pending="1"]').text()).toBe("Recetas");
   });
 });
 
@@ -131,8 +177,20 @@ describe("AppBottomNav", () => {
 
     const active = wrapper.find('a[aria-current="page"]');
     expect(active.text()).toContain("Producción");
-    expect(active.classes()).toContain("bg-accent-700");
+    expect(active.classes()).toContain("bg-accent-solid");
     expect(active.classes()).toContain("text-text-on-accent");
+  });
+
+  it("marca el destino pendiente", async () => {
+    navPendingMock.path = "/settings";
+
+    const wrapper = await mountSuspended(AppBottomNav, {
+      props: { currentPage: "recipes", showProduction: true },
+    });
+
+    const pending = wrapper.find('a[data-pending="1"]');
+    expect(pending.text()).toBe("Configuración");
+    expect(pending.classes()).toContain("opacity-70");
   });
 });
 
@@ -165,6 +223,19 @@ describe("AppBreadcrumbs", () => {
 });
 
 describe("AppHeader", () => {
+  it("muestra la marca sin subtítulo y las migas después del logo", async () => {
+    const wrapper = await mountSuspended(AppHeader, {
+      props: { breadcrumbs: [{ label: "Recetas" }] },
+    });
+
+    const html = wrapper.find("header").html();
+    const brand = html.indexOf("KitchCalc");
+
+    expect(html).not.toContain("Costeo");
+    expect(brand).toBeLessThan(html.indexOf('data-variant="mobile"'));
+    expect(brand).toBeLessThan(html.indexOf('data-variant="desktop"'));
+  });
+
   it("emite openSidebar desde el botón de menú", async () => {
     const onOpenSidebar = vi.fn();
     const wrapper = await mountSuspended(AppHeader, {

@@ -14,12 +14,12 @@ defineProps<{
 <template>
   <div>
     <FeedbackAlert type="error" :message="message" :recipes="recipes ?? []" />
-    <a
+    <NuxtLink
       v-if="planLimit"
-      href="/pricing"
+      to="/pricing"
       class="text-danger -mt-2 inline-block font-bold underline"
     >
       Actualizar plan
-    </a>
+    </NuxtLink>
   </div>
 </template>

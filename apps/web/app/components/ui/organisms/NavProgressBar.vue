@@ -1,12 +1,13 @@
 <script setup lang="ts">
 /**
  * Barra de progreso de navegación. `useLoadingIndicator` se engancha a los
- * hooks `page:loading:start/end` de Nuxt: no hay listeners manuales ni eventos
- * `astro:*` que limpiar.
+ * hooks `page:loading:start/end` de Nuxt: no hay listeners manuales que limpiar.
  */
 const { isLoading, progress } = useLoadingIndicator({
   duration: 2000,
-  throttle: 150,
+  // Sin throttle: la barra arranca en el mismo frame del click (con el valor
+  // por defecto, 150 ms, cualquier navegación rápida no mostraba nada).
+  throttle: 0,
   hideDelay: 200,
   resetDelay: 300,
 });

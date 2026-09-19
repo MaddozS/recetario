@@ -1,5 +1,5 @@
 <script setup lang="ts">
-/** Footer del landing. Port literal del `LandingFooter.astro`. */
+/** Footer del landing. Port literal del `LandingFooter` del baseline. */
 const year = new Date().getFullYear();
 
 const PRODUCT_LINKS = [
@@ -19,33 +19,33 @@ const ACCESS_LINKS = [
     <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 md:py-16">
       <div class="grid gap-6 md:grid-cols-2 md:gap-12">
         <div>
-          <a href="/" class="flex items-center gap-2.5">
+          <NuxtLink to="/" class="flex items-center gap-2.5">
             <img
               src="/kitchcalc_logo.svg"
               alt="KitchCalc"
               class="h-8 w-8 rounded-lg"
             />
             <span class="text-foreground text-base font-black">KitchCalc</span>
-          </a>
+          </NuxtLink>
           <p class="text-muted-foreground mt-3 max-w-sm text-sm leading-relaxed">
             La forma más simple de calcular costos, márgenes y precios para tu
             negocio de alimentos.
           </p>
 
           <div class="mt-6 flex items-center gap-4">
-            <a
-              href="/privacy"
+            <NuxtLink
+              to="/privacy"
               class="text-muted-foreground hover:text-foreground text-xs transition-colors"
             >
               Privacidad
-            </a>
+            </NuxtLink>
             <span class="text-subtle-foreground text-xs">·</span>
-            <a
-              href="/terms"
+            <NuxtLink
+              to="/terms"
               class="text-muted-foreground hover:text-foreground text-xs transition-colors"
             >
               Términos
-            </a>
+            </NuxtLink>
           </div>
         </div>
 
@@ -77,12 +77,12 @@ const ACCESS_LINKS = [
             </h3>
             <ul class="mt-3 space-y-2.5">
               <li v-for="link in ACCESS_LINKS" :key="link.href">
-                <a
-                  :href="link.href"
+                <NuxtLink
+                  :to="link.href"
                   class="text-muted-foreground hover:text-foreground text-sm transition-colors"
                 >
                   {{ link.label }}
-                </a>
+                </NuxtLink>
               </li>
             </ul>
           </div>

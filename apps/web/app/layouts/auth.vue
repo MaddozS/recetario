@@ -13,14 +13,14 @@
       <div
         class="mx-auto flex h-16 max-w-7xl items-center justify-between px-6"
       >
-        <a href="/" class="flex shrink-0 items-center gap-2.5">
+        <NuxtLink to="/" class="flex shrink-0 items-center gap-2.5">
           <img
             src="/kitchcalc_logo.svg"
             alt="KitchCalc"
             class="h-9 w-9 rounded-xl"
           />
           <span class="text-foreground text-lg font-black">KitchCalc</span>
-        </a>
+        </NuxtLink>
         <LandingThemeToggle />
       </div>
     </nav>

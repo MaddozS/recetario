@@ -6,7 +6,7 @@ const route = useRoute();
 const { theme, accent, isDark } = useTheme();
 
 // Las rutas públicas de marketing y las de auth siempre son coral (paridad con
-// el `data-accent="coral"` del `LandingLayout` de Astro); el resto usa la
+// el `data-accent="coral"` del `LandingLayout` del baseline); el resto usa la
 // preferencia del usuario. `<html>` sigue teniendo un único dueño: `app.vue`.
 const effectiveAccent = computed(() =>
   isCoralAccentPath(route.path) ? "coral" : accent.value,
@@ -27,6 +27,7 @@ useHead({
 </script>
 
 <template>
+  <NavProgressBar />
   <NuxtLayout>
     <NuxtPage />
   </NuxtLayout>

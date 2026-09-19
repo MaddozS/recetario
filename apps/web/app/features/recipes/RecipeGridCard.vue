@@ -3,7 +3,7 @@ import type { RecipeRecord } from "~/features/recipes/recipe-state";
 import RecipeActionsMenu from "~/features/recipes/RecipeActionsMenu.vue";
 
 /**
- * Card del grid de recetas. Paridad con `RecipeGridCard.astro`: enlace al
+ * Card del grid de recetas. Paridad con `RecipeGridCard`: enlace al
  * detalle, badge de categoría, conteo de ingredientes y menú de acciones.
  * El grid aporta el índice para el stagger de la animación.
  */
@@ -21,8 +21,8 @@ const emit = defineEmits<{
 
 <template>
   <div class="relative" :style="{ '--stagger-index': index }">
-    <a
-      :href="`/recipes/${recipe.id}`"
+    <NuxtLink
+      :to="`/recipes/${recipe.id}`"
       class="recipe-grid-card group border-border bg-card hover:border-accent-300 hover:bg-accent-50/30 block rounded-2xl border p-5 shadow-sm hover:shadow-md active:scale-[0.98]"
       style="
         transition:
@@ -52,7 +52,7 @@ const emit = defineEmits<{
           </div>
         </div>
       </div>
-    </a>
+    </NuxtLink>
 
     <RecipeActionsMenu
       :recipe-id="recipe.id"

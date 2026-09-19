@@ -69,6 +69,8 @@ test("anónimo: las rutas públicas siguen respondiendo y sin shell", async ({
   expect(response.status()).toBe(200);
   const html = await response.text();
   expect(html).not.toContain('id="app-sidebar"');
+  // La barra de progreso vive en `app.vue`: está en todos los layouts.
+  expect(html).toContain('id="nav-progress-bar"');
 });
 
 test("plan free: el shell oculta Producción y mantiene las tres secciones", async ({

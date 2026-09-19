@@ -44,13 +44,13 @@ const price = computed(() => (props.tier === "pro" ? "$10/mes" : "$5/mes"));
       >
         No gracias
       </button>
-      <a
-        :href="`/pricing?plan=${tier}`"
-        class="bg-accent-700 text-text-on-accent hover:bg-accent-800 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-bold transition-colors"
+      <NuxtLink
+        :to="`/pricing?plan=${tier}`"
+        class="bg-accent-solid text-text-on-accent hover:bg-accent-solid-hover inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-bold transition-colors"
       >
         <Icon name="lucide:arrow-up-circle" :size="16" />
         Suscribirse a {{ tierLabel }}
-      </a>
+      </NuxtLink>
     </div>
   </div>
 </template>

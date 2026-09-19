@@ -19,12 +19,19 @@ const parentItem = computed(() =>
     class="flex min-w-0 items-center gap-1 md:hidden"
   >
     <template v-if="parentItem">
-      <a
-        :href="parentItem.href"
+      <NuxtLink
+        v-if="parentItem.href"
+        :to="parentItem.href"
         class="text-muted-foreground hover:text-secondary-foreground flex min-h-11 items-center text-sm font-medium transition-colors"
       >
         <span class="truncate">{{ parentItem.label }}</span>
-      </a>
+      </NuxtLink>
+      <span
+        v-else
+        class="text-muted-foreground flex min-h-11 items-center text-sm font-medium"
+      >
+        <span class="truncate">{{ parentItem.label }}</span>
+      </span>
       <Icon
         name="lucide:chevron-right"
         :size="14"
@@ -58,13 +65,13 @@ const parentItem = computed(() =>
         class="text-accent-600 shrink-0"
         aria-hidden="true"
       />
-      <a
+      <NuxtLink
         v-if="item.href"
-        :href="item.href"
+        :to="item.href"
         class="text-muted-foreground hover:text-secondary-foreground font-medium whitespace-nowrap transition-colors"
       >
         {{ item.label }}
-      </a>
+      </NuxtLink>
       <span v-else class="text-foreground max-w-50 truncate font-semibold">
         {{ item.label }}
       </span>

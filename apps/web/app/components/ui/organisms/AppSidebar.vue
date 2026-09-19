@@ -21,6 +21,11 @@ const planLabel = computed(() => {
 
 const isCollapsed = computed(() => props.collapsed === true);
 const isActive = (page: AppPage) => props.currentPage === page;
+
+// Estado pendiente: el destino de la navegación en curso se marca en el mismo
+// frame del click (lo escribe el plugin `nav-pending`).
+const pending = useNavPending();
+const isPending = (href: string) => matchesPendingHref(pending.value, href);
 </script>
 
 <template>
@@ -43,18 +48,13 @@ const isActive = (page: AppPage) => props.currentPage === page;
       </div>
       <template v-else>
         <div
-          class="bg-accent-700 text-text-on-accent shadow-accent-100 rounded-xl p-2 shadow-md"
+          class="bg-accent-solid text-text-on-accent shadow-accent-100 rounded-xl p-2 shadow-md"
         >
           <Icon name="lucide:chef-hat" :size="20" />
         </div>
-        <div>
-          <p class="text-foreground text-base leading-tight font-bold">
-            KitchCalc
-          </p>
-          <p class="text-muted-foreground text-[10px] font-medium">
-            Costeo Inteligente
-          </p>
-        </div>
+        <p class="text-foreground text-base leading-tight font-bold">
+          KitchCalc
+        </p>
       </template>
     </div>
 
@@ -63,16 +63,18 @@ const isActive = (page: AppPage) => props.currentPage === page;
       class="flex-1 space-y-1 overflow-y-auto px-3 pt-4 pb-2"
       aria-label="Secciones"
     >
-      <a
+      <NuxtLink
         v-for="item in items"
         :key="item.page"
-        :href="item.href"
+        :to="item.href"
         :title="item.label"
+        :data-pending="isPending(item.href) ? '1' : undefined"
         class="sidebar-link flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors"
         :class="[
-          isActive(item.page)
-            ? 'bg-accent-700 text-text-on-accent'
+          isActive(item.page) || isPending(item.href)
+            ? 'bg-accent-solid text-text-on-accent'
             : 'text-muted-foreground hover:text-secondary-foreground hover:bg-muted',
+          isPending(item.href) ? 'opacity-70' : '',
           isCollapsed ? 'md:justify-center md:gap-0 md:px-0' : '',
         ]"
         :aria-current="isActive(item.page) ? 'page' : undefined"
@@ -84,7 +86,7 @@ const isActive = (page: AppPage) => props.currentPage === page;
         >
           {{ item.label }}
         </span>
-      </a>
+      </NuxtLink>
     </nav>
 
     <!-- Pie de sidebar (escritorio): plan + colapso -->

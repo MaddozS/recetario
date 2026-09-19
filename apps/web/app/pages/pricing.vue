@@ -97,7 +97,7 @@ function buttonClass(plan: PricingPlan): string {
     return `${base} border-border bg-background text-subtle-foreground cursor-not-allowed border`;
   }
   if (plan.id === "pro") {
-    return `${base} bg-accent-700 text-text-on-accent hover:bg-accent-800`;
+    return `${base} bg-accent-solid text-text-on-accent hover:bg-accent-solid-hover`;
   }
   return `${base} border-border bg-card text-muted-foreground hover:bg-background border`;
 }
@@ -216,13 +216,13 @@ async function subscribe(plan: PricingPlan): Promise<void> {
           <PlanPrice :plan="plan" :interval="interval" />
         </div>
 
-        <a
+        <NuxtLink
           v-if="!isAuthenticated"
-          :href="signInHref(plan)"
+          :to="signInHref(plan)"
           :class="buttonClass(plan)"
         >
           {{ anonymousLabel(plan) }}
-        </a>
+        </NuxtLink>
         <button
           v-else
           type="button"

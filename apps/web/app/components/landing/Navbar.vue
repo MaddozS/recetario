@@ -3,8 +3,8 @@ import { onBeforeUnmount, onMounted, ref, watch } from "vue";
 
 /**
  * Navbar del landing. El drawer móvil, el bloqueo de scroll, el cierre con
- * Escape y el scroll-spy son estado Vue con cleanup; no hay globals, ni
- * `data-*-bound`, ni listeners `astro:*`.
+ * Escape y el scroll-spy son estado Vue con cleanup; no hay globals ni
+ * listeners manuales.
  */
 const SECTIONS = ["features", "how-it-works", "pricing"] as const;
 const NAV_LINKS = [
@@ -70,7 +70,7 @@ function isActive(href: string): boolean {
         >
           <Icon name="lucide:menu" :size="20" />
         </button>
-        <a href="/" class="flex shrink-0 items-center gap-2.5">
+        <NuxtLink to="/" class="flex shrink-0 items-center gap-2.5">
           <img
             src="/kitchcalc_logo.svg"
             alt="KitchCalc"
@@ -79,7 +79,7 @@ function isActive(href: string): boolean {
           <span class="text-foreground hidden text-lg font-black sm:inline">
             KitchCalc
           </span>
-        </a>
+        </NuxtLink>
       </div>
 
       <div class="hidden items-center gap-6 md:flex">

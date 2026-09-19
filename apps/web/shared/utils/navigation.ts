@@ -57,6 +57,47 @@ export function visibleNavItems(showProduction: boolean): AppNavItem[] {
   return APP_NAV_ITEMS.filter((item) => !item.productionOnly || showProduction);
 }
 
+/** Pathname de un href, sin query ni hash (para comparar destinos). */
+function pathnameOf(href: string): string {
+  const [withoutHash = ""] = href.split("#");
+  const [pathname = ""] = withoutHash.split("?");
+  return pathname;
+}
+
+/**
+ * Enlaces que debe resolver el router de Vue (`NuxtLink`). Quedan fuera los
+ * externos y los protocolos no HTTP (`mailto:`, `tel:`…), los anclas de la
+ * misma página (`#seccion`) y el relay same-origin `/api/**`.
+ */
+export function isInternalHref(href: string): boolean {
+  const value = href.trim();
+  if (value.length === 0 || value.startsWith("#") || value.startsWith("//")) {
+    return false;
+  }
+  if (/^[a-z][a-z0-9+.-]*:/i.test(value)) return false;
+  return value !== "/api" && !value.startsWith("/api/");
+}
+
+/**
+ * ¿El enlace apunta al destino que se está navegando? Ignora query y hash, y
+ * para las secciones del shell compara por sección —igual que el estado activo
+ * (`pageKeyFromPath`)— para que `/recipes/4` marque «Recetas» como pendiente.
+ */
+export function matchesPendingHref(
+  pending: string | null,
+  href: string,
+): boolean {
+  if (!pending) return false;
+  const pendingPath = pathnameOf(pending);
+  if (pendingPath.length === 0) return false;
+
+  const hrefPath = pathnameOf(href);
+  const pendingKey = pageKeyFromPath(pendingPath);
+  const hrefKey = pageKeyFromPath(hrefPath);
+  if (pendingKey !== null && hrefKey !== null) return pendingKey === hrefKey;
+  return pendingPath === hrefPath;
+}
+
 /** Migas resueltas por una página que conoce su etiqueta después del setup. */
 export type BreadcrumbTail = { path: string; label: string };
 

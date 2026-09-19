@@ -9,7 +9,7 @@ const props = defineProps<{
 const emit = defineEmits<{ openSidebar: [] }>();
 const { isAuthenticated } = useAuth();
 
-// Con migas, el logo y el título dejan sitio en móvil (paridad con Astro).
+// Con migas, el logo y el título dejan sitio en móvil (paridad con el baseline).
 const hasBreadcrumbs = computed(() => (props.breadcrumbs?.length ?? 0) > 0);
 </script>
 
@@ -29,28 +29,26 @@ const hasBreadcrumbs = computed(() => (props.breadcrumbs?.length ?? 0) > 0);
         <Icon name="lucide:menu" :size="20" />
       </button>
 
-      <AppBreadcrumbs :items="breadcrumbs ?? []" />
-
       <img
         src="/kitchcalc_logo.svg"
         alt="KitchCalc"
         class="shadow-accent-100 h-9 w-9 rounded-xl shadow-md sm:h-10 sm:w-10"
         :class="hasBreadcrumbs ? 'hidden md:block' : ''"
       />
-      <div :class="hasBreadcrumbs ? 'hidden md:block' : ''">
-        <h1 class="text-foreground text-lg leading-tight font-bold sm:text-xl">
-          KitchCalc
-        </h1>
-        <p class="text-muted-foreground text-[10px] font-medium sm:text-xs">
-          Costeo Inteligente
-        </p>
-      </div>
+      <h1
+        class="text-foreground text-lg leading-tight font-bold sm:text-xl"
+        :class="hasBreadcrumbs ? 'hidden md:block' : ''"
+      >
+        KitchCalc
+      </h1>
 
       <div
         v-if="hasBreadcrumbs"
         class="bg-border hidden h-6 w-px md:block"
         aria-hidden="true"
       />
+
+      <AppBreadcrumbs :items="breadcrumbs ?? []" />
     </div>
 
     <div

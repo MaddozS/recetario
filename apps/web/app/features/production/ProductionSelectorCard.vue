@@ -153,9 +153,9 @@ function isRecipeDisabled(recipe: ProductionCatalogRecipe): boolean {
           <p class="text-warning text-sm font-semibold">
             Límite de {{ maxRecipes }} recetas alcanzado en plan Basic.
           </p>
-          <a href="/pricing" class="text-accent-600 text-sm font-bold">
+          <NuxtLink to="/pricing" class="text-accent-800 text-sm font-bold">
             Actualizar a Pro para planificar recetas ilimitadas →
-          </a>
+          </NuxtLink>
         </div>
 
         <fieldset v-for="group in groups" :key="group.label ?? '__all__'">

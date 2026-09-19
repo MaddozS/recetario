@@ -43,7 +43,7 @@ const showWarning = computed(() =>
     </div>
     <p v-if="showWarning" class="text-warning mt-2 text-xs font-semibold">
       Te quedan {{ remaining }} {{ unit }}.
-      <a href="/pricing" class="underline">Actualizar plan</a>
+      <NuxtLink to="/pricing" class="underline">Actualizar plan</NuxtLink>
     </p>
   </Card>
 </template>

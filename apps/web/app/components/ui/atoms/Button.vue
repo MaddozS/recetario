@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, watch } from "vue";
+import { isInternalHref } from "#shared/utils/navigation";
 
 type Variant =
   | "primary"
@@ -40,12 +41,13 @@ const BASE_CLASSES =
 
 const VARIANT_CLASSES: Record<Variant, { solid: string; iconOnly: string }> = {
   primary: {
-    // `accent-700` + `text-on-accent` sostiene AA en ambos temas: en light el
-    // 600 con blanco daba 3.72:1 y en dark el 600 con blanco 2.95:1.
+    // El relleno sale del rol sólido del acento (mismo tono en claro y oscuro
+    // en las familias con paridad) y encima va `text-on-accent`, que cada
+    // familia fija para sostener AA.
     solid:
-      "bg-accent-700 text-text-on-accent hover:bg-accent-800 rounded-xl shadow-sm",
+      "bg-accent-solid text-text-on-accent hover:bg-accent-solid-hover rounded-xl shadow-sm",
     iconOnly:
-      "bg-accent-700 text-text-on-accent hover:bg-accent-800 rounded-full",
+      "bg-accent-solid text-text-on-accent hover:bg-accent-solid-hover rounded-full",
   },
   secondary: {
     solid:
@@ -81,7 +83,7 @@ const SIZE_CLASSES: Record<Size, string> = {
 };
 
 // `iconAccent`/`iconDanger` sólo tienen sentido sin etiqueta; si se usan mal,
-// cae a `ghost` (paridad con el componente Astro).
+// cae a `ghost` (paridad con el componente el baseline).
 const misusedIconVariant = computed(
   () =>
     (props.variant === "iconAccent" || props.variant === "iconDanger") &&
@@ -124,8 +126,19 @@ const iconSize = computed(() =>
 </script>
 
 <template>
+  <NuxtLink
+    v-if="href && isInternalHref(href)"
+    :id="id"
+    :to="href"
+    :aria-label="ariaLabel"
+    :class="classes"
+    v-bind="$attrs"
+  >
+    <Icon v-if="icon" :name="`lucide:${icon}`" :size="iconSize" />
+    <slot v-if="!iconOnly" />
+  </NuxtLink>
   <a
-    v-if="href"
+    v-else-if="href"
     :id="id"
     :href="href"
     :aria-label="ariaLabel"
