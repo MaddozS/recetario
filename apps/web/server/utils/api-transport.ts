@@ -11,6 +11,10 @@ import { setSecurityHeaders } from "@recetario/config/request";
  *
  * En desarrollo el binding no está conectado al worker del API (instancias
  * separadas de miniflare), así que se cae a HTTP contra `INTERNAL_API_URL`.
+ * Esa rama no reenvía el `accept-encoding` del navegador: `fetch` (undici)
+ * descomprime el body de forma transparente pero conserva el `content-encoding`
+ * del upstream, y el navegador acabaría descomprimiendo texto plano
+ * (`ERR_CONTENT_DECODING_FAILED` sobre una respuesta 200).
  */
 
 export type ApiServiceBinding = {
@@ -34,7 +38,7 @@ export type ApiCallInit = {
 };
 
 /** Headers que fija el transporte de destino, no el request entrante. */
-const TRANSPORT_OWNED_HEADERS = ["host", "content-length"];
+const TRANSPORT_OWNED_HEADERS = ["host", "content-length", "accept-encoding"];
 
 export function resolveBindingFromEnv(
   env: Record<string, unknown>,
@@ -93,6 +97,9 @@ export async function forwardApiRequest(
   for (const header of TRANSPORT_OWNED_HEADERS) {
     headers.delete(header);
   }
+  // `fetch` ya descomprime, así que el API no debe comprimir: su
+  // `content-encoding` sobreviviría en la respuesta que ve el navegador.
+  headers.set("accept-encoding", "identity");
 
   const init: RequestInit & { duplex?: "half" } = {
     method: request.method,
@@ -145,7 +152,7 @@ export async function relayApiRequest(event: H3Event): Promise<Response> {
 /**
  * Llamada server-side al API (bootstrap de sesión y carga SSR de datos).
  * Reenvía las cookies del request entrante; en producción conserva el host
- * público, igual que hacía `apiFetch` en Astro.
+ * público, igual que hacía `apiFetch` en el baseline.
  */
 export async function callApi(
   event: H3Event,

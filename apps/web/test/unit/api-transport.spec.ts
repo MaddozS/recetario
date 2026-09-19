@@ -1,3 +1,5 @@
+import { createServer } from "node:http";
+import { gzipSync } from "node:zlib";
 import { describe, expect, it, vi } from "vitest";
 import {
   buildUpstreamRequest,
@@ -9,9 +11,52 @@ import {
 
 const INTERNAL_API_URL = "http://localhost:8787";
 const PUBLIC_URL = "https://app.example.com";
+const OAUTH_PAYLOAD = JSON.stringify({
+  url: "https://accounts.google.com/o/oauth2/v2/auth",
+});
 
 function makeRequest(path = "/api/health", init: RequestInit = {}) {
   return new Request(`${PUBLIC_URL}${path}`, init);
+}
+
+/**
+ * Upstream real que comprime igual que el API (workerd responde gzip si el
+ * cliente lo pide). `fetchImpl` es el `fetch` global, así que el test cubre la
+ * negociación de contenido de punta a punta.
+ */
+async function withGzipUpstream(
+  run: (
+    internalApiUrl: string,
+    seen: { acceptEncoding?: string },
+  ) => Promise<void>,
+): Promise<void> {
+  const seen: { acceptEncoding?: string } = {};
+  const server = createServer((request, response) => {
+    seen.acceptEncoding = request.headers["accept-encoding"];
+    if (request.headers["accept-encoding"]?.includes("gzip")) {
+      response.writeHead(200, {
+        "content-type": "application/json",
+        "content-encoding": "gzip",
+      });
+      response.end(gzipSync(OAUTH_PAYLOAD));
+      return;
+    }
+    response.writeHead(200, { "content-type": "application/json" });
+    response.end(OAUTH_PAYLOAD);
+  });
+
+  await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve));
+  const address = server.address();
+  const port = typeof address === "object" && address ? address.port : 0;
+
+  try {
+    await run(`http://127.0.0.1:${port}`, seen);
+  } finally {
+    await new Promise<void>((resolve) => {
+      server.closeAllConnections();
+      server.close(() => resolve());
+    });
+  }
 }
 
 describe("resolveBindingFromEnv", () => {
@@ -135,6 +180,30 @@ describe("forwardApiRequest — fallback HTTP", () => {
     expect(headers.get("host")).toBeNull();
     expect(headers.get("content-length")).toBeNull();
     expect(headers.get("cookie")).toBe("csrf=1");
+  });
+
+  it("no declara content-encoding si el body ya llega descomprimido", async () => {
+    await withGzipUpstream(async (internalApiUrl, seen) => {
+      const response = await forwardApiRequest(
+        makeRequest("/api/auth/sign-in/social", {
+          method: "POST",
+          headers: {
+            "accept-encoding": "gzip, deflate, br",
+            "content-type": "application/json",
+          },
+          body: JSON.stringify({ provider: "google" }),
+        }),
+        { internalApiUrl, useBinding: false },
+      );
+
+      const bytes = new Uint8Array(await response.arrayBuffer());
+      // `fetch` descomprime el body pero conserva el header del upstream: si se
+      // reenvía el `accept-encoding` del navegador, el cliente intenta
+      // descomprimir texto plano y falla con ERR_CONTENT_DECODING_FAILED.
+      expect(seen.acceptEncoding).toBe("identity");
+      expect(response.headers.get("content-encoding")).toBeNull();
+      expect(new TextDecoder().decode(bytes)).toBe(OAUTH_PAYLOAD);
+    });
   });
 
   it("reenvía el body y exige duplex en mutaciones", async () => {
