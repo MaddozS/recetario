@@ -12,7 +12,7 @@
     "lint": "eslint .",
     "type-check": "nuxt typecheck",
     "test": "nuxt prepare && vitest run",
-    "test:e2e": "playwright test",
+    "test:e2e": "nuxt prepare && playwright test",
     "wrangler:dry-run": "wrangler deploy --dry-run --outdir .wrangler/dry-run"
   },
   "dependencies": {
