@@ -176,7 +176,7 @@ function onComment(index: number, event: Event): void {
         variant="secondary"
         icon="plus"
         size="md"
-        class="border-accent-200 text-accent-600 hover:bg-accent-50 shadow-sm"
+        class="border-accent-200 text-accent-700 hover:bg-accent-50 shadow-sm"
         @click="addRow()"
       >
         Añadir Ingrediente

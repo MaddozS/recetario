@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KitchCalc - Review Report</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body {
+        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+      }
+      .mono {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      }
+      .report-section {
+        border: 1px solid #222226;
+        background: #0a0a0b;
+        position: relative;
+      }
+      .corner-box {
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        border: 1px solid #222226;
+        background: #000;
+      }
+    </style>
+  </head>
+  <body class="bg-black text-[#fafafa]">
+    <main class="mx-auto w-full max-w-6xl px-5 py-8 md:px-10 md:py-12">
+      <header class="report-section mb-8 p-6 md:p-8">
+        <div class="corner-box left-0 top-0 -translate-x-1/2 -translate-y-1/2"></div>
+        <div class="corner-box right-0 top-0 translate-x-1/2 -translate-y-1/2"></div>
+        <div class="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+          <div>
+            <div class="mono mb-2 text-xs tracking-widest text-[#666]">// REVIEW</div>
+            <h1 class="text-4xl font-bold tracking-tight md:text-6xl">KitchCalc</h1>
+            <p class="mt-3 max-w-2xl text-sm leading-6 text-[#a0a0a0]">
+              Pase de recolor del acento: familia coral, rol de relleno de acción y la sección CTA
+              del landing. Superficies incluidas: CTA, shell privado, toolbar de recetas, settings y
+              pricing.
+            </p>
+          </div>
+          <div class="mono text-left text-xs text-[#666] md:text-right">
+            <div>COMMANDCODE REPORT</div>
+            <div class="text-[#444]">2026-09-18</div>
+            <div class="text-[#444]">apps/web</div>
+          </div>
+        </div>
+      </header>
+
+      <section class="report-section mb-8 p-6 md:p-8">
+        <div class="corner-box left-0 top-0 -translate-x-1/2 -translate-y-1/2"></div>
+        <div class="corner-box right-0 top-0 translate-x-1/2 -translate-y-1/2"></div>
+        <div class="grid gap-8 md:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
+          <div>
+            <div class="mono mb-2 text-xs tracking-widest text-[#666]">// OVERALL</div>
+            <div class="text-6xl font-bold tracking-tight md:text-7xl">35</div>
+            <div class="mt-1 text-lg text-[#666]">/ 50</div>
+            <div
+              class="mt-4 inline-flex border border-[#f43f5e]/30 bg-[#f43f5e]/10 px-3 py-1 text-sm text-[#f43f5e]"
+            >
+              Block
+            </div>
+          </div>
+          <div>
+            <div class="mono mb-3 text-xs tracking-widest text-[#666]">// TL;DR</div>
+            <p class="text-sm leading-6 text-[#a0a0a0]">
+              El pase arregló lo señalado: el coral ya no cambia de identidad entre temas (banda del
+              CTA y rellenos de acción idénticos en claro y oscuro, medido en el DOM), la rampa dejó
+              de derivar de tono, y el CTA pasó de rosa neón con texto casi negro y botón salmón a
+              banda coral profunda con texto blanco y CTA blanco con anillo de foco verificado.
+            </p>
+            <p class="mt-4 text-sm leading-6 text-[#a0a0a0]">
+              Pero el override de paridad vive dentro de <span class="mono">resolveShade()</span>, que
+              alimenta toda la rampa: en oscuro + coral <span class="mono">text-accent-800</span>
+              quedó en <span class="mono">1.95:1</span> sobre los tintes y
+              <span class="mono">text-accent-700</span> en <span class="mono">3.95:1</span> sobre el
+              fondo. 7 nodos, 5 superficies, una causa raíz.
+            </p>
+            <p class="mt-4 text-sm leading-6 text-[#fbbf24]">
+              Siguiente acción: un <span class="mono">/design recolor</span> acotado a
+              <span class="mono">apps/web/app/utils/accent-colors.ts</span> — aplicar el override
+              solo a <span class="mono">--color-accent-solid</span> y su hover, dejando
+              <span class="mono">darkShadeMap</span> para los shades de texto y tinte; después volver
+              a correr el barrido <span class="mono">acentos</span> del spec de a11y.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="report-section mb-8 p-6 md:p-8">
+        <div class="mono mb-6 text-xs tracking-widest text-[#666]">// HEURISTIC SCORES</div>
+        <div class="overflow-x-auto">
+          <table class="w-full min-w-[720px] border-collapse text-sm">
+            <thead>
+              <tr class="mono border-b border-[#222226] text-left text-xs text-[#666]">
+                <th class="py-3 pr-4 font-normal">#</th>
+                <th class="py-3 pr-4 font-normal">LENTE</th>
+                <th class="py-3 pr-4 font-normal">SCORE</th>
+                <th class="py-3 font-normal">HALLAZGO CLAVE</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-b border-[#1a1a1e]">
+                <td class="py-4 pr-4 text-[#555]">1</td>
+                <td class="py-4 pr-4 text-[#fafafa]">First impression</td>
+                <td class="py-4 pr-4 text-[#fbbf24]">7 / 10</td>
+                <td class="py-4 text-[#a0a0a0]">
+                  El CTA dejó el rosa neón con texto negro; ahora es una banda coral profunda con CTA
+                  blanco.
+                </td>
+              </tr>
+              <tr class="border-b border-[#1a1a1e]">
+                <td class="py-4 pr-4 text-[#555]">2</td>
+                <td class="py-4 pr-4 text-[#fafafa]">Hierarchy</td>
+                <td class="py-4 pr-4 text-[#34d399]">8 / 10</td>
+                <td class="py-4 text-[#a0a0a0]">
+                  Titular negro pesado + primario blanco + fantasma translúcido: el ojo sabe dónde
+                  actuar primero.
+                </td>
+              </tr>
+              <tr class="border-b border-[#1a1a1e]">
+                <td class="py-4 pr-4 text-[#555]">3</td>
+                <td class="py-4 pr-4 text-[#fafafa]">Color voice</td>
+                <td class="py-4 pr-4 text-[#f43f5e]">5 / 10</td>
+                <td class="py-4 text-[#a0a0a0]">
+                  La identidad del coral ya es una sola, pero el rol de relleno se filtró al rol de
+                  texto (1.95:1).
+                </td>
+              </tr>
+              <tr class="border-b border-[#1a1a1e]">
+                <td class="py-4 pr-4 text-[#555]">4</td>
+                <td class="py-4 pr-4 text-[#fafafa]">Type voice</td>
+                <td class="py-4 pr-4 text-[#fbbf24]">7 / 10</td>
+                <td class="py-4 text-[#a0a0a0]">
+                  Sin cambios en esta pasada; jerarquía por tamaño y peso, sin regresiones
+                  observadas.
+                </td>
+              </tr>
+              <tr>
+                <td class="py-4 pr-4 text-[#555]">5</td>
+                <td class="py-4 pr-4 text-[#fafafa]">Interaction feel</td>
+                <td class="py-4 pr-4 text-[#34d399]">8 / 10</td>
+                <td class="py-4 text-[#a0a0a0]">
+                  Anillos de foco verificados en ambos CTA (blanco 2px + offset coral); target mínimo
+                  44px.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="report-section mb-8 p-6 md:p-8">
+        <div class="mono mb-6 text-xs tracking-widest text-[#666]">// PRIORITY ISSUES</div>
+        <div class="space-y-5">
+          <article class="border border-[#2a1d22] bg-[#110b0d] p-5">
+            <div class="mono mb-2 text-xs text-[#f43f5e]">HIGH · COLOR</div>
+            <h2 class="mb-2 text-lg font-semibold">
+              El override de paridad se aplica a toda la rampa, no solo al relleno de acción
+            </h2>
+            <p class="text-sm leading-6 text-[#a0a0a0]">
+              <span class="mono">accent-colors.ts:211</span> (<span class="mono">resolveShade</span>)
+              se usa también en el loop de <span class="mono">ACCENT_SHADES</span> (línea 215), así
+              que en oscuro coral <span class="mono">--color-accent-700/800</span> pasan a
+              <span class="mono">#c94445</span> / <span class="mono">#b33b3c</span> (valores de claro),
+              mientras el mapeo oscuro anterior daba <span class="mono">#faa898</span>.
+            </p>
+            <p class="mt-3 text-sm leading-6 text-[#a0a0a0]">
+              Medido con axe sobre superficies reales: <span class="mono">text-accent-800</span> sobre
+              <span class="mono">bg-accent-50</span> = <span class="mono">1.95:1</span> (antes
+              <span class="mono">6.0:1</span>) y <span class="mono">text-accent-700</span> sobre el
+              fondo = <span class="mono">3.95:1</span> (antes <span class="mono">7.48:1</span>).
+            </p>
+            <div class="mt-4 overflow-x-auto">
+              <table class="w-full min-w-[640px] border-collapse text-sm">
+                <thead>
+                  <tr class="mono border-b border-[#222226] text-left text-xs text-[#666]">
+                    <th class="py-2 pr-4 font-normal">SUPERFICIE</th>
+                    <th class="py-2 pr-4 font-normal">NODO</th>
+                    <th class="py-2 pr-4 font-normal">PAR</th>
+                    <th class="py-2 pr-4 font-normal">AHORA</th>
+                    <th class="py-2 font-normal">ANTES</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="border-b border-[#1a1a1e]">
+                    <td class="mono py-3 pr-4 text-[#a0a0a0]">/recipes</td>
+                    <td class="py-3 pr-4 text-[#a0a0a0]">Badge de categoría</td>
+                    <td class="mono py-3 pr-4 text-[#a0a0a0]">#b33b3c / #6b1f20</td>
+                    <td class="mono py-3 pr-4 text-[#f43f5e]">1.95:1</td>
+                    <td class="mono py-3 text-[#666]">6.01:1</td>
+                  </tr>
+                  <tr class="border-b border-[#1a1a1e]">
+                    <td class="mono py-3 pr-4 text-[#a0a0a0]">/settings?tab=preferences</td>
+                    <td class="py-3 pr-4 text-[#a0a0a0]">Badge y tarjeta de acento</td>
+                    <td class="mono py-3 pr-4 text-[#a0a0a0]">#b33b3c / #6b1f20</td>
+                    <td class="mono py-3 pr-4 text-[#f43f5e]">1.95:1</td>
+                    <td class="mono py-3 text-[#666]">6.01:1</td>
+                  </tr>
+                  <tr class="border-b border-[#1a1a1e]">
+                    <td class="mono py-3 pr-4 text-[#a0a0a0]">/settings?tab=preferences</td>
+                    <td class="py-3 pr-4 text-[#a0a0a0]">Tab activa</td>
+                    <td class="mono py-3 pr-4 text-[#a0a0a0]">#c94445 / #0f1114</td>
+                    <td class="mono py-3 pr-4 text-[#f43f5e]">3.95:1</td>
+                    <td class="mono py-3 text-[#666]">7.48:1</td>
+                  </tr>
+                  <tr>
+                    <td class="mono py-3 pr-4 text-[#a0a0a0]">/produccion · /pricing</td>
+                    <td class="py-3 pr-4 text-[#a0a0a0]">Badges equivalentes</td>
+                    <td class="mono py-3 pr-4 text-[#a0a0a0]">#b33b3c / #6b1f20</td>
+                    <td class="mono py-3 pr-4 text-[#f43f5e]">1.95:1</td>
+                    <td class="mono py-3 text-[#666]">6.01:1</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="mt-4 border-l border-[#fbbf24] pl-4 text-sm leading-6 text-[#fbbf24]">
+              FIX: aplicar el override solo al emitir
+              <span class="mono">--color-accent-solid</span> y
+              <span class="mono">--color-accent-solid-hover</span>; los shades
+              <span class="mono">50…800</span> siguen saliendo de
+              <span class="mono">darkShadeMap</span>. Un solo cambio arregla los ~20 usos de
+              <span class="mono">text-accent-700/800</span>.
+            </div>
+          </article>
+
+          <article class="border border-[#1f1f24] bg-[#0d0d0f] p-5">
+            <div class="mono mb-2 text-xs text-[#fbbf24]">LOW · COLOR</div>
+            <h2 class="mb-2 text-lg font-semibold">
+              El tinte oscuro de la card Pro apunta a un token que no existe
+            </h2>
+            <p class="mb-4 text-sm leading-6 text-[#a0a0a0]">
+              <span class="mono">PricingSection.vue:91</span> usa
+              <span class="mono">dark:bg-accent-950/10</span>, pero
+              <span class="mono">--color-accent-950</span> no está definido (ni en
+              <span class="mono">@theme</span> ni en la emisión: <span class="mono">ACCENT_SHADES</span>
+              llega a 800), así que la utilidad no pinta nada. Verificado leyendo la custom property
+              en el DOM: vacía.
+            </p>
+            <div class="border-l border-[#fbbf24] pl-4 text-sm leading-6 text-[#fbbf24]">
+              FIX: emitir los shades 900/950 con su mapeo oscuro, o cambiar la clase por un token
+              existente.
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="report-section mb-8 p-6 md:p-8">
+        <div class="mono mb-6 text-xs tracking-widest text-[#666]">// WHAT'S WORKING</div>
+        <div class="grid gap-4 md:grid-cols-3">
+          <article class="border border-[#1f1f24] p-4">
+            <h2 class="mb-2 text-sm font-semibold">Paridad real de tema</h2>
+            <p class="text-sm leading-6 text-[#a0a0a0]">
+              Banda del CTA y relleno de acción con el mismo coral en claro y oscuro:
+              <span class="mono">#c94445 → #b33b3c</span> con texto
+              <span class="mono">#ffffff</span>, medido por estilos computados. Antes en oscuro:
+              <span class="mono">#e84d5a → #ff7b6e</span> con etiqueta
+              <span class="mono">#171717</span>.
+            </p>
+          </article>
+          <article class="border border-[#1f1f24] p-4">
+            <h2 class="mb-2 text-sm font-semibold">Rampa coral coherente</h2>
+            <p class="text-sm leading-6 text-[#a0a0a0]">
+              Un solo tono (H≈24) en los 11 pasos y chroma recortado al 92% del máximo del gamut.
+              Antes: tints a H≈34, vívidos a H≈19 y el 500 pegado al borde del gamut.
+            </p>
+          </article>
+          <article class="border border-[#1f1f24] p-4">
+            <h2 class="mb-2 text-sm font-semibold">CTA y foco</h2>
+            <p class="text-sm leading-6 text-[#a0a0a0]">
+              Titular y subtítulo blancos (4.78–5.82:1), primario blanco con etiqueta coral (4.78:1),
+              fantasma translúcido, y anillo de foco visible en ambos botones (blanco 2px, con offset
+              coral en el primario).
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="report-section mb-8 p-6 md:p-8">
+        <div class="mono mb-6 text-xs tracking-widest text-[#666]">// CONSIDERADO Y DESCARTADO</div>
+        <div class="overflow-x-auto">
+          <table class="w-full min-w-[720px] border-collapse text-sm">
+            <thead>
+              <tr class="mono border-b border-[#222226] text-left text-xs text-[#666]">
+                <th class="py-3 pr-4 font-normal">UBICACIÓN</th>
+                <th class="py-3 pr-4 font-normal">CANDIDATO</th>
+                <th class="py-3 font-normal">POR QUÉ SE DESCARTA</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-b border-[#1a1a1e]">
+                <td class="mono py-3 pr-4 text-[#666]">CTASection.vue:11</td>
+                <td class="py-3 pr-4 text-[#a0a0a0]">
+                  La banda es más profunda en claro que el resto de planos coral del landing
+                </td>
+                <td class="py-3 text-[#a0a0a0]">
+                  Deliberado: debe sostener texto blanco AA y ser idéntica entre temas; funciona como
+                  cierre de página.
+                </td>
+              </tr>
+              <tr class="border-b border-[#1a1a1e]">
+                <td class="mono py-3 pr-4 text-[#666]">accent-colors.ts:186</td>
+                <td class="py-3 pr-4 text-[#a0a0a0]">Extender la paridad a las otras 6 familias</td>
+                <td class="py-3 text-[#a0a0a0]">
+                  Solo se pidió coral; el resto fue validado en el barrido 13a y sostiene los
+                  contrastes actuales.
+                </td>
+              </tr>
+              <tr class="border-b border-[#1a1a1e]">
+                <td class="mono py-3 pr-4 text-[#666]">accent-colors.ts:228</td>
+                <td class="py-3 pr-4 text-[#a0a0a0]">
+                  No emitir <span class="mono">--tw-text-on-accent</span> para no-coral
+                </td>
+                <td class="py-3 text-[#a0a0a0]">
+                  Duplicaría la fuente de verdad; el valor emitido es idéntico al de
+                  <span class="mono">tokens.css</span>.
+                </td>
+              </tr>
+              <tr>
+                <td class="mono py-3 pr-4 text-[#666]">Button.vue:47</td>
+                <td class="py-3 pr-4 text-[#a0a0a0]">
+                  Reutilizar <span class="mono">bg-accent-700</span> con modificador de tema
+                </td>
+                <td class="py-3 text-[#a0a0a0]">
+                  El token de rol es lo que permite que coral conserve su tono mientras el resto
+                  aclara el relleno en oscuro.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="report-section mb-8 p-6 md:p-8">
+        <div class="mono mb-6 text-xs tracking-widest text-[#666]">// VERIFICACIÓN</div>
+        <div class="grid gap-8 md:grid-cols-2">
+          <div>
+            <div class="mono mb-3 text-xs tracking-widest text-[#666]">PASADA</div>
+            <ul class="space-y-3 text-sm text-[#a0a0a0]">
+              <li>
+                <span class="mono mr-2 text-[#34d399]">PASS</span>Vitest: 49 archivos, 659 tests
+                verdes (incluye el contrato nuevo de <span class="mono">accent-colors</span>).
+              </li>
+              <li>
+                <span class="mono mr-2 text-[#34d399]">PASS</span>Type-check, eslint y prettier limpios
+                en los archivos tocados.
+              </li>
+              <li>
+                <span class="mono mr-2 text-[#34d399]">PASS</span>Estilos computados en claro/oscuro:
+                banda idéntica, primario <span class="mono">#ffffff/#c94445</span>, anillos de foco
+                presentes, pill y contador del toolbar correctos.
+              </li>
+            </ul>
+          </div>
+          <div>
+            <div class="mono mb-3 text-xs tracking-widest text-[#666]">FALLADA</div>
+            <ul class="space-y-3 text-sm text-[#a0a0a0]">
+              <li>
+                <span class="mono mr-2 text-[#ef4444]">FAIL</span>Barrido <span class="mono">acentos</span>
+                (6 superficies) por el hallazgo HIGH.
+              </li>
+              <li>
+                <span class="mono mr-2 text-[#ef4444]">FAIL</span>firefox-smoke: fallo de lanzamiento
+                del navegador en este entorno, no relacionado con el diseño.
+              </li>
+            </ul>
+            <div class="mono mb-3 mt-6 text-xs tracking-widest text-[#666]">NO VERIFICADO</div>
+            <ul class="space-y-3 text-sm text-[#a0a0a0]">
+              <li>
+                <span class="mono mr-2 text-[#666]">GAP</span>Inspección visual por ojo: el entorno no
+                muestra capturas y el run de Playwright borró <span class="mono">test-results/</span>.
+              </li>
+              <li>
+                <span class="mono mr-2 text-[#666]">GAP</span>Páginas públicas en oscuro dentro del
+                gate del repo (solo escanea claro); el CTA oscuro se midió, no se escaneó.
+              </li>
+              <li>
+                <span class="mono mr-2 text-[#666]">GAP</span>Hover y
+                <span class="mono">:active</span> del fantasma: definidos y razonados, sin medición
+                automática.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="report-section mb-8 p-6 md:p-8">
+        <div class="mono mb-3 text-xs tracking-widest text-[#666]">// NEXT MODES</div>
+        <div class="flex flex-wrap gap-2">
+          <span class="border border-[#333] px-3 py-1 text-sm text-[#a0a0a0]">/design recolor</span>
+          <span class="border border-[#333] px-3 py-1 text-sm text-[#a0a0a0]">/design a11y</span>
+        </div>
+        <p class="mt-4 text-sm leading-6 text-[#a0a0a0]">
+          <span class="mono">recolor</span> acotado a
+          <span class="mono">accent-colors.ts</span> para separar el override del rol de relleno;
+          criterio de aceptación: el barrido <span class="mono">acentos</span> en verde.
+          <span class="mono">a11y</span> solo si se quiere ampliar el gate a las públicas en oscuro
+          (foco y teclado ya están verificados).
+        </p>
+      </section>
+
+      <footer class="mono py-8 text-center text-xs tracking-widest text-[#444]">
+        Generated with CommandCode - 2026-09-18
+      </footer>
+    </main>
+  </body>
+</html>

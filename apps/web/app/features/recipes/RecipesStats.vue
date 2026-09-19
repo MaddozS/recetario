@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Pills de métricas del recetario. Paridad con `RecipeStats.astro`: la pill de
+ * Pills de métricas del recetario. Paridad con `RecipeStats`: la pill de
  * categorías sólo aparece si hay categorías y la de ingredientes si hay
  * ingredientes usados en recetas.
  */
@@ -11,7 +11,7 @@ defineProps<{
 }>();
 
 const STAT_CLASSES =
-  "recipe-stat border-accent-200 bg-accent-50 text-accent-600 inline-flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-sm font-semibold";
+  "recipe-stat border-accent-200 bg-accent-50 text-accent-800 inline-flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-sm font-semibold";
 </script>
 
 <template>

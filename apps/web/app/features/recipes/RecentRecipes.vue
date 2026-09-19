@@ -4,7 +4,7 @@ import type { RecipeRecord } from "~/features/recipes/recipe-state";
 
 /**
  * Rail de recetas recientemente actualizadas. Paridad con `RecipeMiniCard` +
- * el bloque "Recientemente actualizadas" de Astro: scroll horizontal con cards
+ * el bloque "Recientemente actualizadas" del baseline: scroll horizontal con cards
  * de ancho fijo (misma información en móvil y escritorio).
  */
 defineProps<{ recipes: RecipeRecord[] }>();
@@ -33,7 +33,7 @@ defineProps<{ recipes: RecipeRecord[] }>();
         <div class="mt-1.5 flex items-center gap-2">
           <span
             v-if="recipe.category"
-            class="bg-accent-50 text-accent-600 border-accent-200 inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold"
+            class="bg-accent-50 text-accent-800 border-accent-200 inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold"
           >
             {{ recipe.category }}
           </span>

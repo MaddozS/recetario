@@ -5,7 +5,7 @@ import type { ComponentPublicInstance } from "vue";
 /**
  * Tabs del detalle. Controladas por el padre (el hash de la URL): este
  * componente sólo pinta y emite, así que el deep link y el back/forward los
- * resuelve el router. Las flechas mueven la selección y el foco, como en Astro.
+ * resuelve el router. Las flechas mueven la selección y el foco, como en el baseline.
  */
 const props = defineProps<{
   tabs: ReadonlyArray<{ id: string; label: string }>;
@@ -65,7 +65,7 @@ function onKeydown(event: KeyboardEvent, index: number): void {
       class="-mb-px cursor-pointer border-b-2 px-4 py-2.5 text-sm font-bold transition-colors"
       :class="
         tab.id === active
-          ? 'border-accent-500 text-accent-600'
+          ? 'border-accent-500 text-accent-700'
           : 'text-muted-foreground hover:border-border border-transparent'
       "
       :aria-selected="tab.id === active ? 'true' : 'false'"

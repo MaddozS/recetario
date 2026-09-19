@@ -208,8 +208,8 @@ async function confirmChange(): Promise<void> {
       <div class="flex items-center gap-3">
         <Icon name="lucide:clock" :size="20" class="text-accent-600" />
         <div>
-          <p class="text-accent-700 font-semibold">Periodo de prueba activo</p>
-          <p class="text-accent-600 text-sm">
+          <p class="text-accent-800 font-semibold">Periodo de prueba activo</p>
+          <p class="text-accent-800 text-sm">
             Tu prueba termina el {{ trialEndLabel }}.
           </p>
         </div>

@@ -73,7 +73,7 @@ const STEPS: readonly Step[] = [
           >
             <div class="flex items-start gap-5">
               <div
-                class="bg-accent-700 text-text-on-accent flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-sm font-black"
+                class="bg-accent-solid text-text-on-accent flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-sm font-black"
               >
                 {{ step.number }}
               </div>

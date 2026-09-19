@@ -3,7 +3,7 @@ import type { FinancialEditField } from "./recipe-detail-form";
 import type { FinancialRow } from "./recipe-financials";
 
 /**
- * Resumen financiero del detalle (paridad con `FinancialSummary.astro`).
+ * Resumen financiero del detalle (paridad con `FinancialSummary`).
  *
  * En modo edición algunas filas cambian el valor por un input: `fields` dice
  * cuáles y qué campo del formulario editan; el valor viaja como `v-model` desde
@@ -83,7 +83,7 @@ function onInput(name: FinancialEditField["name"], event: Event): void {
           class="mb-1.5 text-[10px] font-black tracking-wider uppercase"
           :class="
             index === highlightRow
-              ? 'text-accent-500'
+              ? 'text-accent-700'
               : 'text-subtle-foreground'
           "
         >
@@ -104,7 +104,7 @@ function onInput(name: FinancialEditField["name"], event: Event): void {
               class="focus:ring-accent-500/20 w-16 rounded-xl border p-1 font-mono text-xl font-semibold focus:ring-2 2xl:text-2xl"
               :class="
                 index === highlightRow
-                  ? 'border-white/20 bg-white/15 text-white focus:ring-white/30'
+                  ? 'border-accent-300 bg-accent-50 text-accent-800 focus:ring-accent-500/30'
                   : 'bg-background border-border text-foreground'
               "
               @input="onInput(fieldFor(index)!.name, $event)"
@@ -114,7 +114,7 @@ function onInput(name: FinancialEditField["name"], event: Event): void {
               class="text-lg font-bold"
               :class="
                 index === highlightRow
-                  ? 'text-white/80'
+                  ? 'text-accent-700'
                   : 'text-subtle-foreground'
               "
             >
@@ -126,7 +126,7 @@ function onInput(name: FinancialEditField["name"], event: Event): void {
             data-financial-value
             class="truncate font-mono text-2xl leading-none font-semibold tabular-nums 2xl:text-3xl"
             :class="
-              index === highlightRow ? 'text-accent-600' : 'text-foreground'
+              index === highlightRow ? 'text-accent-800' : 'text-foreground'
             "
             :title="row.value"
           >
@@ -137,7 +137,7 @@ function onInput(name: FinancialEditField["name"], event: Event): void {
             class="mt-1.5 line-clamp-1 text-[11px] font-semibold"
             :class="
               index === highlightRow
-                ? 'text-accent-400'
+                ? 'text-accent-700'
                 : 'text-subtle-foreground'
             "
           >

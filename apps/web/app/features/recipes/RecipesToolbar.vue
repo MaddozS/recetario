@@ -31,13 +31,14 @@ function isActive(value: string): boolean {
 }
 
 function pillClasses(value: string): string[] {
-  if (isActive(value)) return [BASE_PILL, "bg-accent-600 text-white"];
+  if (isActive(value))
+    return [BASE_PILL, "bg-accent-solid text-text-on-accent"];
 
   return [
     BASE_PILL,
     value === ""
       ? "bg-muted text-muted-foreground hover:bg-border border border-border"
-      : "bg-accent-50 text-accent-600 hover:bg-accent-100 border border-accent-200",
+      : "bg-accent-50 text-accent-800 hover:bg-accent-100 border border-accent-200",
   ];
 }
 
@@ -45,7 +46,7 @@ function countClasses(value: string): string[] {
   const base =
     "inline-flex min-w-5 items-center justify-center rounded-full px-1 text-[11px] font-bold";
 
-  if (isActive(value)) return [base, "bg-accent-500 text-white"];
+  if (isActive(value)) return [base, "bg-current/20"];
 
   return [
     base,

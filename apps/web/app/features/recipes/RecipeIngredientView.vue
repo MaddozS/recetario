@@ -109,15 +109,15 @@ function subtotal(
             class="border-accent-200 bg-accent-50 rounded-xl border px-3 py-2"
           >
             <p
-              class="text-accent-600 text-[10px] font-bold tracking-wider uppercase"
+              class="text-accent-800 text-[10px] font-bold tracking-wider uppercase"
             >
               Con x{{ multiplier }}
             </p>
-            <p class="text-accent-700 mt-1 flex items-baseline gap-2">
+            <p class="text-accent-800 mt-1 flex items-baseline gap-2">
               <span class="font-mono text-lg font-semibold">{{
                 formatCantidad(item.quantity * multiplier, item.unit)
               }}</span>
-              <span class="text-accent-500 text-xs font-semibold uppercase">{{
+              <span class="text-accent-800 text-xs font-semibold uppercase">{{
                 item.unit
               }}</span>
             </p>
@@ -194,16 +194,16 @@ function subtotal(
                   class="border-accent-200 bg-accent-50 flex-1 rounded-xl border px-3 py-2"
                 >
                   <p
-                    class="text-accent-600 text-[10px] font-bold tracking-wider uppercase"
+                    class="text-accent-800 text-[10px] font-bold tracking-wider uppercase"
                   >
                     Con x{{ multiplier }}
                   </p>
-                  <p class="text-accent-700 mt-1 flex items-baseline gap-2">
+                  <p class="text-accent-800 mt-1 flex items-baseline gap-2">
                     <span class="font-mono text-lg font-semibold">{{
                       formatCantidad(item.quantity * multiplier, item.unit)
                     }}</span>
                     <span
-                      class="text-accent-500 text-xs font-semibold uppercase"
+                      class="text-accent-800 text-xs font-semibold uppercase"
                       >{{ item.unit }}</span
                     >
                   </p>

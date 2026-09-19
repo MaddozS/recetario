@@ -16,7 +16,7 @@ import type { MutationOutcome } from "./useRecipes";
 
 /**
  * Card de una presentación de venta. Sustituye al custom element
- * `presentation-card` de Astro: la edición es estado reactivo, los importes se
+ * `presentation-card` del baseline: la edición es estado reactivo, los importes se
  * derivan con la lógica pura de la feature y la mutación llega como function
  * prop (la card no conoce el API ni recarga la página).
  *
@@ -259,7 +259,7 @@ onMounted(syncDialog);
 
         <div
           v-if="adjusted"
-          class="border-accent-200 bg-accent-50 text-accent-700 inline-flex items-center gap-1 rounded-md border px-2.5 py-1 text-xs transition-all"
+          class="border-accent-200 bg-accent-50 text-accent-800 inline-flex items-center gap-1 rounded-md border px-2.5 py-1 text-xs transition-all"
         >
           <span class="font-semibold">Con x{{ multiplier }}:</span>
           <span class="yield-value font-mono font-semibold" data-yield>
@@ -307,7 +307,7 @@ onMounted(syncDialog);
             class="focus-within:bg-card focus-within:ring-accent-500/20 focus-within:border-accent-300 relative -mr-1 flex shrink-0 items-center justify-end rounded-md border border-transparent px-1 transition-all focus-within:ring-2"
           >
             <span
-              class="text-accent-600 pointer-events-none mr-0.5 font-mono text-[20px] font-semibold"
+              class="text-accent-700 pointer-events-none mr-0.5 font-mono text-[20px] font-semibold"
             >
               $
             </span>
@@ -318,7 +318,7 @@ onMounted(syncDialog);
               :readonly="!isEditing"
               :value="draft.salePrice"
               :style="{ width: `${priceWidth}ch` }"
-              class="presentation-price text-accent-600 max-w-full min-w-[3ch] border-none bg-transparent p-0 text-left font-mono text-[20px] font-semibold tabular-nums read-only:pointer-events-none focus:ring-0"
+              class="presentation-price text-accent-700 max-w-full min-w-[3ch] border-none bg-transparent p-0 text-left font-mono text-[20px] font-semibold tabular-nums read-only:pointer-events-none focus:ring-0"
               @input="onPriceInput"
             />
           </div>

@@ -120,18 +120,23 @@ const accentBaseColors: Record<
     "900": "#78350f",
     "950": "#451a03",
   },
+  // Rampa reconstruida en OKLCH a un único tono (H 24): los tints iban a H 34
+  // (melocotón) y los vívidos a H 19 (rosa), así que el mismo acento cambiaba
+  // de familia de color dentro de la escala. El chroma de 400/500 queda
+  // recortado al 92% del máximo del gamut: antes tocaban el borde y el clip
+  // empujaba el 500 al rosa.
   coral: {
-    "50": "#fef2ef",
-    "100": "#fde0d8",
-    "200": "#fcc5b8",
-    "300": "#faa898",
-    "400": "#ff7b6e",
-    "500": "#ff5f6d",
-    "600": "#e84d5a",
-    "700": "#c9434e",
-    "800": "#b33a46",
-    "900": "#962e39",
-    "950": "#6b1f27",
+    "50": "#fef2f1",
+    "100": "#fddfdc",
+    "200": "#fcc4bf",
+    "300": "#faa7a1",
+    "400": "#f97f7a",
+    "500": "#f86865",
+    "600": "#e84f4f",
+    "700": "#c94445",
+    "800": "#b33b3c",
+    "900": "#962f30",
+    "950": "#6b1f20",
   },
 };
 
@@ -163,6 +168,44 @@ const darkShadeMap: Record<AccentShade, AccentBaseShade> = {
   "800": "300",
 };
 
+/** Texto sobre el relleno de acción: blanco en los dos temas (ver `solidShades`). */
+const ON_ACCENT = "#ffffff";
+
+/**
+ * Relleno de acción por familia y tema: botón primario, ítem activo y banda CTA.
+ *
+ * El claro usa siempre el 700 (etiqueta blanca entre 4.78:1 y 7.90:1). El oscuro
+ * arranca en ese mismo 700 para que el acento no cambie de tono al cambiar de
+ * tema, y sólo sube al 600 cuando el 700 no llega a 3:1 contra el fondo oscuro
+ * (`oklch(0.176 0.008 258)` ≈ `#0f1114`), donde el relleno se confundiría con la
+ * página: indigo 2.39:1, violet 2.66:1 y blue 2.82:1. Con el 600 quedan en
+ * 3.01–3.66:1 y la etiqueta sigue en blanco (5.17–7.90:1).
+ *
+ * La rampa 50…950 no interviene: sirve tinta, tinte, borde y decoración y sigue
+ * el `darkShadeMap`. La regla está medida en `test/unit/accent-colors.spec.ts`.
+ */
+const solidShades: Record<
+  AccentFamily,
+  { light: AccentBaseShade; dark: AccentBaseShade }
+> = {
+  indigo: { light: "700", dark: "600" },
+  violet: { light: "700", dark: "600" },
+  blue: { light: "700", dark: "600" },
+  emerald: { light: "700", dark: "700" },
+  rose: { light: "700", dark: "700" },
+  amber: { light: "700", dark: "700" },
+  coral: { light: "700", dark: "700" },
+};
+
+/**
+ * Hover del relleno: un paso más profundo, como en claro (600 → 700, 700 → 800).
+ * Mantiene la etiqueta blanca por encima de AA en las 7 familias.
+ */
+const solidHoverShades: Partial<Record<AccentBaseShade, AccentBaseShade>> = {
+  "600": "700",
+  "700": "800",
+};
+
 /**
  * Genera un string de CSS custom properties para un color de acento y tema dados.
  * Ejemplo de salida: "--aw-accent-50:#eef2ff;--aw-accent-100:#e0e7ff;..."
@@ -173,11 +216,31 @@ export function getAccentCssVars(accent: string, theme: string): string {
     : "indigo";
   const isDark = theme === "dark";
   const colors = accentBaseColors[family];
-  return ACCENT_SHADES.map((shade) => {
-    const mappedShade = isDark ? darkShadeMap[shade] : shade;
-    const value = colors[mappedShade] ?? colors[shade];
-    return `--aw-accent-${shade}:${value};--color-accent-${shade}:${value}`;
-  }).join(";");
+
+  const vars = ACCENT_SHADES.flatMap((shade) => {
+    const value = colors[isDark ? darkShadeMap[shade] : shade];
+    return [
+      `--aw-accent-${shade}:${value}`,
+      `--color-accent-${shade}:${value}`,
+    ];
+  });
+
+  const solidShade = isDark
+    ? solidShades[family].dark
+    : solidShades[family].light;
+  const solid = colors[solidShade];
+  const solidHover = colors[solidHoverShades[solidShade] ?? solidShade];
+
+  vars.push(
+    `--aw-accent-solid:${solid}`,
+    `--color-accent-solid:${solid}`,
+    `--aw-accent-solid-hover:${solidHover}`,
+    `--color-accent-solid-hover:${solidHover}`,
+    `--tw-text-on-accent:${ON_ACCENT}`,
+    `--color-text-on-accent:${ON_ACCENT}`,
+  );
+
+  return vars.join(";");
 }
 
 /**

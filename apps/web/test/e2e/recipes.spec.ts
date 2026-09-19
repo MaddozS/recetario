@@ -158,7 +158,7 @@ test("filtro por categoría: URL, deep link y back/forward", async ({
   await expect(cards(page)).toHaveCount(1);
   await expect(cards(page).first()).toContainText("Pan de Masa Madre");
   await expect(page.getByRole("button", { name: /^Panes/ })).toHaveClass(
-    /bg-accent-600/,
+    /bg-accent-solid/,
   );
 
   // Cambio de pill (pushState) y limpieza del filtro.

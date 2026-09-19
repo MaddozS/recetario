@@ -317,7 +317,7 @@ describe("RecipesToolbar", () => {
     const active = wrapper
       .findAll("button")
       .find((button) => button.text().startsWith("Postres"));
-    expect(active?.classes()).toContain("bg-accent-600");
+    expect(active?.classes()).toContain("bg-accent-solid");
 
     const clear = wrapper
       .findAll("button")

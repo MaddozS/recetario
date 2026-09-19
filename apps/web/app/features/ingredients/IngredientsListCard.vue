@@ -142,7 +142,7 @@ function usedRecipesFor(ingredient: IngredientRecord): string[] {
               </td>
               <td class="px-6 py-5">
                 <span
-                  class="border-accent-100 bg-accent-50 text-accent-600 inline-flex items-center rounded-xl border px-3 py-2 font-mono text-sm font-semibold whitespace-nowrap tabular-nums"
+                  class="border-accent-100 bg-accent-50 text-accent-800 inline-flex items-center rounded-xl border px-3 py-2 font-mono text-sm font-semibold whitespace-nowrap tabular-nums"
                 >
                   {{
                     formatUnitCost(

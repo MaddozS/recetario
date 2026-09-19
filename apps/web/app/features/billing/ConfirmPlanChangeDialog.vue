@@ -61,7 +61,7 @@ function close(): void {
         class="text-subtle-foreground flex items-center justify-between text-xs"
       >
         <span>Nuevo plan</span>
-        <span class="text-accent-600 font-bold">{{ targetPlanName }}</span>
+        <span class="text-accent-700 font-bold">{{ targetPlanName }}</span>
       </div>
     </div>
 
@@ -70,7 +70,7 @@ function close(): void {
       class="mt-3 space-y-1.5 rounded-xl border p-3 text-xs"
       :class="
         copy.tone === 'upgrade'
-          ? 'border-accent-300 bg-accent-50/50 text-accent-700'
+          ? 'border-accent-300 bg-accent-50/50 text-accent-800'
           : 'border-warning-border bg-warning-bg/50 text-warning'
       "
       data-confirm-change-type

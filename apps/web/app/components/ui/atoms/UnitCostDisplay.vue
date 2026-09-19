@@ -18,7 +18,7 @@ withDefaults(
 
     <div>
       <p
-        class="text-muted-foreground text-xs font-bold tracking-[0.16em] uppercase"
+        class="text-secondary-foreground text-xs font-bold tracking-[0.16em] uppercase"
       >
         Costo unitario calculado:
       </p>

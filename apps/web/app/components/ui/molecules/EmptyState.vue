@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { isInternalHref } from "#shared/utils/navigation";
+
 withDefaults(
   defineProps<{
     icon: string;
@@ -39,10 +41,18 @@ const emit = defineEmits<{ action: [] }>();
     </p>
     <slot name="action">
       <template v-if="actionLabel">
+        <NuxtLink
+          v-if="actionHref && isInternalHref(actionHref)"
+          :to="actionHref"
+          class="bg-accent-solid text-text-on-accent hover:bg-accent-solid-hover mt-5 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-bold transition-colors"
+        >
+          <Icon name="lucide:plus" :size="18" />
+          {{ actionLabel }}
+        </NuxtLink>
         <a
-          v-if="actionHref"
+          v-else-if="actionHref"
           :href="actionHref"
-          class="bg-accent-700 text-text-on-accent hover:bg-accent-800 mt-5 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-bold transition-colors"
+          class="bg-accent-solid text-text-on-accent hover:bg-accent-solid-hover mt-5 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-bold transition-colors"
         >
           <Icon name="lucide:plus" :size="18" />
           {{ actionLabel }}
@@ -50,7 +60,7 @@ const emit = defineEmits<{ action: [] }>();
         <button
           v-else
           type="button"
-          class="bg-accent-700 text-text-on-accent hover:bg-accent-800 mt-5 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-bold transition-colors lg:hidden"
+          class="bg-accent-solid text-text-on-accent hover:bg-accent-solid-hover mt-5 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-bold transition-colors lg:hidden"
           @click="emit('action')"
         >
           <Icon name="lucide:plus" :size="18" />

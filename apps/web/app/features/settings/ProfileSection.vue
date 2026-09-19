@@ -35,7 +35,7 @@ const initial = computed(() =>
     <Card padding="lg">
       <div class="flex items-center gap-4">
         <div
-          class="bg-accent-600 shadow-accent-100 flex h-16 w-16 flex-none items-center justify-center rounded-2xl text-xl font-bold text-white shadow-md"
+          class="bg-accent-solid shadow-accent-100 text-text-on-accent flex h-16 w-16 flex-none items-center justify-center rounded-2xl text-xl font-bold shadow-md"
         >
           <img
             v-if="user.image"

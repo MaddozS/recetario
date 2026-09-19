@@ -74,7 +74,7 @@ describe("Button", () => {
     const wrapper = await mountSuspended(Button, { slots: { default: "OK" } });
     const button = wrapper.find("button");
     expect(button.attributes("type")).toBe("button");
-    expect(button.classes()).toContain("bg-accent-700");
+    expect(button.classes()).toContain("bg-accent-solid");
     expect(button.classes()).toContain("text-text-on-accent");
     expect(button.classes()).toContain("min-h-11");
   });

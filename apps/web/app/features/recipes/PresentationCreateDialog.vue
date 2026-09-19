@@ -5,7 +5,7 @@ import type { PresentationDraft } from "./recipe-presentations";
 import type { MutationOutcome } from "./useRecipes";
 
 /**
- * Alta de una presentación (paridad con el dialog de Astro). Valida con la
+ * Alta de una presentación (paridad con el dialog del baseline). Valida con la
  * lógica pura antes de enviar y nunca cierra sola en error: conserva lo escrito
  * y muestra la causa dentro del dialog.
  */
@@ -81,7 +81,7 @@ async function onSubmit(): Promise<void> {
     <div class="flex items-start justify-between gap-4">
       <div>
         <p
-          class="text-accent-500 text-xs font-black tracking-[0.18em] uppercase"
+          class="text-accent-700 text-xs font-black tracking-[0.18em] uppercase"
         >
           Nueva presentación
         </p>

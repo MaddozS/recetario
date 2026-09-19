@@ -174,7 +174,7 @@ describe("RecipeDetailHeader", () => {
     });
 
     expect(wrapper.find("#recipe-title-view").exists()).toBe(false);
-    // Paridad con Astro: badge y «Actualizado» siguen visibles mientras se edita.
+    // Paridad con el baseline: badge y «Actualizado» siguen visibles al editar.
     expect(wrapper.text()).toContain("Actualizado hoy 10:00 a. m.");
     expect(wrapper.find("#recipe-cancel-edit").exists()).toBe(true);
 
@@ -296,7 +296,7 @@ describe("RecipeTabs", () => {
       "Presentaciones",
     ]);
     expect(buttons[0]?.attributes("aria-selected")).toBe("true");
-    expect(buttons[0]?.classes()).toContain("text-accent-600");
+    expect(buttons[0]?.classes()).toContain("text-accent-700");
     expect(buttons[1]?.attributes("aria-selected")).toBe("false");
 
     await buttons[2]?.trigger("click");
@@ -339,7 +339,7 @@ describe("FinancialSummary", () => {
     expect(wrapper.text()).toContain("$36.30");
 
     const values = wrapper.findAll("[data-financial-value]");
-    expect(values[2]?.classes()).toContain("text-accent-600");
+    expect(values[2]?.classes()).toContain("text-accent-800");
     expect(wrapper.find("input").exists()).toBe(false);
   });
 

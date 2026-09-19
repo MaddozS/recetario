@@ -11,7 +11,7 @@ import RecipeErrorAlert from "~/features/recipes/RecipeErrorAlert.vue";
 
 /**
  * Creación de receta: un único dialog para todos los breakpoints (paridad con
- * Astro, que no tenía formulario en card). El botón que lo abre vive en la
+ * el baseline, que no tenía formulario en card). El botón que lo abre vive en la
  * toolbar y en el estado vacío.
  */
 const props = defineProps<{
@@ -74,7 +74,7 @@ async function onSubmit(): Promise<void> {
     <div class="flex items-start justify-between gap-4">
       <div>
         <p
-          class="text-accent-500 text-xs font-black tracking-[0.18em] uppercase"
+          class="text-accent-700 text-xs font-black tracking-[0.18em] uppercase"
         >
           Nueva receta
         </p>
