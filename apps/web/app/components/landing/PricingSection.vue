@@ -93,13 +93,14 @@ function ctaLabel(plan: PricingPlan): string {
             "
             :style="`--reveal-delay: ${index * 100}ms`"
           >
-            <span
+            <Badge
               v-if="plan.badge"
-              class="mb-4 inline-flex items-center self-start rounded-md px-3 py-1 text-xs font-bold"
-              :class="plan.badge.class"
+              variant="tier"
+              :color="plan.id === 'pro' ? 'accent' : 'success'"
+              class="mb-4 self-start"
             >
               {{ plan.badge.text }}
-            </span>
+            </Badge>
 
             <h3 class="text-foreground text-xl font-black break-words">
               {{ plan.name }}
@@ -112,17 +113,17 @@ function ctaLabel(plan: PricingPlan): string {
               <PlanPrice :plan="plan" :interval="interval" />
             </div>
 
-            <a
-              :href="ctaHref(plan)"
+            <NuxtLink
+              :to="ctaHref(plan)"
               class="mt-6 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl px-5 text-center text-sm font-bold transition-all active:scale-[0.97]"
               :class="
                 plan.id === 'pro'
-                  ? 'bg-accent-700 text-text-on-accent hover:bg-accent-800 shadow-accent-tint'
+                  ? 'bg-accent-solid text-text-on-accent hover:bg-accent-solid-hover shadow-accent-tint'
                   : 'border-border bg-card text-secondary-foreground hover:bg-background border'
               "
             >
               {{ ctaLabel(plan) }}
-            </a>
+            </NuxtLink>
 
             <div class="mt-6 min-w-0 flex-1">
               <PlanFeatureList :features="plan.features" />

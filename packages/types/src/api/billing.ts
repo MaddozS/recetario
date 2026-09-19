@@ -24,7 +24,9 @@ export const planFeatureSchema = z.object({
 export const tierConfigSchema = z.object({
   name: z.string(),
   description: z.string(),
-  badge: z.object({ text: z.string(), class: z.string() }).nullable(),
+  // Sólo texto: la presentación del badge la decide la UI (no viaja una clase
+  // Tailwind desde el API).
+  badge: z.object({ text: z.string() }).nullable(),
   limits: z.object({ recipes: z.number().int().nullable(), ingredients: z.number().int().nullable() }),
   features: z.array(planFeatureSchema),
 });
@@ -72,7 +74,7 @@ export const pricingPlanSchema = z.object({
   tier: subscriptionTierSchema,
   name: z.string(),
   description: z.string(),
-  badge: z.object({ text: z.string(), class: z.string() }).nullable(),
+  badge: z.object({ text: z.string() }).nullable(),
   currency: z.string(),
   monthlyPriceId: z.string().nullable(),
   monthlyDisplay: z.string().nullable(),

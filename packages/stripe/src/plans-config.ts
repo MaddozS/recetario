@@ -85,7 +85,7 @@ export const TIER_CONFIG: Record<string, TierConfig> = {
   basic: {
     name: "Basic",
     description: "Para negocios en crecimiento",
-    badge: { text: "Recomendado", class: "bg-success-bg text-success" },
+    badge: { text: "Recomendado" },
     limits: { recipes: 75, ingredients: null },
     features: [
       { text: "Hasta 75 recetas", included: true },
@@ -107,7 +107,7 @@ export const TIER_CONFIG: Record<string, TierConfig> = {
   pro: {
     name: "Pro",
     description: "Para profesionales",
-    badge: { text: "Mas popular", class: "bg-accent-700 text-text-on-accent" },
+    badge: { text: "Mas popular" },
     limits: { recipes: null, ingredients: null },
     features: [
       { text: "Recetas ilimitadas", included: true },
