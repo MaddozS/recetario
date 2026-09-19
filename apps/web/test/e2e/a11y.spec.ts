@@ -2,6 +2,7 @@ import { expect, test } from "@nuxt/test-utils/playwright";
 import { url } from "@nuxt/test-utils/e2e";
 import AxeBuilder from "@axe-core/playwright";
 import type { Page } from "@playwright/test";
+import { PREFERENCE_ACCENT_COLORS } from "@recetario/types";
 
 /**
  * Barrido de accesibilidad (Task 13a) sobre las superficies reales del rework:
@@ -149,6 +150,65 @@ for (const path of PRIVATE_PAGES) {
       await goto(path, { waitUntil: "hydration" });
       const { violations } = await scan(page);
       expectNoBlocking(violations);
+    }
+  });
+}
+
+/**
+ * Superficies privadas donde el acento elegido por el usuario pinta texto y
+ * fondos: chips/pills del listado, tabla de ingredientes (preview de costo),
+ * planificador, detalle de receta y settings (swatches, tabs, facturación).
+ * Las públicas y las de auth siempre son coral, así que las cubre el barrido
+ * base.
+ */
+const ACCENT_SURFACES = [
+  "/recipes",
+  "/recipes/1",
+  "/ingredients",
+  "/produccion",
+  "/settings?tab=preferences",
+  "/settings?tab=billing",
+] as const;
+
+/**
+ * Hallazgo 13a #2: el barrido base sólo medía el acento por defecto de cada
+ * zona (coral en público/auth, esmeralda en privado). Aquí se recorren las 7
+ * familias con las cookies de presentación —cookie-first, el middleware las
+ * respeta por encima de la preferencia de la sesión— en claro y oscuro.
+ *
+ * Sólo 1280: las familias cambian colores, no geometría, y 375/1280 ya se
+ * cubre en el barrido base de cada superficie. Encontró deuda real (texto del
+ * acento sobre tinte y sobre fondo neutro en indigo/violet/blue/rose/coral
+ * dark y emerald/amber/coral light); el arreglo vive en los componentes.
+ */
+for (const path of ACCENT_SURFACES) {
+  test(`acentos ${path}: sin violaciones blocking en 7 familias x claro/oscuro`, async ({
+    page,
+    goto,
+  }) => {
+    await page.context().addCookies([
+      {
+        name: "better-auth.session_token",
+        value: "stub-session-token",
+        url: url("/"),
+      },
+    ]);
+    await page.setViewportSize(DESKTOP);
+
+    for (const accent of PREFERENCE_ACCENT_COLORS) {
+      for (const theme of ["light", "dark"] as const) {
+        await page.context().addCookies([
+          { name: "kitchcalc-accent", value: accent, url: url("/") },
+          { name: "kitchcalc-theme", value: theme, url: url("/") },
+        ]);
+        await goto(path, { waitUntil: "hydration" });
+        const { violations } = await scan(page);
+        const serious = blocking(violations);
+        expect(
+          serious.length,
+          `${path} · acento ${accent} · ${theme}\n${describeViolations(serious)}`,
+        ).toBe(0);
+      }
     }
   });
 }
