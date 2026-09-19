@@ -1,5 +1,7 @@
 # Split monolithic API worker into route modules
 
+> **Histórico (pre-Nuxt).** Documento de la etapa anterior a la migración a Nuxt (Task 13b): se conserva como registro, no como guía operativa, y las rutas o comandos que cita pueden no existir. Ver `docs/README.md`.
+
 ## Problem Statement
 
 The Cloudflare Worker API (`apps/api/src/index.ts`) is a 574-line single file containing three unrelated domains: auth routes (password reset, catch-all), account routes (update-name, change-email, change-password), and Stripe routes (checkout, portal, webhook). Utility functions and type definitions are interleaved at the top. Adding a new endpoint requires scrolling through hundreds of lines to find the right section, and the file has no internal seams — everything is global scope within the module.

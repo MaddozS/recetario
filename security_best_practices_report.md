@@ -1,5 +1,7 @@
 # Security Audit Report — KitchCalc (Recetario)
 
+> **Histórico (pre-Nuxt).** Documento de la etapa anterior a la migración a Nuxt (Task 13b): se conserva como registro, no como guía operativa, y las rutas o comandos que cita pueden no existir. Ver `docs/README.md`.
+
 **Date:** 2026-05-24
 **Scope:** Full codebase audit — Astro 6 SSR, Better Auth, Prisma/PostgreSQL, Stripe billing
 **Severity scale:** Critical > High > Medium > Low

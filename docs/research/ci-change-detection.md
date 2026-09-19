@@ -1,5 +1,7 @@
 # CI Change Detection for Recetario Monorepo
 
+> **Histórico (pre-Nuxt).** Documento de la etapa anterior a la migración a Nuxt (Task 13b): se conserva como registro, no como guía operativa, y las rutas o comandos que cita pueden no existir. Ver `docs/README.md`.
+
 **Issue**: #91 — Conditionally build/deploy only changed apps in CI.
 
 ## Dependency Graph

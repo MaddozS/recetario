@@ -1,5 +1,7 @@
 # Eliminate auth barrel duplication (index.ts ↔ server.ts)
 
+> **Histórico (pre-Nuxt).** Documento de la etapa anterior a la migración a Nuxt (Task 13b): se conserva como registro, no como guía operativa, y las rutas o comandos que cita pueden no existir. Ver `docs/README.md`.
+
 ## Problem Statement
 
 The `@recetario/auth` package has two barrel files that export a nearly identical set of symbols: `src/index.ts` (12 lines) and `src/server.ts` (30 lines). `server.ts` mirrors `index.ts` minus client-only exports (`authClient`, `getCsrfToken`, `signIn*`, `signOut`). Adding a new auth module requires editing both barrels, and the two barrels already differ in formatting style (index.ts uses compact one-liners, server.ts spells out each export individually). This is a maintenance burden with drift risk — a developer adding a server-safe module to `index.ts` might forget `server.ts`, causing a silent missing export.

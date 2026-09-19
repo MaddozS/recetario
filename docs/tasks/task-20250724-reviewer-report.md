@@ -1,5 +1,7 @@
 # Reviewer Report: lazyInit extract + migrate (Issues #37, #38)
 
+> **Registro de sesión (histórico).** Documento del rework Astro→Nuxt: refleja el estado en su fecha, no la guía operativa actual. La documentación viva está en `docs/README.md`.
+
 ## Review Scope
 - Spec: Issues #37 and #38 (as quoted in task)
 - Plan: none (task-based dispatch)

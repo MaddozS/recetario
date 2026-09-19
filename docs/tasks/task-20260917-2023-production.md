@@ -1,5 +1,7 @@
 # Task 12 — Planificador de producción (`/produccion`)
 
+> **Registro de sesión (histórico).** Documento del rework Astro→Nuxt: refleja el estado en su fecha, no la guía operativa actual. La documentación viva está en `docs/README.md`.
+
 Roadmap padre: `~/.commandcode/plans/recetario-nuxt-rework.md` (Task 12)
 Plan de sesión: `~/.commandcode/plans/recetario-nuxt-task-12-production.md`
 

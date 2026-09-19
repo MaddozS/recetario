@@ -10,12 +10,11 @@ Producción y Configuración.
 > (`npm i -g agent-browser && agent-browser install`) y el dev server corriendo
 > (`pnpm dev` → web en `localhost:4321`, API en `localhost:8787`).
 
-> **Nota (Task 4)**: el shell privado ya es Nuxt. `pnpm dev` en `apps/web`
-> sincroniza `.dev.vars`, limpia `.vite-cache/web` y sirve en `localhost:4321`;
-> el `/sign-in` de la UI todavía es placeholder (Task 6), así que para el QA
-> autenticado entra por el relay:
-> `agent-browser eval "(async () => (await fetch('/api/auth/sign-in/email', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ email: 'qa@example.com', password: 'Temporal123!' }) })).status)()"`.
-> Los server islands (`server:defer`) ya no existen en las rutas privadas.
+> **Nota (post-corte Nuxt)**: el shell y todas las rutas ya son Nuxt; el login se
+> hace por el formulario real de `/sign-in` (§2) o por el relay desde la página
+> (`fetch('/api/auth/sign-in/email', …)` con `agent-browser eval` si hace falta
+> saltar la UI). Las server islands (`server:defer`) y el ClientRouter de Astro ya
+> no existen: las páginas son SSR + hidratación.
 
 ---
 
@@ -31,9 +30,10 @@ Producción y Configuración.
   (elementos interactivos con refs `@eN`) → `agent-browser click @eN` /
   `fill @eN "texto"` → re-snapshot (los refs **caducan** tras cada cambio de
   página). Cierra con `agent-browser close --all`.
-- **Los server islands** (`server:defer` en `/produccion`, `/recipes`, etc.)
-  cargan asíncrono: tras `open`, espera con
-  `agent-browser wait --load networkidle` y re-snapshot antes de interactuar.
+- **SSR + hidratación**: tras `agent-browser open`, espera con
+  `agent-browser wait --load networkidle` y re-snapshot antes de interactuar
+  (los datos de la página llegan con el render del servidor y las mutaciones
+  actualizan el estado sin recargar).
 - **Verificación sin UI**: `agent-browser eval "<js>"` ejecuta JS en la página
   y devuelve el resultado (útil para asserts, contar elementos, leer estado).
 - **OAuth de Google no es automatizable** con cuentas de prueba; para QA usa
@@ -121,9 +121,9 @@ await prisma.$disconnect();
 - `production_planner` → solo **basic/pro** (`/produccion` muestra UpgradePrompt en Free).
 - `production_save`, `production_advanced`, `cooking_mode` → solo **pro**.
 - Límites: Free = 10 recetas / 30 ingredientes; Basic = 75 recetas; Pro = ilimitado.
-- El **flag de feature** se lee de la suscripción vía `/api/auth/session` con
-  caché Accelerate (ttl 60s) — tras cambiar el plan, espera ~60s o usa
-  `?nocache=<timestamp>` en la URL.
+- El **flag de feature** se lee fresco de la suscripción en `/api/auth/session`
+  (las suscripciones **no** están cacheadas): tras cambiar el plan en BD, recarga
+  y ya está.
 
 ---
 
@@ -250,8 +250,7 @@ Solo visible con plan **basic** (hasta 3 recetas) o **pro** (ilimitado).
 
 ### Flujo UI (verificado)
 
-1. `open http://localhost:4321/produccion` → `wait --load networkidle` (el
-   contenido es server island, carga tarde).
+1. `open http://localhost:4321/produccion` → `wait --load networkidle`.
 2. **Selector de recetas**: lista agrupada por categoría con:
    - input **"Buscar por nombre..."** (filtra al instante, ignora acentos y
      mayúsculas; las recetas ya seleccionadas **siguen visibles** aunque no
@@ -302,13 +301,14 @@ Tres tabs (vía `?tab=`): `profile` (default), `preferences`, `billing`.
 ### Perfil
 - Card con avatar (inicial), nombre, email y tipo de cuenta ("Cuenta de email"
   vs "Sesion de Google").
-- **Cambiar nombre**: form `#change-name-form` → `POST /api/account/update-name`
-  (FormData `firstName`, `lastName`). Feedback inline.
+- **Cambiar nombre**: form → `POST /api/account/update-name` (**JSON**:
+  `{ firstName, lastName }`). Feedback inline.
 - **Cambiar email** (solo cuentas email): `POST /api/account/change-email`
-  (FormData `newEmail`, `currentPassword`).
+  (JSON: `{ newEmail, currentPassword }`).
 - **Cambiar contraseña** (solo cuentas email): `POST
-  /api/account/change-password` (FormData `currentPassword`, `newPassword`).
-  Mínimo 6 caracteres.
+  /api/account/change-password` (JSON: `{ currentPassword, newPassword }`).
+  Política de sign-up: mínimo **8** caracteres con mayúscula, minúscula, número
+  y carácter especial.
 
 ### Preferencias
 - **Tema**: system / light / dark (botones con `data-theme-option`). Preview en
@@ -316,8 +316,9 @@ Tres tabs (vía `?tab=`): `profile` (default), `preferences`, `billing`.
 - **Color de acento**: 7 familias (`data-accent-option`: indigo, violet, blue,
   emerald, rose, amber, coral).
 - El botón "Guardar cambios" aparece solo si algo cambió (`#save-btn-wrapper`).
-  Guarda vía `POST /settings?tab=preferences` (form-urlencoded `theme`,
-  `accentColor`) + setea cookies `kitchcalc-theme` / `kitchcalc-accent`.
+  Guarda vía `PUT /api/preferences` (**JSON**: `theme`, `accentColor`) y escribe
+  las cookies `kitchcalc-theme` / `kitchcalc-accent` desde la respuesta
+  confirmada (si falla, revierte el preview).
 - **Preferencias cookie-first**: en otras páginas, las cookies mandan sobre la
   sesión.
 
@@ -371,14 +372,13 @@ agent-browser open "http://localhost:4321/settings?tab=billing"      # plan
 | Trampa | Solución |
 |--------|----------|
 | Los refs `@eN` caducan tras cualquier cambio de página | Re-snapshot antes de cada interacción |
-| Server islands cargan tarde (`/produccion`, `/recipes`) | `wait --load networkidle` + re-snapshot |
+| Páginas privadas con datos SSR | `wait --load networkidle` + re-snapshot |
 | Login con Google no automatizable | Usar email/contraseña |
 | Sign-up manda email (Resend rechaza `example.com`) | Crear usuario con `seed:test-users` o verificar en BD |
-| Suscripción cacheada 60s (Accelerate) | Esperar ~60s o `?nocache=<ts>` |
 | `PATCH /api/recipes/:id` reemplaza ingredientes | Enviar la lista completa |
 | Borrar ingrediente en uso → bloqueado | Usar `GET /api/ingredients/:id/usage` primero |
 | El cliente Prisma `generated/client` no corre en Node | Usar `generated-node/client` en scripts |
-| Dev server ya corriendo (`astro dev` activo) | Reutilizar; si hace falta, `astro dev --force` |
+| Dev server ya corriendo (`nuxt dev` o `pnpm dev`) | Reutilizar; los puertos 4321/8787 deben estar libres |
 | Email stub imprime token en stdout de wrangler | Leer la terminal donde corre `pnpm dev` (no accesible desde el agente) |
 
 ---
@@ -403,9 +403,9 @@ agent-browser open "http://localhost:4321/settings?tab=billing"      # plan
 | GET/PUT | `/api/preferences` | Preferencias de usuario |
 | GET | `/api/billing/subscription` | Suscripción actual |
 | GET | `/api/billing/plans` | Planes con features |
-| POST | `/api/account/update-name` | Cambiar nombre (FormData) |
-| POST | `/api/account/change-email` | Cambiar email (FormData) |
-| POST | `/api/account/change-password` | Cambiar contraseña (FormData) |
+| POST | `/api/account/update-name` | Cambiar nombre (JSON) |
+| POST | `/api/account/change-email` | Cambiar email (JSON) |
+| POST | `/api/account/change-password` | Cambiar contraseña (JSON) |
 | POST | `/api/stripe/checkout` | Checkout Session |
 | POST | `/api/stripe/portal` | Customer Portal |
 | POST | `/api/stripe/sync-session` | Sync tras checkout |

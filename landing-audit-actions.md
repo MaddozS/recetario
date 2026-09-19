@@ -1,5 +1,7 @@
 # Landing Page Audit — Action Items
 
+> **Histórico (pre-Nuxt).** Documento de la etapa anterior a la migración a Nuxt (Task 13b): se conserva como registro, no como guía operativa, y las rutas o comandos que cita pueden no existir. Ver `docs/README.md`.
+
 Score: **13/20** (Acceptable)
 Dimensions: A11y 2 | Perf 3 | Theming 3 | Responsive 3 | Anti-Patterns 2
 

@@ -1,5 +1,7 @@
 # Comparación de frameworks frontend para reemplazar Astro en Recetario
 
+> **Histórico (pre-Nuxt).** Documento de la etapa anterior a la migración a Nuxt (Task 13b): se conserva como registro, no como guía operativa, y las rutas o comandos que cita pueden no existir. Ver `docs/README.md`.
+
 **Fecha de corte:** 2026  
 **Opciones evaluadas:** Nuxt, Next.js, SvelteKit y React Router (Framework Mode)  
 **Fuentes:** exclusivamente documentación oficial, repositorios oficiales y páginas first-party. No se usan encuestas, benchmarks ni artículos de terceros.

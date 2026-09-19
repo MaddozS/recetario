@@ -1,5 +1,7 @@
 # Secrets propagation: manual sync script, not CI-driven
 
+> **Nota (Task 13b):** la decisión de fondo sigue vigente; el destino `pages` del script se retiró (hoy sólo `workers`, sobre `apps/api`). Ver ADR-0009.
+
 Runtime secrets (DATABASE_URL, STRIPE_SECRET_KEY, GOOGLE_CLIENT_ID, etc.) are set in Cloudflare via a manual `scripts/sync-cloudflare-secrets.mjs` script — not by CI during deploy. The CI only holds `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` to authenticate deploys.
 
 ## Considered Options

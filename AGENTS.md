@@ -1,150 +1,61 @@
 # AGENTS.md — Recetario
 
-> **Migración Nuxt en curso.** `apps/web` se está reescribiendo de Astro a Nuxt 4 + Vue en el worktree `worktree-nuxt-rework`, hoy en `/Users/maddozs/personal-projects/recetario-nuxt-rework` (fuera de `~/.commandcode/` para no disparar prompts de permiso). El árbol Astro (`apps/web/src/**`) queda como referencia fuera de build/lint/type-check hasta la Task 13. Decisión en `docs/adr/0009-nuxt-frontend-rework.md`; estado por task en `docs/tasks/` (última: `task-20260915-1139-recipe-detail.md`).
+> **Migración Astro → Nuxt completada (Task 13b).** `apps/web` es **Nuxt 4 + Vue** sobre Nitro (`cloudflare_module`) en un Cloudflare Worker con Workers Assets y service binding `API`; el árbol Astro (`src/**`, `astro.config.mjs` y sus dependencias) fue retirado. Decisión: `docs/adr/0009-nuxt-frontend-rework.md`; `docs/README.md` clasifica la documentación viva y la histórica (`docs/tasks/**` es registro de sesión, no guía operativa).
 >
-> **Task 4 (relay, sesión y shell) ya está en la rama.** Detalles operativos:
+> Notas operativas vigentes:
 >
-> - `pnpm dev` en `apps/web` sincroniza `.dev.vars` y limpia `.vite-cache/web`, y sirve en `localhost:4321` (el API confía en `WEB_ORIGIN`). El API sigue en `localhost:8787`: en dev el relay cae a HTTP contra `INTERNAL_API_URL`.
-> - `apps/web/server/**` es Nitro: relay `/api/**`, bootstrap de sesión y cabeceras privadas. El estado de sesión lo resuelve `useAuth().resolveSession()` (contexto del request → `GET /api/auth/session`).
-> - Preferir `useApi()` y `@recetario/stripe/subscription` en el código nuevo; el barrel de `@recetario/stripe` arrastra el SDK.
-> - **Íconos:** `Icon.vue` compone el `<svg>` desde los datos de lucide (`app/utils/icon-registry.ts` → `__iconData`), **no** desde sus componentes: son funcionales y usan `inject()`, que perdía la instancia de Vue en el primer render SSR dentro del `Suspense` de un layout (500 en la primera petición de cada proceso). No reintroducir componentes de `@lucide/vue` en el render; el contrato de markup está en `test/nuxt/icon-parity.spec.ts`.
->
-> **Task 5 (SEO y páginas públicas) ya está en la rama.** Detalles operativos:
->
-> - Las cuatro rutas indexables son `/`, `/pricing`, `/privacy` y `/terms` (`shared/utils/seo.ts`): layout `public.vue`, metadata vía `usePageSeo()` y `robots.txt`/`sitemap.xml` como rutas de Nitro.
-> - **Indexación fail-closed:** sin `NUXT_PUBLIC_INDEXABLE=true` las públicas emiten `noindex,nofollow` y `robots.txt` bloquea el sitio completo. Producción la activa al desplegar (Task 13); staging la deja sin definir. `NUXT_PUBLIC_SITE_URL` fija el canonical absoluto (default `https://app.kitchcalc.com`).
-> - `/pricing` es pública: el anónimo ve el catálogo y su CTA pasa por `/sign-in?redirect=…`; el checkout sigue exigiendo sesión y CSRF en Hono.
-> - El landing no porta la maquinaria de Astro: `useTheme()` unificado (sin `landing_theme` ni localStorage), `v-reveal` (directiva con un observer compartido y cleanup) y estado Vue para drawer, lightbox, scroll-spy y precios. El acento de las públicas es coral (`app.vue`).
-> - Tests de referencia: `test/unit/seo.spec.ts`, `test/nuxt/public-ui.spec.ts` y `test/e2e/public.spec.ts` (metadata SSR, robots/sitemap, 404, checkout con el stub del API).
->
-> **Task 6 (flujos de autenticación) ya está en la rama.** Detalles operativos:
->
-> - Las cinco rutas (`/sign-in`, `/sign-up`, `/forgot-password`, `/reset-password`, `/verify-email`) usan `layouts/auth.vue`, `useNoindexSeo()` (title + `noindex,nofollow`, **sin** canonical ni OG) y viven en `shared/utils/seo.ts` → `AUTH_PAGES`/`isAuthPath()`. Junto con las públicas indexables son las rutas de acento coral (`isCoralAccentPath()` en `app.vue`).
-> - `server/middleware/10.auth.ts` aplica `cache-control: private, no-store` + `x-robots-tag: noindex, nofollow` a las rutas de auth (llevan token en la query). `PUBLIC_PAGES` sigue con 4 rutas: ni `robots.txt` ni `sitemap.xml` cambian.
-> - **Transporte propio, sin `better-auth` en el bundle**: `app/features/auth/useAuthApi.ts` sobre `useRequestFetch()` + Zod (`auth-contracts.ts`) + `toAuthApiError()` (entiende el envelope de Hono, los errores de Better Auth `{message, code}` y las rutas custom `{error, code, errors}`). No importar `@recetario/auth/client` ni el barrel `@recetario/auth` en la web: arrastran `createAuthClient`; para las reglas de contraseña existe el subpath `@recetario/auth/password`.
-> - Los formularios son componentes montables (`app/features/auth/*Form.vue`) con props desde la query; las páginas sólo leen la query, declaran layout/`guest` y SEO. Tras un sign-in correcto se navega con **carga completa** (`navigateTo(..., { external: true })`) para que el SSR vuelva a resolver la sesión.
-> - `useCountdown` (reset) limpia el intervalo al desmontar; `PasswordRules` alimenta las 5 reglas desde `getRuleResults`.
-> - Tests de referencia: `test/unit/auth-{redirect,messages,error}.spec.ts`, `test/nuxt/auth-ui.spec.ts` y `test/e2e/auth.spec.ts` (el stub del API cubre credenciales inválidas, email sin verificar, reset válido/expirado y verify).
-> - **QA funcional en dev:** el relay lee `INTERNAL_API_URL` de `.dev.vars` (proxy de wrangler) antes que `process.env`; para apuntar el dev server al stub de los e2e hay que levantarlo en `8787` (`STUB_API_PORT=8787 node test/e2e/support/stub-api.mjs`).
-
-> **Task 7 (slice de ingredientes) ya está en la rama.** Detalles operativos:
->
-> - `app/features/ingredients/**` es el patrón del slice vertical: piezas puras sin aliases (`ingredient-form`, `ingredient-search`, `ingredient-messages`, `ingredient-state`, `ingredient-units`), `useIngredients()` y los componentes de la feature. Las mutaciones van directo a Hono y la lista/contadores se actualizan en sitio con los reducers puros (`withCreated`/`withUpdated`/`withRemoved`): **sin recarga y sin query params de feedback**.
-> - `UNIT_OPTIONS`/`parseIngredientNumber`/`formatUnitCost` viven en la feature (no en `shared/`) porque el proyecto `unit` de Vitest no resuelve el alias `#shared`; se promueven a `shared/utils/` cuando recetas o producción los necesiten. Los tipos del API se derivan del schema (`IngredientRecord = z.infer<typeof ingredientSchema>`) para no duplicar el contrato.
-> - **Límite de plan:** se anticipa con `canCreateIngredient` sobre los contadores SSR y el `PLAN_LIMIT` de Hono se mapea al mismo mensaje; el CTA “Actualizar plan” aparece **sólo** en ese caso (`planLimit: true`), nunca en errores genéricos.
-> - `Dialog` del kit acepta `size` (`md|lg|xl`) y `scroll` (defaults = comportamiento anterior); los dialogs de feature reciben la mutación como **function prop** para resetear/cerrar sólo en éxito.
-> - Tests de referencia: `test/unit/ingredient-*.spec.ts`, `test/nuxt/ingredients-ui.spec.ts` y `test/e2e/ingredients.spec.ts`; el stub expone `POST /api/__qa/ingredients/reset` y `GET /api/__qa/ingredients/state` para que cada test sea determinista.
-> - **Nota de tests:** con `mountSuspended`, `wrapper.emitted()` y `findComponent(Component).emitted()` están vacíos (el wrapper es el del `Suspense`). Para assertar eventos usa listeners espía en `attrs` (`"onUpdate:open"`, `onEdit`, …).
-
-> **Task 8 (listado de recetas) ya está en la rama.** Detalles operativos:
->
-> - `app/features/recipes/**` sigue el patrón del slice: piezas puras sin aliases (`recipe-form`, `recipe-filters`, `recipe-messages`, `recipe-stats`, `recipe-state`), `useRecipes()` y los componentes de la feature. Crear/duplicar/eliminar mutan con `withCreated`/`withRemoved` y **después** navegan o dejan feedback: la mutación previa deja la lista correcta sin esperar al viaje de vuelta (el refetch al remontar lo aclaró la Task 9: `purgeCachedData` es `true`).
-> - **El filtro por categoría vive en la URL** (`?category=`; `""` = sin categoría, ausente = todas) y se resuelve con `navigateTo`: el back/forward y el deep link salen gratis y una navegación solo-query no remonta la página ni pierde la búsqueda.
-> - **Contratos retirados:** `?type=`, `?message=` y `?upgrade=1` (los generaba el redirect de Astro). El límite de plan ahora sólo muestra la alerta inline con «Actualizar plan», igual que la Task 7.
-> - **`@recetario/stripe/formatters`** (subpath nuevo) expone `timeAgo`/`formatCurrency` sin arrastrar el SDK; usar ese subpath en lugar del barrel.
-> - **Los componentes de una feature no están auto-registrados** (el escaneo es solo de `~/components/ui` y `~/components/landing`): hay que importar siempre los de `app/features/**`. Si falta el import, el componente se renderiza como nada y `nuxt typecheck` no lo detecta (lo cazan los tests nuxt).
-> - Tests de referencia: `test/unit/recipe-*.spec.ts`, `test/nuxt/recipes-ui.spec.ts` y `test/e2e/recipes.spec.ts`; el stub expone `/api/__qa/recipes/reset|state` y `qa-plan=free|basic|pro` con los límites y features reales de `plans-config.ts`.
-> - **Hallazgos abiertos con dueño:** el task file de la Task 8 cierra con «Hallazgos abiertos y quién los atiende», una tabla que mapea cada pendiente a la Task que lo cierra (9, 11, 12 o 13) y distingue los que se resuelven _de paso_ de los que exigen trabajo explícito. Leerla antes de planear la Task 9 (detalle) o la 12 (producción).
-
-> **Task 9 (detalle y edición base de receta) ya está en la rama.** Detalles operativos:
->
-> - `/recipes/[id]` es el slice real: header (título/categoría, badge, «Actualizado», Mezclas), tabs con hash (`#ingredientes|#costos-fijos|#presentaciones`), lista de ingredientes en cards móvil / tabla desktop con «Ver notas», editor con picker y `FinancialSummary` base. `useRecipeDetail()` es el composable; la página sólo compone.
-> - **`PATCH /api/recipes/:id` ahora responde shapeado** (`shapeRecipeDetail`, igual que el GET): antes devolvía la fila cruda de Prisma y no validaba contra `recipeWithIngredientsSchema`. El detalle usa la respuesta validada como estado nuevo.
-> - **El composable es `async` y espera su `useAsyncData`**: sin esperar, el servidor renderiza el formulario vacío y el cliente lo hidrata lleno («Hydration completed but contains mismatches», que en producción no dice nada — se diagnostica en dev). Los hooks de ciclo de vida (`onMounted`) van **antes** del primer `await`.
-> - **`refreshNuxtData` desde otra página es un no-op**: `useAsyncData` desregistra su hook al desmontar y `experimental.purgeCachedData` es `true`, así que el listado se remonta y refetchea solo al volver. No hay que refrescarlo a mano (corrige el handoff de la Task 8).
-> - **Contratos de URL:** `?edit=true` (entrar empuja, cancelar/salir usan `replace`), `?multiplier=` (reactivo, sin recargas) y los hashes de tab. Retirados `?type=`/`?message=`/`_fc`.
-> - **`shared/` es la fuente de las piezas compartidas**: `UNIT_OPTIONS`/`DEFAULT_UNIT` (`#shared/utils/units`) y `normalizeSearchText` (`#shared/utils/search`); el proyecto `unit` de Vitest resuelve `#shared` desde esta Task.
-> - Costos Fijos y Presentaciones muestran «Pendiente: Task 10»; `FinancialSummary` ya calcula con los `recipeFixedCosts` reales. El menú de acciones tiene variante `page` con Escape + gestión de foco.
-> - Tests de referencia: `test/unit/recipe-detail-*.spec.ts`, `test/unit/recipe-financials.spec.ts`, `test/nuxt/recipe-detail-ui.spec.ts` y `test/e2e/recipe-detail.spec.ts`; el stub cubre `GET`/`PATCH /api/recipes/:id`, `patchAttempts` y la sentinela `Fallo simulado`.
-> - **Notas de tests:** las vistas ocultas cuentan igual y `getByText` resuelve al nodo más profundo: acotar por contenedor (`table`, `[data-multiplier='desktop|mobile']`). El stub es **un único proceso** para toda la suite: un error en un handler tumba todos los specs con fallos en cascada. `request.get` de Playwright sigue redirects salvo `maxRedirects: 0`.
-> - **Formato:** `pnpm format` de la raíz no funciona (prettier sólo existe en `apps/web`); usar `pnpm --filter @recetario/web exec prettier --write <paths>`.
-
-> **Task 10 (presentaciones, costos fijos y finanzas) ya está en la rama.** Detalles operativos:
->
-> - `app/features/recipes/{recipe-fixed-costs,recipe-presentations}.ts` son las piezas puras (draft, validación, payloads, reducers y las métricas por pieza); `recipe-financials.ts` expone además `computeRecipeFixedCostsTotal`, `computeRecipeBatchCost` y `computeSuggestedBatchPrice`. `useRecipeFinancials` es el composable de las subsecciones.
-> - **Un solo escritor del detalle:** `useRecipeDetail` expone `applyRecipe(next)`. Las mutaciones de costos fijos y presentaciones aplican la respuesta del API ahí, y el resumen financiero, el costo de mezcla y los importes por pieza se recalculan solos (`computed`). No hay recargas ni parche de DOM (el baseline recargaba al crear un costo fijo).
-> - **CRUD autónomo del modo de edición de receta** (mandato del roadmap): «Nueva Presentación» y «Agregar Costo Fijo» están siempre visibles, aunque el baseline escondía el primero detrás de `?edit=true`.
-> - **`salePrice` es opcional con semántica propia:** el input muestra el guardado o el sugerido; guardar sin tocarlo **omite** la clave (`priceDirty`) y vaciarlo envía `null`. El `PATCH` de presentación responde **sin** `fixedCosts`: `mergePresentationResponse` los conserva.
-> - **Tokens:** `turmeric`/`herb`/`chili` del baseline no existen en el design system; los badges usan `warning`/`success`/`danger`/`accent`. Los FCs por presentación siguen sin UI (paridad), aunque el cálculo los soporte.
-> - Tests de referencia: `test/unit/recipe-{fixed-costs,presentations,financials,messages}.spec.ts`, `test/nuxt/recipe-financials-ui.spec.ts` y `test/e2e/recipe-financials.spec.ts`; el stub expone los CRUD reales, `fixedCostAttempts`/`presentationAttempts` y `lastPresentationPatch`.
-> - **Notas de tests:** un `button[type=submit]` **no** dispara el submit con `trigger("click")` en el entorno de test (`form.trigger("submit")`); los dialogs de confirmación están siempre montados, así que hay que acotar los selectores (`data-fc-cancel`, `data-presentation-*`); los valores de un `<input>` no son `textContent` (usar `toHaveValue`). Para QA con `agent-browser`: `cookies set --url http://localhost:4321` y el tema real se cambia con la cookie `kitchcalc-theme`, no tocando la clase `dark`.
-
-> **Task 11 (settings, preferencias y billing) ya está en la rama.** Detalles operativos:
->
-> - `/settings` es el slice real: tabs con `?tab=` (router, back/forward y deep links), perfil (nombre y contraseña), preferencias y facturación en `app/features/settings/**` + `app/features/billing/**`. `/settings/billing` **es un 301 de Nitro** (`server/routes/settings/billing.ts`, preserva la query) y no una página; `/pricing?plan=basic|pro` resalta la card objetivo (anillo doble + scroll).
-> - **Cuenta con contrato JSON + envelope:** `packages/types/src/api/account.ts` + `apps/api/src/account/handlers.ts`. `update-name` devuelve `{firstName,lastName}`, `change-password` y `change-email` devuelven `{ok:true}`; la política de contraseña es la de sign-up (`validatePassword`: 8+, mayúscula, minúscula, número, especial) y los errores de Better Auth se traducen en el handler. `sync-session` responde `{ok:true}` o lanza `ApiError` (404/409/500).
-> - **Apariencia:** `useAppearancePersistence().saveAppearance()` es el único camino de guardado — previsualiza, hace `PUT /api/preferences` y escribe las cookies **desde la respuesta confirmada** (revierte la snapshot en error). El toggle del landing lo usa cuando hay sesión; el anónimo escribe sólo cookie. `useAuth` expone `applyPreferences`/`applyProfile` para las respuestas confirmadas.
-> - **Validación antes de llamar:** los formularios no validan; lo hace `useAccountSettings` con `account-form.ts` (0 requests si es inválido). Las reglas de contraseña se muestran con `PasswordRules` de `features/auth`.
-> - **Billing:** `useSettingsOverview` (página) sincroniza `?session_id=`, carga contadores y trae la suscripción fresca (`scheduledChange` sólo existe ahí); `BillingSection` compone `usePricingPlans`/`useCheckout`/`useBillingPortal` y los dialogs de plan/confirmación reutilizan `PlanPrice`/`PlanFeatureList`/`BillingIntervalToggle`. El stub controla los escenarios con `qa-plan`, `qa-subscription` (trial|canceled|scheduled), `qa-usage=low`, `qa-prefs=error`, `qa-portal=error`, `qa-sync=error` y `__qa/settings/reset|state`.
-> - **Notas de tests:** los dialogs viven siempre montados: acotar los assertos con `data-plan-summary`, `data-usage-cards`, `data-plan-features` (evita strict-mode de Playwright); el stub exige CSRF sólo si hay `Origin` (las llamadas del SSR pasan, como Hono); `es-MX` no rellena con cero los días (`1/10/2026`). Diseño: el bloque del cambio programado lleva `<!-- prettier-ignore -->` porque prettier rompe el `</strong>` y ESLint lo prohíbe.
-> - **Íconos:** `lucide:palette`, `save`, `monitor`, `sun`, `moon` ya están en el registro; no hace falta añadir ninguno.
-
-> **Task 12 (planificador de producción) ya está en la rama.** Detalles operativos:
->
-> - `/produccion` es el slice real: selector (búsqueda accent-insensitive que nunca oculta lo seleccionado, agrupado por categoría, select-all con indeterminado, stepper de 0.5, presentación por receta), resultados en sitio (insumos consolidados, resumen financiero, desglose «Seleccionada»/«Más rentable») y hoja imprimible. `app/features/production/**` con piezas puras (`production-{calculator,selection,catalog,format}.ts`) + `useProductionPlanner` + componentes.
-> - **La selección vive en la URL** (`?recipes=`, `?batches=`, `?presentations=` con `0` como slot sin presentación) y se escribe con `replace`; el *stage* (`select`/`results`) es estado local inicializado desde la query. Se retiró `?upgrade` (rama muerta del baseline).
-> - **Carga sólo de la selección:** el SSR trae el catálogo + el detalle de los ids de la query; al marcar una receta se piden por lotes (máx. 100 ids) y se cachean. `attemptedIds` distingue «no pedido» de «pedido y ausente» (borrado en carrera) para no dejar skeletons colgados. Corrige el 400 del baseline con >100 recetas.
-> - **Hono es autoridad del gate:** `GET /api/recipes/by-ids` exige `production_planner` (403 `FEATURE_REQUIRED`) y, sin Pro, rechaza más de 3 ids (403 `PLAN_LIMIT`). `PRODUCTION_BASIC_RECIPE_LIMIT` vive en `packages/stripe/src/plans-config.ts` y la web lo importa por el subpath puro `@recetario/stripe/plans-config` (no arrastra el SDK).
-> - `FinancialSummary` (features/recipes) admite `title?` y el planner lo reutiliza con `production-sheet financial-summary` para el salto de página al imprimir; las clases `production-sheet`/`prod-row`/`no-print` son el contrato de `@media print` de `global.css`.
-> - Tests de referencia: `test/unit/production-*.spec.ts`, `test/nuxt/production-{ui,planner}.spec.ts` y `test/e2e/production.spec.ts`; el stub implementa `by-ids` con el gate por `qa-plan` y expone `byIdsAttempts`.
-> - **Notas de tests:** `mountSuspended` deja instancias vivas entre tests y `useAsyncData` guarda handler/datos por clave en el app de test: en specs del composable hay que usar `enableAutoUnmount(afterEach)` y una copia reactiva de la ruta por montaje, o los montajes previos vuelven a pedir detalles y contaminan los contadores del stub. En e2e, el desglose (`<details>`) arranca colapsado y el botón de calcular puede quedar bajo el pliegue (scroll antes del clic).
-
-> **Task 13a (QA integral: matriz E2E, accesibilidad y gates de CI) ya está en la rama.** Detalles operativos:
->
-> - **Matriz E2E:** `playwright.config.ts` define `chromium` (suite completa), `firefox-smoke` y `webkit-smoke` (`testMatch: /journey\.spec\.ts/`), un build del fixture por proyecto. **Firefox no arranca en el entorno del agente** (el sandbox de macOS bloquea su `plugin-container`); el job `e2e` de CI instala los tres navegadores.
-> - **`journey.spec.ts`** es el recorrido crítico encadenado (anónimo → login por el formulario → ingrediente → receta con presentación y costo fijo → planificador → settings → logout + tramo móvil) y vigila consola, `pageerror`, hidratación y respuestas ≥500. El redirect anónimo se asserta con `request`: encadenar el redirect de `/recipes` con el `goto` siguiente se interrumpe en WebKit.
-> - **`a11y.spec.ts`** (axe, 9 superficies × 375/1280) asienta la página antes de medir: duración 0 de animaciones + `[data-reveal]`/`.reveal-item` forzados. Las animaciones de entrada (`statFadeIn`, `cardFadeIn`, `animate-fade-in`, reveals) hacían que axe midiera opacidades intermedias y reportara contrastes falsos (p. ej. `#0f4033` sobre `#0b1918`).
-> - **Migas del detalle:** el middleware `recipe-breadcrumb` resuelve el nombre **antes del render** (reutiliza la clave `recipe:<id>` de `useAsyncData`, sin segunda petición). El layout pinta el header antes del setup de la página, así que un `watch` en la página no alcanza el SSR y provoca hydration mismatch. `useBreadcrumbTail(computed)` mantiene el rename sin recargar.
-> - **Contraste AA:** el primer barrido destapó deuda real. Único token retocado: `--tw-muted-fg` light (`#5f6f84`, daba 4.34 sobre `bg-muted`). Componentes: labels/stats del hero, CTA del landing (dark `bg-accent-700 text-text-on-accent`), badge de pasos, variante `accent` de `Badge` (`text-accent-800 dark:bg-accent-50`), sufijo de `UnitCostDisplay` y el badge Pro de `packages/stripe/plans-config.ts`.
-> - **Gates de CI:** `ci.yml` gana los jobs `e2e` (instala chromium+firefox+webkit) y `dry-run` (build Nitro + `wrangler deploy --dry-run`). El gating del deploy y el orden API→web son de la Task 13b (`deploy.yml` único).
-> - **Notas de tests:** el stub es un único proceso — un handler que revienta tumba la suite entera (pasó: `presentations.map` al crear una presentación sobre una receta creada en el test; la receta creada ahora nace con `presentations: []`). Evidencia de QA en `apps/web/test-results/qa/` (gitignored).
+> - **Relay y sesión:** `apps/web/server/**` es Nitro: relay `/api/**`, bootstrap de sesión y cabeceras privadas. El estado de sesión lo resuelve `useAuth().resolveSession()` (contexto del request → `GET /api/auth/session`).
+> - **Subpaths puros:** usar `useApi()` y los subpaths `@recetario/stripe/{plans-config,formatters,subscription}`; los barrels (`@recetario/stripe`, `@recetario/auth`, `@recetario/auth/client`) arrastran el SDK o `createAuthClient`.
+> - **Íconos:** `Icon.vue` compone el `<svg>` desde los datos de lucide (`app/utils/icon-registry.ts` → `__iconData`), **no** desde sus componentes. No reintroducir componentes de `@lucide/vue` en el render; el contrato de markup está en `test/nuxt/icon-parity.spec.ts`.
+> - **Indexación fail-closed:** sin `NUXT_PUBLIC_INDEXABLE=true` (var del worker de producción en `wrangler.jsonc`) las públicas emiten `noindex,nofollow` y `robots.txt` bloquea el sitio completo. Staging no la define.
+> - **El stub de e2e es un único proceso** (`test/e2e/support/stub-api.mjs`): un handler que revienta tumba la suite entera; no tocar los seeds por defecto (cada spec resetea su dominio con `/api/__qa/**`).
 
 ## Stack
 
-**Astro 6** SSR via `@astrojs/cloudflare` (Cloudflare Pages). Two apps: `apps/web` (Astro Pages) + `apps/api` (Hono Worker). **pnpm 11.1.2** (package-manager locked). **Node >= 22.23.1**.
+**Nuxt 4 + Vue 3** SSR sobre **Nitro** (`cloudflare_module`) desplegado como Cloudflare Worker con Workers Assets y service binding `API`. Two apps: `apps/web` (Nuxt) + `apps/api` (Hono Worker). **pnpm 11.1.2** (package-manager locked). **Node >= 22.23.1**.
 No `.env.local` — use `.env`.
 
 ## Commands
 
 **For manual terminal/tool invocations, always use `pnpm exec` or `pnpm dlx`** to respect pinned pnpm/Node version. Do not introduce other package runners in new instructions, docs, or one-off commands.
 
-| Command                                 | Purpose                        |
-| --------------------------------------- | ------------------------------ |
-| `pnpm dev`                              | Dev server at `localhost:4321` |
-| `pnpm build`                            | Production build               |
-| `pnpm preview`                          | Preview build locally          |
-| `pnpm format`                           | Prettier whole project         |
-| `pnpm astro check`                      | Type-check `.astro` + `.ts`    |
-| `pnpm eslint .`                         | Lint JS/TS/Astro               |
-| `pnpm exec prisma migrate dev --name X` | Create migration               |
-| `pnpm exec prisma generate`             | Regenerate client              |
-| `pnpm exec prisma studio`               | Open Prisma Studio             |
-| `pnpm exec tsx prisma/seed.ts`          | Run seed manually              |
+| Command                                         | Purpose                                       |
+| ----------------------------------------------- | --------------------------------------------- |
+| `pnpm dev`                                      | Web `localhost:4321` + API `localhost:8787`   |
+| `pnpm build`                                    | Production build (Turbo)                      |
+| `pnpm --filter @recetario/web type-check`       | `nuxt typecheck`                              |
+| `pnpm lint` / `pnpm test`                       | Lint / tests de todos los workspaces          |
+| `pnpm --filter @recetario/web test:e2e`         | Playwright (chromium + smokes firefox/webkit) |
+| `pnpm --filter @recetario/web wrangler:dry-run` | Dry-run del worker con `wrangler.jsonc`       |
+| `pnpm format`                                   | Prettier whole project                        |
+| `pnpm exec prisma migrate dev --name X`         | Create migration                              |
+| `pnpm exec prisma generate`                     | Regenerate client                             |
+| `pnpm exec prisma studio`                       | Open Prisma Studio                            |
+| `pnpm exec tsx prisma/seed.ts`                  | Run seed manually                             |
 
 **Schema changes**: When modifying `prisma/schema.prisma`, always create a new migration with `pnpm exec prisma migrate dev --name <descriptive>`. Never edit existing migration files.
 **postinstall** generates the Prisma client automatically; if you need to run the same step manually, use `pnpm exec prisma generate`.
-**cloudflare-build** (apps/web) runs Prisma generate, migrate deploy, and Astro build; reproduce with `pnpm --filter @recetario/web cloudflare-build`. **api deploy** via `pnpm --filter @recetario/api deploy` (wrangler deploy). Set per-environment secrets via `wrangler pages secret put <KEY>` (web) / `wrangler secret put <KEY>` (api) or the Cloudflare dashboard.
+**Deploy**: un único `.github/workflows/deploy.yml` (`push` a `dev`/`master`) con jobs encadenados `verify` (reusa `ci.yml` vía `workflow_call`) → `deploy-api` → `deploy-web`; `dev` → staging, `master` → production. El artefacto web es `.output/**` (Nitro) y el build web **no** usa Prisma. Secrets por entorno con `scripts/sync-cloudflare-secrets.mjs` (`wrangler secret put` sobre `apps/api`), no desde el dashboard.
 
-App test infrastructure: `apps/api` and `packages/db` use Vitest (`pnpm --filter @recetario/api test`, `pnpm --filter @recetario/db test`). If tests are requested for a package without infra, propose `Vitest` and confirm with the user before scaffolding.
+App test infrastructure: `apps/api` y `packages/db` usan Vitest; `apps/web` usa Vitest 5 (proyectos `unit` y `nuxt`) + Playwright. Si se piden tests para un paquete sin infra, proponer `Vitest` y confirmar con el usuario antes de montarla.
 
 ## Architecture
 
 ### Auth
 
-Better Auth via `src/lib/auth.ts` (server singleton) + `src/lib/auth-client.ts` (client). Google OAuth. Middleware (`src/middleware.ts`) populates `Astro.locals.{user, session, subscription}` on every request. `SubscriptionPlan` rows auto-seeded on first authenticated request (`globals.__plansSeeded` guard).
+Better Auth vive en **Hono** (`packages/auth`); la web no importa sus clientes. Google OAuth arranca y termina en el API (`BETTER_AUTH_URL`). La web resuelve la sesión por documento: `server/middleware/10.auth.ts` (bootstrap por request, cookies de presentación y CSRF) → `event.context.auth` → `app/plugins/auth.server.ts` → `useAuth().resolveSession()`. Los route middleware `auth`/`guest` protegen páginas; un 401 expira el estado y redirige a `/sign-in` con el motivo. El transporte de los formularios de auth es `app/features/auth/useAuthApi.ts` sobre `useRequestFetch()` + Zod; las reglas de contraseña salen de `@recetario/auth/password`. El bundle cliente **no** puede contener `better-auth` (lo verifica un paso de `ci.yml`).
 
 ### Pages & routing
 
-- **Protected** (`Astro.locals.session` required): `/recipes`, `/recipes/[recipe]`, `/ingredients`, `/settings`, `/produccion` (`/settings/billing` redirects 301 to `/settings?tab=billing`)
-- On protected pages, if `Astro.locals.session` is null, return `Astro.redirect("/sign-in")` at the top of the frontmatter.
-- **Public**: `/sign-in`, `/sign-up`, `/pricing`
-- `/produccion` also gated behind `production_planner` feature flag
-- If the `production_planner` flag is false, redirect to `/settings?tab=billing` with an upgrade prompt.
-- Layout: `Layout` (app shell + sidebar) or `LandingLayout` (marketing). `currentPage` prop: `recipes | ingredients | settings | production`.
+- **Protected** (`definePageMeta({ middleware: "auth" })`): `/recipes`, `/recipes/[id]`, `/ingredients`, `/settings`, `/produccion` (`/settings/billing` es un 301 de Nitro que preserva la query).
+- **Public**: `/`, `/pricing`, `/privacy`, `/terms` (indexables; `/pricing` es pública, el checkout sigue exigiendo sesión en Hono).
+- **Auth**: `/sign-in`, `/sign-up`, `/forgot-password`, `/reset-password`, `/verify-email` (`noindex,nofollow`, sin canonical ni OG).
+- `/produccion` exige además la feature `production_planner` (`FEATURE_REQUIRED` en Hono); la UI dirige a `/settings?tab=billing`.
+- Layouts: `public.vue` (marketing), `private.vue` (shell + sidebar), `auth.vue`. El acento coral es de las rutas públicas y de auth (`isCoralAccentPath()` en `app.vue`).
 
 ### Data layer
 
-**PostgreSQL + Prisma ORM** is the data layer for `apps/api` (Hono worker) and the seed script. The web app (`apps/web`) does NOT import Prisma or `@recetario/db` directly — every web page calls `apps/api` via `apiFetch` (see "Web→API destination rule" below). The singleton PrismaClient (with the Accelerate extension) lives in `packages/db/src/prisma.ts`.
+**PostgreSQL + Prisma ORM** is the data layer for `apps/api` (Hono worker) and the seed script. The web app (`apps/web`) does NOT import Prisma or `@recetario/db` directly — every web page calls `apps/api` through the same-origin `/api/**` relay (see "Web→API destination rule" below). The singleton PrismaClient (with the Accelerate extension) lives in `packages/db/src/prisma.ts`.
 
 - Output: `generated/prisma/` (non-standard — set in `schema.prisma:7`)
 - Apps import via the `@recetario/db` workspace package; the web app must not import it.
@@ -159,11 +70,11 @@ Better Auth via `src/lib/auth.ts` (server singleton) + `src/lib/auth-client.ts` 
 
 `apps/web` is a thin SSR client of `apps/api`. It must not import `prisma` or `@recetario/db` directly. The only allowed data access from web is:
 
-- `apiFetch(path, { schema, ... }, Astro.request)` from `@/lib/api-client` for live data
+- The same-origin `/api/**` relay (`server/routes/api/[...path].ts` → binding `API`, fallback HTTP a `INTERNAL_API_URL` en dev), consumido con `useApi()`/`useRequestFetch()` y validado con Zod.
 - Types from `@recetario/types` (Zod schemas and TS types — type-only is fine)
-- Pure transformation in `apps/web/src/lib/*` (e.g. `production-calculator.ts`)
+- Pure transformation in `app/features/**` y `shared/**` (p. ej. `production-calculator.ts`)
 
-If a new feature needs data access from a web page, add the endpoint in `apps/api` and call it via `apiFetch`. This keeps the data layer in one place.
+If a new feature needs data access from a web page, add the endpoint in `apps/api` and call it through the relay. This keeps the data layer in one place.
 
 ### Key gotchas
 
@@ -176,75 +87,73 @@ If a new feature needs data access from a web page, add the endpoint in `apps/ap
 
 #### Operational gotchas
 
-- **Forms**: no Astro Actions. POST to the same page, read `Astro.request.formData()`, then redirect. Spanish locale: `parseNumberInput()` converts comma to dot.
+- **Formularios**: componentes Vue + mutaciones `useApi()` (JSON validado con Zod + envelope de error de Hono); nada de POST a la misma página. Los decimales en formato español los normaliza cada feature (`parseNumberInput` en `features/ingredients/ingredient-form.ts`).
 - **Subscription cache**: `getSubscriptionByUserId` (the hot path behind `/api/auth/session` and every authenticated page) is deliberately **uncached** — entitlements must never be stale. Only `getUserPreferences` and `getCredentialAccount` still use Accelerate edge caching (`cacheStrategy` with `ttl: 60`, `swr: 120`, tagged `user:<id>`); writes invalidate via `invalidateAccelerateCache` in `@recetario/db` (best-effort; failures are logged).
 - **pnpm allowed builds**: only `esbuild`, `sharp`, `@prisma/engines`, `prisma` are allowed in `pnpm-workspace.yaml`.
 - **Cloudflare ephemeral**: `DATABASE_URL` is not auto-injected — set per-environment via `wrangler secret put` or the dashboard. Local dev: `pnpm dev` runs `scripts/sync-cloudflare-dev-vars.mjs` which copies root `.env` to `apps/web/.dev.vars` and `apps/api/.dev.vars`.
-- **Feedback + reload**: `showFeedback()` is client-side DOM; `window.location.reload()` after it erases feedback, so prefer DOM updates for in-page state.
+- **Mutaciones en Nuxt**: el estado se actualiza en sitio desde la respuesta validada (`applyRecipe`, reducers `withCreated`/`withUpdated`/`withRemoved`) y las listas se refrescan solas al volver a montarse (`experimental.purgeCachedData` es `true`): nunca recargar la página para reflejar un guardado.
+- **El layout SSR se pinta antes que la página**: el dato que un layout necesita en su primer render (p. ej. el nombre en las migas) se resuelve en un route middleware reutilizando la clave de `useAsyncData`, no en un `watch` de la página (hydration mismatch).
 
 #### Autoridad de mutaciones (Hono)
 
 - **CSRF**: `csrfProtection()` en `apps/api/src/middleware/csrf.ts` cubre todo `POST|PUT|PATCH|DELETE`. Exige `Origin`/`Referer` confiable y, si la petición viene de navegador con cookies, doble-submit (`x-csrf-token` o `_csrf` contra la cookie `csrf_token`). Exentos: `POST /api/stripe/webhook` y `/api/auth/**` (Better Auth valida su propio origen). Las peticiones sin `Origin` (service binding, SSR) pasan por diseño.
 - **Límites de plan**: `requireRecipeCapacity`, `requireIngredientCapacity` y `requireFeature` en `apps/api/src/entitlements.ts`; sin fila de suscripción se aplica el plan free (fail-closed). Al agotarse lanzan `PLAN_LIMIT` / `FEATURE_REQUIRED` (403): la UI sólo muestra CTA de upgrade con `PLAN_LIMIT`.
+- **Lecturas con gate**: cuando una lectura es la única vía a datos gateados (p. ej. `GET /api/recipes/by-ids` del planificador), el gate corre también ahí (feature + tope de plan) antes de la query.
 - **Auditoría de sign-in**: `recordSignInAudit` corre en `databaseHooks.session.create.after` de Better Auth (`packages/auth/src/auth.ts`); el middleware web no inspecciona paths.
 - **Preferencias**: la respuesta validada de `GET/PUT /api/preferences` (y `session.preferences`) es la fuente; las cookies de tema/acento son sólo una réplica visual.
 
-#### Known bugs
-
-- **Tsconfig exclude**: this is a known bug. Do NOT modify it unless explicitly asked. If asked, split it into separate array entries: `["dist", ".agent/**", ".astro/**", "node_modules/**"]`.
-
 ### Modules you might miss
 
-- `src/lib/instructions-parser.ts` — markdown→HTML rendering for recipe instructions (parses headings, steps, `@ingredient` refs)
-- `src/lib/html-sanitizer.ts` — DOMPurify wrapper for recipe instructions (limited tag/attr allowlist)
-- `src/lib/formatters.ts` — exports `formatCurrency` and `timeAgo` (no `formatNumber`)
-- `src/lib/form-utils.ts` — `parseNumberInput(value)` for Spanish-format decimals
-- `src/lib/auth-client.ts` — client-side Better Auth (used for sign-in popup)
-- `src/lib/sign-in.ts` / `src/lib/sign-out.ts` — Google sign-in with popup/open-in-tab
-- `src/lib/dialog.ts` — `bindDialogBackdrop()` utility
+- `app/utils/icon-registry.ts` — datos `__iconData` de lucide que consume `Icon.vue` (no importar componentes de `@lucide/vue` en el render)
+- `app/utils/accent-colors.ts` — 7 familias de acento y el mapeo de shades light/dark
+- `shared/utils/seo.ts` — rutas públicas indexables, `robots.txt`/`sitemap.xml` y acento coral
+- `shared/utils/preferences.ts` — cookies de presentación (`kitchcalc-theme`, `kitchcalc-accent`) y sus resolvers
+- `shared/utils/units.ts` / `shared/utils/search.ts` — unidades y búsqueda accent-insensitive (`#shared/*`)
+- `app/features/recipes/recipe-{financials,presentations,fixed-costs}.ts` — cálculos puros del detalle
+- `app/features/production/production-{calculator,selection,catalog,format}.ts` — planificador de producción
+- `server/utils/api-transport.ts` — binding `API`/fallback HTTP y headers de error tempranos
+- `server/middleware/10.auth.ts` — bootstrap de sesión, cookies de presentación/CSRF y `private, no-store`
 
 ### Stripe billing
 
-3 routes in `src/pages/api/stripe/`:
+Rutas en `apps/api/src/billing/**` (montadas en `apps/api/src/index.ts`):
 
-- `checkout` (POST, auth) — creates Checkout Session, returns `{ url }`
-- `portal` (POST, auth) — creates Customer Portal session
-- `webhook` (POST, no session auth — verified via Stripe signature header using `STRIPE_WEBHOOK_SECRET`) — handles `checkout.session.completed`, `invoice.paid`, `invoice.payment_failed`, `customer.subscription.deleted`, `customer.subscription.updated`
+- `POST /api/stripe/checkout` (auth) — creates Checkout Session, returns `{ url }`
+- `POST /api/stripe/portal` (auth) — creates Customer Portal session
+- `POST /api/stripe/sync-session` (auth) — sincroniza la sesión de checkout al volver a `/settings`
+- `POST /api/stripe/webhook` (no session auth — verified via Stripe signature header using `STRIPE_WEBHOOK_SECRET`) — handles `checkout.session.completed`, `invoice.paid`, `invoice.payment_failed`, `customer.subscription.deleted`, `customer.subscription.updated`
 
 API version: `2026-04-22.dahlia`.
 
 ## Client-side patterns
 
-- **Binding guards**: `data-*-bound="1"` attributes prevent duplicate listener binding across SPA navigations
-- **Lifecycle**: Bind on both `astro:page-load` and `astro:after-swap`
-- **Theme**: `applyTheme()` reads `html.dataset.theme` / `html.dataset.accent`. No `.dark` CSS overrides — semantic tokens auto-adapt.
-- **Accent colors**: 7 families (`indigo`, `violet`, `blue`, `emerald`, `rose`, `amber`, `coral`) in `src/lib/accent-colors.ts`. Landing layout always uses `coral`.
+- **Estado local primero**: `ref`/`computed` y composables de feature; `useState` sólo para sesión/apariencia. Nada de globals `window.__*`, observers para sincronizar el DOM ni `innerHTML` de UI.
+- **Cleanup**: todo listener/interval/observer se libera en `onBeforeUnmount`/`onUnmounted` (countdown del reset, drawer, scroll-spy, reveals).
+- **Tema y acento**: los gobierna `app.vue` con `useHead` sobre `html` (`data-theme`/`data-accent`/clase `dark`) desde `useTheme()`; no hay overrides `.dark` en CSS (los tokens semánticos se adaptan solos).
+- **Acentos**: 7 familias (`indigo`, `violet`, `blue`, `emerald`, `rose`, `amber`, `coral`) en `app/utils/accent-colors.ts`. El landing y las rutas de auth siempre usan `coral`.
+- **Feedback de navegación/mutación**: `useLoadingIndicator` (barra superior) y estados `pending` locales; la UI nunca recarga para reflejar un cambio.
 
 ## UI conventions
 
-- **ALWAYS** use `Button`, `Input`, `Dialog`, `Badge`, `Card`, `FeedbackAlert`, `SectionHeading`, `FinancialSummary` from `@/components/ui` barrel. Icons: import named components from `@recetario/ui/icons/<Name>.astro` or use `DynamicIcon` from `@recetario/ui/DynamicIcon.astro` for dynamic resolution.
+- **Componentes del kit** (`~/components/ui`, auto-registrados sin prefijo): `Button`, `Input`, `Dialog`, `Badge`, `Card`, `FeedbackAlert`, `SectionHeading`, `FinancialSummary`, `Skeleton`, `EmptyState`… **Los componentes de `app/features/**`NO se auto-registran**: hay que importarlos explícitamente (si falta el import no se renderiza nada y`nuxt typecheck` no lo detecta; lo cazan los tests nuxt).
 - **ALWAYS** use semantic tokens (`bg-card`, `text-foreground`, `border-border`, `accent-*`). Never hardcoded colors.
 - **Dialog backdrops**: use `backdrop:bg-backdrop/50`, never `backdrop:bg-slate-900/50`.
 
 ### Icon components
 
-Per-icon `.astro` components live in `packages/ui/src/icons/<Name>.astro`. Import directly:
+Un solo componente: `<Icon name="lucide:check" :size="18" class="text-success" />`. El registro vive en `app/utils/icon-registry.ts` (`__iconData`); si falta un ícono se añade ahí — no se importan componentes de `@lucide/vue` en el render (usan `inject()` y rompen el primer render SSR dentro de un `Suspense`). El contrato de markup está en `test/nuxt/icon-parity.spec.ts`.
 
-```astro
-import Check from "@recetario/ui/icons/Check.astro";
-<Check size={18} class="text-success" />
-```
+### Testing notes
 
-Missing an icon? Drop a new `.astro` file into `packages/ui/src/icons/` and import it. TypeScript catches typos at the import line — no allowlist, no central registry.
-
-For dynamic icon names (resolved at runtime), use `DynamicIcon`:
-
-```astro
-import DynamicIcon from "@recetario/ui/DynamicIcon.astro";
-<DynamicIcon name="lucide:check" size={16} />
-```
-
-`DynamicIcon` strips the `lucide:` prefix automatically.
+- `apps/web` tiene dos proyectos Vitest: `unit` (nodo, sin Nuxt; resuelve `#shared` por el alias declarado en `vitest.config.ts`) y `nuxt` (`mountSuspended`). Playwright corre `chromium` (suite completa) + `firefox-smoke`/`webkit-smoke` (recorrido crítico).
+- El stub e2e es un **único proceso**: los handlers deben ser defensivos y cada spec resetea su dominio con `/api/__qa/<dominio>/reset` + `GET …/state`; no tocar los seeds por defecto (los números de otros specs dependen de ellos).
+- `mountSuspended` devuelve el wrapper del `Suspense`: `wrapper.emitted()`/`findComponent(...).emitted()` están vacíos; assertar eventos con listeners espía en `attrs` (`"onUpdate:open"`, `onEdit`, …).
+- `mountSuspended` deja instancias vivas entre tests y `useAsyncData` cachea por clave: usar `enableAutoUnmount(afterEach)` y una copia reactiva de la ruta por montaje, o los montajes previos contaminan los contadores del stub.
+- En el entorno de test, `trigger("click")` sobre un `button[type=submit]` no dispara el submit: usar `form.trigger("submit")`. Los valores de un `<input>` se asertan con `toHaveValue`/`.element.value`, no con `textContent`.
+- Los dialogs viven siempre montados: acotar selectores por contenedor/`data-*` (strict mode de Playwright cuenta nodos ocultos).
+- `request.get` de Playwright sigue redirects: usar `maxRedirects: 0` para assertar un 302 real.
+- Antes de correr tests dependientes de entorno, limpia las variables del shell: `env -u WEB_ORIGIN -u BETTER_AUTH_URL -u PUBLIC_APP_URL pnpm --filter @recetario/api test`.
+- QA con `agent-browser`: `cookies set --url http://localhost:4321`; el tema real se cambia con la cookie `kitchcalc-theme` (tocar la clase `dark` deja los tokens del tema anterior). Evidencia en `apps/web/test-results/qa/` (gitignored).
 
 ### Responsive state enumeration
 
@@ -270,7 +179,7 @@ Any task that modifies visible UI components requires visual verification before
   - Mobile and desktop provide equivalent information (parity check)
   - No broken icons, missing elements, or layout issues
 
-This goes beyond `pnpm astro check` — that only verifies types, not visual correctness.
+This goes beyond `pnpm --filter @recetario/web type-check` — that only verifies types, not visual correctness.
 
 ## Process Conventions
 
@@ -301,14 +210,7 @@ This prevents task scope ambiguity where a builder discovers work already done.
 
 ### Pre-Flight Checks
 
-Before dispatching builder tasks, the orchestrator should verify tool dependencies:
-
-```bash
-# Graphify dependencies
-$(cat graphify-out/.graphify_python 2>/dev/null || echo python3) -c "import networkx" 2>/dev/null && echo "graphify: ok" || echo "graphify: networkx MISSING"
-```
-
-If dependencies are missing, document the gap in the task file's guardrails so the builder knows to use the fallback procedure (grep/glob instead of graphify).
+Before dispatching builder tasks, verify the external tools they depend on (CLIs, credentials, network access). If a dependency is missing, document the gap in the task file's guardrails so the builder knows the fallback procedure.
 
 ### ESLint Cleanup
 
@@ -326,14 +228,4 @@ When a plan dispatches 2+ tasks in parallel, include a "Parallel Execution Notes
 
 ## graphify
 
-This project has a knowledge graph at graphify-out/ with god nodes, community structure, and cross-file relationships.
-
-When the user types `/graphify`, invoke the `skill` tool with `skill: "graphify"` before doing anything else.
-
-Rules:
-
-- For codebase questions, first run `graphify query "<question>"` when graphify-out/graph.json exists. Use `graphify path "<A>" "<B>"` for relationships and `graphify explain "<concept>"` for focused concepts. These return a scoped subgraph, usually much smaller than GRAPH_REPORT.md or raw grep output.
-- Dirty graphify-out/ files are expected after hooks or incremental updates; dirty graph files are not a reason to skip graphify. Only skip graphify if the task is about stale or incorrect graph output, or the user explicitly says not to use it.
-- If graphify-out/wiki/index.md exists, use it for broad navigation instead of raw source browsing.
-- Read graphify-out/GRAPH_REPORT.md only for broad architecture review or when query/path/explain do not surface enough context.
-- After modifying code, run `graphify update .` to keep the graph current (AST-only, no API cost).
+**No usar.** El usuario indicó que graphify todavía no está configurado correctamente (este worktree no tiene `graphify-out/`): para preguntas del código, explorar con grep/glob y agentes de exploración. No ejecutar `graphify update` en esta etapa.

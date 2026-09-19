@@ -1,5 +1,7 @@
 # Task 13a — QA integral: matriz E2E, accesibilidad y gates de CI
 
+> **Registro de sesión (histórico).** Documento del rework Astro→Nuxt: refleja el estado en su fecha, no la guía operativa actual. La documentación viva está en `docs/README.md`.
+
 Roadmap padre: `~/.commandcode/plans/recetario-nuxt-rework.md` (Task 13 — QA integral, corte y retirada de Astro).
 Split aprobado con el usuario: **13a (esta sesión)** + **13b** (`~/.commandcode/plans/recetario-nuxt-task-13b-corte-retirada.md`, sesión aparte: `deploy.yml` único, `wrangler.jsonc` → output Nitro, retirada de Astro, docs vivos y pasada guiada en staging).
 Plan de sesión: `~/.commandcode/plans/recetario-nuxt-task-13a-qa-integral.md`

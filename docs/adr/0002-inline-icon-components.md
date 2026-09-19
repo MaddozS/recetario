@@ -1,5 +1,7 @@
 # Inline `.astro` components replace the astro-icon library
 
+> **Nota (Task 13b):** decisión de la etapa Astro. El frontend Nuxt usa un único `Icon.vue` alimentado por `app/utils/icon-registry.ts` (`__iconData` de lucide), sin componentes `.astro` ni allowlist. Ver ADR-0009.
+
 We removed `astro-icon` and `@iconify-json/lucide` (along with the `debug` CJS shim that was masking their workerd failure) and replaced them with 47 hand-authored icon components at `packages/ui/src/icons/` — one per icon in the previous `include.lucide` allowlist. Consumers import each icon by name (`import Check from "@recetario/ui/icons/Check.astro"`) so TypeScript catches missing icons at the import line; the iconify CJS chain is gone, so the workerd `module is not defined` class of failure can no longer originate from this surface.
 
 ## Considered Options

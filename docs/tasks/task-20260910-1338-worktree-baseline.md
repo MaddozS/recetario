@@ -1,5 +1,7 @@
 # Task 1 — Worktree y baseline
 
+> **Registro de sesión (histórico).** Documento del rework Astro→Nuxt: refleja el estado en su fecha, no la guía operativa actual. La documentación viva está en `docs/README.md`.
+
 Roadmap padre: `~/.commandcode/plans/recetario-nuxt-rework.md`
 Plan de sesión: `~/.commandcode/plans/recetario-nuxt-task-01-worktree-baseline.md`
 

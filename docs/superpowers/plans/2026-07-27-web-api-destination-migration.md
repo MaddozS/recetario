@@ -1,5 +1,7 @@
 # Web → API Destination Migration Plan
 
+> **Histórico (pre-Nuxt).** Documento de la etapa anterior a la migración a Nuxt (Task 13b): se conserva como registro, no como guía operativa, y las rutas o comandos que cita pueden no existir. Ver `docs/README.md`.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Eliminate every direct `prisma` / `@recetario/db` call from `apps/web`. All database access from web goes through `apps/api` via `apiFetch`. This fixes the pg.Pool wedge in `@astrojs/cloudflare` dev (workerd can't reach `localhost:5432` via the singleton pool) and finishes the destination rule tracked under memory #64.

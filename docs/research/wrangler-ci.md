@@ -1,5 +1,7 @@
 # Wrangler CI/CD Research — GitHub Actions Deployment
 
+> **Histórico (pre-Nuxt).** Documento de la etapa anterior a la migración a Nuxt (Task 13b): se conserva como registro, no como guía operativa, y las rutas o comandos que cita pueden no existir. Ver `docs/README.md`.
+
 ## Project Context
 
 Two apps to deploy:

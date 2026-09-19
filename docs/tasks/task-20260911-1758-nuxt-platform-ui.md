@@ -1,5 +1,7 @@
 # Task 2 — Fundación Nuxt 4, tooling y capa de UI compartida
 
+> **Registro de sesión (histórico).** Documento del rework Astro→Nuxt: refleja el estado en su fecha, no la guía operativa actual. La documentación viva está en `docs/README.md`.
+
 Roadmap padre: `~/.commandcode/plans/recetario-nuxt-rework.md` (Task 2)
 Plan de sesión: `~/.commandcode/plans/recetario-nuxt-task-02-platform-ui.md`
 

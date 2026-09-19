@@ -1,5 +1,7 @@
 # Task 9 — Detalle y edición base de receta
 
+> **Registro de sesión (histórico).** Documento del rework Astro→Nuxt: refleja el estado en su fecha, no la guía operativa actual. La documentación viva está en `docs/README.md`.
+
 Roadmap padre: `~/.commandcode/plans/recetario-nuxt-rework.md` (Task 9)
 Plan de sesión: `~/.commandcode/plans/recetario-nuxt-task-09-recipe-detail.md`
 
