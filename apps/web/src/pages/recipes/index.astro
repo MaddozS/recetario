@@ -137,6 +137,7 @@ const showUpgradeModal = Astro.url.searchParams.get("upgrade") === "1";
     selectedCategory={selectedCategory}
     feedbackType={feedbackType}
     feedbackMessage={feedbackMessage}
+    showUpgradeLink={showUpgradeModal}
   >
     <RecipesSkeleton slot="fallback" />
   </RecipesContent>

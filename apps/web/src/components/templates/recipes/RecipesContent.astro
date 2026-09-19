@@ -21,6 +21,7 @@ interface Props {
   selectedCategory?: string | null;
   feedbackType?: string | null;
   feedbackMessage?: string | null;
+  showUpgradeLink?: boolean;
 }
 
 const {
@@ -28,6 +29,7 @@ const {
   selectedCategory = null,
   feedbackType = null,
   feedbackMessage = null,
+  showUpgradeLink = false,
 } = Astro.props;
 
 const recipes = await apiFetch(
@@ -70,7 +72,11 @@ const recentRecipes = recipes
     feedbackType === "error" && feedbackMessage && (
       <div class="relative mb-6">
         <FeedbackAlert type="error" message={feedbackMessage} />
-        <a href="/pricing" class="text-danger ml-2 font-bold underline">Actualizar plan</a>
+        {
+          showUpgradeLink && (
+            <a href="/pricing" class="text-danger ml-2 font-bold underline">Actualizar plan</a>
+          )
+        }
       </div>
     )
   }

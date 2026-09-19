@@ -212,8 +212,10 @@ const sidebarCollapsed = Astro.cookies.get("kitchcalc-sidebar-collapsed")?.value
 <script>
   import { getAccentCssVars } from "../lib/accent-colors";
   import { setupGlobalFormSubmitListener } from "../lib/mutation-pending";
+  import { setupRecipeActions } from "../lib/recipe-actions";
 
   setupGlobalFormSubmitListener();
+  setupRecipeActions();
 
   function getEffectiveTheme(pref: string): string {
     if (pref === 'system') {
