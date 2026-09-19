@@ -23,7 +23,7 @@ import {
  * estado en `event.context.auth` (lo serializa `app/plugins/auth.server.ts`) y
  * re-emite las cookies de presentación y CSRF.
  *
- * Sustituye al middleware de Astro sin conservar nada de su maquinaria: mismo
+ * Sustituye al middleware del baseline sin conservar nada de su maquinaria: mismo
  * contrato, sin `locals`, sin `globalThis` y sin caché entre requests.
  */
 

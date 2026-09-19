@@ -6,7 +6,7 @@ import type { MutationOutcome } from "./useRecipes";
 
 /**
  * Costos fijos de la receta: cabecera con el alta y la lista de cards. El alta
- * es una card en modo creación gobernada por `v-if` (Astro la inyectaba con
+ * es una card en modo creación gobernada por `v-if` (el baseline la inyectaba con
  * `innerHTML` y borraba el empty state a mano).
  *
  * Los costos fijos no están gateados por plan en Hono: la UI los ofrece siempre

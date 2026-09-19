@@ -14,14 +14,13 @@ export default defineNuxtConfig({
   ],
   nitro: {
     preset: "cloudflare_module",
-    // Sin `deployConfig`: evitaría `.wrangler/deploy/config.json`, que Wrangler
-    // prioriza y que el pipeline Astro todavía usa hasta la Task 13.
     cloudflare: {
       nodeCompat: true,
-      // El proxy de plataforma en dev descubre `wrangler.json`/`wrangler.jsonc`
-      // desde `srcDir`; sin esto leería el `wrangler.jsonc` de Astro (assets en
-      // `./dist/client`, binding a `recetario-api` en producción).
-      dev: { configPath: "./wrangler.nuxt.jsonc" },
+      // `deployConfig` generaría `.wrangler/deploy/config.json` (+
+      // `.output/server/wrangler.json`), que Wrangler prioriza sobre el
+      // `wrangler.jsonc` versionado: se perderían los bloques `env`, el binding
+      // por entorno y los settings del dashboard. El archivo del repo manda.
+      deployConfig: false,
     },
   },
   // El binding `API` no está conectado al worker del API en `nuxt dev`

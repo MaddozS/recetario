@@ -4,7 +4,7 @@
  * Módulo puro y sin aliases: cubierto en `test/unit`. `planLimit` sólo se activa
  * con el código `PLAN_LIMIT` del envelope de Hono, para que la UI muestre el CTA
  * de upgrade únicamente cuando la causa real es el plan; `FEATURE_REQUIRED`
- * (duplicar en plan Free) nunca lo ofrece, igual que en Astro.
+ * (duplicar en plan Free) nunca lo ofrece, igual que en el baseline.
  */
 export type RecipeMutationAction = "create" | "duplicate" | "delete" | "update";
 
@@ -43,7 +43,7 @@ function asErrorLike(error: unknown): ErrorLike | null {
 }
 
 /**
- * Copy del límite de plan con las tildes corregidas (Astro escribía
+ * Copy del límite de plan con las tildes corregidas (el baseline escribía
  * "limite"/"mas"); recetas porta el mismo texto que dejó la Task 7 en
  * ingredientes. El rango se omite si el plan es ilimitado (caso defensivo).
  */

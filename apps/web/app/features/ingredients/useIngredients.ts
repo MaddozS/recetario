@@ -227,7 +227,7 @@ export function useIngredients() {
   /**
    * El 409 de Hono trae `recipes` fuera del envelope y `parseApiError` lo
    * descarta: se resuelve con el mapa de uso local y, si viniera vacío, con
-   * `GET /api/ingredients/:id/usage` (igual que hacía Astro tras el conflicto).
+   * `GET /api/ingredients/:id/usage` (igual que hacía el baseline tras el conflicto).
    */
   async function resolveUsedRecipes(
     ingredientId: number,

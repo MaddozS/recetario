@@ -7,7 +7,7 @@ import RecipeErrorAlert from "~/features/recipes/RecipeErrorAlert.vue";
 
 /**
  * Confirmación de duplicado. El padre decide qué hacer con el id devuelto
- * (paridad con Astro: navegar a la copia en `?edit=true`).
+ * (paridad con el baseline: navegar a la copia en `?edit=true`).
  */
 const props = defineProps<{
   recipe: RecipeRecord | null;

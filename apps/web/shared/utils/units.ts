@@ -1,6 +1,5 @@
 /**
- * Unidades de medida de ingredientes (vocabulario heredado de
- * `src/lib/constants.ts` del árbol Astro).
+ * Unidades de medida de ingredientes (vocabulario heredado del baseline).
  *
  * Viven en `shared/` porque las consumen ingredientes y recetas: los módulos
  * puros las importan por `#shared/utils/units`, que resuelve tanto Nuxt como el

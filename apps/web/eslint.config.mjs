@@ -5,8 +5,6 @@ import tseslint from "typescript-eslint";
 export default [
   {
     ignores: [
-      "dist/",
-      ".astro/",
       ".nuxt/",
       ".output/",
       ".wrangler/",
@@ -14,8 +12,6 @@ export default [
       "generated/",
       "test-results/",
       "playwright-report/",
-      // Árbol Astro: referencia hasta la Task 13, fuera de build/lint/type-check.
-      "src/",
     ],
   },
   pluginJs.configs.recommended,

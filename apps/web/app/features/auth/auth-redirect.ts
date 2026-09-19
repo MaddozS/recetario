@@ -3,7 +3,7 @@
  *
  * Módulo puro (sin imports ni aliases) para poder cubrirlo en `test/unit`.
  * Paridad con `packages/auth/src/sign-in.ts` (`getSafeRedirect`) y con el
- * saneado de `callbackURL` de `verify-email.astro`.
+ * saneado de `callbackURL` de `verify-email`.
  */
 
 /** Primer valor no vacío de un query param de `useRoute()` (colapsa arrays). */
@@ -31,7 +31,7 @@ export function getSafeRedirect(raw: unknown): string {
 
 /**
  * Destino post-verificación: `callbackURL` local distinto de la raíz o
- * `/sign-in` (mismo contrato que el SSR de `verify-email.astro`).
+ * `/sign-in` (mismo contrato que el SSR de `verify-email`).
  */
 export function safeCallbackPath(raw: unknown): string {
   const value = queryString(raw);

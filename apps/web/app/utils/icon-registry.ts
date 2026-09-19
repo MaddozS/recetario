@@ -11,11 +11,11 @@
  * petición de cada proceso. `Icon.vue` compone el `<svg>` con los mismos
  * atributos que lucide (verificado en `test/nuxt/ui-components.spec.ts`).
  *
- * Tres claves conservan el vocabulario del árbol Astro pero apuntan al nombre
+ * Tres claves conservan el vocabulario del baseline pero apuntan al nombre
  * canónico actual de lucide (`alert-triangle` → `triangle-alert`,
  * `arrow-up-circle` → `circle-arrow-up`, `check-circle` → `circle-check`);
  * `trash-2` apunta a `trash` porque lucide fusionó ambos glifos (mismo
- * trazado que en `@lucide/astro@1.28`).
+ * trazado que el ícono del baseline).
  */
 
 import type { LucideIconData } from "~/types/icons";

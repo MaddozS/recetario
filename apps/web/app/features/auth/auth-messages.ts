@@ -2,7 +2,7 @@
  * Mensajes de los flujos de auth (módulo puro, unit-testeable).
  *
  * Los códigos de `?error=` los emite Better Auth al volver del proveedor y los
- * traduce el `sign-in.astro` original; los `reason` los añade el shell Nuxt
+ * traduce el `sign-in` original; los `reason` los añade el shell Nuxt
  * (`app/middleware/auth.ts` y `useApi`) al mandar a `/sign-in`.
  */
 

@@ -10,7 +10,7 @@ import {
 /**
  * Contador «Mezclas» del detalle. Es un control *controlado*: no guarda el
  * valor, lo emite, de modo que la fila móvil y la de escritorio comparten el
- * mismo estado (`?multiplier=`) sin recargar la página (Astro recargaba).
+ * mismo estado (`?multiplier=`) sin recargar la página (el baseline recargaba).
  */
 const props = defineProps<{ multiplier: number }>();
 const emit = defineEmits<{ change: [value: number] }>();

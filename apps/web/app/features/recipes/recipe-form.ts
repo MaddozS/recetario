@@ -4,7 +4,7 @@ import type { CreateRecipeInput } from "@recetario/types";
  * Formulario de receta en su forma de UI y su traducción al contrato del API.
  * Módulo puro y sin aliases: cubierto en `test/unit`.
  *
- * Paridad con el formulario de Astro: sólo el nombre es editable al crear (la
+ * Paridad con el formulario del baseline: sólo el nombre es editable al crear (la
  * categoría y los costos se capturan en la vista de edición).
  */
 export const MAX_RECIPE_NAME_LENGTH = 120;

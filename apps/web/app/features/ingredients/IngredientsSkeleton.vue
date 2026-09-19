@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Skeleton de refresco (paridad con `IngredientsSkeleton.astro`): card de
+ * Skeleton de refresco (paridad con `IngredientsSkeleton`): card de
  * creación de escritorio + filas de la tabla.
  */
 </script>

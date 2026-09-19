@@ -17,7 +17,7 @@ const EMPTY_COUNTS = { recipes: 0, ingredients: 0 };
 /**
  * Datos de la página de Settings.
  *
- * Réplica del SSR de Astro: sincroniza el checkout si llega `?session_id=`,
+ * Réplica del SSR del baseline: sincroniza el checkout si llega `?session_id=`,
  * carga los contadores y, sólo cuando la vista lo necesita (tab de facturación,
  * retorno de Stripe o sincronización), refresca la suscripción — que es el único
  * camino donde el API expone `scheduledChange`. Un fallo del API no tumba la

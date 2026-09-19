@@ -96,7 +96,7 @@ describe("FixedCostCard", () => {
     expect(wrapper.text()).toContain("Por Mezcla");
     expect(wrapper.text()).toContain("$50.00");
     expect(wrapper.find("[data-fc-hours-label]").exists()).toBe(false);
-    // En vista sólo se ofrece editar (Astro esconde también el ícono de borrar).
+    // En vista sólo se ofrece editar (el baseline esconde también el ícono de borrar).
     expect(
       wrapper.find("button[aria-label='Eliminar costo fijo']").exists(),
     ).toBe(false);

@@ -13,8 +13,7 @@ import type { AuthVariables } from "../middleware/auth";
 /**
  * Mutaciones de cuenta: JSON + envelope con la misma forma que el resto del API.
  *
- * El consumidor es el cliente Nuxt (`useApi`, CSRF por doble-submit); el árbol
- * Astro es referencia y no se despliega desde la rama del rework. La política
+ * El consumidor es el cliente Nuxt (`useApi`, CSRF por doble-submit). La política
  * de contraseña es la misma de sign-up/reset (`validatePassword`), no el
  * mínimo suelto de 6 que arrastraba el handler anterior.
  */

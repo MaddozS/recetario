@@ -227,7 +227,7 @@ test("con prefers-reduced-motion el drawer cerrado no tapa la página", async ({
   page,
   goto,
 }) => {
-  // Regresión: el CSS heredado de Astro forzaba `translateX(0)` y el panel
+  // Regresión: el CSS heredado del baseline forzaba `translateX(0)` y el panel
   // quedaba visible con el menú cerrado.
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.setViewportSize({ width: 375, height: 800 });

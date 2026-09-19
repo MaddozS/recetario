@@ -10,7 +10,7 @@ import type {
  * Cálculo del planificador de producción: consolida los insumos de todas las
  * recetas seleccionadas, escala por mezclas y proyecta costos e ingresos.
  *
- * Puerto de `src/lib/production-calculator.ts` del árbol Astro con la misma
+ * Puerto del `production-calculator.ts` del baseline con la misma
  * fórmula; la única diferencia es que las recetas se cruzan por **id** y no por
  * posición. Módulo puro: cubierto en `test/unit`.
  */

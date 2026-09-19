@@ -194,7 +194,7 @@ describe("toFixedCostPayload", () => {
     });
   });
 
-  it("manda las horas sólo con PER_HOUR (limpia el valor pegado de Astro)", () => {
+  it("manda las horas sólo con PER_HOUR (limpia el valor pegado del baseline)", () => {
     expect(
       toFixedCostPayload({
         name: "Luz",

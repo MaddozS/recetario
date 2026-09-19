@@ -3,7 +3,7 @@ import type { BillingInterval } from "./billing-interval";
 import { formatBillingDate } from "./billing-format";
 
 /**
- * Estado y copys del cambio de plan, portados del `PricingModal.astro`.
+ * Estado y copys del cambio de plan, portados del `PricingModal`.
  *
  * Puro y sin aliases: cubierto por `test/unit`. El baseline recalculaba estas
  * reglas mutando `data-*` del DOM; aquí se derivan del estado.

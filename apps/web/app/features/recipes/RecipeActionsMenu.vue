@@ -3,7 +3,7 @@ import { nextTick, onBeforeUnmount, onMounted, ref } from "vue";
 
 /**
  * Menú de acciones de una receta. Sustituye al listener delegado de
- * `recipe-actions.ts` + los `data-*` de Astro por estado Vue local: cada menú
+ * `recipe-actions.ts` + los `data-*` del baseline por estado Vue local: cada menú
  * gestiona su propio `open` y se cierra al hacer click fuera (con cleanup).
  *
  * Dos variantes: `card` (el menú de una tarjeta del listado, anclado arriba a la

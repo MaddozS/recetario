@@ -38,7 +38,7 @@ import type { MutationOutcome } from "./useRecipes";
  * mezcla y los importes por pieza se recalculan solos. No hay recargas ni
  * parches de DOM, que es lo que hacía el baseline con sus custom elements.
  *
- * El CRUD es autónomo del modo de edición de la receta (`?edit=true`): Astro
+ * El CRUD es autónomo del modo de edición de la receta (`?edit=true`): el baseline
  * escondía «Nueva Presentación» detrás de ese modo.
  */
 export type RecipeFinancialsMutation = RecipeFinancialsAction;

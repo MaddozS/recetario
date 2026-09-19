@@ -13,7 +13,7 @@ defineProps<{
   name: string;
   /** Valor editable del formulario (input de categoría). */
   category: string;
-  /** Categoría guardada: la del badge, como en Astro (no cambia al teclear). */
+  /** Categoría guardada: la del badge, como en el baseline (no cambia al teclear). */
   savedCategory: string;
   editMode: boolean;
   saving: boolean;

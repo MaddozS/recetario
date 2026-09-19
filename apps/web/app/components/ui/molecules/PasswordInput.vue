@@ -23,7 +23,7 @@ withDefaults(
 
 const model = defineModel<string>();
 
-// Reemplaza `password-toggle.ts` y sus listeners `astro:*`.
+// Reemplaza al `password-toggle.ts` del baseline.
 const visible = ref(false);
 </script>
 

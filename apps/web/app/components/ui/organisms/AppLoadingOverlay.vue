@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Overlay de proceso (paridad con `showLoadingOverlay` de Astro) para acciones
+ * Overlay de proceso (paridad con `showLoadingOverlay` del baseline) para acciones
  * que bloquean la pantalla, como cerrar sesión. Se controla con el estado
  * compartido `loading-overlay`.
  */

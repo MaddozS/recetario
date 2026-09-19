@@ -10,8 +10,7 @@ import type { Directive } from "vue";
  *   `reveal-visible` y deja de observar. Con `prefers-reduced-motion` el
  *   bloque se muestra sin animación y no se observa.
  *
- * Sustituye a los dos observers globales y a los hooks `astro:after-swap` del
- * `LandingLayout` de Astro.
+ * Sustituye a los dos observers globales del `LandingLayout` del baseline.
  */
 
 const VARIANT_MODIFIERS = ["left", "right", "scale"] as const;

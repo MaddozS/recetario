@@ -8,12 +8,11 @@ import type { RecipeFormValidation } from "./recipe-detail-form";
  * reducers y los importes derivados por pieza.
  *
  * Módulo puro sin aliases: cubierto en `test/unit`. Sustituye al custom element
- * `presentation-card` del árbol Astro
- * (`src/components/organisms/recipes/PresentationCard.astro`), que recalculaba
- * todo escribiendo `textContent` y `className`.
+ * `presentation-card` del baseline, que recalculaba todo escribiendo
+ * `textContent` y `className`.
  *
- * Los costos fijos por presentación siguen sin UI (paridad con Astro, que no
- * monta `PresentationFixedCosts.astro`), pero el cálculo los soporta porque el
+ * Los costos fijos por presentación siguen sin UI (paridad con el baseline, que no
+ * monta `PresentationFixedCosts`), pero el cálculo los soporta porque el
  * detalle del API ya los devuelve.
  */
 export type PresentationRecord = z.infer<typeof presentationSchema>;
@@ -44,7 +43,7 @@ export function formatPrice(value: number): string {
   return value.toFixed(2);
 }
 
-/** Piezas totales con dos decimales, en el formato que mostraba Astro. */
+/** Piezas totales con dos decimales, en el formato que mostraba el baseline. */
 export function formatUnits(value: number): string {
   return String(Math.round(value * 100) / 100);
 }
@@ -80,7 +79,7 @@ export type PresentationMetrics = {
 /**
  * Costos fijos de la presentación. `PER_UNIT` multiplica por el rendimiento y
  * por el multiplicador; el resto de montos sólo por el multiplicador, y los
- * porcentajes se calculan sobre el costo de la mezcla (paridad con Astro).
+ * porcentajes se calculan sobre el costo de la mezcla (paridad con el baseline).
  */
 export function computePresentationFixedCostsTotal(
   fixedCosts: ReadonlyArray<{ type: string; base: string; value: number }>,
@@ -172,7 +171,7 @@ export function computePresentationMetrics(
 
 /**
  * Siembra del formulario. Sin precio guardado el input muestra el sugerido (lo
- * hacía Astro) pero queda limpio de "suciedad": guardar sin tocarlo no persiste
+ * hacía el baseline) pero queda limpio de "suciedad": guardar sin tocarlo no persiste
  * un importe calculado.
  */
 export function presentationDraftFromRecord(

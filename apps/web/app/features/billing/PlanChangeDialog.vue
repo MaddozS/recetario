@@ -8,7 +8,7 @@ import type { BillingInterval } from "./billing-interval";
 import { planAction } from "./billing-plan-state";
 
 /**
- * Selector de planes del tab de facturación (puerto del `PricingModal.astro`).
+ * Selector de planes del tab de facturación (puerto del `PricingModal`).
  *
  * Reutiliza las piezas de Task 5 (`BillingIntervalToggle`, `PlanPrice`,
  * `PlanFeatureList`) sin forzar el layout de `/pricing`, y emite la elección:

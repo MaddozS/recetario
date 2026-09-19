@@ -6,7 +6,7 @@ import type { MutationOutcome } from "~/features/recipes/useRecipes";
 import RecipeErrorAlert from "~/features/recipes/RecipeErrorAlert.vue";
 
 /**
- * Confirmación de borrado desde el listado. Mejora registrada sobre Astro (allí
+ * Confirmación de borrado desde el listado. Mejora registrada sobre el baseline (allí
  * el menú de la card no ofrecía Eliminar): el borrado se resuelve en sitio, sin
  * recargar.
  */

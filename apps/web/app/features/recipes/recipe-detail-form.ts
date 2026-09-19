@@ -88,7 +88,7 @@ export function formatIngredientLabel(ingredient: {
 /**
  * Catálogo de unidades de la receta: las estándar más las descubiertas en los
  * ingredientes y en las filas de la receta, sin duplicados y en orden de
- * aparición (paridad con Astro).
+ * aparición (paridad con el baseline).
  */
 export function buildUnitOptions(
   allIngredients: ReadonlyArray<{ unit: string }>,
@@ -175,7 +175,7 @@ export function invalidRows(rows: readonly IngredientRow[]): IngredientRow[] {
 }
 
 /**
- * Gate del guardado. Astro descartaba las filas inválidas en silencio y, si
+ * Gate del guardado. El baseline descartaba las filas inválidas en silencio y, si
  * todas lo eran, el `PATCH` borraba todos los ingredientes: aquí se avisa.
  */
 export function validateRecipeForm(

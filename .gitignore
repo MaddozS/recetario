@@ -1,7 +1,4 @@
-# build output
-dist/
-
-# Nuxt build output (temporal mientras convive con el árbol Astro)
+# Nuxt build output
 .nuxt/
 .output/
 test-results/
@@ -10,9 +7,6 @@ playwright-report/
 # package compilation output
 packages/*/dist/
 *.tsbuildinfo
-
-# generated types
-.astro/
 
 # generated Prisma clients
 **/generated/prisma/

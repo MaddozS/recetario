@@ -536,7 +536,7 @@ test("404: una receta inexistente redirige al listado", async ({ request }) => {
     maxRedirects: 0,
   });
 
-  // El SSR responde con un redirect al listado (paridad con Astro).
+  // El SSR responde con un redirect al listado (paridad con el baseline).
   expect([302, 303, 307]).toContain(response.status());
   expect(response.headers()["location"] ?? "").toContain("/recipes");
 });

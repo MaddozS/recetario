@@ -49,7 +49,7 @@ export function ingredientFormFrom(
   };
 }
 
-/** Paridad con `parseNumberInput` de Astro: trim, coma → punto y `""` → NaN. */
+/** Paridad con `parseNumberInput` del baseline: trim, coma → punto y `""` → NaN. */
 export function parseIngredientNumber(raw: string | null | undefined): number {
   const normalized = String(raw ?? "")
     .trim()
@@ -68,7 +68,7 @@ export function isValidIngredientQuantity(raw: string): boolean {
   return Number.isFinite(quantity) && quantity > 0;
 }
 
-/** Gate del botón de submit (paridad con el script de Astro). */
+/** Gate del botón de submit (paridad con el script del baseline). */
 export function isIngredientFormValid(values: IngredientFormValues): boolean {
   return (
     values.name.trim().length > 0 &&
@@ -77,7 +77,7 @@ export function isIngredientFormValid(values: IngredientFormValues): boolean {
   );
 }
 
-/** Mensajes verbatim del formulario de Astro. */
+/** Mensajes verbatim del formulario del baseline. */
 export function validateIngredientInput(
   values: IngredientFormValues,
 ): string | null {

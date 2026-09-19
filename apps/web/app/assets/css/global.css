@@ -2,8 +2,7 @@
 @import "./tokens.css";
 
 /* Fuentes Tailwind deterministas: sólo `apps/web/app`. `source(none)` desactiva
-   la detección automática de Tailwind, que si no escanearía el monorepo entero
-   (árbol Astro y `packages/ui` incluidos). */
+   la detección automática de Tailwind, que si no escanearía el monorepo entero. */
 @source "../..";
 
 @custom-variant dark (&:where(.dark, .dark *));

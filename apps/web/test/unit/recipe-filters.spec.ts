@@ -48,7 +48,7 @@ describe("matchesRecipeSearch", () => {
     expect(matchesRecipeSearch(FLAN, "CAFÉ")).toBe(true);
   });
 
-  it("sólo busca en el nombre (paridad con Astro)", () => {
+  it("sólo busca en el nombre (paridad con el baseline)", () => {
     expect(matchesRecipeSearch(TARTA, "postres")).toBe(false);
   });
 

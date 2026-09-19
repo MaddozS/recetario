@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Estado vacío del recetario. Copy heredado con tildes corregidas (Astro
+ * Estado vacío del recetario. Copy heredado con tildes corregidas (el baseline
  * escribía "Todavia"/"aqui"/"boton"/"tambien" y mencionaba un botón del sidebar
  * que no existe).
  */

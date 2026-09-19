@@ -3,7 +3,7 @@ import { plansListResponseSchema, type PricingPlan } from "@recetario/types";
 /**
  * Catálogo público de planes (`GET /api/billing/plans`, sin auth).
  *
- * La landing de Astro degradaba a `[]` con un `console.error` si el API falla;
+ * La landing del baseline degradaba a `[]` con un `console.error` si el API falla;
  * aquí se conserva ese contrato para no romper el render público. `useAsyncData`
  * comparte la misma clave entre landing y `/pricing`, así que la navegación
  * cliente no vuelve a pedirla.

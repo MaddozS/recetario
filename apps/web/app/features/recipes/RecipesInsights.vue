@@ -3,7 +3,7 @@ import { timeAgo } from "@recetario/stripe/formatters";
 import { computed } from "vue";
 
 /**
- * Tarjetas de estado del recetario. Paridad con las "info-cards" de Astro: el
+ * Tarjetas de estado del recetario. Paridad con las "info-cards" del baseline: el
  * mensaje cambia según haya o no recetas incompletas / sin categoría.
  */
 const props = defineProps<{

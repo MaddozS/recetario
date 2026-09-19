@@ -85,7 +85,7 @@ export function isPublicMarketingPath(path: string): boolean {
 
 /**
  * Rutas con acento coral: las públicas indexables y las de autenticación
- * (paridad con el `data-accent="coral"` del `LandingLayout` de Astro).
+ * (paridad con el `data-accent="coral"` del `LandingLayout` del baseline).
  */
 export function isCoralAccentPath(path: string): boolean {
   return isPublicMarketingPath(path) || isAuthPath(path);

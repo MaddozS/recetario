@@ -1,73 +1,75 @@
 {
+  // Config única del worker Nuxt (Task 13b): el artefacto es el output de Nitro.
+  // Nitro corre con `cloudflare.deployConfig: false`, así que Wrangler siempre
+  // lee este archivo (el generado en `.output/server/wrangler.json` lo pisaría y
+  // descartaría los `env` y los settings del dashboard).
   "name": "recetario-web",
+  "main": ".output/server/index.mjs",
   "assets": {
-    "directory": "./dist/client",
-    "binding": "ASSETS"
+    "directory": ".output/public",
+    "binding": "ASSETS",
   },
-  "compatibility_date": "2026-07-28",
+  "compatibility_date": "2026-08-01",
   "compatibility_flags": ["nodejs_compat"],
   "observability": {
-    "enabled": true
+    "enabled": true,
   },
   "vars": {
-    "NODE_ENV": "production"
+    "NODE_ENV": "production",
   },
-  // "kv_namespaces": [
-  //   {
-  //     "binding": "SESSION",
-  //     "id": "10323f891e024ef0ad89099b717c2c79"
-  //   }
-  // ],
   "services": [
     {
       "binding": "API",
-      "service": "recetario-api"
-    }
+      "service": "recetario-api",
+    },
   ],
   "env": {
     "staging": {
       "name": "recetario-web-staging",
-      "main": "dist/server/entry.mjs",
+      "main": ".output/server/index.mjs",
       "assets": {
-        "directory": "./dist/client",
-        "binding": "ASSETS"
+        "directory": ".output/public",
+        "binding": "ASSETS",
       },
       "compatibility_date": "2026-08-01",
       "compatibility_flags": ["nodejs_compat"],
       "observability": {
-        "enabled": true
+        "enabled": true,
       },
       "services": [
         {
           "binding": "API",
-          "service": "recetario-api-staging"
-        }
+          "service": "recetario-api-staging",
+        },
       ],
       "vars": {
-        "NODE_ENV": "staging"
-      }
+        "NODE_ENV": "staging",
+      },
     },
     "production": {
       "name": "recetario-web-production",
-      "main": "dist/server/entry.mjs",
+      "main": ".output/server/index.mjs",
       "assets": {
-        "directory": "./dist/client",
-        "binding": "ASSETS"
+        "directory": ".output/public",
+        "binding": "ASSETS",
       },
       "compatibility_date": "2026-08-01",
       "compatibility_flags": ["nodejs_compat"],
       "observability": {
-        "enabled": true
+        "enabled": true,
       },
       "services": [
         {
           "binding": "API",
-          "service": "recetario-api-production"
-        }
+          "service": "recetario-api-production",
+        },
       ],
       "vars": {
-        "NODE_ENV": "production"
-      }
-    }
-  }
+        "NODE_ENV": "production",
+        // Fail-closed: staging no define esta var y emite noindex + robots
+        // bloqueado. Producción la activa aquí (no en el dashboard).
+        "NUXT_PUBLIC_INDEXABLE": "true",
+      },
+    },
+  },
 }

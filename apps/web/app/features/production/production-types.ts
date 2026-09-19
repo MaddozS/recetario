@@ -7,7 +7,7 @@ import type { z } from "zod";
 /**
  * Tipos del planificador de producción.
  *
- * Puerto de `src/lib/production-types.ts` del árbol Astro. Los registros del
+ * Puerto del `production-types.ts` del baseline. Los registros del
  * API se derivan de los schemas (`@recetario/types`) para no duplicar el
  * contrato.
  */

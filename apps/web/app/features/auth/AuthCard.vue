@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * Tarjeta de las cinco páginas de auth (paridad con el markup de Astro): barra
+ * Tarjeta de las cinco páginas de auth (paridad con el markup del baseline): barra
  * de acento superior, cabecera opcional con icono y h1, y slot para el
  * formulario o los estados.
  */

@@ -23,7 +23,6 @@ module.exports = {
   ignorePatterns: [
     'node_modules/',
     'dist/',
-    '.astro/',
     'generated/',
     '*.config.js',
     '*.config.mjs',

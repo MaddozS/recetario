@@ -3,7 +3,7 @@ import type { RecipeRecord } from "~/features/recipes/recipe-state";
 import RecipeGridCard from "~/features/recipes/RecipeGridCard.vue";
 
 /**
- * Grid del listado. Sustituye al parche de Astro que ocultaba/mostraba cards e
+ * Grid del listado. Sustituye al parche del baseline que ocultaba/mostraba cards e
  * inyectaba el bloque de "sin resultados" con `innerHTML`: aquí el estado
  * filtrado ya viene resuelto y el bloque es declarativo.
  */

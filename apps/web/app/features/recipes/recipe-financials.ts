@@ -9,7 +9,7 @@ import type { z } from "zod";
  * Cálculos financieros del detalle de receta (costos de insumos, costos fijos y
  * filas del `FinancialSummary`).
  *
- * Puerto de `src/lib/recipe-financials.ts` del árbol Astro, con los mismos
+ * Puerto del `recipe-financials.ts` del baseline, con los mismos
  * nombres para poder comparar. Módulo puro: cubierto en `test/unit`.
  *
  * Los tipos se derivan de los schemas del API (`ingredientSchema`,

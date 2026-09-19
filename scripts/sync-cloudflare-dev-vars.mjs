@@ -30,11 +30,8 @@ function ensure(content, key, value) {
 // stale entry, fix again". Nuxt keeps the cache outside node_modules
 // (`vite.cacheDir` en `nuxt.config.ts`) para sobrevivir a pnpm install.
 const viteCache = resolve(root, "apps/web/.vite-cache/web");
-const astroCache = resolve(root, "apps/web/node_modules/.astro");
-for (const dir of [viteCache, astroCache]) {
-  if (existsSync(dir)) {
-    rmSync(dir, { recursive: true, force: true });
-  }
+if (existsSync(viteCache)) {
+  rmSync(viteCache, { recursive: true, force: true });
 }
 
 if (!existsSync(envPath)) {

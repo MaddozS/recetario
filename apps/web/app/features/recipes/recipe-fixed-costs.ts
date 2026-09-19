@@ -8,8 +8,7 @@ import type { RecipeFormValidation } from "./recipe-detail-form";
  * reducers de la lista.
  *
  * Módulo puro sin aliases: cubierto en `test/unit`. Sustituye al custom element
- * `fixed-cost-card` del árbol Astro (`src/lib/fixed-cost-card.ts`), que leía y
- * escribía el DOM a mano.
+ * `fixed-cost-card` del baseline, que leía y escribía el DOM a mano.
  *
  * El tipo se deriva del schema del API (`recipeFixedCostSchema`) para no
  * duplicar el contrato, igual que el resto de la feature.
@@ -45,7 +44,7 @@ export const FIXED_COST_BASE_LABELS: Record<FixedCostBase, string> = {
 };
 
 /**
- * Familias semánticas de los badges. Astro usaba `bg-turmeric-bg`,
+ * Familias semánticas de los badges. El baseline usaba `bg-turmeric-bg`,
  * `bg-herb-bg` y `bg-chili-bg`, que no existen en el design system (utilidades
  * muertas: los badges salían sin fondo); aquí se mapean a warning/success/danger.
  */
@@ -66,7 +65,7 @@ export const FIXED_COST_BASE_BADGE_COLORS: Record<
   PER_HOUR: "danger",
 };
 
-/** `"10%"` para porcentajes y `"$12.00"` para montos (paridad con Astro). */
+/** `"10%"` para porcentajes y `"$12.00"` para montos (paridad con el baseline). */
 export function fixedCostDisplayValue(fc: {
   type: FixedCostType;
   value: number;

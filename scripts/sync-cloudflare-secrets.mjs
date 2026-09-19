@@ -128,15 +128,6 @@ function buildCommands(env, secretsMap, values, only) {
         cmd: `pnpm exec wrangler secret put ${key} --env ${envConfig.workers}`,
       });
     }
-    if (entry.targets.includes("pages")) {
-      commands.push({
-        secret: key,
-        target: "pages",
-        value,
-        cwd: null,
-        cmd: `pnpm exec wrangler pages secret put ${key} --branch ${envConfig.pages} --project-name recetario`,
-      });
-    }
   }
 
   return commands;

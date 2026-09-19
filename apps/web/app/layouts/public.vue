@@ -19,7 +19,7 @@
 
 <style>
 /* Estilos del shell público (antes en el `<style is:global>` del
-   `LandingLayout.astro`): scroll suave, reveals, hovers de tarjetas y el pulso
+   `LandingLayout` del baseline): scroll suave, reveals, hovers de tarjetas y el pulso
    del plan Pro. Los `reveal-item` se revelan cuando su contenedor `[data-reveal]`
    recibe `reveal-visible` (directiva `v-reveal`). */
 html {

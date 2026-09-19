@@ -10,7 +10,7 @@ import type { MutationOutcome } from "./useRecipes";
 
 /**
  * Presentaciones de venta: cabecera con el alta, grid de cards y estado vacío.
- * El CRUD es independiente del modo de edición de la receta (Astro escondía
+ * El CRUD es independiente del modo de edición de la receta (el baseline escondía
  * «Nueva Presentación» detrás de `?edit=true`).
  */
 defineProps<{

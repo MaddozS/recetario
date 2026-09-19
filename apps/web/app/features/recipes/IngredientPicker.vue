@@ -10,7 +10,7 @@ import type { IngredientRecord } from "./recipe-detail-form";
  * Sustituye al `<select>` oculto + input + dropdown con delegación de eventos del
  * baseline: aquí el texto, el filtro y el panel son estado del componente, así
  * que el `<select>` no puede quedar desincronizado del texto (el motivo del
- * *fallback* «adivinar por nombre al enviar» de Astro, que desaparece).
+ * *fallback* «adivinar por nombre al enviar» del baseline, que desaparece).
  *
  * El filtro normaliza con NFD, igual que el resto de búsquedas.
  */

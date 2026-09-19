@@ -52,7 +52,7 @@ export function isIngredientInUse(error: unknown): boolean {
 }
 
 /**
- * Copy del límite de plan. Corrige las tildes que arrastraba el texto de Astro
+ * Copy del límite de plan. Corrige las tildes que arrastraba el texto del baseline
  * ("limite"/"mas"); cuando recetas porte su mensaje debe usar este mismo texto.
  * El rango se omite si el plan es ilimitado (caso defensivo).
  */

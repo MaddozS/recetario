@@ -31,7 +31,7 @@ import type { RecipeRecord, RecipesSnapshot } from "./recipe-state";
  * La instantánea (recetas + ingredientes usados) llega del SSR en una sola
  * llamada y se muta en sitio con los reducers puros: crear, duplicar y eliminar
  * no recargan la página. Crear y duplicar navegan después en cliente a
- * `/recipes/{id}?edit=true` (paridad con Astro), así que el reducer corre antes
+ * `/recipes/{id}?edit=true` (paridad con el baseline), así que el reducer corre antes
  * de salir para que el listado siga siendo correcto al volver.
  *
  * El filtro por categoría vive en la URL (`?category=`), de modo que el
@@ -110,7 +110,7 @@ export function useRecipes() {
 
   const searchQuery = ref("");
 
-  /** `null` = todas, `""` = sin categoría (paridad con `?category=` de Astro). */
+  /** `null` = todas, `""` = sin categoría (paridad con `?category=` del baseline). */
   const category = computed<string | null>(() => {
     const value = route.query.category;
     return typeof value === "string" ? value : null;

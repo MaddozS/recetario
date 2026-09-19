@@ -21,7 +21,7 @@ import type {
 
 /**
  * Card de un costo fijo de la receta. Sustituye al custom element
- * `fixed-cost-card` de Astro: aquí el modo (vista/edición/creación) es estado
+ * `fixed-cost-card` del baseline: aquí el modo (vista/edición/creación) es estado
  * reactivo y la mutación llega como function prop, así que la card no toca el
  * DOM ni recarga la página.
  *

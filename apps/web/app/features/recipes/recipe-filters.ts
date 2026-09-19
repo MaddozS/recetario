@@ -18,7 +18,7 @@ export type RecipeCategorySource = {
 };
 
 export type RecipeFilter = {
-  /** Texto libre; sólo se compara contra el nombre (paridad con Astro). */
+  /** Texto libre; sólo se compara contra el nombre (paridad con el baseline). */
   query: string;
   /** `null` = todas, `""` = sin categoría, otro valor = match exacto. */
   category: string | null;

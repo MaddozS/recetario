@@ -62,7 +62,7 @@ function openDelete(recipe: RecipeRecord): void {
   deleteOpen.value = true;
 }
 
-/** Crear navega a la vista de edición de la receta nueva (paridad Astro). */
+/** Crear navega a la vista de edición de la receta nueva (paridad el baseline). */
 async function submitCreate(
   values: RecipeFormValues,
 ): Promise<MutationOutcome> {

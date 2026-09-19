@@ -41,7 +41,7 @@ export function recipeStats<T extends RecipeStatsSource>(
   };
 }
 
-/** ISO más reciente de la lista (comparación lexicográfica, como Astro). */
+/** ISO más reciente de la lista (comparación lexicográfica, como el baseline). */
 export function lastUpdatedAt(
   recipes: readonly RecipeStatsSource[],
 ): string | null {

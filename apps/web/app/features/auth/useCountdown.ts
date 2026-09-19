@@ -6,7 +6,7 @@ const TICK_MS = 1000;
 /**
  * Countdown de un solo intervalo que avisa al expirar y se limpia al desmontar.
  *
- * Sustituye a la cadena recursiva de `setTimeout` de `reset-password.astro`, que
+ * Sustituye a la cadena recursiva de `setTimeout` de `reset-password`, que
  * no tenía cleanup y seguía viva tras abandonar la página.
  */
 export function useCountdown(onExpire: () => void) {

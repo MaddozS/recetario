@@ -5,7 +5,7 @@ import { UNIT_OPTIONS } from "~/features/ingredients/ingredient-units";
 /**
  * Campos compartidos por los tres formularios de ingredientes (card de
  * escritorio, dialog móvil y dialog de edición). Paridad con
- * `IngredientFormFields.astro`: el componente no incluye `<form>`, botón de
+ * `IngredientFormFields`: el componente no incluye `<form>`, botón de
  * submit ni preview de costo; el padre decide el layout.
  *
  * Multi-root a propósito: en la variante `create` los cinco campos son nodos

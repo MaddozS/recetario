@@ -7,7 +7,7 @@ import {
 
 /**
  * Preview vivo del costo unitario: `price / purchaseQuantity` con la unidad
- * elegida. Sustituye a `updateIngredientForm()` del script de Astro (que
+ * elegida. Sustituye a `updateIngredientForm()` del script del baseline (que
  * mutaba el DOM a mano) por estado reactivo.
  */
 const props = defineProps<{
