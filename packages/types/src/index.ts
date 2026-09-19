@@ -1,4 +1,5 @@
 export * from "./types";
+export * from "./api/account";
 export * from "./api/errors";
 export * from "./api/errors.zod";
 export * from "./api/ingredients";

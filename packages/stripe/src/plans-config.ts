@@ -37,6 +37,13 @@ export const FEATURE_FLAGS: Record<string, Record<string, boolean>> = {
   pro: PRO_FEATURES,
 };
 
+/**
+ * Recetas por plan de producción en Basic. Fuente única: la UI lo anticipa y
+ * `by-ids` de Hono lo exige (la web lo importa por el subpath puro
+ * `@recetario/stripe/plans-config`).
+ */
+export const PRODUCTION_BASIC_RECIPE_LIMIT = 3;
+
 export const FREE_FEATURES: Record<string, boolean> = {
   recipe_duplicate: false,
   recipe_photos: false,
@@ -78,7 +85,7 @@ export const TIER_CONFIG: Record<string, TierConfig> = {
   basic: {
     name: "Basic",
     description: "Para negocios en crecimiento",
-    badge: { text: "Recomendado", class: "bg-success-bg text-success" },
+    badge: { text: "Recomendado" },
     limits: { recipes: 75, ingredients: null },
     features: [
       { text: "Hasta 75 recetas", included: true },
@@ -100,7 +107,7 @@ export const TIER_CONFIG: Record<string, TierConfig> = {
   pro: {
     name: "Pro",
     description: "Para profesionales",
-    badge: { text: "Mas popular", class: "bg-accent-600 text-white" },
+    badge: { text: "Mas popular" },
     limits: { recipes: null, ingredients: null },
     features: [
       { text: "Recetas ilimitadas", included: true },

@@ -5,8 +5,12 @@ export {
   getCsrfHeader,
   getCsrfFormField,
   setCsrfCookieHeader,
+  extractCsrfCookie,
+  getTrustedOrigins,
+  resolveRequestOrigin,
   validateCsrf,
 } from "./csrf";
+export { recordSignInAudit } from "./session-audit";
 export {
   validatePassword,
   getRuleResults,

@@ -1,5 +1,7 @@
 # Decompose monolithic Astro page files
 
+> **Histórico (pre-Nuxt).** Documento de la etapa anterior a la migración a Nuxt (Task 13b): se conserva como registro, no como guía operativa, y las rutas o comandos que cita pueden no existir. Ver `docs/README.md`.
+
 ## Problem Statement
 
 Three Astro page files exceed 1,000 lines each: `recipes/[recipe].astro` (1,762 lines), `ingredients.astro` (1,115 lines), and `settings.astro` (1,232 lines). These files mix data fetching (Prisma queries), POST form handling (mutations), template markup, and inline client scripts in a single module. The recipe page alone handles recipe CRUD, presentation CRUD, fixed-cost CRUD, ingredient management, instructions editing, tab state, and production calculations. Navigating a single concern (e.g., understanding how ingredient updates work) requires scrolling past unrelated markup and form-handling code for other features.

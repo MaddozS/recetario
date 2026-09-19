@@ -22,6 +22,8 @@ describe("codeToStatus", () => {
     expect(codeToStatus("VALIDATION_ERROR")).toBe(400);
     expect(codeToStatus("UNAUTHENTICATED")).toBe(401);
     expect(codeToStatus("FORBIDDEN")).toBe(403);
+    expect(codeToStatus("PLAN_LIMIT")).toBe(403);
+    expect(codeToStatus("FEATURE_REQUIRED")).toBe(403);
     expect(codeToStatus("NOT_FOUND")).toBe(404);
     expect(codeToStatus("INTERNAL")).toBe(500);
     expect(codeToStatus("DOMAIN_ERROR")).toBe(409);

@@ -1,5 +1,7 @@
 # Spec: Costos Fijos Avanzados
 
+> **Histórico (pre-Nuxt).** Documento de la etapa anterior a la migración a Nuxt (Task 13b): se conserva como registro, no como guía operativa, y las rutas o comandos que cita pueden no existir. Ver `docs/README.md`.
+
 Created: 2026-06-12 14:30
 Orchestrator: orchestrator
 Status: approved

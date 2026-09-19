@@ -1,5 +1,7 @@
 # Decompose monolithic auth config into focused modules
 
+> **Histórico (pre-Nuxt).** Documento de la etapa anterior a la migración a Nuxt (Task 13b): se conserva como registro, no como guía operativa, y las rutas o comandos que cita pueden no existir. Ver `docs/README.md`.
+
 ## Problem Statement
 
 The `initAuth()` function in `packages/auth/src/auth.ts` is 114 lines of a single Better Auth config object. The `sendResetPassword` callback alone mixes database read/write, crypto token generation, URL construction, HTML rendering, and email dispatch — five distinct concerns in one function. While `password-reset.ts` and `email.ts` already exist as separate modules, the callback composition lives inside `auth.ts`, making it untestable in isolation and coupling the auth config to every concern it touches.

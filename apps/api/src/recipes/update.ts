@@ -3,6 +3,7 @@ import { getRecipe, updateRecipe } from "@recetario/db";
 import { auth } from "@recetario/auth/server";
 import { recipeUpdateSchema } from "@recetario/types";
 import { ApiError } from "../errors";
+import { shapeRecipeDetail } from "./shape";
 
 export function recipesUpdateHandler(): Handler {
   return async (c) => {
@@ -66,6 +67,10 @@ export function recipesUpdateHandler(): Handler {
     );
 
     const updated = await getRecipe(id, session.user.id);
-    return c.json(updated);
+    if (!updated) {
+      throw new ApiError("NOT_FOUND", "Recipe not found");
+    }
+
+    return c.json(shapeRecipeDetail(updated));
   };
 }

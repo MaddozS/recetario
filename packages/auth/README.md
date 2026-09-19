@@ -28,8 +28,8 @@ import { validateCsrf, generateToken } from "@recetario/auth";
 
 ### Server vs Client
 
-- Server-side files (`auth.ts`, `csrf.ts`, `email.ts`, etc.) use `process.env.*` — standard Node.js environment variables. Resolved at runtime on Cloudflare Workers/Pages (set via `wrangler secret put` or dashboard; local dev via `apps/*/.dev.vars`, synced from root `.env` by `pnpm dev`).
-- Client-side file (`auth-client.ts`) uses `import.meta.env.PUBLIC_*` — Vite/Astro build-time substitution. Only `PUBLIC_*` prefixed vars are available to browser code.
+- Server-side files (`auth.ts`, `csrf.ts`, `email.ts`, etc.) use `process.env.*` — standard Node.js environment variables. Resolved at runtime on Cloudflare Workers (set via `wrangler secret put`; local dev via `apps/*/.dev.vars`, synced from root `.env` by `pnpm dev`).
+- Client-side file (`auth-client.ts`) uses `import.meta.env.PUBLIC_*` — sustitución en build del bundler. Only `PUBLIC_*` prefixed vars are available to browser code. **La web Nuxt no lo consume**: los flujos de auth pasan por `/api/auth/**` a través del relay (`app/features/auth/useAuthApi.ts`); este cliente queda para consumidores que vivan en el mismo origen que Better Auth.
 - `auth-client.ts` also falls back to `window.location.origin` when the env var is unset (useful during development).
 
 ## Dependencies

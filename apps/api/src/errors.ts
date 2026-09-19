@@ -27,6 +27,8 @@ export function codeToStatus(code: ApiErrorCode): number {
   if (code === "VALIDATION_ERROR") return 400;
   if (code === "UNAUTHENTICATED") return 401;
   if (code === "FORBIDDEN") return 403;
+  if (code === "PLAN_LIMIT") return 403;
+  if (code === "FEATURE_REQUIRED") return 403;
   if (code === "NOT_FOUND") return 404;
   if (code === "DOMAIN_ERROR") return 409;
   return 500;

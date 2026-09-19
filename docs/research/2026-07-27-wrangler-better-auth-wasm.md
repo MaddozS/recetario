@@ -1,5 +1,7 @@
 # wrangler dev + Better Auth + Prisma 7 WASM query compiler
 
+> **Histórico (pre-Nuxt).** Documento de la etapa anterior a la migración a Nuxt (Task 13b): se conserva como registro, no como guía operativa, y las rutas o comandos que cita pueden no existir. Ver `docs/README.md`.
+
 **Date:** 2026-07-27
 **Question:** What "WASM limitation" was the workaround at `apps/web/src/pages/api/auth/[...path].ts` actually working around, and can we delete that file now and let `auth.handler` / `auth.api.*` run in the `apps/api` Hono worker under `wrangler dev`?
 **Status:** open — workaround is not required by Better Auth on this stack; the real risk is the **Prisma 7.8 WASM query-compiler leak** in long-lived isolates, which affects both apps equally but is mitigated by the repo's per-isolate `lazyInit` singleton pattern. Recommend bump `better-auth` → 1.6.25, validate with `wrangler dev`, then delete the workaround file.

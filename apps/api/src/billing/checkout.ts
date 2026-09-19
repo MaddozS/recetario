@@ -1,5 +1,4 @@
 import type { Handler } from "hono";
-import { validateCsrf } from "@recetario/auth/server";
 import {
   getSubscriptionPlanByStripePriceId,
   getStripeCustomerId,
@@ -11,27 +10,25 @@ import {
   subscriptionIngestion,
 } from "@recetario/stripe/server";
 import type { AuthVariables } from "../middleware/auth";
+import { ApiError } from "../errors";
 import { getAppOrigin, safeRedirectUrl } from "../url-utils";
 
 export function stripeCheckoutHandler(): Handler<{ Variables: AuthVariables }> {
   return async (c) => {
     const user = c.get("user");
-    if (!validateCsrf(c.req.raw)) {
-      return c.json({ error: "CSRF validation failed" }, 403);
-    }
 
     let body: { priceId?: string; successUrl?: string; cancelUrl?: string };
     try {
       body = await c.req.json();
     } catch {
-      return c.json({ error: "Invalid request body" }, 400);
+      throw new ApiError("VALIDATION_ERROR", "Invalid request body");
     }
 
     const { priceId, successUrl, cancelUrl } = body;
-    if (!priceId) return c.json({ error: "Missing priceId" }, 400);
+    if (!priceId) throw new ApiError("VALIDATION_ERROR", "Missing priceId");
 
     const plan = await getSubscriptionPlanByStripePriceId(priceId);
-    if (!plan) return c.json({ error: "Invalid price ID" }, 400);
+    if (!plan) throw new ApiError("VALIDATION_ERROR", "Invalid price ID");
 
     const appOrigin = getAppOrigin(c);
     const userId = user.id;
@@ -76,7 +73,8 @@ export function stripeCheckoutHandler(): Handler<{ Variables: AuthVariables }> {
         isTrialing: currentSub.status === "trialing",
       });
       if (!change.ok) {
-        return c.json({ error: change.error }, 500);
+        console.error("[checkout] changePlanIfNeeded failed:", change.error);
+        throw new ApiError("INTERNAL", "Could not apply the plan change");
       }
 
       // Local ingestion is not atomic with the Stripe mutation; ingest the
@@ -90,7 +88,8 @@ export function stripeCheckoutHandler(): Handler<{ Variables: AuthVariables }> {
           context: { authority: "authenticated-user", userId },
         });
       if (!ingestResult.ok) {
-        return c.json({ error: ingestResult.error }, 500);
+        console.error("[checkout] ingestSubscriptionSnapshot failed:", ingestResult.error);
+        throw new ApiError("INTERNAL", "Could not reconcile the subscription");
       }
 
       // No Checkout Session here: local state was ingested synchronously
@@ -122,7 +121,8 @@ export function stripeCheckoutHandler(): Handler<{ Variables: AuthVariables }> {
       trialPeriodDays,
     });
     if (!result.ok) {
-      return c.json({ error: result.error }, 500);
+      console.error("[checkout] createTrustedCheckoutSession failed:", result.error);
+      throw new ApiError("INTERNAL", "Could not start the checkout session");
     }
     return c.json({ url: result.url });
   };

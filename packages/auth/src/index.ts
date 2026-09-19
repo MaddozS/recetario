@@ -10,6 +10,9 @@ export {
   getCsrfHeader,
   getCsrfFormField,
   setCsrfCookieHeader,
+  extractCsrfCookie,
+  getTrustedOrigins,
+  resolveRequestOrigin,
   validateCsrf,
 } from "./csrf";
 

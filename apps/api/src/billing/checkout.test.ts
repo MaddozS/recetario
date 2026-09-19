@@ -6,7 +6,6 @@ import { hostAllowlist } from "../host-allowlist";
 import type { AuthVariables } from "../middleware/auth";
 
 const {
-  mockValidateCsrf,
   mockGetSubscriptionPlanByStripePriceId,
   mockGetStripeCustomerId,
   mockGetSubscriptionByUserId,
@@ -19,7 +18,6 @@ const {
   mockCreateTrustedCheckoutSession,
   mockChangePlanIfNeeded,
 } = vi.hoisted(() => ({
-  mockValidateCsrf: vi.fn(),
   mockGetSubscriptionPlanByStripePriceId: vi.fn(),
   mockGetStripeCustomerId: vi.fn(),
   mockGetSubscriptionByUserId: vi.fn(),
@@ -31,10 +29,6 @@ const {
   mockIngestSubscriptionSnapshot: vi.fn(),
   mockCreateTrustedCheckoutSession: vi.fn(),
   mockChangePlanIfNeeded: vi.fn(),
-}));
-
-vi.mock("@recetario/auth/server", () => ({
-  validateCsrf: mockValidateCsrf,
 }));
 
 vi.mock("@recetario/db", () => ({
@@ -107,24 +101,7 @@ function buildApp() {
 describe("stripeCheckoutHandler", () => {
   beforeEach(() => {
     vi.resetAllMocks();
-    mockValidateCsrf.mockReturnValue(true);
     mockGetSubscriptionByUserId.mockResolvedValue(null);
-  });
-
-  it("returns 403 when CSRF validation fails", async () => {
-    mockValidateCsrf.mockReturnValue(false);
-    const res = await buildApp().request(
-      "/api/stripe/checkout",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ priceId: "price_pro_monthly" }),
-      },
-      {},
-    );
-    expect(res.status).toBe(403);
-    const data = (await res.json()) as any;
-    expect(data.error).toBe("CSRF validation failed");
   });
 
   it("returns 400 when body is invalid JSON", async () => {
@@ -139,7 +116,7 @@ describe("stripeCheckoutHandler", () => {
     );
     expect(res.status).toBe(400);
     const data = (await res.json()) as any;
-    expect(data.error).toBe("Invalid request body");
+    expect(data.error.code).toBe("VALIDATION_ERROR");
   });
 
   it("returns 400 when priceId is missing", async () => {
@@ -154,7 +131,7 @@ describe("stripeCheckoutHandler", () => {
     );
     expect(res.status).toBe(400);
     const data = (await res.json()) as any;
-    expect(data.error).toBe("Missing priceId");
+    expect(data.error.code).toBe("VALIDATION_ERROR");
   });
 
   it("returns 400 when plan is not found for priceId", async () => {
@@ -171,7 +148,7 @@ describe("stripeCheckoutHandler", () => {
     );
     expect(res.status).toBe(400);
     const data = (await res.json()) as any;
-    expect(data.error).toBe("Invalid price ID");
+    expect(data.error.code).toBe("VALIDATION_ERROR");
   });
 
   it("updates existing subscription in-place when user already has an active subscription", async () => {

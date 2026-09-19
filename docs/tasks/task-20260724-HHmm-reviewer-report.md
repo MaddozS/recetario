@@ -1,5 +1,7 @@
 # Reviewer Report: extract shared lazyInit factory
 
+> **Registro de sesión (histórico).** Documento del rework Astro→Nuxt: refleja el estado en su fecha, no la guía operativa actual. La documentación viva está en `docs/README.md`.
+
 ## Review Scope
 - **Spec/Plan**: N/A (diff-only review)
 - **Builder report**: N/A (direct review of commit 04fc7d4 against 75f52bf)

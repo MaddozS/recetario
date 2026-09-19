@@ -1,0 +1,34 @@
+<script setup lang="ts">
+import { isCoralAccentPath } from "#shared/utils/seo";
+import { getAccentCssVars } from "~/utils/accent-colors";
+
+const route = useRoute();
+const { theme, accent, isDark } = useTheme();
+
+// Las rutas públicas de marketing y las de auth siempre son coral (paridad con
+// el `data-accent="coral"` del `LandingLayout` del baseline); el resto usa la
+// preferencia del usuario. `<html>` sigue teniendo un único dueño: `app.vue`.
+const effectiveAccent = computed(() =>
+  isCoralAccentPath(route.path) ? "coral" : accent.value,
+);
+
+const accentCssVars = computed(() =>
+  getAccentCssVars(effectiveAccent.value, isDark.value ? "dark" : "light"),
+);
+
+useHead({
+  htmlAttrs: {
+    "data-theme": theme,
+    "data-accent": effectiveAccent,
+    class: computed(() => (isDark.value ? "dark" : "")),
+    style: accentCssVars,
+  },
+});
+</script>
+
+<template>
+  <NavProgressBar />
+  <NuxtLayout>
+    <NuxtPage />
+  </NuxtLayout>
+</template>

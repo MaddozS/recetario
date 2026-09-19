@@ -1,5 +1,7 @@
 # Spec: Closer Agent — Merge analyst + synthesizer
 
+> **Histórico (pre-Nuxt).** Documento de la etapa anterior a la migración a Nuxt (Task 13b): se conserva como registro, no como guía operativa, y las rutas o comandos que cita pueden no existir. Ver `docs/README.md`.
+
 Created: 2026-06-07
 Orchestrator: orchestrator
 Status: approved

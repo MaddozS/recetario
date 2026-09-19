@@ -1,5 +1,7 @@
 # GitHub Actions: 3 workflows (ci, deploy-web, deploy-api)
 
+> **Nota (Task 13b):** sustituida por un único `deploy.yml` con jobs encadenados `verify` (reusa `ci.yml` vía `workflow_call`) → `deploy-api` → `deploy-web`, y el web ya no usa Cloudflare Pages. Ver ADR-0009 y `DEPLOY.md`.
+
 The monorepo uses three GitHub Actions workflows: `ci.yml` (PR checks), `deploy-web.yml` (Cloudflare Pages), `deploy-api.yml` (Cloudflare Worker). CI and CD are separate because they have different triggers (PR vs push to `dev`/`master`) and different concerns (validation vs deployment). Web and API have separate CD workflows because they use different Cloudflare products with different deploy commands and can be deployed independently — Turborepo detects which app actually changed and skips the other.
 
 ## Considered Options

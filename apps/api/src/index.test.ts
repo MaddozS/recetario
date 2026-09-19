@@ -13,6 +13,7 @@ const mocks = vi.hoisted(() => ({
   createPortalSession: vi.fn(),
   processStripeEvent: vi.fn(),
   createTrustedCheckoutSession: vi.fn(),
+  validateCsrf: vi.fn(),
 }));
 
 vi.mock("@recetario/auth/server", () => ({
@@ -25,7 +26,19 @@ vi.mock("@recetario/auth/server", () => ({
     },
     handler: vi.fn(),
   },
-  validateCsrf: vi.fn().mockReturnValue(true),
+  validateCsrf: mocks.validateCsrf,
+  getTrustedOrigins: () => ["http://localhost:4321"],
+  resolveRequestOrigin: (request: Request) => {
+    const origin = request.headers.get("origin");
+    if (origin) return origin;
+    const referer = request.headers.get("referer");
+    if (!referer) return null;
+    try {
+      return new URL(referer).origin;
+    } catch {
+      return null;
+    }
+  },
   validatePassword: vi.fn().mockReturnValue({ valid: true, errors: [] }),
   validatePasswordResetToken: vi.fn().mockResolvedValue({ valid: false }),
   markTokenAsUsed: vi.fn(),
@@ -87,6 +100,7 @@ beforeAll(() => {
 describe("health endpoint", () => {
   beforeEach(() => {
     for (const mock of Object.values(mocks)) mock.mockReset();
+    mocks.validateCsrf.mockReturnValue(true);
   });
 
   it("returns 200 and ok body", async () => {
@@ -174,5 +188,50 @@ describe("health endpoint", () => {
         cancelUrl: "http://localhost:4321/pricing?canceled=1",
       }),
     );
+  });
+});
+
+describe("CSRF authority", () => {
+  beforeEach(() => {
+    for (const mock of Object.values(mocks)) mock.mockReset();
+    mocks.validateCsrf.mockReturnValue(true);
+  });
+
+  async function post(path: string, headers: Record<string, string>) {
+    const { default: app } = await import("./index");
+    return app.request(
+      path,
+      { method: "POST", headers },
+      createTestEnv() as unknown as Record<string, unknown>,
+    );
+  }
+
+  it("rejects untrusted browser origins before authentication", async () => {
+    const res = await post("/api/recipes", {
+      origin: "https://evil.example",
+      cookie: "session=1",
+    });
+    expect(res.status).toBe(403);
+    expect(await res.json()).toEqual({
+      error: { code: "FORBIDDEN", message: "Untrusted origin" },
+    });
+  });
+
+  it("rejects cookie-based browser mutations without a CSRF token", async () => {
+    mocks.validateCsrf.mockReturnValueOnce(false);
+
+    const res = await post("/api/recipes", {
+      origin: "http://localhost:4321",
+      cookie: "session=1; csrf_token=abc",
+    });
+    expect(res.status).toBe(403);
+    expect(await res.json()).toEqual({
+      error: { code: "FORBIDDEN", message: "CSRF validation failed" },
+    });
+  });
+
+  it("lets internal cookie-based mutations reach authentication", async () => {
+    const res = await post("/api/recipes", { cookie: "session=1" });
+    expect(res.status).toBe(401);
   });
 });

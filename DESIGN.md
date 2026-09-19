@@ -120,6 +120,8 @@ components:
 
 # Design System: KitchCalc
 
+> **Nota (Task 13b).** Este documento describe el sistema de diseño (tokens, tipografía, elevación, motion y las APIs visuales de los componentes); sigue vigente. La **implementación de referencia** vive ahora en `apps/web/app/components/ui/**` y `apps/web/app/features/**` (Vue 3 + Nuxt), no en los archivos `.astro` que aparecen en §8–§10: esas rutas y ejemplos se conservan como referencia de la etapa previa a la migración.
+
 ## 1. Overview
 
 **Creative North Star: "La Cocina Ordenada"**
@@ -176,6 +178,8 @@ The palette is restrained: a single accent family (user-selectable from 7 option
 ### Named Rules
 
 **The One Voice Rule.** The accent color is used on primary actions, current selection, and focus indicators only. It never decorates. Its rarity on the page is what makes it signal.
+
+**The Action Fill Rule.** Fills that carry text or are the primary action (primary buttons, active nav items, the landing CTA band) use `accent-solid` with `text-on-accent`, both emitted per family and theme by `getAccentCssVars`. Light starts at the family's 700. Dark keeps that same tone (the accent is the constant; the neutrals are what change) and only steps up to the 600 when the 700 does not clear 3:1 against the dark background (indigo, violet, blue). The label is white in both themes, and every pair is measured in `test/unit/accent-colors.spec.ts`. Shade classes (`bg-accent-700`, `text-accent-600`) stay for text, tints, borders, and indicators, and follow `darkShadeMap` with no overrides.
 
 **The Token Bridge Rule.** Every color is a semantic token (`bg-card`, `text-foreground`) referencing a CSS variable (`--tw-card`, `--tw-fg`). Never hardcode a hex or oklch value in a component. This is how dark mode works without a single `.dark` override in component code.
 
@@ -336,22 +340,16 @@ All animations use CSS custom properties for easing and duration, defined in `:r
 
 ## 8. UI Component Library
 
-All reusable UI primitives live in `src/components/ui/` with a barrel export at `src/components/ui/index.ts`.
+All reusable UI primitives live in `apps/web/app/components/ui/{atoms,molecules,organisms}/` and are **auto-registered without prefix** by Nuxt (`nuxt.config.ts` → `components`).
 
 ### Import convention
 
-```astro
----
-import {
-  Button,
-  Card,
-  Input,
-  Badge,
-  Dialog,
-  FinancialSummary,
-  SectionHeading,
-} from "@/components/ui";
----
+```vue
+<!-- El kit (~/components/ui) no necesita import: <Button>, <Card>, <Dialog>… -->
+<!-- Los componentes de una feature SÍ: -->
+<script setup lang="ts">
+import BillingSection from "~/features/billing/BillingSection.vue";
+</script>
 ```
 
 ### Button
@@ -552,7 +550,7 @@ A single-card layout for financial metrics — replaces the old 4-card icon-circ
 
 ## 9. CSS Utility Classes
 
-Reusable Tailwind component classes in `src/styles/global.css` `@layer components`:
+Reusable Tailwind component classes in `apps/web/app/assets/css/global.css` `@layer components`:
 
 | Class            | Purpose                                             |
 | ---------------- | --------------------------------------------------- |
@@ -566,61 +564,29 @@ Reusable Tailwind component classes in `src/styles/global.css` `@layer component
 ## 10. File Structure
 
 ```
-src/components/ui/
-  ├── Button.astro        # Button with 4 variants + loading state
-  ├── Card.astro          # Card container with hover/accent modes
-  ├── Input.astro         # Form input with label, error, monospace
-  ├── Badge.astro         # Badge with 4 variants x 5 colors
-  ├── Dialog.astro        # Modal dialog with animated backdrop
-  ├── FinancialSummary.astro # Financial metrics card (POS-receipt style)
-  ├── SectionHeading.astro # Icon + title + subtitle heading
-  └── index.ts            # Barrel export
+apps/web/app/components/ui/
+  ├── atoms/       # Button, Input, Badge, Icon, Skeleton, SectionHeading, UnitCostDisplay
+  ├── molecules/   # Card, FeedbackAlert, EmptyState, PasswordInput, AppBreadcrumbs, UpgradePrompt
+  └── organisms/   # Dialog, AppHeader, AppSidebar, AppBottomNav, NavProgressBar, AppLoadingOverlay
+apps/web/app/features/   # componentes de feature (no auto-registrados; import explícito)
 ```
 
 ### App-level components
 
 ```
-src/components/
-  ├── FeedbackAlert.astro     # Success/error feedback banner
-  ├── BillingSection.astro    # Subscription plan card, usage bars, feature list
-  └── ...
+apps/web/app/components/ui/molecules/  # FeedbackAlert, EmptyState, PasswordInput, UpgradePrompt
+apps/web/app/features/billing/         # BillingSection (plan, uso, features)
 ```
 
 ### BillingSection
 
-**File:** `src/components/BillingSection.astro`
+**File:** `apps/web/app/features/billing/BillingSection.vue` (feature `billing`, import explícito).
 
-Reusable billing/susbcription display used in both `settings.astro` billing tab and `settings/billing.astro` dedicated page. Consolidates plan card, usage progress bars, and feature list into one component.
-
-```astro
-<BillingSection
-  subscription={subscription}
-  recipeCount={recipeCount}
-  ingredientCount={ingredientCount}
-  remainingRecipes={remainingRecipes}
-  remainingIngredients={remainingIngredients}
-  showBackButton={true}
-  isSuccess={isSuccess}
-  isCanceled={isCanceled}
-/>
-```
-
-| Prop                   | Type                   | Default | Description                                                   |
-| ---------------------- | ---------------------- | ------- | ------------------------------------------------------------- |
-| `subscription`         | `UserSubscriptionInfo` | —       | Current user subscription data                                |
-| `recipeCount`          | `number`               | —       | Current recipe count                                          |
-| `ingredientCount`      | `number`               | —       | Current ingredient count                                      |
-| `remainingRecipes`     | `number \| null`       | —       | Remaining recipes before limit                                |
-| `remainingIngredients` | `number \| null`       | —       | Remaining ingredients before limit                            |
-| `showBackButton`       | `boolean`              | `false` | Show back-to-settings button (true on dedicated billing page) |
-| `isSuccess`            | `boolean`              | `false` | Show success banner (from Stripe return)                      |
-| `isCanceled`           | `boolean`              | `false` | Show canceled banner (from Stripe return)                     |
-
-Includes client-side JS for Stripe Customer Portal management via `#manage-subscription-btn`.
+Muestra el plan actual (trial, cancelación programada, cambio programado), el uso, las funciones incluidas, el portal de Stripe y el cambio de plan con confirmación. La suscripción entra como prop desde la página (`useSettingsOverview`); las mutaciones (`useCheckout`, `useBillingPortal`) viven dentro y nunca recargan la página.
 
 ## Semantic color tokens
 
-The following tokens are defined in `src/styles/global.css` via `@theme`:
+The following tokens are defined in `apps/web/app/assets/css/tokens.css` (importado desde `global.css`) via `@theme`:
 
 ### Danger
 
@@ -633,11 +599,11 @@ The following tokens are defined in `src/styles/global.css` via `@theme`:
 
 Use `backdrop:bg-backdrop/50` on dialog backdrops instead of hardcoded `backdrop:bg-slate-900/50`.
 
-All components are server-rendered Astro components with zero client JS (except the Button loading spinner and BillingSection portal button, which use CSS animation / fetch). They consume the semantic token system from `global.css` and are dark-mode-ready without any `.dark` selector overrides.
+Los componentes consumen el sistema de tokens semánticos de `global.css`/`tokens.css` y se adaptan a dark mode sin overrides `.dark` en CSS.
 
 ### Hardcoded color bans
 
 The following hardcoded values have been eliminated from all app pages:
 
-- `backdrop:bg-slate-900/50` — replaced with `backdrop:bg-backdrop/50` (10 instances across ingredients.astro, recipes/index.astro, recipes/[recipe].astro)
-- `dark:md:border-gray-950` — removed from recipes/[recipe].astro template (token system handles dark borders automatically)
+- `backdrop:bg-slate-900/50` — replaced with `backdrop:bg-backdrop/50`
+- `dark:md:border-gray-950` — removed from the recipe detail template (token system handles dark borders automatically)

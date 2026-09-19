@@ -3,6 +3,7 @@ import { createRecipe } from "@recetario/db";
 import { auth } from "@recetario/auth/server";
 import { recipeCreateSchema } from "@recetario/types";
 import { ApiError } from "../errors";
+import { requireRecipeCapacity } from "../entitlements";
 import { shapeRecipeDetail } from "./shape";
 
 export function recipesCreateHandler(): Handler {
@@ -23,6 +24,8 @@ export function recipesCreateHandler(): Handler {
     if (!parsed.success) {
       throw new ApiError("VALIDATION_ERROR", "Invalid recipe input");
     }
+
+    await requireRecipeCapacity(session.user.id);
 
     const created = await createRecipe(
       session.user.id,

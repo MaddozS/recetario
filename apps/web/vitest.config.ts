@@ -1,26 +1,32 @@
-/// <reference types="vitest/config" />
-import { getViteConfig } from "astro/config";
-import node from "@astrojs/node";
+import { fileURLToPath } from "node:url";
+import { defineVitestProject } from "@nuxt/test-utils/config";
+import { defineConfig } from "vitest/config";
 
-// astro/config ships Vite 8's UserConfig; vitest/config ships Vite 7's. The
-// shapes are compatible for our uses but the type identity is not. Cast the
-// vitest-shaped config so getViteConfig accepts it without a TS2345.
-const testConfig = {
+export default defineConfig({
   test: {
-    include: ["src/**/*.test.{ts,astro}"],
+    projects: [
+      {
+        test: {
+          name: "unit",
+          include: ["test/unit/**/*.spec.ts"],
+          environment: "node",
+        },
+        // Los módulos puros importan `shared/utils/**` por `#shared` (igual que
+        // la app); el proyecto `unit` no pasa por Nuxt, así que el alias se
+        // declara aquí.
+        resolve: {
+          alias: {
+            "#shared": fileURLToPath(new URL("./shared", import.meta.url)),
+          },
+        },
+      },
+      await defineVitestProject({
+        test: {
+          name: "nuxt",
+          include: ["test/nuxt/**/*.spec.ts"],
+          environment: "nuxt",
+        },
+      }),
+    ],
   },
-  server: {
-    port: 4321,
-    hmr: {
-      clientPort: 4321
-    }
-  },
-} as Parameters<typeof getViteConfig>[0];
-
-export default getViteConfig(testConfig, {
-  // Override the cloudflare adapter with node so vitest doesn't spin up workerd.
-  // The page + layout don't import cloudflare:workers directly, so the node
-  // adapter is sufficient for the Container API in tests.
-  output: "server",
-  adapter: node({ mode: "standalone" }),
 });

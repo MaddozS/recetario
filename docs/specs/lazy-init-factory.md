@@ -1,5 +1,7 @@
 # Extract shared lazy-init factory
 
+> **Histórico (pre-Nuxt).** Documento de la etapa anterior a la migración a Nuxt (Task 13b): se conserva como registro, no como guía operativa, y las rutas o comandos que cita pueden no existir. Ver `docs/README.md`.
+
 ## Problem Statement
 
 Developers modifying the codebase must copy-paste the same Proxy-based lazy-initialization boilerplate (~16 lines) every time a new module needs deferred client creation. The pattern is already duplicated across 4 files: `packages/db/src/prisma.ts`, `packages/auth/src/auth.ts`, `packages/stripe/src/stripe.ts`, and `apps/api/src/lib/prisma.ts`. If the pattern needs a fix (error handling, logging, debugging), it must be replicated in 4 separate places with no guarantee of consistency.

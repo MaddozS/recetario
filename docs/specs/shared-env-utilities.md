@@ -1,5 +1,7 @@
 # Extract shared env-binding + request utilities
 
+> **Histórico (pre-Nuxt).** Documento de la etapa anterior a la migración a Nuxt (Task 13b): se conserva como registro, no como guía operativa, y las rutas o comandos que cita pueden no existir. Ver `docs/README.md`.
+
 ## Problem Statement
 
 Every time a new environment variable is added to the project, developers must add it to two separate `ENV_KEYS` arrays (`apps/web/src/middleware.ts` and `apps/api/src/index.ts`) and update two separate `syncBindingsToProcessEnv` functions. The `clientIp` helper is also copy-pasted across both files. Additionally, `setSecurityHeaders` exists only in `middleware.ts` but should apply to every response, including the API worker. Adding a variable in one place but not the other causes silent runtime failures (the missing env var is `undefined` in the un-updated file). This has already bitten the project (memory #47: scattered env-var management caused repeated round-trips during bootstrap).

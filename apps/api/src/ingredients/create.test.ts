@@ -3,21 +3,40 @@ import { Hono } from "hono";
 import { envelope } from "../envelope";
 import { errorHandler } from "../error-handler";
 
-const { mockGetSession, mockAuth, mockCreateIngredient } = vi.hoisted(() => {
+const {
+  mockGetSession,
+  mockAuth,
+  mockCreateIngredient,
+  mockCountUserIngredients,
+  mockGetSubscriptionInfo,
+} = vi.hoisted(() => {
   const mockGetSession = vi.fn();
   const mockAuth = { api: { getSession: (...args: unknown[]) => mockGetSession(...args) } };
   const mockCreateIngredient = vi.fn();
-  return { mockGetSession, mockAuth, mockCreateIngredient };
+  const mockCountUserIngredients = vi.fn();
+  const mockGetSubscriptionInfo = vi.fn();
+  return {
+    mockGetSession,
+    mockAuth,
+    mockCreateIngredient,
+    mockCountUserIngredients,
+    mockGetSubscriptionInfo,
+  };
 });
 
 vi.mock("@recetario/auth/server", () => ({
   auth: mockAuth,
 }));
 
+vi.mock("@recetario/stripe/server", () => ({
+  getSubscriptionInfo: (...args: unknown[]) => mockGetSubscriptionInfo(...args),
+}));
+
 vi.mock("@recetario/db", () => ({
   prisma: {},
   createIngredient: (input: unknown, ownerId: string) =>
     mockCreateIngredient(input, ownerId),
+  countUserIngredients: (...args: unknown[]) => mockCountUserIngredients(...args),
 }));
 
 const { ingredientsCreateHandler } = await import("./create");
@@ -39,6 +58,9 @@ function buildApp() {
 beforeEach(() => {
   mockGetSession.mockReset();
   mockCreateIngredient.mockReset();
+  mockCountUserIngredients.mockReset();
+  mockCountUserIngredients.mockResolvedValue(0);
+  mockGetSubscriptionInfo.mockReset();
   mockGetSession.mockResolvedValue(sessionFixture);
 });
 
@@ -112,6 +134,27 @@ describe("ingredientsCreateHandler", () => {
     });
 
     expect(res.status).toBe(401);
+    expect(mockCreateIngredient).not.toHaveBeenCalled();
+  });
+
+  it("returns 403 PLAN_LIMIT when the plan is at its ingredient limit", async () => {
+    mockGetSubscriptionInfo.mockResolvedValueOnce({ ingredientsLimit: 30 });
+    mockCountUserIngredients.mockResolvedValueOnce(30);
+
+    const res = await buildApp().request("/api/ingredients", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        name: "Tomato",
+        unit: "kg",
+        price: 3.5,
+        purchaseQuantity: 1,
+      }),
+    });
+
+    expect(res.status).toBe(403);
+    const body = (await res.json()) as { error: { code: string } };
+    expect(body.error.code).toBe("PLAN_LIMIT");
     expect(mockCreateIngredient).not.toHaveBeenCalled();
   });
 });

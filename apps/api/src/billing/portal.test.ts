@@ -5,15 +5,9 @@ import { errorHandler } from "../error-handler";
 import { hostAllowlist } from "../host-allowlist";
 import type { AuthVariables } from "../middleware/auth";
 
-const { mockValidateCsrf, mockGetStripeCustomerId, mockCreatePortalSession } =
-  vi.hoisted(() => ({
-    mockValidateCsrf: vi.fn(),
-    mockGetStripeCustomerId: vi.fn(),
-    mockCreatePortalSession: vi.fn(),
-  }));
-
-vi.mock("@recetario/auth/server", () => ({
-  validateCsrf: mockValidateCsrf,
+const { mockGetStripeCustomerId, mockCreatePortalSession } = vi.hoisted(() => ({
+  mockGetStripeCustomerId: vi.fn(),
+  mockCreatePortalSession: vi.fn(),
 }));
 
 vi.mock("@recetario/db", () => ({
@@ -48,19 +42,6 @@ function buildApp() {
 describe("stripePortalHandler", () => {
   beforeEach(() => {
     vi.resetAllMocks();
-    mockValidateCsrf.mockReturnValue(true);
-  });
-
-  it("returns 403 when CSRF validation fails", async () => {
-    mockValidateCsrf.mockReturnValue(false);
-    const res = await buildApp().request(
-      "/api/stripe/portal",
-      { method: "POST" },
-      {},
-    );
-    expect(res.status).toBe(403);
-    const data = (await res.json()) as any;
-    expect(data.error).toBe("CSRF validation failed");
   });
 
   it("returns 404 if no customer ID is associated with the user", async () => {
@@ -72,7 +53,7 @@ describe("stripePortalHandler", () => {
     );
     expect(res.status).toBe(404);
     const data = (await res.json()) as any;
-    expect(data.error).toBe("No subscription found");
+    expect(data.error.code).toBe("NOT_FOUND");
   });
 
   it("returns portal URL when customer exists", async () => {

@@ -3,20 +3,39 @@ import { Hono } from "hono";
 import { envelope } from "../envelope";
 import { errorHandler } from "../error-handler";
 
-const { mockGetSession, mockAuth, mockCreateRecipe } = vi.hoisted(() => {
+const {
+  mockGetSession,
+  mockAuth,
+  mockCreateRecipe,
+  mockCountUserRecipes,
+  mockGetSubscriptionInfo,
+} = vi.hoisted(() => {
   const mockGetSession = vi.fn();
   const mockAuth = { api: { getSession: (...args: unknown[]) => mockGetSession(...args) } };
   const mockCreateRecipe = vi.fn();
-  return { mockGetSession, mockAuth, mockCreateRecipe };
+  const mockCountUserRecipes = vi.fn();
+  const mockGetSubscriptionInfo = vi.fn();
+  return {
+    mockGetSession,
+    mockAuth,
+    mockCreateRecipe,
+    mockCountUserRecipes,
+    mockGetSubscriptionInfo,
+  };
 });
 
 vi.mock("@recetario/auth/server", () => ({
   auth: mockAuth,
 }));
 
+vi.mock("@recetario/stripe/server", () => ({
+  getSubscriptionInfo: (...args: unknown[]) => mockGetSubscriptionInfo(...args),
+}));
+
 vi.mock("@recetario/db", () => ({
   createRecipe: (ownerId: string, input: unknown, ...rest: unknown[]) =>
     mockCreateRecipe(ownerId, input, ...rest),
+  countUserRecipes: (...args: unknown[]) => mockCountUserRecipes(...args),
 }));
 
 const { recipesCreateHandler } = await import("./create");
@@ -53,6 +72,9 @@ describe("recipesCreateHandler", () => {
   beforeEach(() => {
     mockGetSession.mockReset();
     mockCreateRecipe.mockReset();
+    mockCountUserRecipes.mockReset();
+    mockCountUserRecipes.mockResolvedValue(0);
+    mockGetSubscriptionInfo.mockReset();
   });
 
   it("returns 401 when there is no session", async () => {
@@ -120,5 +142,37 @@ describe("recipesCreateHandler", () => {
       undefined,
       undefined,
     );
+  });
+
+  it("returns 403 PLAN_LIMIT when the plan is at its recipe limit", async () => {
+    mockGetSession.mockResolvedValueOnce(sessionFixture);
+    mockGetSubscriptionInfo.mockResolvedValueOnce({ recipesLimit: 10 });
+    mockCountUserRecipes.mockResolvedValueOnce(10);
+
+    const res = await buildApp().request("/api/recipes", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ name: "Tarta" }),
+    });
+
+    expect(res.status).toBe(403);
+    const body = (await res.json()) as { error: { code: string } };
+    expect(body.error.code).toBe("PLAN_LIMIT");
+    expect(mockCreateRecipe).not.toHaveBeenCalled();
+  });
+
+  it("skips the recipe count when the plan is unlimited", async () => {
+    mockGetSession.mockResolvedValueOnce(sessionFixture);
+    mockGetSubscriptionInfo.mockResolvedValueOnce({ recipesLimit: null });
+    mockCreateRecipe.mockResolvedValueOnce(recipeFixture(1));
+
+    const res = await buildApp().request("/api/recipes", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ name: "Tarta" }),
+    });
+
+    expect(res.status).toBe(201);
+    expect(mockCountUserRecipes).not.toHaveBeenCalled();
   });
 });

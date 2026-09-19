@@ -3,6 +3,7 @@ import { getRecipesByIds } from "@recetario/db";
 import { auth } from "@recetario/auth/server";
 import { recipeWithIngredientsSchema } from "@recetario/types";
 import { ApiError } from "../errors";
+import { requireProductionAccess } from "../entitlements";
 
 const MAX_IDS = 100;
 
@@ -35,8 +36,14 @@ export function recipesByIdsHandler(): Handler {
       );
     }
 
+    // El planificador es una feature de plan: la autoridad vive aquí, no sólo
+    // en la UI (una llamada directa no puede saltarse el tope de Basic).
+    await requireProductionAccess(session.user.id, ids.length);
+
     const recipes = await getRecipesByIds(ids, session.user.id);
-    const shaped = recipes.map((r) => recipeWithIngredientsSchema.parse(shapeRecipeDetail(r)));
+    const shaped = recipes.map((r) =>
+      recipeWithIngredientsSchema.parse(shapeRecipeDetail(r)),
+    );
     return c.json(shaped);
   };
 }

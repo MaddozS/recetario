@@ -1,12 +1,12 @@
-# build output
-dist/
+# Nuxt build output
+.nuxt/
+.output/
+test-results/
+playwright-report/
 
 # package compilation output
 packages/*/dist/
 *.tsbuildinfo
-
-# generated types
-.astro/
 
 # generated Prisma clients
 **/generated/prisma/
