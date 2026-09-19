@@ -89,11 +89,15 @@ export async function apiFetch<T>(
   options: ApiFetchOptions<T> = {},
 ): Promise<T> {
   const { method = "GET", body, schema, headers = {}, signal } = options;
+  // Better Auth responde 415 a cualquier mutación que llegue sin `content-type`
+  // en cuanto el request trae body: el navegador manda `Content-Length: 0` y el
+  // relay materializa un stream vacío, así que las mutaciones siempre son JSON.
+  const payload = body === undefined && MUTATING_METHODS.includes(method) ? {} : body;
   const requestHeaders: Record<string, string> = {
     accept: "application/json",
     ...headers,
   };
-  if (body !== undefined) {
+  if (payload !== undefined) {
     requestHeaders["content-type"] = "application/json";
   }
 
@@ -102,7 +106,7 @@ export async function apiFetch<T>(
     data = await fetchImpl(path, {
       method,
       headers: requestHeaders,
-      body: body === undefined ? undefined : JSON.stringify(body),
+      body: payload === undefined ? undefined : JSON.stringify(payload),
       signal,
     });
   } catch (error) {

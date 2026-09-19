@@ -47,13 +47,31 @@ describe("apiFetch", () => {
     expect(init.body).toBe(JSON.stringify({ theme: "dark" }));
   });
 
-  it("no manda body en GET", async () => {
+  it("manda JSON vacío en mutaciones sin body", async () => {
+    const fetchImpl = vi.fn(async () => undefined);
+
+    await apiFetch(fetchImpl, "/api/auth/sign-out", { method: "POST" });
+
+    const [, init] = fetchImpl.mock.calls[0] as [
+      string,
+      { headers: Record<string, string>; body?: string },
+    ];
+    // Better Auth responde 415 si el body llega sin `content-type`.
+    expect(init.headers["content-type"]).toBe("application/json");
+    expect(init.body).toBe("{}");
+  });
+
+  it("no manda body ni content-type en GET", async () => {
     const fetchImpl = vi.fn(async () => null);
 
     await apiFetch(fetchImpl, "/api/recipes");
 
-    const [, init] = fetchImpl.mock.calls[0] as [string, { body?: string }];
+    const [, init] = fetchImpl.mock.calls[0] as [
+      string,
+      { headers: Record<string, string>; body?: string },
+    ];
     expect(init.body).toBeUndefined();
+    expect(init.headers["content-type"]).toBeUndefined();
   });
 
   it("traduce un FetchError con envelope al ApiError tipado", async () => {

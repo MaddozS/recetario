@@ -725,6 +725,16 @@ const server = createServer(async (req, res) => {
   }
 
   if (pathname === "/api/auth/sign-out" && req.method === "POST") {
+    // Como Better Auth: exige `content-type` JSON en la mutación (el cliente
+    // manda `{}` aunque no tenga datos), así el e2e falla si el transporte
+    // vuelve a mandar un POST sin body.
+    if (!(req.headers["content-type"] ?? "").startsWith("application/json")) {
+      return sendJson(res, 415, {
+        message: "Content-Type is required. Allowed types: application/json",
+        code: "UNSUPPORTED_MEDIA_TYPE",
+      });
+    }
+
     return sendJson(
       res,
       200,
