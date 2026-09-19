@@ -54,18 +54,20 @@ function describeViolations(violations: Violation[]): string {
  * las `statFadeIn`/`cardFadeIn` con `animation-fill-mode: both` de las stats y
  * las cards), y la landing usa `v-reveal` (`[data-reveal]` en opacidad 0 hasta
  * entrar en viewport). Sin asentar, axe mide colores mezclados con la animación
- * (o elementos aún en opacidad 0) y reporta contrastes falsos. Se neutralizan
- * *todas* las animaciones (duración 0 ⇒ estado final con `both`) y se fuerza el
- * estado revelado.
+ * (o elementos aún en opacidad 0) y reporta contrastes falsos.
+ *
+ * Ojo: una transición **ya en vuelo** no la ataja cambiar su duración —el valor
+ * animado tapa al especificado—, así que en un runner lento (CI) el barrido
+ * medía el hero a media opacidad y reportaba `color-contrast` falso. `none` en
+ * `animation`/`transition` cancela lo que esté corriendo y deja el estado final;
+ * después se espera a que no quede ninguna animación viva.
  */
 async function settle(page: Page): Promise<void> {
   await page.addStyleTag({
     content: `
       *, *::before, *::after {
-        animation-delay: 0s !important;
-        animation-duration: 0s !important;
-        transition-delay: 0s !important;
-        transition-duration: 0s !important;
+        animation: none !important;
+        transition: none !important;
       }
       [data-reveal],
       .reveal-item,
@@ -75,11 +77,10 @@ async function settle(page: Page): Promise<void> {
       }
     `,
   });
-  await page.evaluate(
-    () =>
-      new Promise((resolve) =>
-        requestAnimationFrame(() => requestAnimationFrame(resolve)),
-      ),
+  await page.waitForFunction(
+    () => document.getAnimations().length === 0,
+    undefined,
+    { timeout: 5_000 },
   );
 }
 
