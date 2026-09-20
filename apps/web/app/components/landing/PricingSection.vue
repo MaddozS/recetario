@@ -2,6 +2,7 @@
 import { computed, ref } from "vue";
 import type { PricingPlan } from "@recetario/types";
 import BillingIntervalToggle from "~/features/billing/BillingIntervalToggle.vue";
+import PlanCard from "~/features/billing/PlanCard.vue";
 import PlanFeatureList from "~/features/billing/PlanFeatureList.vue";
 import PlanPrice from "~/features/billing/PlanPrice.vue";
 import type { BillingInterval } from "~/features/billing/billing-interval";
@@ -10,6 +11,9 @@ import type { BillingInterval } from "~/features/billing/billing-interval";
  * Sección `#pricing` de la landing: scroll horizontal con snap en móvil y tres
  * columnas en desktop. El CTA decide por sesión (el anónimo pasa por sign-in) y
  * el checkout vive en `/pricing`, que es la página autenticable.
+ *
+ * La card es `PlanCard` (el mismo shell que `/pricing`); aquí sólo se le añaden
+ * las clases del scroller y el hover del landing.
  */
 const props = defineProps<{
   plans: PricingPlan[];
@@ -20,8 +24,13 @@ const props = defineProps<{
 const { isAuthenticated } = useAuth();
 const interval = ref<BillingInterval>("monthly");
 
+const CARD_LAYOUT_CLASSES =
+  "reveal-item min-w-[260px] shrink-0 snap-start sm:min-w-[320px] lg:min-w-0 lg:flex-1";
+
+// El vacío sólo es verdad sin error: con el API caído la sección avisa, no dice
+// que el producto no tiene planes.
 const showEmptyState = computed(
-  () => !props.pending && props.plans.length === 0,
+  () => !props.pending && !props.error && props.plans.length === 0,
 );
 
 function ctaHref(plan: PricingPlan): string {
@@ -66,10 +75,11 @@ function ctaLabel(plan: PricingPlan): string {
           class="pricing-scroll flex snap-x snap-mandatory gap-4 overflow-x-auto py-5 sm:gap-6 lg:overflow-visible xl:gap-8"
         >
           <template v-if="pending && plans.length === 0">
-            <div
+            <PlanCard
               v-for="index in 3"
               :key="`skeleton-${index}`"
-              class="bg-card border-border min-w-[260px] shrink-0 snap-start rounded-2xl border p-7 sm:min-w-[320px] md:p-8 lg:min-w-0 lg:flex-1 xl:p-10"
+              density="roomy"
+              :class="CARD_LAYOUT_CLASSES"
             >
               <Skeleton class="h-6 w-1/2" />
               <Skeleton class="mt-4 h-10 w-3/4" />
@@ -78,19 +88,19 @@ function ctaLabel(plan: PricingPlan): string {
                 <Skeleton class="h-4 w-5/6" />
                 <Skeleton class="h-4 w-4/6" />
               </div>
-            </div>
+            </PlanCard>
           </template>
 
-          <div
+          <PlanCard
             v-for="(plan, index) in plans"
             :key="plan.id"
-            :data-plan="plan.id"
-            class="reveal-item bg-card relative flex min-w-[260px] shrink-0 snap-start flex-col rounded-2xl p-7 sm:min-w-[320px] md:p-8 lg:min-w-0 lg:flex-1 xl:p-10"
-            :class="
-              plan.id === 'pro'
-                ? 'shadow-accent-tint plan-pro pricing-card-hover-pro bg-card dark:bg-accent-800/10 z-10'
-                : 'pricing-card-hover shadow-sm'
-            "
+            :plan-id="plan.id"
+            :featured="plan.id === 'pro'"
+            density="roomy"
+            :class="[
+              CARD_LAYOUT_CLASSES,
+              plan.id === 'pro' ? 'pricing-card-hover-pro' : 'pricing-card-hover',
+            ]"
             :style="`--reveal-delay: ${index * 100}ms`"
           >
             <Badge
@@ -115,7 +125,7 @@ function ctaLabel(plan: PricingPlan): string {
 
             <NuxtLink
               :to="ctaHref(plan)"
-              class="mt-6 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl px-5 text-center text-sm font-bold transition-all active:scale-[0.97]"
+              class="focus-ring mt-6 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl px-5 text-center text-sm font-bold transition-all active:scale-[0.97]"
               :class="
                 plan.id === 'pro'
                   ? 'bg-accent-solid text-text-on-accent hover:bg-accent-solid-hover shadow-accent-tint'
@@ -128,7 +138,7 @@ function ctaLabel(plan: PricingPlan): string {
             <div class="mt-6 min-w-0 flex-1">
               <PlanFeatureList :features="plan.features" />
             </div>
-          </div>
+          </PlanCard>
 
           <div
             aria-hidden="true"

@@ -2,6 +2,7 @@
 import { computed, onMounted, ref } from "vue";
 import type { PricingPlan } from "@recetario/types";
 import BillingIntervalToggle from "~/features/billing/BillingIntervalToggle.vue";
+import PlanCard from "~/features/billing/PlanCard.vue";
 import PlanFeatureList from "~/features/billing/PlanFeatureList.vue";
 import PlanPrice from "~/features/billing/PlanPrice.vue";
 import { useCheckout } from "~/features/billing/useCheckout";
@@ -18,7 +19,8 @@ usePageSeo("/pricing");
  * iniciar el checkout, con pending visible y error inline.
  *
  * `?plan=<tier>` (el enlace de `UpgradePrompt`) resalta la card objetivo y hace
- * scroll a ella en cliente; no dispara ningún checkout por sí solo.
+ * scroll a ella en cliente; no dispara ningún checkout por sí solo. La card es
+ * `PlanCard`, el mismo shell que monta la landing.
  */
 const route = useRoute();
 const { plans, pending: plansPending, error: plansError } = usePricingPlans();
@@ -64,17 +66,6 @@ function isCurrent(plan: PricingPlan): boolean {
   return plan.id === currentTier.value;
 }
 
-function cardClasses(plan: PricingPlan): string {
-  if (plan.id === highlightedPlan.value) {
-    // Destaca sobre el anillo por defecto de Pro (`?plan=` llega de
-    // `UpgradePrompt`).
-    return "border-accent-500 ring-2 ring-accent-500 ring-offset-2 ring-offset-background";
-  }
-  return plan.id === "pro"
-    ? "border-accent-300 ring-accent-200 ring-1"
-    : "border-border";
-}
-
 function buttonLabel(plan: PricingPlan): string {
   if (isCurrent(plan)) return "Plan actual";
   if (plan.id === "pro" && currentTier.value === "basic")
@@ -89,7 +80,7 @@ function anonymousLabel(plan: PricingPlan): string {
 
 function buttonClass(plan: PricingPlan): string {
   const base =
-    "mt-6 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-bold transition-colors";
+    "focus-ring mt-6 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-bold transition-colors";
 
   // Sólo el autenticado ve estados bloqueados; para el anónimo todos los CTA
   // son un enlace accionable a sign-in.
@@ -179,7 +170,7 @@ async function subscribe(plan: PricingPlan): Promise<void> {
 
     <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
       <template v-if="plansPending && plans.length === 0">
-        <Card v-for="index in 3" :key="`skeleton-${index}`">
+        <PlanCard v-for="index in 3" :key="`skeleton-${index}`">
           <Skeleton class="h-6 w-1/2" />
           <Skeleton class="mt-4 h-10 w-3/4" />
           <div class="mt-6 space-y-3">
@@ -187,16 +178,15 @@ async function subscribe(plan: PricingPlan): Promise<void> {
             <Skeleton class="h-4 w-5/6" />
             <Skeleton class="h-4 w-4/6" />
           </div>
-        </Card>
+        </PlanCard>
       </template>
 
-      <div
+      <PlanCard
         v-for="plan in plans"
         :key="plan.id"
-        :data-plan="plan.id"
-        :data-highlighted="plan.id === highlightedPlan ? '1' : undefined"
-        class="bg-card flex flex-col rounded-2xl border p-6 shadow-sm"
-        :class="cardClasses(plan)"
+        :plan-id="plan.id"
+        :featured="plan.id === 'pro'"
+        :highlighted="plan.id === highlightedPlan"
       >
         <Badge
           v-if="plan.badge"
@@ -243,7 +233,7 @@ async function subscribe(plan: PricingPlan): Promise<void> {
         <div class="mt-6 flex-1">
           <PlanFeatureList :features="plan.features" />
         </div>
-      </div>
+      </PlanCard>
     </div>
   </section>
 </template>

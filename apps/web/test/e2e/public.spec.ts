@@ -308,6 +308,45 @@ test("/pricing anónimo muestra el catálogo y manda a sign-in sin iniciar check
   await expect(page.getByText("Suscripción cancelada")).toBeVisible();
 });
 
+test("la card de plan se ve igual en la landing y en /pricing", async ({
+  page,
+  goto,
+}) => {
+  /** Borde, fondo y radio del mismo plan en la superficie que esté cargada. */
+  const cardStyles = async (): Promise<Record<string, string | null>[]> =>
+    await page.locator("[data-plan]").evaluateAll((cards) =>
+      cards.map((card) => {
+        const style = getComputedStyle(card);
+        return {
+          plan: card.getAttribute("data-plan"),
+          border: `${style.borderTopWidth} ${style.borderTopStyle} ${style.borderTopColor}`,
+          background: style.backgroundColor,
+          radius: style.borderTopLeftRadius,
+        };
+      }),
+    );
+
+  for (const theme of ["light", "dark"] as const) {
+    await page
+      .context()
+      .addCookies([{ name: "kitchcalc-theme", value: theme, url: url("/") }]);
+
+    await goto("/", { waitUntil: "hydration" });
+    const landing = await cardStyles();
+
+    await goto("/pricing", { waitUntil: "hydration" });
+    const pricing = await cardStyles();
+
+    expect(
+      landing.map((card) => card.plan),
+      `planes renderizados en ${theme}`,
+    ).toEqual(["free", "basic", "pro"]);
+    expect(pricing, `la card en ${theme} depende de la superficie`).toEqual(
+      landing,
+    );
+  }
+});
+
 test("/pricing autenticado respeta el plan actual y completa el checkout", async ({
   page,
   context,
