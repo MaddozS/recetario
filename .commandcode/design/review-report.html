@@ -36,15 +36,19 @@
             <div class="mono mb-2 text-xs tracking-widest text-[#666]">// REVIEW</div>
             <h1 class="text-4xl font-bold tracking-tight md:text-6xl">KitchCalc</h1>
             <p class="mt-3 max-w-2xl text-sm leading-6 text-[#a0a0a0]">
-              Pase de recolor del acento: familia coral, rol de relleno de acción y la sección CTA
-              del landing. Superficies incluidas: CTA, shell privado, toolbar de recetas, settings y
-              pricing.
+              Segunda pasada sobre las landings públicas: <span class="mono">/</span> (hero,
+              features, cómo funciona, planes, CTA) y <span class="mono">/pricing</span>, su layout
+              público, los 10 componentes de
+              <span class="mono">app/components/landing/</span> y las piezas compartidas que montan
+              (<span class="mono">PlanCard</span>, <span class="mono">PlanComparison</span>,
+              <span class="mono">PlanFeatureList</span>, <span class="mono">PlanPrice</span>,
+              <span class="mono">BillingIntervalToggle</span>).
             </p>
           </div>
           <div class="mono text-left text-xs text-[#666] md:text-right">
             <div>COMMANDCODE REPORT</div>
-            <div class="text-[#444]">2026-09-18</div>
-            <div class="text-[#444]">apps/web</div>
+            <div class="text-[#444]">2026-09-20</div>
+            <div class="text-[#444]">apps/web · landing</div>
           </div>
         </div>
       </header>
@@ -55,35 +59,41 @@
         <div class="grid gap-8 md:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
           <div>
             <div class="mono mb-2 text-xs tracking-widest text-[#666]">// OVERALL</div>
-            <div class="text-6xl font-bold tracking-tight md:text-7xl">35</div>
+            <div class="text-6xl font-bold tracking-tight md:text-7xl">40</div>
             <div class="mt-1 text-lg text-[#666]">/ 50</div>
+            <div class="mono mt-2 text-xs text-[#444]">ANTES: 33/50 · Block</div>
             <div
-              class="mt-4 inline-flex border border-[#f43f5e]/30 bg-[#f43f5e]/10 px-3 py-1 text-sm text-[#f43f5e]"
+              class="mt-4 inline-flex border border-[#fbbf24]/30 bg-[#fbbf24]/10 px-3 py-1 text-sm text-[#fbbf24]"
             >
-              Block
+              Needs changes
             </div>
           </div>
           <div>
             <div class="mono mb-3 text-xs tracking-widest text-[#666]">// TL;DR</div>
             <p class="text-sm leading-6 text-[#a0a0a0]">
-              El pase arregló lo señalado: el coral ya no cambia de identidad entre temas (banda del
-              CTA y rellenos de acción idénticos en claro y oscuro, medido en el DOM), la rampa dejó
-              de derivar de tono, y el CTA pasó de rosa neón con texto casi negro y botón salmón a
-              banda coral profunda con texto blanco y CTA blanco con anillo de foco verificado.
+              La superficie cambió de forma. La landing dejó de clonar el catálogo: cada card
+              muestra <span class="font-semibold text-[#fafafa]">4 destacados</span> —lo incluido y
+              disponible que no está en el plan Free— con el precio, el CTA y un enlace al detalle.
+              <span class="mono">/pricing</span> es la comparación real: una tabla con las
+              <span class="font-semibold text-[#fafafa]">5 filas que cambian</span> entre planes y
+              las <span class="font-semibold text-[#fafafa]">9 iguales</span> listadas una sola vez.
+              El recomendado abre la fila en las dos superficies: ya no queda a dos swipes en móvil.
             </p>
             <p class="mt-4 text-sm leading-6 text-[#a0a0a0]">
-              Pero el override de paridad vive dentro de <span class="mono">resolveShade()</span>, que
-              alimenta toda la rampa: en oscuro + coral <span class="mono">text-accent-800</span>
-              quedó en <span class="mono">1.95:1</span> sobre los tintes y
-              <span class="mono">text-accent-700</span> en <span class="mono">3.95:1</span> sobre el
-              fondo. 7 nodos, 5 superficies, una causa raíz.
+              Los <span class="font-semibold text-[#fafafa]">15 hallazgos</span> de la pasada
+              anterior están cerrados y verificados con la misma vara. Lo que queda: el scroller no
+              revela la card enfocada con teclado (MEDIUM), los títulos de card no usan la cara de
+              marca, "Próximamente" esconde una diferencia real, las cards de la landing no
+              comparten lanes y <span class="mono">shadow-accent-tint</span> sigue declarada sin
+              pintar (LOW).
             </p>
             <p class="mt-4 text-sm leading-6 text-[#fbbf24]">
-              Siguiente acción: un <span class="mono">/design recolor</span> acotado a
-              <span class="mono">apps/web/app/utils/accent-colors.ts</span> — aplicar el override
-              solo a <span class="mono">--color-accent-solid</span> y su hover, dejando
-              <span class="mono">darkShadeMap</span> para los shades de texto y tinte; después volver
-              a correr el barrido <span class="mono">acentos</span> del spec de a11y.
+              Siguiente acción: un <span class="mono">/design interaction</span> corto sobre
+              <span class="mono">landing/PricingSection.vue</span> (<span class="mono">focusin</span>
+              → <span class="mono">card.scrollIntoView({ inline: "start" })</span> + aserto e2e), un
+              <span class="mono">/design typeset</span> para los títulos de card y un
+              <span class="mono">/design refine</span> para la promesa de lo "próximamente"; el
+              resto es <span class="mono">/design finish</span>.
             </p>
           </div>
         </div>
@@ -105,10 +115,11 @@
               <tr class="border-b border-[#1a1a1e]">
                 <td class="py-4 pr-4 text-[#555]">1</td>
                 <td class="py-4 pr-4 text-[#fafafa]">First impression</td>
-                <td class="py-4 pr-4 text-[#fbbf24]">7 / 10</td>
+                <td class="py-4 pr-4 text-[#34d399]">8 / 10</td>
                 <td class="py-4 text-[#a0a0a0]">
-                  El CTA dejó el rosa neón con texto negro; ahora es una banda coral profunda con CTA
-                  blanco.
+                  La landing abre con promesa <span class="font-semibold text-[#fafafa]">y</span>
+                  prueba (captura real en el primer viewport, también en móvil) y la sección de
+                  planes abre por el recomendado.
                 </td>
               </tr>
               <tr class="border-b border-[#1a1a1e]">
@@ -116,35 +127,45 @@
                 <td class="py-4 pr-4 text-[#fafafa]">Hierarchy</td>
                 <td class="py-4 pr-4 text-[#34d399]">8 / 10</td>
                 <td class="py-4 text-[#a0a0a0]">
-                  Titular negro pesado + primario blanco + fantasma translúcido: el ojo sabe dónde
-                  actuar primero.
+                  Landing = decidir (destacados + CTA), <span class="mono">/pricing</span> = comparar
+                  (5 filas + lo común). Falta alinear las lanes internas de las cards de la landing.
                 </td>
               </tr>
               <tr class="border-b border-[#1a1a1e]">
                 <td class="py-4 pr-4 text-[#555]">3</td>
                 <td class="py-4 pr-4 text-[#fafafa]">Color voice</td>
-                <td class="py-4 pr-4 text-[#f43f5e]">5 / 10</td>
+                <td class="py-4 pr-4 text-[#34d399]">9 / 10</td>
                 <td class="py-4 text-[#a0a0a0]">
-                  La identidad del coral ya es una sola, pero el rol de relleno se filtró al rol de
-                  texto (1.95:1).
+                  Rol de texto del acento en AA en los dos temas; tinte del Pro sólo en oscuro; queda
+                  una clase de sombra que no existe en hero/features.
                 </td>
               </tr>
               <tr class="border-b border-[#1a1a1e]">
                 <td class="py-4 pr-4 text-[#555]">4</td>
                 <td class="py-4 pr-4 text-[#fafafa]">Type voice</td>
+                <td class="py-4 pr-4 text-[#34d399]">8 / 10</td>
+                <td class="py-4 text-[#a0a0a0]">
+                  Outfit en los titulares de página y sección de las dos superficies (medido:
+                  <span class="mono">font-family: Outfit</span>) y mono tabular para el dinero; los
+                  títulos de card siguen en la pila del sistema.
+                </td>
+              </tr>
+              <tr class="border-b border-[#1a1a1e]">
+                <td class="py-4 pr-4 text-[#555]">5</td>
+                <td class="py-4 pr-4 text-[#fafafa]">Interaction feel</td>
                 <td class="py-4 pr-4 text-[#fbbf24]">7 / 10</td>
                 <td class="py-4 text-[#a0a0a0]">
-                  Sin cambios en esta pasada; jerarquía por tamaño y peso, sin regresiones
-                  observadas.
+                  Lightbox con zoom real, drawer como diálogo, un solo anillo de foco y estados de
+                  plan completos; el foco por teclado no arrastra el scroller.
                 </td>
               </tr>
               <tr>
-                <td class="py-4 pr-4 text-[#555]">5</td>
-                <td class="py-4 pr-4 text-[#fafafa]">Interaction feel</td>
-                <td class="py-4 pr-4 text-[#34d399]">8 / 10</td>
+                <td class="py-4 pr-4 text-[#555]"></td>
+                <td class="py-4 pr-4 font-semibold text-[#fafafa]">Total</td>
+                <td class="py-4 pr-4 font-semibold text-[#fafafa]">40 / 50</td>
                 <td class="py-4 text-[#a0a0a0]">
-                  Anillos de foco verificados en ambos CTA (blanco 2px + offset coral); target mínimo
-                  44px.
+                  +7 respecto de la pasada anterior: el <span class="mono">Block</span> era un fallo
+                  AA real y un gate que no lo veía, los dos cerrados.
                 </td>
               </tr>
             </tbody>
@@ -153,97 +174,61 @@
       </section>
 
       <section class="report-section mb-8 p-6 md:p-8">
-        <div class="mono mb-6 text-xs tracking-widest text-[#666]">// PRIORITY ISSUES</div>
-        <div class="space-y-5">
-          <article class="border border-[#2a1d22] bg-[#110b0d] p-5">
-            <div class="mono mb-2 text-xs text-[#f43f5e]">HIGH · COLOR</div>
-            <h2 class="mb-2 text-lg font-semibold">
-              El override de paridad se aplica a toda la rampa, no solo al relleno de acción
-            </h2>
-            <p class="text-sm leading-6 text-[#a0a0a0]">
-              <span class="mono">accent-colors.ts:211</span> (<span class="mono">resolveShade</span>)
-              se usa también en el loop de <span class="mono">ACCENT_SHADES</span> (línea 215), así
-              que en oscuro coral <span class="mono">--color-accent-700/800</span> pasan a
-              <span class="mono">#c94445</span> / <span class="mono">#b33b3c</span> (valores de claro),
-              mientras el mapeo oscuro anterior daba <span class="mono">#faa898</span>.
-            </p>
-            <p class="mt-3 text-sm leading-6 text-[#a0a0a0]">
-              Medido con axe sobre superficies reales: <span class="mono">text-accent-800</span> sobre
-              <span class="mono">bg-accent-50</span> = <span class="mono">1.95:1</span> (antes
-              <span class="mono">6.0:1</span>) y <span class="mono">text-accent-700</span> sobre el
-              fondo = <span class="mono">3.95:1</span> (antes <span class="mono">7.48:1</span>).
-            </p>
-            <div class="mt-4 overflow-x-auto">
-              <table class="w-full min-w-[640px] border-collapse text-sm">
-                <thead>
-                  <tr class="mono border-b border-[#222226] text-left text-xs text-[#666]">
-                    <th class="py-2 pr-4 font-normal">SUPERFICIE</th>
-                    <th class="py-2 pr-4 font-normal">NODO</th>
-                    <th class="py-2 pr-4 font-normal">PAR</th>
-                    <th class="py-2 pr-4 font-normal">AHORA</th>
-                    <th class="py-2 font-normal">ANTES</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr class="border-b border-[#1a1a1e]">
-                    <td class="mono py-3 pr-4 text-[#a0a0a0]">/recipes</td>
-                    <td class="py-3 pr-4 text-[#a0a0a0]">Badge de categoría</td>
-                    <td class="mono py-3 pr-4 text-[#a0a0a0]">#b33b3c / #6b1f20</td>
-                    <td class="mono py-3 pr-4 text-[#f43f5e]">1.95:1</td>
-                    <td class="mono py-3 text-[#666]">6.01:1</td>
-                  </tr>
-                  <tr class="border-b border-[#1a1a1e]">
-                    <td class="mono py-3 pr-4 text-[#a0a0a0]">/settings?tab=preferences</td>
-                    <td class="py-3 pr-4 text-[#a0a0a0]">Badge y tarjeta de acento</td>
-                    <td class="mono py-3 pr-4 text-[#a0a0a0]">#b33b3c / #6b1f20</td>
-                    <td class="mono py-3 pr-4 text-[#f43f5e]">1.95:1</td>
-                    <td class="mono py-3 text-[#666]">6.01:1</td>
-                  </tr>
-                  <tr class="border-b border-[#1a1a1e]">
-                    <td class="mono py-3 pr-4 text-[#a0a0a0]">/settings?tab=preferences</td>
-                    <td class="py-3 pr-4 text-[#a0a0a0]">Tab activa</td>
-                    <td class="mono py-3 pr-4 text-[#a0a0a0]">#c94445 / #0f1114</td>
-                    <td class="mono py-3 pr-4 text-[#f43f5e]">3.95:1</td>
-                    <td class="mono py-3 text-[#666]">7.48:1</td>
-                  </tr>
-                  <tr>
-                    <td class="mono py-3 pr-4 text-[#a0a0a0]">/produccion · /pricing</td>
-                    <td class="py-3 pr-4 text-[#a0a0a0]">Badges equivalentes</td>
-                    <td class="mono py-3 pr-4 text-[#a0a0a0]">#b33b3c / #6b1f20</td>
-                    <td class="mono py-3 pr-4 text-[#f43f5e]">1.95:1</td>
-                    <td class="mono py-3 text-[#666]">6.01:1</td>
-                  </tr>
-                </tbody>
-              </table>
+        <div class="mono mb-6 text-xs tracking-widest text-[#666]">
+          // SEÑALES / PRÓXIMOS MODOS
+        </div>
+        <div class="grid gap-6 md:grid-cols-2">
+          <div>
+            <div class="mb-3 text-xl font-semibold">Tres lanes paralelas, una lectura</div>
+            <ul class="space-y-3 text-sm text-[#a0a0a0]">
+              <li>
+                <span class="mono mr-2 text-[#34d399]">PASS</span>Los 15 hallazgos previos cerrados
+                y verificados
+              </li>
+              <li>
+                <span class="mono mr-2 text-[#34d399]">PASS</span>axe 15/15 (con scroll, claro y
+                oscuro) y sonda de contraste 8/8
+              </li>
+              <li>
+                <span class="mono mr-2 text-[#34d399]">PASS</span>164 e2e de chromium, incluidos los
+                asertos nuevos
+              </li>
+              <li>
+                <span class="mono mr-2 text-[#fbbf24]">WATCH</span>El foco por Tab no revela la
+                tercera card en móvil (MEDIUM)
+              </li>
+              <li>
+                <span class="mono mr-2 text-[#fbbf24]">WATCH</span>Los títulos de card sin la cara
+                de marca y "Próximamente" sin decir la promesa (LOW)
+              </li>
+              <li>
+                <span class="mono mr-2 text-[#34d399]">PASS</span>Ninguna violación HIGH: no queda
+                nada que bloquee
+              </li>
+            </ul>
+          </div>
+          <div>
+            <div class="mono mb-3 text-xs tracking-widest text-[#666]">// NEXT MODES</div>
+            <div class="flex flex-wrap gap-2">
+              <span class="mono border border-[#333] px-3 py-1 text-sm text-[#a0a0a0]"
+                >/design interaction</span
+              >
+              <span class="mono border border-[#333] px-3 py-1 text-sm text-[#a0a0a0]"
+                >/design typeset</span
+              >
+              <span class="mono border border-[#333] px-3 py-1 text-sm text-[#a0a0a0]"
+                >/design refine</span
+              >
+              <span class="mono border border-[#333] px-3 py-1 text-sm text-[#a0a0a0]"
+                >/design finish</span
+              >
             </div>
-            <div class="mt-4 border-l border-[#fbbf24] pl-4 text-sm leading-6 text-[#fbbf24]">
-              FIX: aplicar el override solo al emitir
-              <span class="mono">--color-accent-solid</span> y
-              <span class="mono">--color-accent-solid-hover</span>; los shades
-              <span class="mono">50…800</span> siguen saliendo de
-              <span class="mono">darkShadeMap</span>. Un solo cambio arregla los ~20 usos de
-              <span class="mono">text-accent-700/800</span>.
-            </div>
-          </article>
-
-          <article class="border border-[#1f1f24] bg-[#0d0d0f] p-5">
-            <div class="mono mb-2 text-xs text-[#fbbf24]">LOW · COLOR</div>
-            <h2 class="mb-2 text-lg font-semibold">
-              El tinte oscuro de la card Pro apunta a un token que no existe
-            </h2>
-            <p class="mb-4 text-sm leading-6 text-[#a0a0a0]">
-              <span class="mono">PricingSection.vue:91</span> usa
-              <span class="mono">dark:bg-accent-950/10</span>, pero
-              <span class="mono">--color-accent-950</span> no está definido (ni en
-              <span class="mono">@theme</span> ni en la emisión: <span class="mono">ACCENT_SHADES</span>
-              llega a 800), así que la utilidad no pinta nada. Verificado leyendo la custom property
-              en el DOM: vacía.
+            <p class="mt-4 text-sm leading-6 text-[#a0a0a0]">
+              Los cinco hallazgos abiertos tienen su <span class="mono text-[#fbbf24]">FIX</span>
+              escrito en la tabla de prioridades: localización, estado actual medido y qué hacer
+              exactamente.
             </p>
-            <div class="border-l border-[#fbbf24] pl-4 text-sm leading-6 text-[#fbbf24]">
-              FIX: emitir los shades 900/950 con su mapeo oscuro, o cambiar la clase por un token
-              existente.
-            </div>
-          </article>
+          </div>
         </div>
       </section>
 
@@ -251,31 +236,397 @@
         <div class="mono mb-6 text-xs tracking-widest text-[#666]">// WHAT'S WORKING</div>
         <div class="grid gap-4 md:grid-cols-3">
           <article class="border border-[#1f1f24] p-4">
-            <h2 class="mb-2 text-sm font-semibold">Paridad real de tema</h2>
+            <h2 class="mb-2 text-sm font-semibold">Dos superficies con dos trabajos</h2>
             <p class="text-sm leading-6 text-[#a0a0a0]">
-              Banda del CTA y relleno de acción con el mismo coral en claro y oscuro:
-              <span class="mono">#c94445 → #b33b3c</span> con texto
-              <span class="mono">#ffffff</span>, medido por estilos computados. Antes en oscuro:
-              <span class="mono">#e84d5a → #ff7b6e</span> con etiqueta
-              <span class="mono">#171717</span>.
+              La landing decide (destacados = lo que se gana pagando, precio y CTA) y
+              <span class="mono">/pricing</span> compara (matriz de diferencias + detalle). La card
+              sigue siendo el mismo objeto en las dos.
             </p>
           </article>
           <article class="border border-[#1f1f24] p-4">
-            <h2 class="mb-2 text-sm font-semibold">Rampa coral coherente</h2>
+            <h2 class="mb-2 text-sm font-semibold">Comparación que no exige memoria</h2>
             <p class="text-sm leading-6 text-[#a0a0a0]">
-              Un solo tono (H≈24) en los 11 pasos y chroma recortado al 92% del máximo del gamut.
-              Antes: tints a H≈34, vívidos a H≈19 y el 500 pegado al borde del gamut.
+              Columnas = cards, celda = estado + texto del propio plan, reglas verticales que separan
+              columnas, 5 filas que cambian frente a 9 comunes listadas una vez. A 320px las celdas se
+              envuelven en sus tres columnas sin esconder filas ni desbordar la página.
             </p>
           </article>
           <article class="border border-[#1f1f24] p-4">
-            <h2 class="mb-2 text-sm font-semibold">CTA y foco</h2>
+            <h2 class="mb-2 text-sm font-semibold">La comparación sabe quién mira</h2>
             <p class="text-sm leading-6 text-[#a0a0a0]">
-              Titular y subtítulo blancos (4.78–5.82:1), primario blanco con etiqueta coral (4.78:1),
-              fantasma translúcido, y anillo de foco visible en ambos botones (blanco 2px, con offset
-              coral en el primario).
+              Con sesión, la columna del plan del visitante lleva "Plan actual" (asertado en nuxt y
+              e2e); sin sesión no se marca nada: el anónimo no tiene plan.
+            </p>
+          </article>
+          <article class="border border-[#1f1f24] p-4">
+            <h2 class="mb-2 text-sm font-semibold">CTAs y enlaces en su lane</h2>
+            <p class="text-sm leading-6 text-[#a0a0a0]">
+              Los tres CTA de <span class="mono">/pricing</span> comparten altura
+              (<span class="mono">y=486..488</span>) aunque un plan traiga badge y otro no; los
+              enlaces "Ver todas las funciones" cierran las cards de la landing en la misma línea
+              (<span class="mono">y=726</span>).
+            </p>
+          </article>
+          <article class="border border-[#1f1f24] p-4">
+            <h2 class="mb-2 text-sm font-semibold">Un solo anillo de foco</h2>
+            <p class="text-sm leading-6 text-[#a0a0a0]">
+              Medido con Tab sobre el enlace nuevo:
+              <span class="mono">rgb(248,104,101) 0 0 0 3px</span>, el mismo anillo de marca del
+              resto de los controles del landing.
+            </p>
+          </article>
+          <article class="border border-[#1f1f24] p-4">
+            <h2 class="mb-2 text-sm font-semibold">Gates con dientes</h2>
+            <p class="text-sm leading-6 text-[#a0a0a0]">
+              axe recorre la página por tramos en claro y oscuro, y la sonda mide los degradados
+              compuestos sobre el píxel: los dos barridos que antes dejaban pasar el fallo AA ahora
+              lo juzgan.
+            </p>
+          </article>
+          <article class="border border-[#1f1f24] p-4">
+            <h2 class="mb-2 text-sm font-semibold">Estados completos</h2>
+            <p class="text-sm leading-6 text-[#a0a0a0]">
+              Cargando con la forma final, error verdadero (nunca vacío falso), "Plan actual",
+              resaltado de <span class="mono">?plan=</span> con anillo y CTA en
+              <span class="mono">aria-busy</span> mientras redirige.
             </p>
           </article>
         </div>
+      </section>
+
+      <section class="report-section mb-8 p-6 md:p-8">
+        <div class="mono mb-6 text-xs tracking-widest text-[#666]">// PRIORITY ISSUES</div>
+        <div class="space-y-5">
+          <article class="border border-[#2a1d22] bg-[#110b0d] p-5">
+            <div class="mono mb-2 text-xs text-[#f43f5e]">P1 · MEDIUM · ACCESSIBILITY</div>
+            <h2 class="mb-2 text-lg font-semibold">
+              El scroller de planes no revela la card enfocada
+            </h2>
+            <p class="mb-4 text-sm leading-6 text-[#a0a0a0]">
+              <span class="mono">landing/PricingSection.vue:117-131</span>. A 375px, Tab hasta el CTA
+              de <span class="mono">[data-plan="basic"]</span> deja el contenedor donde estaba
+              (<span class="mono">scrollLeft</span> 331) y el control enfocado mide
+              <span class="mono">x=332..645</span> sobre 375 de viewport: se ve su borde y el anillo,
+              no su etiqueta. El mismo control enfocado por código sí se revela
+              (<span class="mono">scrollLeft</span> 640), así que el contenedor puede mostrarlo.
+              Deuda previa al plan: el scroller y su snap vienen del baseline y el reorden de esta
+              pasada no la introduce ni la empeora.
+            </p>
+            <div class="border-l border-[#fbbf24] pl-4 text-sm leading-6 text-[#fbbf24]">
+              FIX: escuchar <span class="mono">focusin</span> dentro del scroller y traer la card a
+              la vista (<span class="mono"
+                >card.scrollIntoView({ inline: "start", block: "nearest" })</span
+              >, respetando <span class="mono">prefers-reduced-motion</span>) + aserto e2e de que la
+              caja entera del control cae dentro del viewport tras Tab.
+            </div>
+          </article>
+
+          <article class="border border-[#2a1d22] bg-[#110b0d] p-5">
+            <div class="mono mb-2 text-xs text-[#fbbf24]">P2 · LOW · TYPE</div>
+            <h2 class="mb-2 text-lg font-semibold">Los títulos de card no usan la cara de marca</h2>
+            <p class="mb-4 text-sm leading-6 text-[#a0a0a0]">
+              <span class="mono">landing/PricingSection.vue:133</span>,
+              <span class="mono">pages/pricing.vue:209</span>. <span class="mono">DESIGN.md</span> §3
+              pide <span class="mono">--font-display</span> para los títulos de card ("Title"); los
+              nombres de plan computan la pila del sistema en las dos superficies, mientras los
+              titulares de página y sección de <span class="mono">/pricing</span> ya resuelven Outfit
+              tras esta pasada.
+            </p>
+            <div class="border-l border-[#fbbf24] pl-4 text-sm leading-6 text-[#fbbf24]">
+              FIX: aplicar <span class="mono">font-display</span> a los nombres de plan de las dos
+              superficies (una sola decisión, por la paridad de <span class="mono">PlanCard</span>).
+            </div>
+          </article>
+
+          <article class="border border-[#2a1d22] bg-[#110b0d] p-5">
+            <div class="mono mb-2 text-xs text-[#fbbf24]">P2 · LOW · WRITING</div>
+            <h2 class="mb-2 text-lg font-semibold">"Próximamente" esconde una diferencia real</h2>
+            <p class="mb-4 text-sm leading-6 text-[#a0a0a0]">
+              <span class="mono">features/billing/plan-feature-state.ts:44-47</span>.
+              <span class="mono">coming_soon</span> manda sobre <span class="mono">included</span>, así
+              que "Instrucciones de preparación" (Free: no incluida; Basic/Pro: incluida cuando
+              llegue) se clasifica como <span class="font-semibold text-[#fafafa]">igual en los tres
+              planes</span> y sus celdas se leen idénticas. El catálogo ya declara la diferencia; el
+              vocabulario actual la borra.
+            </p>
+            <div class="border-l border-[#fbbf24] pl-4 text-sm leading-6 text-[#fbbf24]">
+              FIX: distinguir la promesa en el estado (p. ej. etiquetas
+              <span class="mono">Próximamente incluido</span> / <span class="mono">Próximamente</span>)
+              y usar <span class="mono">included</span> en la clave de igualdad de
+              <span class="mono">comparePlans</span>.
+            </div>
+          </article>
+
+          <article class="border border-[#2a1d22] bg-[#110b0d] p-5">
+            <div class="mono mb-2 text-xs text-[#fbbf24]">P2 · LOW · LAYOUT</div>
+            <h2 class="mb-2 text-lg font-semibold">Las cards de la landing no comparten lanes</h2>
+            <p class="mb-4 text-sm leading-6 text-[#a0a0a0]">
+              <span class="mono">landing/PricingSection.vue:133-146</span>,
+              <span class="mono">features/billing/PlanPrice.vue</span>. A 1024px el nombre de Free
+              está 35px por encima del de Pro/Basic (<span class="mono">283 vs 318</span>) y su
+              CTA/lista 53px (<span class="mono">411 vs 464 / 479 vs 532</span>): la fila del badge
+              existe sólo en dos cards y la línea de facturación sólo en los planes de pago.
+            </p>
+            <div class="border-l border-[#fbbf24] pl-4 text-sm leading-6 text-[#fbbf24]">
+              FIX: reservar la fila del badge en el shell (slot con <span class="mono">min-h</span>) y
+              la línea de facturación en <span class="mono">PlanPrice</span>; o alinear el CTA al
+              fondo de la card, como ya hace <span class="mono">/pricing</span> con
+              <span class="mono">mt-auto</span>.
+            </div>
+          </article>
+
+          <article class="border border-[#2a1d22] bg-[#110b0d] p-5">
+            <div class="mono mb-2 text-xs text-[#fbbf24]">P2 · LOW · COLOR</div>
+            <h2 class="mb-2 text-lg font-semibold">
+              shadow-accent-tint sigue declarada y no pinta
+            </h2>
+            <p class="mb-4 text-sm leading-6 text-[#a0a0a0]">
+              <span class="mono">landing/HeroSection.vue:59,100</span>,
+              <span class="mono">landing/FeaturesSection.vue:111</span>. La clase sigue en tres
+              sitios (CTA "Comenzar gratis" y los dos marcos de captura) y el token no existe: 0
+              reglas en los cuatro CSS construidos (<span class="mono"
+                >grep -c shadow-accent-tint apps/web/.output/public/_nuxt/*.css</span
+              >
+              → 0,0,0,0). Misma familia que el hallazgo 14.
+            </p>
+            <div class="border-l border-[#fbbf24] pl-4 text-sm leading-6 text-[#fbbf24]">
+              FIX: quitarla, o apuntarla al token real
+              (<span class="mono">shadow-sm shadow-accent-200</span>, que existe y se apaga en
+              oscuro).
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="report-section mb-8 p-6 md:p-8">
+        <div class="mono mb-6 text-xs tracking-widest text-[#666]">// FINDINGS</div>
+        <div class="overflow-x-auto">
+          <table class="w-full min-w-[980px] border-collapse text-sm">
+            <thead>
+              <tr class="mono border-b border-[#222226] text-left text-xs text-[#666]">
+                <th class="py-3 pr-4 font-normal">#</th>
+                <th class="py-3 pr-4 font-normal">SEV</th>
+                <th class="py-3 pr-4 font-normal">DISCIPLINA</th>
+                <th class="py-3 pr-4 font-normal">UBICACIÓN</th>
+                <th class="py-3 pr-4 font-normal">ANTES</th>
+                <th class="py-3 font-normal">DESPUÉS</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-b border-[#1a1a1e]">
+                <td class="py-3 pr-4 text-[#555]">1</td>
+                <td class="mono py-3 pr-4 text-[#fbbf24]">MEDIUM</td>
+                <td class="py-3 pr-4 text-[#a0a0a0]">Accessibility</td>
+                <td class="mono py-3 pr-4 text-[#a0a0a0]">landing/PricingSection.vue:117-131</td>
+                <td class="py-3 pr-4 text-[#a0a0a0]">
+                  Tab al CTA de la tercera card a 375px: <span class="mono">scrollLeft</span> 331 y
+                  el control mide <span class="mono">x=332..645</span> (su etiqueta, fuera)
+                </td>
+                <td class="py-3 text-[#a0a0a0]">
+                  <span class="mono">focusin</span> → <span class="mono">scrollIntoView</span> de la
+                  card + aserto e2e de caja visible
+                </td>
+              </tr>
+              <tr class="border-b border-[#1a1a1e]">
+                <td class="py-3 pr-4 text-[#555]">2</td>
+                <td class="mono py-3 pr-4 text-[#34d399]">LOW</td>
+                <td class="py-3 pr-4 text-[#a0a0a0]">Type</td>
+                <td class="mono py-3 pr-4 text-[#a0a0a0]">
+                  PricingSection.vue:133 · pages/pricing.vue:209
+                </td>
+                <td class="py-3 pr-4 text-[#a0a0a0]">
+                  Los nombres de plan computan la pila del sistema aunque DESIGN.md §3 pide
+                  <span class="mono">--font-display</span> para los títulos de card
+                </td>
+                <td class="py-3 text-[#a0a0a0]">
+                  <span class="mono">font-display</span> en los nombres de plan de las dos
+                  superficies
+                </td>
+              </tr>
+              <tr class="border-b border-[#1a1a1e]">
+                <td class="py-3 pr-4 text-[#555]">3</td>
+                <td class="mono py-3 pr-4 text-[#34d399]">LOW</td>
+                <td class="py-3 pr-4 text-[#a0a0a0]">Writing</td>
+                <td class="mono py-3 pr-4 text-[#a0a0a0]">plan-feature-state.ts:44-47</td>
+                <td class="py-3 pr-4 text-[#a0a0a0]">
+                  <span class="mono">coming_soon</span> manda sobre <span class="mono">included</span>:
+                  una fila con promesa distinta por plan se agrupa como "igual en los tres"
+                </td>
+                <td class="py-3 text-[#a0a0a0]">
+                  Etiqueta por <span class="mono">included</span> y clave de igualdad con la promesa
+                </td>
+              </tr>
+              <tr class="border-b border-[#1a1a1e]">
+                <td class="py-3 pr-4 text-[#555]">4</td>
+                <td class="mono py-3 pr-4 text-[#34d399]">LOW</td>
+                <td class="py-3 pr-4 text-[#a0a0a0]">Layout</td>
+                <td class="mono py-3 pr-4 text-[#a0a0a0]">
+                  PricingSection.vue:133-146 · PlanPrice.vue
+                </td>
+                <td class="py-3 pr-4 text-[#a0a0a0]">
+                  Nombre 283 vs 318 y CTA/lista 411 vs 464 / 479 vs 532 a 1024px
+                </td>
+                <td class="py-3 text-[#a0a0a0]">
+                  Reservar fila de badge y línea de facturación (o CTA al fondo con
+                  <span class="mono">mt-auto</span>)
+                </td>
+              </tr>
+              <tr>
+                <td class="py-3 pr-4 text-[#555]">5</td>
+                <td class="mono py-3 pr-4 text-[#34d399]">LOW</td>
+                <td class="py-3 pr-4 text-[#a0a0a0]">Color</td>
+                <td class="mono py-3 pr-4 text-[#a0a0a0]">
+                  HeroSection.vue:59,100 · FeaturesSection.vue:111
+                </td>
+                <td class="py-3 pr-4 text-[#a0a0a0]">
+                  <span class="mono">shadow-accent-tint</span> en tres sitios, 0 reglas en el CSS
+                  construido
+                </td>
+                <td class="py-3 text-[#a0a0a0]">
+                  Fuera, o al token real <span class="mono">shadow-accent-200</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="report-section mb-8 p-6 md:p-8">
+        <div class="mono mb-6 text-xs tracking-widest text-[#666]">
+          // ESTADO DE LOS 15 HALLAZGOS PREVIOS
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full min-w-[720px] border-collapse text-sm">
+            <thead>
+              <tr class="mono border-b border-[#222226] text-left text-xs text-[#666]">
+                <th class="py-3 pr-4 font-normal">#</th>
+                <th class="py-3 pr-4 font-normal">HALLAZGO (2026-09-20)</th>
+                <th class="py-3 pr-4 font-normal">ESTADO</th>
+                <th class="py-3 font-normal">EVIDENCIA DE ESTA PASADA</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-b border-[#1a1a1e]">
+                <td class="py-3 pr-4 text-[#555]">1</td>
+                <td class="py-3 pr-4 text-[#fafafa]">AA roto del acento como texto (claro)</td>
+                <td class="mono py-3 pr-4 text-[#34d399]">CERRADO</td>
+                <td class="py-3 text-[#a0a0a0]">
+                  Rol <span class="mono">--color-accent-text</span>; sonda de contraste 8/8
+                </td>
+              </tr>
+              <tr class="border-b border-[#1a1a1e]">
+                <td class="py-3 pr-4 text-[#555]">2</td>
+                <td class="py-3 pr-4 text-[#fafafa]">Gate de a11y ciego (sin scroll, sólo claro)</td>
+                <td class="mono py-3 pr-4 text-[#34d399]">CERRADO</td>
+                <td class="py-3 text-[#a0a0a0]">Barrido por tramos, dos temas: axe 15/15</td>
+              </tr>
+              <tr class="border-b border-[#1a1a1e]">
+                <td class="py-3 pr-4 text-[#555]">3</td>
+                <td class="py-3 pr-4 text-[#fafafa]">Estado de cada feature sólo por ícono</td>
+                <td class="mono py-3 pr-4 text-[#34d399]">CERRADO</td>
+                <td class="py-3 text-[#a0a0a0]">
+                  <span class="mono">ul/li</span> + <span class="mono">sr-only</span> por fila, y en
+                  las celdas de la matriz
+                </td>
+              </tr>
+              <tr class="border-b border-[#1a1a1e]">
+                <td class="py-3 pr-4 text-[#555]">4</td>
+                <td class="py-3 pr-4 text-[#fafafa]">La misma card con dos tratamientos</td>
+                <td class="mono py-3 pr-4 text-[#34d399]">CERRADO</td>
+                <td class="py-3 text-[#a0a0a0]">
+                  <span class="mono">PlanCard</span> único + e2e de paridad (3 planes × 2 temas)
+                </td>
+              </tr>
+              <tr class="border-b border-[#1a1a1e]">
+                <td class="py-3 pr-4 text-[#555]">5</td>
+                <td class="py-3 pr-4 text-[#fafafa]">El lightbox no amplía en móvil</td>
+                <td class="mono py-3 pr-4 text-[#34d399]">CERRADO</td>
+                <td class="py-3 text-[#a0a0a0]">
+                  e2e: zoom &gt; viewport y &gt; 3× la miniatura inline
+                </td>
+              </tr>
+              <tr class="border-b border-[#1a1a1e]">
+                <td class="py-3 pr-4 text-[#555]">6</td>
+                <td class="py-3 pr-4 text-[#fafafa]">El hero gasta media pantalla en el logo</td>
+                <td class="mono py-3 pr-4 text-[#34d399]">CERRADO</td>
+                <td class="py-3 text-[#a0a0a0]">Captura real: 100% visible a 1280, &gt;50% a 375</td>
+              </tr>
+              <tr class="border-b border-[#1a1a1e]">
+                <td class="py-3 pr-4 text-[#555]">7</td>
+                <td class="py-3 pr-4 text-[#fafafa]">Outfit se pide y no se usa</td>
+                <td class="mono py-3 pr-4 text-[#34d399]">CERRADO</td>
+                <td class="py-3 text-[#a0a0a0]">
+                  Titulares de página y sección en Outfit en las dos superficies (medido); lo que
+                  falta son los títulos de card → P2 de esta pasada
+                </td>
+              </tr>
+              <tr class="border-b border-[#1a1a1e]">
+                <td class="py-3 pr-4 text-[#555]">8</td>
+                <td class="py-3 pr-4 text-[#fafafa]">El cierre repite el hero / "Prueba gratis"</td>
+                <td class="mono py-3 pr-4 text-[#34d399]">CERRADO</td>
+                <td class="py-3 text-[#a0a0a0]">Copy nuevo; el e2e no encuentra "prueba"</td>
+              </tr>
+              <tr class="border-b border-[#1a1a1e]">
+                <td class="py-3 pr-4 text-[#555]">9</td>
+                <td class="py-3 pr-4 text-[#fafafa]">Tildes del catálogo</td>
+                <td class="mono py-3 pr-4 text-[#34d399]">CERRADO</td>
+                <td class="py-3 text-[#a0a0a0]">
+                  "Categorías", "Información nutricional", "Más popular"
+                </td>
+              </tr>
+              <tr class="border-b border-[#1a1a1e]">
+                <td class="py-3 pr-4 text-[#555]">10</td>
+                <td class="py-3 pr-4 text-[#fafafa]">Número de paso impreso dos veces</td>
+                <td class="mono py-3 pr-4 text-[#34d399]">CERRADO</td>
+                <td class="py-3 text-[#a0a0a0]">e2e: una sola aparición de "01"</td>
+              </tr>
+              <tr class="border-b border-[#1a1a1e]">
+                <td class="py-3 pr-4 text-[#555]">11</td>
+                <td class="py-3 pr-4 text-[#fafafa]">Pista de zoom sólo con hover</td>
+                <td class="mono py-3 pr-4 text-[#34d399]">CERRADO</td>
+                <td class="py-3 text-[#a0a0a0]">Se revela con foco; el texto lo decide el puntero</td>
+              </tr>
+              <tr class="border-b border-[#1a1a1e]">
+                <td class="py-3 pr-4 text-[#555]">12</td>
+                <td class="py-3 pr-4 text-[#fafafa]">Drawer sin semántica de diálogo</td>
+                <td class="mono py-3 pr-4 text-[#34d399]">CERRADO</td>
+                <td class="py-3 text-[#a0a0a0]">
+                  <span class="mono">role=dialog</span>, <span class="mono">aria-modal</span>, foco e
+                  <span class="mono">inert</span> (e2e)
+                </td>
+              </tr>
+              <tr class="border-b border-[#1a1a1e]">
+                <td class="py-3 pr-4 text-[#555]">13</td>
+                <td class="py-3 pr-4 text-[#fafafa]">El error del API disfrazado de vacío</td>
+                <td class="mono py-3 pr-4 text-[#34d399]">CERRADO</td>
+                <td class="py-3 text-[#a0a0a0]">Con el API caído avisa; SSR 200 sin estado vacío</td>
+              </tr>
+              <tr class="border-b border-[#1a1a1e]">
+                <td class="py-3 pr-4 text-[#555]">14</td>
+                <td class="py-3 pr-4 text-[#fafafa]">
+                  <span class="mono">accent-950</span> inexistente
+                </td>
+                <td class="mono py-3 pr-4 text-[#34d399]">CERRADO</td>
+                <td class="py-3 text-[#a0a0a0]">
+                  Card Pro en oscuro con <span class="mono">accent-800/10</span>; queda un hermano →
+                  P2
+                </td>
+              </tr>
+              <tr>
+                <td class="py-3 pr-4 text-[#555]">15</td>
+                <td class="py-3 pr-4 text-[#fafafa]">Anillos de foco mezclados</td>
+                <td class="mono py-3 pr-4 text-[#34d399]">CERRADO</td>
+                <td class="py-3 text-[#a0a0a0]">
+                  <span class="mono">.focus-ring</span> medido en los controles nuevos y viejos
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="mono mt-6 text-xs leading-6 tracking-widest text-[#666]">
+          DEUDA DE LOS HALLAZGOS 4 Y 6 (LA LANDING CLONA EL CATÁLOGO · SIN AYUDA PARA COMPARAR · PRO
+          A DOS SWIPES): CERRADA
+        </p>
       </section>
 
       <section class="report-section mb-8 p-6 md:p-8">
@@ -291,41 +642,62 @@
             </thead>
             <tbody>
               <tr class="border-b border-[#1a1a1e]">
-                <td class="mono py-3 pr-4 text-[#666]">CTASection.vue:11</td>
-                <td class="py-3 pr-4 text-[#a0a0a0]">
-                  La banda es más profunda en claro que el resto de planos coral del landing
-                </td>
+                <td class="mono py-3 pr-4 text-[#666]">/pricing cards</td>
+                <td class="py-3 pr-4 text-[#a0a0a0]">Devolver los destacados a las cards</td>
                 <td class="py-3 text-[#a0a0a0]">
-                  Deliberado: debe sostener texto blanco AA y ser idéntica entre temas; funciona como
-                  cierre de página.
+                  Reconstruiría la duplicación que esta pasada elimina; en 1280 la comparación entra
+                  en el primer viewport y el reparto pitch/comparación es la decisión del plan
                 </td>
               </tr>
               <tr class="border-b border-[#1a1a1e]">
-                <td class="mono py-3 pr-4 text-[#666]">accent-colors.ts:186</td>
-                <td class="py-3 pr-4 text-[#a0a0a0]">Extender la paridad a las otras 6 familias</td>
+                <td class="mono py-3 pr-4 text-[#666]">PlanComparison</td>
+                <td class="py-3 pr-4 text-[#a0a0a0]">Colapsar las 9 filas comunes en una línea</td>
                 <td class="py-3 text-[#a0a0a0]">
-                  Solo se pidió coral; el resto fue validado en el barrido 13a y sostiene los
-                  contrastes actuales.
+                  <span class="mono">/pricing</span> conserva el catálogo completo; colapsarlo
+                  escondería el detalle que debe dar
                 </td>
               </tr>
               <tr class="border-b border-[#1a1a1e]">
-                <td class="mono py-3 pr-4 text-[#666]">accent-colors.ts:228</td>
+                <td class="mono py-3 pr-4 text-[#666]">PricingSection</td>
                 <td class="py-3 pr-4 text-[#a0a0a0]">
-                  No emitir <span class="mono">--tw-text-on-accent</span> para no-coral
+                  Mostrar "Próximamente" y lo no incluido en los destacados
                 </td>
                 <td class="py-3 text-[#a0a0a0]">
-                  Duplicaría la fuente de verdad; el valor emitido es idéntico al de
-                  <span class="mono">tokens.css</span>.
+                  El pitch vende lo disponible de hoy; lo futuro y lo excluido viven en el catálogo,
+                  a un click, con el mismo contrato de estado
+                </td>
+              </tr>
+              <tr class="border-b border-[#1a1a1e]">
+                <td class="mono py-3 pr-4 text-[#666]">plan-highlights.ts</td>
+                <td class="py-3 pr-4 text-[#a0a0a0]">
+                  El "y N funciones más" no se dispara con el catálogo actual
+                </td>
+                <td class="py-3 text-[#a0a0a0]">
+                  Guardarraíl para cuando el catálogo crezca: cubierto por unit y nuxt; no hay nada
+                  que arreglar hoy
+                </td>
+              </tr>
+              <tr class="border-b border-[#1a1a1e]">
+                <td class="mono py-3 pr-4 text-[#666]">plan-highlights · plan-order</td>
+                <td class="py-3 pr-4 text-[#a0a0a0]">
+                  El <span class="mono">"free"</span> literal y el <span class="mono">plan()</span>
+                  duplicado en los tres specs unitarios
+                </td>
+                <td class="py-3 text-[#a0a0a0]">
+                  El id "free" vive en ~15 sitios del feature de billing: el arreglo real es un
+                  <span class="mono">PLAN_IDS</span> compartido. La fábrica de fixtures sí se extrajo
+                  a <span class="mono">test/unit/support/plan-fixture.ts</span>
                 </td>
               </tr>
               <tr>
-                <td class="mono py-3 pr-4 text-[#666]">Button.vue:47</td>
+                <td class="mono py-3 pr-4 text-[#666]">PlanComparison</td>
                 <td class="py-3 pr-4 text-[#a0a0a0]">
-                  Reutilizar <span class="mono">bg-accent-700</span> con modificador de tema
+                  Etiqueta sintética ("Recetas: 10 / 75 / ∞")
                 </td>
                 <td class="py-3 text-[#a0a0a0]">
-                  El token de rol es lo que permite que coral conserve su tono mientras el resto
-                  aclara el relleno en oscuro.
+                  El catálogo no declara una etiqueta de fila: inventarla sería publicar un dato que
+                  la config no tiene (<span class="mono">PRODUCT.md</span> rechaza además la tabla
+                  densa tipo ERP)
                 </td>
               </tr>
             </tbody>
@@ -340,69 +712,70 @@
             <div class="mono mb-3 text-xs tracking-widest text-[#666]">PASADA</div>
             <ul class="space-y-3 text-sm text-[#a0a0a0]">
               <li>
-                <span class="mono mr-2 text-[#34d399]">PASS</span>Vitest: 49 archivos, 659 tests
-                verdes (incluye el contrato nuevo de <span class="mono">accent-colors</span>).
+                <span class="mono mr-2 text-[#34d399]">PASS</span
+                ><span class="mono">pnpm --filter @recetario/web test</span> → 700 pasan (53
+                archivos; incluye 14 unit y 9 nuxt nuevos de esta pasada).
               </li>
               <li>
-                <span class="mono mr-2 text-[#34d399]">PASS</span>Type-check, eslint y prettier limpios
-                en los archivos tocados.
+                <span class="mono mr-2 text-[#34d399]">PASS</span
+                ><span class="mono">type-check</span> y <span class="mono">lint</span> limpios.
               </li>
               <li>
-                <span class="mono mr-2 text-[#34d399]">PASS</span>Estilos computados en claro/oscuro:
-                banda idéntica, primario <span class="mono">#ffffff/#c94445</span>, anillos de foco
-                presentes, pill y contador del toolbar correctos.
+                <span class="mono mr-2 text-[#34d399]">PASS</span>Suite completa de chromium
+                (<span class="mono">playwright test --project=chromium</span>) → 164 pasan.</li>
+              <li>
+                <span class="mono mr-2 text-[#34d399]">PASS</span
+                ><span class="mono">public.spec.ts</span> + <span class="mono">a11y.spec.ts</span> +
+                <span class="mono">contrast.spec.ts</span> tras la revisión de dos ejes → 42 pasan
+                (recorrido por tramos en dos temas, sonda por píxeles y los asertos nuevos).
+              </li>
+              <li>
+                <span class="mono mr-2 text-[#34d399]">PASS</span
+                ><span class="mono">wrangler:dry-run</span> OK, con warnings preexistentes de
+                <span class="mono">duplicate-object-key</span> en el chunk de producción.
+              </li>
+              <li>
+                <span class="mono mr-2 text-[#34d399]">PASS</span>Medidas en vivo a
+                320/375/768/1024/1280, claro y oscuro: CTAs de <span class="mono">/pricing</span> en
+                <span class="mono">y=486..488</span>, enlaces en <span class="mono">y=726</span>,
+                matriz de 5 × 3, <span class="mono">overflow</span> de página 0 a 320 en las dos
+                superficies, anillo de foco del enlace nuevo y el flujo landing →
+                <span class="mono">/pricing</span> → <span class="mono">/sign-in</span> caminado a
+                mano.
+              </li>
+              <li>
+                <span class="mono mr-2 text-[#34d399]">PASS</span>Sin errores de consola ni de página
+                (<span class="mono">agent-browser errors</span>, vacío). 30 capturas de evidencia en
+                <span class="mono">apps/web/test-results/qa-t7/</span>.
               </li>
             </ul>
           </div>
           <div>
-            <div class="mono mb-3 text-xs tracking-widest text-[#666]">FALLADA</div>
+            <div class="mono mb-3 text-xs tracking-widest text-[#666]">NO VERIFICADO</div>
             <ul class="space-y-3 text-sm text-[#a0a0a0]">
               <li>
-                <span class="mono mr-2 text-[#ef4444]">FAIL</span>Barrido <span class="mono">acentos</span>
-                (6 superficies) por el hallazgo HIGH.
+                <span class="mono mr-2 text-[#666]">GAP</span>Firefox/WebKit: los smokes no cubren
+                las landings en esta máquina (<span class="mono">firefox-smoke</span> falla al
+                lanzar).
               </li>
               <li>
-                <span class="mono mr-2 text-[#ef4444]">FAIL</span>firefox-smoke: fallo de lanzamiento
-                del navegador en este entorno, no relacionado con el diseño.
-              </li>
-            </ul>
-            <div class="mono mb-3 mt-6 text-xs tracking-widest text-[#666]">NO VERIFICADO</div>
-            <ul class="space-y-3 text-sm text-[#a0a0a0]">
-              <li>
-                <span class="mono mr-2 text-[#666]">GAP</span>Inspección visual por ojo: el entorno no
-                muestra capturas y el run de Playwright borró <span class="mono">test-results/</span>.
+                <span class="mono mr-2 text-[#666]">GAP</span>Lector de pantalla real
+                (VoiceOver/NVDA): el estado se sostiene sobre el DOM
+                (<span class="mono">sr-only</span>, <span class="mono">th[scope]</span>,
+                <span class="mono">caption</span>).
               </li>
               <li>
-                <span class="mono mr-2 text-[#666]">GAP</span>Páginas públicas en oscuro dentro del
-                gate del repo (solo escanea claro); el CTA oscuro se midió, no se escaneó.
-              </li>
-              <li>
-                <span class="mono mr-2 text-[#666]">GAP</span>Hover y
-                <span class="mono">:active</span> del fantasma: definidos y razonados, sin medición
-                automática.
+                <span class="mono mr-2 text-[#666]">GAP</span>Mecanismo del scroll por foco en
+                Chromium: medido el efecto (Tab no revela, <span class="mono">focus()</span> sí), no
+                la causa interna.
               </li>
             </ul>
           </div>
         </div>
       </section>
 
-      <section class="report-section mb-8 p-6 md:p-8">
-        <div class="mono mb-3 text-xs tracking-widest text-[#666]">// NEXT MODES</div>
-        <div class="flex flex-wrap gap-2">
-          <span class="border border-[#333] px-3 py-1 text-sm text-[#a0a0a0]">/design recolor</span>
-          <span class="border border-[#333] px-3 py-1 text-sm text-[#a0a0a0]">/design a11y</span>
-        </div>
-        <p class="mt-4 text-sm leading-6 text-[#a0a0a0]">
-          <span class="mono">recolor</span> acotado a
-          <span class="mono">accent-colors.ts</span> para separar el override del rol de relleno;
-          criterio de aceptación: el barrido <span class="mono">acentos</span> en verde.
-          <span class="mono">a11y</span> solo si se quiere ampliar el gate a las públicas en oscuro
-          (foco y teclado ya están verificados).
-        </p>
-      </section>
-
       <footer class="mono py-8 text-center text-xs tracking-widest text-[#444]">
-        Generated with CommandCode - 2026-09-18
+        Generated with CommandCode - 2026-09-20
       </footer>
     </main>
   </body>
