@@ -146,6 +146,43 @@ describe("PlanFeatureList", () => {
     expect(wrapper.findAll(".lucide-clock")).toHaveLength(1);
     expect(wrapper.text()).toContain("Próximamente");
   });
+
+  it("expone el estado de cada fila en texto, no sólo por ícono", async () => {
+    const wrapper = await mountSuspended(PlanFeatureList, {
+      props: {
+        features: [
+          { text: "Hasta 10 recetas", included: true },
+          { text: "Duplicar recetas", included: false },
+          { text: "Exportar a PDF", included: false, status: "coming_soon" },
+        ],
+      },
+    });
+
+    expect(wrapper.find("ul").exists()).toBe(true);
+
+    const rows = wrapper.findAll("li");
+    expect(rows).toHaveLength(3);
+    expect(rows.map((row) => row.find(".sr-only").text())).toEqual([
+      "Incluido:",
+      "No incluido:",
+      "Próximamente:",
+    ]);
+    expect(
+      rows.map((row) => row.findAll("span").map((span) => span.text())),
+    ).toEqual([
+      ["Incluido:", "Hasta 10 recetas"],
+      ["No incluido:", "Duplicar recetas"],
+      ["Próximamente:", "Exportar a PDF"],
+    ]);
+    expect(rows.map((row) => row.find("svg").classes()[1])).toEqual([
+      "lucide-check",
+      "lucide-x",
+      "lucide-clock",
+    ]);
+    expect(
+      rows.every((row) => row.find("svg").attributes("aria-hidden") === "true"),
+    ).toBe(true);
+  });
 });
 
 describe("LandingPricingSection", () => {
