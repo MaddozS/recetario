@@ -87,13 +87,8 @@ const STEPS: readonly Step[] = [
                   {{ step.description }}
                 </p>
                 <div
-                  class="bg-card border-border mt-4 inline-flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm shadow-sm"
+                  class="bg-card border-border mt-4 inline-flex items-center rounded-xl border px-4 py-2.5 text-sm shadow-sm"
                 >
-                  <span
-                    class="bg-accent-100 text-accent-800 dark:bg-accent-50 rounded-md px-2 py-0.5 text-xs font-bold"
-                  >
-                    {{ step.number }}
-                  </span>
                   <span
                     class="text-secondary-foreground font-mono text-xs font-medium tabular-nums"
                   >

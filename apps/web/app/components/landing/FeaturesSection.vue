@@ -100,6 +100,7 @@ function closeLightbox(): void {
             <div class="mx-auto w-full max-w-md">
               <button
                 type="button"
+                data-lightbox-trigger
                 class="group/lightbox focus-ring w-full cursor-pointer rounded-2xl text-left"
                 :aria-label="`Ampliar imagen de ${feature.title}`"
                 @click="openLightbox(feature)"
@@ -114,10 +115,16 @@ function closeLightbox(): void {
                   height="600"
                 />
                 <span
-                  class="text-muted-foreground mt-1.5 flex items-center gap-1.5 text-xs transition-opacity group-hover/lightbox:opacity-100 md:opacity-0"
+                  data-zoom-hint
+                  class="text-muted-foreground mt-1.5 flex items-center gap-1.5 text-xs opacity-0 transition-opacity group-hover/lightbox:opacity-100 group-focus-visible/lightbox:opacity-100 max-md:opacity-100 pointer-coarse:opacity-100"
                 >
                   <Icon name="lucide:zoom-in" :size="14" />
-                  Click para ampliar
+                  <span data-zoom-hint-fine class="hidden pointer-fine:inline">
+                    Click para ampliar
+                  </span>
+                  <span data-zoom-hint-touch class="pointer-fine:hidden">
+                    Toca para ampliar
+                  </span>
                 </span>
               </button>
             </div>
