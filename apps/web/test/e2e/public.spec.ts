@@ -605,11 +605,99 @@ test("la card de plan se ve igual en la landing y en /pricing", async ({
     expect(
       landing.map((card) => card.plan),
       `planes renderizados en ${theme}`,
-    ).toEqual(["free", "basic", "pro"]);
+    ).toEqual(["pro", "free", "basic"]);
     expect(pricing, `la card en ${theme} depende de la superficie`).toEqual(
       landing,
     );
   }
+});
+
+test("la landing abre por el recomendado y manda el catálogo completo a /pricing", async ({
+  page,
+  goto,
+}) => {
+  await page.setViewportSize({ width: 375, height: 800 });
+  await goto("/", { waitUntil: "hydration" });
+
+  const scroller = page.locator("#pricing .pricing-scroll");
+  const recommended = scroller.locator("[data-plan]").first();
+
+  // El scroller arranca en 0 y el recomendado cae entero en el viewport: ya no
+  // queda a dos swipes como cuando cerraba la fila.
+  await expect(recommended).toHaveAttribute("data-plan", "pro");
+  expect(await scroller.evaluate((element) => element.scrollLeft)).toBe(0);
+  const box = await recommended.boundingBox();
+  expect(box?.x ?? -1).toBeGreaterThanOrEqual(0);
+  expect((box?.x ?? 0) + (box?.width ?? 0)).toBeLessThanOrEqual(375);
+
+  // Destacados: lo que se gana con cada plan, sin filas "no incluido".
+  const pro = page.locator('#pricing [data-plan="pro"]');
+  await expect(pro).toContainText("Recetas ilimitadas");
+  await expect(pro).not.toContainText("Costeo básico con márgenes");
+  await expect(page.locator('#pricing [data-plan="free"]')).not.toContainText(
+    "Duplicar recetas",
+  );
+  await expect(page.locator('#pricing [data-plan="basic"]')).toContainText(
+    "Planificador de producción",
+  );
+  await expect(page.locator("#pricing")).not.toContainText("No incluido");
+
+  // El catálogo completo está a un click, una vez por card.
+  const details = page.locator('#pricing a[href="/pricing"]');
+  await expect(details).toHaveCount(3);
+  await expect(details.first()).toContainText("Ver todas las funciones");
+  await details.first().click();
+  await expect(page).toHaveURL(/\/pricing$/);
+});
+
+test("/pricing compara sólo las diferencias y no repite lo igual en los tres planes", async ({
+  page,
+  goto,
+}) => {
+  await goto("/pricing", { waitUntil: "hydration" });
+
+  const comparison = page.locator("section:has(#plan-comparison-heading)");
+  const table = comparison.locator("table");
+
+  // Columnas = cards, en el mismo orden (el recomendado primero).
+  await expect(table.locator("thead th")).toHaveText(["Pro", "Free", "Basic"]);
+  // Cinco slots cambian entre planes y nueve son iguales en los tres.
+  await expect(table.locator("tbody tr")).toHaveCount(5);
+  await expect(comparison.locator("li")).toHaveCount(9);
+  await expect(table.getByText("Costeo básico con márgenes")).toHaveCount(0);
+  await expect(
+    comparison.locator("li", { hasText: "Costeo básico con márgenes" }),
+  ).toHaveCount(1);
+  await expect(comparison.locator("li", { hasText: "Exportar a PDF" })).toHaveCount(
+    1,
+  );
+
+  // Cada celda dice el estado de su plan: el mismo texto cambia de estado.
+  const duplicates = table.locator("tbody tr", { hasText: "Duplicar recetas" });
+  await expect(duplicates).toHaveCount(1);
+  expect(
+    await duplicates
+      .locator(".sr-only")
+      .evaluateAll((nodes) => nodes.map((node) => node.textContent?.trim() ?? "")),
+  ).toEqual(["Incluido:", "No incluido:", "Incluido:"]);
+
+  // Las cards llevan precio, CTA y estados; el catálogo vive en la comparación.
+  await expect(page.locator('[data-plan="free"]')).toContainText("Gratis");
+  await expect(page.locator('[data-plan="free"]')).not.toContainText(
+    "Hasta 10 recetas",
+  );
+
+  // A 320px la tabla no esconde filas ni desborda la página: las celdas se
+  // envuelven en sus tres columnas.
+  await page.setViewportSize({ width: 320, height: 800 });
+  await goto("/pricing", { waitUntil: "hydration" });
+  await expect(table.locator("tbody tr").first()).toBeVisible();
+  const overflow = await page.evaluate(
+    () =>
+      document.documentElement.scrollWidth -
+      document.documentElement.clientWidth,
+  );
+  expect(overflow).toBeLessThanOrEqual(0);
 });
 
 test("/pricing autenticado respeta el plan actual y completa el checkout", async ({
@@ -630,6 +718,11 @@ test("/pricing autenticado respeta el plan actual y completa el checkout", async
   // El stub responde plan Pro: sólo ese plan queda como actual.
   await expect(page.locator('[data-plan="pro"] button')).toHaveText("Plan actual");
   await expect(page.locator('[data-plan="pro"] button')).toBeDisabled();
+
+  // La comparación marca la columna del plan del visitante.
+  await expect(
+    page.locator("section:has(#plan-comparison-heading) thead th"),
+  ).toHaveText(["Pro Plan actual", "Free", "Basic"]);
 
   await page.locator('[data-plan="basic"] button').click();
 

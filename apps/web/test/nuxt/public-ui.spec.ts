@@ -1,11 +1,16 @@
 import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
-import { enableAutoUnmount } from "@vue/test-utils";
+import {
+  enableAutoUnmount,
+  type DOMWrapper,
+  type VueWrapper,
+} from "@vue/test-utils";
 import { computed, defineComponent, h } from "vue";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { PlanFeature, PricingPlan } from "@recetario/types";
+import type { PricingPlan } from "@recetario/types";
 import LandingPricingSection from "~/components/landing/PricingSection.vue";
 import BillingIntervalToggle from "~/features/billing/BillingIntervalToggle.vue";
 import PlanCard from "~/features/billing/PlanCard.vue";
+import PlanComparison from "~/features/billing/PlanComparison.vue";
 import PlanFeatureList from "~/features/billing/PlanFeatureList.vue";
 import PlanPrice from "~/features/billing/PlanPrice.vue";
 import { usePricingPlans } from "~/features/billing/usePricingPlans";
@@ -33,11 +38,11 @@ mockNuxtImport("useAuth", () => () => ({
 
 mockNuxtImport("useApi", () => () => apiMock.request);
 
-const FREE_FEATURES: PlanFeature[] = [
-  { text: "Hasta 10 recetas", included: true },
-  { text: "Duplicar recetas", included: false },
-];
-
+/**
+ * Catálogo de prueba con la forma del real (`TIER_CONFIG`): mismos slots en los
+ * tres tiers, con un slot que cambia de texto, uno que cambia de estado y tres
+ * iguales en los tres planes.
+ */
 const PLANS: PricingPlan[] = [
   {
     id: "free",
@@ -51,7 +56,13 @@ const PLANS: PricingPlan[] = [
     yearlyPriceId: null,
     yearlyDisplay: null,
     yearlyPerMonthDisplay: null,
-    features: FREE_FEATURES,
+    features: [
+      { text: "Hasta 10 recetas", included: true },
+      { text: "Costeo básico con márgenes", included: true },
+      { text: "Categorías", included: true },
+      { text: "Duplicar recetas", included: false },
+      { text: "Exportar a PDF", included: false, status: "coming_soon" },
+    ],
   },
   {
     id: "basic",
@@ -66,6 +77,10 @@ const PLANS: PricingPlan[] = [
     yearlyDisplay: "$95.90",
     yearlyPerMonthDisplay: "$7.99",
     features: [
+      { text: "Hasta 75 recetas", included: true },
+      { text: "Costeo básico con márgenes", included: true },
+      { text: "Categorías", included: true },
+      { text: "Duplicar recetas", included: true },
       { text: "Exportar a PDF", included: false, status: "coming_soon" },
     ],
   },
@@ -74,14 +89,20 @@ const PLANS: PricingPlan[] = [
     tier: "pro",
     name: "Pro",
     description: "Para profesionales",
-    badge: { text: "Mas popular" },
+    badge: { text: "Más popular" },
     currency: "MXN",
     monthlyPriceId: "price_pro_monthly",
     monthlyDisplay: "$19.99",
     yearlyPriceId: "price_pro_yearly",
     yearlyDisplay: "$191.90",
     yearlyPerMonthDisplay: "$15.99",
-    features: [{ text: "Recetas ilimitadas", included: true }],
+    features: [
+      { text: "Recetas ilimitadas", included: true },
+      { text: "Costeo básico con márgenes", included: true },
+      { text: "Categorías", included: true },
+      { text: "Duplicar recetas", included: true },
+      { text: "Exportar a PDF", included: true, status: "coming_soon" },
+    ],
   },
 ];
 
@@ -197,6 +218,30 @@ describe("PlanFeatureList", () => {
       rows.every((row) => row.find("svg").attributes("aria-hidden") === "true"),
     ).toBe(true);
   });
+
+  it("la variante compacta dice en texto cuántos destacados se recortaron", async () => {
+    const wrapper = await mountSuspended(PlanFeatureList, {
+      props: {
+        features: [
+          { text: "Recetas ilimitadas", included: true },
+          { text: "Ingredientes ilimitados", included: true },
+        ],
+        variant: "compact",
+        remaining: 2,
+      },
+    });
+
+    expect(wrapper.findAll("li")).toHaveLength(2);
+    expect(wrapper.find("ul").classes()).toContain("space-y-2.5");
+    expect(wrapper.text()).toContain("y 2 funciones más");
+
+    await wrapper.setProps({ remaining: 1 });
+    expect(wrapper.text()).toContain("y 1 función más");
+
+    // Sin recorte no hay nota: la lista es todo lo que hay que decir.
+    await wrapper.setProps({ remaining: 0 });
+    expect(wrapper.text()).not.toContain("más");
+  });
 });
 
 describe("PlanCard", () => {
@@ -261,6 +306,30 @@ describe("PlanCard", () => {
   });
 });
 
+/** Cards de plan montadas, en el orden del DOM (el que ve el visitante). */
+function planIds(wrapper: VueWrapper): (string | undefined)[] {
+  return wrapper
+    .findAll("[data-plan]")
+    .map((card) => card.attributes("data-plan"));
+}
+
+/** Links de cada card por plan: el CTA primero, el enlace al catálogo después. */
+function linksByPlan(
+  wrapper: VueWrapper,
+): Record<string, (string | undefined)[]> {
+  return Object.fromEntries(
+    wrapper.findAll("[data-plan]").map((card) => [
+      card.attributes("data-plan") ?? "",
+      card.findAll("a").map((link) => link.attributes("href")),
+    ]),
+  );
+}
+
+/** Texto de un nodo con los espacios colapsados (el `sr-only` va incluido). */
+function collapsedText(element: DOMWrapper<Element>): string {
+  return element.text().replace(/\s+/g, " ").trim();
+}
+
 describe("LandingPricingSection", () => {
   it("cambia los precios al alternar el periodo", async () => {
     const wrapper = await mountSuspended(LandingPricingSection, {
@@ -279,21 +348,66 @@ describe("LandingPricingSection", () => {
     const anonymous = await mountSuspended(LandingPricingSection, {
       props: { plans: PLANS },
     });
-    expect(
-      anonymous.findAll("a").map((link) => link.attributes("href")),
-    ).toEqual([
-      "/sign-in?redirect=/recipes",
-      "/sign-in?redirect=/pricing",
-      "/sign-in?redirect=/pricing",
-    ]);
+    expect(linksByPlan(anonymous)).toEqual({
+      pro: ["/sign-in?redirect=/pricing", "/pricing"],
+      free: ["/sign-in?redirect=/recipes", "/pricing"],
+      basic: ["/sign-in?redirect=/pricing", "/pricing"],
+    });
 
     authMock.isAuthenticated = true;
     const authenticated = await mountSuspended(LandingPricingSection, {
       props: { plans: PLANS },
     });
+    expect(linksByPlan(authenticated)).toEqual({
+      pro: ["/pricing", "/pricing"],
+      free: ["/recipes", "/pricing"],
+      basic: ["/pricing", "/pricing"],
+    });
+  });
+
+  it("el recomendado va primero y el catálogo completo vive en /pricing", async () => {
+    const wrapper = await mountSuspended(LandingPricingSection, {
+      props: { plans: PLANS },
+    });
+
+    expect(planIds(wrapper)).toEqual(["pro", "free", "basic"]);
+    expect(wrapper.find('[data-plan="pro"]').classes()).toContain("plan-pro");
+
+    // Destacados: lo incluido que no está en el plan Free, y nada más.
+    const pro = wrapper.find('[data-plan="pro"]');
+    expect(pro.text()).toContain("Recetas ilimitadas");
+    expect(pro.text()).not.toContain("Costeo básico con márgenes");
+    expect(wrapper.find('[data-plan="free"]').text()).not.toContain(
+      "Duplicar recetas",
+    );
+    expect(wrapper.text()).not.toContain("No incluido");
+    // Tres enlaces con el mismo texto: el nombre accesible dice de qué plan es.
     expect(
-      authenticated.findAll("a").map((link) => link.attributes("href")),
-    ).toEqual(["/recipes", "/pricing", "/pricing"]);
+      wrapper
+        .findAll('a[href="/pricing"]')
+        .map((link) => link.attributes("aria-label")),
+    ).toEqual([
+      "Ver todas las funciones del plan Pro",
+      "Ver todas las funciones del plan Free",
+      "Ver todas las funciones del plan Basic",
+    ]);
+  });
+
+  it("cuando los destacados no caben, el recorte se dice en texto", async () => {
+    const generous: PricingPlan = {
+      ...PLANS[2]!,
+      features: Array.from({ length: 7 }, (_, index) => ({
+        text: `Función ${index + 1}`,
+        included: true,
+      })),
+    };
+
+    const wrapper = await mountSuspended(LandingPricingSection, {
+      props: { plans: [generous] },
+    });
+
+    expect(wrapper.findAll('[data-plan="pro"] li')).toHaveLength(5);
+    expect(wrapper.text()).toContain("y 2 funciones más");
   });
 
   it("sin planes muestra el aviso en vez de una grilla vacía", async () => {
@@ -311,6 +425,93 @@ describe("LandingPricingSection", () => {
 
     expect(wrapper.text()).toContain("No pudimos cargar los planes");
     expect(wrapper.text()).not.toContain("No hay planes disponibles por ahora");
+  });
+});
+
+describe("PlanComparison", () => {
+  it("sólo compara lo que cambia: las filas iguales no se repiten por columna", async () => {
+    const wrapper = await mountSuspended(PlanComparison, {
+      props: { plans: PLANS },
+    });
+
+    // Columnas = planes, en el mismo orden que las cards.
+    expect(wrapper.findAll("th").map(collapsedText)).toEqual([
+      "Pro",
+      "Free",
+      "Basic",
+    ]);
+    // Dos slots cambian (cantidades y duplicar); los otros tres son comunes.
+    expect(wrapper.findAll("tbody tr")).toHaveLength(2);
+    expect(wrapper.find("caption.sr-only").exists()).toBe(true);
+  });
+
+  it("cada celda dice el estado y el texto de su propio plan", async () => {
+    const wrapper = await mountSuspended(PlanComparison, {
+      props: { plans: PLANS },
+    });
+    const rows = wrapper.findAll("tbody tr");
+
+    expect(rows[0]!.findAll("td").map(collapsedText)).toEqual([
+      "Incluido: Recetas ilimitadas",
+      "Incluido: Hasta 10 recetas",
+      "Incluido: Hasta 75 recetas",
+    ]);
+    expect(rows[1]!.findAll("td").map(collapsedText)).toEqual([
+      "Incluido: Duplicar recetas",
+      "No incluido: Duplicar recetas",
+      "Incluido: Duplicar recetas",
+    ]);
+    expect(
+      wrapper
+        .findAll("tbody svg")
+        .every((icon) => icon.attributes("aria-hidden") === "true"),
+    ).toBe(true);
+  });
+
+  it("lo igual en todos los planes se lista una sola vez", async () => {
+    const wrapper = await mountSuspended(PlanComparison, {
+      props: { plans: PLANS },
+    });
+
+    expect(wrapper.findAll("li").map(collapsedText)).toEqual([
+      "Incluido: Costeo básico con márgenes",
+      "Incluido: Categorías",
+      "Próximamente: Exportar a PDF",
+    ]);
+  });
+
+  it("con un solo plan no hay nada que comparar", async () => {
+    const wrapper = await mountSuspended(PlanComparison, {
+      props: { plans: [PLANS[0]!] },
+    });
+
+    expect(wrapper.find("section").exists()).toBe(false);
+  });
+
+  it("sin filas que mostrar no pinta un encabezado huérfano", async () => {
+    const empty = PLANS.map((plan) => ({ ...plan, features: [] }));
+    const wrapper = await mountSuspended(PlanComparison, { props: { plans: empty } });
+
+    expect(wrapper.find("section").exists()).toBe(false);
+  });
+
+  it("marca la columna del plan del visitante", async () => {
+    const wrapper = await mountSuspended(PlanComparison, {
+      props: { plans: PLANS, currentPlanId: "free" },
+    });
+
+    const headers = wrapper.findAll("th");
+    expect(headers.map(collapsedText)).toEqual([
+      "Pro",
+      "Free Plan actual",
+      "Basic",
+    ]);
+
+    // Sin sesión no hay marca: la columna Free no dice nada.
+    const anonymous = await mountSuspended(PlanComparison, {
+      props: { plans: PLANS },
+    });
+    expect(collapsedText(anonymous.findAll("th")[1]!)).toBe("Free");
   });
 });
 

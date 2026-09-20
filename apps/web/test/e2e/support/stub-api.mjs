@@ -70,7 +70,14 @@ function parseCookies(header) {
   return cookies;
 }
 
-/** Catálogo determinista para las vistas de planes (mismo shape que Hono). */
+/**
+ * Catálogo determinista para las vistas de planes (mismo shape que Hono).
+ *
+ * Las features son un **espejo de `TIER_CONFIG`** (`packages/stripe`), mismo
+ * orden de slots en los tres tiers: la comparación de `/pricing` parte de ahí y
+ * de este espejo dependen sus grupos (5 filas cambian entre planes, 9 son
+ * iguales en los tres). Un cambio de catálogo se refleja también aquí.
+ */
 const PLANS = [
   {
     id: "free",
@@ -86,7 +93,31 @@ const PLANS = [
     yearlyPerMonthDisplay: null,
     features: [
       { text: "Hasta 10 recetas", included: true },
+      { text: "Hasta 30 ingredientes", included: true },
+      { text: "Costeo básico con márgenes", included: true },
+      { text: "Categorías", included: true },
+      {
+        text: "Instrucciones de preparación",
+        included: false,
+        status: "coming_soon",
+      },
       { text: "Duplicar recetas", included: false },
+      { text: "Fotos de recetas", included: false, status: "coming_soon" },
+      { text: "Stock de ingredientes", included: false, status: "coming_soon" },
+      { text: "Planificador de producción", included: false },
+      { text: "Exportar a PDF", included: false, status: "coming_soon" },
+      { text: "Costos fijos avanzados", included: false, status: "coming_soon" },
+      { text: "Historial de cambios", included: false, status: "coming_soon" },
+      {
+        text: "Importar/Exportar datos",
+        included: false,
+        status: "coming_soon",
+      },
+      {
+        text: "Información nutricional",
+        included: false,
+        status: "coming_soon",
+      },
     ],
   },
   {
@@ -103,7 +134,38 @@ const PLANS = [
     yearlyPerMonthDisplay: "$7.99",
     features: [
       { text: "Hasta 75 recetas", included: true },
+      { text: "Ingredientes ilimitados", included: true },
+      { text: "Costeo básico con márgenes", included: true },
+      { text: "Categorías", included: true },
+      {
+        text: "Instrucciones de preparación",
+        included: true,
+        status: "coming_soon",
+      },
+      { text: "Duplicar recetas", included: true },
+      {
+        text: "Fotos de recetas (1 por receta)",
+        included: true,
+        status: "coming_soon",
+      },
+      { text: "Stock de ingredientes", included: true, status: "coming_soon" },
+      {
+        text: "Planificador de producción (hasta 3 recetas)",
+        included: true,
+      },
       { text: "Exportar a PDF", included: false, status: "coming_soon" },
+      { text: "Costos fijos avanzados", included: false, status: "coming_soon" },
+      { text: "Historial de cambios", included: false, status: "coming_soon" },
+      {
+        text: "Importar/Exportar datos",
+        included: false,
+        status: "coming_soon",
+      },
+      {
+        text: "Información nutricional",
+        included: false,
+        status: "coming_soon",
+      },
     ],
   },
   {
@@ -111,14 +173,41 @@ const PLANS = [
     tier: "pro",
     name: "Pro",
     description: "Para profesionales",
-    badge: { text: "Mas popular" },
+    badge: { text: "Más popular" },
     currency: "MXN",
     monthlyPriceId: "price_pro_monthly",
     monthlyDisplay: "$19.99",
     yearlyPriceId: "price_pro_yearly",
     yearlyDisplay: "$191.90",
     yearlyPerMonthDisplay: "$15.99",
-    features: [{ text: "Recetas ilimitadas", included: true }],
+    features: [
+      { text: "Recetas ilimitadas", included: true },
+      { text: "Ingredientes ilimitados", included: true },
+      { text: "Costeo básico con márgenes", included: true },
+      { text: "Categorías", included: true },
+      {
+        text: "Instrucciones de preparación",
+        included: true,
+        status: "coming_soon",
+      },
+      { text: "Duplicar recetas", included: true },
+      {
+        text: "Fotos de recetas + galería",
+        included: true,
+        status: "coming_soon",
+      },
+      { text: "Stock de ingredientes", included: true, status: "coming_soon" },
+      { text: "Planificador de producción ilimitado", included: true },
+      { text: "Exportar a PDF", included: true, status: "coming_soon" },
+      { text: "Costos fijos avanzados", included: true, status: "coming_soon" },
+      { text: "Historial de cambios", included: true, status: "coming_soon" },
+      { text: "Importar/Exportar datos", included: true, status: "coming_soon" },
+      {
+        text: "Información nutricional",
+        included: true,
+        status: "coming_soon",
+      },
+    ],
   },
 ];
 
