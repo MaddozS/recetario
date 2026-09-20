@@ -50,7 +50,7 @@ function ctaLabel(plan: PricingPlan): string {
     <div class="mx-auto max-w-7xl px-4 sm:px-6 xl:px-8">
       <div v-reveal class="mx-auto max-w-2xl text-center">
         <h2
-          class="landing-heading text-foreground text-3xl font-black md:text-4xl"
+          class="landing-heading text-foreground font-display text-3xl font-black md:text-4xl"
         >
           Planes y precios
         </h2>

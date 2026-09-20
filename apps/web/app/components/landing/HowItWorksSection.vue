@@ -54,7 +54,7 @@ const STEPS: readonly Step[] = [
           Cómo funciona
         </p>
         <h2
-          class="landing-heading text-foreground text-3xl font-black md:text-4xl"
+          class="landing-heading text-foreground font-display text-3xl font-black md:text-4xl"
         >
           Del ingrediente al precio final
         </h2>

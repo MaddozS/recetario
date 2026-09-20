@@ -69,7 +69,7 @@ function closeLightbox(): void {
     <div class="mx-auto max-w-7xl px-6">
       <div v-reveal class="mx-auto max-w-2xl text-center">
         <h2
-          class="landing-heading text-foreground text-3xl font-black md:text-4xl"
+          class="landing-heading text-foreground font-display text-3xl font-black md:text-4xl"
         >
           Todo lo que necesitas para costear
         </h2>

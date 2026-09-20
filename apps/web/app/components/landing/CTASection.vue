@@ -31,7 +31,7 @@
 
     <div class="relative z-10 mx-auto max-w-3xl px-6 text-center">
       <h2
-        class="landing-heading text-text-on-accent text-3xl leading-[1.1] font-black md:text-4xl lg:text-5xl"
+        class="landing-heading text-text-on-accent font-display text-3xl leading-[1.1] font-black md:text-4xl lg:text-5xl"
       >
         Empieza a calcular el costo real de tus recetas hoy
       </h2>
