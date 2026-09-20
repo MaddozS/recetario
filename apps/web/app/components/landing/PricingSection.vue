@@ -5,15 +5,27 @@ import BillingIntervalToggle from "~/features/billing/BillingIntervalToggle.vue"
 import PlanCard from "~/features/billing/PlanCard.vue";
 import PlanFeatureList from "~/features/billing/PlanFeatureList.vue";
 import PlanPrice from "~/features/billing/PlanPrice.vue";
+import { planHighlights } from "~/features/billing/plan-highlights";
+import {
+  RECOMMENDED_PLAN_ID,
+  displayPlanOrder,
+} from "~/features/billing/plan-order";
 import type { BillingInterval } from "~/features/billing/billing-interval";
 
 /**
- * Sección `#pricing` de la landing: scroll horizontal con snap en móvil y tres
- * columnas en desktop. El CTA decide por sesión (el anónimo pasa por sign-in) y
- * el checkout vive en `/pricing`, que es la página autenticable.
+ * Sección `#pricing` de la landing: superficie de **decisión**, con scroll
+ * horizontal con snap en móvil y tres columnas en desktop.
  *
- * La card es `PlanCard` (el mismo shell que `/pricing`); aquí sólo se le añaden
- * las clases del scroller y el hover del landing.
+ * Cada card llevaba el catálogo completo (14 filas, las mismas que `/pricing`),
+ * así que comparar dos planes era memorizar dos listas y el plan recomendado
+ * quedaba a dos swipes. Ahora la card muestra sus **destacados** (lo incluido y
+ * disponible que no está en el plan Free, con tope de 5 y el recorte dicho en
+ * texto) y el catálogo completo vive en `/pricing`, que es la superficie de
+ * comparación.
+ *
+ * El orden de las cards es el mismo que el de `/pricing` (recomendado primero):
+ * el CTA decide por sesión (el anónimo pasa por sign-in) y el checkout vive en
+ * `/pricing`, que es la página autenticable.
  */
 const props = defineProps<{
   plans: PricingPlan[];
@@ -26,6 +38,14 @@ const interval = ref<BillingInterval>("monthly");
 
 const CARD_LAYOUT_CLASSES =
   "reveal-item min-w-[260px] shrink-0 snap-start sm:min-w-[320px] lg:min-w-0 lg:flex-1";
+
+const cards = computed(() =>
+  displayPlanOrder(props.plans).map((plan) => ({
+    plan,
+    featured: plan.id === RECOMMENDED_PLAN_ID,
+    highlights: planHighlights(plan, props.plans),
+  })),
+);
 
 // El vacío sólo es verdad sin error: con el API caído la sección avisa, no dice
 // que el producto no tiene planes.
@@ -92,21 +112,21 @@ function ctaLabel(plan: PricingPlan): string {
           </template>
 
           <PlanCard
-            v-for="(plan, index) in plans"
+            v-for="({ plan, featured, highlights }, index) in cards"
             :key="plan.id"
             :plan-id="plan.id"
-            :featured="plan.id === 'pro'"
+            :featured="featured"
             density="roomy"
             :class="[
               CARD_LAYOUT_CLASSES,
-              plan.id === 'pro' ? 'pricing-card-hover-pro' : 'pricing-card-hover',
+              featured ? 'pricing-card-hover-pro' : 'pricing-card-hover',
             ]"
             :style="`--reveal-delay: ${index * 100}ms`"
           >
             <Badge
               v-if="plan.badge"
               variant="tier"
-              :color="plan.id === 'pro' ? 'accent' : 'success'"
+              :color="featured ? 'accent' : 'success'"
               class="mb-4 self-start"
             >
               {{ plan.badge.text }}
@@ -127,16 +147,29 @@ function ctaLabel(plan: PricingPlan): string {
               :to="ctaHref(plan)"
               class="focus-ring mt-6 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl px-5 text-center text-sm font-bold transition-all active:scale-[0.97]"
               :class="
-                plan.id === 'pro'
-                  ? 'bg-accent-solid text-text-on-accent hover:bg-accent-solid-hover shadow-accent-tint'
+                featured
+                  ? 'bg-accent-solid text-text-on-accent hover:bg-accent-solid-hover'
                   : 'border-border bg-card text-secondary-foreground hover:bg-background border'
               "
             >
               {{ ctaLabel(plan) }}
             </NuxtLink>
 
-            <div class="mt-6 min-w-0 flex-1">
-              <PlanFeatureList :features="plan.features" />
+            <div class="mt-6 flex min-w-0 flex-1 flex-col">
+              <PlanFeatureList
+                :features="highlights.features"
+                variant="compact"
+                :remaining="highlights.remaining"
+              />
+
+              <NuxtLink
+                to="/pricing"
+                class="focus-ring text-accent-text mt-auto inline-flex min-h-11 items-center gap-1 pt-3 text-sm font-bold"
+                :aria-label="`Ver todas las funciones del plan ${plan.name}`"
+              >
+                Ver todas las funciones
+                <Icon name="lucide:chevron-right" :size="16" />
+              </NuxtLink>
             </div>
           </PlanCard>
 
