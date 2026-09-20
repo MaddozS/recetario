@@ -1,9 +1,20 @@
 <script setup lang="ts">
+import { computed } from "vue";
+
 /**
  * Hero del landing. Los números de la tarjeta de costos se animan con
  * `LandingCountUp` (rAF con cleanup) en lugar del `data-count-up` con
  * IntersectionObserver del original.
+ *
+ * La columna visual es una captura real del producto (`public/hero_{light,dark}.webp`,
+ * recorte 2x de la vista de receta con datos del seed) en una "ventana" con
+ * marco; el mismo `isDark` que usa `FeaturesSection` elige la variante.
  */
+const { isDark } = useTheme();
+
+const heroShot = computed(() =>
+  isDark.value ? "/hero_dark.webp" : "/hero_light.webp",
+);
 </script>
 
 <template>
@@ -20,11 +31,11 @@
       class="relative z-10 mx-auto w-full max-w-7xl place-self-center px-6 py-16 sm:py-20 md:py-24 lg:py-28 xl:py-32 2xl:py-36"
     >
       <div
-        class="grid items-center gap-12 lg:grid-cols-[1fr_auto] lg:gap-16 xl:gap-20 2xl:gap-24"
+        class="grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-x-16 lg:gap-y-12 xl:gap-x-20 2xl:gap-x-24"
       >
         <div class="text-center lg:text-left">
           <h1
-            class="landing-heading text-foreground reveal-item leading-[1.05] font-black tracking-[-0.03em] sm:leading-[0.95]"
+            class="landing-heading text-foreground reveal-item font-display leading-[1.05] font-black tracking-[-0.03em] sm:leading-[0.95]"
             style="--reveal-delay: 0ms; font-size: clamp(2.5rem, 7vw, 5.5rem)"
           >
             Calcula el costo real
@@ -69,9 +80,31 @@
               </svg>
             </a>
           </div>
+        </div>
 
+        <div class="lg:col-start-2 lg:row-span-2 lg:row-start-1">
           <div
-            class="reveal-item mt-10 flex justify-center lg:justify-start"
+            v-reveal="'scale'"
+            class="relative mx-auto w-full max-w-xl lg:max-w-none lg:w-[26rem] xl:w-[30rem] 2xl:w-[34rem]"
+            style="transition-delay: 150ms"
+          >
+            <div
+              aria-hidden="true"
+              class="bg-accent-500/25 absolute -inset-8 rounded-[2.5rem] blur-3xl"
+            />
+            <img
+              :src="heroShot"
+              alt="Receta de ejemplo en KitchCalc con el costo de insumos, los costos fijos, el costo total de la receta y el margen deseado"
+              width="1682"
+              height="1378"
+              class="border-border shadow-accent-tint relative block h-auto w-full rounded-2xl border"
+            />
+          </div>
+        </div>
+
+        <div class="lg:col-start-1 lg:row-start-2">
+          <div
+            class="reveal-item flex justify-center lg:justify-start"
             style="--reveal-delay: 350ms"
           >
             <div
@@ -126,23 +159,6 @@
           >
             Sin tarjeta de crédito. Prueba gratis.
           </p>
-        </div>
-
-        <div class="hidden items-center justify-end lg:flex">
-          <div
-            v-reveal="'scale'"
-            class="relative"
-            style="transition-delay: 150ms"
-          >
-            <div
-              class="shadow-accent-tint bg-accent-500/35 absolute -inset-10 rounded-[3rem] blur-3xl"
-            />
-            <img
-              src="/kitchcalc_logo.svg"
-              alt="KitchCalc"
-              class="relative h-72 w-72 drop-shadow-2xl"
-            />
-          </div>
         </div>
       </div>
     </div>

@@ -274,6 +274,63 @@ test("la landing navega, alterna tema y precios, y abre el lightbox sin errores"
   expect(consoleErrors).toEqual([]);
 });
 
+test("el hero muestra la captura del producto en los dos temas y los dos anchos", async ({
+  page,
+  goto,
+}) => {
+  await goto("/", { waitUntil: "hydration" });
+
+  const shot = page.locator("[data-landing-hero] img");
+  // Dimensiones declaradas: la captura entra sin salto de layout.
+  await expect(shot).toHaveAttribute("src", "/hero_light.webp");
+  await expect(shot).toHaveAttribute("width", "1682");
+  await expect(shot).toHaveAttribute("height", "1378");
+  await expect(shot).toHaveAttribute("alt", /KitchCalc/);
+  // El asset existe y se decodifica (no es un `img` roto).
+  expect(
+    await shot.evaluate((el) => (el as HTMLImageElement).naturalWidth),
+  ).toBe(1682);
+
+  /** Fracción de la captura que cae dentro del primer viewport. */
+  const visibleFraction = async (): Promise<number> =>
+    await shot.evaluate((el) => {
+      const box = el.getBoundingClientRect();
+      const visible = Math.min(box.bottom, window.innerHeight) - Math.max(box.top, 0);
+      return Math.max(visible, 0) / box.height;
+    });
+
+  // La prueba entra en el primer viewport en escritorio y en móvil.
+  await page.setViewportSize({ width: 1280, height: 900 });
+  expect(await visibleFraction()).toBe(1);
+
+  await page.setViewportSize({ width: 375, height: 812 });
+  expect(await visibleFraction()).toBeGreaterThan(0.5);
+
+  // En móvil la captura va después de los CTA y antes de la tarjeta de costo.
+  const order = await page.evaluate(() => {
+    const section = document.querySelector("[data-landing-hero]") as HTMLElement;
+    const shotEl = section.querySelector("img") as HTMLElement;
+    const card = section.querySelector(".min-w-60") as HTMLElement;
+    const cta = section.querySelector('a[href="#features"]') as HTMLElement;
+    const follows =
+      (first: HTMLElement, second: HTMLElement): boolean =>
+        (first.compareDocumentPosition(second) &
+          Node.DOCUMENT_POSITION_FOLLOWING) !==
+        0;
+    return {
+      afterCta: follows(cta, shotEl),
+      beforeCostCard: follows(shotEl, card),
+    };
+  });
+  expect(order).toEqual({ afterCta: true, beforeCostCard: true });
+
+  // El tema alterna la captura (mismo patrón que el aserto del lightbox).
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.locator("nav [data-theme-toggle]").first().click();
+  await expect(page.locator("html")).toHaveClass(/dark/);
+  await expect(shot).toHaveAttribute("src", "/hero_dark.webp");
+});
+
 test("el lightbox amplía de verdad y devuelve el foco en ambos estados", async ({
   page,
   goto,
