@@ -28,7 +28,7 @@
             style="--reveal-delay: 0ms; font-size: clamp(2.5rem, 7vw, 5.5rem)"
           >
             Calcula el costo real
-            <span class="text-accent-600"> de tus recetas</span>
+            <span class="text-accent-text"> de tus recetas</span>
           </h1>
           <p
             class="text-secondary-foreground landing-heading reveal-item mx-auto mt-5 max-w-lg text-lg leading-relaxed sm:text-xl md:mt-6 lg:mx-0"

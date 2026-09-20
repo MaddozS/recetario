@@ -49,7 +49,7 @@ const STEPS: readonly Step[] = [
     <div class="relative z-10 mx-auto max-w-7xl px-6">
       <div v-reveal class="mx-auto max-w-2xl text-center">
         <p
-          class="text-accent-600 mb-3 text-xs font-bold tracking-[0.16em] uppercase"
+          class="text-accent-text mb-3 text-xs font-bold tracking-[0.16em] uppercase"
         >
           Cómo funciona
         </p>

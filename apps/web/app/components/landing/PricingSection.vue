@@ -88,7 +88,7 @@ function ctaLabel(plan: PricingPlan): string {
             class="reveal-item bg-card relative flex min-w-[260px] shrink-0 snap-start flex-col rounded-2xl p-7 sm:min-w-[320px] md:p-8 lg:min-w-0 lg:flex-1 xl:p-10"
             :class="
               plan.id === 'pro'
-                ? 'shadow-accent-tint plan-pro pricing-card-hover-pro bg-card dark:bg-accent-950/10 z-10'
+                ? 'shadow-accent-tint plan-pro pricing-card-hover-pro bg-card dark:bg-accent-800/10 z-10'
                 : 'pricing-card-hover shadow-sm'
             "
             :style="`--reveal-delay: ${index * 100}ms`"

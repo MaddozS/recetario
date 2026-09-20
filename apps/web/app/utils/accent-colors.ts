@@ -207,6 +207,19 @@ const solidHoverShades: Partial<Record<AccentBaseShade, AccentBaseShade>> = {
 };
 
 /**
+ * Rol de **texto** del acento: la tinta con la que el acento escribe sobre
+ * superficies neutras (`bg-background`, `bg-muted`, `bg-card` y los lavados de
+ * degradado). En claro usa el 800 de la familia; en oscuro, el tono al que ese
+ * 800 mapea (el 300), que ya superaba AA.
+ *
+ * El 600 no sirve como texto en claro: 3.54:1 sobre `bg-background` con coral
+ * (axe `serious` en el navbar activo) y 3.02:1 sobre el lavado del eyebrow. Para
+ * iconos y decoración no aplica: ahí el umbral es 3:1 y la rampa sigue valiendo.
+ * La regla está medida en `test/unit/accent-colors.spec.ts`.
+ */
+const TEXT_SHADE: AccentShade = "800";
+
+/**
  * Genera un string de CSS custom properties para un color de acento y tema dados.
  * Ejemplo de salida: "--aw-accent-50:#eef2ff;--aw-accent-100:#e0e7ff;..."
  */
@@ -230,12 +243,15 @@ export function getAccentCssVars(accent: string, theme: string): string {
     : solidShades[family].light;
   const solid = colors[solidShade];
   const solidHover = colors[solidHoverShades[solidShade] ?? solidShade];
+  const text = colors[isDark ? darkShadeMap[TEXT_SHADE] : TEXT_SHADE];
 
   vars.push(
     `--aw-accent-solid:${solid}`,
     `--color-accent-solid:${solid}`,
     `--aw-accent-solid-hover:${solidHover}`,
     `--color-accent-solid-hover:${solidHover}`,
+    `--aw-accent-text:${text}`,
+    `--color-accent-text:${text}`,
     `--tw-text-on-accent:${ON_ACCENT}`,
     `--color-text-on-accent:${ON_ACCENT}`,
   );

@@ -88,7 +88,7 @@ function isActive(href: string): boolean {
           :key="link.href"
           :href="link.href"
           class="text-muted-foreground hover:text-foreground focus-visible:ring-accent-500 rounded text-sm font-medium transition-colors focus-visible:ring-2"
-          :class="{ 'text-accent-600': isActive(link.href) }"
+          :class="{ 'text-accent-text': isActive(link.href) }"
           :data-spy-active="isActive(link.href) ? '1' : undefined"
         >
           {{ link.label }}
@@ -139,7 +139,7 @@ function isActive(href: string): boolean {
           v-for="link in NAV_LINKS"
           :key="link.href"
           :href="link.href"
-          class="text-foreground hover:text-accent-600 focus-visible:ring-accent-500 block rounded text-lg font-medium transition-colors focus-visible:ring-2"
+          class="text-foreground hover:text-accent-text focus-visible:ring-accent-500 block rounded text-lg font-medium transition-colors focus-visible:ring-2"
           @click="closeMenu"
         >
           {{ link.label }}
@@ -174,7 +174,7 @@ function isActive(href: string): boolean {
   transform: translateX(0);
 }
 a[data-spy-active] {
-  color: var(--aw-accent-600);
+  color: var(--aw-accent-text);
 }
 
 @media (prefers-reduced-motion: reduce) {
