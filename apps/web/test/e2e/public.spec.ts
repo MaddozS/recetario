@@ -179,14 +179,53 @@ test("la landing navega, alterna tema y precios, y abre el lightbox sin errores"
   await expect(page.locator("#features")).toBeAttached();
   await expect(page.locator("#how-it-works")).toBeAttached();
 
-  // Drawer móvil: abre con el botón, cierra con Escape.
+  // Drawer móvil: se anuncia como diálogo, lleva el foco al panel, deja la
+  // página inerte y cierra con Escape devolviendo el foco al hamburger.
   await page.setViewportSize({ width: 375, height: 800 });
   const drawer = page.locator("#landing-mobile-menu");
+  const panel = page.locator("#landing-mobile-panel");
+  const menuButton = page.locator("#landing-mobile-menu-btn");
+  const isInert = async (selector: string): Promise<boolean> =>
+    await page
+      .locator(selector)
+      .first()
+      .evaluate((el) => (el as HTMLElement).inert);
+
   await expect(drawer).toHaveAttribute("data-open", "0");
-  await page.getByRole("button", { name: "Abrir menú" }).click();
+  await expect(menuButton).toHaveAttribute("aria-expanded", "false");
+  await expect(menuButton).toHaveAttribute(
+    "aria-controls",
+    "landing-mobile-menu",
+  );
+  await expect(drawer).toHaveAttribute("role", "dialog");
+  await expect(drawer).toHaveAttribute("aria-modal", "true");
+  await expect(drawer).toHaveAttribute("aria-label", "Menú");
+  // Cerrado: sigue `inert` (nada focusable escondido) y sin bloqueo de scroll.
+  expect(await isInert("#landing-mobile-menu")).toBe(true);
+  expect(await page.evaluate(() => document.body.style.overflow)).toBe("");
+
+  await menuButton.click();
   await expect(drawer).toHaveAttribute("data-open", "1");
+  await expect(menuButton).toHaveAttribute("aria-expanded", "true");
+  expect(await page.evaluate(() => document.body.style.overflow)).toBe("hidden");
+
+  // El foco entra al panel, no se queda en el hamburger.
+  await expect(panel).toBeFocused();
+  // Dentro del diálogo el recorrido empieza por el botón de cierre.
+  await page.keyboard.press("Tab");
+  await expect(page.locator("#landing-mobile-menu-close")).toBeFocused();
+
+  // La página de detrás queda inerte mientras el diálogo está abierto.
+  for (const behind of ["#main-content", "footer", "nav"]) {
+    expect(await isInert(behind)).toBe(true);
+  }
+
   await page.keyboard.press("Escape");
   await expect(drawer).toHaveAttribute("data-open", "0");
+  await expect(menuButton).toBeFocused();
+  expect(await isInert("#main-content")).toBe(false);
+  expect(await isInert("#landing-mobile-menu")).toBe(true);
+  expect(await page.evaluate(() => document.body.style.overflow)).toBe("");
 
   await page.setViewportSize({ width: 1280, height: 800 });
 
