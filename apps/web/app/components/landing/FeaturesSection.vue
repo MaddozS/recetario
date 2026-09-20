@@ -100,7 +100,7 @@ function closeLightbox(): void {
             <div class="mx-auto w-full max-w-md">
               <button
                 type="button"
-                class="group/lightbox w-full cursor-pointer text-left"
+                class="group/lightbox focus-ring w-full cursor-pointer rounded-2xl text-left"
                 :aria-label="`Ampliar imagen de ${feature.title}`"
                 @click="openLightbox(feature)"
               >

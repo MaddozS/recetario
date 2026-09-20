@@ -19,7 +19,10 @@ const ACCESS_LINKS = [
     <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 md:py-16">
       <div class="grid gap-6 md:grid-cols-2 md:gap-12">
         <div>
-          <NuxtLink to="/" class="flex items-center gap-2.5">
+          <NuxtLink
+            to="/"
+            class="focus-ring flex items-center gap-2.5 rounded-lg"
+          >
             <img
               src="/kitchcalc_logo.svg"
               alt="KitchCalc"
@@ -27,7 +30,9 @@ const ACCESS_LINKS = [
             />
             <span class="text-foreground text-base font-black">KitchCalc</span>
           </NuxtLink>
-          <p class="text-muted-foreground mt-3 max-w-sm text-sm leading-relaxed">
+          <p
+            class="text-muted-foreground mt-3 max-w-sm text-sm leading-relaxed"
+          >
             La forma más simple de calcular costos, márgenes y precios para tu
             negocio de alimentos.
           </p>
@@ -35,14 +40,14 @@ const ACCESS_LINKS = [
           <div class="mt-6 flex items-center gap-4">
             <NuxtLink
               to="/privacy"
-              class="text-muted-foreground hover:text-foreground text-xs transition-colors"
+              class="text-muted-foreground hover:text-foreground focus-ring rounded text-xs transition-colors"
             >
               Privacidad
             </NuxtLink>
             <span class="text-subtle-foreground text-xs">·</span>
             <NuxtLink
               to="/terms"
-              class="text-muted-foreground hover:text-foreground text-xs transition-colors"
+              class="text-muted-foreground hover:text-foreground focus-ring rounded text-xs transition-colors"
             >
               Términos
             </NuxtLink>
@@ -62,7 +67,7 @@ const ACCESS_LINKS = [
               <li v-for="link in PRODUCT_LINKS" :key="link.href">
                 <a
                   :href="link.href"
-                  class="text-muted-foreground hover:text-foreground text-sm transition-colors"
+                  class="text-muted-foreground hover:text-foreground focus-ring rounded text-sm transition-colors"
                 >
                   {{ link.label }}
                 </a>
@@ -79,7 +84,7 @@ const ACCESS_LINKS = [
               <li v-for="link in ACCESS_LINKS" :key="link.href">
                 <NuxtLink
                   :to="link.href"
-                  class="text-muted-foreground hover:text-foreground text-sm transition-colors"
+                  class="text-muted-foreground hover:text-foreground focus-ring rounded text-sm transition-colors"
                 >
                   {{ link.label }}
                 </NuxtLink>

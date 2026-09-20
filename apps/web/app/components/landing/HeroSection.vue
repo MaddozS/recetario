@@ -51,7 +51,7 @@
             </Button>
             <a
               href="#features"
-              class="text-muted-foreground hover:text-foreground relative inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold transition-colors after:absolute after:-bottom-0.5 after:left-0 after:h-px after:w-full after:origin-right after:scale-x-0 after:bg-current after:transition-transform after:duration-300 hover:after:origin-left hover:after:scale-x-100"
+              class="text-muted-foreground hover:text-foreground focus-ring relative inline-flex min-h-11 items-center gap-1.5 rounded text-sm font-semibold transition-colors after:absolute after:-bottom-0.5 after:left-0 after:h-px after:w-full after:origin-right after:scale-x-0 after:bg-current after:transition-transform after:duration-300 hover:after:origin-left hover:after:scale-x-100"
             >
               Conocer más
               <svg

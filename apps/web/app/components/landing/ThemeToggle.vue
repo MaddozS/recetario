@@ -17,7 +17,7 @@ function toggleTheme(): void {
 <template>
   <button
     type="button"
-    class="text-muted-foreground hover:text-foreground hover:bg-hover-muted inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl transition-colors"
+    class="text-muted-foreground hover:text-foreground hover:bg-hover-muted focus-ring inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl transition-colors"
     aria-label="Cambiar tema"
     data-theme-toggle
     @click="toggleTheme"
