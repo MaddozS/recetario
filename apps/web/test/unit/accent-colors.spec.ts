@@ -13,6 +13,13 @@ import {
  */
 const THEME_BACKGROUND = { light: "#f8fafc", dark: "#0f1114" } as const;
 
+/**
+ * Superficie secundaria de cada tema, donde también vive texto del acento:
+ * claro `bg-muted` (`#f1f5f9`) y oscuro `bg-card` (`oklch(0.208 0.008 258)`,
+ * medido `#16181c` en el DOM).
+ */
+const THEME_SURFACE = { light: "#f1f5f9", dark: "#16181c" } as const;
+
 const luminance = (hex: string): number => {
   const [r, g, b] = [1, 3, 5].map((index) => {
     const channel = parseInt(hex.slice(index, index + 2), 16) / 255;
@@ -46,15 +53,52 @@ describe("accent-colors", () => {
     ]);
   });
 
-  it("genera las custom properties de cada shade en light, más el relleno sólido", () => {
+  it("genera las custom properties de cada shade en light, más el relleno sólido y el rol de texto", () => {
     for (const family of ACCENT_FAMILIES) {
       const css = getAccentCssVars(family, "light");
-      expect(css.split(";")).toHaveLength(ACCENT_SHADES.length * 2 + 6);
+      expect(css.split(";")).toHaveLength(ACCENT_SHADES.length * 2 + 8);
       for (const shade of ACCENT_SHADES) {
         expect(css).toContain(`--aw-accent-${shade}:`);
         expect(css).toContain(`--color-accent-${shade}:`);
       }
       expect(css).toContain("--color-accent-solid:");
+      expect(css).toContain("--color-accent-text:");
+    }
+  });
+
+  it("sostiene el rol de texto del acento sobre las superficies neutras de cada tema", () => {
+    // El rol `accent-text` es la tinta del acento sobre neutros. La rampa por sí
+    // sola no lo garantiza: el 600 usado como texto en claro daba 3.54:1
+    // (navbar activo) y 3.02:1 sobre el lavado del eyebrow.
+    for (const family of ACCENT_FAMILIES) {
+      for (const theme of ["light", "dark"] as const) {
+        const css = getAccentCssVars(family, theme);
+        const text = shadeOf(css, "text");
+
+        expect(text, `${family} ${theme}`).toMatch(/^#[0-9a-f]{6}$/);
+        expect(
+          contrast(text, THEME_BACKGROUND[theme]),
+          `${family} ${theme} texto/fondo`,
+        ).toBeGreaterThanOrEqual(4.5);
+        expect(
+          contrast(text, THEME_SURFACE[theme]),
+          `${family} ${theme} texto/superficie`,
+        ).toBeGreaterThanOrEqual(4.5);
+      }
+    }
+  });
+
+  it("rol de texto del acento: 800 en claro y el 300 al que mapea en oscuro", () => {
+    // Medido en el DOM: coral #b33b3c da 5.56:1 sobre `bg-background` y 5.29:1
+    // sobre `bg-muted`; en oscuro #faa7a1 da 9.40:1 sobre `bg-card` (el 800 ya
+    // mapeaba al 300, así que el tono oscuro no cambia).
+    expect(shadeOf(getAccentCssVars("coral", "light"), "text")).toBe("#b33b3c");
+    expect(shadeOf(getAccentCssVars("coral", "dark"), "text")).toBe("#faa7a1");
+    for (const family of ACCENT_FAMILIES) {
+      const lightCss = getAccentCssVars(family, "light");
+      const darkCss = getAccentCssVars(family, "dark");
+      expect(shadeOf(lightCss, "text"), family).toBe(shadeOf(lightCss, "800"));
+      expect(shadeOf(darkCss, "text"), family).toBe(shadeOf(darkCss, "800"));
     }
   });
 
