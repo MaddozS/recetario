@@ -157,7 +157,7 @@ const heroShot = computed(() =>
             class="text-muted-foreground reveal-item mt-6 text-sm"
             style="--reveal-delay: 400ms"
           >
-            Sin tarjeta de crédito. Prueba gratis.
+            Sin tarjeta de crédito. Plan gratis para siempre.
           </p>
         </div>
       </div>

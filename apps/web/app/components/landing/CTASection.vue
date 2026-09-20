@@ -33,10 +33,10 @@
       <h2
         class="landing-heading text-text-on-accent font-display text-3xl leading-[1.1] font-black md:text-4xl lg:text-5xl"
       >
-        Empieza a calcular el costo real de tus recetas hoy
+        Ponle precio a tu próxima receta
       </h2>
       <p class="text-text-on-accent mt-4 text-lg font-medium">
-        Sin tarjeta de crédito. Configuración en segundos.
+        En tu primera receta ves el costo, el margen y cuánto cobrar.
       </p>
       <div
         class="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row"
