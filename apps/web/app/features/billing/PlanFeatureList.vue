@@ -2,11 +2,10 @@
 import { computed } from "vue";
 import type { PlanFeature } from "@recetario/types";
 import {
-  PLAN_FEATURE_ICONS,
-  PLAN_FEATURE_ICON_CLASSES,
-  PLAN_FEATURE_STATE_LABELS,
-  PLAN_FEATURE_TEXT_CLASSES,
+  PLAN_FEATURE_PRESENTATION,
+  planFeatureMarker,
   planFeatureState,
+  type PlanFeaturePresentation,
 } from "./plan-feature-state";
 
 /**
@@ -16,7 +15,9 @@ import {
  * Los íconos van `aria-hidden`, así que sin esa línea la diferencia entre
  * "incluido" y "no incluido" —que es lo que se compra— no existiría para un
  * lector de pantalla. El estado se resuelve en `plan-feature-state` (lo comparte
- * la matriz de `/pricing`) y aquí sólo se pinta.
+ * la matriz de `/pricing`) y aquí sólo se pinta: la marca dice la inclusión
+ * —también la futura— y el marcador "Próximamente" avisa de lo que todavía no
+ * está disponible, visible y `aria-hidden` porque la etiqueta ya lo anuncia.
  *
  * `compact` es la variante de la landing: mismos contratos, menos aire, y el
  * recorte dicho en texto ("y N funciones más") cuando los destacados no son
@@ -32,6 +33,23 @@ const props = withDefaults(
     remaining?: number;
   }>(),
   { variant: "full", remaining: 0 },
+);
+
+interface FeatureRow {
+  text: string;
+  presentation: PlanFeaturePresentation;
+  marker: string;
+}
+
+const rows = computed<FeatureRow[]>(() =>
+  props.features.map((feature) => {
+    const state = planFeatureState(feature);
+    return {
+      text: feature.text,
+      presentation: PLAN_FEATURE_PRESENTATION[state],
+      marker: planFeatureMarker(state, feature.text),
+    };
+  }),
 );
 
 const LIST_CLASSES: Record<Variant, string> = {
@@ -51,25 +69,27 @@ const remainingLabel = computed(() =>
   <div>
     <ul :class="LIST_CLASSES[props.variant]">
       <li
-        v-for="(feature, index) in features"
+        v-for="(row, index) in rows"
         :key="index"
         class="flex min-w-0 items-center gap-2.5 text-sm"
       >
         <Icon
-          :name="PLAN_FEATURE_ICONS[planFeatureState(feature)]"
+          :name="row.presentation.icon"
           :size="16"
-          :class="PLAN_FEATURE_ICON_CLASSES[planFeatureState(feature)]"
+          :class="row.presentation.iconClass"
         />
         <span class="sr-only">
-          {{ PLAN_FEATURE_STATE_LABELS[planFeatureState(feature)] }}:
+          {{ row.presentation.label }}:
+        </span>
+        <span :class="[row.presentation.textClass, 'break-words']">
+          {{ row.text }}
         </span>
         <span
-          :class="[
-            PLAN_FEATURE_TEXT_CLASSES[planFeatureState(feature)],
-            'break-words',
-          ]"
+          v-if="row.marker"
+          aria-hidden="true"
+          class="text-muted-foreground shrink-0 text-xs"
         >
-          {{ feature.text }}
+          {{ row.marker }}
         </span>
       </li>
     </ul>

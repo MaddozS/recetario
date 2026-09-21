@@ -2,14 +2,15 @@ import type { PlanFeature, PricingPlan } from "@recetario/types";
 import { planFeatureState, type PlanFeatureState } from "./plan-feature-state";
 
 /**
- * Comparación de planes para `/pricing`: parte el catálogo en lo que **cambia**
- * entre planes y lo que es **igual en todos**.
+ * Matriz de comparación de `/pricing`: **todas** las funciones del catálogo,
+ * una fila por slot, en el orden del catálogo.
  *
  * El catálogo está escrito por plan, no por dimensión (`"Hasta 10 recetas"`,
  * `"Hasta 75 recetas"` y `"Recetas ilimitadas"` son tres frases, no un valor por
- * columna), así que la matriz no inventa etiquetas de fila: cada celda lleva el
- * texto de su propio plan y el estado. Las filas idénticas en los tres planes no
- * se repiten tres veces: se listan una sola vez.
+ * columna), así que la etiqueta de fila sale del catálogo: `label` cuando la
+ * frase cambia entre planes y la frase misma cuando es idéntica en los tres
+ * (ahí ya hace de nombre). Esa etiqueta es lo que permite que lo compartido
+ * aparezca como una fila más, sin repetir la frase en las tres columnas.
  *
  * Los planes se alinean **por slot** (índice), que es como los escribe
  * `TIER_CONFIG`: mismo orden y misma longitud en los tres tiers. Un plan más
@@ -17,43 +18,46 @@ import { planFeatureState, type PlanFeatureState } from "./plan-feature-state";
  * resto de la tabla.
  */
 export interface PlanComparisonCell {
+  /** Frase propia del plan cuando dice más que la etiqueta; `null` si no. */
   text: string | null;
+  /** `null` cuando ese plan no trae la función (catálogo más corto). */
   state: PlanFeatureState | null;
 }
 
-export interface PlanComparison {
-  /** Filas donde el texto o el estado no coincide en todos los planes. */
-  changing: PlanComparisonCell[][];
-  /** Filas idénticas en todos los planes, listadas una sola vez. */
-  shared: PlanFeature[];
+export interface PlanComparisonRow {
+  /** Etiqueta de fila: el nombre de la función en el catálogo. */
+  label: string;
+  /** Una celda por plan, en el orden recibido. */
+  cells: PlanComparisonCell[];
 }
 
-export function comparePlans(plans: PricingPlan[]): PlanComparison {
+export function comparePlans(plans: PricingPlan[]): PlanComparisonRow[] {
   const slots = plans.reduce(
     (max, plan) => Math.max(max, plan.features.length),
     0,
   );
-  const changing: PlanComparisonCell[][] = [];
-  const shared: PlanFeature[] = [];
+  const rows: PlanComparisonRow[] = [];
 
   for (let index = 0; index < slots; index += 1) {
     const features = plans.map((plan) => plan.features[index] ?? null);
-    if (features.every((feature) => feature === null)) continue;
-
-    const cells = features.map((feature) =>
-      feature === null
-        ? { text: null, state: null }
-        : { text: feature.text, state: planFeatureState(feature) },
+    const first = features.find(
+      (feature): feature is PlanFeature => feature !== null,
     );
-    const sameText = cells.every((cell) => cell.text === cells[0]?.text);
-    const sameState = cells.every((cell) => cell.state === cells[0]?.state);
+    if (!first) continue;
 
-    if (sameText && sameState) {
-      shared.push(features[0]!);
-    } else {
-      changing.push(cells);
-    }
+    const label = first.label ?? first.text;
+    rows.push({
+      label,
+      cells: features.map((feature) =>
+        feature === null
+          ? { text: null, state: null }
+          : {
+              text: feature.text === label ? null : feature.text,
+              state: planFeatureState(feature),
+            },
+      ),
+    });
   }
 
-  return { changing, shared };
+  return rows;
 }
