@@ -40,8 +40,9 @@ mockNuxtImport("useApi", () => () => apiMock.request);
 
 /**
  * Catálogo de prueba con la forma del real (`TIER_CONFIG`): mismos slots en los
- * tres tiers, con un slot que cambia de texto, uno que cambia de estado y tres
- * iguales en los tres planes.
+ * tres tiers, con un slot que cambia de texto (con su etiqueta de fila), uno que
+ * cambia de estado, uno que cambia sólo en la inclusión futura y dos iguales en
+ * los tres planes.
  */
 const PLANS: PricingPlan[] = [
   {
@@ -57,7 +58,7 @@ const PLANS: PricingPlan[] = [
     yearlyDisplay: null,
     yearlyPerMonthDisplay: null,
     features: [
-      { text: "Hasta 10 recetas", included: true },
+      { text: "Hasta 10 recetas", label: "Recetas", included: true },
       { text: "Costeo básico con márgenes", included: true },
       { text: "Categorías", included: true },
       { text: "Duplicar recetas", included: false },
@@ -77,7 +78,7 @@ const PLANS: PricingPlan[] = [
     yearlyDisplay: "$95.90",
     yearlyPerMonthDisplay: "$7.99",
     features: [
-      { text: "Hasta 75 recetas", included: true },
+      { text: "Hasta 75 recetas", label: "Recetas", included: true },
       { text: "Costeo básico con márgenes", included: true },
       { text: "Categorías", included: true },
       { text: "Duplicar recetas", included: true },
@@ -97,7 +98,7 @@ const PLANS: PricingPlan[] = [
     yearlyDisplay: "$191.90",
     yearlyPerMonthDisplay: "$15.99",
     features: [
-      { text: "Recetas ilimitadas", included: true },
+      { text: "Recetas ilimitadas", label: "Recetas", included: true },
       { text: "Costeo básico con márgenes", included: true },
       { text: "Categorías", included: true },
       { text: "Duplicar recetas", included: true },
@@ -165,24 +166,46 @@ describe("PlanPrice", () => {
 });
 
 describe("PlanFeatureList", () => {
-  it("distingue incluidas, no incluidas y próximas", async () => {
+  it("distingue incluidas, no incluidas y próximas —incluidas o no—", async () => {
     const wrapper = await mountSuspended(PlanFeatureList, {
       props: {
         features: [
           { text: "Incluida", included: true },
           { text: "No incluida", included: false },
-          { text: "Próximamente", included: false, status: "coming_soon" },
+          { text: "Próxima incluida", included: true, status: "coming_soon" },
+          {
+            text: "Próxima no incluida",
+            included: false,
+            status: "coming_soon",
+          },
         ],
       },
     });
 
-    expect(wrapper.findAll(".lucide-check")).toHaveLength(1);
-    expect(wrapper.findAll(".lucide-x")).toHaveLength(1);
-    expect(wrapper.findAll(".lucide-clock")).toHaveLength(1);
-    expect(wrapper.text()).toContain("Próximamente");
+    // La marca dice la inclusión —también la futura— y "Próximamente" es texto
+    // visible: el comprador no depende del color ni del lector de pantalla.
+    const rows = wrapper.findAll("li");
+    expect(rows.map((row) => row.find("svg").classes()[1])).toEqual([
+      "lucide-check",
+      "lucide-x",
+      "lucide-check",
+      "lucide-x",
+    ]);
+    expect(rows.map((row) => row.find(".sr-only").text())).toEqual([
+      "Incluido:",
+      "No incluido:",
+      "Incluido, próximamente:",
+      "No incluido, próximamente:",
+    ]);
+    expect(rows.map((row) => collapsedText(row))).toEqual([
+      "Incluido: Incluida",
+      "No incluido: No incluida",
+      "Incluido, próximamente: Próxima incluida · Próximamente",
+      "No incluido, próximamente: Próxima no incluida · Próximamente",
+    ]);
   });
 
-  it("expone el estado de cada fila en texto, no sólo por ícono", async () => {
+  it("expone el estado de cada fila en texto y no anuncia el marcador dos veces", async () => {
     const wrapper = await mountSuspended(PlanFeatureList, {
       props: {
         features: [
@@ -200,23 +223,20 @@ describe("PlanFeatureList", () => {
     expect(rows.map((row) => row.find(".sr-only").text())).toEqual([
       "Incluido:",
       "No incluido:",
-      "Próximamente:",
+      "No incluido, próximamente:",
     ]);
-    expect(
-      rows.map((row) => row.findAll("span").map((span) => span.text())),
-    ).toEqual([
-      ["Incluido:", "Hasta 10 recetas"],
-      ["No incluido:", "Duplicar recetas"],
-      ["Próximamente:", "Exportar a PDF"],
-    ]);
-    expect(rows.map((row) => row.find("svg").classes()[1])).toEqual([
-      "lucide-check",
-      "lucide-x",
-      "lucide-clock",
+    expect(rows.map((row) => collapsedText(row))).toEqual([
+      "Incluido: Hasta 10 recetas",
+      "No incluido: Duplicar recetas",
+      "No incluido, próximamente: Exportar a PDF · Próximamente",
     ]);
     expect(
       rows.every((row) => row.find("svg").attributes("aria-hidden") === "true"),
     ).toBe(true);
+
+    // El marcador visible no se anuncia dos veces: la etiqueta ya lo dice.
+    expect(rows[2]!.find("span[aria-hidden='true']").text()).toBe("· Próximamente");
+    expect(rows[0]!.find("span[aria-hidden='true']").exists()).toBe(false);
   });
 
   it("la variante compacta dice en texto cuántos destacados se recortaron", async () => {
@@ -429,37 +449,60 @@ describe("LandingPricingSection", () => {
 });
 
 describe("PlanComparison", () => {
-  it("sólo compara lo que cambia: las filas iguales no se repiten por columna", async () => {
+  it("lista todas las funciones en una sola tabla, en el orden del catálogo", async () => {
     const wrapper = await mountSuspended(PlanComparison, {
       props: { plans: PLANS },
     });
 
-    // Columnas = planes, en el mismo orden que las cards.
-    expect(wrapper.findAll("th").map(collapsedText)).toEqual([
+    // Una sola tabla: columna de función + una columna por plan (orden de cards).
+    expect(wrapper.findAll("table")).toHaveLength(1);
+    expect(wrapper.findAll("thead th").map(collapsedText)).toEqual([
+      "Función",
       "Pro",
       "Free",
       "Basic",
     ]);
-    // Dos slots cambian (cantidades y duplicar); los otros tres son comunes.
-    expect(wrapper.findAll("tbody tr")).toHaveLength(2);
+    // Una fila por función del catálogo, en su orden.
+    expect(
+      wrapper.findAll("tbody th[scope='row']").map(collapsedText),
+    ).toEqual([
+      "Recetas",
+      "Costeo básico con márgenes",
+      "Categorías",
+      "Duplicar recetas",
+      "Exportar a PDF",
+    ]);
     expect(wrapper.find("caption.sr-only").exists()).toBe(true);
+
+    // Nada queda fuera de la matriz: sin bloques aparte ni listas.
+    expect(wrapper.find("ul").exists()).toBe(false);
+    expect(wrapper.text()).not.toContain("Igual en todos los planes");
+    expect(wrapper.text()).not.toContain("Lo que cambia");
   });
 
-  it("cada celda dice el estado y el texto de su propio plan", async () => {
+  it("cada celda dice el estado de su plan y su valor cuando aporta", async () => {
     const wrapper = await mountSuspended(PlanComparison, {
       props: { plans: PLANS },
     });
     const rows = wrapper.findAll("tbody tr");
 
+    // Límites: la frase de cada plan dice más que la etiqueta de fila.
     expect(rows[0]!.findAll("td").map(collapsedText)).toEqual([
       "Incluido: Recetas ilimitadas",
       "Incluido: Hasta 10 recetas",
       "Incluido: Hasta 75 recetas",
     ]);
-    expect(rows[1]!.findAll("td").map(collapsedText)).toEqual([
-      "Incluido: Duplicar recetas",
-      "No incluido: Duplicar recetas",
-      "Incluido: Duplicar recetas",
+    // Duplicar: el mismo texto en los tres, distinto estado → sólo la marca.
+    expect(rows[3]!.findAll("td").map(collapsedText)).toEqual([
+      "Incluido:",
+      "No incluido:",
+      "Incluido:",
+    ]);
+    // Próximamente: la marca dice la inclusión futura y el texto lo dice visible.
+    expect(rows[4]!.findAll("td").map(collapsedText)).toEqual([
+      "Incluido, próximamente: Próximamente",
+      "No incluido, próximamente: Próximamente",
+      "No incluido, próximamente: Próximamente",
     ]);
     expect(
       wrapper
@@ -468,15 +511,22 @@ describe("PlanComparison", () => {
     ).toBe(true);
   });
 
-  it("lo igual en todos los planes se lista una sola vez", async () => {
+  it("las filas que todos los planes comparten llevan su marca en cada columna", async () => {
     const wrapper = await mountSuspended(PlanComparison, {
       props: { plans: PLANS },
     });
 
-    expect(wrapper.findAll("li").map(collapsedText)).toEqual([
-      "Incluido: Costeo básico con márgenes",
-      "Incluido: Categorías",
-      "Próximamente: Exportar a PDF",
+    // Categorías es idéntica en los tres planes y aun así tiene su fila con las
+    // tres celdas: lo compartido no se lista aparte.
+    const categories = wrapper
+      .findAll("tbody tr")
+      .filter((row) => collapsedText(row.find("th")) === "Categorías");
+
+    expect(categories).toHaveLength(1);
+    expect(categories[0]!.findAll("td").map(collapsedText)).toEqual([
+      "Incluido:",
+      "Incluido:",
+      "Incluido:",
     ]);
   });
 
@@ -500,8 +550,9 @@ describe("PlanComparison", () => {
       props: { plans: PLANS, currentPlanId: "free" },
     });
 
-    const headers = wrapper.findAll("th");
+    const headers = wrapper.findAll("thead th");
     expect(headers.map(collapsedText)).toEqual([
+      "Función",
       "Pro",
       "Free Plan actual",
       "Basic",
@@ -511,7 +562,7 @@ describe("PlanComparison", () => {
     const anonymous = await mountSuspended(PlanComparison, {
       props: { plans: PLANS },
     });
-    expect(collapsedText(anonymous.findAll("th")[1]!)).toBe("Free");
+    expect(collapsedText(anonymous.findAll("thead th")[2]!)).toBe("Free");
   });
 });
 

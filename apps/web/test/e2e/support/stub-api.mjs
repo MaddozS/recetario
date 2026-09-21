@@ -73,10 +73,10 @@ function parseCookies(header) {
 /**
  * Catálogo determinista para las vistas de planes (mismo shape que Hono).
  *
- * Las features son un **espejo de `TIER_CONFIG`** (`packages/stripe`), mismo
- * orden de slots en los tres tiers: la comparación de `/pricing` parte de ahí y
- * de este espejo dependen sus grupos (5 filas cambian entre planes, 9 son
- * iguales en los tres). Un cambio de catálogo se refleja también aquí.
+ * Las features son un **espejo de `TIER_CONFIG`** (`packages/stripe`): mismo
+ * orden de slots en los tres tiers y con las etiquetas de fila que la matriz de
+ * `/pricing` usa como encabezado (sin etiqueta, la fila cae en la frase de un
+ * solo plan). Un cambio de catálogo se refleja también aquí.
  */
 const PLANS = [
   {
@@ -92,8 +92,8 @@ const PLANS = [
     yearlyDisplay: null,
     yearlyPerMonthDisplay: null,
     features: [
-      { text: "Hasta 10 recetas", included: true },
-      { text: "Hasta 30 ingredientes", included: true },
+      { text: "Hasta 10 recetas", label: "Recetas", included: true },
+      { text: "Hasta 30 ingredientes", label: "Ingredientes", included: true },
       { text: "Costeo básico con márgenes", included: true },
       { text: "Categorías", included: true },
       {
@@ -102,9 +102,18 @@ const PLANS = [
         status: "coming_soon",
       },
       { text: "Duplicar recetas", included: false },
-      { text: "Fotos de recetas", included: false, status: "coming_soon" },
+      {
+        text: "Fotos de recetas",
+        label: "Fotos de recetas",
+        included: false,
+        status: "coming_soon",
+      },
       { text: "Stock de ingredientes", included: false, status: "coming_soon" },
-      { text: "Planificador de producción", included: false },
+      {
+        text: "Planificador de producción",
+        label: "Planificador de producción",
+        included: false,
+      },
       { text: "Exportar a PDF", included: false, status: "coming_soon" },
       { text: "Costos fijos avanzados", included: false, status: "coming_soon" },
       { text: "Historial de cambios", included: false, status: "coming_soon" },
@@ -133,8 +142,8 @@ const PLANS = [
     yearlyDisplay: "$95.90",
     yearlyPerMonthDisplay: "$7.99",
     features: [
-      { text: "Hasta 75 recetas", included: true },
-      { text: "Ingredientes ilimitados", included: true },
+      { text: "Hasta 75 recetas", label: "Recetas", included: true },
+      { text: "Ingredientes ilimitados", label: "Ingredientes", included: true },
       { text: "Costeo básico con márgenes", included: true },
       { text: "Categorías", included: true },
       {
@@ -145,12 +154,14 @@ const PLANS = [
       { text: "Duplicar recetas", included: true },
       {
         text: "Fotos de recetas (1 por receta)",
+        label: "Fotos de recetas",
         included: true,
         status: "coming_soon",
       },
       { text: "Stock de ingredientes", included: true, status: "coming_soon" },
       {
         text: "Planificador de producción (hasta 3 recetas)",
+        label: "Planificador de producción",
         included: true,
       },
       { text: "Exportar a PDF", included: false, status: "coming_soon" },
@@ -181,8 +192,8 @@ const PLANS = [
     yearlyDisplay: "$191.90",
     yearlyPerMonthDisplay: "$15.99",
     features: [
-      { text: "Recetas ilimitadas", included: true },
-      { text: "Ingredientes ilimitados", included: true },
+      { text: "Recetas ilimitadas", label: "Recetas", included: true },
+      { text: "Ingredientes ilimitados", label: "Ingredientes", included: true },
       { text: "Costeo básico con márgenes", included: true },
       { text: "Categorías", included: true },
       {
@@ -193,11 +204,16 @@ const PLANS = [
       { text: "Duplicar recetas", included: true },
       {
         text: "Fotos de recetas + galería",
+        label: "Fotos de recetas",
         included: true,
         status: "coming_soon",
       },
       { text: "Stock de ingredientes", included: true, status: "coming_soon" },
-      { text: "Planificador de producción ilimitado", included: true },
+      {
+        text: "Planificador de producción ilimitado",
+        label: "Planificador de producción",
+        included: true,
+      },
       { text: "Exportar a PDF", included: true, status: "coming_soon" },
       { text: "Costos fijos avanzados", included: true, status: "coming_soon" },
       { text: "Historial de cambios", included: true, status: "coming_soon" },

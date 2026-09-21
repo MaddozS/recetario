@@ -650,30 +650,70 @@ test("la landing abre por el recomendado y manda el catálogo completo a /pricin
   await expect(page).toHaveURL(/\/pricing$/);
 });
 
-test("/pricing compara sólo las diferencias y no repite lo igual en los tres planes", async ({
+test("/pricing compara todas las funciones en una sola matriz", async ({
   page,
   goto,
 }) => {
   await goto("/pricing", { waitUntil: "hydration" });
 
-  const comparison = page.locator("section:has(#plan-comparison-heading)");
-  const table = comparison.locator("table");
-
-  // Columnas = cards, en el mismo orden (el recomendado primero).
-  await expect(table.locator("thead th")).toHaveText(["Pro", "Free", "Basic"]);
-  // Cinco slots cambian entre planes y nueve son iguales en los tres.
-  await expect(table.locator("tbody tr")).toHaveCount(5);
-  await expect(comparison.locator("li")).toHaveCount(9);
-  await expect(table.getByText("Costeo básico con márgenes")).toHaveCount(0);
-  await expect(
-    comparison.locator("li", { hasText: "Costeo básico con márgenes" }),
-  ).toHaveCount(1);
-  await expect(comparison.locator("li", { hasText: "Exportar a PDF" })).toHaveCount(
-    1,
+  const comparison = page.locator(
+    "section[aria-labelledby='plan-comparison-heading']",
   );
+  const table = comparison.locator("table");
+  const rows = table.locator("tbody tr");
+
+  /** Fila de la matriz por el nombre exacto de su función. */
+  const matrixRow = (label: string) =>
+    rows.filter({
+      has: page.locator("th[scope='row']", { hasText: new RegExp(`^${label}$`) }),
+    });
+
+  // Una sola tabla: la columna de función y una columna por plan, en el mismo
+  // orden que las cards (el recomendado primero).
+  await expect(table.locator("thead th")).toHaveText([
+    "Función",
+    "Pro",
+    "Free",
+    "Basic",
+  ]);
+  // El catálogo completo, en su orden: también lo que comparten los tres planes.
+  await expect(rows).toHaveCount(14);
+  await expect(rows.locator("th[scope='row']")).toHaveText([
+    "Recetas",
+    "Ingredientes",
+    "Costeo básico con márgenes",
+    "Categorías",
+    "Instrucciones de preparación",
+    "Duplicar recetas",
+    "Fotos de recetas",
+    "Stock de ingredientes",
+    "Planificador de producción",
+    "Exportar a PDF",
+    "Costos fijos avanzados",
+    "Historial de cambios",
+    "Importar/Exportar datos",
+    "Información nutricional",
+  ]);
+  // Nada queda fuera de la matriz: ni listas ni bloques aparte.
+  await expect(comparison.locator("li")).toHaveCount(0);
+  await expect(comparison).not.toContainText("Igual en todos los planes");
+  await expect(comparison).not.toContainText("Lo que cambia");
+
+  // Los límites llevan la frase propia de cada plan, no la etiqueta repetida.
+  const limits = matrixRow("Recetas");
+  await expect(limits.locator("td").nth(0)).toHaveText(/Recetas ilimitadas/);
+  await expect(limits.locator("td").nth(1)).toHaveText(/Hasta 10 recetas/);
+  await expect(limits.locator("td").nth(2)).toHaveText(/Hasta 75 recetas/);
+
+  // Lo que comparten los tres planes tiene su fila con las tres marcas.
+  await expect(matrixRow("Costeo básico con márgenes").locator("td")).toHaveText([
+    "Incluido:",
+    "Incluido:",
+    "Incluido:",
+  ]);
 
   // Cada celda dice el estado de su plan: el mismo texto cambia de estado.
-  const duplicates = table.locator("tbody tr", { hasText: "Duplicar recetas" });
+  const duplicates = matrixRow("Duplicar recetas");
   await expect(duplicates).toHaveCount(1);
   expect(
     await duplicates
@@ -681,17 +721,42 @@ test("/pricing compara sólo las diferencias y no repite lo igual en los tres pl
       .evaluateAll((nodes) => nodes.map((node) => node.textContent?.trim() ?? "")),
   ).toEqual(["Incluido:", "No incluido:", "Incluido:"]);
 
+  // Las filas próximas dicen la inclusión futura por columna (Free y Basic no
+  // la tendrán, Pro sí) y el aviso se lee en texto.
+  const pdf = matrixRow("Exportar a PDF");
+  expect(
+    await pdf
+      .locator(".sr-only")
+      .evaluateAll((nodes) => nodes.map((node) => node.textContent?.trim() ?? "")),
+  ).toEqual([
+    "Incluido, próximamente:",
+    "No incluido, próximamente:",
+    "No incluido, próximamente:",
+  ]);
+  await expect(pdf.locator("td span[aria-hidden='true']")).toHaveText([
+    "Próximamente",
+    "Próximamente",
+    "Próximamente",
+  ]);
+
+  // El valor propio del plan convive con el aviso de lo que falta por llegar.
+  await expect(matrixRow("Fotos de recetas").locator("td").nth(2)).toHaveText(
+    /Fotos de recetas \(1 por receta\) · Próximamente/,
+  );
+
   // Las cards llevan precio, CTA y estados; el catálogo vive en la comparación.
   await expect(page.locator('[data-plan="free"]')).toContainText("Gratis");
   await expect(page.locator('[data-plan="free"]')).not.toContainText(
     "Hasta 10 recetas",
   );
 
-  // A 320px la tabla no esconde filas ni desborda la página: las celdas se
-  // envuelven en sus tres columnas.
+  // A 320px la matriz no esconde filas ni columnas, y no desborda la página.
   await page.setViewportSize({ width: 320, height: 800 });
   await goto("/pricing", { waitUntil: "hydration" });
-  await expect(table.locator("tbody tr").first()).toBeVisible();
+  await expect(table.locator("thead th")).toHaveCount(4);
+  const firstRow = table.locator("tbody tr").first();
+  await expect(firstRow).toBeVisible();
+  await expect(firstRow.locator("td").nth(2)).toBeVisible();
   const overflow = await page.evaluate(
     () =>
       document.documentElement.scrollWidth -
@@ -721,8 +786,10 @@ test("/pricing autenticado respeta el plan actual y completa el checkout", async
 
   // La comparación marca la columna del plan del visitante.
   await expect(
-    page.locator("section:has(#plan-comparison-heading) thead th"),
-  ).toHaveText(["Pro Plan actual", "Free", "Basic"]);
+    page.locator(
+      "section[aria-labelledby='plan-comparison-heading'] thead th",
+    ),
+  ).toHaveText(["Función", "Pro Plan actual", "Free", "Basic"]);
 
   await page.locator('[data-plan="basic"] button').click();
 
