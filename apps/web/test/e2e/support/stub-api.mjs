@@ -363,12 +363,14 @@ function subscriptionResponse(plan, cookies) {
 
 /**
  * Doble-submit del CSRF como Hono: una petición de navegador (con `Origin`)
- * necesita el header; las internas sin `Origin` (SSR por el relay) pasan por
- * diseño. Así el stub falla si el cliente olvida el token.
+ * necesita el header y éste debe coincidir con la cookie; las internas sin
+ * `Origin` (SSR por el relay) pasan por diseño. Así el stub falla si el cliente
+ * olvida el token o lo manda desincronizado.
  */
-function csrfAllowed(req) {
+function csrfAllowed(req, cookies) {
   if (!req.headers.origin) return true;
-  return Boolean(req.headers["x-csrf-token"]);
+  const token = req.headers["x-csrf-token"];
+  return Boolean(token) && token === cookies["csrf_token"];
 }
 
 function unauthorized(res) {
@@ -382,6 +384,20 @@ function forbiddenCsrf(res) {
     error: { code: "FORBIDDEN", message: "CSRF validation failed" },
   });
 }
+
+/**
+ * `GET /api/csrf` (paridad con Hono): reemite la cookie del token conservando
+ * el valor existente. `mintAttempts` permite comprobar que el cliente sólo pide
+ * token cuando le falta. El stub no necesita aleatoriedad: lo único que importa
+ * es que cookie y header viajen con el mismo valor.
+ */
+function createCsrfState() {
+  return { mintAttempts: 0 };
+}
+
+let csrfState = createCsrfState();
+
+const CSRF_STUB_TOKEN = "stub-csrf-token";
 
 /** ── Ingredientes (Task 7): estado en memoria, sin BD ─────────────────────── */
 
@@ -682,6 +698,23 @@ const server = createServer(async (req, res) => {
     );
   }
 
+  if (pathname === "/api/csrf" && req.method === "GET") {
+    if (cookies["better-auth.session_token"] !== SESSION_TOKEN) {
+      return unauthorized(res);
+    }
+
+    csrfState.mintAttempts += 1;
+    return sendJson(
+      res,
+      200,
+      { ok: true },
+      {
+        // Sin `HttpOnly` (el cliente lee el token) y conservando el valor previo.
+        "set-cookie": `csrf_token=${cookies["csrf_token"] ?? CSRF_STUB_TOKEN}; Path=/; Max-Age=604800; SameSite=Strict`,
+      },
+    );
+  }
+
   if (pathname === "/api/auth/sign-in/email" && req.method === "POST") {
     const payload = JSON.parse(body || "{}");
 
@@ -859,7 +892,7 @@ const server = createServer(async (req, res) => {
   if (pathname === "/api/stripe/checkout" && req.method === "POST") {
     // Hono exige auth + doble-submit CSRF: el stub rechaza una petición de
     // navegador sin `x-csrf-token` para que el e2e falle si el cliente lo omite.
-    if (!csrfAllowed(req)) {
+    if (!csrfAllowed(req, cookies)) {
       return sendJson(res, 403, {
         error: { code: "FORBIDDEN", message: "CSRF validation failed" },
       });
@@ -895,7 +928,7 @@ const server = createServer(async (req, res) => {
   }
 
   if (pathname === "/api/account/update-name" && req.method === "POST") {
-    if (!csrfAllowed(req)) return forbiddenCsrf(res);
+    if (!csrfAllowed(req, cookies)) return forbiddenCsrf(res);
 
     settingsState.nameAttempts += 1;
     const payload = JSON.parse(body || "{}");
@@ -921,7 +954,7 @@ const server = createServer(async (req, res) => {
   }
 
   if (pathname === "/api/account/change-password" && req.method === "POST") {
-    if (!csrfAllowed(req)) return forbiddenCsrf(res);
+    if (!csrfAllowed(req, cookies)) return forbiddenCsrf(res);
 
     settingsState.passwordAttempts += 1;
     const payload = JSON.parse(body || "{}");
@@ -960,7 +993,7 @@ const server = createServer(async (req, res) => {
   }
 
   if (pathname === "/api/preferences" && req.method === "PUT") {
-    if (!csrfAllowed(req)) return forbiddenCsrf(res);
+    if (!csrfAllowed(req, cookies)) return forbiddenCsrf(res);
 
     settingsState.preferencesPutAttempts += 1;
 
@@ -1014,7 +1047,7 @@ const server = createServer(async (req, res) => {
   }
 
   if (pathname === "/api/stripe/portal" && req.method === "POST") {
-    if (!csrfAllowed(req)) return forbiddenCsrf(res);
+    if (!csrfAllowed(req, cookies)) return forbiddenCsrf(res);
 
     settingsState.portalAttempts += 1;
 
@@ -1028,7 +1061,7 @@ const server = createServer(async (req, res) => {
   }
 
   if (pathname === "/api/stripe/sync-session" && req.method === "POST") {
-    if (!csrfAllowed(req)) return forbiddenCsrf(res);
+    if (!csrfAllowed(req, cookies)) return forbiddenCsrf(res);
 
     settingsState.syncAttempts += 1;
 
@@ -1043,6 +1076,21 @@ const server = createServer(async (req, res) => {
 
     settingsState.synced = true;
     return sendJson(res, 200, { ok: true });
+  }
+
+  // Doble-submit como Hono (allí el middleware es global): toda mutación de
+  // recetas o ingredientes exige el token coincidente. Se comprueba una vez
+  // aquí, antes de los handlers de ambos dominios, en lugar de repetirlo en
+  // cada uno; las rutas de auth y las de cuenta/stripe ya lo validan arriba.
+  const isDataMutation =
+    (pathname === "/api/recipes" ||
+      pathname.startsWith("/api/recipes/") ||
+      pathname === "/api/ingredients" ||
+      pathname.startsWith("/api/ingredients/")) &&
+    ["POST", "PUT", "PATCH", "DELETE"].includes(req.method);
+
+  if (isDataMutation && !csrfAllowed(req, cookies)) {
+    return forbiddenCsrf(res);
   }
 
   // ── Ingredientes (Task 7) ─────────────────────────────────────────────────
@@ -1720,6 +1768,16 @@ const server = createServer(async (req, res) => {
 
   if (pathname === "/api/__qa/settings/state" && req.method === "GET") {
     return sendJson(res, 200, readSettingsState());
+  }
+
+  // ── Fixture QA del token CSRF ─────────────────────────────────────────────
+  if (pathname === "/api/__qa/csrf/reset" && req.method === "POST") {
+    csrfState = createCsrfState();
+    return sendJson(res, 200, { ...csrfState });
+  }
+
+  if (pathname === "/api/__qa/csrf/state" && req.method === "GET") {
+    return sendJson(res, 200, { ...csrfState });
   }
 
   // ── Casos del relay ───────────────────────────────────────────────────────

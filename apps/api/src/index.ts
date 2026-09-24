@@ -21,6 +21,7 @@ import { errorHandler } from "./error-handler";
 import { hostAllowlist } from "./host-allowlist";
 import { csrfProtection } from "./middleware/csrf";
 import { authSessionHandler } from "./auth-session";
+import { csrfTokenHandler } from "./csrf/handler";
 import { recipesListHandler } from "./recipes/list";
 import { recipesByIdsHandler } from "./recipes/by-ids";
 import { recipesDetailHandler } from "./recipes/detail";
@@ -257,8 +258,10 @@ app.use("/api/stripe/sync-session", requireAuth());
 app.use("/api/billing/subscription", requireAuth());
 app.use("/api/usage-counts", requireAuth());
 app.use("/api/auth/credential-status", requireAuth());
+app.use("/api/csrf", requireAuth());
 app.use("/api/audit/log", requireAuth());
 
+app.get("/api/csrf", csrfTokenHandler());
 app.get("/api/recipes", recipesListHandler());
 app.get("/api/recipes/by-ids", recipesByIdsHandler());
 app.get("/api/recipes/:id", recipesDetailHandler());

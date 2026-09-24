@@ -5,6 +5,48 @@ const CSRF_COOKIE = "csrf_token";
 const CSRF_HEADER = "x-csrf-token";
 const CSRF_FORM_FIELD = "_csrf";
 
+/**
+ * Vida de la cookie del token: la de la sesión de Better Auth (7 días). Antes
+ * caducaba en 1 h mientras la sesión seguía viva, así que cualquier documento
+ * de más de una hora (edición larga, pestaña restaurada del bfcache) se quedaba
+ * sin poder mutar: el cliente mandaba la mutación sin `x-csrf-token` y el API
+ * respondía 403 `CSRF validation failed` hasta recargar.
+ */
+export const CSRF_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
+
+export type CsrfCookieOptions = {
+  path: string;
+  sameSite: "strict";
+  httpOnly: false;
+  secure: boolean;
+  maxAge: number;
+};
+
+/**
+ * Opciones de la cookie para sus dos emisores: el middleware de Nitro de la web
+ * y `GET /api/csrf` del API. Una sola definición evita que las dos políticas se
+ * desincronicen (`h3`/`cookie-es` y Hono aceptan los mismos nombres y el
+ * `sameSite` en minúsculas).
+ */
+export function csrfCookieOptions(secure: boolean): CsrfCookieOptions {
+  return {
+    path: "/",
+    sameSite: "strict",
+    httpOnly: false,
+    secure,
+    maxAge: CSRF_COOKIE_MAX_AGE,
+  };
+}
+
+/**
+ * Conserva el token ya emitido y sólo genera uno nuevo cuando no hay ninguno:
+ * el API valida `header === cookie`, así que rotarlo rompería en vuelo las
+ * peticiones del cliente que estén usando el valor anterior.
+ */
+export function resolveCsrfToken(existing?: string | null): string {
+  return existing && existing.length > 0 ? existing : generateToken();
+}
+
 export function generateToken(): string {
   return randomBytes(TOKEN_BYTES).toString("hex");
 }
@@ -19,13 +61,6 @@ export function getCsrfHeader(): string {
 
 export function getCsrfFormField(): string {
   return CSRF_FORM_FIELD;
-}
-
-export function setCsrfCookieHeader(headers: Headers, token: string): void {
-  headers.append(
-    "Set-Cookie",
-    `${CSRF_COOKIE}=${token}; Path=/; SameSite=Strict; Max-Age=3600${process.env.NODE_ENV === "production" ? "; Secure" : ""}`,
-  );
 }
 
 /**

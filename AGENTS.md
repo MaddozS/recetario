@@ -97,6 +97,7 @@ If a new feature needs data access from a web page, add the endpoint in `apps/ap
 #### Autoridad de mutaciones (Hono)
 
 - **CSRF**: `csrfProtection()` en `apps/api/src/middleware/csrf.ts` cubre todo `POST|PUT|PATCH|DELETE`. Exige `Origin`/`Referer` confiable y, si la petición viene de navegador con cookies, doble-submit (`x-csrf-token` o `_csrf` contra la cookie `csrf_token`). Exentos: `POST /api/stripe/webhook` y `/api/auth/**` (Better Auth valida su propio origen). Las peticiones sin `Origin` (service binding, SSR) pasan por diseño.
+- **Vida del token**: la cookie dura lo que la sesión (7 días) y la emiten dos sitios con la misma política (`csrfCookieOptions`/`resolveCsrfToken` en `packages/auth/src/csrf.ts`): el middleware de Nitro en cada documento con sesión y `GET /api/csrf` (`apps/api/src/csrf/handler.ts`) a demanda, conservando siempre el valor existente. Si se toca el TTL o los atributos, se tocan ahí, no en cada consumidor.
 - **Límites de plan**: `requireRecipeCapacity`, `requireIngredientCapacity` y `requireFeature` en `apps/api/src/entitlements.ts`; sin fila de suscripción se aplica el plan free (fail-closed). Al agotarse lanzan `PLAN_LIMIT` / `FEATURE_REQUIRED` (403): la UI sólo muestra CTA de upgrade con `PLAN_LIMIT`.
 - **Lecturas con gate**: cuando una lectura es la única vía a datos gateados (p. ej. `GET /api/recipes/by-ids` del planificador), el gate corre también ahí (feature + tope de plan) antes de la query.
 - **Auditoría de sign-in**: `recordSignInAudit` corre en `databaseHooks.session.create.after` de Better Auth (`packages/auth/src/auth.ts`); el middleware web no inspecciona paths.
@@ -113,6 +114,7 @@ If a new feature needs data access from a web page, add the endpoint in `apps/ap
 - `app/features/production/production-{calculator,selection,catalog,format}.ts` — planificador de producción
 - `server/utils/api-transport.ts` — binding `API`/fallback HTTP y headers de error tempranos
 - `server/middleware/10.auth.ts` — bootstrap de sesión, cookies de presentación/CSRF y `private, no-store`
+- `app/utils/csrf.ts` — `ensureCsrfToken()`: pre-flight single-flight que `useApi()` corre antes de mutar (pide `GET /api/csrf` sólo si falta la cookie)
 
 ### Stripe billing
 

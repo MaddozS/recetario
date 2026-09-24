@@ -31,7 +31,12 @@ that mutates user data or hits Stripe goes here.
   (`x-csrf-token` header or `_csrf` form field against the `csrf_token`
   cookie) for browser requests that carry cookies. Exempt: `/api/auth/**`
   (Better Auth checks its own origin) and the signature-authenticated
-  `POST /api/stripe/webhook`.
+  `POST /api/stripe/webhook`. The token is minted by the web's Nitro
+  middleware and by `GET /api/csrf` (`src/csrf/handler.ts`), which both
+  preserve an existing value and share the cookie policy
+  (`csrfCookieOptions` in `packages/auth/src/csrf.ts`, 7-day lifetime). The
+  web calls it before a mutation when the cookie is gone, so a long-lived
+  tab never has to reload to save.
 - **Entitlements** — `src/entitlements.ts` (`requireRecipeCapacity`,
   `requireIngredientCapacity`, `requireFeature`) is the authoritative gate
   for plan limits and feature flags; it throws `PLAN_LIMIT` /
@@ -238,6 +243,7 @@ match the calling worker's public host per environment (or be unset).
 | GET    | `/api/auth/reset-password`          | token    | Validates a password-reset token.                                                              |
 | POST   | `/api/auth/reset-password`          | token    | Marks token used; logs audit event.                                                            |
 | GET    | `/api/auth/session`                 | optional | Pass-through to `auth.api.getSession`, plus preferences. Used by every SSR request.            |
+| GET    | `/api/csrf`                         | user     | Re-emits the `csrf_token` cookie (value preserved). Called by the web before a mutation.       |
 | ALL    | `/api/auth/*`                       | varies   | Catch-all for Better Auth.                                                                     |
 | POST   | `/api/account/update-name`          | user     | JSON `{firstName,lastName}`; returns the shaped name.                                          |
 | POST   | `/api/account/change-email`         | user     | JSON; triggers verification email. No UI yet.                                                  |

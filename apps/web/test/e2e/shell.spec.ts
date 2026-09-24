@@ -44,8 +44,12 @@ test("autenticado: SSR del shell con tema, cookies y cabeceras privadas", async 
   expect(setCookies.filter((value) => value.startsWith("kitchcalc-"))).toHaveLength(2);
   expect(setCookies.some((value) => value.startsWith("kitchcalc-theme=dark"))).toBe(true);
   expect(setCookies.some((value) => value.startsWith("kitchcalc-accent=emerald"))).toBe(true);
-  expect(setCookies.some((value) => value.startsWith("csrf_token="))).toBe(true);
-  expect(setCookies.some((value) => value.includes("SameSite=Strict"))).toBe(true);
+  // El token dura lo que la sesión (7 días) y es legible por JS (doble-submit).
+  const csrfCookie = setCookies.find((value) => value.startsWith("csrf_token="));
+  expect(csrfCookie).toBeDefined();
+  expect(csrfCookie).toContain("Max-Age=604800");
+  expect(csrfCookie).toContain("SameSite=Strict");
+  expect(csrfCookie).not.toContain("HttpOnly");
 
   const html = await response.text();
   expect(html).toMatch(/<html[^>]*data-theme="dark"/);

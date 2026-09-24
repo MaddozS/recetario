@@ -43,7 +43,7 @@ import { validateCsrf, generateToken } from "@recetario/auth";
 |---|---|
 | `auth.ts` | Better Auth server singleton (Prisma adapter, Google OAuth, email/password, hooks) |
 | `auth-client.ts` | Better Auth browser client (uses `import.meta.env.PUBLIC_BETTER_AUTH_URL`) |
-| `csrf.ts` | Server-side CSRF token generation/validation |
+| `csrf.ts` | Server-side CSRF token generation/validation + shared cookie policy (`CSRF_COOKIE_MAX_AGE`, `csrfCookieOptions`, `resolveCsrfToken`) |
 | `csrf-client.ts` | Client-side CSRF cookie reader |
 | `password-validation.ts` | Password strength rules (min 8 chars, upper, lower, digit, special) |
 | `password-reset.ts` | Password reset token CRUD + HTML email template |

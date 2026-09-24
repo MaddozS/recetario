@@ -1,6 +1,10 @@
 // Subpath sin DOM ni `better-auth/client`: el barrel `@recetario/auth` arrastra
 // módulos de navegador que no pertenecen al grafo del servidor.
-import { generateToken, getCsrfCookie } from "@recetario/auth/csrf";
+import {
+  csrfCookieOptions,
+  getCsrfCookie,
+  resolveCsrfToken,
+} from "@recetario/auth/csrf";
 import { syncEnvBindings } from "@recetario/config/env";
 import {
   ACCENT_COOKIE,
@@ -28,7 +32,6 @@ import {
  */
 
 const PRESENTATION_COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
-const CSRF_COOKIE_MAX_AGE = 60 * 60;
 
 // Sin caché compartida y fuera de índices. Se aplican aquí (y no con
 // `routeRules`) para que el contrato sea el mismo en dev, e2e y producción:
@@ -89,18 +92,14 @@ export default defineEventHandler(async (event) => {
     maxAge: PRESENTATION_COOKIE_MAX_AGE,
   });
 
+  // Política y valor compartidos con `GET /api/csrf` (el otro emisor): conserva
+  // el token existente y lo emite a la vida de la sesión.
   const csrfCookie = getCsrfCookie();
   setCookie(
     event,
     csrfCookie,
-    getCookie(event, csrfCookie) ?? generateToken(),
-    {
-      path: "/",
-      sameSite: "strict",
-      httpOnly: false,
-      secure,
-      maxAge: CSRF_COOKIE_MAX_AGE,
-    },
+    resolveCsrfToken(getCookie(event, csrfCookie)),
+    csrfCookieOptions(secure),
   );
 
   event.context.auth = buildAuthenticatedAuthState(session, preferences);
