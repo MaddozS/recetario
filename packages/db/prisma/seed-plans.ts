@@ -9,16 +9,17 @@ dotenv.config();
 dotenv.config({ path: resolve(__dirname, "../../../.env") });
 
 import { PrismaClient } from "./generated-node/client";
-import { withAccelerate } from "@prisma/extension-accelerate";
+import { PrismaPg } from "@prisma/adapter-pg";
 import { listPrices } from "../../stripe/src/stripe-api";
 import type { SyncPlanInput } from "@recetario/types";
 
-if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL environment variable is not set");
+const connectionString = process.env.DATABASE_URL;
+if (!connectionString) throw new Error("DATABASE_URL environment variable is not set");
 if (!process.env.STRIPE_SECRET_KEY) throw new Error("STRIPE_SECRET_KEY environment variable is not set");
 
 const prisma = new PrismaClient({
-  accelerateUrl: process.env.DATABASE_URL,
-}).$extends(withAccelerate());
+  adapter: new PrismaPg({ connectionString }),
+});
 
 async function syncPlans(input: SyncPlanInput[]): Promise<void> {
   if (input.length === 0) return;
