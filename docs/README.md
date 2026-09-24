@@ -12,6 +12,7 @@ Este directorio mezcla documentación **viva** (guía operativa) con el **regist
 | `../CONTEXT.md`                    | Glosario de dominio                                              |
 | `qa-agent-browser.md`              | Guía de QA manual/funcional con `agent-browser`                  |
 | `adr/0009-nuxt-frontend-rework.md` | Decisión del rework Nuxt (implementada en la Task 13b)           |
+| `adr/0010-sin-accelerate-prisma-postgres-directo.md` | Salida de Accelerate: driver serverless de Prisma Postgres |
 | `agents/*`                         | Cómo consumen las skills la documentación del repo               |
 | `venta/*`                          | Material comercial                                               |
 
