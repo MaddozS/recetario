@@ -1,4 +1,4 @@
-import { prisma, invalidateAccelerateCache, userCacheTag } from "./prisma";
+import { prisma } from "./prisma";
 import type {
   SubscriptionUncheckedCreateInput,
   SubscriptionUncheckedUpdateInput,
@@ -84,7 +84,6 @@ export async function upsertSubscription(
     update: input,
     create: { stripeSubscriptionId, ...input },
   });
-  await invalidateAccelerateCache([userCacheTag(data.userId)]);
   return data;
 }
 
@@ -96,7 +95,6 @@ export async function updateSubscription(
     where: { stripeSubscriptionId },
     data: input,
   });
-  await invalidateAccelerateCache([userCacheTag(data.userId)]);
   return data;
 }
 
