@@ -160,15 +160,15 @@ test("recorrido crítico: anónimo → cuenta → receta → producción → set
   await fixedCostCard.locator("[data-fc-save]").click();
   await expect(page.getByText("Costo fijo creado.")).toBeVisible();
   await expect(
-    page.locator("[data-financial-row='Total Costos Fijos']"),
+    page.locator("[data-financial-row='Costos Fijos']"),
   ).toContainText("$100.00");
 
   // ── 6. Planificador: deep link a resultados con la receta creada ──────────
   await goto(`/produccion?recipes=${recipeId}`, { waitUntil: "hydration" });
   await expect(page.locator("[data-results-count]")).toContainText("1 receta");
-  await expect(
-    page.locator("[data-financial-row='Costo Insumos']"),
-  ).toContainText("$12.50");
+  await expect(page.locator("[data-financial-row='Insumos']")).toContainText(
+    "$12.50",
+  );
 
   // ── 7. Settings: perfil y preferencias persistidas sin recarga ────────────
   await goto("/settings", { waitUntil: "hydration" });
@@ -213,15 +213,13 @@ test("smoke móvil autenticado: bottom nav, drawer y listados con sesión", asyn
 }) => {
   const consoleErrors = watchPage(page);
   await resetRecipes(request);
-  await page
-    .context()
-    .addCookies([
-      {
-        name: "better-auth.session_token",
-        value: "stub-session-token",
-        url: url("/"),
-      },
-    ]);
+  await page.context().addCookies([
+    {
+      name: "better-auth.session_token",
+      value: "stub-session-token",
+      url: url("/"),
+    },
+  ]);
   await page.setViewportSize(MOBILE);
 
   await goto("/recipes", { waitUntil: "hydration" });

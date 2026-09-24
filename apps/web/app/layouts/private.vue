@@ -111,6 +111,16 @@ useHead({
         id="main-content"
         class="bg-background w-full flex-1 overflow-y-auto p-4 pb-24 md:p-8 md:pb-8"
       >
+        <!--
+          Cortina del borde superior: `sticky` se pega al content box de `main`,
+          así que el contenido que pasa por detrás de una barra pegajosa asoma
+          por la franja del padding. Este bloque de altura cero la tapa con el
+          fondo de la página, sin ocupar lugar en el flujo.
+        -->
+        <div
+          aria-hidden="true"
+          class="before:bg-background pointer-events-none sticky top-0 z-10 h-0 before:absolute before:inset-x-0 before:bottom-0 before:h-4 md:before:h-8 print:hidden"
+        ></div>
         <div class="mx-auto max-w-7xl">
           <slot />
         </div>

@@ -176,9 +176,9 @@ test("Basic: deep link con 4 recetas se recorta a 3 y muestra el banner al edita
     "3 recetas · 4 mezclas",
   );
   // Tarta: 2 mezclas ($50.00) + Pan ($12.50) + Flan ($0.00).
-  await expect(
-    page.locator("[data-financial-row='Costo Insumos']"),
-  ).toContainText("$62.50");
+  await expect(page.locator("[data-financial-row='Insumos']")).toContainText(
+    "$62.50",
+  );
 
   await page.getByRole("button", { name: "Editar selección" }).click();
   await expect(page.locator("[data-selected-count]")).toHaveText("3");
@@ -250,11 +250,11 @@ test("Pro: selección, cálculo sin recarga, mezclas y presentación", async ({
     "2 recetas · 3.5 mezclas",
   );
   // Tarta 2 mezclas ($50.00) + Pan 1.5 ($18.75) = $68.75 de insumos.
+  await expect(page.locator("[data-financial-row='Insumos']")).toContainText(
+    "$68.75",
+  );
   await expect(
-    page.locator("[data-financial-row='Costo Insumos']"),
-  ).toContainText("$68.75");
-  await expect(
-    page.locator("[data-financial-row='Ingresos Proyectados']"),
+    page.locator("[data-financial-answer='Ingresos Proyectados']"),
   ).toContainText("$192.00");
   // El desglose arranca colapsado: se abre para ver las presentaciones.
   const breakdown = page.locator("[data-recipe-breakdown='1']");

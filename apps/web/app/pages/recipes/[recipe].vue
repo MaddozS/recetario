@@ -104,6 +104,11 @@ const successMessage = computed(
   () => financialFeedback.value ?? feedback.value,
 );
 
+/** Alcance del resumen: sus cifras escalan con las mezclas del multiplicador. */
+const multiplierLabel = computed(
+  () => `${multiplier.value} mezcla${multiplier.value === 1 ? "" : "s"}`,
+);
+
 // Paridad con el baseline: una receta inexistente (o de otro usuario) vuelve al
 // listado. En SSR lo decide el middleware de migas (que sí espera el dato); en
 // navegación cliente el detalle llega después del setup, así que se reacciona
@@ -180,8 +185,9 @@ async function confirmDuplicate(recipeId: number): Promise<MutationOutcome> {
         <FinancialSummary
           v-model:desired-margin="form.desiredMargin"
           v-model:fixed-costs-percentage="form.fixedCostsPercentage"
+          title="Resumen financiero"
+          :scope="multiplierLabel"
           :rows="financialRows.rows"
-          :highlight-row="financialRows.highlightIndex"
           :fields="financialEditFields"
           :editable="isEditMode"
         />

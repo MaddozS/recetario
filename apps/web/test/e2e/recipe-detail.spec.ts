@@ -131,10 +131,13 @@ test("SSR: detalle, ingredientes repetidos, notas ocultas y cabeceras privadas",
   // clase dinámica antes que la estática, así que se acota al párrafo.
   expect(html).toMatch(/<p class="[^"]*hidden[^"]*">Para la masa<\/p>/);
   // Default del stub: plan Pro → filas con costos fijos explícitos.
-  expect(html).toContain("Costo Insumos");
+  expect(html).toContain("Insumos");
   expect(html).toContain("$33.00");
-  expect(html).toContain("Total Costos Fijos");
+  expect(html).toContain("Costos Fijos");
+  expect(html).toContain("Suma de los costos fijos");
   expect(html).toContain("Margen Deseado");
+  expect(html).toContain("Precio Sugerido");
+  expect(html).toContain("Ganancia");
   expect(html).toContain("Ingredientes");
   expect(html).toContain("Costos Fijos");
   expect(html).toContain("Presentaciones");
@@ -160,9 +163,10 @@ test("Free: filas operativas y % editable", async ({ request }) => {
   const html = (await response.text()).replace(/<!--[\s\S]*?-->/g, "");
   expect(html).toContain("Gastos Operativos");
   expect(html).toContain("10%");
-  expect(html).toContain("+$3.30");
-  expect(html).toContain("Costo Total Real");
-  expect(html).not.toContain("Total Costos Fijos");
+  expect(html).toContain("$3.30");
+  expect(html).toContain("Costo Total");
+  // El tramo de costos fijos es del plan con la feature; la tab homónima queda.
+  expect(html).not.toContain("Suma de los costos fijos");
 });
 
 test("tabs: click con hash, deep link y teclado", async ({
@@ -248,9 +252,9 @@ test("multiplicador: deep link, botones e input sin recargar", async ({
   // costo directo en el resumen financiero).
   await goto("/recipes/1?multiplier=2");
   await expect(desktopTable(page).getByText("Con x2").first()).toBeVisible();
-  await expect(
-    page.locator("[data-financial-row='Costo Insumos']"),
-  ).toContainText("$66.00");
+  await expect(page.locator("[data-financial-row='Insumos']")).toContainText(
+    "$66.00",
+  );
 
   await page.evaluate(() => {
     (window as unknown as { __qaMarker?: boolean }).__qaMarker = true;
@@ -260,9 +264,9 @@ test("multiplicador: deep link, botones e input sin recargar", async ({
   await page.getByRole("button", { name: "Aumentar mezclas" }).first().click();
   await expect(page).toHaveURL(/multiplier=3/);
   await expect(desktopTable(page).getByText("Con x3").first()).toBeVisible();
-  await expect(
-    page.locator("[data-financial-row='Costo Insumos']"),
-  ).toContainText("$99.00");
+  await expect(page.locator("[data-financial-row='Insumos']")).toContainText(
+    "$99.00",
+  );
 
   await page.getByRole("button", { name: "Disminuir mezclas" }).first().click();
   await expect(page).toHaveURL(/multiplier=2/);

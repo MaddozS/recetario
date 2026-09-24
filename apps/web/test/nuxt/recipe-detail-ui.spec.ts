@@ -327,35 +327,78 @@ describe("RecipeTabs", () => {
 });
 
 describe("FinancialSummary", () => {
-  it("pinta las filas, el highlight y el valor secundario", async () => {
+  it("pinta los dos tramos, el total y la banda de respuesta", async () => {
     const wrapper = await mountSuspended(FinancialSummary, {
-      props: { rows: FINANCIAL_ROWS, highlightRow: 2 },
+      props: { rows: FINANCIAL_ROWS },
     });
 
-    expect(wrapper.text()).toContain("Costo Insumos");
+    expect(wrapper.text()).toContain("Costo de la mezcla");
+    expect(wrapper.text()).toContain("Precio de venta");
+    expect(wrapper.text()).toContain("Insumos");
     expect(wrapper.text()).toContain("$33.00");
     expect(wrapper.text()).toContain("Gastos Operativos");
-    expect(wrapper.text()).toContain("+$3.30");
+    expect(wrapper.text()).toContain("$3.30");
     expect(wrapper.text()).toContain("$36.30");
+    expect(wrapper.text()).toContain("$51.86");
+    expect(wrapper.text()).toContain("$15.56");
 
-    const values = wrapper.findAll("[data-financial-value]");
-    expect(values[2]?.classes()).toContain("text-accent-800");
+    // La aritmética se declara: Insumos + Gastos operativos = Costo total.
+    const insumosRow = wrapper.find("[data-financial-row='Insumos']");
+    const operativosRow = wrapper.find(
+      "[data-financial-row='Gastos Operativos']",
+    );
+    const totalRow = wrapper.find("[data-financial-row='Costo Total']");
+    expect(insumosRow.text()).not.toContain("+");
+    expect(operativosRow.text()).toContain("+");
+    expect(totalRow.text()).toContain("=");
+
+    // El total cierra el tramo con un paso de tipo.
+    const totalValue = totalRow.find("[data-financial-value]");
+    expect(totalValue.classes()).toContain("text-2xl");
+    expect(totalValue.classes()).toContain("font-bold");
+
+    // El bloque de precio va junto en la banda teñida, el recurso del sistema:
+    // el costo como base y sus dos consecuencias, con el texto que las explica.
+    const band = wrapper.find(".bg-accent-50");
+    expect(band.classes()).toContain("border-accent-200");
+    expect(
+      band
+        .findAll("[data-financial-answer]")
+        .map((row) => row.attributes("data-financial-answer")),
+    ).toEqual(["Costo Total", "Precio Sugerido", "Ganancia"]);
+    expect(band.text()).toContain("Lo que cuesta producir");
+    expect(band.text()).toContain("Con 30% de margen");
+    expect(band.text()).toContain("Después de costos");
+    // La palanca vive en el encabezado del tramo, no entre las respuestas.
+    expect(band.text()).not.toContain("Margen Deseado");
+
+    // El costo se queda en tinta neutra: acento sólo dentro de la banda.
+    expect(
+      wrapper
+        .find("[data-financial-row='Insumos'] [data-financial-value]")
+        .classes(),
+    ).not.toContain("text-accent-800");
     expect(wrapper.find("input").exists()).toBe(false);
   });
 
-  it("pinta un título opcional dentro de la card", async () => {
+  it("pinta el encabezado con el chip de alcance", async () => {
     const wrapper = await mountSuspended(FinancialSummary, {
-      props: { rows: FINANCIAL_ROWS, title: "Resumen financiero" },
+      props: {
+        rows: FINANCIAL_ROWS,
+        title: "Resumen financiero",
+        scope: "1 mezcla",
+      },
     });
 
     const title = wrapper.find("h2");
     expect(title.text()).toBe("Resumen financiero");
-    expect(title.classes()).toContain("uppercase");
+    expect(title.classes()).toContain("font-display");
+    expect(wrapper.text()).toContain("1 mezcla");
 
-    const withoutTitle = await mountSuspended(FinancialSummary, {
+    const withoutHeader = await mountSuspended(FinancialSummary, {
       props: { rows: FINANCIAL_ROWS },
     });
-    expect(withoutTitle.find("h2").exists()).toBe(false);
+    expect(withoutHeader.find("h2").exists()).toBe(false);
   });
 
   it("en edición cambia por inputs sólo las filas con campo", async () => {
@@ -365,7 +408,6 @@ describe("FinancialSummary", () => {
     const wrapper = await mountSuspended(FinancialSummary, {
       props: {
         rows: FINANCIAL_ROWS,
-        highlightRow: 2,
         fields: buildFinancialEditFields(false),
         editable: true,
         desiredMargin: "30",
@@ -410,7 +452,6 @@ describe("FinancialSummary", () => {
     const wrapper = await mountSuspended(FinancialSummary, {
       props: {
         rows,
-        highlightRow: 2,
         fields: buildFinancialEditFields(true),
         editable: true,
         desiredMargin: "30",
@@ -418,7 +459,7 @@ describe("FinancialSummary", () => {
       },
     });
 
-    expect(wrapper.text()).toContain("Total Costos Fijos");
+    expect(wrapper.text()).toContain("Costos Fijos");
     expect(wrapper.findAll("input")).toHaveLength(1);
     expect(wrapper.find("#fs-edit-desiredMargin").exists()).toBe(true);
   });

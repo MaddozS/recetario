@@ -476,34 +476,69 @@ Dialog uses native `<dialog>` with `data-animated` for enter/exit transitions. A
 
 **File:** `src/components/ui/FinancialSummary.astro`
 
-A single-card layout for financial metrics — replaces the old 4-card icon-circle metric template. Renders as 4 inline rows in a 2x2 grid (inline on desktop, stacking on mobile). Like a restaurant POS receipt: label + mono value, no decorative chrome.
+A single-card layout for financial metrics — replaces the old 4-card icon-circle metric template. Like a restaurant POS receipt: a labeled header (title + scope chip) and label + mono value rows, no decorative chrome.
+
+Every row declares its `group`; the card draws the section label (`.section-label`) when the group changes: `Costo de la mezcla` / `Precio de venta` in the recipe, `Costos` / `Resultado` in the planner. The section states its arithmetic with the row's `op` (`Insumos + Costos Fijos = Costo Total`), the row that closes it carries `emphasis: "total"` (one type step larger) and, when the plan has more than one batch, it translates itself to an average per batch.
+
+The section's lever carries `emphasis: "control"`: it renders in the section header, next to the label, as the editable field of the section (the margin). The rows with `emphasis: "answer"` render together inside the tinted accent band, each with the line that explains it: the base (what it costs to produce), the price (with which margin) and the profit (what is left) — the same resource as the system's metric pills and category badges. Cost rows stay in neutral ink: a red number reads as loss, and the accent is reserved for actions, selection, and focus (The One Voice Rule).
 
 ```astro
 <FinancialSummary
+  title="Resumen financiero"
+  scope="1 mezcla"
   rows={[
     {
-      label: "Costo Insumos",
+      label: "Insumos",
       value: "$120.50",
       subtitle: "Costo base de materiales",
+      group: "Costo de la mezcla",
     },
     {
       label: "Gastos Operativos",
       value: "25%",
       subtitle: "Servicios, labor, etc.",
-      secondaryValue: "+$66.80",
+      secondaryValue: "$66.80",
+      group: "Costo de la mezcla",
+      op: "+",
     },
     {
-      label: "Costo Total Real",
+      label: "Costo Total",
       value: "$187.30",
       subtitle: "Insumos + Operativos",
+      secondaryValue: "≈ $93.65 por mezcla",
+      group: "Costo de la mezcla",
+      emphasis: "total",
+      op: "=",
     },
     {
-      label: "Margen Utilidad",
+      label: "Margen Deseado",
       value: "35%",
       subtitle: "Objetivo de ganancia",
+      group: "Precio de venta",
+      emphasis: "control",
+    },
+    {
+      label: "Costo Total",
+      value: "$187.30",
+      subtitle: "Lo que cuesta producir",
+      group: "Precio de venta",
+      emphasis: "answer",
+    },
+    {
+      label: "Precio Sugerido",
+      value: "$288.15",
+      subtitle: "Con 35% de margen",
+      group: "Precio de venta",
+      emphasis: "answer",
+    },
+    {
+      label: "Ganancia",
+      value: "$100.85",
+      subtitle: "Después de costos",
+      group: "Precio de venta",
+      emphasis: "answer",
     },
   ]}
-  highlightRow={2}
   isEditMode
   editFormId="recipe-edit-form"
   editFields={[
@@ -518,14 +553,15 @@ A single-card layout for financial metrics — replaces the old 4-card icon-circ
 />
 ```
 
-| Prop           | Type             | Default | Description                                                                  |
-| -------------- | ---------------- | ------- | ---------------------------------------------------------------------------- |
-| `rows`         | `FinancialRow[]` | —       | Array of `{ label, value, subtitle?, secondaryValue? }` — 4 rows recommended |
-| `highlightRow` | `number`         | —       | Index of row to accent-highlight (accent-500/600 text)                       |
-| `isEditMode`   | `boolean`        | `false` | Enable inline edit inputs on specified rows                                  |
-| `editFormId`   | `string`         | —       | Form id for edit inputs to attach to                                         |
-| `editFields`   | `EditField[]`    | `[]`    | `{ rowIndex, name, currentValue, suffix? }` — which rows to make editable    |
-| `class`        | `string`         | —       | Additional classes                                                           |
+| Prop         | Type             | Default | Description                                                                                                                                                                        |
+| ------------ | ---------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `rows`       | `FinancialRow[]` | —       | `{ label, value, subtitle?, secondaryValue?, group?, emphasis?, op? }` — `op` declara la aritmética, `total` cierra el tramo, `control` va en su encabezado y `answer` en la banda |
+| `title`      | `string`         | —       | Encabezado de la card (icono + texto); sin él no hay encabezado                                                                                                                    |
+| `scope`      | `string`         | —       | Alcance de las cifras («1 mezcla»), como chip a la derecha del encabezado                                                                                                          |
+| `isEditMode` | `boolean`        | `false` | Enable inline edit inputs on specified rows                                                                                                                                        |
+| `editFormId` | `string`         | —       | Form id for edit inputs to attach to                                                                                                                                               |
+| `editFields` | `EditField[]`    | `[]`    | `{ rowIndex, name, currentValue, suffix? }` — which rows to make editable                                                                                                          |
+| `class`      | `string`         | —       | Additional classes                                                                                                                                                                 |
 
 ### SectionHeading
 

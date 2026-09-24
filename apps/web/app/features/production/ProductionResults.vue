@@ -26,10 +26,15 @@ const props = defineProps<{
 
 const emit = defineEmits<{ edit: []; retry: [] }>();
 
+/** Tramos del resumen del plan: lo que cuesta y lo que deja la producción. */
+const COST_GROUP = "Costos";
+const RESULT_GROUP = "Resultado";
+
 const financialRows = computed<FinancialRow[]>(() => {
   const {
     totalIngredientsCost,
     totalOperationalCost,
+    totalProductionCost,
     projectedRevenue,
     estimatedProfit,
     effectiveMargin,
@@ -38,16 +43,25 @@ const financialRows = computed<FinancialRow[]>(() => {
 
   return [
     {
-      label: "Costo Insumos",
+      label: "Insumos",
       value: formatCurrency(totalIngredientsCost),
       subtitle: "Materiales de todas las recetas",
-      color: "danger",
+      group: COST_GROUP,
     },
     {
       label: "Gastos Operativos",
       value: formatCurrency(totalOperationalCost),
       subtitle: "Servicios, labor, etc.",
-      color: "muted",
+      op: "+",
+      group: COST_GROUP,
+    },
+    {
+      label: "Costo Total",
+      value: formatCurrency(totalProductionCost),
+      subtitle: "Insumos + Gastos Operativos",
+      emphasis: "total",
+      op: "=",
+      group: COST_GROUP,
     },
     {
       label: "Ingresos Proyectados",
@@ -55,14 +69,19 @@ const financialRows = computed<FinancialRow[]>(() => {
       subtitle: noRevenue
         ? "Configura precios de venta en las presentaciones"
         : "Ventas totales proyectadas",
-      color: "accent",
+      group: RESULT_GROUP,
+      emphasis: "answer",
     },
     {
       label: "Ganancia Estimada",
       value: noRevenue ? "Sin datos" : formatCurrency(estimatedProfit),
-      subtitle: noRevenue ? "" : "Margen de ganancia estimada",
-      secondaryValue: noRevenue ? undefined : `${effectiveMargin.toFixed(1)}%`,
-      color: "success",
+      // El margen va en la misma línea del texto: la celda se lee de un vistazo.
+      // Sin ingresos no hay margen que mostrar (el aviso vive en la fila previa).
+      subtitle: noRevenue
+        ? ""
+        : `Margen de ganancia estimada: ${effectiveMargin.toFixed(1)}%`,
+      group: RESULT_GROUP,
+      emphasis: "answer",
     },
   ];
 });
@@ -76,7 +95,7 @@ function printSheet(): void {
   <div class="space-y-6">
     <div
       id="results-toolbar"
-      class="border-border bg-card/95 sticky top-0 z-10 flex items-center justify-between gap-3 rounded-2xl border px-4 py-3 shadow-sm backdrop-blur"
+      class="border-border bg-card sticky top-0 z-10 flex items-center justify-between gap-3 rounded-2xl border px-4 py-3 shadow-sm"
     >
       <span data-results-count class="text-foreground text-sm font-bold">
         {{ selectionLabel }}
@@ -116,6 +135,7 @@ function printSheet(): void {
       <FinancialSummary
         class="production-sheet financial-summary"
         title="Resumen financiero"
+        :scope="selectionLabel"
         :rows="financialRows"
       />
 

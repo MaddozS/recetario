@@ -201,7 +201,7 @@ test("SSR: costos fijos con badges, horas y resumen; presentaciones con precios"
   expect(html).toContain("16%");
 
   // Resumen con advanced_costs (Pro por defecto): 50 + 120 + 16 % de 33 = $175.28
-  expect(html).toContain("Total Costos Fijos");
+  expect(html).toContain("Suma de los costos fijos");
   expect(html).toContain("$175.28");
   expect(html).toContain("$208.28");
 
@@ -256,12 +256,8 @@ test("costos fijos: crear sin recarga, con resumen recalculado", async ({
   await expect(createCard).toBeHidden();
   await expect(fixedCostCards(page)).toHaveCount(1);
   await expect(fixedCostCards(page).first()).toContainText("Renta");
-  await expect(financialRow(page, "Total Costos Fijos")).toContainText(
-    "$100.00",
-  );
-  await expect(financialRow(page, "Costo Total Receta")).toContainText(
-    "$133.00",
-  );
+  await expect(financialRow(page, "Costos Fijos")).toContainText("$100.00");
+  await expect(financialRow(page, "Costo Total")).toContainText("$133.00");
 
   expect(await pageAlive(page)).toBe(true);
   const state = await readRecipeState(request);
@@ -302,9 +298,7 @@ test("costos fijos: crear por hora con horas y multiplicador", async ({
   await expect(fixedCostCards(page)).toHaveCount(1);
   await expect(fixedCostCards(page).first()).toContainText("(3h)");
   // Las horas no escalan con las mezclas: 120 para cualquier multiplicador.
-  await expect(financialRow(page, "Total Costos Fijos")).toContainText(
-    "$120.00",
-  );
+  await expect(financialRow(page, "Costos Fijos")).toContainText("$120.00");
 });
 
 test("costos fijos: editar cambia el tipo y el resumen; cancelar no llama al API", async ({
@@ -339,10 +333,8 @@ test("costos fijos: editar cambia el tipo y el resumen; cancelar no llama al API
   await expect(card).toContainText("Porcentaje");
   await expect(card).toContainText("10%");
   // 10 % de $33 de costo directo.
-  await expect(financialRow(page, "Total Costos Fijos")).toContainText("$3.30");
-  await expect(financialRow(page, "Costo Total Receta")).toContainText(
-    "$36.30",
-  );
+  await expect(financialRow(page, "Costos Fijos")).toContainText("$3.30");
+  await expect(financialRow(page, "Costo Total")).toContainText("$36.30");
 
   expect(await pageAlive(page)).toBe(true);
   const state = await readRecipeState(request);
@@ -382,9 +374,7 @@ test("costos fijos: eliminar con confirmación y resumen actualizado", async ({
   await expect(fixedCostCards(page)).toHaveCount(1);
   await expect(fixedCostCards(page).first()).toContainText("Mano de obra");
   // 2 h × $60 = $120 (las horas no escalan con las mezclas).
-  await expect(financialRow(page, "Total Costos Fijos")).toContainText(
-    "$120.00",
-  );
+  await expect(financialRow(page, "Costos Fijos")).toContainText("$120.00");
 
   expect(await pageAlive(page)).toBe(true);
   expect(consoleErrors).toEqual([]);
@@ -441,10 +431,10 @@ test("costos fijos: el plan Free también opera y ve las filas operativas", asyn
 
   // Sin advanced_costs el resumen usa el % operativo, pero el CRUD sigue vivo.
   await expect(financialRow(page, "Gastos Operativos")).toContainText("10%");
-  await expect(financialRow(page, "Costo Total Real")).toContainText("$36.30");
-  await expect(
-    page.locator("[data-financial-row='Total Costos Fijos']"),
-  ).toHaveCount(0);
+  await expect(financialRow(page, "Costo Total")).toContainText("$36.30");
+  await expect(page.locator("[data-financial-row='Costos Fijos']")).toHaveCount(
+    0,
+  );
   await expect(fixedCostCards(page)).toHaveCount(1);
 
   await page.locator("[data-open-fixed-cost]").click();
