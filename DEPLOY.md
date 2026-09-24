@@ -6,7 +6,7 @@ KitchCalc corre en dos Cloudflare **Workers** (el web ya no usa Pages ni KV) con
 | ------------------------------------ | ---------------------------------------------------------------------------- | --------------------------- |
 | `recetario-web-{staging,production}` | Nuxt 4 + Nitro (`cloudflare_module`), Workers Assets + service binding `API` | `https://app.kitchcalc.com` |
 | `recetario-api-{staging,production}` | Hono (Better Auth, CSRF, límites)                                            | `https://api.kitchcalc.com` |
-| Database                             | Prisma Postgres (free tier)                                                  | vía `DATABASE_URL`          |
+| Database                             | Prisma Postgres (free tier)                                                  | vía `DATABASE_URL` directa (no Accelerate) |
 
 ## Prerequisites
 
@@ -75,6 +75,8 @@ pnpm --filter @recetario/db seed:plans
 ```
 
 `@recetario/db` se consume como TypeScript crudo (`exports` → `src/index.ts`) y su `build` es `tsc --noEmit`: no hay `dist/` que reconstruir tras `prisma generate`.
+
+`DATABASE_URL` debe ser la cadena **directa** de Prisma Postgres (`postgres://…@db.prisma.io:5432/postgres?sslmode=require`), nunca una de Accelerate (`prisma+postgres://`): el cliente usa el driver serverless, que la toma como credencial y habla HTTP/WebSocket. Aplica a local, a Cloudflare y a los secrets de GitHub que usa `deploy.yml`. Ver `docs/adr/0010-sin-accelerate-prisma-postgres-directo.md`.
 
 ## Local development
 

@@ -6,32 +6,10 @@ import { fileURLToPath } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-function getDirectUrl(url: string): string {
-  if (url.startsWith("prisma+postgres:")) {
-    try {
-      const parsed = new URL(url);
-      const apiKey = parsed.searchParams.get("api_key");
-      if (apiKey) {
-        const payloadBase64 = apiKey.split(".")[1];
-        const payload = JSON.parse(
-          Buffer.from(payloadBase64, "base64").toString("utf-8"),
-        );
-        if (payload.tenant_id && payload.secure_key) {
-          return `postgres://${payload.tenant_id}:${payload.secure_key}@db.prisma.io:5432/postgres?sslmode=require`;
-        }
-      }
-    } catch {
-      // Return original URL if parsing fails
-    }
-  }
-  return url;
-}
-
-const rawConnectionString = process.env.DATABASE_URL;
-if (!rawConnectionString) {
+const connectionString = process.env.DATABASE_URL;
+if (!connectionString) {
   throw new Error("DATABASE_URL environment variable is not set");
 }
-const connectionString = getDirectUrl(rawConnectionString);
 
 interface IngredientInput {
   id: number;

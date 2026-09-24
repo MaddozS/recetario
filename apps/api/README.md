@@ -156,13 +156,14 @@ existence of the row; 404 is the safe default.
 
 ## 5. Caching
 
-There is **no in-memory cache in this worker**. The hot entitlement path
-(`getSubscriptionByUserId`, behind `/api/auth/session` and every
-authenticated page) is deliberately **uncached** — stale entitlements after
-a plan change are worse than a cheap indexed query. Only
-`getUserPreferences` and `getCredentialAccount` use Accelerate edge caching
-(ttl 60, swr 120) inside `@recetario/db`; their writes invalidate via
-`invalidateAccelerateCache` (best-effort, failures are logged).
+There is **no in-memory cache in this worker**, and no query caching at all:
+the Prisma client reaches Prisma Postgres through the serverless driver
+(`@prisma/adapter-ppg`), so every read goes to the database. The hot
+entitlement path (`getSubscriptionByUserId`, behind `/api/auth/session` and
+every authenticated page) is deliberately **uncached** — stale entitlements
+after a plan change are worse than a cheap indexed query.
+`getUserPreferences` and `getCredentialAccount` lost their Accelerate edge
+cache when Accelerate retired (ADR 0010); they are plain indexed reads now.
 
 If a future read path genuinely needs shared caching, design it explicitly
 (Cloudflare KV/cache API or Upstash) and document the key convention — never

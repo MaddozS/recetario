@@ -55,7 +55,7 @@ Better Auth vive en **Hono** (`packages/auth`); la web no importa sus clientes. 
 
 ### Data layer
 
-**PostgreSQL + Prisma ORM** is the data layer for `apps/api` (Hono worker) and the seed script. The web app (`apps/web`) does NOT import Prisma or `@recetario/db` directly — every web page calls `apps/api` through the same-origin `/api/**` relay (see "Web→API destination rule" below). The singleton PrismaClient (with the Accelerate extension) lives in `packages/db/src/prisma.ts`.
+**PostgreSQL + Prisma ORM** is the data layer for `apps/api` (Hono worker) and the seed script. The web app (`apps/web`) does NOT import Prisma or `@recetario/db` directly — every web page calls `apps/api` through the same-origin `/api/**` relay (see "Web→API destination rule" below). The singleton PrismaClient (Prisma Postgres serverless driver, `@prisma/adapter-ppg`) lives in `packages/db/src/prisma.ts`.
 
 - Output: `generated/prisma/` (non-standard — set in `schema.prisma:7`)
 - Apps import via the `@recetario/db` workspace package; the web app must not import it.
@@ -88,7 +88,7 @@ If a new feature needs data access from a web page, add the endpoint in `apps/ap
 #### Operational gotchas
 
 - **Formularios**: componentes Vue + mutaciones `useApi()` (JSON validado con Zod + envelope de error de Hono); nada de POST a la misma página. Los decimales en formato español los normaliza cada feature (`parseNumberInput` en `features/ingredients/ingredient-form.ts`).
-- **Subscription cache**: `getSubscriptionByUserId` (the hot path behind `/api/auth/session` and every authenticated page) is deliberately **uncached** — entitlements must never be stale. Only `getUserPreferences` and `getCredentialAccount` still use Accelerate edge caching (`cacheStrategy` with `ttl: 60`, `swr: 120`, tagged `user:<id>`); writes invalidate via `invalidateAccelerateCache` in `@recetario/db` (best-effort; failures are logged).
+- **Sin caché de queries**: el cliente habla con Prisma Postgres por el serverless driver (`@prisma/adapter-ppg`) y **toda lectura va a la DB**; el singleton se crea una vez por isolate. `getSubscriptionByUserId` (el hot path detrás de `/api/auth/session` y de cada página autenticada) nunca estuvo cacheado a propósito — un entitlement rancio tras un cambio de plan es peor que una query indexada. `getUserPreferences` y `getCredentialAccount` perdieron su caché de borde con la retirada de Accelerate (`docs/adr/0010-sin-accelerate-prisma-postgres-directo.md`).
 - **pnpm allowed builds**: only `esbuild`, `sharp`, `@prisma/engines`, `prisma` are allowed in `pnpm-workspace.yaml`.
 - **Cloudflare ephemeral**: `DATABASE_URL` is not auto-injected — set per-environment via `wrangler secret put` or the dashboard. Local dev: `pnpm dev` runs `scripts/sync-cloudflare-dev-vars.mjs` which copies root `.env` to `apps/web/.dev.vars` and `apps/api/.dev.vars`.
 - **Mutaciones en Nuxt**: el estado se actualiza en sitio desde la respuesta validada (`applyRecipe`, reducers `withCreated`/`withUpdated`/`withRemoved`) y las listas se refrescan solas al volver a montarse (`experimental.purgeCachedData` es `true`): nunca recargar la página para reflejar un guardado.

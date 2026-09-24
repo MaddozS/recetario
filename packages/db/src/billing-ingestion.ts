@@ -1,4 +1,4 @@
-import { prisma, invalidateAccelerateCache, userCacheTag } from "./prisma";
+import { prisma } from "./prisma";
 import type {
   CheckoutIntentUncheckedCreateInput,
   SubscriptionUncheckedCreateInput,
@@ -186,9 +186,6 @@ export async function applySubscriptionMutation(
     INGESTION_TRANSACTION_OPTIONS,
   );
 
-  if (result.applied) {
-    await invalidateAccelerateCache([userCacheTag(mutation.userId)]);
-  }
   return result;
 }
 
@@ -228,7 +225,6 @@ export async function upsertSubscriptionAndConsumeIntent(
     INGESTION_TRANSACTION_OPTIONS,
   );
 
-  await invalidateAccelerateCache([userCacheTag(mutation.userId)]);
   return row;
 }
 
