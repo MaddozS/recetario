@@ -31,6 +31,7 @@ See [workflow/taste.md](workflow/taste.md)
 - Prefers direct, unfiltered, "brutalism honest" feedback — do not soften or sugar-coat criticism of code, architecture, or decisions. The user values candor over diplomacy when evaluating the quality of their work. Confidence: 0.75
 - Communicates in Spanish — expects replies, commit messages, PR titles/bodies, and summaries in Spanish. Confidence: 0.70
 - The project's working artifacts are Spanish-language: code comments (including in config files like nuxt.config.ts, eslint.config.mjs, wrangler.jsonc), task/todo labels, and in-repo notes (AGENTS.md banners) are written in Spanish, not English. Confidence: 0.6
+- Reports defects by attaching screenshots of the wrong state plus a reference capture of how it should look elsewhere — without naming files or components — and expects the agent to locate the implementation itself and match the reference; for runtime/API failures they additionally paste the exact raw Network response (e.g. `{"code":"FORBIDDEN","message":"CSRF validation failed"}`) and the action that triggers it ("Al editar una receta me sale este error"), so the agent diagnoses from that evidence instead of asking for reproduction steps. Confidence: 0.55
 - When asked for the recommended solution to a problem, prefers a clear, structured description of what will be done — separating durable code fixes from one-off cleanup and infrastructure/config decisions — and expects to approve the approach before any changes are applied (not jumping straight into implementation). Confidence: 0.70
 
 # ux
@@ -39,6 +40,7 @@ See [ux/taste.md](ux/taste.md)
 See [tooling/taste.md](tooling/taste.md)
 # error-handling
 - Best-effort operations (e.g., Accelerate cache invalidation) should log failures via `console.error` rather than silently swallowing them in an empty `catch` — silent failures hide operational bugs (e.g., stale data) and leave them untraceable. Confidence: 0.60
+- A failed load must never be presented as an empty state: the composable propagates `error` (instead of catching it and returning `[]`) and the empty state is gated on `!pending && !error && length === 0`, so an API outage shows an explicit "couldn't load" alert rather than claiming the product has no data. The visible surface is the trace of the failure — a `console.error` alone (or leaving a dead alert branch) is not enough. Confidence: 0.65
 
 # cloudflare-workers
 See [cloudflare-workers/taste.md](cloudflare-workers/taste.md)
