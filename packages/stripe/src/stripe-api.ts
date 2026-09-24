@@ -129,12 +129,10 @@ export async function createPortalSession(customerId: string, returnUrl: string)
   return stripe.billingPortal.sessions.create({ customer: customerId, return_url: returnUrl });
 }
 
+// workerd solo expone crypto.subtle (asíncrono): `constructEvent` síncrono siempre
+// revienta con CryptoProviderOnlySupportsAsyncError y enmascara el fallo real.
 export async function verifyWebhookSignature(payload: string, signature: string, secret: string): Promise<Stripe.Event> {
-  try {
-    return await stripe.webhooks.constructEventAsync(payload, signature, secret);
-  } catch {
-    return stripe.webhooks.constructEvent(payload, signature, secret);
-  }
+  return stripe.webhooks.constructEventAsync(payload, signature, secret);
 }
 
 export async function retrieveSubscription(subscriptionId: string): Promise<Stripe.Subscription> {
