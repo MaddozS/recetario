@@ -32,13 +32,14 @@ dotenv.config();
 dotenv.config({ path: resolve(__dirname, "../../../.env") });
 
 import { PrismaClient } from "./generated-node/client";
-import { withAccelerate } from "@prisma/extension-accelerate";
+import { PrismaPg } from "@prisma/adapter-pg";
 
-if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL environment variable is not set");
+const connectionString = process.env.DATABASE_URL;
+if (!connectionString) throw new Error("DATABASE_URL environment variable is not set");
 
 const prisma = new PrismaClient({
-  accelerateUrl: process.env.DATABASE_URL,
-}).$extends(withAccelerate());
+  adapter: new PrismaPg({ connectionString }),
+});
 
 const args = process.argv.slice(2);
 const flag = (name: string): string | undefined => {
