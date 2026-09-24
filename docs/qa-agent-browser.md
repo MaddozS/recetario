@@ -96,8 +96,8 @@ const __dirname = dirname(__filename);
 dotenv.config();
 dotenv.config({ path: resolve(__dirname, "../../../.env") });
 import { PrismaClient } from "./generated-node/client";
-import { withAccelerate } from "@prisma/extension-accelerate";
-const prisma = new PrismaClient({ accelerateUrl: process.env.DATABASE_URL }).$extends(withAccelerate());
+import { PrismaPg } from "@prisma/adapter-pg";
+const prisma = new PrismaClient({ adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL! }) });
 
 // ── Suscripción activa ─────────────────────────────────────────────
 // planId debe existir en subscription_plans: basic_monthly | basic_yearly
