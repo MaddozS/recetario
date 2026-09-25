@@ -11,6 +11,7 @@ import {
 import {
   logAuditEvent,
   updateAccountPassword,
+  withPrismaContext,
 } from "@recetario/db";
 import { syncEnvBindings } from "@recetario/config/env";
 import { clientIp, setSecurityHeaders } from "@recetario/config/request";
@@ -75,7 +76,7 @@ const app = new Hono<{ Variables: AuthVariables }>();
 app.onError(errorHandler());
 app.use("*", async (c, next) => {
   syncEnvBindings(c.env as Record<string, unknown>);
-  await next();
+  await withPrismaContext(() => next());
   setSecurityHeaders(c.res);
 });
 app.use("*", envelope());

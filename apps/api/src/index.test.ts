@@ -51,6 +51,7 @@ vi.mock("@recetario/db", () => ({
   logAuditEvent: vi.fn(),
   updateAccountPassword: vi.fn(),
   updateUserName: vi.fn(),
+  withPrismaContext: (fn: () => Promise<unknown>) => fn(),
   getSubscriptionPlanByStripePriceId: mocks.getSubscriptionPlanByStripePriceId,
   getSubscriptionByStripeId: mocks.getSubscriptionByStripeId,
   getSubscriptionByUserId: mocks.getSubscriptionByUserId,

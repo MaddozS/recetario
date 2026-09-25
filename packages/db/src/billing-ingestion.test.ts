@@ -43,16 +43,15 @@ import {
   recordFailedEventAttempt,
   getLatestEventAttempt,
   upsertSubscriptionAndConsumeIntent,
-  type EventAttemptInput,
+  type SubscriptionMutationAttempt,
 } from "./billing-ingestion";
 
-const attempt: EventAttemptInput = {
+/** Identidad del intento: el número y el resultado los decide la transacción. */
+const attempt: SubscriptionMutationAttempt = {
   stripeEventId: "evt_1",
-  attemptNumber: 1,
   eventType: "checkout.session.completed",
   stripeCreated: 1700000000n,
   stripeSubscriptionId: "sub_123",
-  outcome: "applied",
 };
 
 const mutation = {
@@ -134,7 +133,7 @@ describe("applySubscriptionMutation", () => {
       },
     });
     expect(mocks.tx.stripeEventAttempt.create).toHaveBeenCalledWith({
-      data: { ...attempt, outcome: "applied" },
+      data: { ...attempt, attemptNumber: 1, outcome: "applied" },
     });
   });
 
@@ -172,11 +171,12 @@ describe("applySubscriptionMutation", () => {
     expect(result).toEqual({ applied: false, ignored: true, reason: "duplicate" });
     expect(mocks.tx.subscription.upsert).not.toHaveBeenCalled();
     expect(mocks.tx.stripeEventAttempt.create).toHaveBeenCalledWith({
-      data: { ...attempt, outcome: "ignored", ignoredReason: "duplicate" },
+      data: { ...attempt, attemptNumber: 2, outcome: "ignored", ignoredReason: "duplicate" },
     });
   });
 
   it("records an ignored stale attempt when the event is older than the terminal cursor", async () => {
+    mocks.tx.stripeEventAttempt.findFirst.mockResolvedValueOnce(null); // sin intentos previos del evento
     mocks.tx.stripeEventAttempt.findFirst.mockResolvedValueOnce(null); // no terminal for this event
     mocks.tx.stripeEventAttempt.findFirst.mockResolvedValueOnce({
       stripeCreated: 2000000000n,
@@ -195,6 +195,7 @@ describe("applySubscriptionMutation", () => {
       data: {
         ...attempt,
         stripeCreated: 1000000000n,
+        attemptNumber: 1,
         outcome: "ignored",
         ignoredReason: "stale",
       },
@@ -229,11 +230,12 @@ describe("event attempt helpers", () => {
     mocks.prisma.stripeEventAttempt.create.mockResolvedValue({});
     await recordFailedEventAttempt({
       ...attempt,
+      attemptNumber: 3,
       outcome: "failed",
       failureMessage: "boom",
     });
     expect(mocks.prisma.stripeEventAttempt.create).toHaveBeenCalledWith({
-      data: { ...attempt, outcome: "failed", failureMessage: "boom" },
+      data: { ...attempt, attemptNumber: 3, outcome: "failed", failureMessage: "boom" },
     });
   });
 
