@@ -1,5 +1,7 @@
 # Prisma Postgres is reached directly with the serverless driver, not through Accelerate
 
+> **Superseded in part by [ADR 0011](./0011-transporte-tcp-en-el-worker.md).** Leaving Accelerate stands, but the transport chosen here (the serverless driver) was replaced by TCP with one client per request: it cost 5-6x per query and broke the Stripe webhook in local development. The `DATABASE_URL` decision (a direct Prisma Postgres connection string) still holds.
+
 `packages/db` builds its Prisma client with `@prisma/adapter-ppg` over a direct Prisma Postgres connection string. Accelerate — the extension, the edge query cache and the cache-invalidation API — is gone from the codebase.
 
 ## Context
