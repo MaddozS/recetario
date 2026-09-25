@@ -1,38 +1,68 @@
+import { AsyncLocalStorage } from "node:async_hooks";
 import { PrismaClient } from "../prisma/generated/client";
-import { PrismaPostgresAdapter } from "@prisma/adapter-ppg";
+import { PrismaPg } from "@prisma/adapter-pg";
 
-let prismaInstance: ReturnType<typeof createPrismaClientInternal> | null = null;
+// El cliente vive lo que dura el request: con `PrismaPg` el cliente posee
+// sockets TCP, y en workerd esos sockets están atados al request que los abrió.
+// `withPrismaContext` envuelve la petición y le da a `prisma` su instancia.
+const clientStorage = new AsyncLocalStorage<PrismaClient>();
 
-function createPrismaClientInternal() {
+function createPrismaClientInternal(): PrismaClient {
   const connectionString = process.env.DATABASE_URL;
   if (!connectionString) {
     throw new Error("DATABASE_URL environment variable is not set");
   }
 
   return new PrismaClient({
-    adapter: new PrismaPostgresAdapter({ connectionString }),
+    adapter: new PrismaPg({ connectionString }),
   });
 }
 
-export function createPrismaClient() {
-  return createPrismaClientInternal();
-}
-
-export function getPrisma() {
-  if (!prismaInstance) {
-    prismaInstance = createPrismaClientInternal();
+export async function withPrismaContext<T>(fn: () => Promise<T>): Promise<T> {
+  const client = createPrismaClientInternal();
+  try {
+    return await clientStorage.run(client, fn);
+  } finally {
+    await client.$disconnect().catch(() => {});
   }
-  return prismaInstance;
 }
 
-export const prisma = new Proxy({} as ReturnType<typeof createPrismaClientInternal>, {
-  get(_target, prop) {
-    const instance = getPrisma();
-    const value = Reflect.get(instance, prop);
-    if (typeof value === "function") {
-      return value.bind(instance);
-    }
-    return value;
-  },
-});
+export function getPrisma(): PrismaClient {
+  const client = clientStorage.getStore();
+  if (!client) {
+    throw new Error(
+      "prisma se usó fuera del contexto de un request: falta withPrismaContext()",
+    );
+  }
+  return client;
+}
 
+/**
+ * Proxy perezoso: no resuelve el cliente hasta que se invoca el método, así que
+ * capturarlo al cargar un módulo (p. ej. `prismaAdapter(prisma, …)`) es seguro.
+ */
+function lazy(path: string[]): unknown {
+  return new Proxy(function () {}, {
+    get(_target, prop) {
+      // Nunca debe comportarse como thenable: `await prisma.user` colgaría.
+      if (prop === "then" || typeof prop === "symbol") return undefined;
+      return lazy([...path, String(prop)]);
+    },
+    apply(_target, _this, args) {
+      const client = getPrisma() as unknown as Record<string, unknown>;
+      const parent = path
+        .slice(0, -1)
+        .reduce<Record<string, unknown>>(
+          (acc, key) => acc[key] as Record<string, unknown>,
+          client,
+        );
+      const method = parent?.[path[path.length - 1] as string];
+      if (typeof method !== "function") {
+        throw new Error(`prisma.${path.join(".")} no es una función`);
+      }
+      return (method as (...a: unknown[]) => unknown).apply(parent, args);
+    },
+  });
+}
+
+export const prisma = lazy([]) as PrismaClient;
