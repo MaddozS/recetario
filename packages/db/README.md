@@ -4,7 +4,8 @@ Prisma ORM wrapper for Prisma Postgres. Provides the Prisma client singleton and
 
 ## What's inside
 
-- `prisma` — singleton PrismaClient over the Prisma Postgres serverless driver (`@prisma/adapter-ppg`)
+- `prisma` — lazy proxy over a per-request PrismaClient (Prisma Postgres over TCP, `@prisma/adapter-pg`)
+- `withPrismaContext(fn)` — creates the request's client and runs `fn` inside its `AsyncLocalStorage` store
 - `logAuditEvent` — audit-log insert for sign-in events and sensitive actions
 - Query helpers for ingredients, recipes, presentations, user preferences, and billing (legacy — most billing moved to `@recetario/stripe`)
 
@@ -20,7 +21,7 @@ const recipes = await prisma.recipe.findMany({
 
 ## Caching
 
-There is **no query caching**. The client is created once per isolate and every read reaches the database.
+There is **no query caching**. A client is created per request (workerd binds TCP sockets to the request that opened them) and every read reaches the database.
 
 `getSubscriptionByUserId` backs the subscription shown on every authenticated page and is deliberately **uncached** — a stale entitlement after a plan change is worse than a cheap indexed query. `getUserPreferences` and `getCredentialAccount` used to be cached at the edge through Accelerate; that cache disappeared with Accelerate's retirement and is not replaced (see `docs/adr/0010-sin-accelerate-prisma-postgres-directo.md`).
 
@@ -35,9 +36,8 @@ Regenerate with `pnpm --filter @recetario/db exec prisma generate`.
 
 ## Peer dependencies
 
-- `@prisma/client`, `@prisma/adapter-ppg` — runtime (worker)
-- `@prisma/adapter-pg`, `pg` — Node scripts and seeds
+- `@prisma/client`, `@prisma/adapter-pg`, `pg` — runtime (worker) and Node scripts
 
 ## Cloudflare Workers
 
-`DATABASE_URL` must be the **direct** Prisma Postgres connection string (`postgres://…@db.prisma.io:5432/postgres?sslmode=require`), never an Accelerate `prisma+postgres://` URL: the serverless driver uses it as a credential and speaks HTTP/WebSocket, so no TCP connection is opened and no compatibility flag is needed for the database. Keep it as a Worker secret, not a committed `vars` value.
+`DATABASE_URL` must be the **direct** Prisma Postgres connection string (`postgres://…@db.prisma.io:5432/postgres?sslmode=require`), never an Accelerate `prisma+postgres://` URL: a driver adapter rejects it. `nodejs_compat` is required for the TCP sockets, and the client is built per request — workerd binds socket I/O to the request that opened it, so a module-scope client hangs. Keep the value as a Worker secret, not a committed `vars` value.

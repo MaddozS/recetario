@@ -162,8 +162,8 @@ existence of the row; 404 is the safe default.
 ## 5. Caching
 
 There is **no in-memory cache in this worker**, and no query caching at all:
-the Prisma client reaches Prisma Postgres through the serverless driver
-(`@prisma/adapter-ppg`), so every read goes to the database. The hot
+the Prisma client reaches Prisma Postgres over TCP (`@prisma/adapter-pg`), one
+client per request, so every read goes to the database. The hot
 entitlement path (`getSubscriptionByUserId`, behind `/api/auth/session` and
 every authenticated page) is deliberately **uncached** — stale entitlements
 after a plan change are worse than a cheap indexed query.

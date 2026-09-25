@@ -13,6 +13,7 @@ Este directorio mezcla documentación **viva** (guía operativa) con el **regist
 | `qa-agent-browser.md`              | Guía de QA manual/funcional con `agent-browser`                  |
 | `adr/0009-nuxt-frontend-rework.md` | Decisión del rework Nuxt (implementada en la Task 13b)           |
 | `adr/0010-sin-accelerate-prisma-postgres-directo.md` | Salida de Accelerate: driver serverless de Prisma Postgres |
+| `adr/0011-transporte-tcp-en-el-worker.md` | El worker va por TCP con cliente por request (sustituye en parte al 0010) |
 | `agents/*`                         | Cómo consumen las skills la documentación del repo               |
 | `venta/*`                          | Material comercial                                               |
 
