@@ -390,7 +390,7 @@ describe("processStripeEvent", () => {
     expect(db.applySubscriptionMutation).toHaveBeenCalledWith(
       "sub_123",
       expect.objectContaining({ planId: "pro_monthly", status: "active" }),
-      expect.objectContaining({ stripeEventId: "evt_1", attemptNumber: 1 }),
+      expect.objectContaining({ stripeEventId: "evt_1" }),
       "intent-1",
     );
   });
@@ -479,7 +479,7 @@ describe("processStripeEvent", () => {
     );
   });
 
-  it("computes attempt numbers from any prior attempt", async () => {
+  it("no consulta el número de intento en el camino feliz: lo decide la transacción", async () => {
     const { db, ingestion } = makeDeps();
     db.getCheckoutIntentBySession.mockResolvedValue(makeIntent());
     db.getLatestEventAttempt.mockResolvedValue({ attemptNumber: 2 });
@@ -493,12 +493,34 @@ describe("processStripeEvent", () => {
     });
 
     expect(result).toEqual({ ok: true, outcome: "applied" });
+    expect(db.getLatestEventAttempt).not.toHaveBeenCalled();
     expect(db.applySubscriptionMutation).toHaveBeenCalledWith(
       "sub_123",
       expect.anything(),
-      expect.objectContaining({ attemptNumber: 3 }),
+      expect.objectContaining({ stripeEventId: "evt_1" }),
       "intent-1",
     );
+  });
+
+  it("reutiliza la suscripción ya leída al resolver plan y periodos", async () => {
+    const { db, ingestion } = makeDeps();
+    const stored = {
+      planId: "pro_monthly",
+      userId: "user-1",
+      currentPeriodStart: new Date("2026-01-01T00:00:00Z"),
+      currentPeriodEnd: new Date("2026-02-01T00:00:00Z"),
+    };
+    db.getSubscriptionByStripeIdForIngestion.mockResolvedValue(stored);
+
+    const result = await ingestion.processStripeEvent({
+      event: event("customer.subscription.updated", {
+        id: "sub_123",
+        customer: "cus_123",
+      }),
+    });
+
+    expect(result).toEqual({ ok: true, outcome: "applied" });
+    expect(db.getSubscriptionByStripeIdForIngestion).toHaveBeenCalledTimes(1);
   });
 
   it("processes customer.subscription.updated through persisted linkage", async () => {

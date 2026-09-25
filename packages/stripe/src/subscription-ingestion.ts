@@ -71,6 +71,13 @@ export type SnapshotContext =
   | { authority: "checkout-intent"; intent: CheckoutIntentRow }
   | { authority: "persisted-subscription"; userId: string };
 
+export type StoredSubscription = {
+  planId: string;
+  userId: string;
+  currentPeriodStart: Date | null;
+  currentPeriodEnd: Date | null;
+};
+
 export type IngestionDeps = {
   db: {
     getCheckoutIntentBySession(
@@ -78,12 +85,7 @@ export type IngestionDeps = {
     ): Promise<CheckoutIntentRow | null>;
     getSubscriptionByStripeIdForIngestion(
       stripeSubscriptionId: string,
-    ): Promise<{
-      planId: string;
-      userId: string;
-      currentPeriodStart: Date | null;
-      currentPeriodEnd: Date | null;
-    } | null>;
+    ): Promise<StoredSubscription | null>;
     getSubscriptionPlanByStripePriceId(
       stripePriceId: string,
     ): Promise<{ id: string; tier: string; billingInterval: string } | null>;
@@ -111,11 +113,9 @@ export type IngestionDeps = {
       mutation: SubscriptionMutation,
       attempt: {
         stripeEventId: string;
-        attemptNumber: number;
         eventType: string;
         stripeCreated: bigint;
         stripeSubscriptionId: string | null;
-        outcome: "applied";
       },
       checkoutIntentId?: string | null,
     ): Promise<
@@ -235,18 +235,14 @@ export function createSubscriptionIngestionWith(deps: IngestionDeps) {
   async function resolvePlanAndPeriods(
     snapshot: StripeSubscriptionSnapshot,
     context: SnapshotContext,
+    existingRow?: StoredSubscription | null,
   ): Promise<
     | {
         ok: true;
         plan: { id: string; tier: string; billingInterval: string };
         periodStart: Date;
         periodEnd: Date;
-        existing: {
-          planId: string;
-          userId: string;
-          currentPeriodStart: Date | null;
-          currentPeriodEnd: Date | null;
-        } | null;
+        existing: StoredSubscription | null;
       }
     | { ok: false; error: string }
   > {
@@ -270,9 +266,14 @@ export function createSubscriptionIngestionWith(deps: IngestionDeps) {
       return { ok: false, error: "Unrecognized Stripe Price" };
     }
 
-    const existing = await db.getSubscriptionByStripeIdForIngestion(
-      snapshot.stripeSubscriptionId,
-    );
+    // El evento ya leyó la fila en la mayoría de caminos: se reutiliza para no
+    // repetir la query (undefined = no la tengo, léela tú).
+    const existing =
+      existingRow !== undefined
+        ? existingRow
+        : await db.getSubscriptionByStripeIdForIngestion(
+            snapshot.stripeSubscriptionId,
+          );
     const userId = authorityUserId(context);
     if (existing && existing.userId !== userId) {
       return { ok: false, error: "Subscription already owned by another user" };
@@ -511,20 +512,23 @@ export function createSubscriptionIngestionWith(deps: IngestionDeps) {
     snapshot: StripeSubscriptionSnapshot;
     metadata: Record<string, string> | null;
     context: SnapshotContext;
+    existing?: StoredSubscription | null;
   }): Promise<EventProcessResult> {
     const { event, subscriptionId, customerId, snapshot, metadata, context } =
       input;
     const eventCreated = BigInt(event.created ?? 0);
-    const attemptNumber = await nextAttemptNumber(event.id);
+    // El número de intento sólo hace falta cuando algo falla: en el camino
+    // feliz lo decide la transacción de `applySubscriptionMutation`.
+    const failureAttemptNumber = () => nextAttemptNumber(event.id);
 
     const mismatch = assertMetadataMatches(metadata, authorityUserId(context));
     if (mismatch) {
-      return recordFailure(event, eventCreated, attemptNumber, subscriptionId, mismatch);
+      return recordFailure(event, eventCreated, await failureAttemptNumber(), subscriptionId, mismatch);
     }
 
-    const resolved = await resolvePlanAndPeriods(snapshot, context);
+    const resolved = await resolvePlanAndPeriods(snapshot, context, input.existing);
     if (!resolved.ok) {
-      return recordFailure(event, eventCreated, attemptNumber, subscriptionId, resolved.error);
+      return recordFailure(event, eventCreated, await failureAttemptNumber(), subscriptionId, resolved.error);
     }
 
     const mutation = buildMutation(
@@ -542,11 +546,9 @@ export function createSubscriptionIngestionWith(deps: IngestionDeps) {
       mutation,
       {
         stripeEventId: event.id,
-        attemptNumber,
         eventType: event.type,
         stripeCreated: eventCreated,
         stripeSubscriptionId: subscriptionId,
-        outcome: "applied",
       },
       intentId,
     );
@@ -558,7 +560,7 @@ export function createSubscriptionIngestionWith(deps: IngestionDeps) {
       return recordFailure(
         event,
         eventCreated,
-        attemptNumber,
+        await failureAttemptNumber(),
         subscriptionId,
         applied.error ?? "Persistence failed",
       );
@@ -579,6 +581,7 @@ export function createSubscriptionIngestionWith(deps: IngestionDeps) {
     let metadata: Record<string, string> | null = null;
     let snapshot: StripeSubscriptionSnapshot;
     let context: SnapshotContext;
+    let existing: StoredSubscription | null | undefined;
 
     if (event.type === "checkout.session.completed" && checkoutSessionId) {
       const intent = await db.getCheckoutIntentBySession(checkoutSessionId);
@@ -607,7 +610,7 @@ export function createSubscriptionIngestionWith(deps: IngestionDeps) {
       snapshot = snapshotFromSubscription(liveSub, customerId);
       context = { authority: "checkout-intent", intent };
     } else {
-      const existing = await db.getSubscriptionByStripeIdForIngestion(
+      existing = await db.getSubscriptionByStripeIdForIngestion(
         subscriptionId,
       );
       if (!existing) {
@@ -631,6 +634,7 @@ export function createSubscriptionIngestionWith(deps: IngestionDeps) {
       snapshot,
       metadata,
       context,
+      existing,
     });
   }
 
@@ -671,6 +675,7 @@ export function createSubscriptionIngestionWith(deps: IngestionDeps) {
       snapshot,
       metadata: null,
       context: { authority: "persisted-subscription", userId: existing.userId },
+      existing,
     });
   }
 

@@ -41,6 +41,15 @@ export type EventAttemptInput = {
   failureMessage?: string | null;
 };
 
+/**
+ * Lo que necesita `applySubscriptionMutation` para registrar el intento: el
+ * número y el resultado los decide la propia transacción, bajo el advisory lock.
+ */
+export type SubscriptionMutationAttempt = Omit<
+  EventAttemptInput,
+  "attemptNumber" | "outcome" | "ignoredReason" | "failureMessage"
+>;
+
 /** Latest attempt sequence for an event, regardless of outcome. */
 export async function getLatestEventAttempt(
   stripeEventId: string,
@@ -108,7 +117,7 @@ const INGESTION_TRANSACTION_OPTIONS = {
 export async function applySubscriptionMutation(
   stripeSubscriptionId: string,
   mutation: SubscriptionMutation,
-  attempt: EventAttemptInput,
+  attempt: SubscriptionMutationAttempt,
   checkoutIntentId?: string | null,
 ): Promise<ApplyResult> {
   const result = await prisma.$transaction(
@@ -122,6 +131,15 @@ export async function applySubscriptionMutation(
       BigInt(hashString(attempt.stripeEventId)),
     );
 
+    // El número de intento se calcula aquí dentro (una query menos en el
+    // camino del evento) y bajo el lock, así que no compite con otro intento.
+    const newest = await tx.stripeEventAttempt.findFirst({
+      where: { stripeEventId: attempt.stripeEventId },
+      orderBy: { attemptNumber: "desc" },
+      select: { attemptNumber: true },
+    });
+    const attemptNumber = (newest?.attemptNumber ?? 0) + 1;
+
     const terminal = await tx.stripeEventAttempt.findFirst({
       where: {
         stripeEventId: attempt.stripeEventId,
@@ -132,7 +150,7 @@ export async function applySubscriptionMutation(
     });
     if (terminal) {
       await tx.stripeEventAttempt.create({
-        data: { ...attempt, outcome: "ignored", ignoredReason: "duplicate" },
+        data: { ...attempt, attemptNumber, outcome: "ignored", ignoredReason: "duplicate" },
       });
       return { applied: false, ignored: true, reason: "duplicate" };
     }
@@ -152,7 +170,7 @@ export async function applySubscriptionMutation(
           attempt.stripeEventId <= latest.stripeEventId))
     ) {
       await tx.stripeEventAttempt.create({
-        data: { ...attempt, outcome: "ignored", ignoredReason: "stale" },
+        data: { ...attempt, attemptNumber, outcome: "ignored", ignoredReason: "stale" },
       });
       return { applied: false, ignored: true, reason: "stale" };
     }
@@ -167,7 +185,7 @@ export async function applySubscriptionMutation(
       },
     });
     await tx.stripeEventAttempt.create({
-      data: { ...attempt, outcome: "applied" },
+      data: { ...attempt, attemptNumber, outcome: "applied" },
     });
 
     if (checkoutIntentId) {
