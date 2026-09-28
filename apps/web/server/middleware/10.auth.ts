@@ -12,15 +12,14 @@ import {
   resolveAccent,
   resolveTheme,
 } from "#shared/utils/preferences";
-import { buildAnonymousAuthState } from "#shared/types/auth";
+import {
+  buildAnonymousAuthState,
+  buildAuthenticatedAuthState,
+} from "#shared/types/auth";
 import { isPrivatePath } from "#shared/utils/navigation";
 import { isAuthPath } from "#shared/utils/seo";
 import { getCloudflareEnv } from "../utils/api-transport";
-import {
-  buildAuthenticatedAuthState,
-  fetchSession,
-  shouldBootstrapSession,
-} from "../utils/session-state";
+import { fetchSession, shouldBootstrapSession } from "../utils/session-state";
 
 /**
  * Bootstrap de sesión por documento: resuelve la sesión contra el API, deja el

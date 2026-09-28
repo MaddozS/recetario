@@ -4,7 +4,7 @@
 >
 > Notas operativas vigentes:
 >
-> - **Relay y sesión:** `apps/web/server/**` es Nitro: relay `/api/**`, bootstrap de sesión y cabeceras privadas. El estado de sesión lo resuelve `useAuth().resolveSession()` (contexto del request → `GET /api/auth/session`).
+> - **Relay y sesión:** `apps/web/server/**` es Nitro: relay `/api/**`, bootstrap de sesión y cabeceras privadas. El estado de sesión lo resuelve el documento (`server/middleware/10.auth.ts` → `GET /api/auth/session` → `useState("auth")`, builder compartido en `shared/types/auth.ts`) y en cliente se revalida con `useAuth().refresh()` cuando la página se restaura de bfcache o vuelve a primer plano (`app/plugins/auth-revalidation.client.ts`, TTL 30 s con dedupe). La pestaña de facturación no usa el snapshot: pide siempre `GET /api/billing/subscription` al activarse o al revalidarse la sesión.
 > - **Subpaths puros:** usar `useApi()` y los subpaths `@recetario/stripe/{plans-config,formatters,subscription}`; los barrels (`@recetario/stripe`, `@recetario/auth`, `@recetario/auth/client`) arrastran el SDK o `createAuthClient`.
 > - **Íconos:** `Icon.vue` compone el `<svg>` desde los datos de lucide (`app/utils/icon-registry.ts` → `__iconData`), **no** desde sus componentes. No reintroducir componentes de `@lucide/vue` en el render; el contrato de markup está en `test/nuxt/icon-parity.spec.ts`.
 > - **Indexación fail-closed:** sin `NUXT_PUBLIC_INDEXABLE=true` (var del worker de producción en `wrangler.jsonc`) las públicas emiten `noindex,nofollow` y `robots.txt` bloquea el sitio completo. Staging no la define.
@@ -43,7 +43,7 @@ App test infrastructure: `apps/api` y `packages/db` usan Vitest; `apps/web` usa 
 
 ### Auth
 
-Better Auth vive en **Hono** (`packages/auth`); la web no importa sus clientes. Google OAuth arranca y termina en el API (`BETTER_AUTH_URL`). La web resuelve la sesión por documento: `server/middleware/10.auth.ts` (bootstrap por request, cookies de presentación y CSRF) → `event.context.auth` → `app/plugins/auth.server.ts` → `useAuth().resolveSession()`. Los route middleware `auth`/`guest` protegen páginas; un 401 expira el estado y redirige a `/sign-in` con el motivo. El transporte de los formularios de auth es `app/features/auth/useAuthApi.ts` sobre `useRequestFetch()` + Zod; las reglas de contraseña salen de `@recetario/auth/password`. El bundle cliente **no** puede contener `better-auth` (lo verifica un paso de `ci.yml`).
+Better Auth vive en **Hono** (`packages/auth`); la web no importa sus clientes. Google OAuth arranca y termina en el API (`BETTER_AUTH_URL`). La web resuelve la sesión por documento: `server/middleware/10.auth.ts` (bootstrap por request, cookies de presentación y CSRF) → `event.context.auth` → `app/plugins/auth.server.ts`. Ese snapshot se revalida explícitamente con `useAuth().refresh()` (`app/plugins/auth-revalidation.client.ts`: `pageshow` con `persisted`, `visibilitychange` y `focus`, con TTL y dedupe en `app/utils/session-revalidation.ts`); `revision` avisa a los datos derivados. Los route middleware `auth`/`guest` protegen páginas; un 401 expira el estado y redirige a `/sign-in` con el motivo. El transporte de los formularios de auth es `app/features/auth/useAuthApi.ts` sobre `useRequestFetch()` + Zod; las reglas de contraseña salen de `@recetario/auth/password`. El bundle cliente **no** puede contener `better-auth` (lo verifica un paso de `ci.yml`).
 
 ### Pages & routing
 

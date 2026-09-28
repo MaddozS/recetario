@@ -623,3 +623,93 @@ test("responsive: tabs y facturación en 375 sin perder información", async ({
   await expect(page.locator('[data-tab="preferences"] .lucide')).toBeVisible();
   await expect(summary.getByText("Plan actual")).toBeVisible();
 });
+
+/**
+ * Frescura sin recargar: el snapshot de sesión del documento y la suscripción
+ * de la pestaña se revalidan cuando un cambio ocurre fuera de la app (Stripe).
+ * El reload queda prohibido en estos casos: es justo lo que los tests
+ * anteriores no cubrían, porque todos entran con `goto("/settings?tab=billing")`.
+ */
+
+test("billing: activar la pestaña revalida la suscripción sin recargar", async ({
+  page,
+  goto,
+  request,
+  context,
+}) => {
+  await resetSettings(request);
+  await signIn(page, { plan: "pro" });
+  await goto("/settings", { waitUntil: "hydration" });
+  await markPage(page);
+
+  // La suscripción se cancela en Stripe mientras el documento sigue vivo.
+  await context.addCookies([
+    { name: "qa-subscription", value: "canceled", url: url("/") },
+  ]);
+
+  await page.locator('[data-tab="billing"]').click();
+
+  await expect(page.getByText("Suscripción cancelada")).toBeVisible();
+  await expect(
+    page.getByText("Tu plan seguirá activo hasta el 15/10/2026."),
+  ).toBeVisible();
+  expect(await pageAlive(page)).toBe(true);
+});
+
+test("billing: una página restaurada de bfcache revalida sesión y suscripción", async ({
+  page,
+  goto,
+  request,
+  context,
+}) => {
+  await resetSettings(request);
+  await signIn(page, { plan: "free" });
+  await goto("/settings?tab=billing", { waitUntil: "hydration" });
+  await markPage(page);
+
+  // Plan y suscripción cambian fuera del documento (Stripe) y el navegador
+  // restaura la página sin request: `pageshow` con `persisted`.
+  await context.addCookies([
+    { name: "qa-plan", value: "pro", url: url("/") },
+    { name: "qa-subscription", value: "canceled", url: url("/") },
+  ]);
+  await page.evaluate(() => {
+    window.dispatchEvent(
+      new PageTransitionEvent("pageshow", { persisted: true }),
+    );
+  });
+
+  await expect(page.getByText("Suscripción cancelada")).toBeVisible();
+  // La sesión también: con el plan free el shell no ofrece Producción.
+  await expect(
+    page.locator("#sidebar-nav").getByText("Producción"),
+  ).toBeVisible();
+  expect(await pageAlive(page)).toBe(true);
+});
+
+/**
+ * Flujo real de vuelta del portal. No fija el camino de bfcache —si el
+ * navegador recarga el documento, el SSR ya trae el dato—: ese contrato lo
+ * cubre el test sintético de `pageshow` con `persisted`.
+ */
+test("billing: volver del portal con Back actualiza el estado sin recargar", async ({
+  page,
+  goto,
+  request,
+  context,
+}) => {
+  await resetSettings(request);
+  await signIn(page, { plan: "pro" });
+  await goto("/settings?tab=billing", { waitUntil: "hydration" });
+
+  await page.locator("#manage-subscription-btn").click();
+  await page.waitForURL(/portal=1/);
+
+  // El usuario cancela la suscripción en el portal y vuelve con el botón atrás.
+  await context.addCookies([
+    { name: "qa-subscription", value: "canceled", url: url("/") },
+  ]);
+  await page.goBack();
+
+  await expect(page.getByText("Suscripción cancelada")).toBeVisible();
+});
