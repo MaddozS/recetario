@@ -22,13 +22,24 @@ export type RecipeIngredientDetail = z.infer<
 >;
 export type RecipeFixedCostRecord = z.infer<typeof recipeFixedCostSchema>;
 
+/**
+ * Jerarquía de la fila: parte del costo (`base`), cierre del tramo (`total`), la
+ * palanca que gobierna el tramo (`control`) o una respuesta de la banda (`answer`).
+ */
+export type FinancialRowEmphasis = "base" | "total" | "control" | "answer";
+
 export type FinancialRow = {
   label: string;
   value: string;
   subtitle?: string;
+  /** Línea derivada bajo el subtítulo (p. ej. el `+$` del gasto operativo). */
   secondaryValue?: string;
-  /** Rol semántico del borde izquierdo: danger | muted | accent | success. */
-  color?: "danger" | "muted" | "accent" | "success";
+  /** Título del tramo; la card lo dibuja cuando cambia respecto de la fila previa. */
+  group?: string;
+  /** `total` cierra el tramo (paso de tipo); `control` va en su encabezado. */
+  emphasis?: FinancialRowEmphasis;
+  /** Signo delante del rótulo: `+` suma al anterior, `=` lo cierra. */
+  op?: "+" | "=";
 };
 
 export type FinancialRowsInput = {
@@ -47,7 +58,6 @@ export type FinancialRowsInput = {
 
 export type FinancialRowsResult = {
   rows: FinancialRow[];
-  highlightIndex: number;
   /** Índices de fila con input editable (margen y, sin advanced, % operativo). */
   editRowIndices: number[];
 };
@@ -172,9 +182,17 @@ export function computeSuggestedBatchPrice(
   return batchCost / (1 - desiredMarginValue / 100);
 }
 
+export const COST_GROUP = "Costo de la mezcla";
+export const PRICE_GROUP = "Precio de venta";
+
 /**
- * Filas del resumen financiero. Con `advanced_costs` la receta usa costos fijos
- * explícitos; sin la feature, un porcentaje de gastos operativos.
+ * Filas del resumen financiero en dos tramos: el costo de la mezcla (sus partes
+ * y el total) y el precio de venta (el margen como control y su consecuencia en
+ * la banda de respuesta).
+ *
+ * Con `advanced_costs` la receta usa costos fijos explícitos; sin la feature, un
+ * porcentaje de gastos operativos. El total y el margen llevan el mismo nombre
+ * en los dos caminos: es el mismo número.
  */
 export function buildFinancialRows(
   input: FinancialRowsInput,
@@ -188,6 +206,70 @@ export function buildFinancialRows(
     desiredMarginValue,
   } = input;
 
+  const batchCost = computeRecipeBatchCost({
+    hasAdvancedCosts,
+    costoDirectoTotal,
+    recipeFixedCosts,
+    multiplier,
+    fixedCostsPercentageValue,
+  });
+  const precioSugerido = computeSuggestedBatchPrice(
+    batchCost,
+    desiredMarginValue,
+  );
+  const ganancia = precioSugerido - batchCost;
+  // Con más de una mezcla el promedio ayuda a leer la tanda; con una es el valor.
+  const costoTotalRow: FinancialRow = {
+    label: "Costo Total",
+    value: `$${batchCost.toFixed(2)}`,
+    subtitle: hasAdvancedCosts
+      ? "Insumos + Costos Fijos"
+      : "Insumos + Operativos",
+    secondaryValue:
+      multiplier === 1
+        ? undefined
+        : `≈ $${(batchCost / multiplier).toFixed(2)} por mezcla`,
+    emphasis: "total",
+    op: "=",
+    group: COST_GROUP,
+  };
+
+  const priceRows: FinancialRow[] = [
+    {
+      // La palanca del tramo: gobierna las respuestas y va en su encabezado.
+      label: "Margen Deseado",
+      value: `${desiredMarginValue}%`,
+      subtitle: "Objetivo de ganancia",
+      emphasis: "control",
+      group: PRICE_GROUP,
+    },
+    {
+      // La banda se lee sola: de dónde sale el precio y qué deja.
+      label: "Costo Total",
+      value: `$${batchCost.toFixed(2)}`,
+      subtitle: "Lo que cuesta producir",
+      emphasis: "answer",
+      group: PRICE_GROUP,
+    },
+    {
+      label: "Precio Sugerido",
+      value: `$${precioSugerido.toFixed(2)}`,
+      subtitle: `Con ${desiredMarginValue}% de margen`,
+      emphasis: "answer",
+      group: PRICE_GROUP,
+    },
+    {
+      label: "Ganancia",
+      value: `$${ganancia.toFixed(2)}`,
+      subtitle:
+        multiplier === 1
+          ? "Después de costos"
+          : `≈ $${(ganancia / multiplier).toFixed(2)} por mezcla`,
+      emphasis: "answer",
+      group: PRICE_GROUP,
+    },
+  ];
+
   if (hasAdvancedCosts) {
     const recipeFixedCostsTotal = computeRecipeFixedCostsTotal(
       recipeFixedCosts,
@@ -198,31 +280,21 @@ export function buildFinancialRows(
     return {
       rows: [
         {
-          label: "Costo Insumos",
+          label: "Insumos",
           value: `$${costoDirectoTotal.toFixed(2)}`,
           subtitle: "Costo base de materiales",
-          color: "danger",
+          group: COST_GROUP,
         },
         {
-          label: "Total Costos Fijos",
+          label: "Costos Fijos",
           value: `$${recipeFixedCostsTotal.toFixed(2)}`,
-          subtitle: "Suma de costos fijos de la receta",
-          color: "muted",
+          subtitle: "Suma de los costos fijos",
+          op: "+",
+          group: COST_GROUP,
         },
-        {
-          label: "Costo Total Receta",
-          value: `$${(costoDirectoTotal + recipeFixedCostsTotal).toFixed(2)}`,
-          subtitle: "Insumos + Costos Fijos",
-          color: "accent",
-        },
-        {
-          label: "Margen Deseado",
-          value: `${desiredMarginValue}%`,
-          subtitle: "Objetivo de ganancia",
-          color: "success",
-        },
+        costoTotalRow,
+        ...priceRows,
       ],
-      highlightIndex: 2,
       editRowIndices: [3],
     };
   }
@@ -232,32 +304,23 @@ export function buildFinancialRows(
   return {
     rows: [
       {
-        label: "Costo Insumos",
+        label: "Insumos",
         value: `$${costoDirectoTotal.toFixed(2)}`,
         subtitle: "Costo base de materiales",
-        color: "danger",
+        group: COST_GROUP,
       },
       {
         label: "Gastos Operativos",
         value: `${fixedCostsPercentageValue}%`,
         subtitle: "Servicios, labor, etc.",
-        secondaryValue: `+$${costoOperativo.toFixed(2)}`,
-        color: "muted",
+        // El signo va en el `op` de la fila; aquí sólo el monto.
+        secondaryValue: `$${costoOperativo.toFixed(2)}`,
+        op: "+",
+        group: COST_GROUP,
       },
-      {
-        label: "Costo Total Real",
-        value: `$${(costoDirectoTotal + costoOperativo).toFixed(2)}`,
-        subtitle: "Insumos + Operativos",
-        color: "accent",
-      },
-      {
-        label: "Margen Utilidad",
-        value: `${desiredMarginValue}%`,
-        subtitle: "Objetivo de ganancia",
-        color: "success",
-      },
+      costoTotalRow,
+      ...priceRows,
     ],
-    highlightIndex: 2,
     editRowIndices: [1, 3],
   };
 }

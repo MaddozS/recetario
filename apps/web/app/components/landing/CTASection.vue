@@ -21,19 +21,22 @@
       class="absolute inset-0 bg-[repeating-conic-gradient(var(--tw-bg)_0_0.5deg,transparent_0_1deg)] opacity-[0.03]"
     />
 
+    <!-- Lavado decorativo rebajado: con 0.12/0.07 el fondo renderizado bajo el
+         párrafo aclaraba lo suficiente para dejar la etiqueta blanca en 4.41:1
+         (AA exige 4.5:1). Medido por la sonda de contraste de `contrast.spec`. -->
     <div
       aria-hidden="true"
-      class="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_20%_30%,rgba(255,255,255,0.12)_0%,transparent_60%),radial-gradient(ellipse_40%_50%_at_80%_70%,rgba(255,255,255,0.07)_0%,transparent_50%)]"
+      class="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_20%_30%,rgba(255,255,255,0.06)_0%,transparent_60%),radial-gradient(ellipse_40%_50%_at_80%_70%,rgba(255,255,255,0.04)_0%,transparent_50%)]"
     />
 
     <div class="relative z-10 mx-auto max-w-3xl px-6 text-center">
       <h2
-        class="landing-heading text-text-on-accent text-3xl leading-[1.1] font-black md:text-4xl lg:text-5xl"
+        class="landing-heading text-text-on-accent font-display text-3xl leading-[1.1] font-black md:text-4xl lg:text-5xl"
       >
-        Empieza a calcular el costo real de tus recetas hoy
+        Ponle precio a tu próxima receta
       </h2>
       <p class="text-text-on-accent mt-4 text-lg font-medium">
-        Sin tarjeta de crédito. Configuración en segundos.
+        En tu primera receta ves el costo, el margen y cuánto cobrar.
       </p>
       <div
         class="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row"

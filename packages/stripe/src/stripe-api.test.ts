@@ -8,6 +8,8 @@ const {
   createSchedule,
   updateSchedule,
   retrieveSchedule,
+  constructEventAsync,
+  constructEvent,
 } = vi.hoisted(() => ({
   prices: vi.fn(),
   createSession: vi.fn(),
@@ -16,6 +18,8 @@ const {
   createSchedule: vi.fn(),
   updateSchedule: vi.fn(),
   retrieveSchedule: vi.fn(),
+  constructEventAsync: vi.fn(),
+  constructEvent: vi.fn(),
 }));
 
 vi.mock("./stripe-client", () => ({
@@ -28,10 +32,12 @@ vi.mock("./stripe-client", () => ({
       update: updateSchedule,
       retrieve: retrieveSchedule,
     },
+    webhooks: { constructEventAsync, constructEvent },
   },
 }));
 
-const { listPrices, createCheckoutSession, updateStripeSubscription } = await import("./stripe-api");
+const { listPrices, createCheckoutSession, updateStripeSubscription, verifyWebhookSignature } =
+  await import("./stripe-api");
 
 describe("stripe-api", () => {
   it("filters unknown tiers and maps Stripe prices to sync inputs", async () => {
@@ -203,6 +209,25 @@ describe("stripe-api", () => {
     expect(updateSchedule).toHaveBeenCalledWith("sched_fresh", expect.objectContaining({
       end_behavior: "release",
     }));
+  });
+
+  it("verifies webhook signatures through the async verifier", async () => {
+    constructEventAsync.mockResolvedValueOnce({ id: "evt_1", type: "customer.created" });
+
+    await expect(verifyWebhookSignature("payload", "signature", "whsec_test")).resolves.toEqual({
+      id: "evt_1",
+      type: "customer.created",
+    });
+    expect(constructEventAsync).toHaveBeenCalledWith("payload", "signature", "whsec_test");
+    expect(constructEvent).not.toHaveBeenCalled();
+  });
+
+  it("propagates the verification failure instead of falling back to the sync verifier", async () => {
+    const failure = new Error("No signatures found matching the expected signature for payload");
+    constructEventAsync.mockRejectedValueOnce(failure);
+
+    await expect(verifyWebhookSignature("payload", "signature", "whsec_test")).rejects.toBe(failure);
+    expect(constructEvent).not.toHaveBeenCalled();
   });
 });
 

@@ -42,6 +42,18 @@ async function readRecipesState(request: APIRequestContext): Promise<{
   return await response.json();
 }
 
+async function resetCsrf(request: APIRequestContext): Promise<void> {
+  const response = await request.post(url("/api/__qa/csrf/reset"));
+  expect(response.ok()).toBe(true);
+}
+
+async function readCsrfState(
+  request: APIRequestContext,
+): Promise<{ mintAttempts: number }> {
+  const response = await request.get(url("/api/__qa/csrf/state"));
+  return await response.json();
+}
+
 async function signIn(
   page: Page,
   plan?: "free" | "basic" | "pro",
@@ -119,10 +131,13 @@ test("SSR: detalle, ingredientes repetidos, notas ocultas y cabeceras privadas",
   // clase dinámica antes que la estática, así que se acota al párrafo.
   expect(html).toMatch(/<p class="[^"]*hidden[^"]*">Para la masa<\/p>/);
   // Default del stub: plan Pro → filas con costos fijos explícitos.
-  expect(html).toContain("Costo Insumos");
+  expect(html).toContain("Insumos");
   expect(html).toContain("$33.00");
-  expect(html).toContain("Total Costos Fijos");
+  expect(html).toContain("Costos Fijos");
+  expect(html).toContain("Suma de los costos fijos");
   expect(html).toContain("Margen Deseado");
+  expect(html).toContain("Precio Sugerido");
+  expect(html).toContain("Ganancia");
   expect(html).toContain("Ingredientes");
   expect(html).toContain("Costos Fijos");
   expect(html).toContain("Presentaciones");
@@ -148,9 +163,10 @@ test("Free: filas operativas y % editable", async ({ request }) => {
   const html = (await response.text()).replace(/<!--[\s\S]*?-->/g, "");
   expect(html).toContain("Gastos Operativos");
   expect(html).toContain("10%");
-  expect(html).toContain("+$3.30");
-  expect(html).toContain("Costo Total Real");
-  expect(html).not.toContain("Total Costos Fijos");
+  expect(html).toContain("$3.30");
+  expect(html).toContain("Costo Total");
+  // El tramo de costos fijos es del plan con la feature; la tab homónima queda.
+  expect(html).not.toContain("Suma de los costos fijos");
 });
 
 test("tabs: click con hash, deep link y teclado", async ({
@@ -236,9 +252,9 @@ test("multiplicador: deep link, botones e input sin recargar", async ({
   // costo directo en el resumen financiero).
   await goto("/recipes/1?multiplier=2");
   await expect(desktopTable(page).getByText("Con x2").first()).toBeVisible();
-  await expect(
-    page.locator("[data-financial-row='Costo Insumos']"),
-  ).toContainText("$66.00");
+  await expect(page.locator("[data-financial-row='Insumos']")).toContainText(
+    "$66.00",
+  );
 
   await page.evaluate(() => {
     (window as unknown as { __qaMarker?: boolean }).__qaMarker = true;
@@ -248,9 +264,9 @@ test("multiplicador: deep link, botones e input sin recargar", async ({
   await page.getByRole("button", { name: "Aumentar mezclas" }).first().click();
   await expect(page).toHaveURL(/multiplier=3/);
   await expect(desktopTable(page).getByText("Con x3").first()).toBeVisible();
-  await expect(
-    page.locator("[data-financial-row='Costo Insumos']"),
-  ).toContainText("$99.00");
+  await expect(page.locator("[data-financial-row='Insumos']")).toContainText(
+    "$99.00",
+  );
 
   await page.getByRole("button", { name: "Disminuir mezclas" }).first().click();
   await expect(page).toHaveURL(/multiplier=2/);
@@ -359,6 +375,65 @@ test("guardar sin recarga: alerta, PATCH y listado al día al volver", async ({
     page.locator("a.recipe-grid-card[href='/recipes/1']"),
   ).toContainText("Tarta v2");
   expect(consoleErrors).toEqual([]);
+});
+
+test("cookie CSRF perdida: guarda renovando el token, sin recargar", async ({
+  page,
+  goto,
+  request,
+}) => {
+  const consoleErrors = trackConsoleErrors(page);
+  await resetRecipes(request);
+  await resetCsrf(request);
+  await signIn(page);
+  await page.setViewportSize(DESKTOP);
+  await goto("/recipes/1?edit=true");
+
+  // La cookie se emite con el documento: un documento que vive más que ella
+  // (edición larga, pestaña restaurada del bfcache) equivale a borrarla. Es
+  // legible por JS, así que la página puede eliminarla.
+  await page.evaluate(() => {
+    document.cookie = "csrf_token=; path=/; Max-Age=0";
+  });
+  expect(await page.evaluate(() => document.cookie)).not.toContain(
+    "csrf_token=",
+  );
+
+  await page.locator("#recipe-name-input").fill("Tarta sin token");
+  await page.getByRole("button", { name: "Guardar Receta" }).click();
+
+  // El pre-flight pide token antes de la mutación: sin 403 y sin recargar.
+  await expect(page.getByText("Receta guardada correctamente.")).toBeVisible();
+  await expect(page.getByText("CSRF validation failed")).toHaveCount(0);
+
+  const state = await readRecipesState(request);
+  expect(state.patchAttempts).toBe(1);
+  expect(state.recipes.find((recipe) => recipe.id === 1)?.name).toBe(
+    "Tarta sin token",
+  );
+
+  const csrf = await readCsrfState(request);
+  expect(csrf.mintAttempts).toBe(1);
+  expect(await page.evaluate(() => document.cookie)).toContain("csrf_token=");
+  expect(consoleErrors).toEqual([]);
+});
+
+test("con el token presente no se pide uno nuevo", async ({
+  page,
+  goto,
+  request,
+}) => {
+  await resetRecipes(request);
+  await resetCsrf(request);
+  await signIn(page);
+  await page.setViewportSize(DESKTOP);
+  await goto("/recipes/1?edit=true");
+
+  await page.locator("#recipe-name-input").fill("Tarta con token");
+  await page.getByRole("button", { name: "Guardar Receta" }).click();
+  await expect(page.getByText("Receta guardada correctamente.")).toBeVisible();
+
+  expect((await readCsrfState(request)).mintAttempts).toBe(0);
 });
 
 test("validación local: sin filas o con filas incompletas no llama al API", async ({

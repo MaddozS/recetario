@@ -69,7 +69,7 @@ function closeLightbox(): void {
     <div class="mx-auto max-w-7xl px-6">
       <div v-reveal class="mx-auto max-w-2xl text-center">
         <h2
-          class="landing-heading text-foreground text-3xl font-black md:text-4xl"
+          class="landing-heading text-foreground font-display text-3xl font-black md:text-4xl"
         >
           Todo lo que necesitas para costear
         </h2>
@@ -100,7 +100,8 @@ function closeLightbox(): void {
             <div class="mx-auto w-full max-w-md">
               <button
                 type="button"
-                class="group/lightbox w-full cursor-pointer text-left"
+                data-lightbox-trigger
+                class="group/lightbox focus-ring w-full cursor-pointer rounded-2xl text-left"
                 :aria-label="`Ampliar imagen de ${feature.title}`"
                 @click="openLightbox(feature)"
               >
@@ -114,10 +115,16 @@ function closeLightbox(): void {
                   height="600"
                 />
                 <span
-                  class="text-muted-foreground mt-1.5 flex items-center gap-1.5 text-xs transition-opacity group-hover/lightbox:opacity-100 md:opacity-0"
+                  data-zoom-hint
+                  class="text-muted-foreground mt-1.5 flex items-center gap-1.5 text-xs opacity-0 transition-opacity group-hover/lightbox:opacity-100 group-focus-visible/lightbox:opacity-100 max-md:opacity-100 pointer-coarse:opacity-100"
                 >
                   <Icon name="lucide:zoom-in" :size="14" />
-                  Click para ampliar
+                  <span data-zoom-hint-fine class="hidden pointer-fine:inline">
+                    Click para ampliar
+                  </span>
+                  <span data-zoom-hint-touch class="pointer-fine:hidden">
+                    Toca para ampliar
+                  </span>
                 </span>
               </button>
             </div>

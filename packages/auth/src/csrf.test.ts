@@ -1,7 +1,10 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
 import {
+  CSRF_COOKIE_MAX_AGE,
+  csrfCookieOptions,
   extractCsrfCookie,
   getTrustedOrigins,
+  resolveCsrfToken,
   resolveRequestOrigin,
   validateCsrf,
 } from "./csrf";
@@ -14,6 +17,35 @@ function request(headers: Record<string, string>): Request {
 
 afterEach(() => {
   vi.unstubAllEnvs();
+});
+
+describe("resolveCsrfToken", () => {
+  it("conserva el token ya emitido", () => {
+    expect(resolveCsrfToken(TOKEN)).toBe(TOKEN);
+  });
+
+  it("genera uno nuevo cuando no hay token", () => {
+    for (const missing of [undefined, null, ""]) {
+      expect(resolveCsrfToken(missing), String(missing)).toMatch(/^[0-9a-f]{64}$/);
+    }
+  });
+});
+
+describe("csrfCookieOptions", () => {
+  it("aplica la política compartida (legible por JS, Strict, vida de la sesión)", () => {
+    expect(CSRF_COOKIE_MAX_AGE).toBe(7 * 24 * 60 * 60);
+    expect(csrfCookieOptions(true)).toEqual({
+      path: "/",
+      sameSite: "strict",
+      httpOnly: false,
+      secure: true,
+      maxAge: CSRF_COOKIE_MAX_AGE,
+    });
+  });
+
+  it("marca Secure sólo cuando el transporte es https", () => {
+    expect(csrfCookieOptions(false).secure).toBe(false);
+  });
 });
 
 describe("extractCsrfCookie", () => {

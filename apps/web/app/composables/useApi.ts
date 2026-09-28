@@ -1,6 +1,12 @@
 import { getCsrfToken } from "@recetario/auth/csrf-client";
-import type { ApiFetchImpl, ApiFetchOptions } from "~/utils/api-client";
+import {
+  apiFetch,
+  MUTATING_METHODS,
+  type ApiFetchImpl,
+  type ApiFetchOptions,
+} from "~/utils/api-client";
 import { ApiError } from "~/utils/api-error";
+import { CSRF_TOKEN_PATH, createCsrfEnsurer } from "~/utils/csrf";
 
 /**
  * Cliente tipado universal de `/api/**`.
@@ -16,11 +22,26 @@ export function useApi() {
   const requestFetch = useRequestFetch();
   const fetchImpl: ApiFetchImpl = async (path, init) => await requestFetch(path, init);
 
+  // Sólo en el navegador: en SSR no hay cookie jar y el API exime las peticiones
+  // sin `Origin` (la cookie emitida en el fetch del servidor no llegaría al
+  // navegador y daría una falsa sensación de token).
+  const ensureCsrfToken = import.meta.client
+    ? createCsrfEnsurer({
+        getToken: getCsrfToken,
+        refresh: () => apiFetch(fetchImpl, CSRF_TOKEN_PATH),
+      })
+    : null;
+
   return async function apiRequest<T>(
     path: string,
     options: ApiFetchOptions<T> = {},
   ): Promise<T> {
     const method = options.method ?? "GET";
+
+    if (ensureCsrfToken && MUTATING_METHODS.includes(method)) {
+      await ensureCsrfToken();
+    }
+
     const csrfToken = import.meta.client ? getCsrfToken() : null;
     const headers = { ...options.headers, ...csrfHeaderFor(method, csrfToken) };
 

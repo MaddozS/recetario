@@ -1,15 +1,18 @@
 export { auth, createAuth } from "./auth";
 export {
+  CSRF_COOKIE_MAX_AGE,
+  csrfCookieOptions,
+  resolveCsrfToken,
   generateToken,
   getCsrfCookie,
   getCsrfHeader,
   getCsrfFormField,
-  setCsrfCookieHeader,
   extractCsrfCookie,
   getTrustedOrigins,
   resolveRequestOrigin,
   validateCsrf,
 } from "./csrf";
+export type { CsrfCookieOptions } from "./csrf";
 export { recordSignInAudit } from "./session-audit";
 export {
   validatePassword,

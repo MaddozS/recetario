@@ -4,7 +4,7 @@
 >
 > Notas operativas vigentes:
 >
-> - **Relay y sesión:** `apps/web/server/**` es Nitro: relay `/api/**`, bootstrap de sesión y cabeceras privadas. El estado de sesión lo resuelve `useAuth().resolveSession()` (contexto del request → `GET /api/auth/session`).
+> - **Relay y sesión:** `apps/web/server/**` es Nitro: relay `/api/**`, bootstrap de sesión y cabeceras privadas. El estado de sesión lo resuelve el documento (`server/middleware/10.auth.ts` → `GET /api/auth/session` → `useState("auth")`, builder compartido en `shared/types/auth.ts`) y en cliente se revalida con `useAuth().refresh()` cuando la página se restaura de bfcache o vuelve a primer plano (`app/plugins/auth-revalidation.client.ts`, TTL 30 s con dedupe). La pestaña de facturación no usa el snapshot: pide siempre `GET /api/billing/subscription` al activarse o al revalidarse la sesión.
 > - **Subpaths puros:** usar `useApi()` y los subpaths `@recetario/stripe/{plans-config,formatters,subscription}`; los barrels (`@recetario/stripe`, `@recetario/auth`, `@recetario/auth/client`) arrastran el SDK o `createAuthClient`.
 > - **Íconos:** `Icon.vue` compone el `<svg>` desde los datos de lucide (`app/utils/icon-registry.ts` → `__iconData`), **no** desde sus componentes. No reintroducir componentes de `@lucide/vue` en el render; el contrato de markup está en `test/nuxt/icon-parity.spec.ts`.
 > - **Indexación fail-closed:** sin `NUXT_PUBLIC_INDEXABLE=true` (var del worker de producción en `wrangler.jsonc`) las públicas emiten `noindex,nofollow` y `robots.txt` bloquea el sitio completo. Staging no la define.
@@ -43,7 +43,7 @@ App test infrastructure: `apps/api` y `packages/db` usan Vitest; `apps/web` usa 
 
 ### Auth
 
-Better Auth vive en **Hono** (`packages/auth`); la web no importa sus clientes. Google OAuth arranca y termina en el API (`BETTER_AUTH_URL`). La web resuelve la sesión por documento: `server/middleware/10.auth.ts` (bootstrap por request, cookies de presentación y CSRF) → `event.context.auth` → `app/plugins/auth.server.ts` → `useAuth().resolveSession()`. Los route middleware `auth`/`guest` protegen páginas; un 401 expira el estado y redirige a `/sign-in` con el motivo. El transporte de los formularios de auth es `app/features/auth/useAuthApi.ts` sobre `useRequestFetch()` + Zod; las reglas de contraseña salen de `@recetario/auth/password`. El bundle cliente **no** puede contener `better-auth` (lo verifica un paso de `ci.yml`).
+Better Auth vive en **Hono** (`packages/auth`); la web no importa sus clientes. Google OAuth arranca y termina en el API (`BETTER_AUTH_URL`). La web resuelve la sesión por documento: `server/middleware/10.auth.ts` (bootstrap por request, cookies de presentación y CSRF) → `event.context.auth` → `app/plugins/auth.server.ts`. Ese snapshot se revalida explícitamente con `useAuth().refresh()` (`app/plugins/auth-revalidation.client.ts`: `pageshow` con `persisted`, `visibilitychange` y `focus`, con TTL y dedupe en `app/utils/session-revalidation.ts`); `revision` avisa a los datos derivados. Los route middleware `auth`/`guest` protegen páginas; un 401 expira el estado y redirige a `/sign-in` con el motivo. El transporte de los formularios de auth es `app/features/auth/useAuthApi.ts` sobre `useRequestFetch()` + Zod; las reglas de contraseña salen de `@recetario/auth/password`. El bundle cliente **no** puede contener `better-auth` (lo verifica un paso de `ci.yml`).
 
 ### Pages & routing
 
@@ -97,6 +97,7 @@ If a new feature needs data access from a web page, add the endpoint in `apps/ap
 #### Autoridad de mutaciones (Hono)
 
 - **CSRF**: `csrfProtection()` en `apps/api/src/middleware/csrf.ts` cubre todo `POST|PUT|PATCH|DELETE`. Exige `Origin`/`Referer` confiable y, si la petición viene de navegador con cookies, doble-submit (`x-csrf-token` o `_csrf` contra la cookie `csrf_token`). Exentos: `POST /api/stripe/webhook` y `/api/auth/**` (Better Auth valida su propio origen). Las peticiones sin `Origin` (service binding, SSR) pasan por diseño.
+- **Vida del token**: la cookie dura lo que la sesión (7 días) y la emiten dos sitios con la misma política (`csrfCookieOptions`/`resolveCsrfToken` en `packages/auth/src/csrf.ts`): el middleware de Nitro en cada documento con sesión y `GET /api/csrf` (`apps/api/src/csrf/handler.ts`) a demanda, conservando siempre el valor existente. Si se toca el TTL o los atributos, se tocan ahí, no en cada consumidor.
 - **Límites de plan**: `requireRecipeCapacity`, `requireIngredientCapacity` y `requireFeature` en `apps/api/src/entitlements.ts`; sin fila de suscripción se aplica el plan free (fail-closed). Al agotarse lanzan `PLAN_LIMIT` / `FEATURE_REQUIRED` (403): la UI sólo muestra CTA de upgrade con `PLAN_LIMIT`.
 - **Lecturas con gate**: cuando una lectura es la única vía a datos gateados (p. ej. `GET /api/recipes/by-ids` del planificador), el gate corre también ahí (feature + tope de plan) antes de la query.
 - **Auditoría de sign-in**: `recordSignInAudit` corre en `databaseHooks.session.create.after` de Better Auth (`packages/auth/src/auth.ts`); el middleware web no inspecciona paths.
@@ -113,6 +114,7 @@ If a new feature needs data access from a web page, add the endpoint in `apps/ap
 - `app/features/production/production-{calculator,selection,catalog,format}.ts` — planificador de producción
 - `server/utils/api-transport.ts` — binding `API`/fallback HTTP y headers de error tempranos
 - `server/middleware/10.auth.ts` — bootstrap de sesión, cookies de presentación/CSRF y `private, no-store`
+- `app/utils/csrf.ts` — `ensureCsrfToken()`: pre-flight single-flight que `useApi()` corre antes de mutar (pide `GET /api/csrf` sólo si falta la cookie)
 
 ### Stripe billing
 

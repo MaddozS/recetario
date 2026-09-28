@@ -491,6 +491,30 @@ describe("ProductionRecipeBreakdown", () => {
     expect(rows[1]?.text()).toContain("72.5%");
   });
 
+  it("comparte la barra neutra en las tres tarjetas de costo", async () => {
+    const wrapper = await mountSuspended(ProductionRecipeBreakdown, {
+      props: { recipes: [TARTA_RESULT] },
+    });
+
+    const cards = wrapper.findAll("[data-cost-card]");
+    expect(cards.map((card) => card.attributes("data-cost-card"))).toEqual([
+      "insumos",
+      "operativos",
+      "total",
+    ]);
+
+    for (const card of cards) {
+      // Barra neutra: un costo no es un peligro y el acento no decora datos.
+      expect(card.classes()).toContain("border-l-muted-foreground/30");
+      expect(card.classes().join(" ")).not.toContain("accent");
+      expect(card.classes().join(" ")).not.toContain("danger");
+      // Esquinas rectas a la izquierda: el radio curva el borde de 3px.
+      expect(card.classes()).toContain("border-l-[3px]");
+      expect(card.classes()).toContain("rounded-r-xl");
+      expect(card.classes()).not.toContain("rounded-xl");
+    }
+  });
+
   it("colorea el margen por tramos y avisa sin presentaciones", async () => {
     const lowMargin = await mountSuspended(ProductionRecipeBreakdown, {
       props: {
@@ -545,16 +569,30 @@ describe("ProductionResults", () => {
       "2 recetas · 3 mezclas",
     );
     expect(wrapper.text()).toContain("Resumen financiero");
-    expect(wrapper.text()).toContain("Costo Insumos");
+    expect(wrapper.text()).toContain("2 recetas · 3 mezclas");
+    expect(wrapper.text()).toContain("Costos");
+    expect(wrapper.text()).toContain("Insumos");
     expect(wrapper.text()).toContain("$59.50");
+    // La aritmética del tramo, igual que en el detalle de receta.
+    expect(wrapper.text()).toContain("Costo Total");
+    expect(wrapper.text()).toContain("Insumos + Gastos Operativos");
+    expect(wrapper.text()).toContain("Resultado");
     expect(wrapper.text()).toContain("Ingresos Proyectados");
     expect(wrapper.text()).toContain("$120.00");
     expect(wrapper.text()).toContain("Ganancia Estimada");
-    // 56.025 / 120 → 46.7%.
-    expect(wrapper.text()).toContain("46.7%");
+    // 56.025 / 120 → 46.7%, en la misma línea del texto.
+    expect(wrapper.text()).toContain("Margen de ganancia estimada: 46.7%");
     expect(wrapper.find(".production-sheet.financial-summary").exists()).toBe(
       true,
     );
+
+    // Las dos cifras del plan van juntas en la banda de respuesta.
+    const band = wrapper.find(".bg-accent-50");
+    expect(
+      band
+        .findAll("[data-financial-answer]")
+        .map((row) => row.attributes("data-financial-answer")),
+    ).toEqual(["Ingresos Proyectados", "Ganancia Estimada"]);
 
     const editButton = wrapper
       .findAll("button")

@@ -1,6 +1,7 @@
 import type {
   PREFERENCE_ACCENT_COLORS,
   PREFERENCE_THEMES,
+  SessionResponse,
   UserSubscriptionInfo,
 } from "@recetario/types";
 
@@ -59,6 +60,38 @@ export function buildAnonymousAuthState(
     session: null,
     user: null,
     subscription: null,
+    preferences,
+  };
+}
+
+/**
+ * Estado autenticado a partir de la respuesta de `GET /api/auth/session`.
+ *
+ * Lo comparten el bootstrap del SSR (`server/middleware/10.auth.ts`) y la
+ * revalidación de cliente (`useAuth().refresh()`): las dos vías construyen el
+ * mismo estado con la misma función.
+ */
+export function buildAuthenticatedAuthState(
+  session: NonNullable<SessionResponse>,
+  preferences: AuthPreferences,
+): Extract<AuthState, { status: "authenticated" }> {
+  const { user, subscription, hasPasswordAuth } = session;
+  const authUser: AuthUser = {
+    id: user.id,
+    email: user.email ?? null,
+    name: user.name || user.email?.split("@")[0] || "Usuario",
+    firstName: user.firstName ?? null,
+    lastName: user.lastName ?? null,
+    image: user.image ?? null,
+    role: user.role ?? "USER",
+    hasPasswordAuth: hasPasswordAuth ?? false,
+  };
+
+  return {
+    status: "authenticated",
+    session: { id: session.session.id },
+    user: authUser,
+    subscription,
     preferences,
   };
 }

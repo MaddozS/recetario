@@ -49,12 +49,12 @@ const STEPS: readonly Step[] = [
     <div class="relative z-10 mx-auto max-w-7xl px-6">
       <div v-reveal class="mx-auto max-w-2xl text-center">
         <p
-          class="text-accent-600 mb-3 text-xs font-bold tracking-[0.16em] uppercase"
+          class="text-accent-text mb-3 text-xs font-bold tracking-[0.16em] uppercase"
         >
           Cómo funciona
         </p>
         <h2
-          class="landing-heading text-foreground text-3xl font-black md:text-4xl"
+          class="landing-heading text-foreground font-display text-3xl font-black md:text-4xl"
         >
           Del ingrediente al precio final
         </h2>
@@ -87,13 +87,8 @@ const STEPS: readonly Step[] = [
                   {{ step.description }}
                 </p>
                 <div
-                  class="bg-card border-border mt-4 inline-flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm shadow-sm"
+                  class="bg-card border-border mt-4 inline-flex items-center rounded-xl border px-4 py-2.5 text-sm shadow-sm"
                 >
-                  <span
-                    class="bg-accent-100 text-accent-800 dark:bg-accent-50 rounded-md px-2 py-0.5 text-xs font-bold"
-                  >
-                    {{ step.number }}
-                  </span>
                   <span
                     class="text-secondary-foreground font-mono text-xs font-medium tabular-nums"
                   >

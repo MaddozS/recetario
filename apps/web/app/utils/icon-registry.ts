@@ -55,7 +55,9 @@ import { __iconData as listOrderedIcon } from "@lucide/vue/dist/esm/icons/list-o
 import { __iconData as lockIcon } from "@lucide/vue/dist/esm/icons/lock.mjs";
 import { __iconData as logOutIcon } from "@lucide/vue/dist/esm/icons/log-out.mjs";
 import { __iconData as mailCheckIcon } from "@lucide/vue/dist/esm/icons/mail-check.mjs";
+import { __iconData as maximizeIcon } from "@lucide/vue/dist/esm/icons/maximize-2.mjs";
 import { __iconData as menuIcon } from "@lucide/vue/dist/esm/icons/menu.mjs";
+import { __iconData as minimizeIcon } from "@lucide/vue/dist/esm/icons/minimize-2.mjs";
 import { __iconData as monitorIcon } from "@lucide/vue/dist/esm/icons/monitor.mjs";
 import { __iconData as moonIcon } from "@lucide/vue/dist/esm/icons/moon.mjs";
 import { __iconData as packageIcon } from "@lucide/vue/dist/esm/icons/package.mjs";
@@ -116,7 +118,9 @@ export const ICON_REGISTRY: Record<string, LucideIconData> = {
   "lock": lockIcon,
   "log-out": logOutIcon,
   "mail-check": mailCheckIcon,
+  "maximize-2": maximizeIcon,
   "menu": menuIcon,
+  "minimize-2": minimizeIcon,
   "monitor": monitorIcon,
   "moon": moonIcon,
   "package": packageIcon,

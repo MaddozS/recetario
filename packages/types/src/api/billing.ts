@@ -17,6 +17,10 @@ export const billingIntervalSchema = z.enum(["monthly", "yearly"]).nullable();
 
 export const planFeatureSchema = z.object({
   text: z.string(),
+  // Etiqueta de fila para la matriz de `/pricing`: el nombre de la dimensión
+  // cuando la frase cambia entre planes ("Recetas" para "Hasta 10 recetas").
+  // Sin ella la frase hace de etiqueta, así que es opcional.
+  label: z.string().min(1).optional(),
   included: z.boolean(),
   status: z.literal("coming_soon").optional(),
 });

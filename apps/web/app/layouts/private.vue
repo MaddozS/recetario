@@ -51,7 +51,7 @@ onBeforeUnmount(() => {
 });
 
 // Rutas privadas: fuera de índices y sin caché compartida (el header lo fija
-// `routeRules` en `nuxt.config.ts`).
+// `server/middleware/10.auth.ts`, junto con las cookies de sesión).
 useHead({
   bodyAttrs: {
     class: "bg-background flex flex-col min-h-dvh md:h-dvh md:overflow-hidden",
@@ -111,7 +111,23 @@ useHead({
         id="main-content"
         class="bg-background w-full flex-1 overflow-y-auto p-4 pb-24 md:p-8 md:pb-8"
       >
-        <div class="mx-auto max-w-7xl">
+        <!--
+          Cortina del borde superior: `sticky` se pega al content box de `main`,
+          así que el contenido que pasa por detrás de una barra pegajosa asoma
+          por la franja del padding. Este bloque de altura cero la tapa con el
+          fondo de la página, sin ocupar lugar en el flujo.
+        -->
+        <div
+          aria-hidden="true"
+          class="before:bg-background pointer-events-none sticky top-0 z-10 h-0 before:absolute before:inset-x-0 before:bottom-0 before:h-4 md:before:h-8 print:hidden"
+        ></div>
+        <!--
+          `h-full` da a la página una altura definida dentro del scroller de
+          `main`: sin ella un `h-full`/`flex-1` de página se resuelve como
+          `auto` contra este wrapper y no crece. No altera a las páginas de
+          flujo normal, que desbordan el wrapper y siguen desplazando `main`.
+        -->
+        <div class="mx-auto h-full max-w-7xl">
           <slot />
         </div>
       </main>

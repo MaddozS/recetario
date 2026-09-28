@@ -1,8 +1,6 @@
 import { describe, expect, it } from "vitest";
-import {
-  buildAuthenticatedAuthState,
-  isDocumentRequest,
-} from "../../server/utils/session-state";
+import { buildAuthenticatedAuthState } from "#shared/types/auth";
+import { isDocumentRequest } from "../../server/utils/session-state";
 
 const SESSION = {
   user: {
@@ -83,7 +81,10 @@ describe("buildAuthenticatedAuthState", () => {
     expect(state.user.hasPasswordAuth).toBe(false);
     expect(state.user.role).toBe("USER");
     expect(state.subscription.tier).toBe("pro");
-    expect(state.preferences).toEqual({ theme: "system", accentColor: "coral" });
+    expect(state.preferences).toEqual({
+      theme: "system",
+      accentColor: "coral",
+    });
   });
 
   it("propaga hasPasswordAuth y el rol cuando existen", () => {

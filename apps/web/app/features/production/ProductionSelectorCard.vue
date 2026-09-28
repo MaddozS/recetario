@@ -72,7 +72,7 @@ function isRecipeDisabled(recipe: ProductionCatalogRecipe): boolean {
 </script>
 
 <template>
-  <Card class="production-selector" padding="lg">
+  <Card class="production-selector flex flex-col" padding="lg">
     <div class="mb-4 flex flex-wrap items-start justify-between gap-2">
       <div>
         <h2 class="text-foreground text-lg font-bold">Seleccionar recetas</h2>
@@ -140,10 +140,14 @@ function isRecipeDisabled(recipe: ProductionCatalogRecipe): boolean {
       action-href="/recipes"
     />
 
-    <form v-else class="flex flex-col gap-4" @submit.prevent>
+    <form
+      v-else
+      class="flex flex-col gap-4 md:min-h-0 md:flex-1"
+      @submit.prevent
+    >
       <div
         id="recipe-groups"
-        class="max-h-[420px] space-y-4 overflow-y-auto overscroll-contain pr-1 pb-2"
+        class="max-h-105 space-y-4 overflow-y-auto overscroll-contain px-1 pb-2 md:max-h-none md:min-h-0 md:flex-1"
       >
         <div
           v-if="!isPro && atLimit"

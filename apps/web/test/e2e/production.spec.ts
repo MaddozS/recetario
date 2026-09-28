@@ -1,12 +1,14 @@
 import { expect, test } from "@nuxt/test-utils/playwright";
 import { url } from "@nuxt/test-utils/e2e";
 import type { APIRequestContext, Page } from "@playwright/test";
+import { freezeAnimations } from "./support/page-sweep";
 
 /**
  * Planificador de producción contra el stub del API: gate de Free, tope de
  * Basic, deep links con mezclas y presentaciones, selección interactiva sin
- * recarga, búsqueda que no oculta lo seleccionado, back/forward, impresión y
- * paridad de información en móvil.
+ * recarga, búsqueda que no oculta lo seleccionado, back/forward, impresión,
+ * paridad de información en móvil y el selector que se queda con el alto libre
+ * de la pantalla en escritorio.
  *
  * El fixture siembra cuatro recetas (2 categorías + sin categoría): la Tarta
  * con presentaciones (Entera $12×8, Porción $5×24) y el Pan sin ellas; los
@@ -176,9 +178,9 @@ test("Basic: deep link con 4 recetas se recorta a 3 y muestra el banner al edita
     "3 recetas · 4 mezclas",
   );
   // Tarta: 2 mezclas ($50.00) + Pan ($12.50) + Flan ($0.00).
-  await expect(
-    page.locator("[data-financial-row='Costo Insumos']"),
-  ).toContainText("$62.50");
+  await expect(page.locator("[data-financial-row='Insumos']")).toContainText(
+    "$62.50",
+  );
 
   await page.getByRole("button", { name: "Editar selección" }).click();
   await expect(page.locator("[data-selected-count]")).toHaveText("3");
@@ -250,11 +252,11 @@ test("Pro: selección, cálculo sin recarga, mezclas y presentación", async ({
     "2 recetas · 3.5 mezclas",
   );
   // Tarta 2 mezclas ($50.00) + Pan 1.5 ($18.75) = $68.75 de insumos.
+  await expect(page.locator("[data-financial-row='Insumos']")).toContainText(
+    "$68.75",
+  );
   await expect(
-    page.locator("[data-financial-row='Costo Insumos']"),
-  ).toContainText("$68.75");
-  await expect(
-    page.locator("[data-financial-row='Ingresos Proyectados']"),
+    page.locator("[data-financial-answer='Ingresos Proyectados']"),
   ).toContainText("$192.00");
   // El desglose arranca colapsado: se abre para ver las presentaciones.
   const breakdown = page.locator("[data-recipe-breakdown='1']");
@@ -410,6 +412,103 @@ test("móvil: la hoja conserva la información con etiquetas por celda", async (
   // En escritorio la etiqueta se oculta y manda la cabecera de la tabla.
   await page.setViewportSize(DESKTOP);
   await expect(amountLabel).toBeHidden();
+
+  expect(consoleErrors).toEqual([]);
+});
+
+/** Catálogo largo: la lista no cabe y el alto tiene que repartirse. */
+const BULK_RECIPES = Array.from({ length: 14 }, (_, index) => ({
+  id: index + 1,
+  name: `Receta ${String(index + 1).padStart(2, "0")}`,
+  category: index % 2 === 0 ? "Postres" : "Panes",
+  desiredMargin: 0,
+  fixedCostsPercentage: 0,
+  recipeFixedCosts: [],
+  updatedAt: "2026-09-14T10:00:00.000Z",
+  ingredients: [],
+  presentations: [],
+}));
+
+test("escritorio: el selector ocupa el alto libre sin desplazar la página", async ({
+  page,
+  goto,
+  request,
+}) => {
+  const consoleErrors = trackConsoleErrors(page);
+  const reset = await request.post(url("/api/__qa/recipes/reset"), {
+    data: { recipes: BULK_RECIPES },
+  });
+  expect(reset.ok()).toBe(true);
+
+  await signIn(page, "pro");
+  await page.setViewportSize(DESKTOP);
+  // La fila se marca con un click: hay que esperar la hidratación o el
+  // `change` del checkbox nativo no llega a Vue y el estado no cambia.
+  await goto("/produccion", { waitUntil: "hydration" });
+  await freezeAnimations(page);
+
+  const list = page.locator("#recipe-groups");
+  await expect(list).toBeVisible();
+
+  const layout = await page.evaluate(() => {
+    const main = document.querySelector("#main-content") as HTMLElement;
+    const mainBox = main.getBoundingClientRect();
+    const cardBox = document
+      .querySelector(".production-selector")!
+      .getBoundingClientRect();
+    const list = document.querySelector("#recipe-groups") as HTMLElement;
+    const paddingBottom = Number.parseFloat(
+      getComputedStyle(main).paddingBottom,
+    );
+
+    return {
+      // `main` es el scroller del shell: no debe desplazar nada.
+      mainOverflow: main.scrollHeight - main.clientHeight,
+      // Hueco entre el fondo de la card y el borde interior inferior de `main`.
+      bottomGap: Math.round(mainBox.bottom - paddingBottom - cardBox.bottom),
+      listScrolls: list.scrollHeight > list.clientHeight + 1,
+    };
+  });
+
+  expect(layout.mainOverflow).toBeLessThanOrEqual(1);
+  expect(layout.bottomGap).toBeLessThanOrEqual(1);
+  // El sobrante es de la lista: scrollea por dentro y el pie queda a la vista.
+  expect(layout.listScrolls).toBe(true);
+  await expect(page.locator("[data-calculate]")).toBeInViewport();
+
+  // La fila seleccionada pinta su anillo 1px por fuera de su caja: el scroller
+  // recorta en los dos ejes, así que necesita aire a izquierda y derecha.
+  await page.locator("[data-recipe-row] input[type='checkbox']").first().check();
+  await expect(page.locator("[data-selected-count]")).toHaveText("1");
+  const ring = await page.evaluate(() => {
+    const list = document.querySelector("#recipe-groups") as HTMLElement;
+    const row = document.querySelector("[data-recipe-row]") as HTMLElement;
+    const listBox = list.getBoundingClientRect();
+    const rowBox = row.getBoundingClientRect();
+
+    return {
+      left: Math.round(rowBox.left - listBox.left),
+      right: Math.round(listBox.right - rowBox.right),
+    };
+  });
+
+  expect(ring.left).toBeGreaterThanOrEqual(1);
+  expect(ring.right).toBeGreaterThanOrEqual(1);
+  await page.screenshot({
+    path: "test-results/qa/produccion-selector-1280.png",
+  });
+
+  // Móvil: la columna mide su contenido y la lista conserva su tope propio.
+  await page.setViewportSize(MOBILE);
+  const mobileListHeight = await list.evaluate(
+    (element) => element.getBoundingClientRect().height,
+  );
+  expect(mobileListHeight).toBeGreaterThan(419);
+  expect(mobileListHeight).toBeLessThanOrEqual(421);
+  await page.screenshot({
+    path: "test-results/qa/produccion-selector-375.png",
+    fullPage: true,
+  });
 
   expect(consoleErrors).toEqual([]);
 });

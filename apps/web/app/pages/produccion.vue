@@ -47,7 +47,7 @@ const {
 
 <template>
   <div
-    class="animate-fade-in mx-auto max-w-5xl space-y-6 pb-12"
+    class="animate-fade-in mx-auto max-w-5xl space-y-6 pb-12 md:h-full md:pb-0"
     :data-stage="stage"
   >
     <UpgradePrompt
@@ -76,33 +76,41 @@ const {
     </Card>
 
     <template v-else>
-      <SectionHeading
-        icon="factory"
-        title="Planificador de Producción"
-        subtitle="Elige las recetas, define cuántas mezclas de cada una y obtén al instante los insumos y costos de tu producción."
-        level="h1"
-      />
+      <!--
+        En escritorio la selección ocupa la pantalla: la columna mide el alto
+        de `main` y la card se queda con todo el sobrante bajo el título. En
+        móvil la columna mide su contenido (el documento sigue desplazando) y
+        la lista conserva su tope propio.
+      -->
+      <div v-if="stage === 'select'" class="flex flex-col gap-6 md:h-full">
+        <SectionHeading
+          icon="factory"
+          title="Planificador de Producción"
+          subtitle="Elige las recetas, define cuántas mezclas de cada una y obtén al instante los insumos y costos de tu producción."
+          level="h1"
+        />
 
-      <ProductionSelectorCard
-        v-if="stage === 'select'"
-        v-model:search="searchQuery"
-        :total="catalog.length"
-        :selected-count="selections.length"
-        :selected-ids="selectedIds"
-        :selection-by-id="selectionById"
-        :groups="groups"
-        :visible-count="visibleCount"
-        :presentations="presentationOptions"
-        :is-pro="isPro"
-        :max-recipes="maxRecipes"
-        :at-limit="atLimit"
-        @toggle="toggle"
-        @toggle-all="toggleAll"
-        @update:batches="updateBatches"
-        @step-batches="stepBatchesFor"
-        @update:presentation="updatePresentation"
-        @calculate="showResults"
-      />
+        <ProductionSelectorCard
+          v-model:search="searchQuery"
+          class="md:min-h-0 md:flex-1"
+          :total="catalog.length"
+          :selected-count="selections.length"
+          :selected-ids="selectedIds"
+          :selection-by-id="selectionById"
+          :groups="groups"
+          :visible-count="visibleCount"
+          :presentations="presentationOptions"
+          :is-pro="isPro"
+          :max-recipes="maxRecipes"
+          :at-limit="atLimit"
+          @toggle="toggle"
+          @toggle-all="toggleAll"
+          @update:batches="updateBatches"
+          @step-batches="stepBatchesFor"
+          @update:presentation="updatePresentation"
+          @calculate="showResults"
+        />
+      </div>
 
       <ProductionResults
         v-else

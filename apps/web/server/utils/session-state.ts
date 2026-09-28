@@ -1,10 +1,5 @@
 import type { H3Event } from "h3";
 import { sessionResponseSchema, type SessionResponse } from "@recetario/types";
-import type {
-  AuthPreferences,
-  AuthState,
-  AuthUser,
-} from "#shared/types/auth";
 import { callApi } from "./api-transport";
 
 const SESSION_PATH = "/api/auth/session";
@@ -68,29 +63,4 @@ export async function fetchSession(
     console.error("[session] request to the API failed:", error);
     return null;
   }
-}
-
-export function buildAuthenticatedAuthState(
-  session: NonNullable<SessionResponse>,
-  preferences: AuthPreferences,
-): Extract<AuthState, { status: "authenticated" }> {
-  const { user, subscription, hasPasswordAuth } = session;
-  const authUser: AuthUser = {
-    id: user.id,
-    email: user.email ?? null,
-    name: user.name || user.email?.split("@")[0] || "Usuario",
-    firstName: user.firstName ?? null,
-    lastName: user.lastName ?? null,
-    image: user.image ?? null,
-    role: user.role ?? "USER",
-    hasPasswordAuth: hasPasswordAuth ?? false,
-  };
-
-  return {
-    status: "authenticated",
-    session: { id: session.session.id },
-    user: authUser,
-    subscription,
-    preferences,
-  };
 }

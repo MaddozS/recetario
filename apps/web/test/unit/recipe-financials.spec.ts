@@ -4,11 +4,13 @@ import {
   buildFinancialRows,
   calcularCostoDirecto,
   calcularSubtotalIngrediente,
+  COST_GROUP,
   computeFixedCostAmount,
   computeRecipeBatchCost,
   computeRecipeFixedCostsTotal,
   computeSuggestedBatchPrice,
   getCostoBaseCompra,
+  PRICE_GROUP,
 } from "../../app/features/recipes/recipe-financials";
 import type {
   IngredientRecord,
@@ -142,7 +144,7 @@ describe("computeFixedCostAmount", () => {
 
 describe("buildFinancialRows", () => {
   it("sin advanced_costs muestra el gasto operativo y edita % y margen", () => {
-    const { rows, highlightIndex, editRowIndices } = buildFinancialRows({
+    const { rows, editRowIndices } = buildFinancialRows({
       hasAdvancedCosts: false,
       costoDirectoTotal: 33,
       recipeFixedCosts: [],
@@ -152,21 +154,54 @@ describe("buildFinancialRows", () => {
     });
 
     expect(rows.map((row) => row.label)).toEqual([
-      "Costo Insumos",
+      "Insumos",
       "Gastos Operativos",
-      "Costo Total Real",
-      "Margen Utilidad",
+      "Costo Total",
+      "Margen Deseado",
+      "Costo Total",
+      "Precio Sugerido",
+      "Ganancia",
     ]);
     expect(rows[0]?.value).toBe("$33.00");
-    expect(rows[1]?.secondaryValue).toBe("+$3.30");
+    expect(rows[1]?.secondaryValue).toBe("$3.30");
     expect(rows[2]?.value).toBe("$36.30");
     expect(rows[3]?.value).toBe("30%");
-    expect(highlightIndex).toBe(2);
+    // La banda se lee sola: el costo es su base y el precio su consecuencia.
+    expect(rows[4]?.value).toBe("$36.30");
+    expect(rows[4]?.subtitle).toBe("Lo que cuesta producir");
+    expect(rows[5]?.value).toBe("$51.86");
+    expect(rows[5]?.subtitle).toBe("Con 30% de margen");
+    expect(rows[6]?.value).toBe("$15.56");
+    expect(rows[6]?.subtitle).toBe("Después de costos");
+
+    // La aritmética del tramo se declara con los signos.
+    expect(rows[0]?.op).toBeUndefined();
+    expect(rows[1]?.op).toBe("+");
+    expect(rows[2]?.op).toBe("=");
+    // Con una mezcla no hay promedio que traducir.
+    expect(rows[2]?.secondaryValue).toBeUndefined();
+
+    // Dos tramos: costo de la mezcla (con su total) y precio de venta.
+    expect(rows.slice(0, 3).map((row) => row.group)).toEqual([
+      COST_GROUP,
+      COST_GROUP,
+      COST_GROUP,
+    ]);
+    expect(rows.slice(3).map((row) => row.group)).toEqual([
+      PRICE_GROUP,
+      PRICE_GROUP,
+      PRICE_GROUP,
+      PRICE_GROUP,
+    ]);
+    expect(rows[2]?.emphasis).toBe("total");
+    // La palanca gobierna el tramo desde su encabezado; la banda sólo responde.
+    expect(rows[3]?.emphasis).toBe("control");
+    expect(rows.slice(4).every((row) => row.emphasis === "answer")).toBe(true);
     expect(editRowIndices).toEqual([1, 3]);
   });
 
   it("con advanced_costs suma los costos fijos y sólo edita el margen", () => {
-    const { rows, highlightIndex, editRowIndices } = buildFinancialRows({
+    const { rows, editRowIndices } = buildFinancialRows({
       hasAdvancedCosts: true,
       costoDirectoTotal: 33,
       recipeFixedCosts: [
@@ -179,16 +214,42 @@ describe("buildFinancialRows", () => {
     });
 
     expect(rows.map((row) => row.label)).toEqual([
-      "Costo Insumos",
-      "Total Costos Fijos",
-      "Costo Total Receta",
+      "Insumos",
+      "Costos Fijos",
+      "Costo Total",
       "Margen Deseado",
+      "Costo Total",
+      "Precio Sugerido",
+      "Ganancia",
     ]);
     expect(rows[1]?.value).toBe("$13.30");
     expect(rows[2]?.value).toBe("$46.30");
     expect(rows[3]?.value).toBe("30%");
-    expect(highlightIndex).toBe(2);
+    // 46.30 / (1 - 0.30), con el mismo nombre de margen que sin la feature.
+    expect(rows[5]?.value).toBe("$66.14");
+    expect(rows[6]?.value).toBe("$19.84");
+    expect(rows[2]?.emphasis).toBe("total");
+    expect(rows[3]?.emphasis).toBe("control");
     expect(editRowIndices).toEqual([3]);
+  });
+
+  it("con varias mezclas traduce el total a promedio por mezcla", () => {
+    const { rows } = buildFinancialRows({
+      hasAdvancedCosts: false,
+      // El costo directo ya viene escalado por el multiplicador (4 × 33).
+      costoDirectoTotal: 132,
+      recipeFixedCosts: [],
+      multiplier: 4,
+      fixedCostsPercentageValue: 10,
+      desiredMarginValue: 30,
+    });
+
+    expect(rows[2]?.value).toBe("$145.20");
+    expect(rows[2]?.secondaryValue).toBe("≈ $36.30 por mezcla");
+    // La ganancia también se traduce cuando la tanda tiene varias mezclas.
+    expect(rows[5]?.value).toBe("$207.43");
+    expect(rows[6]?.value).toBe("$62.23");
+    expect(rows[6]?.subtitle).toBe("≈ $15.56 por mezcla");
   });
 });
 

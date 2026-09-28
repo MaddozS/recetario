@@ -24,7 +24,13 @@ const PRES_ROW_GRID_CLASSES =
 const CELL_LABEL_CLASSES =
   "text-subtle-foreground block text-[10px] font-black tracking-wider uppercase md:hidden";
 
-const COST_CARD_CLASSES = "bg-muted/40 rounded-xl border-l-[3px] p-3";
+/**
+ * Esquinas rectas a la izquierda: con radio, el borde de 3px se curva y la
+ * barra deja de verse como en el resumen financiero. La barra es neutra: un
+ * costo no es un peligro y el acento está reservado para acciones y selección.
+ */
+const COST_CARD_CLASSES =
+  "bg-muted/40 border-l-muted-foreground/30 rounded-r-xl border-l-[3px] p-3";
 
 /** Filas de presentación con margen ya resuelto (sin `null` en el template). */
 function presentationRows(recipe: ProductionRecipeResult) {
@@ -89,7 +95,7 @@ function presentationRows(recipe: ProductionRecipeResult) {
               Costos
             </h4>
             <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
-              <div :class="[COST_CARD_CLASSES, 'border-l-danger-solid/60']">
+              <div data-cost-card="insumos" :class="COST_CARD_CLASSES">
                 <p class="text-muted-foreground text-[11px] font-semibold">
                   Insumos
                 </p>
@@ -97,7 +103,7 @@ function presentationRows(recipe: ProductionRecipeResult) {
                   {{ formatCurrency(recipe.ingredientsCost) }}
                 </p>
               </div>
-              <div :class="[COST_CARD_CLASSES, 'border-l-muted-foreground/30']">
+              <div data-cost-card="operativos" :class="COST_CARD_CLASSES">
                 <p class="text-muted-foreground text-[11px] font-semibold">
                   Gastos operativos
                 </p>
@@ -105,7 +111,7 @@ function presentationRows(recipe: ProductionRecipeResult) {
                   {{ formatCurrency(recipe.operationalCost) }}
                 </p>
               </div>
-              <div :class="[COST_CARD_CLASSES, 'border-l-accent-400/60']">
+              <div data-cost-card="total" :class="COST_CARD_CLASSES">
                 <p class="text-muted-foreground text-[11px] font-semibold">
                   Total
                 </p>

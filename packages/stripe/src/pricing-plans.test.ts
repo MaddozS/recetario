@@ -8,6 +8,7 @@ vi.mock("@recetario/db", () => ({
 }));
 
 import { buildPricingPlans } from "./billing";
+import { TIER_CONFIG } from "./plans-config";
 
 describe("buildPricingPlans", () => {
   it("returns enriched free, basic, and pro plans", () => {
@@ -28,5 +29,38 @@ describe("buildPricingPlans", () => {
       currency: "MXN",
     });
     expect(plans[2]?.features.length).toBeGreaterThan(0);
+  });
+});
+
+/**
+ * La matriz de `/pricing` identifica cada fila por su etiqueta: la frase del
+ * plan cuando los tres coinciden, y una dimensión propia cuando las frases
+ * cambian ("Hasta 10 recetas" / "Hasta 75 recetas" / "Recetas ilimitadas" son
+ * tres frases, no un nombre). Sin este contrato, una fila con frases distintas
+ * y sin etiqueta degradaría la tabla en silencio: el encabezado acabaría siendo
+ * la frase de un solo plan.
+ */
+describe("etiquetas de fila de TIER_CONFIG", () => {
+  const tiers = Object.values(TIER_CONFIG);
+  const slots = Math.max(...tiers.map(({ features }) => features.length));
+
+  it("toda fila con frases distintas por plan declara la misma etiqueta", () => {
+    for (let index = 0; index < slots; index += 1) {
+      const features = tiers
+        .map(({ features }) => features[index])
+        .filter((feature) => feature !== undefined);
+      const texts = [...new Set(features.map(({ text }) => text))];
+      if (texts.length < 2) continue;
+
+      const context = `slot ${index} (${texts.join(" / ")})`;
+      const labels = [...new Set(features.map(({ label }) => label))];
+      expect(labels, context).toHaveLength(1);
+      expect(labels[0], context).toBeTruthy();
+    }
+  });
+
+  it("la forma del API conserva la etiqueta de fila", () => {
+    const [free] = buildPricingPlans([]);
+    expect(free?.features[0]?.label).toBe("Recetas");
   });
 });
