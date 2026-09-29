@@ -255,28 +255,35 @@ async function expectDocumentedIncomplete(
 }
 
 for (const path of PUBLIC_PAGES) {
-  test(`pública ${path}: sin violaciones blocking en 375 y 1280, claro y oscuro`, async ({
-    page,
-    goto,
-  }) => {
-    for (const theme of ["light", "dark"] as const) {
-      await page
-        .context()
-        .addCookies([{ name: "kitchcalc-theme", value: theme, url: url("/") }]);
-      for (const viewport of [MOBILE, DESKTOP]) {
-        await page.setViewportSize(viewport);
-        await goto(path, { waitUntil: "hydration" });
-        const { violations, incomplete } = await scan(page);
-        expectNoBlocking(
-          violations.map((finding) => ({
-            ...finding,
-            summary: `${theme} ${viewport.width}px · ${finding.summary}`,
-          })),
-        );
-        await expectDocumentedIncomplete(page, incomplete);
+  // Cada test hace 4 barridos completos (2 temas x 2 anchos) con ~11 análisis
+  // de axe por barrido. En el runner de CI, bastante más lento que local, la
+  // página `/` no cabe en el timeout por defecto de 30s y el test muere a
+  // mitad del recorrido; el presupuesto va por test para no inflar el resto.
+  test(
+    `pública ${path}: sin violaciones blocking en 375 y 1280, claro y oscuro`,
+    { timeout: 120_000 },
+    async ({ page, goto }) => {
+      for (const theme of ["light", "dark"] as const) {
+        await page
+          .context()
+          .addCookies([
+            { name: "kitchcalc-theme", value: theme, url: url("/") },
+          ]);
+        for (const viewport of [MOBILE, DESKTOP]) {
+          await page.setViewportSize(viewport);
+          await goto(path, { waitUntil: "hydration" });
+          const { violations, incomplete } = await scan(page);
+          expectNoBlocking(
+            violations.map((finding) => ({
+              ...finding,
+              summary: `${theme} ${viewport.width}px · ${finding.summary}`,
+            })),
+          );
+          await expectDocumentedIncomplete(page, incomplete);
+        }
       }
-    }
-  });
+    },
+  );
 }
 
 for (const path of AUTH_PAGES) {
@@ -343,33 +350,37 @@ const ACCENT_SURFACES = [
  * dark y emerald/amber/coral light); el arreglo vive en los componentes.
  */
 for (const path of ACCENT_SURFACES) {
-  test(`acentos ${path}: sin violaciones blocking en 7 familias x claro/oscuro`, async ({
-    page,
-    goto,
-  }) => {
-    await page.context().addCookies([
-      {
-        name: "better-auth.session_token",
-        value: "stub-session-token",
-        url: url("/"),
-      },
-    ]);
-    await page.setViewportSize(DESKTOP);
+  // 7 familias x 2 temas = 14 navegaciones con su análisis de axe por test.
+  // Corre holgado en local pero al límite del default de 30s en CI, así que
+  // lleva el mismo presupuesto amplio que el barrido público.
+  test(
+    `acentos ${path}: sin violaciones blocking en 7 familias x claro/oscuro`,
+    { timeout: 90_000 },
+    async ({ page, goto }) => {
+      await page.context().addCookies([
+        {
+          name: "better-auth.session_token",
+          value: "stub-session-token",
+          url: url("/"),
+        },
+      ]);
+      await page.setViewportSize(DESKTOP);
 
-    for (const accent of PREFERENCE_ACCENT_COLORS) {
-      for (const theme of ["light", "dark"] as const) {
-        await page.context().addCookies([
-          { name: "kitchcalc-accent", value: accent, url: url("/") },
-          { name: "kitchcalc-theme", value: theme, url: url("/") },
-        ]);
-        await goto(path, { waitUntil: "hydration" });
-        const { violations } = await scanOnce(page);
-        const serious = blocking(violations);
-        expect(
-          serious.length,
-          `${path} · acento ${accent} · ${theme}\n${describeFindings(serious)}`,
-        ).toBe(0);
+      for (const accent of PREFERENCE_ACCENT_COLORS) {
+        for (const theme of ["light", "dark"] as const) {
+          await page.context().addCookies([
+            { name: "kitchcalc-accent", value: accent, url: url("/") },
+            { name: "kitchcalc-theme", value: theme, url: url("/") },
+          ]);
+          await goto(path, { waitUntil: "hydration" });
+          const { violations } = await scanOnce(page);
+          const serious = blocking(violations);
+          expect(
+            serious.length,
+            `${path} · acento ${accent} · ${theme}\n${describeFindings(serious)}`,
+          ).toBe(0);
+        }
       }
-    }
-  });
+    },
+  );
 }
