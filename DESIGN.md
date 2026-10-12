@@ -120,7 +120,7 @@ components:
 
 # Design System: KitchCalc
 
-> **Nota (Task 13b).** Este documento describe el sistema de diseño (tokens, tipografía, elevación, motion y las APIs visuales de los componentes); sigue vigente. La **implementación de referencia** vive ahora en `apps/web/app/components/ui/**` y `apps/web/app/features/**` (Vue 3 + Nuxt), no en los archivos `.astro` que aparecen en §8–§10: esas rutas y ejemplos se conservan como referencia de la etapa previa a la migración.
+> **Nota.** Este documento describe el sistema de diseño (tokens, tipografía, elevación, motion y las APIs visuales de los componentes). La **implementación de referencia** vive en `apps/web/app/components/ui/**` y `apps/web/app/features/**` (Vue 3 + Nuxt 4).
 
 ## 1. Overview
 
@@ -356,13 +356,9 @@ import BillingSection from "~/features/billing/BillingSection.vue";
 
 ### Button
 
-**File:** `src/components/ui/Button.astro`
+**File:** `apps/web/app/components/ui/atoms/Button.vue`
 
-```astro
----
-import { Button } from "@/components/ui";
----
-
+```vue
 <Button variant="primary" icon="plus">Nueva Receta</Button>
 <Button variant="secondary">Cancelar</Button>
 <Button variant="danger" icon="trash-2">Eliminar</Button>
@@ -384,9 +380,9 @@ import { Button } from "@/components/ui";
 
 ### Card
 
-**File:** `src/components/ui/Card.astro`
+**File:** `apps/web/app/components/ui/molecules/Card.vue`
 
-```astro
+```vue
 <Card padding="md" hover>
   <!-- content -->
 </Card>
@@ -404,9 +400,9 @@ import { Button } from "@/components/ui";
 
 ### Input
 
-**File:** `src/components/ui/Input.astro`
+**File:** `apps/web/app/components/ui/atoms/Input.vue`
 
-```astro
+```vue
 <Input label="Nombre" name="name" required />
 <Input
   label="Precio"
@@ -432,9 +428,9 @@ import { Button } from "@/components/ui";
 
 ### Badge
 
-**File:** `src/components/ui/Badge.astro`
+**File:** `apps/web/app/components/ui/atoms/Badge.vue`
 
-```astro
+```vue
 <Badge variant="category" color="accent">Postres</Badge>
 <Badge variant="status" color="success">Activo</Badge>
 <Badge variant="tier" color="accent">Pro</Badge>
@@ -450,9 +446,9 @@ import { Button } from "@/components/ui";
 
 ### Dialog
 
-**File:** `src/components/ui/Dialog.astro`
+**File:** `apps/web/app/components/ui/organisms/Dialog.vue`
 
-```astro
+```vue
 <Dialog
   id="my-dialog"
   title="Confirmar"
@@ -476,7 +472,7 @@ Dialog uses native `<dialog>` with `data-animated` for enter/exit transitions. A
 
 ### FinancialSummary
 
-**File:** `src/components/ui/FinancialSummary.astro`
+**File:** `apps/web/app/components/ui/molecules/FinancialSummary.vue`
 
 A single-card layout for financial metrics — replaces the old 4-card icon-circle metric template. Like a restaurant POS receipt: a labeled header (title + scope chip) and label + mono value rows, no decorative chrome.
 
@@ -484,7 +480,7 @@ Every row declares its `group`; the card draws the section label (`.section-labe
 
 The section's lever carries `emphasis: "control"`: it renders in the section header, next to the label, as the editable field of the section (the margin). The rows with `emphasis: "answer"` render together inside the tinted accent band, each with the line that explains it: the base (what it costs to produce), the price (with which margin) and the profit (what is left) — the same resource as the system's metric pills and category badges. Cost rows stay in neutral ink: a red number reads as loss, and the accent is reserved for actions, selection, and focus (The One Voice Rule).
 
-```astro
+```vue
 <FinancialSummary
   title="Resumen financiero"
   scope="1 mezcla"
@@ -567,9 +563,9 @@ The section's lever carries `emphasis: "control"`: it renders in the section hea
 
 ### SectionHeading
 
-**File:** `src/components/ui/SectionHeading.astro`
+**File:** `apps/web/app/components/ui/atoms/SectionHeading.vue`
 
-```astro
+```vue
 <SectionHeading
   icon="factory"
   title="Planificador de Produccion"
