@@ -5,17 +5,20 @@ usePageSeo("/terms");
 </script>
 
 <template>
-  <article class="mx-auto max-w-3xl px-6 pt-24 pb-16">
-    <h1 class="landing-heading text-foreground text-3xl font-black md:text-4xl">
-      Términos del servicio
-    </h1>
-    <p class="text-muted-foreground mt-2 text-sm">
+  <LandingSection width="narrow">
+    <LandingSectionHeading
+      level="h1"
+      align="start"
+      eyebrow="Legal"
+      title="Términos del servicio"
+    />
+    <p class="text-muted-foreground mt-3 text-sm">
       Última actualización: mayo 2026
     </p>
 
-    <div class="text-secondary-foreground mt-10 space-y-6 leading-relaxed">
+    <div class="text-secondary-foreground mt-10 space-y-8 leading-relaxed">
       <section>
-        <h2 class="text-foreground mt-8 text-xl font-bold">1. Servicio</h2>
+        <h2 class="text-foreground text-xl font-bold">1. Servicio</h2>
         <p class="mt-2">
           KitchCalc es una herramienta web para calcular costos, márgenes y
           precios de recetas. El servicio se brinda "tal cual" y nos esforzamos
@@ -25,7 +28,7 @@ usePageSeo("/terms");
       </section>
 
       <section>
-        <h2 class="text-foreground mt-8 text-xl font-bold">2. Cuentas</h2>
+        <h2 class="text-foreground text-xl font-bold">2. Cuentas</h2>
         <p class="mt-2">
           Eres responsable de mantener la confidencialidad de tu contraseña y de
           toda actividad que ocurra bajo tu cuenta. Debes notificarnos
@@ -34,9 +37,7 @@ usePageSeo("/terms");
       </section>
 
       <section>
-        <h2 class="text-foreground mt-8 text-xl font-bold">
-          3. Planes y pagos
-        </h2>
+        <h2 class="text-foreground text-xl font-bold">3. Planes y pagos</h2>
         <p class="mt-2">
           Ofrecemos planes gratuitos y de pago. Las suscripciones se renuevan
           automáticamente al final del período contratado. Puedes cancelar en
@@ -47,9 +48,7 @@ usePageSeo("/terms");
       </section>
 
       <section>
-        <h2 class="text-foreground mt-8 text-xl font-bold">
-          4. Límites de uso
-        </h2>
+        <h2 class="text-foreground text-xl font-bold">4. Límites de uso</h2>
         <p class="mt-2">
           Cada plan tiene límites específicos de recetas e ingredientes. Si
           alcanzas el límite de tu plan, deberás actualizar a un plan superior
@@ -59,7 +58,7 @@ usePageSeo("/terms");
       </section>
 
       <section>
-        <h2 class="text-foreground mt-8 text-xl font-bold">
+        <h2 class="text-foreground text-xl font-bold">
           5. Propiedad de los datos
         </h2>
         <p class="mt-2">
@@ -70,7 +69,7 @@ usePageSeo("/terms");
       </section>
 
       <section>
-        <h2 class="text-foreground mt-8 text-xl font-bold">
+        <h2 class="text-foreground text-xl font-bold">
           6. Cancelación y eliminación
         </h2>
         <p class="mt-2">
@@ -80,9 +79,7 @@ usePageSeo("/terms");
       </section>
 
       <section>
-        <h2 class="text-foreground mt-8 text-xl font-bold">
-          7. Modificaciones
-        </h2>
+        <h2 class="text-foreground text-xl font-bold">7. Modificaciones</h2>
         <p class="mt-2">
           Podemos modificar estos términos en cualquier momento. Los cambios
           serán notificados a través de la aplicación. El uso continuado del
@@ -91,5 +88,13 @@ usePageSeo("/terms");
         </p>
       </section>
     </div>
-  </article>
+
+    <p class="text-muted-foreground mt-10 border-t border-border pt-6 text-sm">
+      ¿Dudas sobre estos términos?
+      <NuxtLink to="/#contact" class="text-accent-text focus-ring rounded font-bold">
+        Escríbenos
+      </NuxtLink>
+      .
+    </p>
+  </LandingSection>
 </template>

@@ -22,6 +22,7 @@ import type { LucideIconData } from "~/types/icons";
 
 import { __iconData as triangleAlertIcon } from "@lucide/vue/dist/esm/icons/triangle-alert.mjs";
 import { __iconData as arrowLeftIcon } from "@lucide/vue/dist/esm/icons/arrow-left.mjs";
+import { __iconData as arrowRightIcon } from "@lucide/vue/dist/esm/icons/arrow-right.mjs";
 import { __iconData as circleArrowUpIcon } from "@lucide/vue/dist/esm/icons/circle-arrow-up.mjs";
 import { __iconData as boldIcon } from "@lucide/vue/dist/esm/icons/bold.mjs";
 import { __iconData as bookOpenIcon } from "@lucide/vue/dist/esm/icons/book-open.mjs";
@@ -54,6 +55,7 @@ import { __iconData as listChecksIcon } from "@lucide/vue/dist/esm/icons/list-ch
 import { __iconData as listOrderedIcon } from "@lucide/vue/dist/esm/icons/list-ordered.mjs";
 import { __iconData as lockIcon } from "@lucide/vue/dist/esm/icons/lock.mjs";
 import { __iconData as logOutIcon } from "@lucide/vue/dist/esm/icons/log-out.mjs";
+import { __iconData as mailIcon } from "@lucide/vue/dist/esm/icons/mail.mjs";
 import { __iconData as mailCheckIcon } from "@lucide/vue/dist/esm/icons/mail-check.mjs";
 import { __iconData as maximizeIcon } from "@lucide/vue/dist/esm/icons/maximize-2.mjs";
 import { __iconData as menuIcon } from "@lucide/vue/dist/esm/icons/menu.mjs";
@@ -65,6 +67,7 @@ import { __iconData as packagePlusIcon } from "@lucide/vue/dist/esm/icons/packag
 import { __iconData as packageSearchIcon } from "@lucide/vue/dist/esm/icons/package-search.mjs";
 import { __iconData as paletteIcon } from "@lucide/vue/dist/esm/icons/palette.mjs";
 import { __iconData as pencilIcon } from "@lucide/vue/dist/esm/icons/pencil.mjs";
+import { __iconData as percentIcon } from "@lucide/vue/dist/esm/icons/percent.mjs";
 import { __iconData as plusIcon } from "@lucide/vue/dist/esm/icons/plus.mjs";
 import { __iconData as printerIcon } from "@lucide/vue/dist/esm/icons/printer.mjs";
 import { __iconData as refreshCwIcon } from "@lucide/vue/dist/esm/icons/refresh-cw.mjs";
@@ -78,6 +81,7 @@ import { __iconData as timerIcon } from "@lucide/vue/dist/esm/icons/timer.mjs";
 import { __iconData as trashIcon } from "@lucide/vue/dist/esm/icons/trash.mjs";
 import { __iconData as trendingUpIcon } from "@lucide/vue/dist/esm/icons/trending-up.mjs";
 import { __iconData as userIcon } from "@lucide/vue/dist/esm/icons/user.mjs";
+import { __iconData as usersIcon } from "@lucide/vue/dist/esm/icons/users.mjs";
 import { __iconData as xIcon } from "@lucide/vue/dist/esm/icons/x.mjs";
 import { __iconData as zapIcon } from "@lucide/vue/dist/esm/icons/zap.mjs";
 import { __iconData as zoomInIcon } from "@lucide/vue/dist/esm/icons/zoom-in.mjs";
@@ -85,6 +89,7 @@ import { __iconData as zoomInIcon } from "@lucide/vue/dist/esm/icons/zoom-in.mjs
 export const ICON_REGISTRY: Record<string, LucideIconData> = {
   "alert-triangle": triangleAlertIcon,
   "arrow-left": arrowLeftIcon,
+  "arrow-right": arrowRightIcon,
   "arrow-up-circle": circleArrowUpIcon,
   "bold": boldIcon,
   "book-open": bookOpenIcon,
@@ -117,6 +122,7 @@ export const ICON_REGISTRY: Record<string, LucideIconData> = {
   "list-ordered": listOrderedIcon,
   "lock": lockIcon,
   "log-out": logOutIcon,
+  "mail": mailIcon,
   "mail-check": mailCheckIcon,
   "maximize-2": maximizeIcon,
   "menu": menuIcon,
@@ -128,6 +134,7 @@ export const ICON_REGISTRY: Record<string, LucideIconData> = {
   "package-search": packageSearchIcon,
   "palette": paletteIcon,
   "pencil": pencilIcon,
+  "percent": percentIcon,
   "plus": plusIcon,
   "printer": printerIcon,
   "refresh-cw": refreshCwIcon,
@@ -141,6 +148,7 @@ export const ICON_REGISTRY: Record<string, LucideIconData> = {
   "trash-2": trashIcon,
   "trending-up": trendingUpIcon,
   "user": userIcon,
+  "users": usersIcon,
   "x": xIcon,
   "zap": zapIcon,
   "zoom-in": zoomInIcon,

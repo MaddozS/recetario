@@ -15,17 +15,31 @@ import { nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
  * criterio que el `tabindex="-1"` de `PreferencesSection`) porque el navegador
  * pintaba el anillo azul por defecto sobre todo el borde de la pantalla. El
  * primer Tab entra al botón de cierre, que sí lleva el anillo de marca.
+ *
+ * No monta `LandingThemeToggle`: el marketing es claro (lo fuerza `app.vue`), así
+ * que un botón de tema aquí no tendría a dónde ir. El toggle sigue en el layout
+ * de auth.
  */
-const SECTIONS = ["features", "how-it-works", "pricing"] as const;
-const NAV_LINKS = [
-  { href: "/#features", label: "Funciones" },
-  { href: "/#how-it-works", label: "Cómo funciona" },
-  { href: "/#pricing", label: "Precios" },
-] as const;
+interface NavLink {
+  readonly href: string;
+  readonly label: string;
+  /** Ancla del landing que este enlace resalta mientras está en viewport. */
+  readonly section?: string;
+}
+
+/** El nav es el índice del sitio, no sólo del scroll: "Funciones" abre la página. */
+const NAV_LINKS: readonly NavLink[] = [
+  { href: "/funciones", label: "Funciones" },
+  { href: "/#how-it-works", label: "Cómo funciona", section: "how-it-works" },
+  { href: "/#pricing", label: "Precios", section: "pricing" },
+  { href: "/#contact", label: "Contacto", section: "contact" },
+];
+
+const SCROLL_SPY_SECTIONS = ["how-it-works", "pricing", "contact"] as const;
 
 const { isAuthenticated } = useAuth();
 const route = useRoute();
-const activeSection = useLandingScrollSpy(SECTIONS);
+const activeSection = useLandingScrollSpy(SCROLL_SPY_SECTIONS);
 
 const menuOpen = ref(false);
 const menuButton = ref<HTMLButtonElement | null>(null);
@@ -100,8 +114,9 @@ onBeforeUnmount(() => {
   setBackgroundInert(false);
 });
 
-function isActive(href: string): boolean {
-  return href === `/#${activeSection.value}`;
+function isActive(link: NavLink): boolean {
+  if (!link.section) return route.path === link.href;
+  return route.path === "/" && activeSection.value === link.section;
 }
 </script>
 
@@ -126,7 +141,10 @@ function isActive(href: string): boolean {
         >
           <Icon name="lucide:menu" :size="20" />
         </button>
-        <NuxtLink to="/" class="focus-ring flex shrink-0 items-center gap-2.5 rounded-xl">
+        <NuxtLink
+          to="/"
+          class="focus-ring flex shrink-0 items-center gap-2.5 rounded-xl"
+        >
           <img
             src="/kitchcalc_logo.svg"
             alt="KitchCalc"
@@ -138,28 +156,25 @@ function isActive(href: string): boolean {
         </NuxtLink>
       </div>
 
-      <div class="hidden items-center gap-6 md:flex">
-        <a
+      <div class="hidden items-center gap-7 md:flex">
+        <NuxtLink
           v-for="link in NAV_LINKS"
           :key="link.href"
-          :href="link.href"
+          :to="link.href"
           class="text-muted-foreground hover:text-foreground focus-ring rounded text-sm font-medium transition-colors"
-          :class="{ 'text-accent-text': isActive(link.href) }"
-          :data-spy-active="isActive(link.href) ? '1' : undefined"
+          :aria-current="isActive(link) && !link.section ? 'page' : undefined"
+          :data-spy-active="isActive(link) ? '1' : undefined"
         >
           {{ link.label }}
-        </a>
+        </NuxtLink>
       </div>
 
-      <div class="flex items-center gap-3">
-        <LandingThemeToggle />
-        <Button
-          variant="primary"
-          :href="isAuthenticated ? '/recipes' : '/sign-in'"
-        >
-          {{ isAuthenticated ? "Ir a la app" : "Comenzar gratis" }}
-        </Button>
-      </div>
+      <Button
+        variant="primary"
+        :href="isAuthenticated ? '/recipes' : '/sign-in'"
+      >
+        {{ isAuthenticated ? "Ir a la app" : "Comenzar gratis" }}
+      </Button>
     </div>
   </nav>
 
@@ -197,19 +212,17 @@ function isActive(href: string): boolean {
         </button>
       </div>
       <nav class="mt-8 space-y-5">
-        <a
+        <NuxtLink
           v-for="link in NAV_LINKS"
           :key="link.href"
-          :href="link.href"
+          :to="link.href"
           class="text-foreground hover:text-accent-text focus-ring block rounded text-lg font-medium transition-colors"
+          :aria-current="isActive(link) && !link.section ? 'page' : undefined"
           @click="closeMenu"
         >
           {{ link.label }}
-        </a>
+        </NuxtLink>
       </nav>
-      <div class="mt-8">
-        <LandingThemeToggle />
-      </div>
     </div>
   </div>
 </template>

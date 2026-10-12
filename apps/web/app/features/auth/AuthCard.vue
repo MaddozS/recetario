@@ -3,6 +3,10 @@
  * Tarjeta de las cinco páginas de auth (paridad con el markup del baseline): barra
  * de acento superior, cabecera opcional con icono y h1, y slot para el
  * formulario o los estados.
+ *
+ * La cabecera usa la misma familia y el mismo `landing-heading` que las
+ * públicas: el login quedaba con el h1 en la fuente de sistema mientras el
+ * marketing titulaba en Outfit, y era el salto más visible al entrar.
  */
 withDefaults(
   defineProps<{
@@ -17,7 +21,7 @@ withDefaults(
 
 <template>
   <div
-    class="bg-card relative w-full max-w-sm rounded-2xl p-6 pt-8 shadow-lg sm:p-10 sm:pt-12"
+    class="bg-card border-border relative w-full max-w-sm rounded-2xl border p-6 pt-8 shadow-lg sm:p-10 sm:pt-12"
     :class="{ 'text-center': centered }"
   >
     <div
@@ -32,7 +36,11 @@ withDefaults(
       >
         <Icon :name="`lucide:${icon}`" :size="28" class="text-accent-600" />
       </div>
-      <h1 class="text-foreground text-2xl font-black">{{ title }}</h1>
+      <h1
+        class="landing-heading text-foreground font-display text-2xl font-black"
+      >
+        {{ title }}
+      </h1>
       <p v-if="subtitle" class="text-muted-foreground mt-1 text-sm">
         {{ subtitle }}
       </p>

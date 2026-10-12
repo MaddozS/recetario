@@ -16,13 +16,19 @@ export interface PublicPageSeo {
   readonly description: string;
 }
 
-/** Las cuatro rutas indexables aprobadas: metadata, sitemap y allow de robots. */
+/** Las cinco rutas indexables aprobadas: metadata, sitemap y allow de robots. */
 export const PUBLIC_PAGES = [
   {
     path: "/",
     title: "KitchCalc | Calcula el costo real de tus recetas",
     description:
       "Gestiona costos, márgenes y precios de tus recetas de forma simple y rápida.",
+  },
+  {
+    path: "/funciones",
+    title: "Funciones | KitchCalc",
+    description:
+      "Qué hace cada módulo de KitchCalc: costeo de recetas, ingredientes y precios de compra, planificador de producción, costos fijos y márgenes. Con capturas reales del producto.",
   },
   {
     path: "/pricing",
@@ -133,7 +139,7 @@ export interface RobotsTxtOptions {
 
 /**
  * Sin indexación (staging, dev, e2e sin flag) se bloquea todo; con indexación
- * sólo se permiten las cuatro rutas públicas y el resto queda fuera.
+ * sólo se permiten las cinco rutas públicas y el resto queda fuera.
  */
 export function buildRobotsTxt({
   siteUrl,

@@ -374,7 +374,7 @@ test("preferencias: cambiar de pestaña descarta el preview sin persistir", asyn
   ).toBe("dark");
 });
 
-test("el toggle del landing persiste con sesión y no con anónimo", async ({
+test("el toggle del login persiste con sesión y no con anónimo", async ({
   page,
   goto,
   request,
@@ -382,7 +382,11 @@ test("el toggle del landing persiste con sesión y no con anónimo", async ({
   await resetSettings(request);
   await signIn(page);
   await page.setViewportSize(DESKTOP);
-  await goto("/", { waitUntil: "hydration" });
+
+  // El login es la única superficie pública que conserva el toggle (el
+  // marketing se fuerza claro). `/forgot-password` no lleva el middleware
+  // `guest`, así que un usuario con sesión sí puede llegar a su cabecera.
+  await goto("/forgot-password", { waitUntil: "hydration" });
 
   // La sesión arranca en dark (preferencia del stub): el toggle pasa a light.
   const authenticatedToggle = page.locator("nav [data-theme-toggle]").first();
@@ -396,7 +400,7 @@ test("el toggle del landing persiste con sesión y no con anónimo", async ({
   // Anónimo: mismo gesto, sin PUT (no hay autoridad remota).
   await page.context().clearCookies();
   await resetSettings(request);
-  await goto("/", { waitUntil: "hydration" });
+  await goto("/sign-in", { waitUntil: "hydration" });
   await page.locator("nav [data-theme-toggle]").first().click();
   await expect(page.locator("html")).toHaveClass(/dark/);
 

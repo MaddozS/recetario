@@ -21,21 +21,27 @@ import {
  *    activo del navbar, `a[data-spy-active]`— sólo existe mientras su sección
  *    está en viewport: sin scrollear, el nodo ni siquiera está marcado. Ahora el
  *    barrido recorre la página por tramos y une los hallazgos de cada uno.
- * 2. Las públicas sólo se medían en claro; ahora se recorren los dos temas con
- *    la cookie de presentación, como ya hacía la suite de acentos.
+ * 2. Las públicas se recorren por tramos, en sus dos anchos. La matriz de tema
+ *    sigue viva en las superficies privadas (`ACCENT_SURFACES`): el marketing se
+ *    fuerza claro (`app.vue`), así que ahí una pasada oscura medía el mismo
+ *    documento con otro valor de cookie.
  *
  * `incomplete` no se vuelve bloqueante a ciegas ni se ignora: axe no puede
- * decidir el fondo de todo texto que cae sobre un `background-image` (degradados
- * del hero, de "cómo funciona", de la banda CTA y del scroller de planes), así
- * que cada nodo `color-contrast` incompleto tiene que estar en
- * `DOCUMENTED_INCOMPLETE`, con regla, selector, motivo y el ratio que mide la
- * sonda de píxeles de `contrast.spec.ts`. Un nodo incompleto sin documentar falla
- * la suite con la lista de los que faltan.
+ * decidir el fondo del texto que cae sobre un `background-image`, así que todo
+ * nodo `color-contrast` incompleto tiene que estar en `DOCUMENTED_INCOMPLETE`
+ * (regla, selector, motivo y el ratio que mide la sonda de píxeles de
+ * `contrast.spec.ts`). Un nodo incompleto sin documentar falla la suite con la
+ * lista de los que faltan.
+ *
+ * La lista está **vacía a propósito**: el rediseño quitó los degradados
+ * decorativos (fondo del hero, lavado de "cómo funciona" y banda CTA) y con
+ * ellos los nodos que axe no podía juzgar. Es un gate fail-closed: si alguien
+ * vuelve a poner texto sobre una imagen de fondo, el barrido falla y obliga a
+ * documentarlo con el ratio medido.
  *
  * Las suites de auth, privadas y acentos siguen con un barrido de un solo estado
  * (`scanOnce`) y asertan sólo `violations`, como antes: su deuda no depende del
- * scroll, y el contrato de `incomplete` documentado cubre las superficies
- * públicas, que son las que montan degradados decorativos.
+ * scroll.
  */
 
 type AnalyzeResult = Awaited<ReturnType<AxeBuilder["analyze"]>>;
@@ -52,7 +58,7 @@ type Finding = {
 const MOBILE = { width: 375, height: 800 };
 const DESKTOP = { width: 1280, height: 800 };
 
-const PUBLIC_PAGES = ["/", "/pricing", "/privacy", "/terms"] as const;
+const PUBLIC_PAGES = ["/", "/funciones", "/pricing", "/privacy", "/terms"] as const;
 const AUTH_PAGES = ["/sign-in"] as const;
 const PRIVATE_PAGES = [
   "/recipes",
@@ -70,51 +76,16 @@ const PRIVATE_PAGES = [
  * `contrast.spec.ts` en el peor punto de esos nodos: si baja de AA, ese gate
  * falla antes de que este se quede corto.
  *
- * Si la lista crece, es deuda nueva: cada entrada existe porque axe no puede
- * decidir el fondo, no porque el par esté exento.
+ * Hoy no hay ninguno en las públicas (el texto ya no cae sobre degradados). Cada
+ * entrada futura es deuda nueva y existe sólo porque axe no puede decidir el
+ * fondo, nunca porque el par esté exento.
  */
 const DOCUMENTED_INCOMPLETE: {
   rule: string;
   selector: string;
   reason: string;
   ratio: string;
-}[] = [
-  {
-    rule: "color-contrast",
-    selector: "[data-landing-hero]",
-    reason:
-      "El hero va sobre `.hero-bg` (dos degradados radiales + el patrón de líneas): axe no puede componer el fondo. Incluye h1, párrafo, CTA secundario, tarjeta de costo y la nota de plan gratis.",
-    ratio: "claro 4.69:1 (h1 sobre el lavado) · oscuro 9.40:1",
-  },
-  {
-    rule: "color-contrast",
-    selector: "#features",
-    reason:
-      "Titular y entradilla dentro de un bloque `[data-reveal]` con el patrón del hero detrás.",
-    ratio: "claro 5.66:1 · oscuro 6.94:1",
-  },
-  {
-    rule: "color-contrast",
-    selector: "#how-it-works",
-    reason:
-      "La sección pinta un degradado radial de acento sobre `bg-muted`: axe no compone el lavado, ni en el eyebrow, ni en los pasos.",
-    ratio: "claro 5.03:1 (entradilla) · oscuro 4.73:1",
-  },
-  {
-    rule: "color-contrast",
-    selector: "#pricing",
-    reason:
-      "Las cards viven en el scroller con degradado de corte (`bg-linear-to-r` en móvil) y la card Pro se tiñe con el acento; el fondo de cada fila no es resoluble para axe.",
-    ratio: "claro 4.59:1 · oscuro 5.53:1",
-  },
-  {
-    rule: "color-contrast",
-    selector: "#cta",
-    reason:
-      "La banda CTA combina relleno de acento, un degradado diagonal, el patrón cónico y dos lavados blancos: el fondo real bajo el titular y el párrafo sólo es medible a píxel.",
-    ratio: "claro 4.68:1 (titular) · oscuro 4.81:1",
-  },
-];
+}[] = [];
 
 function flatten(
   result: AnalyzeResult,
@@ -255,32 +226,25 @@ async function expectDocumentedIncomplete(
 }
 
 for (const path of PUBLIC_PAGES) {
-  // Cada test hace 4 barridos completos (2 temas x 2 anchos) con ~11 análisis
-  // de axe por barrido. En el runner de CI, bastante más lento que local, la
-  // página `/` no cabe en el timeout por defecto de 30s y el test muere a
-  // mitad del recorrido; el presupuesto va por test para no inflar el resto.
+  // Cada test hace 2 barridos completos (2 anchos) con ~11 análisis de axe por
+  // barrido. En el runner de CI, bastante más lento que local, la página `/` no
+  // cabe en el timeout por defecto de 30s y el test muere a mitad del
+  // recorrido; el presupuesto va por test para no inflar el resto.
   test(
-    `pública ${path}: sin violaciones blocking en 375 y 1280, claro y oscuro`,
+    `pública ${path}: sin violaciones blocking en 375 y 1280`,
     { timeout: 120_000 },
     async ({ page, goto }) => {
-      for (const theme of ["light", "dark"] as const) {
-        await page
-          .context()
-          .addCookies([
-            { name: "kitchcalc-theme", value: theme, url: url("/") },
-          ]);
-        for (const viewport of [MOBILE, DESKTOP]) {
-          await page.setViewportSize(viewport);
-          await goto(path, { waitUntil: "hydration" });
-          const { violations, incomplete } = await scan(page);
-          expectNoBlocking(
-            violations.map((finding) => ({
-              ...finding,
-              summary: `${theme} ${viewport.width}px · ${finding.summary}`,
-            })),
-          );
-          await expectDocumentedIncomplete(page, incomplete);
-        }
+      for (const viewport of [MOBILE, DESKTOP]) {
+        await page.setViewportSize(viewport);
+        await goto(path, { waitUntil: "hydration" });
+        const { violations, incomplete } = await scan(page);
+        expectNoBlocking(
+          violations.map((finding) => ({
+            ...finding,
+            summary: `${viewport.width}px · ${finding.summary}`,
+          })),
+        );
+        await expectDocumentedIncomplete(page, incomplete);
       }
     },
   );

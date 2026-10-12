@@ -25,7 +25,7 @@ test("la landing responde 200, hidrata sin errores y muestra sus secciones", asy
   await page.setViewportSize(MOBILE);
   await expect(page.getByRole("button", { name: "Abrir menú" })).toBeVisible();
   await expect(page.locator("#features").getByRole("heading", { level: 2 })).toHaveText(
-    "Todo lo que necesitas para costear",
+    "Cada número, trazable",
   );
 
   await page.setViewportSize(DESKTOP);

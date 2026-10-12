@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { isCoralAccentPath } from "#shared/utils/seo";
+import { isCoralAccentPath, isPublicMarketingPath } from "#shared/utils/seo";
 import { getAccentCssVars } from "~/utils/accent-colors";
 
 const route = useRoute();
@@ -12,15 +12,23 @@ const effectiveAccent = computed(() =>
   isCoralAccentPath(route.path) ? "coral" : accent.value,
 );
 
+// El marketing es claro y punto: no ofrece modo oscuro, así que ignora la
+// preferencia guardada en lugar de pintarla a medias (los componentes que
+// elegían captura por tema ya no existen). Las de auth no entran aquí: conservan
+// su toggle. El script anti-FOUC de `nuxt.config` lee `data-theme`, así que el
+// primer paint ya sale claro sin tocar el script.
+const forceLight = computed(() => isPublicMarketingPath(route.path));
+const effectiveDark = computed(() => !forceLight.value && isDark.value);
+
 const accentCssVars = computed(() =>
-  getAccentCssVars(effectiveAccent.value, isDark.value ? "dark" : "light"),
+  getAccentCssVars(effectiveAccent.value, effectiveDark.value ? "dark" : "light"),
 );
 
 useHead({
   htmlAttrs: {
-    "data-theme": theme,
+    "data-theme": computed(() => (forceLight.value ? "light" : theme.value)),
     "data-accent": effectiveAccent,
-    class: computed(() => (isDark.value ? "dark" : "")),
+    class: computed(() => (effectiveDark.value ? "dark" : "")),
     style: accentCssVars,
   },
 });

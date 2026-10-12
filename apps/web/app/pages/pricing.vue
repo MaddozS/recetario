@@ -129,7 +129,7 @@ async function subscribe(plan: PricingPlan): Promise<void> {
 </script>
 
 <template>
-  <section class="mx-auto max-w-6xl px-4 pt-24 pb-16 sm:px-6">
+  <LandingSection>
     <div
       v-if="showSuccessBanner"
       class="border-success-border bg-success-bg mb-6 rounded-2xl border p-4"
@@ -167,21 +167,18 @@ async function subscribe(plan: PricingPlan): Promise<void> {
       icon="arrow-left"
       href="/settings?tab=billing"
       size="sm"
-      class="mb-6"
+      class="mb-8"
     >
       Volver a Facturación
     </Button>
 
-    <div class="mb-8 text-center">
-      <h1 class="landing-heading text-foreground font-display text-3xl font-black">
-        Planes y precios
-      </h1>
-      <p class="text-muted-foreground mt-2">
-        Elige el plan que mejor se adapte a tu negocio.
-      </p>
-    </div>
+    <LandingSectionHeading
+      level="h1"
+      title="Planes y precios"
+      description="Elige el plan que mejor se adapte a tu negocio."
+    />
 
-    <div class="mb-8 flex justify-center">
+    <div class="mt-10 mb-8 flex justify-center">
       <BillingIntervalToggle v-model="interval" />
     </div>
 
@@ -212,14 +209,18 @@ async function subscribe(plan: PricingPlan): Promise<void> {
         :featured="plan.id === RECOMMENDED_PLAN_ID"
         :highlighted="plan.id === highlightedPlan"
       >
-        <Badge
-          v-if="plan.badge"
-          variant="tier"
-          :color="plan.id === RECOMMENDED_PLAN_ID ? 'accent' : 'success'"
-          class="mb-4 self-start"
-        >
-          {{ plan.badge.text }}
-        </Badge>
+        <!-- El slot del badge se reserva en las tres cards: sin él, el plan sin
+             badge adelantaba su titular y las columnas dejaban de compararse en
+             la misma línea. -->
+        <div class="mb-4 flex h-6 items-center">
+          <Badge
+            v-if="plan.badge"
+            variant="tier"
+            :color="plan.id === RECOMMENDED_PLAN_ID ? 'accent' : 'success'"
+          >
+            {{ plan.badge.text }}
+          </Badge>
+        </div>
 
         <h2 class="text-foreground text-xl font-black">{{ plan.name }}</h2>
         <p class="text-muted-foreground mt-1 text-sm">
@@ -259,5 +260,5 @@ async function subscribe(plan: PricingPlan): Promise<void> {
     </div>
 
     <PlanComparison :plans="plans" :current-plan-id="comparisonCurrentPlan" />
-  </section>
+  </LandingSection>
 </template>

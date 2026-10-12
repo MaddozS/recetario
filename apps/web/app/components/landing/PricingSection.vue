@@ -16,12 +16,9 @@ import type { BillingInterval } from "~/features/billing/billing-interval";
  * Sección `#pricing` de la landing: superficie de **decisión**, con scroll
  * horizontal con snap en móvil y tres columnas en desktop.
  *
- * Cada card llevaba el catálogo completo (14 filas, las mismas que `/pricing`),
- * así que comparar dos planes era memorizar dos listas y el plan recomendado
- * quedaba a dos swipes. Ahora la card muestra sus **destacados** (lo incluido y
- * disponible que no está en el plan Free, con tope de 5 y el recorte dicho en
- * texto) y el catálogo completo vive en `/pricing`, que es la superficie de
- * comparación.
+ * Cada card muestra sus **destacados** (lo incluido y disponible que no está en
+ * el plan Free, con tope de 5 y el recorte dicho en texto) y el catálogo
+ * completo vive en `/pricing`, que es la superficie de comparación.
  *
  * El orden de las cards es el mismo que el de `/pricing` (recomendado primero):
  * el CTA decide por sesión (el anónimo pasa por sign-in) y el checkout vive en
@@ -66,20 +63,18 @@ function ctaLabel(plan: PricingPlan): string {
 </script>
 
 <template>
-  <section id="pricing" v-reveal class="bg-background py-24 md:py-32">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 xl:px-8">
-      <div v-reveal class="mx-auto max-w-2xl text-center">
-        <h2
-          class="landing-heading text-foreground font-display text-3xl font-black md:text-4xl"
-        >
-          Planes y precios
-        </h2>
-        <p class="text-muted-foreground mt-4 text-lg">
-          Elige el plan que mejor se adapte a tu negocio.
-        </p>
-      </div>
+  <LandingSection id="pricing">
+    <LandingSectionHeading
+      eyebrow="Precios"
+      title="Planes y precios"
+      description="Empieza gratis y sube cuando el negocio lo pida. Sin contratos ni permanencia."
+    />
 
-      <div v-reveal class="mt-8 flex justify-center">
+    <!-- El `v-reveal` va en el envoltorio (y no en la sección) porque las cards
+         llevan `reveal-item`: sin un ancestro con `reveal-visible` quedarían en
+         opacidad 0. -->
+    <div v-reveal>
+      <div class="mt-8 flex justify-center">
         <BillingIntervalToggle v-model="interval" />
       </div>
 
@@ -123,14 +118,18 @@ function ctaLabel(plan: PricingPlan): string {
             ]"
             :style="`--reveal-delay: ${index * 100}ms`"
           >
-            <Badge
-              v-if="plan.badge"
-              variant="tier"
-              :color="featured ? 'accent' : 'success'"
-              class="mb-4 self-start"
-            >
-              {{ plan.badge.text }}
-            </Badge>
+            <!-- El slot del badge se reserva en las tres cards: sin él, el plan
+                 sin badge adelantaba su titular y las tres columnas dejaban de
+                 compararse en la misma línea. -->
+            <div class="mb-4 flex h-6 items-center">
+              <Badge
+                v-if="plan.badge"
+                variant="tier"
+                :color="featured ? 'accent' : 'success'"
+              >
+                {{ plan.badge.text }}
+              </Badge>
+            </div>
 
             <h3 class="text-foreground text-xl font-black break-words">
               {{ plan.name }}
@@ -187,7 +186,7 @@ function ctaLabel(plan: PricingPlan): string {
         </p>
       </div>
     </div>
-  </section>
+  </LandingSection>
 </template>
 
 <style>

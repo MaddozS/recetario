@@ -7,13 +7,14 @@
       Saltar al contenido
     </a>
 
-    <nav
-      class="border-border bg-background/80 fixed inset-x-0 top-0 z-50 border-b backdrop-blur-xl"
-    >
+    <nav class="border-border bg-background fixed inset-x-0 top-0 z-50 border-b shadow-sm">
       <div
-        class="mx-auto flex h-16 max-w-7xl items-center justify-between px-6"
+        class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6"
       >
-        <NuxtLink to="/" class="flex shrink-0 items-center gap-2.5">
+        <NuxtLink
+          to="/"
+          class="focus-ring flex shrink-0 items-center gap-2.5 rounded-xl"
+        >
           <img
             src="/kitchcalc_logo.svg"
             alt="KitchCalc"
@@ -21,6 +22,8 @@
           />
           <span class="text-foreground text-lg font-black">KitchCalc</span>
         </NuxtLink>
+        <!-- Único sitio donde queda el toggle: el marketing es claro, el login
+             conserva la preferencia del usuario. -->
         <LandingThemeToggle />
       </div>
     </nav>

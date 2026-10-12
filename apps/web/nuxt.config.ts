@@ -31,7 +31,7 @@ export default defineNuxtConfig({
       // Canonical absoluto, sitemap y `og:url`. Se sobrescribe por entorno con
       // `NUXT_PUBLIC_SITE_URL` (Nitro parsea los valores del runtime con destr).
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL ?? SITE_URL_DEFAULT,
-      // Fail-closed: sin `NUXT_PUBLIC_INDEXABLE=true` las cuatro públicas emiten
+      // Fail-closed: sin `NUXT_PUBLIC_INDEXABLE=true` las cinco públicas emiten
       // `noindex,nofollow` y `robots.txt` bloquea el sitio completo (staging).
       indexable: process.env.NUXT_PUBLIC_INDEXABLE === "true",
     },

@@ -1,105 +1,174 @@
 <script setup lang="ts">
 /**
- * Pasos del landing. Los `reveal-item` con `--reveal-delay` se revelan cuando
- * el contenedor de la sección entra en viewport (directiva `v-reveal`).
+ * Cómo funciona: los tres pasos a la izquierda y, al lado, la cuenta que
+ * producen, con la aritmética declarada (`+`, `=`).
+ *
+ * Antes eran tres pasos con un chip decorativo cada uno, y los números no
+ * cuadraban entre sí (`Harina: $15.00/kg` con un `$22.40` de costo base de tres
+ * ingredientes). Ahora la cuenta es la del producto y se puede verificar:
+ *
+ *   Insumos         1.000 kg × $15.00 + 0.250 kg × $24.00 + 0.125 kg × $96.00 = $33.00
+ *   + Operativos    10% del costo directo                                     =  $3.30
+ *   = Costo total                                                              $36.30
+ *   Precio de venta = costo / (1 - 0.40) = 36.30 / 0.6                         $60.50
+ *   Ganancia        = 60.50 - 36.30                                            $24.20
+ *
+ * La última línea usa la misma fórmula que `computeSuggestedBatchPrice`.
  */
-interface Step {
-  number: string;
-  title: string;
-  description: string;
-  stat: string;
+interface CostRow {
+  label: string;
+  note: string;
+  value: string;
+  op?: "+" | "=";
+  total?: boolean;
 }
 
-const STEPS: readonly Step[] = [
+const STEPS = [
   {
     number: "01",
     title: "Registra tus ingredientes",
     description:
-      "Carga tus ingredientes con precios de compra, unidades y proveedores. El sistema calcula los costos automáticamente.",
-    stat: "Harina: $15.00/kg · Azúcar: $23.56/kg",
+      "Cargas cómo compras cada insumo y a qué precio. KitchCalc calcula el costo por unidad de receta, con la conversión incluida.",
+    detail: "Harina $15.00/kg · Azúcar $24.00/kg · Mantequilla $96.00/kg",
   },
   {
     number: "02",
-    title: "Crea tus recetas",
+    title: "Arma la receta",
     description:
-      "Agrega ingredientes con cantidades exactas a cada receta. El costo base se actualiza al instante.",
-    stat: "3 ingredientes · $22.40 costo base",
+      "Agregas ingredientes con su cantidad exacta. El costo de la mezcla se actualiza en el momento, sin recalcular a mano.",
+    detail: "3 ingredientes · $33.00 de insumos por lote",
   },
   {
     number: "03",
-    title: "Optimiza tus precios",
+    title: "Ajusta el margen y cobra",
     description:
-      "Visualiza costos, márgenes y precios sugeridos. Ajusta y exporta tu receta al instante.",
-    stat: "Precio sugerido: $33.60 con margen 50%",
+      "Mueves el margen y ves el precio de venta y la ganancia al instante. El mismo número que usarás para la carta.",
+    detail: "Margen 40% → $60.50 de precio sugerido",
+  },
+] as const;
+
+const COST_ROWS: readonly CostRow[] = [
+  {
+    label: "Insumos",
+    note: "Harina, azúcar y mantequilla",
+    value: "$33.00",
+  },
+  {
+    label: "Gastos operativos",
+    note: "10% del costo directo",
+    value: "$3.30",
+    op: "+",
+  },
+  {
+    label: "Costo total",
+    note: "Lo que cuesta producir",
+    value: "$36.30",
+    op: "=",
+    total: true,
   },
 ];
+
+const PRICE_ROWS = [
+  { label: "Precio de venta", note: "Con 40% de margen", value: "$60.50" },
+  { label: "Ganancia", note: "Después de costos", value: "$24.20" },
+] as const;
 </script>
 
 <template>
-  <section
-    id="how-it-works"
-    v-reveal
-    class="bg-muted relative overflow-hidden py-24 md:py-32"
-  >
-    <div
-      aria-hidden="true"
-      class="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_25%,color-mix(in_oklab,var(--aw-accent-200)_45%,transparent)_0%,transparent_70%)]"
+  <LandingSection id="how-it-works" tone="muted">
+    <LandingSectionHeading
+      eyebrow="Cómo funciona"
+      title="Del ingrediente al precio final"
+      description="Tres pasos, una cuenta. Al final tienes el costo, el precio y lo que te queda."
     />
 
-    <div class="relative z-10 mx-auto max-w-7xl px-6">
-      <div v-reveal class="mx-auto max-w-2xl text-center">
-        <p
-          class="text-accent-text mb-3 text-xs font-bold tracking-[0.16em] uppercase"
-        >
-          Cómo funciona
-        </p>
-        <h2
-          class="landing-heading text-foreground font-display text-3xl font-black md:text-4xl"
-        >
-          Del ingrediente al precio final
-        </h2>
-        <p class="text-muted-foreground mt-4 text-lg">
-          Tres pasos para tener el control de tus costos.
-        </p>
-      </div>
-
-      <div class="relative mx-auto mt-16 sm:mt-24">
-        <div class="mx-auto max-w-3xl space-y-12 md:space-y-16">
-          <div
-            v-for="(step, index) in STEPS"
-            :key="step.number"
-            class="reveal-item"
-            :style="`--reveal-delay: ${index * 150}ms`"
+    <div
+      v-reveal
+      class="mt-14 grid items-start gap-12 lg:grid-cols-2 lg:gap-16"
+    >
+      <ol class="space-y-8">
+        <li v-for="step in STEPS" :key="step.number" class="flex gap-5">
+          <span
+            class="text-accent-text pt-1 font-mono text-sm font-bold tabular-nums"
           >
-            <div class="flex items-start gap-5">
-              <div
-                class="bg-accent-solid text-text-on-accent flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-sm font-black"
-              >
-                {{ step.number }}
-              </div>
-              <div class="min-w-0 flex-1">
-                <h3 class="text-foreground text-xl font-bold md:text-2xl">
-                  {{ step.title }}
-                </h3>
-                <p
-                  class="text-muted-foreground mt-1.5 text-sm leading-relaxed md:text-base"
-                >
-                  {{ step.description }}
-                </p>
-                <div
-                  class="bg-card border-border mt-4 inline-flex items-center rounded-xl border px-4 py-2.5 text-sm shadow-sm"
-                >
-                  <span
-                    class="text-secondary-foreground font-mono text-xs font-medium tabular-nums"
-                  >
-                    {{ step.stat }}
-                  </span>
-                </div>
-              </div>
-            </div>
+            {{ step.number }}
+          </span>
+          <div class="min-w-0">
+            <h3 class="text-foreground text-xl font-bold">{{ step.title }}</h3>
+            <p class="text-secondary-foreground mt-1.5 leading-relaxed">
+              {{ step.description }}
+            </p>
+            <p
+              class="text-muted-foreground mt-2.5 font-mono text-xs tabular-nums"
+            >
+              {{ step.detail }}
+            </p>
           </div>
-        </div>
+        </li>
+      </ol>
+
+      <div
+        data-cost-receipt
+        class="bg-card border-border rounded-2xl border p-6 shadow-sm sm:p-7"
+      >
+        <p class="section-label">La cuenta de la receta</p>
+        <p class="text-muted-foreground mt-1 text-sm">
+          Pan de elote · 1 lote
+        </p>
+
+        <dl class="mt-5 space-y-3.5">
+          <div
+            v-for="row in COST_ROWS"
+            :key="row.label"
+            class="flex items-baseline justify-between gap-6"
+          >
+            <dt
+              class="text-muted-foreground text-sm"
+              :class="{ 'text-foreground font-bold': row.total }"
+            >
+              <span v-if="row.op" aria-hidden="true">{{ row.op }}&nbsp;</span>
+              {{ row.label }}
+              <span class="text-muted-foreground block text-xs font-normal">
+                {{ row.note }}
+              </span>
+            </dt>
+            <dd
+              class="text-foreground shrink-0 font-mono tabular-nums"
+              :class="row.total ? 'text-lg font-black' : 'text-base font-bold'"
+            >
+              {{ row.value }}
+            </dd>
+          </div>
+        </dl>
+
+        <dl
+          class="bg-accent-50 border-accent-200 mt-5 space-y-3 rounded-xl border p-4"
+        >
+          <div
+            v-for="row in PRICE_ROWS"
+            :key="row.label"
+            class="flex items-baseline justify-between gap-6"
+          >
+            <dt class="text-accent-800 text-sm font-bold">
+              {{ row.label }}
+              <span class="block text-xs font-normal">{{ row.note }}</span>
+            </dt>
+            <dd
+              class="text-accent-800 shrink-0 font-mono text-lg font-black tabular-nums"
+            >
+              {{ row.value }}
+            </dd>
+          </div>
+        </dl>
+
+        <NuxtLink
+          to="/funciones"
+          class="focus-ring text-accent-text mt-5 inline-flex min-h-11 items-center gap-1.5 rounded text-sm font-bold"
+        >
+          Ver cómo se calcula
+          <Icon name="lucide:arrow-right" :size="16" />
+        </NuxtLink>
       </div>
     </div>
-  </section>
+  </LandingSection>
 </template>

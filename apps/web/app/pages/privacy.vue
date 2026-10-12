@@ -5,17 +5,20 @@ usePageSeo("/privacy");
 </script>
 
 <template>
-  <article class="mx-auto max-w-3xl px-6 pt-24 pb-16">
-    <h1 class="landing-heading text-foreground text-3xl font-black md:text-4xl">
-      Política de privacidad
-    </h1>
-    <p class="text-muted-foreground mt-2 text-sm">
+  <LandingSection width="narrow">
+    <LandingSectionHeading
+      level="h1"
+      align="start"
+      eyebrow="Legal"
+      title="Política de privacidad"
+    />
+    <p class="text-muted-foreground mt-3 text-sm">
       Última actualización: mayo 2026
     </p>
 
-    <div class="text-secondary-foreground mt-10 space-y-6 leading-relaxed">
+    <div class="text-secondary-foreground mt-10 space-y-8 leading-relaxed">
       <section>
-        <h2 class="text-foreground mt-8 text-xl font-bold">
+        <h2 class="text-foreground text-xl font-bold">
           1. Datos que recopilamos
         </h2>
         <p class="mt-2">
@@ -32,7 +35,7 @@ usePageSeo("/privacy");
       </section>
 
       <section>
-        <h2 class="text-foreground mt-8 text-xl font-bold">2. Autenticación</h2>
+        <h2 class="text-foreground text-xl font-bold">2. Autenticación</h2>
         <p class="mt-2">
           Ofrecemos dos métodos de autenticación: correo electrónico y
           contraseña, e inicio de sesión con Google. Al usar Google OAuth,
@@ -43,7 +46,7 @@ usePageSeo("/privacy");
       </section>
 
       <section>
-        <h2 class="text-foreground mt-8 text-xl font-bold">3. Pagos</h2>
+        <h2 class="text-foreground text-xl font-bold">3. Pagos</h2>
         <p class="mt-2">
           Los pagos se procesan exclusivamente a través de Stripe. KitchCalc no
           almacena ni tiene acceso a los datos de tu tarjeta de crédito. Stripe
@@ -53,7 +56,7 @@ usePageSeo("/privacy");
       </section>
 
       <section>
-        <h2 class="text-foreground mt-8 text-xl font-bold">4. Cookies</h2>
+        <h2 class="text-foreground text-xl font-bold">4. Cookies</h2>
         <p class="mt-2">
           Utilizamos cookies únicamente para mantener tu sesión iniciada y
           recordar tus preferencias de tema visual. No usamos cookies de
@@ -62,7 +65,7 @@ usePageSeo("/privacy");
       </section>
 
       <section>
-        <h2 class="text-foreground mt-8 text-xl font-bold">
+        <h2 class="text-foreground text-xl font-bold">
           5. Almacenamiento y seguridad
         </h2>
         <p class="mt-2">
@@ -74,12 +77,18 @@ usePageSeo("/privacy");
       </section>
 
       <section>
-        <h2 class="text-foreground mt-8 text-xl font-bold">6. Contacto</h2>
+        <h2 class="text-foreground text-xl font-bold">6. Contacto</h2>
         <p class="mt-2">
-          Para consultas sobre privacidad o eliminación de datos, puedes
-          escribir al correo que figura en la aplicación.
+          Para consultas sobre privacidad o eliminación de datos, escríbenos a
+          <a
+            href="mailto:soporte@kitchcalc.com"
+            class="text-accent-text focus-ring rounded font-bold"
+          >
+            soporte@kitchcalc.com
+          </a>
+          .
         </p>
       </section>
     </div>
-  </article>
+  </LandingSection>
 </template>

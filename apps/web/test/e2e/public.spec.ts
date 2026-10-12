@@ -15,6 +15,13 @@ const PUBLIC_PAGES = [
     canonical: `${SITE_URL}/`,
   },
   {
+    path: "/funciones",
+    title: "Funciones | KitchCalc",
+    description:
+      "Qué hace cada módulo de KitchCalc: costeo de recetas, ingredientes y precios de compra, planificador de producción, costos fijos y márgenes. Con capturas reales del producto.",
+    canonical: `${SITE_URL}/funciones`,
+  },
+  {
     path: "/pricing",
     title: "Planes y precios | KitchCalc",
     description:
@@ -115,6 +122,7 @@ test("robots.txt permite sólo las públicas y publica el sitemap", async ({
   const body = await response.text();
   for (const allow of [
     "Allow: /$",
+    "Allow: /funciones$",
     "Allow: /pricing$",
     "Allow: /privacy$",
     "Allow: /terms$",
@@ -125,7 +133,7 @@ test("robots.txt permite sólo las públicas y publica el sitemap", async ({
   expect(body).toContain(`Sitemap: ${SITE_URL}/sitemap.xml`);
 });
 
-test("sitemap.xml lista exactamente las cuatro públicas y todas responden 200", async ({
+test("sitemap.xml lista exactamente las cinco públicas y todas responden 200", async ({
   request,
 }) => {
   const response = await request.get(url("/sitemap.xml"));
@@ -164,7 +172,7 @@ test("el 404 responde con status real, título propio y noindex", async ({
   expect(canonicalHref(html)).toBeNull();
 });
 
-test("la landing navega, alterna tema y precios, y abre el lightbox sin errores", async ({
+test("la landing navega, mantiene el modo claro y precios, y abre el lightbox sin errores", async ({
   page,
   goto,
 }) => {
@@ -179,17 +187,34 @@ test("la landing navega, alterna tema y precios, y abre el lightbox sin errores"
   await expect(page.locator("h1")).toHaveText(
     "Calcula el costo real de tus recetas",
   );
+  await expect(page.locator("#problem")).toBeAttached();
   await expect(page.locator("#features")).toBeAttached();
   await expect(page.locator("#how-it-works")).toBeAttached();
+  await expect(page.locator("#contact")).toBeAttached();
 
-  // El número del paso vive sólo en su cuadrado: el chip del stat no lo repite.
-  const steps = await page.locator("#how-it-works").evaluate((section) => ({
-    occurrences: ((section.textContent ?? "").match(/01/g) ?? []).length,
-    chip: section.querySelector(".font-mono")?.textContent?.trim() ?? "",
-  }));
-  expect(steps.occurrences, "el paso 01 se imprime una sola vez").toBe(1);
-  expect(steps.chip).not.toMatch(/^0\d/);
-  expect(steps.chip).toContain("$15.00");
+  // Cómo funciona: los tres pasos se numeran una sola vez...
+  const numbering = await page.locator("#how-it-works").evaluate((section) => {
+    const text = section.textContent ?? "";
+    return ["01", "02", "03"].map(
+      (step) => (text.match(new RegExp(step, "g")) ?? []).length,
+    );
+  });
+  expect(numbering, "cada paso se imprime una sola vez").toEqual([1, 1, 1]);
+
+  // ...y la cuenta que muestran cuadra con la fórmula del producto
+  // (`precio = costo / (1 - margen)`): es la promesa de "muestra la cuenta".
+  const receipt = page.locator("#how-it-works [data-cost-receipt]");
+  const figures = await receipt.evaluate((node) =>
+    [...(node.textContent ?? "").matchAll(/\$([\d.]+)/g)].map((match) =>
+      Number(match[1]),
+    ),
+  );
+  expect(figures, "insumos, operativos, total, precio y ganancia").toHaveLength(
+    5,
+  );
+  expect(figures[0]! + figures[1]!).toBeCloseTo(figures[2]!, 2);
+  expect(figures[2]! / (1 - 0.4)).toBeCloseTo(figures[3]!, 2);
+  expect(figures[3]! - figures[2]!).toBeCloseTo(figures[4]!, 2);
 
   // Drawer móvil: se anuncia como diálogo, lleva el foco al panel, deja la
   // página inerte y cierra con Escape devolviendo el foco al hamburger.
@@ -241,13 +266,19 @@ test("la landing navega, alterna tema y precios, y abre el lightbox sin errores"
 
   await page.setViewportSize({ width: 1280, height: 800 });
 
-  // Tema: el toggle escribe la cookie que el SSR vuelve a leer.
+  // Tema: la landing no ofrece modo oscuro (el toggle vive sólo en el login) y
+  // la cookie de tema no la oscurece: el marketing se fuerza claro.
   const html = page.locator("html");
+  await expect(page.locator("nav [data-theme-toggle]")).toHaveCount(0);
   await expect(html).not.toHaveClass(/dark/);
-  await page.locator("nav [data-theme-toggle]").first().click();
-  await expect(html).toHaveClass(/dark/);
-  await page.reload();
-  await expect(html).toHaveClass(/dark/);
+  await expect(html).toHaveAttribute("data-theme", "light");
+
+  await page
+    .context()
+    .addCookies([{ name: "kitchcalc-theme", value: "dark", url: url("/") }]);
+  await goto("/", { waitUntil: "hydration" });
+  await expect(html).not.toHaveClass(/dark/);
+  await expect(html).toHaveAttribute("data-theme", "light");
 
   // Precios: el periodo cambia los valores del plan Basic.
   const basicCard = page.locator('#pricing [data-plan="basic"]');
@@ -274,7 +305,7 @@ test("la landing navega, alterna tema y precios, y abre el lightbox sin errores"
   expect(consoleErrors).toEqual([]);
 });
 
-test("el hero muestra la captura del producto en los dos temas y los dos anchos", async ({
+test("el hero muestra la captura del producto en los dos anchos y sólo en claro", async ({
   page,
   goto,
 }) => {
@@ -324,11 +355,15 @@ test("el hero muestra la captura del producto en los dos temas y los dos anchos"
   });
   expect(order).toEqual({ afterCta: true, beforeCostCard: true });
 
-  // El tema alterna la captura (mismo patrón que el aserto del lightbox).
+  // La captura ya no tiene variante oscura (y el marketing tampoco): aun con la
+  // cookie de tema en dark, el hero sigue en claro y con el mismo asset.
   await page.setViewportSize({ width: 1280, height: 900 });
-  await page.locator("nav [data-theme-toggle]").first().click();
-  await expect(page.locator("html")).toHaveClass(/dark/);
-  await expect(shot).toHaveAttribute("src", "/hero_dark.webp");
+  await page
+    .context()
+    .addCookies([{ name: "kitchcalc-theme", value: "dark", url: url("/") }]);
+  await goto("/", { waitUntil: "hydration" });
+  await expect(page.locator("html")).not.toHaveClass(/dark/);
+  await expect(shot).toHaveAttribute("src", "/hero_light.webp");
 });
 
 test("el lightbox amplía de verdad y devuelve el foco en ambos estados", async ({
@@ -591,25 +626,68 @@ test("la card de plan se ve igual en la landing y en /pricing", async ({
       }),
     );
 
-  for (const theme of ["light", "dark"] as const) {
-    await page
-      .context()
-      .addCookies([{ name: "kitchcalc-theme", value: theme, url: url("/") }]);
+  // Una sola pasada: las dos superficies son públicas y el marketing se fuerza
+  // claro, así que el recorrido por tema medía dos veces el mismo documento.
+  await goto("/", { waitUntil: "hydration" });
+  const landing = await cardStyles();
 
-    await goto("/", { waitUntil: "hydration" });
-    const landing = await cardStyles();
+  await goto("/pricing", { waitUntil: "hydration" });
+  const pricing = await cardStyles();
 
-    await goto("/pricing", { waitUntil: "hydration" });
-    const pricing = await cardStyles();
+  expect(landing.map((card) => card.plan), "planes renderizados").toEqual([
+    "pro",
+    "free",
+    "basic",
+  ]);
+  expect(pricing, "la card depende de la superficie").toEqual(landing);
+});
 
-    expect(
-      landing.map((card) => card.plan),
-      `planes renderizados en ${theme}`,
-    ).toEqual(["pro", "free", "basic"]);
-    expect(pricing, `la card en ${theme} depende de la superficie`).toEqual(
-      landing,
-    );
+test("/funciones explica cada módulo, marca su enlace y reusa el lightbox", async ({
+  page,
+  goto,
+}) => {
+  await goto("/funciones", { waitUntil: "hydration" });
+
+  await expect(page.locator("h1")).toHaveText(
+    "Qué hace KitchCalc, módulo por módulo",
+  );
+  for (const title of [
+    "Recetas y costeo",
+    "Ingredientes y precios de compra",
+    "Planificador de producción",
+  ]) {
+    await expect(
+      page.getByRole("heading", { level: 2, name: title }),
+    ).toBeVisible();
   }
+
+  // El nav es el índice del sitio: "Funciones" marca la ruta, no una ancla del
+  // landing (por eso el enlace activo se resuelve por ruta).
+  await expect(page.locator("nav a[aria-current='page']").first()).toHaveText(
+    "Funciones",
+  );
+
+  // Las capturas reales abren el mismo lightbox que en la landing.
+  const lightbox = page.locator("dialog[data-lightbox]");
+  await expect(lightbox).not.toBeVisible();
+  await page.locator("[data-lightbox-trigger]").first().click();
+  await expect(lightbox).toBeVisible();
+  await expect(lightbox.locator("img")).toHaveAttribute(
+    "src",
+    "/receta_light.webp",
+  );
+  await page.keyboard.press("Escape");
+  await expect(lightbox).not.toBeVisible();
+
+  // Cierra con la banda CTA común a todas las públicas.
+  await expect(page.locator("#cta")).toBeAttached();
+
+  // Y su "Ver planes" apunta a la página: el ancla `#pricing` sólo resuelve en
+  // la home, así que aquí sería un enlace muerto.
+  await expect(page.locator('#cta a:has-text("Ver planes")')).toHaveAttribute(
+    "href",
+    "/pricing",
+  );
 });
 
 test("la landing abre por el recomendado y manda el catálogo completo a /pricing", async ({

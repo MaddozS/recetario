@@ -28,9 +28,10 @@ const PRIVATE_PATHS = [
 ];
 
 describe("PUBLIC_PAGES", () => {
-  it("declara exactamente las cuatro rutas indexables aprobadas", () => {
+  it("declara exactamente las cinco rutas indexables aprobadas", () => {
     expect(PUBLIC_PAGES.map((page) => page.path)).toEqual([
       "/",
+      "/funciones",
       "/pricing",
       "/privacy",
       "/terms",
