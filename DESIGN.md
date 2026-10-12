@@ -183,6 +183,8 @@ The palette is restrained: a single accent family (user-selectable from 7 option
 
 **The Token Bridge Rule.** Every color is a semantic token (`bg-card`, `text-foreground`) referencing a CSS variable (`--tw-card`, `--tw-fg`). Never hardcode a hex or oklch value in a component. This is how dark mode works without a single `.dark` override in component code.
 
+**The Marketing Is Light Rule.** Las superficies públicas indexables (`/`, `/funciones`, `/pricing`, la privacidad y los términos) fuerzan el tema claro: `app.vue` ignora la preferencia guardada cuando la ruta pasa `isPublicMarketingPath()`, y su navbar no monta el toggle. La app privada y el login conservan el toggle y los dos temas. Las capturas de esas superficies se sirven en una sola variante (`*_light`).
+
 ## 3. Typography
 
 **Display Font:** Outfit (with -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui fallback). Used only for page headings (h1–h3) and landing hero text via `--font-display`.
