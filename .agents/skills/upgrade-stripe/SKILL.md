@@ -51,8 +51,8 @@ Stripe.api_version = '2026-04-22.dahlia'
 ```
 
 ```javascript
-const stripe = require("stripe")("sk_test_xxx", {
-  apiVersion: "2026-04-22.dahlia",
+const stripe = require('stripe')('sk_test_xxx', {
+  apiVersion: '2026-04-22.dahlia',
 });
 ```
 
@@ -75,12 +75,12 @@ Always specify the API version you’re integrating against in your code instead
 
 ```javascript
 // Good: Explicit version
-const stripe = require("stripe")("sk_test_xxx", {
-  apiVersion: "2026-04-22.dahlia",
+const stripe = require('stripe')('sk_test_xxx', {
+  apiVersion: '2026-04-22.dahlia',
 });
 
 // Avoid: Relying on account default
-const stripe = require("stripe")("sk_test_xxx");
+const stripe = require('stripe')('sk_test_xxx');
 ```
 
 ## Stripe.js Versioning
@@ -171,8 +171,8 @@ curl https://api.stripe.com/v1/customers \
 Or in code:
 
 ```javascript
-const stripe = require("stripe")("sk_test_xxx", {
-  apiVersion: "2026-04-22.dahlia", // Test with new version
+const stripe = require('stripe')('sk_test_xxx', {
+  apiVersion: '2026-04-22.dahlia', // Test with new version
 });
 ```
 
