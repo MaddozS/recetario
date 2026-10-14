@@ -1,9 +1,9 @@
-@import "tailwindcss" source(none);
-@import "./tokens.css";
+@import 'tailwindcss' source(none);
+@import './tokens.css';
 
 /* Fuentes Tailwind deterministas: sólo `apps/web/app`. `source(none)` desactiva
    la detección automática de Tailwind, que si no escanearía el monorepo entero. */
-@source "../..";
+@source '../..';
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -84,6 +84,114 @@
   }
 }
 
+/* =============================================
+   Fondos decorativos de las secciones públicas
+   (`LandingSection` → `decor`, hero y CTA final)
+   Sólo tokens; las máscaras desvanecen el patrón
+   para que nunca quede detrás del texto con fuerza.
+   ============================================= */
+
+.landing-decor {
+  overflow: hidden;
+}
+
+/* Rejilla de puntos: textura sutil de "papel de recetario". */
+.landing-decor[data-decor='dots'],
+.landing-dots {
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    color-mix(in srgb, var(--color-foreground) 8%, transparent) 1px,
+    transparent 0
+  );
+  background-size: 24px 24px;
+  mask-image: radial-gradient(ellipse 75% 65% at 50% 0%, #000 25%, transparent 100%);
+}
+
+/* Retícula fina que se disuelve hacia abajo de forma suave. */
+.landing-decor[data-decor='grid'] {
+  background-image:
+    linear-gradient(
+      to right,
+      color-mix(in srgb, var(--color-border) 45%, transparent) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--color-border) 45%, transparent) 1px,
+      transparent 1px
+    );
+  background-size: 48px 48px;
+  background-position: center top;
+  mask-image: radial-gradient(ellipse 80% 50% at 50% 15%, #000 15%, transparent 90%);
+}
+
+/* Halo del acento centrado arriba (precios). */
+.landing-decor[data-decor='glow'] {
+  background: radial-gradient(
+    55% 45% at 50% 0%,
+    color-mix(in srgb, var(--color-accent-200) 38%, transparent),
+    transparent 72%
+  );
+}
+
+/* Dos halos en esquinas opuestas (problema, confianza). */
+.landing-decor[data-decor='glow-corner'] {
+  background:
+    radial-gradient(
+      40% 55% at 0% 0%,
+      color-mix(in srgb, var(--color-accent-200) 42%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      35% 50% at 100% 100%,
+      color-mix(in srgb, var(--color-accent-100) 55%, transparent),
+      transparent 70%
+    );
+}
+
+/* Hero: halo radial detrás de la captura, desvanecido suavemente a transparente sin corte inferior. */
+.landing-hero-glow {
+  background: radial-gradient(
+    ellipse 65% 50% at 50% 68%,
+    color-mix(in srgb, var(--color-accent-200) 40%, transparent),
+    transparent 70%
+  );
+}
+
+@media (width >= 64rem) {
+  .landing-hero-glow {
+    background: radial-gradient(
+      ellipse 48% 55% at 76% 50%,
+      color-mix(in srgb, var(--color-accent-200) 40%, transparent),
+      transparent 70%
+    );
+  }
+}
+
+/* CTA final: textura de puntos y luz sobre el relleno del acento. */
+.landing-cta-decor {
+  background-image:
+    radial-gradient(
+      circle at 1px 1px,
+      color-mix(in srgb, var(--color-on-accent-surface) 22%, transparent) 1px,
+      transparent 0
+    ),
+    radial-gradient(
+      60% 80% at 50% 0%,
+      color-mix(in srgb, var(--color-on-accent-surface) 9%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      50% 70% at 50% 120%,
+      color-mix(in srgb, var(--color-accent-950) 45%, transparent),
+      transparent 70%
+    );
+  background-size:
+    20px 20px,
+    100% 100%,
+    100% 100%;
+}
+
 dialog[data-animated] {
   opacity: 0;
   transform: scale(0.95);
@@ -139,8 +247,7 @@ dialog[data-animated][open]::backdrop {
 
   select:focus {
     border-color: var(--aw-accent-500, #6366f1);
-    box-shadow: 0 0 0 3px
-      color-mix(in srgb, var(--aw-accent-500, #6366f1) 20%, transparent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--aw-accent-500, #6366f1) 20%, transparent);
     outline: none;
   }
 }
@@ -311,7 +418,7 @@ dialog[data-animated][open]::backdrop {
 }
 
 .recipe-instructions .step-group-header::before {
-  content: "";
+  content: '';
   flex: 1;
   height: 1px;
   background: var(--tw-border-light, #f1f5f9);
@@ -331,7 +438,7 @@ dialog[data-animated][open]::backdrop {
 }
 
 .recipe-instructions .step-group-header::after {
-  content: "";
+  content: '';
   flex: 1;
   height: 1px;
   background: var(--tw-border-light, #f1f5f9);
@@ -353,11 +460,7 @@ dialog[data-animated][open]::backdrop {
 }
 
 .dark .recipe-instructions .linked-ingredient {
-  background: color-mix(
-    in srgb,
-    var(--aw-accent-500, #6366f1) 15%,
-    transparent
-  );
+  background: color-mix(in srgb, var(--aw-accent-500, #6366f1) 15%, transparent);
   border-color: var(--aw-accent-400);
 }
 
@@ -371,7 +474,7 @@ dialog[data-animated][open]::backdrop {
 }
 
 .contenteditable-editor:empty::before {
-  content: "Escribe las instrucciones aquí...";
+  content: 'Escribe las instrucciones aquí...';
   white-space: pre-wrap;
   color: var(--tw-subtle-fg);
 }
@@ -659,8 +762,7 @@ dialog[data-animated][open]::backdrop {
   align-items: center;
   justify-content: center;
   margin-bottom: 1.5rem;
-  box-shadow: 0 4px 14px
-    color-mix(in srgb, var(--aw-accent-600) 30%, transparent);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--aw-accent-600) 30%, transparent);
 }
 
 .cooking-mode-step-text {

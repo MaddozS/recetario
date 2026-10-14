@@ -10,8 +10,8 @@
  * No confundir con el átomo del kit (`~/components/ui/atoms/SectionHeading.vue`,
  * `<SectionHeading>`): ese lleva icono y va dentro de la app privada.
  */
-type Align = "center" | "start";
-type Level = "h1" | "h2";
+type Align = 'center' | 'start';
+type Level = 'h1' | 'h2';
 
 const props = withDefaults(
   defineProps<{
@@ -24,19 +24,19 @@ const props = withDefaults(
   {
     eyebrow: undefined,
     description: undefined,
-    align: "center",
-    level: "h2",
-  },
+    align: 'center',
+    level: 'h2',
+  }
 );
 
 const ALIGN: Record<Align, string> = {
-  center: "mx-auto max-w-2xl text-center",
-  start: "max-w-2xl",
+  center: 'mx-auto max-w-2xl text-center',
+  start: 'max-w-2xl',
 };
 
 const TITLE_SIZE: Record<Level, string> = {
-  h1: "text-4xl md:text-5xl",
-  h2: "text-3xl md:text-4xl",
+  h1: 'text-4xl md:text-5xl',
+  h2: 'text-3xl md:text-4xl',
 };
 </script>
 
@@ -55,10 +55,7 @@ const TITLE_SIZE: Record<Level, string> = {
     >
       {{ props.title }}
     </component>
-    <p
-      v-if="props.description"
-      class="text-secondary-foreground mt-4 text-lg leading-relaxed"
-    >
+    <p v-if="props.description" class="text-secondary-foreground mt-4 text-lg leading-relaxed">
       {{ props.description }}
     </p>
   </div>
