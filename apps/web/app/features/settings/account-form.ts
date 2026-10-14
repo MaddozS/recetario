@@ -1,4 +1,4 @@
-import { validatePassword } from "@recetario/auth/password";
+import { validatePassword } from '@recetario/auth/password';
 
 /**
  * Modelos y validación de los formularios de cuenta.
@@ -24,28 +24,21 @@ export type AccountPasswordFormValues = {
   confirmPassword: string;
 };
 
-export const ACCOUNT_REQUIRED_FIELDS_MESSAGE =
-  "Por favor completa todos los campos requeridos.";
-export const ACCOUNT_PASSWORD_FIELDS_MESSAGE =
-  "Por favor completa todos los campos.";
+export const ACCOUNT_REQUIRED_FIELDS_MESSAGE = 'Por favor completa todos los campos requeridos.';
+export const ACCOUNT_PASSWORD_FIELDS_MESSAGE = 'Por favor completa todos los campos.';
 export const ACCOUNT_PASSWORD_POLICY_MESSAGE =
-  "La contraseña debe tener al menos 8 caracteres, incluir mayúsculas, minúsculas, números y un carácter especial.";
-export const ACCOUNT_PASSWORD_MISMATCH_MESSAGE =
-  "Las contraseñas no coinciden.";
+  'La contraseña debe tener al menos 8 caracteres, incluir mayúsculas, minúsculas, números y un carácter especial.';
+export const ACCOUNT_PASSWORD_MISMATCH_MESSAGE = 'Las contraseñas no coinciden.';
 
-export function accountNameFormFrom(
-  source: AccountProfileSource,
-): AccountNameFormValues {
+export function accountNameFormFrom(source: AccountProfileSource): AccountNameFormValues {
   return {
-    firstName: source.firstName ?? "",
-    lastName: source.lastName ?? "",
+    firstName: source.firstName ?? '',
+    lastName: source.lastName ?? '',
   };
 }
 
 /** Devuelve el mensaje de error o `null` si el formulario es válido. */
-export function validateAccountNameForm(
-  values: AccountNameFormValues,
-): string | null {
+export function validateAccountNameForm(values: AccountNameFormValues): string | null {
   if (!values.firstName.trim() || !values.lastName.trim()) {
     return ACCOUNT_REQUIRED_FIELDS_MESSAGE;
   }
@@ -53,17 +46,11 @@ export function validateAccountNameForm(
 }
 
 export function emptyAccountPasswordForm(): AccountPasswordFormValues {
-  return { currentPassword: "", newPassword: "", confirmPassword: "" };
+  return { currentPassword: '', newPassword: '', confirmPassword: '' };
 }
 
-export function validateAccountPasswordForm(
-  values: AccountPasswordFormValues,
-): string | null {
-  if (
-    !values.currentPassword ||
-    !values.newPassword ||
-    !values.confirmPassword
-  ) {
+export function validateAccountPasswordForm(values: AccountPasswordFormValues): string | null {
+  if (!values.currentPassword || !values.newPassword || !values.confirmPassword) {
     return ACCOUNT_PASSWORD_FIELDS_MESSAGE;
   }
 

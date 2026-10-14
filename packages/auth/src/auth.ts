@@ -1,52 +1,49 @@
-import { betterAuth } from "better-auth";
-import { prismaAdapter } from "better-auth/adapters/prisma";
-import { prisma } from "@recetario/db";
-import { sendEmail } from "./email";
-import { createAuthMiddleware, APIError } from "better-auth/api";
-import { validatePassword } from "./password-validation";
-import {
-  createPasswordResetToken,
-  getResetPasswordEmailHtml,
-} from "./password-reset";
-import { createResetPasswordCallback } from "./reset-password-callback";
-import { createVerificationEmailCallback } from "./verification-email-callback";
-import { getTrustedOrigins } from "./csrf";
-import { recordSignInAudit } from "./session-audit";
+import { betterAuth } from 'better-auth';
+import { prismaAdapter } from 'better-auth/adapters/prisma';
+import { prisma } from '@recetario/db';
+import { sendEmail } from './email';
+import { createAuthMiddleware, APIError } from 'better-auth/api';
+import { validatePassword } from './password-validation';
+import { createPasswordResetToken, getResetPasswordEmailHtml } from './password-reset';
+import { createResetPasswordCallback } from './reset-password-callback';
+import { createVerificationEmailCallback } from './verification-email-callback';
+import { getTrustedOrigins } from './csrf';
+import { recordSignInAudit } from './session-audit';
 
 // ponytail: WEB_ORIGIN defaults to localhost:4321 (dev) so trustedOrigins
 // and errorURL don't need to be hardcoded. In prod, set
 // WEB_ORIGIN=https://app.kitchcalc.com in apps/api env.
 export function createAuth(): any {
-  const webOrigin = process.env.WEB_ORIGIN ?? "http://localhost:4321";
+  const webOrigin = process.env.WEB_ORIGIN ?? 'http://localhost:4321';
 
   const googleClientId = process.env.GOOGLE_CLIENT_ID;
   if (!googleClientId) {
-    throw new Error("GOOGLE_CLIENT_ID environment variable is not set");
+    throw new Error('GOOGLE_CLIENT_ID environment variable is not set');
   }
   const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
   if (!googleClientSecret) {
-    throw new Error("GOOGLE_CLIENT_SECRET environment variable is not set");
+    throw new Error('GOOGLE_CLIENT_SECRET environment variable is not set');
   }
 
   return betterAuth({
     baseURL: webOrigin,
     database: prismaAdapter(prisma, {
-      provider: "postgresql",
+      provider: 'postgresql',
     }),
     user: {
       additionalFields: {
-        firstName: { type: "string", required: true },
-        lastName: { type: "string", required: true },
+        firstName: { type: 'string', required: true },
+        lastName: { type: 'string', required: true },
       },
     },
     emailAndPassword: {
       enabled: true,
       requireEmailVerification: true,
       sendResetPassword: createResetPasswordCallback(
-          sendEmail,
-          createPasswordResetToken,
-          getResetPasswordEmailHtml,
-        ),
+        sendEmail,
+        createPasswordResetToken,
+        getResetPasswordEmailHtml
+      ),
     },
     emailVerification: {
       sendVerificationEmail: createVerificationEmailCallback(sendEmail),
@@ -54,7 +51,7 @@ export function createAuth(): any {
       sendOnSignIn: true,
       expiresIn: 86400,
     },
-    rateLimit: { enabled: process.env.NODE_ENV === "production" },
+    rateLimit: { enabled: process.env.NODE_ENV === 'production' },
     socialProviders: {
       google: {
         clientId: googleClientId,
@@ -68,12 +65,12 @@ export function createAuth(): any {
     },
     hooks: {
       before: createAuthMiddleware(async (ctx) => {
-        if (ctx.path === "/sign-up/email") {
+        if (ctx.path === '/sign-up/email') {
           const password = ctx.body?.password as string | undefined;
           if (!password || !validatePassword(password).valid) {
-            throw new APIError("BAD_REQUEST", {
+            throw new APIError('BAD_REQUEST', {
               message:
-                "La contraseña debe tener al menos 8 caracteres, incluir mayúsculas, minúsculas, números y un carácter especial.",
+                'La contraseña debe tener al menos 8 caracteres, incluir mayúsculas, minúsculas, números y un carácter especial.',
             });
           }
         }
@@ -92,7 +89,7 @@ export function createAuth(): any {
     onAPIError: {
       onError(error: unknown) {
         const err = error as Record<string, unknown> | null | undefined;
-        console.error("[Better Auth Error Details]", {
+        console.error('[Better Auth Error Details]', {
           name: err?.name,
           message: err?.message,
           code: err?.code,
@@ -128,10 +125,9 @@ export const auth = new Proxy({} as any, {
   get(_target, prop) {
     const instance = getAuth();
     const value = Reflect.get(instance, prop);
-    if (typeof value === "function") {
+    if (typeof value === 'function') {
       return value.bind(instance);
     }
     return value;
   },
 });
-

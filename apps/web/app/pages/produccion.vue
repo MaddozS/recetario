@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import ProductionResults from "~/features/production/ProductionResults.vue";
-import ProductionSelectorCard from "~/features/production/ProductionSelectorCard.vue";
-import ProductionSkeleton from "~/features/production/ProductionSkeleton.vue";
-import { useProductionPlanner } from "~/features/production/useProductionPlanner";
+import ProductionResults from '~/features/production/ProductionResults.vue';
+import ProductionSelectorCard from '~/features/production/ProductionSelectorCard.vue';
+import ProductionSkeleton from '~/features/production/ProductionSkeleton.vue';
+import { useProductionPlanner } from '~/features/production/useProductionPlanner';
 
 definePageMeta({
-  layout: "private",
-  middleware: "auth",
-  breadcrumbs: [{ label: "Planificador de Producción" }],
+  layout: 'private',
+  middleware: 'auth',
+  breadcrumbs: [{ label: 'Planificador de Producción' }],
 });
 
-useHead({ title: "Planificador de producción | KitchCalc" });
+useHead({ title: 'Planificador de producción | KitchCalc' });
 
 const {
   canAccess,
@@ -61,16 +61,8 @@ const {
     <ProductionSkeleton v-else-if="loading" />
 
     <Card v-else-if="loadFailed" padding="lg">
-      <FeedbackAlert
-        type="error"
-        message="No se pudo cargar el planificador de producción."
-      />
-      <Button
-        variant="secondary"
-        icon="refresh-cw"
-        class="mt-4"
-        @click="refresh()"
-      >
+      <FeedbackAlert type="error" message="No se pudo cargar el planificador de producción." />
+      <Button variant="secondary" icon="refresh-cw" class="mt-4" @click="refresh()">
         Reintentar
       </Button>
     </Card>

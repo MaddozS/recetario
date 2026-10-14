@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import SettingsTabs from "~/features/settings/SettingsTabs.vue";
-import ProfileSection from "~/features/settings/ProfileSection.vue";
-import PreferencesSection from "~/features/settings/PreferencesSection.vue";
-import BillingSection from "~/features/billing/BillingSection.vue";
-import { resolveSettingsTab } from "~/features/settings/settings-tabs";
-import { useSettingsOverview } from "~/features/settings/useSettingsOverview";
+import { computed } from 'vue';
+import SettingsTabs from '~/features/settings/SettingsTabs.vue';
+import ProfileSection from '~/features/settings/ProfileSection.vue';
+import PreferencesSection from '~/features/settings/PreferencesSection.vue';
+import BillingSection from '~/features/billing/BillingSection.vue';
+import { resolveSettingsTab } from '~/features/settings/settings-tabs';
+import { useSettingsOverview } from '~/features/settings/useSettingsOverview';
 
 /**
  * Página de Settings: coordina la pestaña activa (`?tab=`, back/forward) y los
@@ -16,17 +16,17 @@ import { useSettingsOverview } from "~/features/settings/useSettingsOverview";
  * visible y se descarta —sin persistir— al dejarla.
  */
 definePageMeta({
-  layout: "private",
-  middleware: "auth",
-  breadcrumbs: [{ label: "Configuración" }],
+  layout: 'private',
+  middleware: 'auth',
+  breadcrumbs: [{ label: 'Configuración' }],
 });
 
-useHead({ title: "Configuración | KitchCalc" });
+useHead({ title: 'Configuración | KitchCalc' });
 
 const route = useRoute();
 const activeTab = computed(() => resolveSettingsTab(route.query.tab));
 
-const { counts, subscription, pending, failed, refresh } =
+const { counts, subscription, pending, failed, subscriptionFailed, refresh } =
   useSettingsOverview();
 </script>
 
@@ -46,6 +46,7 @@ const { counts, subscription, pending, failed, refresh } =
       :counts="counts"
       :loading="pending"
       :failed="failed"
+      :subscription-failed="subscriptionFailed"
       @retry="refresh()"
     />
   </section>

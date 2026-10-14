@@ -1,14 +1,11 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import FinancialSummary from "~/features/recipes/FinancialSummary.vue";
-import type { FinancialRow } from "~/features/recipes/recipe-financials";
-import { formatCurrency } from "./production-format";
-import ProductionIngredientsSheet from "./ProductionIngredientsSheet.vue";
-import ProductionRecipeBreakdown from "./ProductionRecipeBreakdown.vue";
-import type {
-  ConsolidatedIngredient,
-  ProductionSummary,
-} from "./production-types";
+import { computed } from 'vue';
+import FinancialSummary from '~/features/recipes/FinancialSummary.vue';
+import type { FinancialRow } from '~/features/recipes/recipe-financials';
+import { formatCurrency } from './production-format';
+import ProductionIngredientsSheet from './ProductionIngredientsSheet.vue';
+import ProductionRecipeBreakdown from './ProductionRecipeBreakdown.vue';
+import type { ConsolidatedIngredient, ProductionSummary } from './production-types';
 
 /**
  * Resultados del plan: toolbar con el conteo de la selección, hojas de insumos,
@@ -27,8 +24,8 @@ const props = defineProps<{
 const emit = defineEmits<{ edit: []; retry: [] }>();
 
 /** Tramos del resumen del plan: lo que cuesta y lo que deja la producción. */
-const COST_GROUP = "Costos";
-const RESULT_GROUP = "Resultado";
+const COST_GROUP = 'Costos';
+const RESULT_GROUP = 'Resultado';
 
 const financialRows = computed<FinancialRow[]>(() => {
   const {
@@ -43,45 +40,43 @@ const financialRows = computed<FinancialRow[]>(() => {
 
   return [
     {
-      label: "Insumos",
+      label: 'Insumos',
       value: formatCurrency(totalIngredientsCost),
-      subtitle: "Materiales de todas las recetas",
+      subtitle: 'Materiales de todas las recetas',
       group: COST_GROUP,
     },
     {
-      label: "Gastos Operativos",
+      label: 'Gastos Operativos',
       value: formatCurrency(totalOperationalCost),
-      subtitle: "Servicios, labor, etc.",
-      op: "+",
+      subtitle: 'Servicios, labor, etc.',
+      op: '+',
       group: COST_GROUP,
     },
     {
-      label: "Costo Total",
+      label: 'Costo Total',
       value: formatCurrency(totalProductionCost),
-      subtitle: "Insumos + Gastos Operativos",
-      emphasis: "total",
-      op: "=",
+      subtitle: 'Insumos + Gastos Operativos',
+      emphasis: 'total',
+      op: '=',
       group: COST_GROUP,
     },
     {
-      label: "Ingresos Proyectados",
-      value: noRevenue ? "Sin datos" : formatCurrency(projectedRevenue),
+      label: 'Ingresos Proyectados',
+      value: noRevenue ? 'Sin datos' : formatCurrency(projectedRevenue),
       subtitle: noRevenue
-        ? "Configura precios de venta en las presentaciones"
-        : "Ventas totales proyectadas",
+        ? 'Configura precios de venta en las presentaciones'
+        : 'Ventas totales proyectadas',
       group: RESULT_GROUP,
-      emphasis: "answer",
+      emphasis: 'answer',
     },
     {
-      label: "Ganancia Estimada",
-      value: noRevenue ? "Sin datos" : formatCurrency(estimatedProfit),
+      label: 'Ganancia Estimada',
+      value: noRevenue ? 'Sin datos' : formatCurrency(estimatedProfit),
       // El margen va en la misma línea del texto: la celda se lee de un vistazo.
       // Sin ingresos no hay margen que mostrar (el aviso vive en la fila previa).
-      subtitle: noRevenue
-        ? ""
-        : `Margen de ganancia estimada: ${effectiveMargin.toFixed(1)}%`,
+      subtitle: noRevenue ? '' : `Margen de ganancia estimada: ${effectiveMargin.toFixed(1)}%`,
       group: RESULT_GROUP,
-      emphasis: "answer",
+      emphasis: 'answer',
     },
   ];
 });
@@ -111,26 +106,14 @@ function printSheet(): void {
     </div>
 
     <Card v-else-if="failed" padding="lg">
-      <FeedbackAlert
-        type="error"
-        message="No se pudieron cargar las recetas seleccionadas."
-      />
-      <Button
-        data-retry
-        variant="secondary"
-        icon="refresh-cw"
-        class="mt-4"
-        @click="emit('retry')"
-      >
+      <FeedbackAlert type="error" message="No se pudieron cargar las recetas seleccionadas." />
+      <Button data-retry variant="secondary" icon="refresh-cw" class="mt-4" @click="emit('retry')">
         Reintentar
       </Button>
     </Card>
 
     <template v-else-if="summary.perRecipe.length > 0">
-      <ProductionIngredientsSheet
-        v-if="ingredients.length > 0"
-        :ingredients="ingredients"
-      />
+      <ProductionIngredientsSheet v-if="ingredients.length > 0" :ingredients="ingredients" />
 
       <FinancialSummary
         class="production-sheet financial-summary"

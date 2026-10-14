@@ -57,3 +57,4 @@ graphify-out/
 
 # Code-review scratch patches (apply via `git apply` and discard)
 .scratch/
+.neon

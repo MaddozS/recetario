@@ -1,4 +1,4 @@
-import { prisma } from "@recetario/db";
+import { prisma } from '@recetario/db';
 
 export interface ResetPasswordTemplateData {
   resetLink: string;
@@ -8,7 +8,7 @@ export interface ResetPasswordTemplateData {
 
 export function getResetPasswordEmailHtml(data: ResetPasswordTemplateData): string {
   const resetLink = data.resetLink;
-  const userName = data.userName || "usuario";
+  const userName = data.userName || 'usuario';
   const expiryMinutes = data.expiryMinutes || 10;
 
   return `<!DOCTYPE html>
@@ -79,14 +79,14 @@ export function getResetPasswordEmailHtml(data: ResetPasswordTemplateData): stri
 
 export interface TokenValidationResult {
   valid: boolean;
-  error?: "not_found" | "expired" | "used";
+  error?: 'not_found' | 'expired' | 'used';
   userId?: string;
   expiresAt?: Date;
 }
 
 export async function createPasswordResetToken(
   userId: string,
-  expiryMinutes = 10,
+  expiryMinutes = 10
 ): Promise<string> {
   const token = crypto.randomUUID();
   const expiresAt = new Date(Date.now() + expiryMinutes * 60 * 1000);
@@ -106,23 +106,21 @@ export async function createPasswordResetToken(
   return token;
 }
 
-export async function validatePasswordResetToken(
-  token: string,
-): Promise<TokenValidationResult> {
+export async function validatePasswordResetToken(token: string): Promise<TokenValidationResult> {
   const resetToken = await prisma.passwordResetToken.findUnique({
     where: { token },
   });
 
   if (!resetToken) {
-    return { valid: false, error: "not_found" };
+    return { valid: false, error: 'not_found' };
   }
 
   if (resetToken.usedAt) {
-    return { valid: false, error: "used" };
+    return { valid: false, error: 'used' };
   }
 
   if (resetToken.expiresAt < new Date()) {
-    return { valid: false, error: "expired" };
+    return { valid: false, error: 'expired' };
   }
 
   return {
@@ -148,5 +146,5 @@ export async function getRemainingSeconds(expiresAt: Date): Promise<number> {
 export function formatTime(seconds: number): string {
   const mins = Math.floor(seconds / 60);
   const secs = seconds % 60;
-  return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+  return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 }

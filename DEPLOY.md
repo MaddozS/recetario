@@ -2,10 +2,10 @@
 
 KitchCalc corre en dos Cloudflare **Workers** (el web ya no usa Pages ni KV) con Prisma Postgres:
 
-| Worker                               | Qué corre                                                                    | URL                         |
-| ------------------------------------ | ---------------------------------------------------------------------------- | --------------------------- |
-| `recetario-web-{staging,production}` | Nuxt 4 + Nitro (`cloudflare_module`), Workers Assets + service binding `API` | `https://app.kitchcalc.com` |
-| `recetario-api-{staging,production}` | Hono (Better Auth, CSRF, límites)                                            | `https://api.kitchcalc.com` |
+| Worker                               | Qué corre                                                                    | URL                                        |
+| ------------------------------------ | ---------------------------------------------------------------------------- | ------------------------------------------ |
+| `recetario-web-{staging,production}` | Nuxt 4 + Nitro (`cloudflare_module`), Workers Assets + service binding `API` | `https://app.kitchcalc.com`                |
+| `recetario-api-{staging,production}` | Hono (Better Auth, CSRF, límites)                                            | `https://api.kitchcalc.com`                |
 | Database                             | Prisma Postgres (free tier)                                                  | vía `DATABASE_URL` directa (no Accelerate) |
 
 ## Prerequisites

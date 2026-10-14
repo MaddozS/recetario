@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 /**
  * Respuestas de los endpoints de auth que consume la UI.

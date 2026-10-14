@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { isInternalHref } from "#shared/utils/navigation";
+import { isInternalHref } from '#shared/utils/navigation';
 
 withDefaults(
   defineProps<{
@@ -7,7 +7,7 @@ withDefaults(
     iconSize?: number;
     title: string;
     description: string;
-    titleTag?: "h1" | "h3";
+    titleTag?: 'h1' | 'h3';
     titleClasses?: string;
     descClasses?: string;
     actionLabel?: string;
@@ -15,10 +15,10 @@ withDefaults(
   }>(),
   {
     iconSize: 24,
-    titleTag: "h3",
-    titleClasses: "mt-5 text-lg font-bold text-foreground",
-    descClasses: "mt-2 text-sm text-muted-foreground",
-  },
+    titleTag: 'h3',
+    titleClasses: 'mt-5 text-lg font-bold text-foreground',
+    descClasses: 'mt-2 text-sm text-muted-foreground',
+  }
 );
 
 // El CTA sin `actionHref` ya no abre un modal por atributo: el consumidor

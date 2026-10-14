@@ -1,7 +1,7 @@
-import type { Handler } from "hono";
-import { getRecipeSummaries } from "@recetario/db";
-import { recipeSummarySchema } from "@recetario/types";
-import { getAuthUser } from "../middleware/auth";
+import type { Handler } from 'hono';
+import { getRecipeSummaries } from '@recetario/db';
+import { recipeSummarySchema } from '@recetario/types';
+import { getAuthUser } from '../middleware/auth';
 
 export function recipesListHandler(): Handler {
   return async (c) => {
@@ -16,8 +16,8 @@ export function recipesListHandler(): Handler {
           category: r.category ?? undefined,
           ingredientCount: r.recipeIngredients?.length ?? 0,
           updatedAt: r.updatedAt?.toISOString(),
-        }),
-      ),
+        })
+      )
     );
   };
 }

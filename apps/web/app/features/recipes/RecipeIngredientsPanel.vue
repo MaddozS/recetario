@@ -1,11 +1,7 @@
 <script setup lang="ts">
-import type {
-  IngredientRecord,
-  IngredientRow,
-  RecipeDetailRecord,
-} from "./recipe-detail-form";
-import RecipeIngredientEditor from "./RecipeIngredientEditor.vue";
-import RecipeIngredientView from "./RecipeIngredientView.vue";
+import type { IngredientRecord, IngredientRow, RecipeDetailRecord } from './recipe-detail-form';
+import RecipeIngredientEditor from './RecipeIngredientEditor.vue';
+import RecipeIngredientView from './RecipeIngredientView.vue';
 
 /**
  * Card de la lista de ingredientes: cabecera con «Ver notas», y la vista
@@ -17,25 +13,22 @@ withDefaults(
     editMode: boolean;
     showComments: boolean;
     multiplier: number;
-    viewIngredients: ReadonlyArray<RecipeDetailRecord["ingredients"][number]>;
+    viewIngredients: ReadonlyArray<RecipeDetailRecord['ingredients'][number]>;
     rows: ReadonlyArray<IngredientRow>;
     ingredients: ReadonlyArray<IngredientRecord>;
     unitOptions: ReadonlyArray<string>;
     invalidKeys?: ReadonlyArray<string>;
     addRow: () => void;
     removeRow: (index: number) => void;
-    patchRow: (
-      index: number,
-      patch: Partial<Omit<IngredientRow, "key">>,
-    ) => void;
+    patchRow: (index: number, patch: Partial<Omit<IngredientRow, 'key'>>) => void;
   }>(),
-  { invalidKeys: () => [] },
+  { invalidKeys: () => [] }
 );
 
 const emit = defineEmits<{ toggleComments: [visible: boolean] }>();
 
 function onToggleComments(event: Event): void {
-  emit("toggleComments", (event.target as HTMLInputElement).checked);
+  emit('toggleComments', (event.target as HTMLInputElement).checked);
 }
 </script>
 

@@ -1,13 +1,10 @@
-import { isPro as isProPlan } from "@recetario/stripe/subscription";
-import {
-  recipeSummarySchema,
-  recipeWithIngredientsSchema,
-} from "@recetario/types";
-import { z } from "zod";
-import { ApiError } from "~/utils/api-error";
-import { filterRecipeGroups, groupRecipes } from "./production-catalog";
-import { calculateProduction } from "./production-calculator";
-import { selectionCountLabel } from "./production-format";
+import { isPro as isProPlan } from '@recetario/stripe/subscription';
+import { recipeSummarySchema, recipeWithIngredientsSchema } from '@recetario/types';
+import { z } from 'zod';
+import { ApiError } from '~/utils/api-error';
+import { filterRecipeGroups, groupRecipes } from './production-catalog';
+import { calculateProduction } from './production-calculator';
+import { selectionCountLabel } from './production-format';
 import {
   PRODUCTION_BASIC_RECIPE_LIMIT,
   atLimit as selectionAtLimit,
@@ -18,12 +15,12 @@ import {
   setPresentation as setSelectionPresentation,
   stepBatches as stepSelectionBatches,
   toggleRecipe,
-} from "./production-selection";
+} from './production-selection';
 import type {
   ProductionCatalogRecipe,
   ProductionRecipeRecord,
   ProductionSelection,
-} from "./production-types";
+} from './production-types';
 
 /**
  * Datos, selección y resultados del planificador de producción.
@@ -39,7 +36,7 @@ import type {
  * El gate del plan se anticipa con `hasFeature`/`isPro`; Hono sigue siendo la
  * autoridad (`FEATURE_REQUIRED` se refleja como `gated`, el resto como fallo).
  */
-export const PRODUCTION_KEY = "production";
+export const PRODUCTION_KEY = 'production';
 const DETAILS_CHUNK = 100;
 
 type ProductionPageData = {
@@ -54,7 +51,7 @@ function emptyData(): ProductionPageData {
 }
 
 function isGated(cause: unknown): boolean {
-  return cause instanceof ApiError && cause.code === "FEATURE_REQUIRED";
+  return cause instanceof ApiError && cause.code === 'FEATURE_REQUIRED';
 }
 
 export function useProductionPlanner() {
@@ -62,25 +59,21 @@ export function useProductionPlanner() {
   const route = useRoute();
   const { subscription, hasFeature } = useAuth();
 
-  const canAccess = computed(() => hasFeature("production_planner"));
-  const isPro = computed(() =>
-    subscription.value ? isProPlan(subscription.value) : false,
-  );
+  const canAccess = computed(() => hasFeature('production_planner'));
+  const isPro = computed(() => (subscription.value ? isProPlan(subscription.value) : false));
   const maxRecipes = computed(() =>
-    isPro.value ? Number.POSITIVE_INFINITY : PRODUCTION_BASIC_RECIPE_LIMIT,
+    isPro.value ? Number.POSITIVE_INFINITY : PRODUCTION_BASIC_RECIPE_LIMIT
   );
 
-  async function fetchDetails(
-    ids: ReadonlyArray<number>,
-  ): Promise<ProductionRecipeRecord[]> {
+  async function fetchDetails(ids: ReadonlyArray<number>): Promise<ProductionRecipeRecord[]> {
     const unique = [...new Set(ids)];
     const records: ProductionRecipeRecord[] = [];
 
     for (let index = 0; index < unique.length; index += DETAILS_CHUNK) {
       const chunk = unique.slice(index, index + DETAILS_CHUNK);
       const response = await api<ProductionRecipeRecord[]>(
-        `/api/recipes/by-ids?ids=${chunk.join(",")}`,
-        { schema: z.array(recipeWithIngredientsSchema) },
+        `/api/recipes/by-ids?ids=${chunk.join(',')}`,
+        { schema: z.array(recipeWithIngredientsSchema) }
       );
       records.push(...response);
     }
@@ -98,13 +91,13 @@ export function useProductionPlanner() {
       if (!canAccess.value) return { ...emptyData(), gated: true };
 
       try {
-        const catalog = await api<ProductionCatalogRecipe[]>("/api/recipes", {
+        const catalog = await api<ProductionCatalogRecipe[]>('/api/recipes', {
           schema: z.array(recipeSummarySchema),
         });
         const wanted = resolveSelections(
           route.query,
           catalog.map((recipe) => recipe.id),
-          maxRecipes.value,
+          maxRecipes.value
         );
         const details =
           wanted.length > 0
@@ -115,45 +108,37 @@ export function useProductionPlanner() {
       } catch (cause) {
         if (isGated(cause)) return { ...emptyData(), gated: true };
 
-        console.error("[production] no se pudo cargar el planificador", cause);
+        console.error('[production] no se pudo cargar el planificador', cause);
         return { ...emptyData(), failed: true };
       }
     },
     // En navegación cliente la página pinta su skeleton en vez de bloquear; el
     // SSR espera la promesa, así que el HTML no cambia.
-    { default: () => emptyData(), lazy: true },
+    { default: () => emptyData(), lazy: true }
   );
 
   const catalog = computed(() => data.value.catalog);
   const catalogIds = computed(() => catalog.value.map((recipe) => recipe.id));
   const detailById = computed(
-    () => new Map(data.value.details.map((recipe) => [recipe.id, recipe])),
+    () => new Map(data.value.details.map((recipe) => [recipe.id, recipe]))
   );
 
   const selections = computed(() =>
-    resolveSelections(route.query, catalogIds.value, maxRecipes.value),
+    resolveSelections(route.query, catalogIds.value, maxRecipes.value)
   );
   const selectedIds = computed(
-    () => new Set(selections.value.map((selection) => selection.recipeId)),
+    () => new Set(selections.value.map((selection) => selection.recipeId))
   );
   const selectionById = computed(
-    () =>
-      new Map(
-        selections.value.map((selection) => [selection.recipeId, selection]),
-      ),
+    () => new Map(selections.value.map((selection) => [selection.recipeId, selection]))
   );
   const selectionLabel = computed(() =>
     selectionCountLabel(
       selections.value.length,
-      selections.value.reduce(
-        (total, selection) => total + (selection.batches || 1),
-        0,
-      ),
-    ),
+      selections.value.reduce((total, selection) => total + (selection.batches || 1), 0)
+    )
   );
-  const atLimit = computed(() =>
-    selectionAtLimit(selections.value, maxRecipes.value),
-  );
+  const atLimit = computed(() => selectionAtLimit(selections.value, maxRecipes.value));
 
   const presentationOptions = computed(
     () =>
@@ -164,8 +149,8 @@ export function useProductionPlanner() {
             id: presentation.id,
             name: presentation.name,
           })),
-        ]),
-      ),
+        ])
+      )
   );
 
   // ── Detalle bajo demanda ─────────────────────────────────────────────────
@@ -178,16 +163,14 @@ export function useProductionPlanner() {
   const missingIds = computed(() =>
     selections.value
       .map((selection) => selection.recipeId)
-      .filter((id) => !detailById.value.has(id) && !attemptedIds.value.has(id)),
+      .filter((id) => !detailById.value.has(id) && !attemptedIds.value.has(id))
   );
   const resultsPending = computed(() => missingIds.value.length > 0);
 
   function applyDetails(records: ReadonlyArray<ProductionRecipeRecord>): void {
     if (records.length === 0) return;
 
-    const byId = new Map(
-      data.value.details.map((recipe) => [recipe.id, recipe]),
-    );
+    const byId = new Map(data.value.details.map((recipe) => [recipe.id, recipe]));
     for (const record of records) byId.set(record.id, record);
     data.value = { ...data.value, details: [...byId.values()] };
   }
@@ -202,10 +185,7 @@ export function useProductionPlanner() {
       applyDetails(records);
       detailsError.value = false;
     } catch (cause) {
-      console.error(
-        "[production] no se pudieron cargar las recetas seleccionadas",
-        cause,
-      );
+      console.error('[production] no se pudieron cargar las recetas seleccionadas', cause);
       detailsError.value = true;
     }
   }
@@ -220,15 +200,12 @@ export function useProductionPlanner() {
     () => {
       if (import.meta.client) void loadMissingDetails();
     },
-    { immediate: true },
+    { immediate: true }
   );
 
   // ── Selección ────────────────────────────────────────────────────────────
   async function writeSelections(next: ProductionSelection[]): Promise<void> {
-    await navigateTo(
-      { path: "/produccion", query: serializeSelections(next) },
-      { replace: true },
-    );
+    await navigateTo({ path: '/produccion', query: serializeSelections(next) }, { replace: true });
   }
 
   async function toggle(recipeId: number): Promise<void> {
@@ -238,62 +215,43 @@ export function useProductionPlanner() {
 
   async function toggleAll(checked: boolean): Promise<void> {
     await writeSelections(
-      selectAllSelections(
-        selections.value,
-        catalogIds.value,
-        checked,
-        maxRecipes.value,
-      ),
+      selectAllSelections(selections.value, catalogIds.value, checked, maxRecipes.value)
     );
   }
 
-  async function updateBatches(
-    recipeId: number,
-    batches: unknown,
-  ): Promise<void> {
-    await writeSelections(
-      setSelectionBatches(selections.value, recipeId, batches),
-    );
+  async function updateBatches(recipeId: number, batches: unknown): Promise<void> {
+    await writeSelections(setSelectionBatches(selections.value, recipeId, batches));
   }
 
-  async function stepBatchesFor(
-    recipeId: number,
-    direction: 1 | -1,
-  ): Promise<void> {
-    const current = selections.value.find(
-      (selection) => selection.recipeId === recipeId,
-    );
+  async function stepBatchesFor(recipeId: number, direction: 1 | -1): Promise<void> {
+    const current = selections.value.find((selection) => selection.recipeId === recipeId);
     if (!current) return;
 
     await writeSelections(
       setSelectionBatches(
         selections.value,
         recipeId,
-        stepSelectionBatches(current.batches, direction),
-      ),
+        stepSelectionBatches(current.batches, direction)
+      )
     );
   }
 
   async function updatePresentation(
     recipeId: number,
-    presentationId: number | undefined,
+    presentationId: number | undefined
   ): Promise<void> {
-    await writeSelections(
-      setSelectionPresentation(selections.value, recipeId, presentationId),
-    );
+    await writeSelections(setSelectionPresentation(selections.value, recipeId, presentationId));
   }
 
   // ── Búsqueda y agrupado ──────────────────────────────────────────────────
-  const searchQuery = ref("");
+  const searchQuery = ref('');
   const filtered = computed(() => {
     const { groups } = groupRecipes(catalog.value);
     return filterRecipeGroups(groups, searchQuery.value, selectedIds.value);
   });
 
   // ── Resultados y stage ───────────────────────────────────────────────────
-  const results = computed(() =>
-    calculateProduction(selections.value, data.value.details),
-  );
+  const results = computed(() => calculateProduction(selections.value, data.value.details));
 
   // El escenario se fija con el primer catálogo disponible y a partir de ahí sólo
   // lo cambian las acciones del usuario: con datos `lazy` el catálogo llega
@@ -301,7 +259,7 @@ export function useProductionPlanner() {
   // deep link `?recipes=…` debe abrir en resultados). `flush: "sync"` decide en
   // el mismo tick en que llega el dato: en SSR eso ocurre durante el render y un
   // watcher diferido pintaría el selector en el HTML y los resultados en cliente.
-  const stage = ref<"select" | "results">("select");
+  const stage = ref<'select' | 'results'>('select');
   let stageCaptured = false;
 
   watch(
@@ -309,17 +267,17 @@ export function useProductionPlanner() {
     (ready) => {
       if (!ready || stageCaptured) return;
       stageCaptured = true;
-      stage.value = selections.value.length > 0 ? "results" : "select";
+      stage.value = selections.value.length > 0 ? 'results' : 'select';
     },
-    { immediate: true, flush: "sync" },
+    { immediate: true, flush: 'sync' }
   );
 
   function showResults(): void {
-    if (selections.value.length > 0) stage.value = "results";
+    if (selections.value.length > 0) stage.value = 'results';
   }
 
   function editSelection(): void {
-    stage.value = "select";
+    stage.value = 'select';
   }
 
   return {

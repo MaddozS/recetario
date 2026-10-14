@@ -2,120 +2,120 @@
 name: KitchCalc
 description: Calculadora de costos de recetas para profesionales de la cocina
 colors:
-  blueprint-indigo: "#4f46e5"
-  apron-white: "#f8fafc"
-  recipe-card: "#ffffff"
-  flour-dust: "#f1f5f9"
-  cell-warmth: "#e2e8f0"
-  espresso: "#0f172a"
-  warm-slate: "#334155"
-  cool-ash: "#64748b"
-  vapor: "#94a3b8"
-  pan-edge: "#e2e8f0"
-  pan-edge-light: "#f1f5f9"
-  chili-red: "#be123c"
-  chili-bg: "#fff1f2"
-  chili-border: "#fecdd3"
-  chili-solid: "#e11d48"
-  herb-green: "#047857"
-  herb-bg: "#ecfdf5"
-  herb-border: "#a7f3d0"
-  herb-solid: "#10b981"
-  turmeric-amber: "#b45309"
-  turmeric-bg: "#fffbeb"
-  turmeric-border: "#fde68a"
-  turmeric-solid: "#f59e0b"
-  ring-indigo: "#4f46e5"
+  blueprint-indigo: '#4f46e5'
+  apron-white: '#f8fafc'
+  recipe-card: '#ffffff'
+  flour-dust: '#f1f5f9'
+  cell-warmth: '#e2e8f0'
+  espresso: '#0f172a'
+  warm-slate: '#334155'
+  cool-ash: '#64748b'
+  vapor: '#94a3b8'
+  pan-edge: '#e2e8f0'
+  pan-edge-light: '#f1f5f9'
+  chili-red: '#be123c'
+  chili-bg: '#fff1f2'
+  chili-border: '#fecdd3'
+  chili-solid: '#e11d48'
+  herb-green: '#047857'
+  herb-bg: '#ecfdf5'
+  herb-border: '#a7f3d0'
+  herb-solid: '#10b981'
+  turmeric-amber: '#b45309'
+  turmeric-bg: '#fffbeb'
+  turmeric-border: '#fde68a'
+  turmeric-solid: '#f59e0b'
+  ring-indigo: '#4f46e5'
 typography:
   display:
-    fontFamily: "Outfit, ui-sans-serif, system-ui, sans-serif"
-    fontSize: "1.875rem"
+    fontFamily: 'Outfit, ui-sans-serif, system-ui, sans-serif'
+    fontSize: '1.875rem'
     fontWeight: 800
     lineHeight: 1.2
-    letterSpacing: "normal"
+    letterSpacing: 'normal'
   headline:
-    fontFamily: "Outfit, ui-sans-serif, system-ui, sans-serif"
-    fontSize: "1.5rem"
+    fontFamily: 'Outfit, ui-sans-serif, system-ui, sans-serif'
+    fontSize: '1.5rem'
     fontWeight: 700
     lineHeight: 1.3
-    letterSpacing: "normal"
+    letterSpacing: 'normal'
   title:
-    fontFamily: "Outfit, ui-sans-serif, system-ui, sans-serif"
-    fontSize: "1.125rem"
+    fontFamily: 'Outfit, ui-sans-serif, system-ui, sans-serif'
+    fontSize: '1.125rem'
     fontWeight: 700
     lineHeight: 1.4
-    letterSpacing: "normal"
+    letterSpacing: 'normal'
   body:
-    fontFamily: "Outfit, ui-sans-serif, system-ui, sans-serif"
-    fontSize: "0.875rem"
+    fontFamily: 'Outfit, ui-sans-serif, system-ui, sans-serif'
+    fontSize: '0.875rem'
     fontWeight: 400
     lineHeight: 1.6
-    letterSpacing: "normal"
+    letterSpacing: 'normal'
   label:
-    fontFamily: "Outfit, ui-sans-serif, system-ui, sans-serif"
-    fontSize: "0.6875rem"
+    fontFamily: 'Outfit, ui-sans-serif, system-ui, sans-serif'
+    fontSize: '0.6875rem'
     fontWeight: 700
     lineHeight: 1.4
-    letterSpacing: "0.16em"
-    textTransform: "uppercase"
+    letterSpacing: '0.16em'
+    textTransform: 'uppercase'
   mono:
     fontFamily: "'JetBrains Mono', ui-monospace, 'SF Mono', 'Cascadia Code', 'Consolas', monospace"
-    fontSize: "inherit"
+    fontSize: 'inherit'
     fontWeight: 500
     lineHeight: 1.5
-    letterSpacing: "normal"
+    letterSpacing: 'normal'
     fontFeature: "'tnum'"
 rounded:
-  lg: "8px"
-  xl: "12px"
-  2xl: "16px"
-  3xl: "24px"
-  full: "9999px"
+  lg: '8px'
+  xl: '12px'
+  2xl: '16px'
+  3xl: '24px'
+  full: '9999px'
 spacing:
-  xs: "4px"
-  sm: "8px"
-  md: "12px"
-  lg: "16px"
-  xl: "20px"
-  2xl: "24px"
-  3xl: "32px"
+  xs: '4px'
+  sm: '8px'
+  md: '12px'
+  lg: '16px'
+  xl: '20px'
+  2xl: '24px'
+  3xl: '32px'
 components:
   button-primary:
-    backgroundColor: "{colors.blueprint-indigo}"
-    textColor: "#ffffff"
-    rounded: "{rounded.xl}"
-    padding: "12px 24px"
-    typography: "{typography.body}"
+    backgroundColor: '{colors.blueprint-indigo}'
+    textColor: '#ffffff'
+    rounded: '{rounded.xl}'
+    padding: '12px 24px'
+    typography: '{typography.body}'
   button-primary-hover:
-    backgroundColor: "#4338ca"
-    textColor: "#ffffff"
-    rounded: "{rounded.xl}"
-    padding: "12px 24px"
+    backgroundColor: '#4338ca'
+    textColor: '#ffffff'
+    rounded: '{rounded.xl}'
+    padding: '12px 24px'
   button-secondary:
-    textColor: "{colors.cool-ash}"
-    rounded: "{rounded.xl}"
-    padding: "12px 20px"
+    textColor: '{colors.cool-ash}'
+    rounded: '{rounded.xl}'
+    padding: '12px 20px'
   button-secondary-hover:
-    backgroundColor: "{colors.apron-white}"
-    textColor: "{colors.cool-ash}"
-    rounded: "{rounded.xl}"
-    padding: "12px 20px"
+    backgroundColor: '{colors.apron-white}'
+    textColor: '{colors.cool-ash}'
+    rounded: '{rounded.xl}'
+    padding: '12px 20px'
   button-danger:
-    backgroundColor: "{colors.chili-solid}"
-    textColor: "#ffffff"
-    rounded: "{rounded.xl}"
-    padding: "12px 20px"
+    backgroundColor: '{colors.chili-solid}'
+    textColor: '#ffffff'
+    rounded: '{rounded.xl}'
+    padding: '12px 20px'
   card-default:
-    backgroundColor: "{colors.recipe-card}"
-    rounded: "{rounded.2xl}"
+    backgroundColor: '{colors.recipe-card}'
+    rounded: '{rounded.2xl}'
   input-field:
-    backgroundColor: "{colors.apron-white}"
-    rounded: "{rounded.xl}"
-    padding: "12px 16px"
+    backgroundColor: '{colors.apron-white}'
+    rounded: '{rounded.xl}'
+    padding: '12px 16px'
   input-field-focus:
-    backgroundColor: "{colors.recipe-card}"
-    rounded: "{rounded.xl}"
-    padding: "12px 16px"
+    backgroundColor: '{colors.recipe-card}'
+    rounded: '{rounded.xl}'
+    padding: '12px 16px'
 ---
 
 # Design System: KitchCalc
@@ -350,7 +350,7 @@ All reusable UI primitives live in `apps/web/app/components/ui/{atoms,molecules,
 <!-- El kit (~/components/ui) no necesita import: <Button>, <Card>, <Dialog>… -->
 <!-- Los componentes de una feature SÍ: -->
 <script setup lang="ts">
-import BillingSection from "~/features/billing/BillingSection.vue";
+import BillingSection from '~/features/billing/BillingSection.vue';
 </script>
 ```
 
@@ -404,13 +404,7 @@ import BillingSection from "~/features/billing/BillingSection.vue";
 
 ```vue
 <Input label="Nombre" name="name" required />
-<Input
-  label="Precio"
-  name="price"
-  type="number"
-  monospace
-  error="Debe ser mayor a 0"
-/>
+<Input label="Precio" name="price" type="number" monospace error="Debe ser mayor a 0" />
 <Input name="search" type="search" placeholder="Buscar..." />
 ```
 
@@ -449,11 +443,7 @@ import BillingSection from "~/features/billing/BillingSection.vue";
 **File:** `apps/web/app/components/ui/organisms/Dialog.vue`
 
 ```vue
-<Dialog
-  id="my-dialog"
-  title="Confirmar"
-  description="Esta accion no se puede deshacer."
->
+<Dialog id="my-dialog" title="Confirmar" description="Esta accion no se puede deshacer.">
   <div class="flex justify-end gap-3">
     <Button variant="secondary">Cancelar</Button>
     <Button variant="danger">Eliminar</Button>

@@ -1,25 +1,18 @@
 // Subpath sin DOM ni `better-auth/client`: el barrel `@recetario/auth` arrastra
 // módulos de navegador que no pertenecen al grafo del servidor.
-import {
-  csrfCookieOptions,
-  getCsrfCookie,
-  resolveCsrfToken,
-} from "@recetario/auth/csrf";
-import { syncEnvBindings } from "@recetario/config/env";
+import { csrfCookieOptions, getCsrfCookie, resolveCsrfToken } from '@recetario/auth/csrf';
+import { syncEnvBindings } from '@recetario/config/env';
 import {
   ACCENT_COOKIE,
   THEME_COOKIE,
   resolveAccent,
   resolveTheme,
-} from "#shared/utils/preferences";
-import {
-  buildAnonymousAuthState,
-  buildAuthenticatedAuthState,
-} from "#shared/types/auth";
-import { isPrivatePath } from "#shared/utils/navigation";
-import { isAuthPath } from "#shared/utils/seo";
-import { getCloudflareEnv } from "../utils/api-transport";
-import { fetchSession, shouldBootstrapSession } from "../utils/session-state";
+} from '#shared/utils/preferences';
+import { buildAnonymousAuthState, buildAuthenticatedAuthState } from '#shared/types/auth';
+import { isPrivatePath } from '#shared/utils/navigation';
+import { isAuthPath } from '#shared/utils/seo';
+import { getCloudflareEnv } from '../utils/api-transport';
+import { fetchSession, shouldBootstrapSession } from '../utils/session-state';
 
 /**
  * Bootstrap de sesión por documento: resuelve la sesión contra el API, deja el
@@ -36,8 +29,8 @@ const PRESENTATION_COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 // `routeRules`) para que el contrato sea el mismo en dev, e2e y producción:
 // `setHeaders` es el mismo mecanismo que emite las cookies de sesión.
 const PRIVATE_HEADERS = {
-  "cache-control": "private, no-store",
-  "x-robots-tag": "noindex, nofollow",
+  'cache-control': 'private, no-store',
+  'x-robots-tag': 'noindex, nofollow',
 };
 
 export default defineEventHandler(async (event) => {
@@ -55,7 +48,7 @@ export default defineEventHandler(async (event) => {
   syncEnvBindings(getCloudflareEnv(event));
   // `Secure` según el esquema real del request: en dev y en los e2e (http) las
   // cookies deben viajar; en producción (https) siempre.
-  const secure = getRequestURL(event).protocol === "https:";
+  const secure = getRequestURL(event).protocol === 'https:';
 
   const cookieTheme = getCookie(event, THEME_COOKIE);
   const cookieAccent = getCookie(event, ACCENT_COOKIE);
@@ -77,15 +70,15 @@ export default defineEventHandler(async (event) => {
   };
 
   setCookie(event, THEME_COOKIE, preferences.theme, {
-    path: "/",
-    sameSite: "lax",
+    path: '/',
+    sameSite: 'lax',
     httpOnly: false,
     secure,
     maxAge: PRESENTATION_COOKIE_MAX_AGE,
   });
   setCookie(event, ACCENT_COOKIE, preferences.accentColor, {
-    path: "/",
-    sameSite: "lax",
+    path: '/',
+    sameSite: 'lax',
     httpOnly: false,
     secure,
     maxAge: PRESENTATION_COOKIE_MAX_AGE,
@@ -98,7 +91,7 @@ export default defineEventHandler(async (event) => {
     event,
     csrfCookie,
     resolveCsrfToken(getCookie(event, csrfCookie)),
-    csrfCookieOptions(secure),
+    csrfCookieOptions(secure)
   );
 
   event.context.auth = buildAuthenticatedAuthState(session, preferences);

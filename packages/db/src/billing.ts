@@ -1,16 +1,16 @@
-import { prisma } from "./prisma";
+import { prisma } from './prisma';
 import type {
   SubscriptionUncheckedCreateInput,
   SubscriptionUncheckedUpdateInput,
   SubscriptionPlanUncheckedCreateInput,
   SubscriptionGetPayload,
-} from "../prisma/generated/models";
-import type { SyncPlanInput } from "@recetario/types";
+} from '../prisma/generated/models';
+import type { SyncPlanInput } from '@recetario/types';
 
 export async function getSubscriptionPlans(activeOnly = true) {
   return prisma.subscriptionPlan.findMany({
     where: activeOnly ? { active: true } : undefined,
-    orderBy: { priceCents: "asc" },
+    orderBy: { priceCents: 'asc' },
   });
 }
 
@@ -24,7 +24,7 @@ export async function getSubscriptionPlanByStripePriceId(stripePriceId: string) 
 
 export async function upsertSubscriptionPlan(
   id: string,
-  input: Omit<SubscriptionPlanUncheckedCreateInput, "id">,
+  input: Omit<SubscriptionPlanUncheckedCreateInput, 'id'>
 ) {
   return prisma.subscriptionPlan.upsert({
     where: { id },
@@ -51,7 +51,7 @@ export async function syncPlans(input: SyncPlanInput[]): Promise<void> {
 
 export async function getSubscriptionByUserId(
   userId: string,
-  statuses?: string[],
+  statuses?: string[]
 ): Promise<SubscriptionGetPayload<{ include: { plan: true } }> | null> {
   // Hot path (session / every authenticated page): deliberately uncached.
   // A 60–120s stale cache on entitlements causes inconsistent UI after a
@@ -59,13 +59,11 @@ export async function getSubscriptionByUserId(
   const rows = await prisma.subscription.findMany({
     where: { userId, ...(statuses ? { status: { in: statuses } } : {}) },
     include: { plan: true },
-    orderBy: { createdAt: "desc" },
+    orderBy: { createdAt: 'desc' },
   });
   if (rows.length === 0) return null;
 
-  const activeOrTrialing = rows.find(
-    (s) => s.status === "active" || s.status === "trialing",
-  );
+  const activeOrTrialing = rows.find((s) => s.status === 'active' || s.status === 'trialing');
   return (activeOrTrialing ?? rows[0]) as SubscriptionGetPayload<{
     include: { plan: true };
   }> | null;
@@ -77,7 +75,7 @@ export async function getSubscriptionByStripeId(stripeSubscriptionId: string) {
 
 export async function upsertSubscription(
   stripeSubscriptionId: string,
-  input: Omit<SubscriptionUncheckedCreateInput, "stripeSubscriptionId">,
+  input: Omit<SubscriptionUncheckedCreateInput, 'stripeSubscriptionId'>
 ) {
   const data = await prisma.subscription.upsert({
     where: { stripeSubscriptionId },
@@ -89,7 +87,7 @@ export async function upsertSubscription(
 
 export async function updateSubscription(
   stripeSubscriptionId: string,
-  input: SubscriptionUncheckedUpdateInput,
+  input: SubscriptionUncheckedUpdateInput
 ) {
   const data = await prisma.subscription.update({
     where: { stripeSubscriptionId },
@@ -102,7 +100,7 @@ export async function getStripeCustomerId(userId: string): Promise<string | null
   const data = await prisma.subscription.findFirst({
     where: { userId, stripeCustomerId: { not: null } },
     select: { stripeCustomerId: true },
-    orderBy: { createdAt: "desc" },
+    orderBy: { createdAt: 'desc' },
   });
   return data?.stripeCustomerId ?? null;
 }

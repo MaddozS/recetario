@@ -1,5 +1,5 @@
-import { computed, onBeforeUnmount, ref } from "vue";
-import { formatCountdown } from "./format-countdown";
+import { computed, onBeforeUnmount, ref } from 'vue';
+import { formatCountdown } from './format-countdown';
 
 const TICK_MS = 1000;
 

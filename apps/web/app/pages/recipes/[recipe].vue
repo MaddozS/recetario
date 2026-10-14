@@ -1,21 +1,18 @@
 <script setup lang="ts">
-import type { MutationOutcome } from "~/features/recipes/useRecipes";
-import { useRecipeFinancials } from "~/features/recipes/useRecipeFinancials";
-import { toRecipeSummary } from "~/features/recipes/recipe-state";
-import {
-  RECIPE_TABS,
-  useRecipeDetail,
-} from "~/features/recipes/useRecipeDetail";
-import FinancialSummary from "~/features/recipes/FinancialSummary.vue";
-import PresentationsPanel from "~/features/recipes/PresentationsPanel.vue";
-import RecipeDeleteDialog from "~/features/recipes/RecipeDeleteDialog.vue";
-import RecipeDetailHeader from "~/features/recipes/RecipeDetailHeader.vue";
-import RecipeDetailSkeleton from "~/features/recipes/RecipeDetailSkeleton.vue";
-import RecipeDuplicateDialog from "~/features/recipes/RecipeDuplicateDialog.vue";
-import RecipeErrorAlert from "~/features/recipes/RecipeErrorAlert.vue";
-import RecipeFixedCostsPanel from "~/features/recipes/RecipeFixedCostsPanel.vue";
-import RecipeIngredientsPanel from "~/features/recipes/RecipeIngredientsPanel.vue";
-import RecipeTabs from "~/features/recipes/RecipeTabs.vue";
+import type { MutationOutcome } from '~/features/recipes/useRecipes';
+import { useRecipeFinancials } from '~/features/recipes/useRecipeFinancials';
+import { toRecipeSummary } from '~/features/recipes/recipe-state';
+import { RECIPE_TABS, useRecipeDetail } from '~/features/recipes/useRecipeDetail';
+import FinancialSummary from '~/features/recipes/FinancialSummary.vue';
+import PresentationsPanel from '~/features/recipes/PresentationsPanel.vue';
+import RecipeDeleteDialog from '~/features/recipes/RecipeDeleteDialog.vue';
+import RecipeDetailHeader from '~/features/recipes/RecipeDetailHeader.vue';
+import RecipeDetailSkeleton from '~/features/recipes/RecipeDetailSkeleton.vue';
+import RecipeDuplicateDialog from '~/features/recipes/RecipeDuplicateDialog.vue';
+import RecipeErrorAlert from '~/features/recipes/RecipeErrorAlert.vue';
+import RecipeFixedCostsPanel from '~/features/recipes/RecipeFixedCostsPanel.vue';
+import RecipeIngredientsPanel from '~/features/recipes/RecipeIngredientsPanel.vue';
+import RecipeTabs from '~/features/recipes/RecipeTabs.vue';
 
 /**
  * Detalle y edición base de receta: página coordinadora delgada. Los datos, el
@@ -25,11 +22,11 @@ import RecipeTabs from "~/features/recipes/RecipeTabs.vue";
  * el resumen y los importes por pieza sin recargar.
  */
 definePageMeta({
-  layout: "private",
+  layout: 'private',
   // `recipe-breadcrumb` resuelve el nombre antes del render (el header del
   // layout se pinta antes que esta página): sin él el SSR mostraba «Receta».
-  middleware: ["auth", "recipe-breadcrumb"],
-  breadcrumbs: [{ label: "Recetas", href: "/recipes" }, { label: "Receta" }],
+  middleware: ['auth', 'recipe-breadcrumb'],
+  breadcrumbs: [{ label: 'Recetas', href: '/recipes' }, { label: 'Receta' }],
 });
 
 const {
@@ -100,13 +97,11 @@ const {
 });
 
 /** Última mutación con éxito; recetas y finanzas comparten el espacio. */
-const successMessage = computed(
-  () => financialFeedback.value ?? feedback.value,
-);
+const successMessage = computed(() => financialFeedback.value ?? feedback.value);
 
 /** Alcance del resumen: sus cifras escalan con las mezclas del multiplicador. */
 const multiplierLabel = computed(
-  () => `${multiplier.value} mezcla${multiplier.value === 1 ? "" : "s"}`,
+  () => `${multiplier.value} mezcla${multiplier.value === 1 ? '' : 's'}`
 );
 
 // Paridad con el baseline: una receta inexistente (o de otro usuario) vuelve al
@@ -114,23 +109,21 @@ const multiplierLabel = computed(
 // navegación cliente el detalle llega después del setup, así que se reacciona
 // al cambio.
 watch(notFound, (missing) => {
-  if (missing) void navigateTo("/recipes", { replace: true });
+  if (missing) void navigateTo('/recipes', { replace: true });
 });
 
 const { hasFeature } = useAuth();
-const canDuplicate = computed(() => hasFeature("recipe_duplicate"));
+const canDuplicate = computed(() => hasFeature('recipe_duplicate'));
 
 useHead({
-  title: () => `${recipe.value?.name ?? "Receta"} | KitchCalc`,
+  title: () => `${recipe.value?.name ?? 'Receta'} | KitchCalc`,
 });
 
 const deleteOpen = ref(false);
 const duplicateOpen = ref(false);
 
 /** Los dialogs reutilizados esperan el resumen de la receta. */
-const summaryRecipe = computed(() =>
-  recipe.value ? toRecipeSummary(recipe.value) : null,
-);
+const summaryRecipe = computed(() => (recipe.value ? toRecipeSummary(recipe.value) : null));
 
 async function confirmDelete(recipeId: number): Promise<MutationOutcome> {
   return removeRecipe(recipeId);
@@ -151,9 +144,7 @@ async function confirmDuplicate(recipeId: number): Promise<MutationOutcome> {
 
     <Card v-else-if="loadFailed" padding="lg">
       <FeedbackAlert type="error" message="No se pudo cargar la receta." />
-      <Button variant="secondary" icon="refresh-cw" @click="refresh()">
-        Reintentar
-      </Button>
+      <Button variant="secondary" icon="refresh-cw" @click="refresh()"> Reintentar </Button>
     </Card>
 
     <template v-else-if="recipe">
@@ -193,11 +184,7 @@ async function confirmDuplicate(recipeId: number): Promise<MutationOutcome> {
         />
       </div>
 
-      <RecipeTabs
-        :tabs="RECIPE_TABS"
-        :active="activeTab"
-        @select="selectTab($event)"
-      />
+      <RecipeTabs :tabs="RECIPE_TABS" :active="activeTab" @select="selectTab($event)" />
 
       <div
         id="panel-ingredientes"

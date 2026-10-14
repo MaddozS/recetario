@@ -4,7 +4,7 @@
  * Módulo puro: cubierto en `test/unit`. La normalización NFD (quitar
  * diacríticos) vive en `shared/utils/search.ts`: "platano" encuentra "Plátano".
  */
-import { normalizeSearchText } from "#shared/utils/search";
+import { normalizeSearchText } from '#shared/utils/search';
 
 export { normalizeSearchText };
 
@@ -16,15 +16,13 @@ export type IngredientSearchSource = {
 
 export function matchesIngredientSearch(
   ingredient: IngredientSearchSource,
-  query: string,
+  query: string
 ): boolean {
   const normalizedQuery = normalizeSearchText(query);
   if (!normalizedQuery) return true;
 
   const haystack = normalizeSearchText(
-    [ingredient.name, ingredient.supplier ?? "", ingredient.brand ?? ""].join(
-      " ",
-    ),
+    [ingredient.name, ingredient.supplier ?? '', ingredient.brand ?? ''].join(' ')
   );
 
   return haystack.includes(normalizedQuery);
@@ -32,12 +30,10 @@ export function matchesIngredientSearch(
 
 export function filterIngredients<T extends IngredientSearchSource>(
   ingredients: readonly T[],
-  query: string,
+  query: string
 ): T[] {
   const normalizedQuery = normalizeSearchText(query);
   if (!normalizedQuery) return [...ingredients];
 
-  return ingredients.filter((ingredient) =>
-    matchesIngredientSearch(ingredient, normalizedQuery),
-  );
+  return ingredients.filter((ingredient) => matchesIngredientSearch(ingredient, normalizedQuery));
 }

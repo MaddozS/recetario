@@ -1,4 +1,4 @@
-import type { PricingPlan } from "@recetario/types";
+import type { PricingPlan } from '@recetario/types';
 
 /**
  * Orden de presentación de los planes en las superficies públicas: el
@@ -10,14 +10,11 @@ import type { PricingPlan } from "@recetario/types";
  * orden lo usan la landing, `/pricing` y las columnas de la matriz, para que el
  * visitante compare lo que acaba de ver.
  */
-export const RECOMMENDED_PLAN_ID = "pro";
+export const RECOMMENDED_PLAN_ID = 'pro';
 
 export function displayPlanOrder(plans: PricingPlan[]): PricingPlan[] {
   const recommended = plans.find((plan) => plan.id === RECOMMENDED_PLAN_ID);
   if (!recommended) return [...plans];
 
-  return [
-    recommended,
-    ...plans.filter((plan) => plan.id !== RECOMMENDED_PLAN_ID),
-  ];
+  return [recommended, ...plans.filter((plan) => plan.id !== RECOMMENDED_PLAN_ID)];
 }

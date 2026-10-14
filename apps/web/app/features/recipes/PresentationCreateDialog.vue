@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref, watch } from "vue";
-import { validatePresentationDraft } from "./recipe-presentations";
-import type { PresentationDraft } from "./recipe-presentations";
-import type { MutationOutcome } from "./useRecipes";
+import { computed, onMounted, reactive, ref, watch } from 'vue';
+import { validatePresentationDraft } from './recipe-presentations';
+import type { PresentationDraft } from './recipe-presentations';
+import type { MutationOutcome } from './useRecipes';
 
 /**
  * Alta de una presentación (paridad con el dialog del baseline). Valida con la
@@ -13,7 +13,7 @@ const props = defineProps<{
   submit: (draft: PresentationDraft) => Promise<MutationOutcome>;
 }>();
 
-const open = defineModel<boolean>("open", { required: true });
+const open = defineModel<boolean>('open', { required: true });
 
 const dialog = ref<{ open: () => void; close: () => void } | null>(null);
 const draft = reactive<PresentationDraft>(emptyDraft());
@@ -24,9 +24,9 @@ const validation = computed(() => validatePresentationDraft(draft));
 
 function emptyDraft(): PresentationDraft {
   return {
-    name: "",
-    unitsPerBatch: "",
-    salePrice: "",
+    name: '',
+    unitsPerBatch: '',
+    salePrice: '',
     priceDirty: false,
   };
 }
@@ -80,14 +80,10 @@ async function onSubmit(): Promise<void> {
   >
     <div class="flex items-start justify-between gap-4">
       <div>
-        <p
-          class="text-accent-700 text-xs font-black tracking-[0.18em] uppercase"
-        >
+        <p class="text-accent-700 text-xs font-black tracking-[0.18em] uppercase">
           Nueva presentación
         </p>
-        <h2 class="text-foreground mt-2 text-xl font-black">
-          Define una nueva venta por pieza
-        </h2>
+        <h2 class="text-foreground mt-2 text-xl font-black">Define una nueva venta por pieza</h2>
         <p class="text-muted-foreground mt-2 text-sm">
           Puedes ajustar nombre, rendimiento y precio desde la tarjeta después.
         </p>
@@ -167,9 +163,7 @@ async function onSubmit(): Promise<void> {
       </p>
 
       <div class="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-        <Button variant="secondary" :disabled="submitting" @click="close">
-          Cancelar
-        </Button>
+        <Button variant="secondary" :disabled="submitting" @click="close"> Cancelar </Button>
         <Button
           variant="primary"
           icon="plus"

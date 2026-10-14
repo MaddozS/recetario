@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 
 /**
  * Número que cuenta desde 0 al montar (las tarjetas del hero siempre están en
@@ -11,7 +11,7 @@ const props = withDefaults(
     prefix?: string;
     decimals?: number;
   }>(),
-  { prefix: "$", decimals: 2 },
+  { prefix: '$', decimals: 2 }
 );
 
 const DURATION_MS = 800;
@@ -40,8 +40,8 @@ function animate(): void {
 
 onMounted(() => {
   const reducedMotion =
-    typeof window.matchMedia === "function" &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    typeof window.matchMedia === 'function' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   if (reducedMotion) {
     progress.value = 1;

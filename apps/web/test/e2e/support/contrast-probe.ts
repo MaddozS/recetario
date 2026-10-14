@@ -1,5 +1,5 @@
-import type { Page } from "@playwright/test";
-import { freezeAnimations, scrollPositions, scrollTo } from "./page-sweep";
+import type { Page } from '@playwright/test';
+import { freezeAnimations, scrollPositions, scrollTo } from './page-sweep';
 
 /**
  * Sonda de contraste medida sobre píxeles renderizados.
@@ -103,7 +103,7 @@ const contrast = (a: Rgb, b: Rgb): number => {
 /** Compone el texto (con su alfa) sobre el fondo medido. */
 const composite = (foreground: Rgb, alpha: number, background: Rgb): Rgb =>
   foreground.map((channel, index) =>
-    Math.round(channel * alpha + background[index] * (1 - alpha)),
+    Math.round(channel * alpha + background[index] * (1 - alpha))
   ) as Rgb;
 
 /** Umbral WCAG 2.1: 3:1 para texto grande (≥24px, o ≥18.66px en negrita). */
@@ -120,16 +120,15 @@ const requiredRatio = (fontSize: number, fontWeight: number): number =>
  */
 async function collectSamples(
   page: Page,
-  { requireOpaqueText = true }: { requireOpaqueText?: boolean } = {},
+  { requireOpaqueText = true }: { requireOpaqueText?: boolean } = {}
 ): Promise<TextSample[]> {
   return await page.evaluate(
     ({ maxLength, opaqueOnly }) => {
-      const SKIPPED_TAGS = new Set(["SCRIPT", "STYLE", "TEMPLATE", "NOSCRIPT"]);
+      const SKIPPED_TAGS = new Set(['SCRIPT', 'STYLE', 'TEMPLATE', 'NOSCRIPT']);
       const INSET = 2;
       const MIN_SIZE = 6;
 
-      const clamp01 = (value: number): number =>
-        Math.min(1, Math.max(0, value));
+      const clamp01 = (value: number): number => Math.min(1, Math.max(0, value));
 
       /** Lineal → sRGB (transferencia de la especificación CSS Color 4). */
       const gamma = (value: number): number =>
@@ -138,11 +137,7 @@ async function collectSamples(
           : 1.055 * clamp01(value) ** (1 / 2.4) - 0.055;
 
       const toRgb = (channels: number[]): [number, number, number] =>
-        channels.map((channel) => Math.round(gamma(channel) * 255)) as [
-          number,
-          number,
-          number,
-        ];
+        channels.map((channel) => Math.round(gamma(channel) * 255)) as [number, number, number];
 
       /** OKLab → sRGB lineal (matriz de la especificación). */
       const oklabToRgb = (lightness: number, a: number, b: number) => {
@@ -161,65 +156,56 @@ async function collectSamples(
        * valor computado de los tokens oscuros, así que no basta con `rgb()`.
        * Cualquier sintaxis no soportada falla en voz alta en vez de medir negro.
        */
-      const parseColor = (
-        value: string,
-      ): { rgb: [number, number, number]; alpha: number } => {
+      const parseColor = (value: string): { rgb: [number, number, number]; alpha: number } => {
         const trimmed = value.trim();
-        if (trimmed.startsWith("#")) {
+        if (trimmed.startsWith('#')) {
           const hex = trimmed.slice(1);
           return {
-            rgb: [0, 2, 4].map((index) =>
-              Number.parseInt(hex.slice(index, index + 2), 16),
-            ) as [number, number, number],
+            rgb: [0, 2, 4].map((index) => Number.parseInt(hex.slice(index, index + 2), 16)) as [
+              number,
+              number,
+              number,
+            ],
             alpha: 1,
           };
         }
 
-        const open = trimmed.indexOf("(");
+        const open = trimmed.indexOf('(');
         const name = trimmed.slice(0, open).toLowerCase();
-        const body = trimmed.slice(open + 1, trimmed.lastIndexOf(")"));
-        const [head, alphaPart] = body.split("/");
+        const body = trimmed.slice(open + 1, trimmed.lastIndexOf(')'));
+        const [head, alphaPart] = body.split('/');
         const parts = head.trim().split(/[\s,]+/);
-        const number = (index: number): number =>
-          Number.parseFloat(parts[index] ?? "0");
+        const number = (index: number): number => Number.parseFloat(parts[index] ?? '0');
         const alphaOf = (legacyIndex: number): number => {
           if (alphaPart !== undefined) {
-            return (
-              Number.parseFloat(alphaPart) / (alphaPart.includes("%") ? 100 : 1)
-            );
+            return Number.parseFloat(alphaPart) / (alphaPart.includes('%') ? 100 : 1);
           }
           return parts.length > legacyIndex ? number(legacyIndex) : 1;
         };
 
-        if (name === "rgb" || name === "rgba") {
+        if (name === 'rgb' || name === 'rgba') {
           // Ya viene en sRGB con transferencia aplicada: no se vuelve a convertir.
           return {
             rgb: [number(0), number(1), number(2)].map((channel) =>
-              Math.round(clamp01(channel / 255) * 255),
+              Math.round(clamp01(channel / 255) * 255)
             ) as [number, number, number],
             alpha: alphaOf(3),
           };
         }
-        if (name === "oklch") {
+        if (name === 'oklch') {
           const hue = (number(2) * Math.PI) / 180;
           return {
-            rgb: oklabToRgb(
-              number(0),
-              number(1) * Math.cos(hue),
-              number(1) * Math.sin(hue),
-            ),
+            rgb: oklabToRgb(number(0), number(1) * Math.cos(hue), number(1) * Math.sin(hue)),
             alpha: alphaOf(3),
           };
         }
-        if (name === "oklab") {
+        if (name === 'oklab') {
           return {
             rgb: oklabToRgb(number(0), number(1), number(2)),
             alpha: alphaOf(3),
           };
         }
-        throw new Error(
-          `color no soportado en la sonda de contraste: ${value}`,
-        );
+        throw new Error(`color no soportado en la sonda de contraste: ${value}`);
       };
 
       const pathOf = (element: Element): string => {
@@ -232,31 +218,25 @@ async function collectSamples(
           parts.unshift(`${node.tagName.toLowerCase()}:nth-child(${index})`);
           node = parent;
         }
-        return parts.join(" > ");
+        return parts.join(' > ');
       };
 
-      const navbar = document.querySelector("nav");
-      const safeTop = navbar
-        ? Math.max(0, navbar.getBoundingClientRect().bottom)
-        : 0;
+      const navbar = document.querySelector('nav');
+      const safeTop = navbar ? Math.max(0, navbar.getBoundingClientRect().bottom) : 0;
       const safeBottom = window.innerHeight;
 
       const samples: TextSample[] = [];
-      const walker = document.createTreeWalker(
-        document.body,
-        NodeFilter.SHOW_TEXT,
-      );
+      const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
 
       let node = walker.nextNode();
       while (node) {
-        const text = node.textContent?.replace(/\s+/g, " ").trim() ?? "";
+        const text = node.textContent?.replace(/\s+/g, ' ').trim() ?? '';
         const element = node.parentElement;
         if (text.length > 0 && element) {
-          const insideInert = element.closest("[inert]") !== null;
+          const insideInert = element.closest('[inert]') !== null;
           if (!insideInert && !SKIPPED_TAGS.has(element.tagName)) {
             const style = window.getComputedStyle(element);
-            const visible =
-              style.visibility === "visible" && style.display !== "none";
+            const visible = style.visibility === 'visible' && style.display !== 'none';
 
             let opacity = Number(style.opacity);
             for (
@@ -271,22 +251,20 @@ async function collectSamples(
               // El navbar es fijo y opaco: tapa lo que pasa por debajo, así que
               // las cajas de debajo se miden cuando el scroll las deja libres.
               // Su propio texto, en cambio, va sobre su fondo: se mide siempre.
-              const top = element.closest("nav") ? 0 : safeTop;
+              const top = element.closest('nav') ? 0 : safeTop;
               const range = document.createRange();
               range.selectNodeContents(node);
               const points: SamplePoint[] = [];
-              const rects = Array.from(range.getClientRects()).filter(
-                (rect) => {
-                  const insideViewport =
-                    rect.height >= MIN_SIZE &&
-                    rect.width >= MIN_SIZE &&
-                    rect.top >= top &&
-                    rect.bottom <= safeBottom &&
-                    rect.right > 0 &&
-                    rect.left < window.innerWidth;
-                  return insideViewport;
-                },
-              );
+              const rects = Array.from(range.getClientRects()).filter((rect) => {
+                const insideViewport =
+                  rect.height >= MIN_SIZE &&
+                  rect.width >= MIN_SIZE &&
+                  rect.top >= top &&
+                  rect.bottom <= safeBottom &&
+                  rect.right > 0 &&
+                  rect.left < window.innerWidth;
+                return insideViewport;
+              });
 
               for (const rect of rects) {
                 const left = rect.left + INSET;
@@ -301,7 +279,7 @@ async function collectSamples(
                   { x: middleX, y: middleY },
                   { x: left + (right - left) * 0.8, y: middleY },
                   { x: middleX, y: top },
-                  { x: middleX, y: bottom },
+                  { x: middleX, y: bottom }
                 );
               }
 
@@ -315,10 +293,7 @@ async function collectSamples(
                   const path = pathOf(element);
                   samples.push({
                     key: `${path}|${text}`,
-                    text:
-                      text.length > maxLength
-                        ? `${text.slice(0, maxLength)}…`
-                        : text,
+                    text: text.length > maxLength ? `${text.slice(0, maxLength)}…` : text,
                     path,
                     color: rgb,
                     alpha: effectiveAlpha,
@@ -336,45 +311,36 @@ async function collectSamples(
 
       return samples;
     },
-    { maxLength: MAX_TEXT_LENGTH, opaqueOnly: requireOpaqueText },
+    { maxLength: MAX_TEXT_LENGTH, opaqueOnly: requireOpaqueText }
   );
 }
 
 /** Decodifica la captura en la página y devuelve el píxel de cada punto. */
-async function samplePixels(
-  page: Page,
-  shot: string,
-  points: SamplePoint[],
-): Promise<Rgb[]> {
+async function samplePixels(page: Page, shot: string, points: SamplePoint[]): Promise<Rgb[]> {
   return await page.evaluate(
     async ({ base64, targets }) => {
       const response = await fetch(`data:image/png;base64,${base64}`);
       const bitmap = await createImageBitmap(await response.blob());
-      const canvas = document.createElement("canvas");
+      const canvas = document.createElement('canvas');
       canvas.width = bitmap.width;
       canvas.height = bitmap.height;
-      const context = canvas.getContext("2d", { willReadFrequently: true });
-      if (!context) throw new Error("sin contexto 2d para leer la captura");
+      const context = canvas.getContext('2d', { willReadFrequently: true });
+      if (!context) throw new Error('sin contexto 2d para leer la captura');
       context.drawImage(bitmap, 0, 0);
-      const { data, width, height } = context.getImageData(
-        0,
-        0,
-        canvas.width,
-        canvas.height,
-      );
+      const { data, width, height } = context.getImageData(0, 0, canvas.width, canvas.height);
 
       return targets.map(({ x, y }) => {
         const px = Math.min(width - 1, Math.max(0, Math.round(x)));
         const py = Math.min(height - 1, Math.max(0, Math.round(y)));
         const index = (py * width + px) * 4;
-        return [
-          data[index] ?? 0,
-          data[index + 1] ?? 0,
-          data[index + 2] ?? 0,
-        ] as [number, number, number];
+        return [data[index] ?? 0, data[index + 1] ?? 0, data[index + 2] ?? 0] as [
+          number,
+          number,
+          number,
+        ];
       });
     },
-    { base64: shot, targets: points },
+    { base64: shot, targets: points }
   );
 }
 
@@ -389,7 +355,7 @@ async function samplePixels(
  */
 export async function measureContrast(
   page: Page,
-  { scrollStep = 0.9 }: { scrollStep?: number } = {},
+  { scrollStep = 0.9 }: { scrollStep?: number } = {}
 ): Promise<ContrastMeasurement[]> {
   await installNameShim(page);
   await freezeAnimations(page);
@@ -405,9 +371,7 @@ export async function measureContrast(
     for (const sample of await collectSamples(page)) {
       const variants = declared.get(sample.key) ?? [];
       const known = variants.some(
-        (variant) =>
-          variant.color.join() === sample.color.join() &&
-          variant.alpha === sample.alpha,
+        (variant) => variant.color.join() === sample.color.join() && variant.alpha === sample.alpha
       );
       if (!known) variants.push(sample);
       declared.set(sample.key, variants);
@@ -422,11 +386,11 @@ export async function measureContrast(
     const samples = await collectSamples(page, { requireOpaqueText: false });
     if (samples.length === 0) continue;
 
-    const shot = (await page.screenshot({ type: "png" })).toString("base64");
+    const shot = (await page.screenshot({ type: 'png' })).toString('base64');
     const pixels = await samplePixels(
       page,
       shot,
-      samples.flatMap((sample) => sample.points),
+      samples.flatMap((sample) => sample.points)
     );
 
     let cursor = 0;
@@ -469,7 +433,7 @@ export async function measureContrast(
 /** Los nodos medidos que no llegan a su umbral: es lo que falla la superficie. */
 export async function collectContrastFailures(
   page: Page,
-  options: { scrollStep?: number } = {},
+  options: { scrollStep?: number } = {}
 ): Promise<ContrastMeasurement[]> {
   const measurements = await measureContrast(page, options);
   return measurements.filter((entry) => entry.ratio < entry.required);
@@ -477,7 +441,7 @@ export async function collectContrastFailures(
 
 /** Mensaje legible para el assert (Playwright no imprime arrays de objetos). */
 export function formatFailures(failures: ContrastMeasurement[]): string {
-  if (failures.length === 0) return "sin fallos de contraste";
+  if (failures.length === 0) return 'sin fallos de contraste';
   return failures
     .map(
       (failure) =>
@@ -486,7 +450,7 @@ export function formatFailures(failures: ContrastMeasurement[]): string {
         `    ${failure.path}\n` +
         `    texto ${failure.color} (declarado ${failure.declared} al ` +
         `${Math.round(failure.alpha * 100)}%) sobre ${failure.background} en ` +
-        `(${Math.round(failure.point.x)}, ${Math.round(failure.point.y)})`,
+        `(${Math.round(failure.point.x)}, ${Math.round(failure.point.y)})`
     )
-    .join("\n");
+    .join('\n');
 }

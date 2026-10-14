@@ -1,9 +1,9 @@
-import { mockNuxtImport, mountSuspended } from "@nuxt/test-utils/runtime";
-import { enableAutoUnmount, flushPromises } from "@vue/test-utils";
-import { defineComponent, h, nextTick } from "vue";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { UserSubscriptionInfo } from "@recetario/types";
-import { useSettingsOverview } from "~/features/settings/useSettingsOverview";
+import { mockNuxtImport, mountSuspended } from '@nuxt/test-utils/runtime';
+import { enableAutoUnmount, flushPromises } from '@vue/test-utils';
+import { defineComponent, h, nextTick } from 'vue';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import type { UserSubscriptionInfo } from '@recetario/types';
+import { useSettingsOverview } from '~/features/settings/useSettingsOverview';
 
 /**
  * Frescura de `/settings`: los contadores se cargan una vez y la suscripción
@@ -29,25 +29,25 @@ const state = vi.hoisted(() => ({
   overview: null as unknown as ReturnType<typeof useSettingsOverview>,
 }));
 
-mockNuxtImport("useApi", () => () => state.request);
+mockNuxtImport('useApi', () => () => state.request);
 
-mockNuxtImport("useAuth", async () => {
+mockNuxtImport('useAuth', async () => {
   // El import dinámico evita el binding hoisteado del factory (Vitest lo iza
   // por encima de los imports del spec).
-  const { computed, ref } = await import("vue");
+  const { computed, ref } = await import('vue');
   const revision = ref(0);
   state.revision = revision;
 
   return () => ({
-    state: { value: { status: "authenticated" } },
+    state: { value: { status: 'authenticated' } },
     revision,
     refresh: state.refreshSession,
     subscription: computed(() => state.sessionSubscription),
   });
 });
 
-mockNuxtImport("useRoute", async () => {
-  const { reactive } = await import("vue");
+mockNuxtImport('useRoute', async () => {
+  const { reactive } = await import('vue');
   return () => {
     const route = reactive({ query: { ...state.query } });
     state.routes.push(route);
@@ -67,23 +67,21 @@ function setQuery(query: Record<string, unknown>): void {
 const Harness = defineComponent({
   setup() {
     state.overview = useSettingsOverview();
-    return () => h("div");
+    return () => h('div');
   },
 });
 
-function subscriptionFixture(
-  overrides: Partial<UserSubscriptionInfo> = {},
-): UserSubscriptionInfo {
+function subscriptionFixture(overrides: Partial<UserSubscriptionInfo> = {}): UserSubscriptionInfo {
   return {
-    tier: "pro",
-    status: "active",
+    tier: 'pro',
+    status: 'active',
     recipesLimit: null,
     ingredientsLimit: null,
     features: {},
     priceCents: 1999,
-    currency: "MXN",
-    billingInterval: "monthly",
-    currentPeriodEnd: "2026-10-15T12:00:00.000Z",
+    currency: 'MXN',
+    billingInterval: 'monthly',
+    currentPeriodEnd: '2026-10-15T12:00:00.000Z',
     cancelAtPeriodEnd: false,
     isTrial: false,
     trialEnd: null,
@@ -95,9 +93,7 @@ const SESSION_SUBSCRIPTION = subscriptionFixture();
 const FRESH_SUBSCRIPTION = subscriptionFixture({ cancelAtPeriodEnd: true });
 
 function billingCalls(): number {
-  return state.request.mock.calls.filter(
-    ([path]) => path === "/api/billing/subscription",
-  ).length;
+  return state.request.mock.calls.filter(([path]) => path === '/api/billing/subscription').length;
 }
 
 beforeEach(() => {
@@ -108,15 +104,15 @@ beforeEach(() => {
   state.revision.value = 0;
   state.sessionSubscription = SESSION_SUBSCRIPTION;
   state.request.mockImplementation(async (path: string) => {
-    if (path === "/api/usage-counts") return { recipes: 2, ingredients: 3 };
-    if (path === "/api/billing/subscription") return FRESH_SUBSCRIPTION;
-    if (path === "/api/stripe/sync-session") return { ok: true };
-    throw Object.assign(new Error("stub sin ruta"), { status: 404 });
+    if (path === '/api/usage-counts') return { recipes: 2, ingredients: 3 };
+    if (path === '/api/billing/subscription') return FRESH_SUBSCRIPTION;
+    if (path === '/api/stripe/sync-session') return { ok: true };
+    throw Object.assign(new Error('stub sin ruta'), { status: 404 });
   });
 });
 
-describe("useSettingsOverview", () => {
-  it("sin pestaña de facturación usa el snapshot de sesión", async () => {
+describe('useSettingsOverview', () => {
+  it('sin pestaña de facturación usa el snapshot de sesión', async () => {
     await mountSuspended(Harness);
     await flushPromises();
 
@@ -124,8 +120,8 @@ describe("useSettingsOverview", () => {
     expect(state.overview.subscription.value).toBe(SESSION_SUBSCRIPTION);
   });
 
-  it("un deep link a facturación la pide al montar", async () => {
-    state.query = { tab: "billing" };
+  it('un deep link a facturación la pide al montar', async () => {
+    state.query = { tab: 'billing' };
     await mountSuspended(Harness);
     await flushPromises();
 
@@ -133,20 +129,20 @@ describe("useSettingsOverview", () => {
     expect(state.overview.subscription.value).toBe(FRESH_SUBSCRIPTION);
   });
 
-  it("activar la pestaña después la pide sin recargar", async () => {
+  it('activar la pestaña después la pide sin recargar', async () => {
     await mountSuspended(Harness);
     await flushPromises();
     expect(billingCalls()).toBe(0);
 
-    setQuery({ tab: "billing" });
+    setQuery({ tab: 'billing' });
     await nextTick();
     await flushPromises();
 
     expect(billingCalls()).toBe(1);
   });
 
-  it("revalidar la sesión con facturación activa vuelve a pedirla", async () => {
-    state.query = { tab: "billing" };
+  it('revalidar la sesión con facturación activa vuelve a pedirla', async () => {
+    state.query = { tab: 'billing' };
     await mountSuspended(Harness);
     await flushPromises();
     expect(billingCalls()).toBe(1);
@@ -158,28 +154,28 @@ describe("useSettingsOverview", () => {
     expect(billingCalls()).toBe(2);
   });
 
-  it("una revalidación fuera de facturación no gasta peticiones, pero al volver sí", async () => {
-    state.query = { tab: "billing" };
+  it('una revalidación fuera de facturación no gasta peticiones, pero al volver sí', async () => {
+    state.query = { tab: 'billing' };
     await mountSuspended(Harness);
     await flushPromises();
 
-    setQuery({ tab: "profile" });
+    setQuery({ tab: 'profile' });
     state.revision.value += 1;
     await nextTick();
     await flushPromises();
     expect(billingCalls()).toBe(1);
 
-    setQuery({ tab: "billing" });
+    setQuery({ tab: 'billing' });
     await nextTick();
     await flushPromises();
     expect(billingCalls()).toBe(2);
   });
 
-  it("esqueletiza mientras no hay suscripción fresca", async () => {
-    state.query = { tab: "billing" };
+  it('esqueletiza mientras no hay suscripción fresca', async () => {
+    state.query = { tab: 'billing' };
     let confirm: (value: UserSubscriptionInfo) => void = () => {};
     state.request.mockImplementation(async (path: string) => {
-      if (path === "/api/usage-counts") return { recipes: 2, ingredients: 3 };
+      if (path === '/api/usage-counts') return { recipes: 2, ingredients: 3 };
       return new Promise<UserSubscriptionInfo>((resolve) => {
         confirm = resolve;
       });
@@ -193,15 +189,15 @@ describe("useSettingsOverview", () => {
     expect(state.overview.pending.value).toBe(false);
   });
 
-  it("no esqueletiza al revalidar datos ya visibles", async () => {
-    state.query = { tab: "billing" };
+  it('no esqueletiza al revalidar datos ya visibles', async () => {
+    state.query = { tab: 'billing' };
     await mountSuspended(Harness);
     await flushPromises();
     expect(state.overview.pending.value).toBe(false);
 
     let confirm: (value: UserSubscriptionInfo) => void = () => {};
     state.request.mockImplementation(async (path: string) => {
-      if (path === "/api/usage-counts") return { recipes: 2, ingredients: 3 };
+      if (path === '/api/usage-counts') return { recipes: 2, ingredients: 3 };
       return new Promise<UserSubscriptionInfo>((resolve) => {
         confirm = resolve;
       });
@@ -216,13 +212,13 @@ describe("useSettingsOverview", () => {
     expect(state.overview.pending.value).toBe(false);
   });
 
-  it("cae al snapshot de sesión si el API de facturación falla", async () => {
-    const logged = vi.spyOn(console, "error").mockImplementation(() => {});
+  it('cae al snapshot de sesión si el API de facturación falla', async () => {
+    const logged = vi.spyOn(console, 'error').mockImplementation(() => {});
     state.request.mockImplementation(async (path: string) => {
-      if (path === "/api/usage-counts") return { recipes: 0, ingredients: 0 };
-      throw Object.assign(new Error("not found"), { status: 404 });
+      if (path === '/api/usage-counts') return { recipes: 0, ingredients: 0 };
+      throw Object.assign(new Error('not found'), { status: 404 });
     });
-    state.query = { tab: "billing" };
+    state.query = { tab: 'billing' };
 
     await mountSuspended(Harness);
     await flushPromises();
@@ -231,30 +227,30 @@ describe("useSettingsOverview", () => {
     logged.mockRestore();
   });
 
-  it("con ?session_id sincroniza el checkout y refresca la sesión", async () => {
-    state.query = { tab: "billing", session_id: "cs_test_123" };
+  it('con ?session_id sincroniza el checkout y refresca la sesión', async () => {
+    state.query = { tab: 'billing', session_id: 'cs_test_123' };
 
     await mountSuspended(Harness);
     await flushPromises();
 
     expect(state.request).toHaveBeenCalledWith(
-      "/api/stripe/sync-session",
+      '/api/stripe/sync-session',
       expect.objectContaining({
-        method: "POST",
-        body: { sessionId: "cs_test_123" },
-      }),
+        method: 'POST',
+        body: { sessionId: 'cs_test_123' },
+      })
     );
     expect(state.refreshSession).toHaveBeenCalledTimes(1);
     expect(billingCalls()).toBe(1);
   });
 
-  it("un fallo de los contadores no tumba la página", async () => {
-    const logged = vi.spyOn(console, "error").mockImplementation(() => {});
+  it('un fallo de los contadores no tumba la página', async () => {
+    const logged = vi.spyOn(console, 'error').mockImplementation(() => {});
     state.request.mockImplementation(async (path: string) => {
-      if (path === "/api/usage-counts") {
-        throw Object.assign(new Error("boom"), { status: 500 });
+      if (path === '/api/usage-counts') {
+        throw Object.assign(new Error('boom'), { status: 500 });
       }
-      throw Object.assign(new Error("stub sin ruta"), { status: 404 });
+      throw Object.assign(new Error('stub sin ruta'), { status: 404 });
     });
 
     await mountSuspended(Harness);
@@ -263,5 +259,40 @@ describe("useSettingsOverview", () => {
     expect(state.overview.failed.value).toBe(true);
     expect(state.overview.counts.value).toEqual({ recipes: 0, ingredients: 0 });
     logged.mockRestore();
+  });
+
+  it('un error 500 al pedir la suscripción marca error de facturación', async () => {
+    const logged = vi.spyOn(console, 'error').mockImplementation(() => {});
+    state.request.mockImplementation(async (path: string) => {
+      if (path === '/api/usage-counts') return { recipes: 2, ingredients: 3 };
+      if (path === '/api/billing/subscription') {
+        throw Object.assign(new Error('stripe error'), { status: 500 });
+      }
+      throw Object.assign(new Error('stub sin ruta'), { status: 404 });
+    });
+    state.query = { tab: 'billing' };
+
+    await mountSuspended(Harness);
+    await flushPromises();
+
+    expect(state.overview.failed.value).toBe(true);
+    expect(state.overview.subscriptionFailed.value).toBe(true);
+    logged.mockRestore();
+  });
+
+  it('refresh reintenta tanto contadores como suscripción fresca', async () => {
+    state.query = { tab: 'billing' };
+    await mountSuspended(Harness);
+    await flushPromises();
+
+    expect(billingCalls()).toBe(1);
+
+    await state.overview.refresh();
+    await flushPromises();
+
+    expect(billingCalls()).toBe(2);
+    expect(state.request.mock.calls.filter(([path]) => path === '/api/usage-counts').length).toBe(
+      2
+    );
   });
 });

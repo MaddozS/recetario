@@ -1,10 +1,7 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import { normalizeBatches } from "./production-selection";
-import type {
-  ProductionCatalogRecipe,
-  ProductionSelection,
-} from "./production-types";
+import { computed } from 'vue';
+import { normalizeBatches } from './production-selection';
+import type { ProductionCatalogRecipe, ProductionSelection } from './production-types';
 
 /**
  * Fila del selector: checkbox, mezclas y presentación. Los controles sólo se
@@ -20,16 +17,16 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   toggle: [];
-  "update:batches": [value: string];
+  'update:batches': [value: string];
   stepBatches: [direction: 1 | -1];
-  "update:presentation": [presentationId: number];
+  'update:presentation': [presentationId: number];
 }>();
 
 const isSelected = computed(() => props.selection !== undefined);
 
 function onBatchesChange(event: Event): void {
   const input = event.target as HTMLInputElement;
-  emit("update:batches", input.value);
+  emit('update:batches', input.value);
   // Si el valor normalizado coincide con el estado, Vue no re-renderiza el
   // input; se corrige aquí para que el DOM no muestre un valor descartado.
   input.value = String(normalizeBatches(input.value));
@@ -40,7 +37,7 @@ function presentationValue(): number | undefined {
 }
 
 const STEPPER_BUTTON_CLASSES =
-  "border-border text-muted-foreground hover:text-secondary-foreground bg-background flex h-10 w-10 items-center justify-center rounded-full border font-bold transition-colors cursor-pointer";
+  'border-border text-muted-foreground hover:text-secondary-foreground bg-background flex h-10 w-10 items-center justify-center rounded-full border font-bold transition-colors cursor-pointer';
 </script>
 
 <template>
@@ -68,9 +65,7 @@ const STEPPER_BUTTON_CLASSES =
           {{ recipe.name }}
         </span>
         <span class="text-muted-foreground block text-xs">
-          {{ recipe.ingredientCount }} ingrediente{{
-            recipe.ingredientCount !== 1 ? "s" : ""
-          }}
+          {{ recipe.ingredientCount }} ingrediente{{ recipe.ingredientCount !== 1 ? 's' : '' }}
         </span>
       </span>
     </label>
@@ -85,12 +80,7 @@ const STEPPER_BUTTON_CLASSES =
         name="presentation_id"
         :value="presentationValue()"
         class="border-border bg-background text-foreground focus:ring-accent-500/20 focus:border-accent-500 min-h-11 rounded-xl border px-3 text-sm font-medium focus:ring-2 focus:outline-none md:w-44"
-        @change="
-          emit(
-            'update:presentation',
-            Number(($event.target as HTMLSelectElement).value),
-          )
-        "
+        @change="emit('update:presentation', Number(($event.target as HTMLSelectElement).value))"
       >
         <option
           v-for="presentation in presentations"

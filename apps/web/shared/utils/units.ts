@@ -6,15 +6,15 @@
  * proyecto `unit` de Vitest.
  */
 export const UNIT_OPTIONS = [
-  "kg",
-  "g",
-  "lt",
-  "ml",
-  "pza",
-  "pieza",
-  "cdita",
-  "cda",
-  "taza",
+  'kg',
+  'g',
+  'lt',
+  'ml',
+  'pza',
+  'pieza',
+  'cdita',
+  'cda',
+  'taza',
 ] as const;
 
 export type UnitOption = (typeof UNIT_OPTIONS)[number];

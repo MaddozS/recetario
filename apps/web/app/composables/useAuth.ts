@@ -1,10 +1,7 @@
-import { hasFeature as hasSubscriptionFeature } from "@recetario/stripe/subscription";
-import { sessionResponseSchema, type SessionResponse } from "@recetario/types";
-import type { AuthPreferences, AuthState } from "#shared/types/auth";
-import {
-  buildAnonymousAuthState,
-  buildAuthenticatedAuthState,
-} from "#shared/types/auth";
+import { hasFeature as hasSubscriptionFeature } from '@recetario/stripe/subscription';
+import { sessionResponseSchema, type SessionResponse } from '@recetario/types';
+import type { AuthPreferences, AuthState } from '#shared/types/auth';
+import { buildAnonymousAuthState, buildAuthenticatedAuthState } from '#shared/types/auth';
 import {
   ACCENT_COOKIE,
   DEFAULT_ACCENT,
@@ -12,14 +9,14 @@ import {
   THEME_COOKIE,
   resolveAccent,
   resolveTheme,
-} from "#shared/utils/preferences";
-import { apiFetch, type ApiFetchImpl } from "~/utils/api-client";
-import { readDocumentCookie } from "~/utils/cookies";
+} from '#shared/utils/preferences';
+import { apiFetch, type ApiFetchImpl } from '~/utils/api-client';
+import { readDocumentCookie } from '~/utils/cookies';
 
-const SESSION_PATH = "/api/auth/session";
+const SESSION_PATH = '/api/auth/session';
 
 /** Sube tras cada revalidación confirmada; los datos derivados la observan. */
-const AUTH_REVISION_KEY = "auth-revision";
+const AUTH_REVISION_KEY = 'auth-revision';
 
 /**
  * Estado de sesión del request actual.
@@ -37,19 +34,18 @@ const AUTH_REVISION_KEY = "auth-revision";
  * la pestaña de facturación).
  */
 export function useAuth() {
-  const state = useState<AuthState>("auth", () =>
+  const state = useState<AuthState>('auth', () =>
     buildAnonymousAuthState({
       theme: DEFAULT_THEME,
       accentColor: DEFAULT_ACCENT,
-    }),
+    })
   );
   const revision = useState<number>(AUTH_REVISION_KEY, () => 0);
 
   // Se resuelve en setup, una sola vez: en SSR queda atado al request (hereda
   // cookies) y en cliente al `$fetch` global.
   const requestFetch = useRequestFetch();
-  const fetchImpl: ApiFetchImpl = async (path, init) =>
-    await requestFetch(path, init);
+  const fetchImpl: ApiFetchImpl = async (path, init) => await requestFetch(path, init);
 
   if (import.meta.server) {
     const requestAuth = useRequestEvent()?.context.auth;
@@ -58,22 +54,16 @@ export function useAuth() {
     }
   }
 
-  const isAuthenticated = computed(
-    () => state.value.status === "authenticated",
-  );
-  const user = computed(() =>
-    state.value.status === "authenticated" ? state.value.user : null,
-  );
+  const isAuthenticated = computed(() => state.value.status === 'authenticated');
+  const user = computed(() => (state.value.status === 'authenticated' ? state.value.user : null));
   const subscription = computed(() =>
-    state.value.status === "authenticated" ? state.value.subscription : null,
+    state.value.status === 'authenticated' ? state.value.subscription : null
   );
   const preferences = computed<AuthPreferences>(() => state.value.preferences);
 
   /** Gate de features del plan; la autoridad sigue siendo Hono. */
   function hasFeature(feature: string): boolean {
-    return subscription.value
-      ? hasSubscriptionFeature(subscription.value, feature)
-      : false;
+    return subscription.value ? hasSubscriptionFeature(subscription.value, feature) : false;
   }
 
   /**
@@ -91,7 +81,7 @@ export function useAuth() {
       const current = state.value;
 
       if (!session?.user) {
-        if (current.status === "authenticated") expire();
+        if (current.status === 'authenticated') expire();
         return false;
       }
 
@@ -99,30 +89,25 @@ export function useAuth() {
         session,
         // Cookie-first como el bootstrap: la réplica de presentación local
         // manda y la sesión sólo siembra cuando el SSR resolvió anónimo.
-        current.status === "authenticated"
+        current.status === 'authenticated'
           ? current.preferences
-          : resolveSessionPreferences(session),
+          : resolveSessionPreferences(session)
       );
       revision.value += 1;
       return true;
     } catch (cause) {
-      console.error("[auth] no se pudo revalidar la sesión", cause);
+      console.error('[auth] no se pudo revalidar la sesión', cause);
       return false;
     }
   }
 
   /** Preferencias cookie-first para la transición anónimo→autenticado. */
-  function resolveSessionPreferences(
-    session: NonNullable<SessionResponse>,
-  ): AuthPreferences {
+  function resolveSessionPreferences(session: NonNullable<SessionResponse>): AuthPreferences {
     return {
-      theme: resolveTheme(
-        readDocumentCookie(THEME_COOKIE),
-        session.preferences?.theme,
-      ),
+      theme: resolveTheme(readDocumentCookie(THEME_COOKIE), session.preferences?.theme),
       accentColor: resolveAccent(
         readDocumentCookie(ACCENT_COOKIE),
-        session.preferences?.accentColor,
+        session.preferences?.accentColor
       ),
     };
   }
@@ -135,7 +120,7 @@ export function useAuth() {
   /** Perfil confirmado por `POST /api/account/update-name`. */
   function applyProfile(next: { firstName: string; lastName: string }): void {
     const current = state.value;
-    if (current.status !== "authenticated") return;
+    if (current.status !== 'authenticated') return;
 
     current.user.firstName = next.firstName;
     current.user.lastName = next.lastName;

@@ -56,22 +56,13 @@ Worked example: a `GET` read path with its shared schema.
 
    ```ts
    export const userSubscriptionInfoSchema = z.object({
-     tier: z.enum(["free", "basic", "pro"]),
+     tier: z.enum(['free', 'basic', 'pro']),
      status: z
-       .enum([
-         "active",
-         "trialing",
-         "canceled",
-         "past_due",
-         "unpaid",
-         "incomplete",
-       ])
+       .enum(['active', 'trialing', 'canceled', 'past_due', 'unpaid', 'incomplete'])
        .nullable(),
      // …
    });
-   export type UserSubscriptionInfo = z.infer<
-     typeof userSubscriptionInfoSchema
-   >;
+   export type UserSubscriptionInfo = z.infer<typeof userSubscriptionInfoSchema>;
    ```
 
    Re-export from `packages/types/src/index.ts` if the file is new.
@@ -79,28 +70,24 @@ Worked example: a `GET` read path with its shared schema.
 2. **Handler.** Create `src/billing/subscription.ts`:
 
    ```ts
-   import type { Handler } from "hono";
-   import { auth } from "@recetario/auth/server";
-   import { getSubscriptionByUserId } from "@recetario/db";
-   import { userSubscriptionInfoSchema } from "@recetario/types";
-   import { ApiError } from "../errors";
+   import type { Handler } from 'hono';
+   import { auth } from '@recetario/auth/server';
+   import { getSubscriptionByUserId } from '@recetario/db';
+   import { userSubscriptionInfoSchema } from '@recetario/types';
+   import { ApiError } from '../errors';
 
    export function subscriptionHandler(): Handler {
      return async (c) => {
        const session = await auth.api.getSession({
          headers: c.req.raw.headers,
        });
-       if (!session?.user)
-         throw new ApiError("UNAUTHENTICATED", "Authentication required");
+       if (!session?.user) throw new ApiError('UNAUTHENTICATED', 'Authentication required');
 
-       const dbSub = await getSubscriptionByUserId(session.user.id, [
-         "active",
-         "trialing",
-       ]);
-       if (!dbSub) throw new ApiError("NOT_FOUND", "No active subscription");
+       const dbSub = await getSubscriptionByUserId(session.user.id, ['active', 'trialing']);
+       if (!dbSub) throw new ApiError('NOT_FOUND', 'No active subscription');
 
        const response = userSubscriptionInfoSchema.parse({
-         tier: dbSub.plan?.tier ?? "free",
+         tier: dbSub.plan?.tier ?? 'free',
          // …
        });
        return c.json(response);
@@ -124,7 +111,7 @@ Worked example: a `GET` read path with its shared schema.
    `useApi()` (SSR-safe, Zod-validated):
 
    ```ts
-   const { data } = await useApi("/api/billing/subscription", {
+   const { data } = await useApi('/api/billing/subscription', {
      schema: userSubscriptionInfoSchema,
    });
    ```
@@ -143,10 +130,10 @@ use `.strict()` (Zod's default for `z.object`).
 ## 4. Throw `ApiError`; never return error JSON by hand
 
 ```ts
-import { ApiError } from "../errors";
+import { ApiError } from '../errors';
 
-throw new ApiError("NOT_FOUND", "Recipe not found");
-throw new ApiError("VALIDATION_ERROR", "Invalid recipe input");
+throw new ApiError('NOT_FOUND', 'Recipe not found');
+throw new ApiError('VALIDATION_ERROR', 'Invalid recipe input');
 ```
 
 The global `errorHandler()` (mounted in `src/index.ts`) catches the throw,
@@ -184,17 +171,17 @@ added later with appropriate shared storage and endpoint-specific controls.
 `vitest run` in this package. Helpers in `src/test-utils/`:
 
 ```ts
-import { createTestRequest, createTestEnv } from "../test-utils/index";
+import { createTestRequest, createTestEnv } from '../test-utils/index';
 
 const env = createTestEnv();
-const req = createTestRequest("/api/recipes", { method: "GET" });
+const req = createTestRequest('/api/recipes', { method: 'GET' });
 ```
 
 Mock `@recetario/auth/server` at the top of the test file:
 
 ```ts
 const mockGetSession = vi.fn();
-vi.mock("@recetario/auth/server", () => ({
+vi.mock('@recetario/auth/server', () => ({
   auth: { api: { getSession: (args: unknown) => mockGetSession(args) } },
 }));
 ```

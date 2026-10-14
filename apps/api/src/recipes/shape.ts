@@ -1,4 +1,4 @@
-import { recipeWithIngredientsSchema } from "@recetario/types";
+import { recipeWithIngredientsSchema } from '@recetario/types';
 
 export type RecipeDetailRecord = {
   id: number;

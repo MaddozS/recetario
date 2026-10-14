@@ -14,7 +14,7 @@ const { isLoading, progress } = useLoadingIndicator({
 
 const barStyle = computed(() => ({
   width: `${progress.value}%`,
-  opacity: isLoading.value ? "1" : "0",
+  opacity: isLoading.value ? '1' : '0',
 }));
 </script>
 

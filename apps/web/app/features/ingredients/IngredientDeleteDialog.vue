@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { IngredientRecord } from "~/features/ingredients/ingredient-state";
-import { computed, onMounted, ref, watch } from "vue";
-import type { MutationOutcome } from "~/features/ingredients/useIngredients";
-import IngredientErrorAlert from "~/features/ingredients/IngredientErrorAlert.vue";
+import type { IngredientRecord } from '~/features/ingredients/ingredient-state';
+import { computed, onMounted, ref, watch } from 'vue';
+import type { MutationOutcome } from '~/features/ingredients/useIngredients';
+import IngredientErrorAlert from '~/features/ingredients/IngredientErrorAlert.vue';
 
 /**
  * Confirmación de borrado. El conflicto `ingredient_in_use` se muestra aquí
@@ -14,7 +14,7 @@ const props = defineProps<{
   confirm: (ingredientId: number) => Promise<MutationOutcome>;
 }>();
 
-const open = defineModel<boolean>("open", { required: true });
+const open = defineModel<boolean>('open', { required: true });
 
 const dialog = ref<{ open: () => void; close: () => void } | null>(null);
 const error = ref<MutationOutcome | null>(null);
@@ -22,7 +22,7 @@ const error = ref<MutationOutcome | null>(null);
 const description = computed(() =>
   props.ingredient
     ? `¿Estás seguro de que deseas eliminar el ingrediente "${props.ingredient.name}"? Esta acción no se puede deshacer.`
-    : "¿Eliminar este ingrediente? Esta acción no se puede deshacer.",
+    : '¿Eliminar este ingrediente? Esta acción no se puede deshacer.'
 );
 
 function syncDialog(): void {
@@ -58,16 +58,9 @@ async function onConfirm(): Promise<void> {
 </script>
 
 <template>
-  <Dialog
-    id="delete-confirm-modal"
-    ref="dialog"
-    :submitting="submitting"
-    @close="open = false"
-  >
+  <Dialog id="delete-confirm-modal" ref="dialog" :submitting="submitting" @close="open = false">
     <div class="flex items-start gap-3">
-      <div
-        class="bg-danger-bg text-danger flex h-11 w-11 items-center justify-center rounded-2xl"
-      >
+      <div class="bg-danger-bg text-danger flex h-11 w-11 items-center justify-center rounded-2xl">
         <Icon name="lucide:trash-2" :size="18" />
       </div>
       <div>
@@ -93,7 +86,7 @@ async function onConfirm(): Promise<void> {
         :loading="submitting"
         @click="onConfirm"
       >
-        {{ submitting ? "Eliminando…" : "Eliminar" }}
+        {{ submitting ? 'Eliminando…' : 'Eliminar' }}
       </Button>
     </div>
   </Dialog>

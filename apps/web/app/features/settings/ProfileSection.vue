@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import AccountNameForm from "./AccountNameForm.vue";
-import AccountPasswordForm from "./AccountPasswordForm.vue";
-import { accountNameFormFrom } from "./account-form";
-import { useAccountSettings } from "./useAccountSettings";
+import { computed } from 'vue';
+import AccountNameForm from './AccountNameForm.vue';
+import AccountPasswordForm from './AccountPasswordForm.vue';
+import { accountNameFormFrom } from './account-form';
+import { useAccountSettings } from './useAccountSettings';
 
 /**
  * Pestaña Perfil: card de identidad + formularios de nombre y contraseña.
@@ -17,16 +17,16 @@ const nameForm = computed(() =>
   accountNameFormFrom({
     firstName: user.value?.firstName ?? null,
     lastName: user.value?.lastName ?? null,
-  }),
+  })
 );
 
 const displayName = computed(() => {
   const { firstName, lastName } = nameForm.value;
-  return `${firstName} ${lastName}`.trim() || user.value?.name || "Usuario";
+  return `${firstName} ${lastName}`.trim() || user.value?.name || 'Usuario';
 });
 
 const initial = computed(() =>
-  (nameForm.value.firstName || displayName.value).charAt(0).toUpperCase(),
+  (nameForm.value.firstName || displayName.value).charAt(0).toUpperCase()
 );
 </script>
 
@@ -47,15 +47,10 @@ const initial = computed(() =>
           <span v-else id="profile-user-initial">{{ initial }}</span>
         </div>
         <div class="min-w-0">
-          <p
-            class="text-muted-foreground text-xs font-bold tracking-[0.16em] uppercase"
-          >
-            {{ user.hasPasswordAuth ? "Cuenta de email" : "Sesión de Google" }}
+          <p class="text-muted-foreground text-xs font-bold tracking-[0.16em] uppercase">
+            {{ user.hasPasswordAuth ? 'Cuenta de email' : 'Sesión de Google' }}
           </p>
-          <h2
-            id="profile-user-name"
-            class="text-foreground mt-1 truncate text-xl font-bold"
-          >
+          <h2 id="profile-user-name" class="text-foreground mt-1 truncate text-xl font-bold">
             {{ displayName }}
           </h2>
           <p
@@ -69,11 +64,7 @@ const initial = computed(() =>
       </div>
     </Card>
 
-    <AccountNameForm
-      :initial="nameForm"
-      :submit="updateName"
-      :submitting="mutation === 'name'"
-    />
+    <AccountNameForm :initial="nameForm" :submit="updateName" :submitting="mutation === 'name'" />
 
     <AccountPasswordForm
       v-if="user.hasPasswordAuth"

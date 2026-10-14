@@ -1,18 +1,15 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, reactive, ref, watch } from "vue";
+import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
 import {
   computePresentationMetrics,
   formatPrice,
   formatUnits,
   presentationDraftFromRecord,
-} from "./recipe-presentations";
-import type {
-  PresentationDraft,
-  PresentationRecord,
-} from "./recipe-presentations";
-import { showAdjustedQuantity } from "./recipe-detail-format";
-import { parseDecimal } from "./recipe-detail-form";
-import type { MutationOutcome } from "./useRecipes";
+} from './recipe-presentations';
+import type { PresentationDraft, PresentationRecord } from './recipe-presentations';
+import { showAdjustedQuantity } from './recipe-detail-format';
+import { parseDecimal } from './recipe-detail-form';
+import type { MutationOutcome } from './useRecipes';
 
 /**
  * Card de una presentación de venta. Sustituye al custom element
@@ -30,10 +27,7 @@ const props = defineProps<{
   recipeBatchCost: number;
   /** Precio sugerido de la mezcla completa para el margen deseado. */
   suggestedBatchPrice: number;
-  save: (
-    presentationId: number,
-    draft: PresentationDraft,
-  ) => Promise<MutationOutcome>;
+  save: (presentationId: number, draft: PresentationDraft) => Promise<MutationOutcome>;
   remove: (presentationId: number) => Promise<MutationOutcome>;
 }>();
 
@@ -52,16 +46,13 @@ const suggestedUnitPrice = computed(
       multiplier: props.multiplier,
       recipeBatchCost: props.recipeBatchCost,
       suggestedBatchPrice: props.suggestedBatchPrice,
-      salePrice: "",
+      salePrice: '',
       presentationFixedCosts: props.presentation.fixedCosts ?? [],
-    }).unitPriceRecommended,
+    }).unitPriceRecommended
 );
 
 function initialDraft(): PresentationDraft {
-  return presentationDraftFromRecord(
-    props.presentation,
-    suggestedUnitPrice.value,
-  );
+  return presentationDraftFromRecord(props.presentation, suggestedUnitPrice.value);
 }
 
 const draft = reactive<PresentationDraft>(initialDraft());
@@ -74,31 +65,29 @@ const metrics = computed(() =>
     suggestedBatchPrice: props.suggestedBatchPrice,
     salePrice: draft.salePrice,
     presentationFixedCosts: props.presentation.fixedCosts ?? [],
-  }),
+  })
 );
 
 const adjusted = computed(() => showAdjustedQuantity(props.multiplier));
 const unitsLabel = computed(() => formatUnits(metrics.value.totalUnits));
 
 const TONE_TEXT: Record<string, string> = {
-  success: "text-success",
-  warning: "text-warning",
-  danger: "text-danger",
+  success: 'text-success',
+  warning: 'text-warning',
+  danger: 'text-danger',
 };
 
 const TONE_BAR: Record<string, string> = {
-  success: "bg-success-solid",
-  warning: "bg-warning-solid",
-  danger: "bg-danger-solid",
+  success: 'bg-success-solid',
+  warning: 'bg-warning-solid',
+  danger: 'bg-danger-solid',
 };
 
-const toneText = computed(() => TONE_TEXT[metrics.value.marginTone] ?? "");
-const toneBar = computed(() => TONE_BAR[metrics.value.marginTone] ?? "");
+const toneText = computed(() => TONE_TEXT[metrics.value.marginTone] ?? '');
+const toneBar = computed(() => TONE_BAR[metrics.value.marginTone] ?? '');
 
 /** Ancho del input de precio en `ch` (la fuente es monoespaciada). */
-const priceWidth = computed(() =>
-  Math.max((draft.salePrice.trim() || "0.00").length + 1, 4),
-);
+const priceWidth = computed(() => Math.max((draft.salePrice.trim() || '0.00').length + 1, 4));
 
 function resetDraft(): void {
   Object.assign(draft, initialDraft());
@@ -183,7 +172,7 @@ watch(
   () => props.presentation,
   () => {
     if (!isEditing.value) resetDraft();
-  },
+  }
 );
 onMounted(syncDialog);
 </script>
@@ -198,11 +187,7 @@ onMounted(syncDialog);
     :data-units="presentation.unitsPerBatch"
     :data-price="presentation.salePrice ?? ''"
   >
-    <form
-      class="flex h-full grow flex-col"
-      novalidate
-      @submit.prevent="onSubmit"
-    >
+    <form class="flex h-full grow flex-col" novalidate @submit.prevent="onSubmit">
       <div class="mb-2 flex items-start justify-between gap-3">
         <input
           name="presentationName"
@@ -271,9 +256,7 @@ onMounted(syncDialog);
 
       <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
         <div class="shrink-0 space-y-0.5">
-          <p
-            class="text-subtle-foreground text-[11px] font-bold tracking-[0.16em] uppercase"
-          >
+          <p class="text-subtle-foreground text-[11px] font-bold tracking-[0.16em] uppercase">
             Costo unitario
           </p>
           <p
@@ -288,9 +271,7 @@ onMounted(syncDialog);
           class="bg-accent-50/50 border-accent-100 flex max-w-65 grow flex-wrap items-center justify-between gap-y-1 rounded-xl border px-2.5 py-2 sm:px-3 sm:py-2.5"
         >
           <div class="flex min-w-0 shrink-0 flex-col">
-            <p
-              class="text-accent-700 mb-0.5 text-[11px] font-bold tracking-[0.16em] uppercase"
-            >
+            <p class="text-accent-700 mb-0.5 text-[11px] font-bold tracking-[0.16em] uppercase">
               Precio Venta
             </p>
             <p class="text-muted-foreground text-[10px]">
@@ -329,9 +310,7 @@ onMounted(syncDialog);
 
       <div class="mt-auto flex items-end justify-between gap-4">
         <div class="space-y-0.5">
-          <p
-            class="text-subtle-foreground text-[11px] font-bold tracking-[0.16em] uppercase"
-          >
+          <p class="text-subtle-foreground text-[11px] font-bold tracking-[0.16em] uppercase">
             Ganancia / Pz
           </p>
           <p
@@ -370,10 +349,7 @@ onMounted(syncDialog);
         </div>
       </div>
 
-      <div
-        v-if="isEditing"
-        class="save-bar border-border-light mt-5 border-t pt-4"
-      >
+      <div v-if="isEditing" class="save-bar border-border-light mt-5 border-t pt-4">
         <Button
           variant="primary"
           icon="check"
@@ -409,9 +385,7 @@ onMounted(syncDialog);
           <Icon name="lucide:trash-2" :size="18" />
         </div>
         <div>
-          <h2 class="text-foreground text-lg font-bold">
-            Confirmar eliminación
-          </h2>
+          <h2 class="text-foreground text-lg font-bold">Confirmar eliminación</h2>
           <p class="text-muted-foreground mt-2 text-sm">
             ¿Eliminar esta presentación? Esta acción no se puede deshacer.
           </p>
@@ -419,11 +393,7 @@ onMounted(syncDialog);
       </div>
 
       <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-        <Button
-          variant="secondary"
-          :disabled="removing"
-          @click="deleteOpen = false"
-        >
+        <Button variant="secondary" :disabled="removing" @click="deleteOpen = false">
           Cancelar
         </Button>
         <Button

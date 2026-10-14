@@ -1,7 +1,7 @@
 <script lang="ts">
-import { computed, defineComponent, h, mergeProps, useAttrs } from "vue";
-import type { LucideIconData } from "~/types/icons";
-import { getIcon } from "~/utils/icon-registry";
+import { computed, defineComponent, h, mergeProps, useAttrs } from 'vue';
+import type { LucideIconData } from '~/types/icons';
+import { getIcon } from '~/utils/icon-registry';
 
 /**
  * Compone el `<svg>` del ícono desde los datos de lucide.
@@ -16,26 +16,20 @@ import { getIcon } from "~/utils/icon-registry";
 
 /** Atributos del `<svg>` en el mismo orden que emite lucide. */
 const SVG_ATTRIBUTES = {
-  xmlns: "http://www.w3.org/2000/svg",
-  viewBox: "0 0 24 24",
-  fill: "none",
-  stroke: "currentColor",
-  "stroke-width": "2",
-  "stroke-linecap": "round",
-  "stroke-linejoin": "round",
+  xmlns: 'http://www.w3.org/2000/svg',
+  viewBox: '0 0 24 24',
+  fill: 'none',
+  stroke: 'currentColor',
+  'stroke-width': '2',
+  'stroke-linecap': 'round',
+  'stroke-linejoin': 'round',
 } as const;
 
 function hasA11yProp(attrs: Record<string, unknown>): boolean {
-  return Object.keys(attrs).some(
-    (key) => key === "role" || key.startsWith("aria-"),
-  );
+  return Object.keys(attrs).some((key) => key === 'role' || key.startsWith('aria-'));
 }
 
-function renderIcon(
-  data: LucideIconData,
-  size: number,
-  attrs: Record<string, unknown>,
-) {
+function renderIcon(data: LucideIconData, size: number, attrs: Record<string, unknown>) {
   const svgAttrs: Record<string, unknown> = {
     ...SVG_ATTRIBUTES,
     width: size,
@@ -43,29 +37,29 @@ function renderIcon(
   };
 
   for (const [key, value] of Object.entries(attrs)) {
-    if (key !== "class") {
+    if (key !== 'class') {
       svgAttrs[key] = value;
     }
   }
-  svgAttrs.class = ["lucide", `lucide-${data.name}`, attrs.class];
+  svgAttrs.class = ['lucide', `lucide-${data.name}`, attrs.class];
   if (!hasA11yProp(attrs)) {
-    svgAttrs["aria-hidden"] = "true";
+    svgAttrs['aria-hidden'] = 'true';
   }
 
   return h(
-    "svg",
+    'svg',
     svgAttrs,
     data.node.map(([tag, nodeAttrs]) => {
       // `key` es metadata de lucide para sus listas: no va al DOM.
       const rest = { ...nodeAttrs } as Record<string, string>;
       delete rest.key;
       return h(tag, rest);
-    }),
+    })
   );
 }
 
 export default defineComponent({
-  name: "Icon",
+  name: 'Icon',
   inheritAttrs: false,
   props: {
     name: { type: String, required: true },

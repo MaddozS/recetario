@@ -1,15 +1,9 @@
 <script setup lang="ts">
-import { computed, watch } from "vue";
-import { isInternalHref } from "#shared/utils/navigation";
+import { computed, watch } from 'vue';
+import { isInternalHref } from '#shared/utils/navigation';
 
-type Variant =
-  | "primary"
-  | "secondary"
-  | "danger"
-  | "ghost"
-  | "iconAccent"
-  | "iconDanger";
-type Size = "sm" | "md" | "lg";
+type Variant = 'primary' | 'secondary' | 'danger' | 'ghost' | 'iconAccent' | 'iconDanger';
+type Size = 'sm' | 'md' | 'lg';
 
 const props = withDefaults(
   defineProps<{
@@ -18,80 +12,71 @@ const props = withDefaults(
     iconOnly?: boolean;
     href?: string;
     icon?: string;
-    type?: "button" | "submit";
+    type?: 'button' | 'submit';
     disabled?: boolean;
     loading?: boolean;
     id?: string;
     ariaLabel?: string;
   }>(),
   {
-    variant: "primary",
-    size: "md",
+    variant: 'primary',
+    size: 'md',
     iconOnly: false,
-    type: "button",
+    type: 'button',
     disabled: false,
     loading: false,
-  },
+  }
 );
 
 defineOptions({ inheritAttrs: false });
 
 const BASE_CLASSES =
-  "inline-flex items-center justify-center gap-2 font-bold transition-colors focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-70 cursor-pointer";
+  'inline-flex items-center justify-center gap-2 font-bold transition-colors focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-70 cursor-pointer';
 
 const VARIANT_CLASSES: Record<Variant, { solid: string; iconOnly: string }> = {
   primary: {
     // El relleno sale del rol sólido del acento (mismo tono en claro y oscuro
     // en las familias con paridad) y encima va `text-on-accent`, que cada
     // familia fija para sostener AA.
-    solid:
-      "bg-accent-solid text-text-on-accent hover:bg-accent-solid-hover rounded-xl shadow-sm",
-    iconOnly:
-      "bg-accent-solid text-text-on-accent hover:bg-accent-solid-hover rounded-full",
+    solid: 'bg-accent-solid text-text-on-accent hover:bg-accent-solid-hover rounded-xl shadow-sm',
+    iconOnly: 'bg-accent-solid text-text-on-accent hover:bg-accent-solid-hover rounded-full',
   },
   secondary: {
-    solid:
-      "border border-border bg-card text-muted-foreground hover:bg-background rounded-xl",
-    iconOnly:
-      "border border-border bg-card text-muted-foreground hover:bg-background rounded-full",
+    solid: 'border border-border bg-card text-muted-foreground hover:bg-background rounded-xl',
+    iconOnly: 'border border-border bg-card text-muted-foreground hover:bg-background rounded-full',
   },
   danger: {
-    solid: "bg-danger-solid text-white hover:bg-danger-hover rounded-xl",
-    iconOnly: "bg-danger-solid text-white hover:bg-danger-hover rounded-full",
+    solid: 'bg-danger-solid text-white hover:bg-danger-hover rounded-xl',
+    iconOnly: 'bg-danger-solid text-white hover:bg-danger-hover rounded-full',
   },
   ghost: {
-    solid:
-      "text-muted-foreground hover:bg-muted hover:text-secondary-foreground rounded-xl",
-    iconOnly:
-      "text-muted-foreground hover:bg-muted hover:text-secondary-foreground rounded-full",
+    solid: 'text-muted-foreground hover:bg-muted hover:text-secondary-foreground rounded-xl',
+    iconOnly: 'text-muted-foreground hover:bg-muted hover:text-secondary-foreground rounded-full',
   },
   iconAccent: {
-    solid: "text-muted-foreground hover:bg-muted rounded-xl",
-    iconOnly:
-      "text-muted-foreground hover:text-accent-600 hover:bg-accent-50 rounded-full",
+    solid: 'text-muted-foreground hover:bg-muted rounded-xl',
+    iconOnly: 'text-muted-foreground hover:text-accent-600 hover:bg-accent-50 rounded-full',
   },
   iconDanger: {
-    solid: "text-muted-foreground hover:bg-muted rounded-xl",
-    iconOnly: "text-danger hover:bg-danger-bg rounded-full",
+    solid: 'text-muted-foreground hover:bg-muted rounded-xl',
+    iconOnly: 'text-danger hover:bg-danger-bg rounded-full',
   },
 };
 
 const SIZE_CLASSES: Record<Size, string> = {
-  sm: "min-h-10 px-4 py-2 text-xs",
-  md: "min-h-11 px-5 py-3 text-sm",
-  lg: "min-h-12 px-6 py-3.5 text-sm",
+  sm: 'min-h-10 px-4 py-2 text-xs',
+  md: 'min-h-11 px-5 py-3 text-sm',
+  lg: 'min-h-12 px-6 py-3.5 text-sm',
 };
 
 // `iconAccent`/`iconDanger` sólo tienen sentido sin etiqueta; si se usan mal,
 // cae a `ghost` (paridad con el componente el baseline).
 const misusedIconVariant = computed(
-  () =>
-    (props.variant === "iconAccent" || props.variant === "iconDanger") &&
-    !props.iconOnly,
+  () => (props.variant === 'iconAccent' || props.variant === 'iconDanger') && !props.iconOnly
 );
 
 const resolvedVariant = computed<Variant>(() =>
-  misusedIconVariant.value ? "ghost" : props.variant,
+  misusedIconVariant.value ? 'ghost' : props.variant
 );
 
 if (import.meta.dev) {
@@ -99,29 +84,21 @@ if (import.meta.dev) {
     misusedIconVariant,
     (misused) => {
       if (misused) {
-        console.warn(
-          `Button: variant "${props.variant}" requiere iconOnly=true. Se usa "ghost".`,
-        );
+        console.warn(`Button: variant "${props.variant}" requiere iconOnly=true. Se usa "ghost".`);
       }
     },
-    { immediate: true },
+    { immediate: true }
   );
 }
 
 const classes = computed(() => [
   BASE_CLASSES,
-  VARIANT_CLASSES[resolvedVariant.value][props.iconOnly ? "iconOnly" : "solid"],
-  props.iconOnly ? "min-h-10 min-w-10 p-2" : SIZE_CLASSES[props.size],
+  VARIANT_CLASSES[resolvedVariant.value][props.iconOnly ? 'iconOnly' : 'solid'],
+  props.iconOnly ? 'min-h-10 min-w-10 p-2' : SIZE_CLASSES[props.size],
 ]);
 
 const iconSize = computed(() =>
-  props.iconOnly
-    ? 14
-    : props.size === "sm"
-      ? 14
-      : props.size === "lg"
-        ? 18
-        : 16,
+  props.iconOnly ? 14 : props.size === 'sm' ? 14 : props.size === 'lg' ? 18 : 16
 );
 </script>
 

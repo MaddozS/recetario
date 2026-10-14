@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
-import { getRuleResults, validatePassword } from "@recetario/auth/password";
-import PasswordRules from "./PasswordRules.vue";
-import { useCountdown } from "./useCountdown";
-import { useAuthApi } from "./useAuthApi";
+import { computed, onMounted, ref } from 'vue';
+import { getRuleResults, validatePassword } from '@recetario/auth/password';
+import PasswordRules from './PasswordRules.vue';
+import { useCountdown } from './useCountdown';
+import { useAuthApi } from './useAuthApi';
 
 /**
  * Nueva contraseña con token de un solo uso.
@@ -18,33 +18,27 @@ const props = defineProps<{
 }>();
 
 const { validateResetToken, submitPasswordReset } = useAuthApi();
-const {
-  label: countdownLabel,
-  start: startCountdown,
-  stop,
-} = useCountdown(showExpired);
+const { label: countdownLabel, start: startCountdown, stop } = useCountdown(showExpired);
 
-const view = ref<"form" | "expired" | "success">("form");
+const view = ref<'form' | 'expired' | 'success'>('form');
 const tokenStatus = ref<string | null>(null);
 const error = ref<string | null>(null);
 const pending = ref(false);
-const password = ref("");
-const confirmation = ref("");
+const password = ref('');
+const confirmation = ref('');
 
 const ruleResults = computed(() => getRuleResults(password.value));
-const successMessage = ref("Tu contraseña ha sido restablecida correctamente.");
+const successMessage = ref('Tu contraseña ha sido restablecida correctamente.');
 
 // El CTA de la vista expirada lleva el email para que el formulario llegue
 // prellenado (la nota del original lo promete).
 const forgotHref = computed(() =>
-  props.email
-    ? `/forgot-password?email=${encodeURIComponent(props.email)}`
-    : "/forgot-password",
+  props.email ? `/forgot-password?email=${encodeURIComponent(props.email)}` : '/forgot-password'
 );
 
 function showExpired(): void {
-  view.value = "expired";
-  tokenStatus.value = "El enlace ha expirado";
+  view.value = 'expired';
+  tokenStatus.value = 'El enlace ha expirado';
 }
 
 onMounted(async () => {
@@ -70,27 +64,24 @@ async function submit(): Promise<void> {
   error.value = null;
 
   if (!validatePassword(password.value).valid) {
-    error.value = "La contraseña no cumple todos los requisitos.";
+    error.value = 'La contraseña no cumple todos los requisitos.';
     return;
   }
   if (password.value !== confirmation.value) {
-    error.value = "Las contraseñas no coinciden.";
+    error.value = 'Las contraseñas no coinciden.';
     return;
   }
 
   pending.value = true;
   try {
-    successMessage.value = await submitPasswordReset(
-      props.token,
-      password.value,
-    );
+    successMessage.value = await submitPasswordReset(props.token, password.value);
     stop();
-    view.value = "success";
+    view.value = 'success';
   } catch (cause) {
     error.value =
       cause instanceof Error && cause.message
         ? cause.message
-        : "Error al restablecer la contraseña.";
+        : 'Error al restablecer la contraseña.';
   } finally {
     pending.value = false;
   }
@@ -124,14 +115,9 @@ async function submit(): Promise<void> {
       <FeedbackAlert v-if="error" type="error" :message="error" />
 
       <div class="mb-4 text-center">
-        <div
-          class="bg-warning-bg inline-flex items-center gap-2 rounded-lg px-4 py-2"
-        >
+        <div class="bg-warning-bg inline-flex items-center gap-2 rounded-lg px-4 py-2">
           <Icon name="lucide:clock" :size="16" class="text-warning" />
-          <span
-            data-reset-countdown
-            class="text-warning font-mono text-lg font-bold"
-          >
+          <span data-reset-countdown class="text-warning font-mono text-lg font-bold">
             {{ countdownLabel }}
           </span>
         </div>
@@ -157,22 +143,14 @@ async function submit(): Promise<void> {
           autocomplete="new-password"
           required
         />
-        <Button
-          id="reset-submit"
-          variant="primary"
-          type="submit"
-          class="w-full"
-          :loading="pending"
-        >
-          {{ pending ? "Restableciendo..." : "Restablecer contraseña" }}
+        <Button id="reset-submit" variant="primary" type="submit" class="w-full" :loading="pending">
+          {{ pending ? 'Restableciendo...' : 'Restablecer contraseña' }}
         </Button>
       </form>
     </template>
 
     <div v-else-if="view === 'success'" data-reset-success class="text-center">
-      <div
-        class="bg-success-bg mb-4 inline-flex h-14 w-14 items-center justify-center rounded-2xl"
-      >
+      <div class="bg-success-bg mb-4 inline-flex h-14 w-14 items-center justify-center rounded-2xl">
         <Icon name="lucide:check" :size="28" class="text-success" />
       </div>
       <h2 class="text-foreground text-xl font-bold">Contraseña actualizada</h2>
@@ -180,16 +158,12 @@ async function submit(): Promise<void> {
         {{ successMessage }}
       </p>
       <div class="mt-6">
-        <Button variant="primary" href="/sign-in" class="w-full">
-          Iniciar sesión
-        </Button>
+        <Button variant="primary" href="/sign-in" class="w-full"> Iniciar sesión </Button>
       </div>
     </div>
 
     <div v-else data-reset-expired class="text-center">
-      <div
-        class="bg-danger-bg mb-4 inline-flex h-14 w-14 items-center justify-center rounded-2xl"
-      >
+      <div class="bg-danger-bg mb-4 inline-flex h-14 w-14 items-center justify-center rounded-2xl">
         <Icon name="lucide:clock" :size="28" class="text-danger" />
       </div>
       <h2 class="text-foreground text-xl font-bold">Enlace expirado</h2>

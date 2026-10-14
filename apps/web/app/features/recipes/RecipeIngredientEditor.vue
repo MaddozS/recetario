@@ -1,10 +1,7 @@
 <script setup lang="ts">
-import {
-  formatIngredientLabel,
-  getUnitOptionsForValue,
-} from "./recipe-detail-form";
-import type { IngredientRecord, IngredientRow } from "./recipe-detail-form";
-import IngredientPicker from "./IngredientPicker.vue";
+import { formatIngredientLabel, getUnitOptionsForValue } from './recipe-detail-form';
+import type { IngredientRecord, IngredientRow } from './recipe-detail-form';
+import IngredientPicker from './IngredientPicker.vue';
 
 /**
  * Editor de la lista de ingredientes: una fila por ingrediente, con picker
@@ -23,28 +20,23 @@ const props = withDefaults(
     invalidKeys?: ReadonlyArray<string>;
     addRow: () => void;
     removeRow: (index: number) => void;
-    patchRow: (
-      index: number,
-      patch: Partial<Omit<IngredientRow, "key">>,
-    ) => void;
+    patchRow: (index: number, patch: Partial<Omit<IngredientRow, 'key'>>) => void;
   }>(),
-  { invalidKeys: () => [] },
+  { invalidKeys: () => [] }
 );
 
 const ROW_CLASSES =
-  "edit-ingredient-row grid grid-cols-1 gap-3 rounded-2xl border p-3 md:grid-cols-[minmax(0,2.4fr)_minmax(0,13rem)_minmax(0,1fr)_3rem] md:items-center md:rounded-none md:border-0 md:border-b md:border-border-light md:bg-card md:p-0 md:pb-3";
+  'edit-ingredient-row grid grid-cols-1 gap-3 rounded-2xl border p-3 md:grid-cols-[minmax(0,2.4fr)_minmax(0,13rem)_minmax(0,1fr)_3rem] md:items-center md:rounded-none md:border-0 md:border-b md:border-border-light md:bg-card md:p-0 md:pb-3';
 
-const LABEL_CLASSES =
-  "text-[10px] uppercase font-bold text-subtle-foreground md:sr-only";
+const LABEL_CLASSES = 'text-[10px] uppercase font-bold text-subtle-foreground md:sr-only';
 
 const FIELD_CLASSES =
-  "w-full bg-card border border-border rounded-xl p-2 focus:ring-2 focus:ring-accent-500/20";
+  'w-full bg-card border border-border rounded-xl p-2 focus:ring-2 focus:ring-accent-500/20';
 
 const REMOVE_CLASSES =
-  "remove-ingredient-btn inline-flex min-h-11 min-w-11 cursor-pointer items-center justify-center rounded-full text-danger transition-colors hover:bg-danger-bg hover:text-danger";
+  'remove-ingredient-btn inline-flex min-h-11 min-w-11 cursor-pointer items-center justify-center rounded-full text-danger transition-colors hover:bg-danger-bg hover:text-danger';
 
-const INVALID_CLASSES =
-  "border-danger bg-danger-bg/40 md:border-b md:border-danger";
+const INVALID_CLASSES = 'border-danger bg-danger-bg/40 md:border-b md:border-danger';
 
 function onPick(index: number, ingredient: IngredientRecord): void {
   props.patchRow(index, {
@@ -55,7 +47,7 @@ function onPick(index: number, ingredient: IngredientRecord): void {
 }
 
 function onClear(index: number): void {
-  props.patchRow(index, { ingredientId: null, label: "" });
+  props.patchRow(index, { ingredientId: null, label: '' });
 }
 
 function onQuantity(index: number, event: Event): void {
@@ -90,9 +82,7 @@ function onComment(index: number, event: Event): void {
         :key="row.key"
         :class="[
           ROW_CLASSES,
-          invalidKeys.includes(row.key)
-            ? INVALID_CLASSES
-            : 'border-border bg-background/50',
+          invalidKeys.includes(row.key) ? INVALID_CLASSES : 'border-border bg-background/50',
         ]"
         :data-invalid="invalidKeys.includes(row.key) ? 'true' : undefined"
       >
@@ -108,9 +98,7 @@ function onComment(index: number, event: Event): void {
 
         <div class="min-w-0 space-y-1">
           <label :class="LABEL_CLASSES">Cantidad</label>
-          <div
-            class="grid min-w-0 grid-cols-[minmax(0,1fr)_5.5rem] items-center gap-2"
-          >
+          <div class="grid min-w-0 grid-cols-[minmax(0,1fr)_5.5rem] items-center gap-2">
             <input
               type="number"
               step="0.01"
@@ -124,10 +112,7 @@ function onComment(index: number, event: Event): void {
             />
             <select
               name="unit"
-              :class="[
-                FIELD_CLASSES,
-                'unit-select text-muted-foreground min-w-0 text-sm',
-              ]"
+              :class="[FIELD_CLASSES, 'unit-select text-muted-foreground min-w-0 text-sm']"
               :value="row.unit"
               @change="onUnit(index, $event)"
             >
@@ -147,10 +132,7 @@ function onComment(index: number, event: Event): void {
           <input
             type="text"
             name="comment"
-            :class="[
-              FIELD_CLASSES,
-              'comment-input text-muted-foreground text-sm',
-            ]"
+            :class="[FIELD_CLASSES, 'comment-input text-muted-foreground text-sm']"
             :value="row.comment"
             placeholder="Opcional"
             @input="onComment(index, $event)"

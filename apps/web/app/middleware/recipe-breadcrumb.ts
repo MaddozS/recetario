@@ -1,7 +1,4 @@
-import {
-  fetchRecipeDetailPage,
-  recipeDetailKey,
-} from "~/features/recipes/recipe-detail-data";
+import { fetchRecipeDetailPage, recipeDetailKey } from '~/features/recipes/recipe-detail-data';
 
 /**
  * Miga de pan del detalle de receta.
@@ -19,7 +16,7 @@ import {
  * cuando llega el dato).
  */
 export default defineNuxtRouteMiddleware(async (to) => {
-  const recipeId = typeof to.params.recipe === "string" ? to.params.recipe : "";
+  const recipeId = typeof to.params.recipe === 'string' ? to.params.recipe : '';
   if (!recipeId) return;
   if (!import.meta.server) return;
 
@@ -27,17 +24,14 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const { data } = await useAsyncData(
     recipeDetailKey(recipeId),
     () => fetchRecipeDetailPage(api, recipeId),
-    { default: () => ({ status: "failed" as const }) },
+    { default: () => ({ status: 'failed' as const }) }
   );
 
   // Receta inexistente (o de otro usuario): al listado. En cliente lo decide la
   // página cuando el 404 llega con el detalle.
-  if (data.value.status === "notFound") {
-    return navigateTo("/recipes", { replace: true });
+  if (data.value.status === 'notFound') {
+    return navigateTo('/recipes', { replace: true });
   }
 
-  setBreadcrumbTail(
-    to.path,
-    data.value.status === "ready" ? data.value.recipe.name : null,
-  );
+  setBreadcrumbTail(to.path, data.value.status === 'ready' ? data.value.recipe.name : null);
 });

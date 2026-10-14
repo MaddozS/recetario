@@ -1,13 +1,9 @@
-import { expect, test } from "@nuxt/test-utils/playwright";
-import { url } from "@nuxt/test-utils/e2e";
-import AxeBuilder from "@axe-core/playwright";
-import type { Page } from "@playwright/test";
-import { PREFERENCE_ACCENT_COLORS } from "@recetario/types";
-import {
-  freezeAnimations,
-  scrollPositions,
-  scrollTo,
-} from "./support/page-sweep";
+import { expect, test } from '@nuxt/test-utils/playwright';
+import { url } from '@nuxt/test-utils/e2e';
+import AxeBuilder from '@axe-core/playwright';
+import type { Page } from '@playwright/test';
+import { PREFERENCE_ACCENT_COLORS } from '@recetario/types';
+import { freezeAnimations, scrollPositions, scrollTo } from './support/page-sweep';
 
 /**
  * Barrido de accesibilidad (Task 13a) sobre las superficies reales del rework:
@@ -44,7 +40,7 @@ import {
  * scroll.
  */
 
-type AnalyzeResult = Awaited<ReturnType<AxeBuilder["analyze"]>>;
+type AnalyzeResult = Awaited<ReturnType<AxeBuilder['analyze']>>;
 
 /** Hallazgo aplanado a nodo: lo que se une entre tramos y se documenta. */
 type Finding = {
@@ -58,14 +54,9 @@ type Finding = {
 const MOBILE = { width: 375, height: 800 };
 const DESKTOP = { width: 1280, height: 800 };
 
-const PUBLIC_PAGES = ["/", "/funciones", "/pricing", "/privacy", "/terms"] as const;
-const AUTH_PAGES = ["/sign-in"] as const;
-const PRIVATE_PAGES = [
-  "/recipes",
-  "/ingredients",
-  "/settings",
-  "/produccion",
-] as const;
+const PUBLIC_PAGES = ['/', '/funciones', '/pricing', '/privacy', '/terms'] as const;
+const AUTH_PAGES = ['/sign-in'] as const;
+const PRIVATE_PAGES = ['/recipes', '/ingredients', '/settings', '/produccion'] as const;
 
 /**
  * Nodos que axe deja en `incomplete` y quién responde por ellos.
@@ -87,31 +78,24 @@ const DOCUMENTED_INCOMPLETE: {
   ratio: string;
 }[] = [];
 
-function flatten(
-  result: AnalyzeResult,
-  key: "violations" | "incomplete",
-): Finding[] {
+function flatten(result: AnalyzeResult, key: 'violations' | 'incomplete'): Finding[] {
   return result[key].flatMap((violation) =>
     violation.nodes.map((node) => ({
       rule: violation.id,
       impact: violation.impact ?? null,
       help: violation.help,
-      target: node.target.join(" "),
-      summary: (node.failureSummary ?? "").replace(/\s+/g, " ").trim(),
-    })),
+      target: node.target.join(' '),
+      summary: (node.failureSummary ?? '').replace(/\s+/g, ' ').trim(),
+    }))
   );
 }
 
 /** Un análisis de axe sobre el estado actual de la página. */
-async function analyze(
-  page: Page,
-): Promise<{ violations: Finding[]; incomplete: Finding[] }> {
-  const result = await new AxeBuilder({ page })
-    .withTags(["wcag2a", "wcag2aa"])
-    .analyze();
+async function analyze(page: Page): Promise<{ violations: Finding[]; incomplete: Finding[] }> {
+  const result = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
   return {
-    violations: flatten(result, "violations"),
-    incomplete: flatten(result, "incomplete"),
+    violations: flatten(result, 'violations'),
+    incomplete: flatten(result, 'incomplete'),
   };
 }
 
@@ -121,14 +105,14 @@ function describeFindings(findings: Finding[]): string {
       (finding) =>
         `- ${finding.rule} [${finding.impact}] ${finding.help}\n` +
         `    ${finding.target}\n` +
-        `      ${finding.summary}`,
+        `      ${finding.summary}`
     )
-    .join("\n");
+    .join('\n');
 }
 
 function blocking(findings: Finding[]): Finding[] {
   return findings.filter(
-    (finding) => finding.impact === "serious" || finding.impact === "critical",
+    (finding) => finding.impact === 'serious' || finding.impact === 'critical'
   );
 }
 
@@ -187,13 +171,8 @@ async function scanOnce(page: Page): Promise<{
 }
 
 /** Comprueba que cada `color-contrast` incompleto esté documentado. */
-async function expectDocumentedIncomplete(
-  page: Page,
-  findings: Finding[],
-): Promise<void> {
-  const undecided = findings.filter(
-    (finding) => finding.rule === "color-contrast",
-  );
+async function expectDocumentedIncomplete(page: Page, findings: Finding[]): Promise<void> {
+  const undecided = findings.filter((finding) => finding.rule === 'color-contrast');
   if (undecided.length === 0) return;
 
   const documented = await page.evaluate(
@@ -205,15 +184,12 @@ async function expectDocumentedIncomplete(
         } catch {
           element = null;
         }
-        return (
-          element !== null &&
-          selectors.some((selector) => element.closest(selector) !== null)
-        );
+        return element !== null && selectors.some((selector) => element.closest(selector) !== null);
       }),
     {
       targets: undecided.map((finding) => finding.target),
       selectors: DOCUMENTED_INCOMPLETE.map((entry) => entry.selector),
-    },
+    }
   );
 
   const undocumented = undecided.filter((_, index) => !documented[index]);
@@ -221,7 +197,7 @@ async function expectDocumentedIncomplete(
     undocumented.length,
     `nodos 'color-contrast' incompletos sin documentar en ` +
       `DOCUMENTED_INCOMPLETE (regla + selector + motivo + ratio medido):\n` +
-      describeFindings(undocumented),
+      describeFindings(undocumented)
   ).toBe(0);
 }
 
@@ -236,28 +212,25 @@ for (const path of PUBLIC_PAGES) {
     async ({ page, goto }) => {
       for (const viewport of [MOBILE, DESKTOP]) {
         await page.setViewportSize(viewport);
-        await goto(path, { waitUntil: "hydration" });
+        await goto(path, { waitUntil: 'hydration' });
         const { violations, incomplete } = await scan(page);
         expectNoBlocking(
           violations.map((finding) => ({
             ...finding,
             summary: `${viewport.width}px · ${finding.summary}`,
-          })),
+          }))
         );
         await expectDocumentedIncomplete(page, incomplete);
       }
-    },
+    }
   );
 }
 
 for (const path of AUTH_PAGES) {
-  test(`auth ${path}: sin violaciones blocking en 375 y 1280`, async ({
-    page,
-    goto,
-  }) => {
+  test(`auth ${path}: sin violaciones blocking en 375 y 1280`, async ({ page, goto }) => {
     for (const viewport of [MOBILE, DESKTOP]) {
       await page.setViewportSize(viewport);
-      await goto(path, { waitUntil: "hydration" });
+      await goto(path, { waitUntil: 'hydration' });
       const { violations } = await scanOnce(page);
       expectNoBlocking(violations);
     }
@@ -265,21 +238,18 @@ for (const path of AUTH_PAGES) {
 }
 
 for (const path of PRIVATE_PAGES) {
-  test(`privada ${path}: sin violaciones blocking en 375 y 1280`, async ({
-    page,
-    goto,
-  }) => {
+  test(`privada ${path}: sin violaciones blocking en 375 y 1280`, async ({ page, goto }) => {
     await page.context().addCookies([
       {
-        name: "better-auth.session_token",
-        value: "stub-session-token",
-        url: url("/"),
+        name: 'better-auth.session_token',
+        value: 'stub-session-token',
+        url: url('/'),
       },
     ]);
 
     for (const viewport of [MOBILE, DESKTOP]) {
       await page.setViewportSize(viewport);
-      await goto(path, { waitUntil: "hydration" });
+      await goto(path, { waitUntil: 'hydration' });
       const { violations } = await scanOnce(page);
       expectNoBlocking(violations);
     }
@@ -294,12 +264,12 @@ for (const path of PRIVATE_PAGES) {
  * base.
  */
 const ACCENT_SURFACES = [
-  "/recipes",
-  "/recipes/1",
-  "/ingredients",
-  "/produccion",
-  "/settings?tab=preferences",
-  "/settings?tab=billing",
+  '/recipes',
+  '/recipes/1',
+  '/ingredients',
+  '/produccion',
+  '/settings?tab=preferences',
+  '/settings?tab=billing',
 ] as const;
 
 /**
@@ -323,28 +293,28 @@ for (const path of ACCENT_SURFACES) {
     async ({ page, goto }) => {
       await page.context().addCookies([
         {
-          name: "better-auth.session_token",
-          value: "stub-session-token",
-          url: url("/"),
+          name: 'better-auth.session_token',
+          value: 'stub-session-token',
+          url: url('/'),
         },
       ]);
       await page.setViewportSize(DESKTOP);
 
       for (const accent of PREFERENCE_ACCENT_COLORS) {
-        for (const theme of ["light", "dark"] as const) {
+        for (const theme of ['light', 'dark'] as const) {
           await page.context().addCookies([
-            { name: "kitchcalc-accent", value: accent, url: url("/") },
-            { name: "kitchcalc-theme", value: theme, url: url("/") },
+            { name: 'kitchcalc-accent', value: accent, url: url('/') },
+            { name: 'kitchcalc-theme', value: theme, url: url('/') },
           ]);
-          await goto(path, { waitUntil: "hydration" });
+          await goto(path, { waitUntil: 'hydration' });
           const { violations } = await scanOnce(page);
           const serious = blocking(violations);
           expect(
             serious.length,
-            `${path} · acento ${accent} · ${theme}\n${describeFindings(serious)}`,
+            `${path} · acento ${accent} · ${theme}\n${describeFindings(serious)}`
           ).toBe(0);
         }
       }
-    },
+    }
   );
 }

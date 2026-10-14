@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed } from 'vue';
 
 const props = defineProps<{
   feature: string;
   description?: string;
-  tier: "basic" | "pro";
+  tier: 'basic' | 'pro';
 }>();
 
 // El cierre del `<dialog>` contenedor ya no se hace por `onclick` inline.
 const emit = defineEmits<{ cancel: [] }>();
 
-const tierLabel = computed(() => (props.tier === "pro" ? "Pro" : "Basic"));
-const price = computed(() => (props.tier === "pro" ? "$10/mes" : "$5/mes"));
+const tierLabel = computed(() => (props.tier === 'pro' ? 'Pro' : 'Basic'));
+const price = computed(() => (props.tier === 'pro' ? '$10/mes' : '$5/mes'));
 </script>
 
 <template>
@@ -22,14 +22,10 @@ const price = computed(() => (props.tier === "pro" ? "$10/mes" : "$5/mes"));
       <Icon name="lucide:lock" :size="20" />
     </div>
 
-    <h3 class="text-foreground mt-4 text-lg font-bold">
-      Funcion no disponible
-    </h3>
+    <h3 class="text-foreground mt-4 text-lg font-bold">Funcion no disponible</h3>
 
     <p class="text-muted-foreground mt-2 text-sm">
-      {{
-        description || `"${feature}" requiere el plan ${tierLabel} o superior.`
-      }}
+      {{ description || `"${feature}" requiere el plan ${tierLabel} o superior.` }}
     </p>
 
     <p class="text-muted-foreground mt-1 text-sm">

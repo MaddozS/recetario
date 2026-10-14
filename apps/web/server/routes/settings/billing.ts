@@ -8,11 +8,11 @@
  */
 export default defineEventHandler((event) => {
   const url = getRequestURL(event);
-  const target = new URL("/settings", url.origin);
+  const target = new URL('/settings', url.origin);
 
-  target.searchParams.set("tab", "billing");
+  target.searchParams.set('tab', 'billing');
   for (const [key, value] of url.searchParams) {
-    if (key !== "tab") target.searchParams.append(key, value);
+    if (key !== 'tab') target.searchParams.append(key, value);
   }
 
   return sendRedirect(event, `${target.pathname}${target.search}`, 301);

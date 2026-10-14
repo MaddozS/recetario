@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from "vue";
-import type { PlanChangeCopy } from "./billing-plan-state";
+import { onMounted, ref, watch } from 'vue';
+import type { PlanChangeCopy } from './billing-plan-state';
 
 /**
  * Confirmación del cambio de plan. El copy de upgrade/downgrade lo decide el
@@ -17,7 +17,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{ confirm: [] }>();
 
-const open = defineModel<boolean>("open", { required: true });
+const open = defineModel<boolean>('open', { required: true });
 
 const dialog = ref<{ open: () => void; close: () => void } | null>(null);
 
@@ -47,19 +47,12 @@ function close(): void {
     :submitting="submitting"
     @close="open = false"
   >
-    <div
-      class="border-border bg-card space-y-3 rounded-xl border p-4"
-      data-confirm-plan-summary
-    >
-      <div
-        class="text-subtle-foreground flex items-center justify-between text-xs"
-      >
+    <div class="border-border bg-card space-y-3 rounded-xl border p-4" data-confirm-plan-summary>
+      <div class="text-subtle-foreground flex items-center justify-between text-xs">
         <span>Plan actual</span>
         <span class="text-foreground font-semibold">{{ currentPlanName }}</span>
       </div>
-      <div
-        class="text-subtle-foreground flex items-center justify-between text-xs"
-      >
+      <div class="text-subtle-foreground flex items-center justify-between text-xs">
         <span>Nuevo plan</span>
         <span class="text-accent-700 font-bold">{{ targetPlanName }}</span>
       </div>
@@ -82,10 +75,7 @@ function close(): void {
       <p class="leading-relaxed opacity-90">{{ copy.description }}</p>
     </div>
 
-    <div
-      v-if="copy"
-      class="border-border bg-muted/40 mt-3 space-y-1 rounded-xl border p-3 text-xs"
-    >
+    <div v-if="copy" class="border-border bg-muted/40 mt-3 space-y-1 rounded-xl border p-3 text-xs">
       <p class="text-foreground font-semibold">Cobro y Facturación</p>
       <p class="text-subtle-foreground leading-relaxed">
         {{ copy.chargeDetails }}

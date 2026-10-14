@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { IngredientRecord } from "~/features/ingredients/ingredient-state";
-import { computed } from "vue";
-import { formatUnitCost } from "~/features/ingredients/ingredient-form";
+import type { IngredientRecord } from '~/features/ingredients/ingredient-state';
+import { computed } from 'vue';
+import { formatUnitCost } from '~/features/ingredients/ingredient-form';
 
 /**
  * Lista de ingredientes: cabecera con búsqueda, tabla de 6 columnas (la misma
@@ -19,15 +19,13 @@ const emit = defineEmits<{
   delete: [ingredient: IngredientRecord];
 }>();
 
-const search = defineModel<string>("search", { required: true });
+const search = defineModel<string>('search', { required: true });
 
 const isSearching = computed(() => search.value.trim().length > 0);
-const showSearchEmpty = computed(
-  () => isSearching.value && props.ingredients.length === 0,
-);
+const showSearchEmpty = computed(() => isSearching.value && props.ingredients.length === 0);
 
 const SEARCH_INPUT_CLASSES =
-  "w-full rounded-xl border border-border bg-background py-3 pr-4 pl-11 text-sm text-foreground outline-none transition placeholder:text-subtle-foreground focus:border-accent-300 focus:bg-card focus:ring-2 focus:ring-accent-500/20";
+  'w-full rounded-xl border border-border bg-background py-3 pr-4 pl-11 text-sm text-foreground outline-none transition placeholder:text-subtle-foreground focus:border-accent-300 focus:bg-card focus:ring-2 focus:ring-accent-500/20';
 
 function usedRecipesFor(ingredient: IngredientRecord): string[] {
   return props.usage[String(ingredient.id)] ?? [];
@@ -37,30 +35,19 @@ function usedRecipesFor(ingredient: IngredientRecord): string[] {
 <template>
   <Card class="overflow-hidden p-0!">
     <div class="border-border border-b px-4 py-4 sm:px-6">
-      <div
-        class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between"
-      >
+      <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <div class="flex items-baseline gap-2">
             <h2 class="text-foreground text-xl font-black">Tus Ingredientes</h2>
-            <span class="text-subtle-foreground text-sm font-semibold">
-              ({{ total }})
-            </span>
+            <span class="text-subtle-foreground text-sm font-semibold"> ({{ total }}) </span>
           </div>
           <p class="text-muted-foreground mt-1 text-sm">
             Busca por ingrediente, proveedor o marca.
           </p>
         </div>
 
-        <div
-          class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end"
-        >
-          <Button
-            variant="primary"
-            icon="plus"
-            class="lg:hidden"
-            @click="emit('create')"
-          >
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+          <Button variant="primary" icon="plus" class="lg:hidden" @click="emit('create')">
             Agregar Insumo
           </Button>
 
@@ -108,10 +95,7 @@ function usedRecipesFor(ingredient: IngredientRecord): string[] {
                   <p class="text-foreground font-semibold">
                     {{ ingredient.name }}
                   </p>
-                  <p
-                    v-if="ingredient.brand"
-                    class="text-subtle-foreground mt-1 text-xs"
-                  >
+                  <p v-if="ingredient.brand" class="text-subtle-foreground mt-1 text-xs">
                     Marca: {{ ingredient.brand }}
                   </p>
                 </div>
@@ -123,9 +107,7 @@ function usedRecipesFor(ingredient: IngredientRecord): string[] {
                 >
                   {{ ingredient.supplier }}
                 </span>
-                <span v-else class="text-subtle-foreground text-sm italic">
-                  Sin proveedor
-                </span>
+                <span v-else class="text-subtle-foreground text-sm italic"> Sin proveedor </span>
               </td>
               <td class="px-6 py-5">
                 <span
@@ -144,12 +126,7 @@ function usedRecipesFor(ingredient: IngredientRecord): string[] {
                 <span
                   class="border-accent-100 bg-accent-50 text-accent-800 inline-flex items-center rounded-xl border px-3 py-2 font-mono text-sm font-semibold whitespace-nowrap tabular-nums"
                 >
-                  {{
-                    formatUnitCost(
-                      ingredient.price,
-                      ingredient.purchaseQuantity,
-                    )
-                  }}
+                  {{ formatUnitCost(ingredient.price, ingredient.purchaseQuantity) }}
                   / {{ ingredient.unit }}
                 </span>
               </td>
@@ -186,10 +163,7 @@ function usedRecipesFor(ingredient: IngredientRecord): string[] {
         </table>
       </div>
 
-      <div
-        v-if="showSearchEmpty"
-        class="border-border-light border-t px-6 py-10 text-center"
-      >
+      <div v-if="showSearchEmpty" class="border-border-light border-t px-6 py-10 text-center">
         <div class="mx-auto flex max-w-sm flex-col items-center">
           <div
             class="bg-muted text-subtle-foreground flex h-12 w-12 items-center justify-center rounded-2xl"

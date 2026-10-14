@@ -1,4 +1,4 @@
-import { buildRobotsTxt } from "#shared/utils/seo";
+import { buildRobotsTxt } from '#shared/utils/seo';
 
 /**
  * `robots.txt` explícito: con indexación sólo se permiten las cuatro rutas
@@ -7,8 +7,8 @@ import { buildRobotsTxt } from "#shared/utils/seo";
 export default defineEventHandler((event) => {
   const { siteUrl, indexable } = useRuntimeConfig(event).public;
 
-  setHeader(event, "content-type", "text/plain; charset=utf-8");
-  setHeader(event, "cache-control", "public, max-age=3600");
+  setHeader(event, 'content-type', 'text/plain; charset=utf-8');
+  setHeader(event, 'cache-control', 'public, max-age=3600');
 
   return buildRobotsTxt({ siteUrl, indexable });
 });

@@ -7,21 +7,19 @@
  * exponer `Internal server error`.
  */
 
-export const NAME_UPDATED_MESSAGE = "Nombre actualizado correctamente.";
-export const PASSWORD_UPDATED_MESSAGE = "Contraseña actualizada correctamente.";
-export const PREFERENCES_SAVED_MESSAGE =
-  "Preferencias guardadas correctamente.";
-export const PREFERENCES_SAVE_ERROR_MESSAGE =
-  "Error al guardar las preferencias.";
+export const NAME_UPDATED_MESSAGE = 'Nombre actualizado correctamente.';
+export const PASSWORD_UPDATED_MESSAGE = 'Contraseña actualizada correctamente.';
+export const PREFERENCES_SAVED_MESSAGE = 'Preferencias guardadas correctamente.';
+export const PREFERENCES_SAVE_ERROR_MESSAGE = 'Error al guardar las preferencias.';
 
-const FALLBACK_MESSAGES: Record<"name" | "password", string> = {
-  name: "Error al actualizar el nombre.",
-  password: "Error al cambiar la contraseña.",
+const FALLBACK_MESSAGES: Record<'name' | 'password', string> = {
+  name: 'Error al actualizar el nombre.',
+  password: 'Error al cambiar la contraseña.',
 };
 
-const NETWORK_MESSAGES: Record<"name" | "password", string> = {
-  name: "Error de conexión al actualizar el nombre.",
-  password: "Error de conexión al cambiar la contraseña.",
+const NETWORK_MESSAGES: Record<'name' | 'password', string> = {
+  name: 'Error de conexión al actualizar el nombre.',
+  password: 'Error de conexión al cambiar la contraseña.',
 };
 
 type ErrorLike = {
@@ -30,18 +28,16 @@ type ErrorLike = {
 };
 
 function asErrorLike(error: unknown): ErrorLike | null {
-  return typeof error === "object" && error !== null
-    ? (error as ErrorLike)
-    : null;
+  return typeof error === 'object' && error !== null ? (error as ErrorLike) : null;
 }
 
-function resolveError(error: unknown, action: "name" | "password"): string {
+function resolveError(error: unknown, action: 'name' | 'password'): string {
   const candidate = asErrorLike(error);
   if (!candidate) return FALLBACK_MESSAGES[action];
 
   // Un objeto sin `status` es un fallo de transporte (fetch): copy de conexión.
   const status = candidate.status;
-  if (typeof status !== "number") {
+  if (typeof status !== 'number') {
     return NETWORK_MESSAGES[action];
   }
 
@@ -54,9 +50,9 @@ function resolveError(error: unknown, action: "name" | "password"): string {
 }
 
 export function resolveAccountNameError(error: unknown): string {
-  return resolveError(error, "name");
+  return resolveError(error, 'name');
 }
 
 export function resolveAccountPasswordError(error: unknown): string {
-  return resolveError(error, "password");
+  return resolveError(error, 'password');
 }

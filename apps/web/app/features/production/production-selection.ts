@@ -1,5 +1,5 @@
-import { PRODUCTION_BASIC_RECIPE_LIMIT } from "@recetario/stripe/plans-config";
-import type { ProductionSelection } from "./production-types";
+import { PRODUCTION_BASIC_RECIPE_LIMIT } from '@recetario/stripe/plans-config';
+import type { ProductionSelection } from './production-types';
 
 /**
  * Selección del planificador: parseo/serialización de la query, tope de plan y
@@ -24,18 +24,14 @@ const BATCH_STEP = 0.5;
 
 /** Valor de un parámetro de query: el primero si viniera repetido. */
 function queryString(value: unknown): string {
-  if (typeof value === "string") return value;
-  if (Array.isArray(value) && typeof value[0] === "string") return value[0];
-  return "";
+  if (typeof value === 'string') return value;
+  if (Array.isArray(value) && typeof value[0] === 'string') return value[0];
+  return '';
 }
 
 export function normalizeBatches(value: unknown): number {
   const parsed =
-    typeof value === "number"
-      ? value
-      : typeof value === "string"
-        ? Number(value)
-        : Number.NaN;
+    typeof value === 'number' ? value : typeof value === 'string' ? Number(value) : Number.NaN;
   return Number.isFinite(parsed) && parsed > 0 ? parsed : DEFAULT_BATCHES;
 }
 
@@ -50,19 +46,15 @@ function parsePresentationId(value: string | undefined): number | undefined {
   return Number.isInteger(parsed) && parsed > 0 ? parsed : undefined;
 }
 
-export function parseSelections(
-  query: Record<string, unknown>,
-): ProductionSelection[] {
+export function parseSelections(query: Record<string, unknown>): ProductionSelection[] {
   const ids = queryString(query.recipes)
-    .split(",")
+    .split(',')
     .map((value) => Number(value.trim()))
     .filter((value) => Number.isInteger(value) && value > 0);
 
   const uniqueIds = [...new Set(ids)];
-  const batches = queryString(query.batches).split(",").map(normalizeBatches);
-  const presentations = queryString(query.presentations)
-    .split(",")
-    .map(parsePresentationId);
+  const batches = queryString(query.batches).split(',').map(normalizeBatches);
+  const presentations = queryString(query.presentations).split(',').map(parsePresentationId);
 
   return uniqueIds.map((recipeId, index) => {
     const presentationId = presentations[index];
@@ -75,19 +67,17 @@ export function parseSelections(
 }
 
 export function serializeSelections(
-  selections: ReadonlyArray<ProductionSelection>,
+  selections: ReadonlyArray<ProductionSelection>
 ): Record<string, string> {
   if (selections.length === 0) return {};
 
   const query: Record<string, string> = {
-    recipes: selections.map((selection) => selection.recipeId).join(","),
-    batches: selections.map((selection) => selection.batches).join(","),
+    recipes: selections.map((selection) => selection.recipeId).join(','),
+    batches: selections.map((selection) => selection.batches).join(','),
   };
 
   if (selections.some((selection) => selection.presentationId !== undefined)) {
-    query.presentations = selections
-      .map((selection) => selection.presentationId ?? 0)
-      .join(",");
+    query.presentations = selections.map((selection) => selection.presentationId ?? 0).join(',');
   }
 
   return query;
@@ -99,21 +89,15 @@ export function serializeSelections(
  */
 export function filterToCatalog(
   selections: ReadonlyArray<ProductionSelection>,
-  catalogIds: ReadonlyArray<number>,
+  catalogIds: ReadonlyArray<number>
 ): ProductionSelection[] {
   const position = new Map(catalogIds.map((id, index) => [id, index]));
   return selections
     .filter((selection) => position.has(selection.recipeId))
-    .sort(
-      (a, b) =>
-        (position.get(a.recipeId) ?? 0) - (position.get(b.recipeId) ?? 0),
-    );
+    .sort((a, b) => (position.get(a.recipeId) ?? 0) - (position.get(b.recipeId) ?? 0));
 }
 
-export function atLimit(
-  selections: ReadonlyArray<ProductionSelection>,
-  max: number,
-): boolean {
+export function atLimit(selections: ReadonlyArray<ProductionSelection>, max: number): boolean {
   return selections.length >= max;
 }
 
@@ -125,14 +109,14 @@ export function atLimit(
 export function resolveSelections(
   query: Record<string, unknown>,
   catalogIds: ReadonlyArray<number>,
-  max: number,
+  max: number
 ): ProductionSelection[] {
   return filterToCatalog(parseSelections(query), catalogIds).slice(0, max);
 }
 
 export function toggleRecipe(
   selections: ReadonlyArray<ProductionSelection>,
-  recipeId: number,
+  recipeId: number
 ): ProductionSelection[] {
   if (selections.some((selection) => selection.recipeId === recipeId)) {
     return selections.filter((selection) => selection.recipeId !== recipeId);
@@ -143,19 +127,19 @@ export function toggleRecipe(
 export function setBatches(
   selections: ReadonlyArray<ProductionSelection>,
   recipeId: number,
-  batches: unknown,
+  batches: unknown
 ): ProductionSelection[] {
   return selections.map((selection) =>
     selection.recipeId === recipeId
       ? { ...selection, batches: normalizeBatches(batches) }
-      : selection,
+      : selection
   );
 }
 
 export function setPresentation(
   selections: ReadonlyArray<ProductionSelection>,
   recipeId: number,
-  presentationId: number | undefined,
+  presentationId: number | undefined
 ): ProductionSelection[] {
   return selections.map((selection) => {
     if (selection.recipeId !== recipeId) return selection;
@@ -177,17 +161,12 @@ export function selectAll(
   current: ReadonlyArray<ProductionSelection>,
   catalogIds: ReadonlyArray<number>,
   checked: boolean,
-  max: number,
+  max: number
 ): ProductionSelection[] {
   if (!checked) return [];
 
-  const existing = new Map(
-    current.map((selection) => [selection.recipeId, selection]),
-  );
+  const existing = new Map(current.map((selection) => [selection.recipeId, selection]));
   return catalogIds
     .slice(0, max)
-    .map(
-      (recipeId) =>
-        existing.get(recipeId) ?? { recipeId, batches: DEFAULT_BATCHES },
-    );
+    .map((recipeId) => existing.get(recipeId) ?? { recipeId, batches: DEFAULT_BATCHES });
 }

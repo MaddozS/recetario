@@ -11,7 +11,10 @@
     "./formatters": "./src/formatters.ts",
     "./plans-config": "./src/plans-config.ts"
   },
-  "files": ["dist", "src"],
+  "files": [
+    "dist",
+    "src"
+  ],
   "scripts": {
     "build": "tsc --noEmit -p tsconfig.build.json",
     "test": "vitest run"

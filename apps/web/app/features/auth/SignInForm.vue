@@ -1,13 +1,10 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
-import { AuthApiError } from "./auth-error";
-import {
-  resolveAuthErrorMessage,
-  resolveAuthReasonMessage,
-} from "./auth-messages";
-import { getSafeRedirect } from "./auth-redirect";
-import GoogleSignInButton from "./GoogleSignInButton.vue";
-import { useAuthApi } from "./useAuthApi";
+import { computed, ref } from 'vue';
+import { AuthApiError } from './auth-error';
+import { resolveAuthErrorMessage, resolveAuthReasonMessage } from './auth-messages';
+import { getSafeRedirect } from './auth-redirect';
+import GoogleSignInButton from './GoogleSignInButton.vue';
+import { useAuthApi } from './useAuthApi';
 
 /**
  * Acceso con email/contraseña o Google. El `?redirect=` se revalida aquí
@@ -21,15 +18,15 @@ const props = defineProps<{
 }>();
 
 const { signInWithEmail, resendVerificationEmail } = useAuthApi();
-const overlay = useState<string | null>("loading-overlay", () => null);
+const overlay = useState<string | null>('loading-overlay', () => null);
 
-const email = ref("");
-const password = ref("");
+const email = ref('');
+const password = ref('');
 const error = ref<string | null>(null);
 const pending = ref(false);
 
 const emailNotVerified = ref(false);
-const resendState = ref<"idle" | "sending" | "sent" | "error">("idle");
+const resendState = ref<'idle' | 'sending' | 'sent' | 'error'>('idle');
 
 const oauthMessage = computed(() => resolveAuthErrorMessage(props.errorCode));
 const reasonMessage = computed(() => resolveAuthReasonMessage(props.reason));
@@ -37,14 +34,14 @@ const target = computed(() => getSafeRedirect(props.redirect));
 
 const resendLabel = computed(() => {
   switch (resendState.value) {
-    case "sending":
-      return "Enviando...";
-    case "sent":
-      return "Reenviado. Revisa tu correo!";
-    case "error":
-      return "Error. Reintentar";
+    case 'sending':
+      return 'Enviando...';
+    case 'sent':
+      return 'Reenviado. Revisa tu correo!';
+    case 'error':
+      return 'Error. Reintentar';
     default:
-      return "Reenviar correo";
+      return 'Reenviar correo';
   }
 });
 
@@ -53,19 +50,19 @@ async function submit(): Promise<void> {
 
   error.value = null;
   emailNotVerified.value = false;
-  resendState.value = "idle";
+  resendState.value = 'idle';
   pending.value = true;
-  overlay.value = "Iniciando sesión…";
+  overlay.value = 'Iniciando sesión…';
 
   try {
     await signInWithEmail(email.value.trim(), password.value);
-    sessionStorage.removeItem("kitchcalc:signup_email");
+    sessionStorage.removeItem('kitchcalc:signup_email');
     await navigateTo(target.value, { external: true });
   } catch (cause) {
-    if (cause instanceof AuthApiError && cause.code === "EMAIL_NOT_VERIFIED") {
+    if (cause instanceof AuthApiError && cause.code === 'EMAIL_NOT_VERIFIED') {
       emailNotVerified.value = true;
     } else {
-      error.value = "Credenciales inválidas.";
+      error.value = 'Credenciales inválidas.';
     }
   } finally {
     overlay.value = null;
@@ -74,14 +71,14 @@ async function submit(): Promise<void> {
 }
 
 async function resend(): Promise<void> {
-  if (resendState.value === "sending" || resendState.value === "sent") return;
+  if (resendState.value === 'sending' || resendState.value === 'sent') return;
 
-  resendState.value = "sending";
+  resendState.value = 'sending';
   try {
     await resendVerificationEmail(email.value.trim());
-    resendState.value = "sent";
+    resendState.value = 'sent';
   } catch {
-    resendState.value = "error";
+    resendState.value = 'error';
   }
 }
 
@@ -139,14 +136,8 @@ function onOauthError(message: string): void {
         required
         :show-required="false"
       />
-      <Button
-        id="sign-in-submit"
-        variant="primary"
-        type="submit"
-        class="w-full"
-        :loading="pending"
-      >
-        {{ pending ? "Iniciando sesión..." : "Iniciar sesión" }}
+      <Button id="sign-in-submit" variant="primary" type="submit" class="w-full" :loading="pending">
+        {{ pending ? 'Iniciando sesión...' : 'Iniciar sesión' }}
       </Button>
       <p class="text-center">
         <Button variant="secondary" href="/forgot-password" size="sm">
@@ -168,9 +159,7 @@ function onOauthError(message: string): void {
 
     <p class="text-muted-foreground mt-6 text-center text-sm">
       ¿No tienes cuenta?
-      <Button variant="secondary" href="/sign-up" size="sm" class="ml-1">
-        Regístrate
-      </Button>
+      <Button variant="secondary" href="/sign-up" size="sm" class="ml-1"> Regístrate </Button>
     </p>
   </div>
 </template>

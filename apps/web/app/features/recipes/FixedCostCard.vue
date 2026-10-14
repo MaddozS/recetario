@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, reactive, ref, watch } from "vue";
-import type { MutationOutcome } from "./useRecipes";
+import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue';
+import type { MutationOutcome } from './useRecipes';
 import {
   FIXED_COST_BASE_BADGE_COLORS,
   FIXED_COST_BASE_LABELS,
@@ -11,13 +11,13 @@ import {
   fixedCostDisplayValue,
   fixedCostHoursLabel,
   fixedCostHoursRequired,
-} from "./recipe-fixed-costs";
+} from './recipe-fixed-costs';
 import type {
   FixedCostBase,
   FixedCostDraft,
   FixedCostRecord,
   FixedCostType,
-} from "./recipe-fixed-costs";
+} from './recipe-fixed-costs';
 
 /**
  * Card de un costo fijo de la receta. Sustituye al custom element
@@ -31,16 +31,16 @@ import type {
 const props = withDefaults(
   defineProps<{
     fixedCost?: FixedCostRecord | null;
-    mode?: "display" | "create";
+    mode?: 'display' | 'create';
     save: (draft: FixedCostDraft) => Promise<MutationOutcome>;
     remove?: (fixedCostId: number) => Promise<MutationOutcome>;
   }>(),
-  { fixedCost: null, mode: "display" },
+  { fixedCost: null, mode: 'display' }
 );
 
 const emit = defineEmits<{ cancel: []; saved: [] }>();
 
-const isCreate = computed(() => props.mode === "create");
+const isCreate = computed(() => props.mode === 'create');
 const isEditing = ref(isCreate.value);
 const saving = ref(false);
 const removing = ref(false);
@@ -49,28 +49,21 @@ const deleteOpen = ref(false);
 const dialog = ref<{ open: () => void; close: () => void } | null>(null);
 
 function initialDraft(): FixedCostDraft {
-  return props.fixedCost
-    ? fixedCostDraftFromRecord(props.fixedCost)
-    : emptyFixedCostDraft();
+  return props.fixedCost ? fixedCostDraftFromRecord(props.fixedCost) : emptyFixedCostDraft();
 }
 
 const draft = reactive<FixedCostDraft>(initialDraft());
 
-const cardMode = computed(() =>
-  isCreate.value ? "create" : isEditing.value ? "edit" : "display",
-);
+const cardMode = computed(() => (isCreate.value ? 'create' : isEditing.value ? 'edit' : 'display'));
 const hoursRequired = computed(() => fixedCostHoursRequired(draft.base));
-const hoursLabel = computed(() =>
-  props.fixedCost ? fixedCostHoursLabel(props.fixedCost) : "",
-);
+const hoursLabel = computed(() => (props.fixedCost ? fixedCostHoursLabel(props.fixedCost) : ''));
 
-const TYPE_OPTIONS: FixedCostType[] = ["PERCENTAGE", "AMOUNT"];
-const BASE_OPTIONS: FixedCostBase[] = ["PER_BATCH", "PER_UNIT", "PER_HOUR"];
+const TYPE_OPTIONS: FixedCostType[] = ['PERCENTAGE', 'AMOUNT'];
+const BASE_OPTIONS: FixedCostBase[] = ['PER_BATCH', 'PER_UNIT', 'PER_HOUR'];
 
-const LABEL_CLASSES =
-  "text-subtle-foreground text-[11px] font-bold tracking-[0.16em] uppercase";
+const LABEL_CLASSES = 'text-subtle-foreground text-[11px] font-bold tracking-[0.16em] uppercase';
 const FIELD_CLASSES =
-  "border-border bg-background text-foreground focus:ring-accent-500/20 rounded-xl border px-3 py-2 text-sm transition-all focus:ring-2 focus:outline-none";
+  'border-border bg-background text-foreground focus:ring-accent-500/20 rounded-xl border px-3 py-2 text-sm transition-all focus:ring-2 focus:outline-none';
 
 function resetDraft(): void {
   Object.assign(draft, initialDraft());
@@ -82,7 +75,7 @@ function toggleEdit(): void {
 
   if (isEditing.value) {
     if (isCreate.value) {
-      emit("cancel");
+      emit('cancel');
       return;
     }
     isEditing.value = false;
@@ -108,7 +101,7 @@ async function onSubmit(): Promise<void> {
     }
 
     if (isCreate.value) {
-      emit("saved");
+      emit('saved');
       return;
     }
 
@@ -150,7 +143,7 @@ watch(
   () => props.fixedCost,
   () => {
     if (!isEditing.value) resetDraft();
-  },
+  }
 );
 onMounted(syncDialog);
 </script>
@@ -170,10 +163,7 @@ onMounted(syncDialog);
       <!-- Vista -->
       <div v-if="!isEditing" class="flex flex-wrap items-center gap-3">
         <div class="flex min-w-0 flex-1 flex-wrap items-center gap-2">
-          <span
-            class="text-foreground font-display text-base font-bold"
-            data-fc-name
-          >
+          <span class="text-foreground font-display text-base font-bold" data-fc-name>
             {{ fixedCost?.name }}
           </span>
 
@@ -234,10 +224,7 @@ onMounted(syncDialog);
       <div v-else class="space-y-4">
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <div class="flex flex-col gap-1">
-            <label
-              :class="LABEL_CLASSES"
-              :for="`fc-name-${fixedCost?.id ?? 'new'}`"
-            >
+            <label :class="LABEL_CLASSES" :for="`fc-name-${fixedCost?.id ?? 'new'}`">
               Nombre
             </label>
             <input
@@ -252,12 +239,7 @@ onMounted(syncDialog);
           </div>
 
           <div class="flex flex-col gap-1">
-            <label
-              :class="LABEL_CLASSES"
-              :for="`fc-type-${fixedCost?.id ?? 'new'}`"
-            >
-              Tipo
-            </label>
+            <label :class="LABEL_CLASSES" :for="`fc-type-${fixedCost?.id ?? 'new'}`"> Tipo </label>
             <select
               :id="`fc-type-${fixedCost?.id ?? 'new'}`"
               v-model="draft.type"
@@ -272,12 +254,7 @@ onMounted(syncDialog);
           </div>
 
           <div class="flex flex-col gap-1">
-            <label
-              :class="LABEL_CLASSES"
-              :for="`fc-base-${fixedCost?.id ?? 'new'}`"
-            >
-              Base
-            </label>
+            <label :class="LABEL_CLASSES" :for="`fc-base-${fixedCost?.id ?? 'new'}`"> Base </label>
             <select
               :id="`fc-base-${fixedCost?.id ?? 'new'}`"
               v-model="draft.base"
@@ -294,10 +271,7 @@ onMounted(syncDialog);
 
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <div class="flex flex-col gap-1">
-            <label
-              :class="LABEL_CLASSES"
-              :for="`fc-value-${fixedCost?.id ?? 'new'}`"
-            >
+            <label :class="LABEL_CLASSES" :for="`fc-value-${fixedCost?.id ?? 'new'}`">
               Valor
             </label>
             <input
@@ -311,15 +285,8 @@ onMounted(syncDialog);
             />
           </div>
 
-          <div
-            v-if="hoursRequired"
-            class="flex flex-col gap-1"
-            data-fc-hours-field
-          >
-            <label
-              :class="LABEL_CLASSES"
-              :for="`fc-hours-${fixedCost?.id ?? 'new'}`"
-            >
+          <div v-if="hoursRequired" class="flex flex-col gap-1" data-fc-hours-field>
+            <label :class="LABEL_CLASSES" :for="`fc-hours-${fixedCost?.id ?? 'new'}`">
               Horas
             </label>
             <input
@@ -352,33 +319,17 @@ onMounted(syncDialog);
             </Button>
           </div>
           <div class="flex items-center gap-2">
-            <Button
-              variant="secondary"
-              :disabled="saving"
-              data-fc-cancel
-              @click="toggleEdit"
-            >
+            <Button variant="secondary" :disabled="saving" data-fc-cancel @click="toggleEdit">
               Cancelar
             </Button>
-            <Button
-              variant="primary"
-              icon="check"
-              type="submit"
-              :loading="saving"
-              data-fc-save
-            >
+            <Button variant="primary" icon="check" type="submit" :loading="saving" data-fc-save>
               Guardar
             </Button>
           </div>
         </div>
       </div>
 
-      <p
-        v-if="error"
-        class="text-danger mt-2 text-xs font-semibold"
-        role="alert"
-        data-fc-error
-      >
+      <p v-if="error" class="text-danger mt-2 text-xs font-semibold" role="alert" data-fc-error>
         {{ error }}
       </p>
     </form>
@@ -396,9 +347,7 @@ onMounted(syncDialog);
           <Icon name="lucide:trash-2" :size="18" />
         </div>
         <div>
-          <h2 class="text-foreground text-lg font-bold">
-            Confirmar eliminación
-          </h2>
+          <h2 class="text-foreground text-lg font-bold">Confirmar eliminación</h2>
           <p class="text-muted-foreground mt-2 text-sm">
             ¿Eliminar este costo fijo? Esta acción no se puede deshacer.
           </p>
@@ -406,11 +355,7 @@ onMounted(syncDialog);
       </div>
 
       <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-        <Button
-          variant="secondary"
-          :disabled="removing"
-          @click="deleteOpen = false"
-        >
+        <Button variant="secondary" :disabled="removing" @click="deleteOpen = false">
           Cancelar
         </Button>
         <Button

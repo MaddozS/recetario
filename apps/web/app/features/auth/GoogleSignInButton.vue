@@ -1,16 +1,15 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import { useAuthApi } from "./useAuthApi";
+import { ref } from 'vue';
+import { useAuthApi } from './useAuthApi';
 
 /**
  * Botón de Google de sign-in y sign-up. El POST va contra `/api/auth/sign-in/social`
  * y la navegación a la URL del proveedor la resolvemos aquí; mientras tanto el
  * botón queda pending con el mismo spinner del original.
  */
-const props = withDefaults(
-  defineProps<{ redirectTo: string; label?: string }>(),
-  { label: "Continuar con Google" },
-);
+const props = withDefaults(defineProps<{ redirectTo: string; label?: string }>(), {
+  label: 'Continuar con Google',
+});
 
 const emit = defineEmits<{ error: [message: string] }>();
 
@@ -25,12 +24,7 @@ async function start(): Promise<void> {
     await startGoogleSignIn(props.redirectTo);
   } catch (cause) {
     pending.value = false;
-    emit(
-      "error",
-      cause instanceof Error
-        ? cause.message
-        : "No se pudo iniciar sesión con Google.",
-    );
+    emit('error', cause instanceof Error ? cause.message : 'No se pudo iniciar sesión con Google.');
   }
 }
 </script>
@@ -78,6 +72,6 @@ async function start(): Promise<void> {
         fill="#EA4335"
       />
     </svg>
-    <span>{{ pending ? "Redirigiendo..." : label }}</span>
+    <span>{{ pending ? 'Redirigiendo...' : label }}</span>
   </button>
 </template>

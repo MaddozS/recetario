@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref, watch } from "vue";
+import { computed, onMounted, reactive, ref, watch } from 'vue';
 import {
   createEmptyIngredientForm,
   isIngredientFormValid,
-} from "~/features/ingredients/ingredient-form";
-import type { IngredientFormValues } from "~/features/ingredients/ingredient-form";
-import type { MutationOutcome } from "~/features/ingredients/useIngredients";
-import IngredientCostPreview from "~/features/ingredients/IngredientCostPreview.vue";
-import IngredientErrorAlert from "~/features/ingredients/IngredientErrorAlert.vue";
-import IngredientFormFields from "~/features/ingredients/IngredientFormFields.vue";
+} from '~/features/ingredients/ingredient-form';
+import type { IngredientFormValues } from '~/features/ingredients/ingredient-form';
+import type { MutationOutcome } from '~/features/ingredients/useIngredients';
+import IngredientCostPreview from '~/features/ingredients/IngredientCostPreview.vue';
+import IngredientErrorAlert from '~/features/ingredients/IngredientErrorAlert.vue';
+import IngredientFormFields from '~/features/ingredients/IngredientFormFields.vue';
 
 /**
  * Formulario de creación en móvil. El disparador vive en la lista (`lg:hidden`).
@@ -18,7 +18,7 @@ const props = defineProps<{
   submit: (values: IngredientFormValues) => Promise<MutationOutcome>;
 }>();
 
-const open = defineModel<boolean>("open", { required: true });
+const open = defineModel<boolean>('open', { required: true });
 
 const dialog = ref<{ open: () => void; close: () => void } | null>(null);
 const form = reactive(createEmptyIngredientForm());
@@ -123,7 +123,7 @@ async function onSubmit(): Promise<void> {
           :disabled="!valid"
           :loading="submitting"
         >
-          {{ submitting ? "Agregando…" : "Agregar Insumo" }}
+          {{ submitting ? 'Agregando…' : 'Agregar Insumo' }}
         </Button>
       </div>
     </form>

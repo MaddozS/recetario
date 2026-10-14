@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import { UNIT_OPTIONS } from "~/features/ingredients/ingredient-units";
+import { computed } from 'vue';
+import { UNIT_OPTIONS } from '~/features/ingredients/ingredient-units';
 
 /**
  * Campos compartidos por los tres formularios de ingredientes (card de
@@ -12,36 +12,33 @@ import { UNIT_OPTIONS } from "~/features/ingredients/ingredient-units";
  * raíz para que el padre aplique su propio grid; en `edit` el nombre pide
  * `md:col-span-2` dentro del grid de dos columnas del dialog.
  */
-const props = withDefaults(
-  defineProps<{ idPrefix: string; variant?: "create" | "edit" }>(),
-  { variant: "create" },
-);
+const props = withDefaults(defineProps<{ idPrefix: string; variant?: 'create' | 'edit' }>(), {
+  variant: 'create',
+});
 
-const name = defineModel<string>("name", { required: true });
-const supplier = defineModel<string>("supplier", { required: true });
-const brand = defineModel<string>("brand", { required: true });
-const price = defineModel<string>("price", { required: true });
-const purchaseQuantity = defineModel<string>("purchaseQuantity", {
+const name = defineModel<string>('name', { required: true });
+const supplier = defineModel<string>('supplier', { required: true });
+const brand = defineModel<string>('brand', { required: true });
+const price = defineModel<string>('price', { required: true });
+const purchaseQuantity = defineModel<string>('purchaseQuantity', {
   required: true,
 });
-const unit = defineModel<string>("unit", { required: true });
+const unit = defineModel<string>('unit', { required: true });
 
-const isCreate = computed(() => props.variant === "create");
-const nameWrapperClasses = computed(() =>
-  props.variant === "edit" ? "md:col-span-2" : "",
-);
+const isCreate = computed(() => props.variant === 'create');
+const nameWrapperClasses = computed(() => (props.variant === 'edit' ? 'md:col-span-2' : ''));
 
 const LABEL_CLASSES =
-  "mb-1.5 block text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground";
+  'mb-1.5 block text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground';
 
 const PRICE_INPUT_CLASSES =
-  "w-full rounded-xl border border-border bg-background py-3 pr-4 pl-8 font-mono text-sm text-foreground outline-none transition placeholder:text-subtle-foreground focus:border-accent-300 focus:bg-card focus:ring-2 focus:ring-accent-500/20";
+  'w-full rounded-xl border border-border bg-background py-3 pr-4 pl-8 font-mono text-sm text-foreground outline-none transition placeholder:text-subtle-foreground focus:border-accent-300 focus:bg-card focus:ring-2 focus:ring-accent-500/20';
 
 const QUANTITY_INPUT_CLASSES =
-  "text-foreground placeholder:text-subtle-foreground border-0 bg-transparent px-4 py-3 font-mono text-sm outline-none";
+  'text-foreground placeholder:text-subtle-foreground border-0 bg-transparent px-4 py-3 font-mono text-sm outline-none';
 
 const QUANTITY_GROUP_CLASSES =
-  "border-border bg-background focus-within:border-accent-300 focus-within:bg-card focus-within:ring-accent-500/20 grid grid-cols-[minmax(0,1fr)_5.5rem] overflow-hidden rounded-xl border transition focus-within:ring-2";
+  'border-border bg-background focus-within:border-accent-300 focus-within:bg-card focus-within:ring-accent-500/20 grid grid-cols-[minmax(0,1fr)_5.5rem] overflow-hidden rounded-xl border transition focus-within:ring-2';
 </script>
 
 <template>

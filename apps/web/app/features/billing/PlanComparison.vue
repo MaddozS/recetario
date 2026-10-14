@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import type { PricingPlan } from "@recetario/types";
-import { comparePlans, type PlanComparisonCell } from "./plan-comparison";
-import { displayPlanOrder } from "./plan-order";
+import { computed } from 'vue';
+import type { PricingPlan } from '@recetario/types';
+import { comparePlans, type PlanComparisonCell } from './plan-comparison';
+import { displayPlanOrder } from './plan-order';
 import {
   PLAN_FEATURE_PRESENTATION,
   planFeatureMarker,
   type PlanFeaturePresentation,
-} from "./plan-feature-state";
+} from './plan-feature-state';
 
 /**
  * Comparación de planes de `/pricing`: la superficie donde se decide entre dos
@@ -31,7 +31,7 @@ const props = withDefaults(
     /** Tier del visitante autenticado, para marcar su columna. */
     currentPlanId?: string;
   }>(),
-  { currentPlanId: undefined },
+  { currentPlanId: undefined }
 );
 
 interface ComparisonCell extends PlanComparisonCell {
@@ -52,9 +52,9 @@ const rows = computed<ComparisonRow[]>(() =>
     cells: row.cells.map((cell) => ({
       ...cell,
       presentation: cell.state ? PLAN_FEATURE_PRESENTATION[cell.state] : null,
-      marker: cell.state ? planFeatureMarker(cell.state, cell.text) : "",
+      marker: cell.state ? planFeatureMarker(cell.state, cell.text) : '',
     })),
-  })),
+  }))
 );
 </script>
 
@@ -64,17 +64,14 @@ const rows = computed<ComparisonRow[]>(() =>
     aria-labelledby="plan-comparison-heading"
     class="mt-16"
   >
-    <h2
-      id="plan-comparison-heading"
-      class="text-foreground font-display text-2xl font-black"
-    >
+    <h2 id="plan-comparison-heading" class="text-foreground font-display text-2xl font-black">
       Comparar planes
     </h2>
 
     <table class="mt-4 w-full table-fixed border-collapse">
       <caption class="sr-only">
-        Todas las funciones del catálogo. Cada columna es un plan y cada celda
-        dice el estado de esa función en ese plan.
+        Todas las funciones del catálogo. Cada columna es un plan y cada celda dice el estado de esa
+        función en ese plan.
       </caption>
       <thead>
         <tr>
@@ -104,7 +101,7 @@ const rows = computed<ComparisonRow[]>(() =>
         <tr v-for="(row, index) in rows" :key="index" class="align-top">
           <th
             scope="row"
-            class="border-border text-foreground border-b pr-2 py-2.5 pl-0 text-left align-top text-[11px] font-semibold hyphens-auto break-words md:pr-3 md:py-3 md:text-xs"
+            class="border-border text-foreground border-b py-2.5 pr-2 pl-0 text-left align-top text-[11px] font-semibold break-words hyphens-auto md:py-3 md:pr-3 md:text-xs"
           >
             {{ row.label }}
           </th>
@@ -123,10 +120,8 @@ const rows = computed<ComparisonRow[]>(() =>
                 class="mt-0.5 size-3.5 shrink-0 md:size-4"
                 :class="cell.presentation.iconClass"
               />
-              <span class="text-[11px] leading-snug hyphens-auto break-words sm:text-xs md:text-sm">
-                <span class="sr-only">
-                  {{ cell.presentation.label }}:
-                </span>
+              <span class="text-[11px] leading-snug break-words hyphens-auto sm:text-xs md:text-sm">
+                <span class="sr-only"> {{ cell.presentation.label }}: </span>
                 <span v-if="cell.text" :class="cell.presentation.textClass">
                   {{ cell.text }}
                 </span>

@@ -1,14 +1,14 @@
-import type { Context, Handler } from "hono";
-import { auth, validatePassword } from "@recetario/auth/server";
-import { logAuditEvent, updateUserName } from "@recetario/db";
-import { clientIp } from "@recetario/config/request";
+import type { Context, Handler } from 'hono';
+import { auth, validatePassword } from '@recetario/auth/server';
+import { logAuditEvent, updateUserName } from '@recetario/db';
+import { clientIp } from '@recetario/config/request';
 import {
   accountEmailChangeSchema,
   accountNameUpdateSchema,
   accountPasswordChangeSchema,
-} from "@recetario/types";
-import { ApiError } from "../errors";
-import type { AuthVariables } from "../middleware/auth";
+} from '@recetario/types';
+import { ApiError } from '../errors';
+import type { AuthVariables } from '../middleware/auth';
 
 /**
  * Mutaciones de cuenta: JSON + envelope con la misma forma que el resto del API.
@@ -19,7 +19,7 @@ import type { AuthVariables } from "../middleware/auth";
  */
 
 const PASSWORD_POLICY_MESSAGE =
-  "La contraseña debe tener al menos 8 caracteres, incluir mayúsculas, minúsculas, números y un carácter especial.";
+  'La contraseña debe tener al menos 8 caracteres, incluir mayúsculas, minúsculas, números y un carácter especial.';
 
 type AccountContext = Context<{ Variables: AuthVariables }>;
 
@@ -27,29 +27,29 @@ async function readJsonBody(c: AccountContext): Promise<unknown> {
   try {
     return await c.req.json();
   } catch {
-    throw new ApiError("VALIDATION_ERROR", "Request body must be valid JSON");
+    throw new ApiError('VALIDATION_ERROR', 'Request body must be valid JSON');
   }
 }
 
 async function recordAudit(
   c: AccountContext,
   userId: string,
-  action: "email_change" | "password_change",
+  action: 'email_change' | 'password_change'
 ): Promise<void> {
   await logAuditEvent({
     userId,
     action,
     ipAddress: clientIp(c.req.raw),
-    userAgent: c.req.header("user-agent") ?? null,
+    userAgent: c.req.header('user-agent') ?? null,
   });
 }
 
 export function accountUpdateNameHandler(): Handler<{ Variables: AuthVariables }> {
   return async (c) => {
-    const user = c.get("user");
+    const user = c.get('user');
     const parsed = accountNameUpdateSchema.safeParse(await readJsonBody(c));
     if (!parsed.success) {
-      throw new ApiError("VALIDATION_ERROR", "Invalid account payload");
+      throw new ApiError('VALIDATION_ERROR', 'Invalid account payload');
     }
 
     try {
@@ -58,8 +58,8 @@ export function accountUpdateNameHandler(): Handler<{ Variables: AuthVariables }
         lastName: parsed.data.lastName,
       });
     } catch (error) {
-      console.error("[account] update-name failed:", error);
-      throw new ApiError("INTERNAL", "No se pudo actualizar el nombre.");
+      console.error('[account] update-name failed:', error);
+      throw new ApiError('INTERNAL', 'No se pudo actualizar el nombre.');
     }
 
     return c.json({
@@ -71,15 +71,15 @@ export function accountUpdateNameHandler(): Handler<{ Variables: AuthVariables }
 
 export function accountChangePasswordHandler(): Handler<{ Variables: AuthVariables }> {
   return async (c) => {
-    const user = c.get("user");
+    const user = c.get('user');
     const parsed = accountPasswordChangeSchema.safeParse(await readJsonBody(c));
     if (!parsed.success) {
-      throw new ApiError("VALIDATION_ERROR", "Invalid account payload");
+      throw new ApiError('VALIDATION_ERROR', 'Invalid account payload');
     }
 
     const { currentPassword, newPassword } = parsed.data;
     if (!validatePassword(newPassword).valid) {
-      throw new ApiError("VALIDATION_ERROR", PASSWORD_POLICY_MESSAGE);
+      throw new ApiError('VALIDATION_ERROR', PASSWORD_POLICY_MESSAGE);
     }
 
     try {
@@ -87,14 +87,14 @@ export function accountChangePasswordHandler(): Handler<{ Variables: AuthVariabl
         headers: c.req.raw.headers,
         body: { currentPassword, newPassword, revokeOtherSessions: false },
       });
-      await recordAudit(c, user.id, "password_change");
+      await recordAudit(c, user.id, 'password_change');
     } catch (error) {
-      const message = (error as { message?: string })?.message ?? "";
+      const message = (error as { message?: string })?.message ?? '';
       if (/invalid password/i.test(message)) {
-        throw new ApiError("VALIDATION_ERROR", "La contraseña actual es incorrecta.");
+        throw new ApiError('VALIDATION_ERROR', 'La contraseña actual es incorrecta.');
       }
-      console.error("[account] change-password failed:", error);
-      throw new ApiError("VALIDATION_ERROR", "No se pudo cambiar la contraseña.");
+      console.error('[account] change-password failed:', error);
+      throw new ApiError('VALIDATION_ERROR', 'No se pudo cambiar la contraseña.');
     }
 
     return c.json({ ok: true });
@@ -103,10 +103,10 @@ export function accountChangePasswordHandler(): Handler<{ Variables: AuthVariabl
 
 export function accountChangeEmailHandler(): Handler<{ Variables: AuthVariables }> {
   return async (c) => {
-    const user = c.get("user");
+    const user = c.get('user');
     const parsed = accountEmailChangeSchema.safeParse(await readJsonBody(c));
     if (!parsed.success) {
-      throw new ApiError("VALIDATION_ERROR", "Invalid account payload");
+      throw new ApiError('VALIDATION_ERROR', 'Invalid account payload');
     }
 
     try {
@@ -114,10 +114,10 @@ export function accountChangeEmailHandler(): Handler<{ Variables: AuthVariables 
         headers: c.req.raw.headers,
         body: { newEmail: parsed.data.newEmail },
       });
-      await recordAudit(c, user.id, "email_change");
+      await recordAudit(c, user.id, 'email_change');
     } catch (error) {
-      console.error("[account] change-email failed:", error);
-      throw new ApiError("VALIDATION_ERROR", "No se pudo cambiar el email.");
+      console.error('[account] change-email failed:', error);
+      throw new ApiError('VALIDATION_ERROR', 'No se pudo cambiar el email.');
     }
 
     return c.json({ ok: true });

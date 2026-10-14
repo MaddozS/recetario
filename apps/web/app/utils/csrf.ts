@@ -10,7 +10,7 @@
  * un token nuevo y la mutación sigue su curso.
  */
 
-export const CSRF_TOKEN_PATH = "/api/csrf";
+export const CSRF_TOKEN_PATH = '/api/csrf';
 
 export type CsrfEnsurerDeps = {
   /** Lee el token del cookie jar (`null` si no hay). */
@@ -27,10 +27,7 @@ export type CsrfEnsurerDeps = {
  */
 let inFlight: Promise<void> | null = null;
 
-export function createCsrfEnsurer({
-  getToken,
-  refresh,
-}: CsrfEnsurerDeps): () => Promise<void> {
+export function createCsrfEnsurer({ getToken, refresh }: CsrfEnsurerDeps): () => Promise<void> {
   return async function ensureCsrfToken(): Promise<void> {
     if (getToken()) return;
 

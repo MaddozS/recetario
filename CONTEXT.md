@@ -27,6 +27,18 @@ Code in `packages/stripe` that talks to the Stripe API or owns subscription/plan
 **Subscription reconcile**:
 The read/reconcile/shape engine in `packages/stripe` (`subscription-reconcile.ts`): reads the user's `Subscription` row, reconciles it against live Stripe (status/period/cancel drift + scheduled downgrades), persists drift, and shapes `UserSubscriptionInfo` via `userSubscriptionInfoSchema`. Both the session and `/api/billing/subscription` handlers call it; `null` means "no subscription" (session falls back to `getDefaultSubscription()`, the endpoint 404s). Tested through `reconcileSubscriptionWith(deps)` factory fakes; `reconcileSubscription` is the pre-wired default.
 
+**Session subscription snapshot**:
+The fast, database-backed subscription state bundled into the auth session, lacking live Stripe schedule changes or immediate portal drifts.
+_Avoid_: "session subscription", "auth subscription".
+
+**Fresh reconciled subscription**:
+The live subscription state reconciled on-demand against the Stripe API via `GET /api/billing/subscription`.
+_Avoid_: "live subscription", "synced subscription".
+
+**Billing pending feedback**:
+The skeleton state displayed across the billing tab during initial load before the fresh reconciled subscription resolves, preventing layout shift and display of stale cancellation state.
+_Avoid_: "billing loader", "plan skeleton".
+
 **Stripe price sync**:
 The process of reconciling `SubscriptionPlan` rows with Stripe's active prices. `packages/stripe` fetches (`listPrices`) and maps to a minimal `SyncPlanInput`; `packages/db` persists (`syncPlans`) with pure upsert+deactivate. The db package never imports `stripe`; the tier whitelist and `featuresJson` are produced by stripe, not db.
 

@@ -1,12 +1,12 @@
-import { preferencesResponseSchema } from "@recetario/types";
-import type { AuthPreferences } from "#shared/types/auth";
-import { ACCENT_COOKIE, THEME_COOKIE } from "#shared/utils/preferences";
-import { writeDocumentCookie } from "~/utils/cookies";
-import { PREFERENCES_SAVE_ERROR_MESSAGE } from "~/features/settings/settings-messages";
+import { preferencesResponseSchema } from '@recetario/types';
+import type { AuthPreferences } from '#shared/types/auth';
+import { ACCENT_COOKIE, THEME_COOKIE } from '#shared/utils/preferences';
+import { writeDocumentCookie } from '~/utils/cookies';
+import { PREFERENCES_SAVE_ERROR_MESSAGE } from '~/features/settings/settings-messages';
 
 export type AppearanceOutcome = { ok: true } | { ok: false; message: string };
 
-const BUSY_MESSAGE = "Hay un guardado de preferencias en curso.";
+const BUSY_MESSAGE = 'Hay un guardado de preferencias en curso.';
 
 /**
  * Persistencia de tema/acento (cross-cutting: Settings y el toggle público).
@@ -33,7 +33,7 @@ export function useAppearancePersistence() {
 
   async function saveAppearance(
     next: AuthPreferences,
-    options: { rollbackTo?: AuthPreferences } = {},
+    options: { rollbackTo?: AuthPreferences } = {}
   ): Promise<AppearanceOutcome> {
     if (saving.value) {
       return { ok: false, message: BUSY_MESSAGE };
@@ -51,8 +51,8 @@ export function useAppearancePersistence() {
         return { ok: true };
       }
 
-      const persisted = await api("/api/preferences", {
-        method: "PUT",
+      const persisted = await api('/api/preferences', {
+        method: 'PUT',
         body: { theme: applied.theme, accentColor: applied.accentColor },
         schema: preferencesResponseSchema,
       });
@@ -65,10 +65,7 @@ export function useAppearancePersistence() {
       applyPreferences(confirmed);
       return { ok: true };
     } catch (cause) {
-      console.error(
-        "[appearance] no se pudieron guardar las preferencias",
-        cause,
-      );
+      console.error('[appearance] no se pudieron guardar las preferencias', cause);
       // El formulario revierte a lo persistido; el toggle, a la snapshot.
       const fallback = options.rollbackTo ?? previous;
       setTheme(fallback.theme);

@@ -1,4 +1,4 @@
-import { SIDEBAR_COOKIE, readCookie } from "#shared/utils/preferences";
+import { SIDEBAR_COOKIE, readCookie } from '#shared/utils/preferences';
 
 /**
  * Estado de la sidebar de escritorio, persistido en cookie para que el SSR
@@ -10,14 +10,14 @@ import { SIDEBAR_COOKIE, readCookie } from "#shared/utils/preferences";
 export function useSidebarCollapsed() {
   const collapsed = ref(
     import.meta.server
-      ? readCookie(useRequestHeaders(["cookie"]).cookie, SIDEBAR_COOKIE) === "1"
-      : readDocumentCookie(SIDEBAR_COOKIE) === "1",
+      ? readCookie(useRequestHeaders(['cookie']).cookie, SIDEBAR_COOKIE) === '1'
+      : readDocumentCookie(SIDEBAR_COOKIE) === '1'
   );
 
   function setCollapsed(next: boolean): void {
     collapsed.value = next;
     if (import.meta.client) {
-      writeDocumentCookie(SIDEBAR_COOKIE, next ? "1" : "0");
+      writeDocumentCookie(SIDEBAR_COOKIE, next ? '1' : '0');
     }
   }
 

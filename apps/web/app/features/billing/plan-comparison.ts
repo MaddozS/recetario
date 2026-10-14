@@ -1,5 +1,5 @@
-import type { PlanFeature, PricingPlan } from "@recetario/types";
-import { planFeatureState, type PlanFeatureState } from "./plan-feature-state";
+import type { PlanFeature, PricingPlan } from '@recetario/types';
+import { planFeatureState, type PlanFeatureState } from './plan-feature-state';
 
 /**
  * Matriz de comparación de `/pricing`: **todas** las funciones del catálogo,
@@ -32,17 +32,12 @@ export interface PlanComparisonRow {
 }
 
 export function comparePlans(plans: PricingPlan[]): PlanComparisonRow[] {
-  const slots = plans.reduce(
-    (max, plan) => Math.max(max, plan.features.length),
-    0,
-  );
+  const slots = plans.reduce((max, plan) => Math.max(max, plan.features.length), 0);
   const rows: PlanComparisonRow[] = [];
 
   for (let index = 0; index < slots; index += 1) {
     const features = plans.map((plan) => plan.features[index] ?? null);
-    const first = features.find(
-      (feature): feature is PlanFeature => feature !== null,
-    );
+    const first = features.find((feature): feature is PlanFeature => feature !== null);
     if (!first) continue;
 
     const label = first.label ?? first.text;
@@ -54,7 +49,7 @@ export function comparePlans(plans: PricingPlan[]): PlanComparisonRow[] {
           : {
               text: feature.text === label ? null : feature.text,
               state: planFeatureState(feature),
-            },
+            }
       ),
     });
   }

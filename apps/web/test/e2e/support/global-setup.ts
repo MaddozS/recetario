@@ -1,5 +1,5 @@
-import { spawn } from "node:child_process";
-import { fileURLToPath } from "node:url";
+import { spawn } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 
 /**
  * Levanta el stub del API antes de los e2e y lo apaga al terminar. El build de
@@ -25,23 +25,23 @@ async function waitForStub(timeoutMs = 15_000) {
 }
 
 export default async function globalSetup() {
-  const script = fileURLToPath(new URL("./stub-api.mjs", import.meta.url));
+  const script = fileURLToPath(new URL('./stub-api.mjs', import.meta.url));
   const child = spawn(process.execPath, [script], {
-    stdio: "inherit",
+    stdio: 'inherit',
     env: { ...process.env, STUB_API_PORT: String(STUB_API_PORT) },
   });
 
   try {
     await waitForStub();
   } catch (error) {
-    child.kill("SIGTERM");
+    child.kill('SIGTERM');
     throw error;
   }
 
   // Playwright usa la función devuelta como global teardown. El SIGKILL es la
   // red de seguridad por si el stub no alcanza a cerrar por SIGTERM.
   return () => {
-    child.kill("SIGTERM");
-    setTimeout(() => child.kill("SIGKILL"), 1_000).unref();
+    child.kill('SIGTERM');
+    setTimeout(() => child.kill('SIGKILL'), 1_000).unref();
   };
 }

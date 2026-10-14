@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import type { FinancialEditField } from "./recipe-detail-form";
-import type { FinancialRow } from "./recipe-financials";
+import { computed } from 'vue';
+import type { FinancialEditField } from './recipe-detail-form';
+import type { FinancialRow } from './recipe-financials';
 
 /**
  * Resumen financiero del detalle y del planificador.
@@ -32,14 +32,14 @@ const props = withDefaults(
   {
     editable: false,
     fields: () => [],
-    desiredMargin: "",
-    fixedCostsPercentage: "",
-  },
+    desiredMargin: '',
+    fixedCostsPercentage: '',
+  }
 );
 
 const emit = defineEmits<{
-  "update:desiredMargin": [value: string];
-  "update:fixedCostsPercentage": [value: string];
+  'update:desiredMargin': [value: string];
+  'update:fixedCostsPercentage': [value: string];
 }>();
 
 type IndexedRow = { row: FinancialRow; index: number };
@@ -64,11 +64,11 @@ const groups = computed<RowGroup[]>(() => {
       result.push(current);
     }
 
-    if (row.emphasis === "control") {
+    if (row.emphasis === 'control') {
       current.control = { row, index };
       return;
     }
-    (row.emphasis === "answer" ? current.answers : current.rows).push({
+    (row.emphasis === 'answer' ? current.answers : current.rows).push({
       row,
       index,
     });
@@ -81,19 +81,17 @@ function fieldFor(rowIndex: number): FinancialEditField | undefined {
   return props.fields.find((field) => field.rowIndex === rowIndex);
 }
 
-function fieldValue(name: FinancialEditField["name"]): string {
-  return name === "desiredMargin"
-    ? props.desiredMargin
-    : props.fixedCostsPercentage;
+function fieldValue(name: FinancialEditField['name']): string {
+  return name === 'desiredMargin' ? props.desiredMargin : props.fixedCostsPercentage;
 }
 
-function onInput(name: FinancialEditField["name"], event: Event): void {
+function onInput(name: FinancialEditField['name'], event: Event): void {
   const value = (event.target as HTMLInputElement).value;
-  if (name === "desiredMargin") {
-    emit("update:desiredMargin", value);
+  if (name === 'desiredMargin') {
+    emit('update:desiredMargin', value);
     return;
   }
-  emit("update:fixedCostsPercentage", value);
+  emit('update:fixedCostsPercentage', value);
 }
 </script>
 
@@ -143,10 +141,7 @@ function onInput(name: FinancialEditField["name"], event: Event): void {
               class="bg-background border-border text-foreground focus:ring-accent-500/20 w-14 rounded-lg border p-1 font-mono text-sm font-semibold focus:ring-2"
               @input="onInput(fieldFor(group.control.index)!.name, $event)"
             />
-            <span
-              v-else
-              class="text-foreground font-mono text-sm font-semibold"
-            >
+            <span v-else class="text-foreground font-mono text-sm font-semibold">
               {{ group.control.row.value }}
             </span>
             <span
@@ -170,26 +165,14 @@ function onInput(name: FinancialEditField["name"], event: Event): void {
           >
             <p
               class="mb-1.5 text-[10px] font-black tracking-wider uppercase"
-              :class="
-                item.row.emphasis === 'total'
-                  ? 'text-foreground'
-                  : 'text-subtle-foreground'
-              "
+              :class="item.row.emphasis === 'total' ? 'text-foreground' : 'text-subtle-foreground'"
             >
-              <span v-if="item.row.op" class="mr-1 font-mono">{{
-                item.row.op
-              }}</span>
+              <span v-if="item.row.op" class="mr-1 font-mono">{{ item.row.op }}</span>
               {{ item.row.label }}
             </p>
             <div>
-              <div
-                v-if="editable && fieldFor(item.index)"
-                class="flex items-baseline gap-1"
-              >
-                <label
-                  :for="`fs-edit-${fieldFor(item.index)!.name}`"
-                  class="sr-only"
-                >
+              <div v-if="editable && fieldFor(item.index)" class="flex items-baseline gap-1">
+                <label :for="`fs-edit-${fieldFor(item.index)!.name}`" class="sr-only">
                   {{ item.row.label }}
                 </label>
                 <input
@@ -246,9 +229,7 @@ function onInput(name: FinancialEditField["name"], event: Event): void {
             :data-financial-answer="item.row.label"
             class="flex min-w-0 flex-col"
           >
-            <p
-              class="text-accent-800 mb-1.5 text-[10px] font-black tracking-wider uppercase"
-            >
+            <p class="text-accent-800 mb-1.5 text-[10px] font-black tracking-wider uppercase">
               {{ item.row.label }}
             </p>
             <p

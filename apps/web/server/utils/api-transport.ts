@@ -1,5 +1,5 @@
-import type { H3Event } from "h3";
-import { setSecurityHeaders } from "@recetario/config/request";
+import type { H3Event } from 'h3';
+import { setSecurityHeaders } from '@recetario/config/request';
 
 /**
  * Transporte hacia el worker `apps/api`.
@@ -18,10 +18,7 @@ import { setSecurityHeaders } from "@recetario/config/request";
  */
 
 export type ApiServiceBinding = {
-  fetch: (
-    input: string | URL | Request,
-    init?: RequestInit,
-  ) => Promise<Response>;
+  fetch: (input: string | URL | Request, init?: RequestInit) => Promise<Response>;
 };
 
 export type ForwardOptions = {
@@ -38,33 +35,28 @@ export type ApiCallInit = {
 };
 
 /** Headers que fija el transporte de destino, no el request entrante. */
-const TRANSPORT_OWNED_HEADERS = ["host", "content-length", "accept-encoding"];
+const TRANSPORT_OWNED_HEADERS = ['host', 'content-length', 'accept-encoding'];
 
-export function resolveBindingFromEnv(
-  env: Record<string, unknown>,
-): ApiServiceBinding | undefined {
+export function resolveBindingFromEnv(env: Record<string, unknown>): ApiServiceBinding | undefined {
   const api = env.API as ApiServiceBinding | undefined;
-  return typeof api?.fetch === "function" ? api : undefined;
+  return typeof api?.fetch === 'function' ? api : undefined;
 }
 
-export function resolveInternalApiUrl(
-  env: Record<string, unknown>,
-  fallback: string,
-): string {
+export function resolveInternalApiUrl(env: Record<string, unknown>, fallback: string): string {
   const value = env.INTERNAL_API_URL;
-  return typeof value === "string" && value.length > 0 ? value : fallback;
+  return typeof value === 'string' && value.length > 0 ? value : fallback;
 }
 
 export function relayFailureResponse(status: number, message: string): Response {
   const response = new Response(
     JSON.stringify({
       error: {
-        code: "INTERNAL",
+        code: 'INTERNAL',
         message,
         traceId: `web-${crypto.randomUUID()}`,
       },
     }),
-    { status, headers: { "content-type": "application/json" } },
+    { status, headers: { 'content-type': 'application/json' } }
   );
   setSecurityHeaders(response);
   return response;
@@ -75,12 +67,12 @@ export function relayFailureResponse(status: number, message: string): Response 
  * seguirlos, y deja el resto del request intacto.
  */
 export function buildUpstreamRequest(request: Request): Request {
-  return new Request(request, { redirect: "manual" });
+  return new Request(request, { redirect: 'manual' });
 }
 
 export async function forwardApiRequest(
   request: Request,
-  options: ForwardOptions,
+  options: ForwardOptions
 ): Promise<Response> {
   const { binding, internalApiUrl, useBinding, fetchImpl = fetch } = options;
 
@@ -89,7 +81,7 @@ export async function forwardApiRequest(
   }
 
   if (!internalApiUrl) {
-    return relayFailureResponse(500, "API transport not configured");
+    return relayFailureResponse(500, 'API transport not configured');
   }
 
   const incoming = new URL(request.url);
@@ -99,16 +91,16 @@ export async function forwardApiRequest(
   }
   // `fetch` ya descomprime, así que el API no debe comprimir: su
   // `content-encoding` sobreviviría en la respuesta que ve el navegador.
-  headers.set("accept-encoding", "identity");
+  headers.set('accept-encoding', 'identity');
 
-  const init: RequestInit & { duplex?: "half" } = {
+  const init: RequestInit & { duplex?: 'half' } = {
     method: request.method,
     headers,
-    redirect: "manual",
+    redirect: 'manual',
   };
-  if (request.method !== "GET" && request.method !== "HEAD") {
+  if (request.method !== 'GET' && request.method !== 'HEAD') {
     init.body = request.body;
-    init.duplex = "half";
+    init.duplex = 'half';
   }
 
   return fetchImpl(new URL(`${incoming.pathname}${incoming.search}`, internalApiUrl), init);
@@ -116,7 +108,7 @@ export async function forwardApiRequest(
 
 export function getCloudflareEnv(event: H3Event): Record<string, unknown> {
   const env = (event.context.cloudflare as { env?: unknown } | undefined)?.env;
-  return env && typeof env === "object" ? (env as Record<string, unknown>) : {};
+  return env && typeof env === 'object' ? (env as Record<string, unknown>) : {};
 }
 
 export function getTransportOptions(event: H3Event): ForwardOptions {
@@ -125,10 +117,9 @@ export function getTransportOptions(event: H3Event): ForwardOptions {
   // `process.env` (dev/CI) → `runtimeConfig` horneado en el build.
   const internalApiUrl = resolveInternalApiUrl(
     env,
-    typeof process.env.INTERNAL_API_URL === "string" &&
-      process.env.INTERNAL_API_URL.length > 0
+    typeof process.env.INTERNAL_API_URL === 'string' && process.env.INTERNAL_API_URL.length > 0
       ? process.env.INTERNAL_API_URL
-      : useRuntimeConfig(event).internalApiUrl,
+      : useRuntimeConfig(event).internalApiUrl
   );
   return {
     binding: resolveBindingFromEnv(env),
@@ -144,8 +135,8 @@ export async function relayApiRequest(event: H3Event): Promise<Response> {
   try {
     return await forwardApiRequest(toWebRequest(event), getTransportOptions(event));
   } catch (error) {
-    console.error("[/api relay] upstream request failed:", error);
-    return relayFailureResponse(502, "API service request failed");
+    console.error('[/api relay] upstream request failed:', error);
+    return relayFailureResponse(502, 'API service request failed');
   }
 }
 
@@ -157,24 +148,24 @@ export async function relayApiRequest(event: H3Event): Promise<Response> {
 export async function callApi(
   event: H3Event,
   path: string,
-  init: ApiCallInit = {},
+  init: ApiCallInit = {}
 ): Promise<Response> {
   const incoming = toWebRequest(event);
-  const method = (init.method ?? "GET").toUpperCase();
+  const method = (init.method ?? 'GET').toUpperCase();
   const headers = new Headers(init.headers);
-  const cookie = incoming.headers.get("cookie");
-  if (cookie && !headers.has("cookie")) {
-    headers.set("cookie", cookie);
+  const cookie = incoming.headers.get('cookie');
+  if (cookie && !headers.has('cookie')) {
+    headers.set('cookie', cookie);
   }
-  if (!headers.has("accept")) {
-    headers.set("accept", "application/json");
+  if (!headers.has('accept')) {
+    headers.set('accept', 'application/json');
   }
 
   const request = new Request(new URL(path, incoming.url), {
     method,
     headers,
-    body: method === "GET" || method === "HEAD" ? undefined : init.body,
-    redirect: "manual",
+    body: method === 'GET' || method === 'HEAD' ? undefined : init.body,
+    redirect: 'manual',
   });
 
   return forwardApiRequest(request, getTransportOptions(event));

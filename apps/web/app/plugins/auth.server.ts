@@ -1,5 +1,5 @@
-import { DEFAULT_ACCENT, DEFAULT_THEME } from "#shared/utils/preferences";
-import { buildAnonymousAuthState } from "#shared/types/auth";
+import { DEFAULT_ACCENT, DEFAULT_THEME } from '#shared/utils/preferences';
+import { buildAnonymousAuthState } from '#shared/types/auth';
 
 /**
  * Siembra el estado del request en el payload de Nuxt.
@@ -11,11 +11,11 @@ import { buildAnonymousAuthState } from "#shared/types/auth";
  * `server/middleware/10.auth.ts`, así que aquí sólo se transporta.
  */
 export default defineNuxtPlugin(() => {
-  const state = useState("auth", () =>
+  const state = useState('auth', () =>
     buildAnonymousAuthState({
       theme: DEFAULT_THEME,
       accentColor: DEFAULT_ACCENT,
-    }),
+    })
   );
   const event = useRequestEvent();
 
@@ -23,7 +23,7 @@ export default defineNuxtPlugin(() => {
     state.value = event.context.auth;
   }
 
-  const appearance = useState("appearance", () => ({
+  const appearance = useState('appearance', () => ({
     theme: state.value.preferences.theme,
     accentColor: state.value.preferences.accentColor,
   }));

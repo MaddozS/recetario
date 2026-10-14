@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import { authPageTitleFor } from "#shared/utils/seo";
-import AuthCard from "~/features/auth/AuthCard.vue";
-import ForgotPasswordForm from "~/features/auth/ForgotPasswordForm.vue";
-import { queryEmail } from "~/features/auth/auth-redirect";
+import { computed } from 'vue';
+import { authPageTitleFor } from '#shared/utils/seo';
+import AuthCard from '~/features/auth/AuthCard.vue';
+import ForgotPasswordForm from '~/features/auth/ForgotPasswordForm.vue';
+import { queryEmail } from '~/features/auth/auth-redirect';
 
-definePageMeta({ layout: "auth" });
+definePageMeta({ layout: 'auth' });
 
-useNoindexSeo(authPageTitleFor("/forgot-password"));
+useNoindexSeo(authPageTitleFor('/forgot-password'));
 
 const route = useRoute();
 // El email nunca entra en metadata, sólo en el campo prellenado.

@@ -2,8 +2,8 @@ import type {
   ingredientSchema,
   recipeFixedCostSchema,
   recipeIngredientDetailSchema,
-} from "@recetario/types";
-import type { z } from "zod";
+} from '@recetario/types';
+import type { z } from 'zod';
 
 /**
  * Cálculos financieros del detalle de receta (costos de insumos, costos fijos y
@@ -17,16 +17,14 @@ import type { z } from "zod";
  * contrato.
  */
 export type IngredientRecord = z.infer<typeof ingredientSchema>;
-export type RecipeIngredientDetail = z.infer<
-  typeof recipeIngredientDetailSchema
->;
+export type RecipeIngredientDetail = z.infer<typeof recipeIngredientDetailSchema>;
 export type RecipeFixedCostRecord = z.infer<typeof recipeFixedCostSchema>;
 
 /**
  * Jerarquía de la fila: parte del costo (`base`), cierre del tramo (`total`), la
  * palanca que gobierna el tramo (`control`) o una respuesta de la banda (`answer`).
  */
-export type FinancialRowEmphasis = "base" | "total" | "control" | "answer";
+export type FinancialRowEmphasis = 'base' | 'total' | 'control' | 'answer';
 
 export type FinancialRow = {
   label: string;
@@ -39,7 +37,7 @@ export type FinancialRow = {
   /** `total` cierra el tramo (paso de tipo); `control` va en su encabezado. */
   emphasis?: FinancialRowEmphasis;
   /** Signo delante del rótulo: `+` suma al anterior, `=` lo cierra. */
-  op?: "+" | "=";
+  op?: '+' | '=';
 };
 
 export type FinancialRowsInput = {
@@ -68,21 +66,15 @@ function roundHalfUp(value: number): number {
 }
 
 /** g/ml se redondean a entero; el resto conserva decimales. */
-export function aplicarRedondeoUnidadPequena(
-  cantidad: number,
-  unidad: string,
-): number {
+export function aplicarRedondeoUnidadPequena(cantidad: number, unidad: string): number {
   const u = unidad.toLowerCase();
-  if (u === "g" || u === "ml") {
+  if (u === 'g' || u === 'ml') {
     return roundHalfUp(cantidad);
   }
   return cantidad;
 }
 
-export function getCostoBaseCompra(insumo: {
-  price: number;
-  purchaseQuantity: number;
-}): number {
+export function getCostoBaseCompra(insumo: { price: number; purchaseQuantity: number }): number {
   if (insumo.purchaseQuantity === 0) return 0;
   return insumo.price / insumo.purchaseQuantity;
 }
@@ -90,21 +82,18 @@ export function getCostoBaseCompra(insumo: {
 export function calcularSubtotalIngrediente(
   ri: { quantity: number; unit: string },
   insumo: IngredientRecord,
-  multiplier: number,
+  multiplier: number
 ): number {
   if (!insumo) return 0;
 
-  let cantidadAjustada = aplicarRedondeoUnidadPequena(
-    ri.quantity * multiplier,
-    ri.unit,
-  );
+  let cantidadAjustada = aplicarRedondeoUnidadPequena(ri.quantity * multiplier, ri.unit);
   const unidadInsumo = insumo.unit.toLowerCase();
   const unidadReceta = ri.unit.toLowerCase();
 
   // Conversión: si el insumo se compra en kg/lt y la receta usa g/ml.
   if (
-    (unidadInsumo === "kg" || unidadInsumo === "lt") &&
-    (unidadReceta === "g" || unidadReceta === "ml")
+    (unidadInsumo === 'kg' || unidadInsumo === 'lt') &&
+    (unidadReceta === 'g' || unidadReceta === 'ml')
   ) {
     cantidadAjustada = cantidadAjustada / 1000;
   }
@@ -114,22 +103,21 @@ export function calcularSubtotalIngrediente(
 
 export function calcularCostoDirecto(
   ingredients: ReadonlyArray<RecipeIngredientDetail>,
-  multiplier: number,
+  multiplier: number
 ): number {
   return ingredients.reduce(
-    (total, ri) =>
-      total + calcularSubtotalIngrediente(ri, ri.ingredient, multiplier),
-    0,
+    (total, ri) => total + calcularSubtotalIngrediente(ri, ri.ingredient, multiplier),
+    0
   );
 }
 
 export function computeFixedCostAmount(
   fc: { type: string; base: string; value: number; hours?: number | null },
   costoDirectoTotal: number,
-  multiplier: number,
+  multiplier: number
 ): number {
-  if (fc.type === "AMOUNT") {
-    if (fc.base === "PER_HOUR") return fc.value * (fc.hours ?? 1);
+  if (fc.type === 'AMOUNT') {
+    if (fc.base === 'PER_HOUR') return fc.value * (fc.hours ?? 1);
     return fc.value * multiplier;
   }
   // PERCENTAGE
@@ -138,21 +126,20 @@ export function computeFixedCostAmount(
 
 /** Suma de los costos fijos de la receta para el costo directo y el multiplicador dados. */
 export function computeRecipeFixedCostsTotal(
-  recipeFixedCosts: FinancialRowsInput["recipeFixedCosts"],
+  recipeFixedCosts: FinancialRowsInput['recipeFixedCosts'],
   costoDirectoTotal: number,
-  multiplier: number,
+  multiplier: number
 ): number {
   return recipeFixedCosts.reduce(
-    (sum, fc) =>
-      sum + computeFixedCostAmount(fc, costoDirectoTotal, multiplier),
-    0,
+    (sum, fc) => sum + computeFixedCostAmount(fc, costoDirectoTotal, multiplier),
+    0
   );
 }
 
 export type RecipeBatchCostInput = {
   hasAdvancedCosts: boolean;
   costoDirectoTotal: number;
-  recipeFixedCosts: FinancialRowsInput["recipeFixedCosts"];
+  recipeFixedCosts: FinancialRowsInput['recipeFixedCosts'];
   multiplier: number;
   fixedCostsPercentageValue: number;
 };
@@ -167,7 +154,7 @@ export function computeRecipeBatchCost(input: RecipeBatchCostInput): number {
     ? computeRecipeFixedCostsTotal(
         input.recipeFixedCosts,
         input.costoDirectoTotal,
-        input.multiplier,
+        input.multiplier
       )
     : input.costoDirectoTotal * (input.fixedCostsPercentageValue / 100);
 
@@ -175,15 +162,12 @@ export function computeRecipeBatchCost(input: RecipeBatchCostInput): number {
 }
 
 /** Precio de venta sugerido de la mezcla para el margen deseado (0-99.99). */
-export function computeSuggestedBatchPrice(
-  batchCost: number,
-  desiredMarginValue: number,
-): number {
+export function computeSuggestedBatchPrice(batchCost: number, desiredMarginValue: number): number {
   return batchCost / (1 - desiredMarginValue / 100);
 }
 
-export const COST_GROUP = "Costo de la mezcla";
-export const PRICE_GROUP = "Precio de venta";
+export const COST_GROUP = 'Costo de la mezcla';
+export const PRICE_GROUP = 'Precio de venta';
 
 /**
  * Filas del resumen financiero en dos tramos: el costo de la mezcla (sus partes
@@ -194,9 +178,7 @@ export const PRICE_GROUP = "Precio de venta";
  * porcentaje de gastos operativos. El total y el margen llevan el mismo nombre
  * en los dos caminos: es el mismo número.
  */
-export function buildFinancialRows(
-  input: FinancialRowsInput,
-): FinancialRowsResult {
+export function buildFinancialRows(input: FinancialRowsInput): FinancialRowsResult {
   const {
     hasAdvancedCosts,
     costoDirectoTotal,
@@ -213,59 +195,52 @@ export function buildFinancialRows(
     multiplier,
     fixedCostsPercentageValue,
   });
-  const precioSugerido = computeSuggestedBatchPrice(
-    batchCost,
-    desiredMarginValue,
-  );
+  const precioSugerido = computeSuggestedBatchPrice(batchCost, desiredMarginValue);
   const ganancia = precioSugerido - batchCost;
   // Con más de una mezcla el promedio ayuda a leer la tanda; con una es el valor.
   const costoTotalRow: FinancialRow = {
-    label: "Costo Total",
+    label: 'Costo Total',
     value: `$${batchCost.toFixed(2)}`,
-    subtitle: hasAdvancedCosts
-      ? "Insumos + Costos Fijos"
-      : "Insumos + Operativos",
+    subtitle: hasAdvancedCosts ? 'Insumos + Costos Fijos' : 'Insumos + Operativos',
     secondaryValue:
-      multiplier === 1
-        ? undefined
-        : `≈ $${(batchCost / multiplier).toFixed(2)} por mezcla`,
-    emphasis: "total",
-    op: "=",
+      multiplier === 1 ? undefined : `≈ $${(batchCost / multiplier).toFixed(2)} por mezcla`,
+    emphasis: 'total',
+    op: '=',
     group: COST_GROUP,
   };
 
   const priceRows: FinancialRow[] = [
     {
       // La palanca del tramo: gobierna las respuestas y va en su encabezado.
-      label: "Margen Deseado",
+      label: 'Margen Deseado',
       value: `${desiredMarginValue}%`,
-      subtitle: "Objetivo de ganancia",
-      emphasis: "control",
+      subtitle: 'Objetivo de ganancia',
+      emphasis: 'control',
       group: PRICE_GROUP,
     },
     {
       // La banda se lee sola: de dónde sale el precio y qué deja.
-      label: "Costo Total",
+      label: 'Costo Total',
       value: `$${batchCost.toFixed(2)}`,
-      subtitle: "Lo que cuesta producir",
-      emphasis: "answer",
+      subtitle: 'Lo que cuesta producir',
+      emphasis: 'answer',
       group: PRICE_GROUP,
     },
     {
-      label: "Precio Sugerido",
+      label: 'Precio Sugerido',
       value: `$${precioSugerido.toFixed(2)}`,
       subtitle: `Con ${desiredMarginValue}% de margen`,
-      emphasis: "answer",
+      emphasis: 'answer',
       group: PRICE_GROUP,
     },
     {
-      label: "Ganancia",
+      label: 'Ganancia',
       value: `$${ganancia.toFixed(2)}`,
       subtitle:
         multiplier === 1
-          ? "Después de costos"
+          ? 'Después de costos'
           : `≈ $${(ganancia / multiplier).toFixed(2)} por mezcla`,
-      emphasis: "answer",
+      emphasis: 'answer',
       group: PRICE_GROUP,
     },
   ];
@@ -274,22 +249,22 @@ export function buildFinancialRows(
     const recipeFixedCostsTotal = computeRecipeFixedCostsTotal(
       recipeFixedCosts,
       costoDirectoTotal,
-      multiplier,
+      multiplier
     );
 
     return {
       rows: [
         {
-          label: "Insumos",
+          label: 'Insumos',
           value: `$${costoDirectoTotal.toFixed(2)}`,
-          subtitle: "Costo base de materiales",
+          subtitle: 'Costo base de materiales',
           group: COST_GROUP,
         },
         {
-          label: "Costos Fijos",
+          label: 'Costos Fijos',
           value: `$${recipeFixedCostsTotal.toFixed(2)}`,
-          subtitle: "Suma de los costos fijos",
-          op: "+",
+          subtitle: 'Suma de los costos fijos',
+          op: '+',
           group: COST_GROUP,
         },
         costoTotalRow,
@@ -304,18 +279,18 @@ export function buildFinancialRows(
   return {
     rows: [
       {
-        label: "Insumos",
+        label: 'Insumos',
         value: `$${costoDirectoTotal.toFixed(2)}`,
-        subtitle: "Costo base de materiales",
+        subtitle: 'Costo base de materiales',
         group: COST_GROUP,
       },
       {
-        label: "Gastos Operativos",
+        label: 'Gastos Operativos',
         value: `${fixedCostsPercentageValue}%`,
-        subtitle: "Servicios, labor, etc.",
+        subtitle: 'Servicios, labor, etc.',
         // El signo va en el `op` de la fila; aquí sólo el monto.
         secondaryValue: `$${costoOperativo.toFixed(2)}`,
-        op: "+",
+        op: '+',
         group: COST_GROUP,
       },
       costoTotalRow,

@@ -1,4 +1,4 @@
-import { NOINDEX_ROBOTS } from "#shared/utils/seo";
+import { NOINDEX_ROBOTS } from '#shared/utils/seo';
 
 /**
  * Metadata de las rutas fuera de índices (auth): título único y `robots`.
@@ -9,6 +9,6 @@ import { NOINDEX_ROBOTS } from "#shared/utils/seo";
 export function useNoindexSeo(title: string): void {
   useHead({
     title,
-    meta: [{ name: "robots", content: NOINDEX_ROBOTS }],
+    meta: [{ name: 'robots', content: NOINDEX_ROBOTS }],
   });
 }

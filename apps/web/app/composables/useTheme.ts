@@ -1,12 +1,12 @@
-import type { AuthPreferences } from "#shared/types/auth";
+import type { AuthPreferences } from '#shared/types/auth';
 import {
   DEFAULT_ACCENT,
   DEFAULT_THEME,
   isDarkTheme,
   resolveAccent,
   resolveTheme,
-} from "#shared/utils/preferences";
-import { getAccentCssVars } from "~/utils/accent-colors";
+} from '#shared/utils/preferences';
+import { getAccentCssVars } from '~/utils/accent-colors';
 
 /**
  * Apariencia (tema + acento) como estado declarativo.
@@ -17,7 +17,7 @@ import { getAccentCssVars } from "~/utils/accent-colors";
  * escritura imperativa al DOM: `<html>` lo gobierna `app.vue` con `useHead`.
  */
 export function useTheme() {
-  const appearance = useState<AuthPreferences>("appearance", () => ({
+  const appearance = useState<AuthPreferences>('appearance', () => ({
     theme: DEFAULT_THEME,
     accentColor: DEFAULT_ACCENT,
   }));
@@ -30,13 +30,13 @@ export function useTheme() {
   }
 
   /** `system` durante el SSR: el script anti-FOUC ya resolvió la clase `dark`. */
-  const prefersDark = useState<boolean>("prefers-dark", () => false);
+  const prefersDark = useState<boolean>('prefers-dark', () => false);
 
   const theme = computed(() => appearance.value.theme);
   const accent = computed(() => appearance.value.accentColor);
   const isDark = computed(() => isDarkTheme(theme.value, prefersDark.value));
   const accentCssVars = computed(() =>
-    getAccentCssVars(accent.value, isDark.value ? "dark" : "light"),
+    getAccentCssVars(accent.value, isDark.value ? 'dark' : 'light')
   );
 
   function setTheme(next: string): void {

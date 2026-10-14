@@ -1,8 +1,5 @@
-import { expect, test } from "@nuxt/test-utils/playwright";
-import {
-  collectContrastFailures,
-  formatFailures,
-} from "./support/contrast-probe";
+import { expect, test } from '@nuxt/test-utils/playwright';
+import { collectContrastFailures, formatFailures } from './support/contrast-probe';
 
 /**
  * Gate de contraste por píxeles de las superficies públicas (hallazgo 2 del
@@ -24,7 +21,7 @@ import {
  * ≥18.66px en negrita). La allowlist de `a11y.spec.ts` apunta a este archivo como
  * el ratio medido de cada nodo que axe no puede juzgar.
  */
-const SURFACES = ["/", "/funciones", "/pricing"] as const;
+const SURFACES = ['/', '/funciones', '/pricing'] as const;
 
 const VIEWPORTS = {
   mobile: { width: 375, height: 800 },
@@ -38,7 +35,7 @@ for (const path of SURFACES) {
       goto,
     }) => {
       await page.setViewportSize(viewport);
-      await goto(path, { waitUntil: "hydration" });
+      await goto(path, { waitUntil: 'hydration' });
 
       const failures = await collectContrastFailures(page);
       expect(failures.length, formatFailures(failures)).toBe(0);

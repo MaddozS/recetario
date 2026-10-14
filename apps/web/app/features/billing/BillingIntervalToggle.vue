@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { ref, type ComponentPublicInstance } from "vue";
+import { ref, type ComponentPublicInstance } from 'vue';
 import {
   BILLING_INTERVALS,
   BILLING_INTERVAL_LABELS,
   type BillingInterval,
-} from "./billing-interval";
+} from './billing-interval';
 
 /**
  * Toggle Mensual/Anual como radiogroup: flechas para cambiar y foco en la opción
@@ -12,34 +12,30 @@ import {
  * reescribía clases del DOM.
  */
 const props = defineProps<{ modelValue: BillingInterval }>();
-const emit = defineEmits<{ "update:modelValue": [value: BillingInterval] }>();
+const emit = defineEmits<{ 'update:modelValue': [value: BillingInterval] }>();
 
 const buttons = ref<HTMLButtonElement[]>([]);
 
-function registerButton(
-  element: Element | ComponentPublicInstance | null,
-  index: number,
-): void {
+function registerButton(element: Element | ComponentPublicInstance | null, index: number): void {
   if (element instanceof HTMLButtonElement) {
     buttons.value[index] = element;
   }
 }
 
 function select(period: BillingInterval): void {
-  emit("update:modelValue", period);
+  emit('update:modelValue', period);
 }
 
 function onKeydown(event: KeyboardEvent): void {
-  if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key)) {
+  if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)) {
     return;
   }
   event.preventDefault();
 
   const currentIndex = BILLING_INTERVALS.indexOf(props.modelValue);
-  const step = event.key === "ArrowRight" || event.key === "ArrowDown" ? 1 : -1;
-  const nextIndex =
-    (currentIndex + step + BILLING_INTERVALS.length) % BILLING_INTERVALS.length;
-  const next = BILLING_INTERVALS[nextIndex] ?? "monthly";
+  const step = event.key === 'ArrowRight' || event.key === 'ArrowDown' ? 1 : -1;
+  const nextIndex = (currentIndex + step + BILLING_INTERVALS.length) % BILLING_INTERVALS.length;
+  const next = BILLING_INTERVALS[nextIndex] ?? 'monthly';
 
   select(next);
   buttons.value[nextIndex]?.focus();
@@ -47,8 +43,8 @@ function onKeydown(event: KeyboardEvent): void {
 
 function buttonClass(period: BillingInterval): string {
   return period === props.modelValue
-    ? "bg-card text-foreground min-h-11 rounded-lg px-5 text-sm font-semibold shadow-sm transition-all"
-    : "text-muted-foreground min-h-11 rounded-lg px-5 text-sm font-semibold transition-all";
+    ? 'bg-card text-foreground min-h-11 rounded-lg px-5 text-sm font-semibold shadow-sm transition-all'
+    : 'text-muted-foreground min-h-11 rounded-lg px-5 text-sm font-semibold transition-all';
 }
 </script>
 
@@ -62,10 +58,7 @@ function buttonClass(period: BillingInterval): string {
     <button
       v-for="(period, index) in BILLING_INTERVALS"
       :key="period"
-      :ref="
-        (element: Element | ComponentPublicInstance | null) =>
-          registerButton(element, index)
-      "
+      :ref="(element: Element | ComponentPublicInstance | null) => registerButton(element, index)"
       type="button"
       role="radio"
       :aria-checked="period === modelValue ? 'true' : 'false'"
@@ -74,9 +67,7 @@ function buttonClass(period: BillingInterval): string {
       @click="select(period)"
     >
       {{ BILLING_INTERVAL_LABELS[period] }}
-      <span v-if="period === 'yearly'" class="text-success text-xs font-bold">
-        -20%
-      </span>
+      <span v-if="period === 'yearly'" class="text-success text-xs font-bold"> -20% </span>
     </button>
   </div>
 </template>

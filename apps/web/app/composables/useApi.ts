@@ -1,12 +1,12 @@
-import { getCsrfToken } from "@recetario/auth/csrf-client";
+import { getCsrfToken } from '@recetario/auth/csrf-client';
 import {
   apiFetch,
   MUTATING_METHODS,
   type ApiFetchImpl,
   type ApiFetchOptions,
-} from "~/utils/api-client";
-import { ApiError } from "~/utils/api-error";
-import { CSRF_TOKEN_PATH, createCsrfEnsurer } from "~/utils/csrf";
+} from '~/utils/api-client';
+import { ApiError } from '~/utils/api-error';
+import { CSRF_TOKEN_PATH, createCsrfEnsurer } from '~/utils/csrf';
 
 /**
  * Cliente tipado universal de `/api/**`.
@@ -32,11 +32,8 @@ export function useApi() {
       })
     : null;
 
-  return async function apiRequest<T>(
-    path: string,
-    options: ApiFetchOptions<T> = {},
-  ): Promise<T> {
-    const method = options.method ?? "GET";
+  return async function apiRequest<T>(path: string, options: ApiFetchOptions<T> = {}): Promise<T> {
+    const method = options.method ?? 'GET';
 
     if (ensureCsrfToken && MUTATING_METHODS.includes(method)) {
       await ensureCsrfToken();
@@ -63,20 +60,20 @@ async function handleSessionExpired(): Promise<void> {
   }
 
   const { state, expire } = useAuth();
-  if (state.value.status === "authenticated") {
+  if (state.value.status === 'authenticated') {
     expire();
   }
 
   const route = useRoute();
-  if (route.path === "/sign-in") {
+  if (route.path === '/sign-in') {
     return;
   }
 
   await navigateTo(
     {
-      path: "/sign-in",
-      query: { redirect: route.fullPath, reason: "session_expired" },
+      path: '/sign-in',
+      query: { redirect: route.fullPath, reason: 'session_expired' },
     },
-    { replace: true },
+    { replace: true }
   );
 }

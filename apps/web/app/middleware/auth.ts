@@ -14,9 +14,9 @@ export default defineNuxtRouteMiddleware((to) => {
 
   return navigateTo(
     {
-      path: "/sign-in",
-      query: { redirect: to.fullPath, reason: "auth_required" },
+      path: '/sign-in',
+      query: { redirect: to.fullPath, reason: 'auth_required' },
     },
-    { replace: true },
+    { replace: true }
   );
 });

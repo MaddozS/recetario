@@ -12,23 +12,18 @@
  */
 
 export const AUTH_NETWORK_ERROR_MESSAGE =
-  "No pudimos conectar con el servidor. Inténtalo de nuevo.";
+  'No pudimos conectar con el servidor. Inténtalo de nuevo.';
 
-const AUTH_UNKNOWN_ERROR_MESSAGE = "Ocurrió un error. Intenta de nuevo.";
+const AUTH_UNKNOWN_ERROR_MESSAGE = 'Ocurrió un error. Intenta de nuevo.';
 
 export class AuthApiError extends Error {
   readonly code: string;
   readonly status: number;
   readonly errors: readonly string[];
 
-  constructor(
-    code: string,
-    message: string,
-    status: number,
-    errors: readonly string[] = [],
-  ) {
+  constructor(code: string, message: string, status: number, errors: readonly string[] = []) {
     super(message);
-    this.name = "AuthApiError";
+    this.name = 'AuthApiError';
     this.code = code;
     this.status = status;
     this.errors = errors;
@@ -36,11 +31,11 @@ export class AuthApiError extends Error {
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null;
+  return typeof value === 'object' && value !== null;
 }
 
 function asString(value: unknown): string | null {
-  return typeof value === "string" && value.length > 0 ? value : null;
+  return typeof value === 'string' && value.length > 0 ? value : null;
 }
 
 /** Normaliza cualquier fallo de `$fetch` a un `AuthApiError` tipado. */
@@ -51,37 +46,37 @@ export function toAuthApiError(cause: unknown): AuthApiError {
     response?: unknown;
   };
   const status =
-    typeof candidate?.status === "number"
+    typeof candidate?.status === 'number'
       ? candidate.status
       : (candidate?.response as Response | undefined)?.status;
 
   const data = candidate?.data;
-  if (typeof status !== "number") {
-    return new AuthApiError("NETWORK_ERROR", AUTH_NETWORK_ERROR_MESSAGE, 0);
+  if (typeof status !== 'number') {
+    return new AuthApiError('NETWORK_ERROR', AUTH_NETWORK_ERROR_MESSAGE, 0);
   }
 
   // Respuesta HTTP sin cuerpo parseable: es un error del servidor, no de red.
   if (!isRecord(data)) {
-    return new AuthApiError("INTERNAL", AUTH_UNKNOWN_ERROR_MESSAGE, status);
+    return new AuthApiError('INTERNAL', AUTH_UNKNOWN_ERROR_MESSAGE, status);
   }
 
   const envelope = data.error;
   if (isRecord(envelope)) {
     return new AuthApiError(
-      asString(envelope.code) ?? "INTERNAL",
+      asString(envelope.code) ?? 'INTERNAL',
       asString(envelope.message) ?? AUTH_UNKNOWN_ERROR_MESSAGE,
-      status,
+      status
     );
   }
 
   const errors = Array.isArray(data.errors)
-    ? data.errors.filter((entry): entry is string => typeof entry === "string")
+    ? data.errors.filter((entry): entry is string => typeof entry === 'string')
     : [];
 
   return new AuthApiError(
-    asString(data.code) ?? "INTERNAL",
+    asString(data.code) ?? 'INTERNAL',
     asString(data.message) ?? asString(envelope) ?? AUTH_UNKNOWN_ERROR_MESSAGE,
     status,
-    errors,
+    errors
   );
 }

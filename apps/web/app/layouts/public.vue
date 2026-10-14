@@ -40,18 +40,16 @@ html {
     opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
     transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
-[data-reveal]:not([data-reveal="left"]):not([data-reveal="right"]):not(
-    [data-reveal="scale"]
-  ) {
+[data-reveal]:not([data-reveal='left']):not([data-reveal='right']):not([data-reveal='scale']) {
   transform: translateY(28px);
 }
-[data-reveal="left"] {
+[data-reveal='left'] {
   transform: translateX(-30px);
 }
-[data-reveal="right"] {
+[data-reveal='right'] {
   transform: translateX(30px);
 }
-[data-reveal="scale"] {
+[data-reveal='scale'] {
   transform: scale(0.94);
 }
 [data-reveal].reveal-visible {
@@ -82,8 +80,7 @@ html {
 }
 
 :root {
-  --pricing-hover-shadow:
-    0 16px 48px -12px rgb(0 0 0 / 0.12), 0 4px 12px -4px rgb(0 0 0 / 0.06);
+  --pricing-hover-shadow: 0 16px 48px -12px rgb(0 0 0 / 0.12), 0 4px 12px -4px rgb(0 0 0 / 0.06);
   --pricing-pro-hover-shadow:
     0 20px 56px -12px color-mix(in srgb, var(--aw-accent-500) 25%, transparent),
     0 4px 16px -4px color-mix(in srgb, var(--aw-accent-500) 12%, transparent);
@@ -93,8 +90,7 @@ html {
     0 16px 48px -12px rgb(0 0 0 / 0.4),
     0 4px 12px -4px color-mix(in srgb, var(--aw-accent-500) 15%, transparent);
   --pricing-pro-hover-shadow:
-    0 20px 56px -12px
-      color-mix(in srgb, var(--aw-accent-500) 35%, transparent),
+    0 20px 56px -12px color-mix(in srgb, var(--aw-accent-500) 35%, transparent),
     0 4px 16px -4px color-mix(in srgb, var(--aw-accent-500) 15%, transparent);
 }
 

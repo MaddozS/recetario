@@ -4,7 +4,7 @@ import {
   pageSeoFor,
   robotsMetaContent,
   type PublicPagePath,
-} from "#shared/utils/seo";
+} from '#shared/utils/seo';
 
 /**
  * Metadata de una página pública indexable: title/description únicos, canonical
@@ -24,16 +24,16 @@ export function usePageSeo(path: PublicPagePath): void {
     ogTitle: page.title,
     ogDescription: page.description,
     ogUrl: canonical,
-    ogType: "website",
-    ogSiteName: "KitchCalc",
+    ogType: 'website',
+    ogSiteName: 'KitchCalc',
     ogImage: canonicalUrl(siteUrl, OG_IMAGE_PATH),
-    twitterCard: "summary_large_image",
+    twitterCard: 'summary_large_image',
     twitterTitle: page.title,
     twitterDescription: page.description,
   });
 
   useHead({
-    link: [{ rel: "canonical", href: canonical }],
-    meta: [{ name: "robots", content: robotsMetaContent(indexable) }],
+    link: [{ rel: 'canonical', href: canonical }],
+    meta: [{ name: 'robots', content: robotsMetaContent(indexable) }],
   });
 }

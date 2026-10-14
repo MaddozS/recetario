@@ -1,11 +1,11 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
   upsert: vi.fn(),
   updateMany: vi.fn(),
 }));
 
-vi.mock("./prisma", () => ({
+vi.mock('./prisma', () => ({
   prisma: {
     subscriptionPlan: {
       upsert: mocks.upsert,
@@ -17,29 +17,29 @@ vi.mock("./prisma", () => ({
   },
 }));
 
-import { syncPlans } from "./billing";
+import { syncPlans } from './billing';
 
 const plan = {
-  id: "basic_monthly",
-  tier: "basic",
-  billingInterval: "monthly" as const,
-  stripePriceId: "price_basic",
+  id: 'basic_monthly',
+  tier: 'basic',
+  billingInterval: 'monthly' as const,
+  stripePriceId: 'price_basic',
   priceCents: 999,
-  currency: "mxn",
-  name: "Basic",
+  currency: 'mxn',
+  name: 'Basic',
   recipesLimit: 75,
   ingredientsLimit: null,
-  featuresJson: "{}",
+  featuresJson: '{}',
   active: true,
 };
 
-describe("syncPlans", () => {
+describe('syncPlans', () => {
   beforeEach(() => {
     mocks.upsert.mockReset();
     mocks.updateMany.mockReset();
   });
 
-  it("upserts every plan and deactivates missing active plans", async () => {
+  it('upserts every plan and deactivates missing active plans', async () => {
     await syncPlans([plan]);
     expect(mocks.upsert).toHaveBeenCalledWith({
       where: { id: plan.id },
@@ -52,7 +52,7 @@ describe("syncPlans", () => {
     });
   });
 
-  it("no-ops safely on empty input", async () => {
+  it('no-ops safely on empty input', async () => {
     await syncPlans([]);
     expect(mocks.upsert).not.toHaveBeenCalled();
     expect(mocks.updateMany).not.toHaveBeenCalled();

@@ -1,13 +1,10 @@
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref, watch } from "vue";
-import {
-  createEmptyRecipeForm,
-  isRecipeFormValid,
-} from "~/features/recipes/recipe-form";
-import type { RecipeFormValues } from "~/features/recipes/recipe-form";
-import type { RecipeMutationFailure } from "~/features/recipes/recipe-messages";
-import type { MutationOutcome } from "~/features/recipes/useRecipes";
-import RecipeErrorAlert from "~/features/recipes/RecipeErrorAlert.vue";
+import { computed, onMounted, reactive, ref, watch } from 'vue';
+import { createEmptyRecipeForm, isRecipeFormValid } from '~/features/recipes/recipe-form';
+import type { RecipeFormValues } from '~/features/recipes/recipe-form';
+import type { RecipeMutationFailure } from '~/features/recipes/recipe-messages';
+import type { MutationOutcome } from '~/features/recipes/useRecipes';
+import RecipeErrorAlert from '~/features/recipes/RecipeErrorAlert.vue';
 
 /**
  * Creación de receta: un único dialog para todos los breakpoints (paridad con
@@ -19,7 +16,7 @@ const props = defineProps<{
   submit: (values: RecipeFormValues) => Promise<MutationOutcome>;
 }>();
 
-const open = defineModel<boolean>("open", { required: true });
+const open = defineModel<boolean>('open', { required: true });
 
 const dialog = ref<{ open: () => void; close: () => void } | null>(null);
 const form = reactive(createEmptyRecipeForm());
@@ -65,22 +62,11 @@ async function onSubmit(): Promise<void> {
 </script>
 
 <template>
-  <Dialog
-    id="create-recipe-modal"
-    ref="dialog"
-    :submitting="submitting"
-    @close="open = false"
-  >
+  <Dialog id="create-recipe-modal" ref="dialog" :submitting="submitting" @close="open = false">
     <div class="flex items-start justify-between gap-4">
       <div>
-        <p
-          class="text-accent-700 text-xs font-black tracking-[0.18em] uppercase"
-        >
-          Nueva receta
-        </p>
-        <h2 class="text-foreground mt-2 text-xl font-black">
-          Escribe el nombre inicial
-        </h2>
+        <p class="text-accent-700 text-xs font-black tracking-[0.18em] uppercase">Nueva receta</p>
+        <h2 class="text-foreground mt-2 text-xl font-black">Escribe el nombre inicial</h2>
         <p class="text-muted-foreground mt-2 text-sm">
           Puedes cambiarlo después desde la vista de edición.
         </p>

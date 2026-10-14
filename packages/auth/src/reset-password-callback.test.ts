@@ -1,145 +1,160 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { createResetPasswordCallback } from "./reset-password-callback";
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { createResetPasswordCallback } from './reset-password-callback';
 
 const { mockPrismaFindUnique } = vi.hoisted(() => {
   const mockPrismaFindUnique = vi.fn();
   return { mockPrismaFindUnique };
 });
 
-vi.mock("@recetario/db", () => ({
+vi.mock('@recetario/db', () => ({
   prisma: {
     user: { findUnique: (...args: unknown[]) => mockPrismaFindUnique(...args) },
   },
 }));
 
-const mockToken = "550e8400-e29b-41d4-a716-446655440000";
+const mockToken = '550e8400-e29b-41d4-a716-446655440000';
 
 let mockCreatePasswordResetToken: ReturnType<typeof vi.fn>;
 let mockGetResetPasswordEmailHtml: ReturnType<typeof vi.fn>;
 
 beforeEach(() => {
   mockCreatePasswordResetToken = vi.fn().mockResolvedValue(mockToken);
-  mockGetResetPasswordEmailHtml = vi.fn().mockReturnValue("<html>reset link</html>");
+  mockGetResetPasswordEmailHtml = vi.fn().mockReturnValue('<html>reset link</html>');
   mockPrismaFindUnique.mockReset();
 });
 
-describe("createResetPasswordCallback", () => {
-  it("sends reset email with correct payload on happy path", async () => {
+describe('createResetPasswordCallback', () => {
+  it('sends reset email with correct payload on happy path', async () => {
     mockPrismaFindUnique.mockResolvedValue({
-      firstName: "Juan",
-      name: "Juan Pérez",
+      firstName: 'Juan',
+      name: 'Juan Pérez',
     });
     const sendEmail = vi.fn();
     const callback = createResetPasswordCallback(
-      sendEmail, mockCreatePasswordResetToken, mockGetResetPasswordEmailHtml,
+      sendEmail,
+      mockCreatePasswordResetToken,
+      mockGetResetPasswordEmailHtml
     );
 
     await callback({
-      user: { id: "user-1", email: "juan@example.com" },
-      url: "https://api.example.com/api/auth/reset-password/better-auth-token?callbackURL=https://example.com/reset",
+      user: { id: 'user-1', email: 'juan@example.com' },
+      url: 'https://api.example.com/api/auth/reset-password/better-auth-token?callbackURL=https://example.com/reset',
     });
 
     expect(mockPrismaFindUnique).toHaveBeenCalledWith({
-      where: { id: "user-1" },
+      where: { id: 'user-1' },
       select: { firstName: true, name: true },
     });
-    expect(mockCreatePasswordResetToken).toHaveBeenCalledWith("user-1", 10);
-    expect(mockGetResetPasswordEmailHtml).toHaveBeenCalledWith(expect.objectContaining({
-      resetLink: "https://api.example.com/reset-password?token=550e8400-e29b-41d4-a716-446655440000",
-      userName: "Juan",
-      expiryMinutes: 10,
-    }));
+    expect(mockCreatePasswordResetToken).toHaveBeenCalledWith('user-1', 10);
+    expect(mockGetResetPasswordEmailHtml).toHaveBeenCalledWith(
+      expect.objectContaining({
+        resetLink:
+          'https://api.example.com/reset-password?token=550e8400-e29b-41d4-a716-446655440000',
+        userName: 'Juan',
+        expiryMinutes: 10,
+      })
+    );
     expect(sendEmail).toHaveBeenCalledWith({
-      to: "juan@example.com",
-      subject: "Restablece tu contraseña - KitchCalc",
-      html: "<html>reset link</html>",
+      to: 'juan@example.com',
+      subject: 'Restablece tu contraseña - KitchCalc',
+      html: '<html>reset link</html>',
     });
   });
 
-  it("falls back to usuario when no firstName or name", async () => {
+  it('falls back to usuario when no firstName or name', async () => {
     mockPrismaFindUnique.mockResolvedValue({
       firstName: null,
       name: null,
     });
     const sendEmail = vi.fn();
     const callback = createResetPasswordCallback(
-      sendEmail, mockCreatePasswordResetToken, mockGetResetPasswordEmailHtml,
+      sendEmail,
+      mockCreatePasswordResetToken,
+      mockGetResetPasswordEmailHtml
     );
 
     await callback({
-      user: { id: "user-2", email: "anon@example.com" },
-      url: "https://api.example.com/api/auth/reset-password/better-auth-token?callbackURL=%2F",
+      user: { id: 'user-2', email: 'anon@example.com' },
+      url: 'https://api.example.com/api/auth/reset-password/better-auth-token?callbackURL=%2F',
     });
 
-    expect(mockGetResetPasswordEmailHtml).toHaveBeenCalledWith(expect.objectContaining({
-      userName: "usuario",
-    }));
+    expect(mockGetResetPasswordEmailHtml).toHaveBeenCalledWith(
+      expect.objectContaining({
+        userName: 'usuario',
+      })
+    );
   });
 
-  it("uses locally-generated token instead of Better Auth token in URL", async () => {
-    mockPrismaFindUnique.mockResolvedValue({ firstName: "Test", name: "Test" });
+  it('uses locally-generated token instead of Better Auth token in URL', async () => {
+    mockPrismaFindUnique.mockResolvedValue({ firstName: 'Test', name: 'Test' });
     const sendEmail = vi.fn();
     const callback = createResetPasswordCallback(
-      sendEmail, mockCreatePasswordResetToken, mockGetResetPasswordEmailHtml,
+      sendEmail,
+      mockCreatePasswordResetToken,
+      mockGetResetPasswordEmailHtml
     );
 
     await callback({
-      user: { id: "user-3", email: "test@example.com" },
-      url: "https://api.example.com/api/auth/reset-password/better-auth-token?callbackURL=%2F",
+      user: { id: 'user-3', email: 'test@example.com' },
+      url: 'https://api.example.com/api/auth/reset-password/better-auth-token?callbackURL=%2F',
     });
 
-    expect(mockGetResetPasswordEmailHtml).toHaveBeenCalledWith(expect.objectContaining({
-      resetLink: expect.stringContaining(mockToken),
-    }));
-    expect(mockGetResetPasswordEmailHtml).toHaveBeenCalledWith(expect.objectContaining({
-      resetLink: expect.not.stringContaining("better-auth-token"),
-    }));
-    expect(mockGetResetPasswordEmailHtml).toHaveBeenCalledWith(expect.objectContaining({
-      resetLink: expect.not.stringContaining("callbackURL"),
-    }));
+    expect(mockGetResetPasswordEmailHtml).toHaveBeenCalledWith(
+      expect.objectContaining({
+        resetLink: expect.stringContaining(mockToken),
+      })
+    );
+    expect(mockGetResetPasswordEmailHtml).toHaveBeenCalledWith(
+      expect.objectContaining({
+        resetLink: expect.not.stringContaining('better-auth-token'),
+      })
+    );
+    expect(mockGetResetPasswordEmailHtml).toHaveBeenCalledWith(
+      expect.objectContaining({
+        resetLink: expect.not.stringContaining('callbackURL'),
+      })
+    );
   });
 
-  it("logs error when user lookup throws and does not rethrow", async () => {
-    mockPrismaFindUnique.mockRejectedValue(new Error("db error"));
+  it('logs error when user lookup throws and does not rethrow', async () => {
+    mockPrismaFindUnique.mockRejectedValue(new Error('db error'));
     const sendEmail = vi.fn();
-    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     const callback = createResetPasswordCallback(
-      sendEmail, mockCreatePasswordResetToken, mockGetResetPasswordEmailHtml,
+      sendEmail,
+      mockCreatePasswordResetToken,
+      mockGetResetPasswordEmailHtml
     );
 
     await expect(
       callback({
-        user: { id: "user-4", email: "fail@example.com" },
-        url: "https://api.example.com/api/auth/reset-password/better-auth-token?callbackURL=%2F",
-      }),
+        user: { id: 'user-4', email: 'fail@example.com' },
+        url: 'https://api.example.com/api/auth/reset-password/better-auth-token?callbackURL=%2F',
+      })
     ).resolves.toBeUndefined();
 
-    expect(consoleSpy).toHaveBeenCalledWith(
-      "[AUTH] sendResetPassword failed:",
-      expect.any(Error),
-    );
+    expect(consoleSpy).toHaveBeenCalledWith('[AUTH] sendResetPassword failed:', expect.any(Error));
     consoleSpy.mockRestore();
   });
 
-  it("logs error when email dispatch throws and does not rethrow", async () => {
-    const sendEmail = vi.fn().mockRejectedValue(new Error("email failed"));
-    mockPrismaFindUnique.mockResolvedValue({ firstName: "Test", name: "Test" });
-    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+  it('logs error when email dispatch throws and does not rethrow', async () => {
+    const sendEmail = vi.fn().mockRejectedValue(new Error('email failed'));
+    mockPrismaFindUnique.mockResolvedValue({ firstName: 'Test', name: 'Test' });
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     const callback = createResetPasswordCallback(
-      sendEmail, mockCreatePasswordResetToken, mockGetResetPasswordEmailHtml,
+      sendEmail,
+      mockCreatePasswordResetToken,
+      mockGetResetPasswordEmailHtml
     );
 
     await expect(
       callback({
-        user: { id: "user-5", email: "fail@example.com" },
-        url: "https://api.example.com/api/auth/reset-password/better-auth-token?callbackURL=%2F",
-      }),
+        user: { id: 'user-5', email: 'fail@example.com' },
+        url: 'https://api.example.com/api/auth/reset-password/better-auth-token?callbackURL=%2F',
+      })
     ).resolves.toBeUndefined();
 
-    expect(consoleSpy).toHaveBeenCalledWith(
-      "[AUTH] sendResetPassword failed:",
-      expect.any(Error),
-    );
+    expect(consoleSpy).toHaveBeenCalledWith('[AUTH] sendResetPassword failed:', expect.any(Error));
     consoleSpy.mockRestore();
   });
 });

@@ -1,14 +1,18 @@
-import pg from "pg";
-import { readFileSync, existsSync } from "node:fs";
-import { resolve, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
+import dotenv from 'dotenv';
+import pg from 'pg';
+import { readFileSync, existsSync } from 'node:fs';
+import { resolve, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+dotenv.config();
+dotenv.config({ path: resolve(__dirname, '../../../.env') });
+
 const connectionString = process.env.DATABASE_URL;
 if (!connectionString) {
-  throw new Error("DATABASE_URL environment variable is not set");
+  throw new Error('DATABASE_URL environment variable is not set');
 }
 
 interface IngredientInput {
@@ -43,8 +47,8 @@ interface RecipeInput {
   fixedCosts?: {
     id?: number;
     name: string;
-    type: "PERCENTAGE" | "AMOUNT";
-    base: "PER_BATCH" | "PER_UNIT" | "PER_HOUR";
+    type: 'PERCENTAGE' | 'AMOUNT';
+    base: 'PER_BATCH' | 'PER_UNIT' | 'PER_HOUR';
     value: number;
     hours?: number | null;
   }[];
@@ -104,26 +108,22 @@ async function seed() {
   const client = await pool.connect();
 
   try {
-    const dataDir = resolve(__dirname, "../../../data");
-    const userDataPath = resolve(dataDir, "axel_user_data.json");
-    const ingredientsPath = resolve(dataDir, "ingredients.json");
-    const recipesPath = resolve(dataDir, "recipes.json");
+    const dataDir = resolve(__dirname, '../../../data');
+    const userDataPath = resolve(dataDir, 'axel_user_data.json');
+    const ingredientsPath = resolve(dataDir, 'ingredients.json');
+    const recipesPath = resolve(dataDir, 'recipes.json');
 
-    let ownerId =
-      process.env.RECIPES_STATIC_OWNER_ID || "YAcM7VNYBRQkSIGvBJSYwkwNRNXZpZGh";
+    let ownerId = process.env.RECIPES_STATIC_OWNER_ID || 'YAcM7VNYBRQkSIGvBJSYwkwNRNXZpZGh';
 
     // 1. Seed User, Account, Preferences, Subscriptions if axel_user_data.json exists
     if (existsSync(userDataPath)) {
-      const userData: UserDataExport = JSON.parse(
-        readFileSync(userDataPath, "utf-8"),
-      );
+      const userData: UserDataExport = JSON.parse(readFileSync(userDataPath, 'utf-8'));
       const u = userData.user;
 
       // Check if user already exists by email in the target database
-      const existingUserRes = await client.query(
-        `SELECT id FROM "user" WHERE email = $1`,
-        [u.email],
-      );
+      const existingUserRes = await client.query(`SELECT id FROM "user" WHERE email = $1`, [
+        u.email,
+      ]);
 
       if (existingUserRes.rows.length > 0) {
         ownerId = existingUserRes.rows[0].id;
@@ -139,9 +139,9 @@ async function seed() {
             u.lastName,
             u.emailVerified,
             u.image ?? null,
-            u.role || "USER",
+            u.role || 'USER',
             ownerId,
-          ],
+          ]
         );
       } else {
         ownerId = u.id;
@@ -165,10 +165,10 @@ async function seed() {
             u.email,
             u.emailVerified,
             u.image ?? null,
-            u.role || "USER",
+            u.role || 'USER',
             new Date(u.createdAt),
             new Date(u.updatedAt),
-          ],
+          ]
         );
         console.log(`Seeded new user: ${u.email} (${ownerId})`);
       }
@@ -197,17 +197,13 @@ async function seed() {
             acc.accessToken ?? null,
             acc.refreshToken ?? null,
             acc.idToken ?? null,
-            acc.accessTokenExpiresAt
-              ? new Date(acc.accessTokenExpiresAt)
-              : null,
-            acc.refreshTokenExpiresAt
-              ? new Date(acc.refreshTokenExpiresAt)
-              : null,
+            acc.accessTokenExpiresAt ? new Date(acc.accessTokenExpiresAt) : null,
+            acc.refreshTokenExpiresAt ? new Date(acc.refreshTokenExpiresAt) : null,
             acc.scope ?? null,
             acc.password ?? null,
             new Date(acc.createdAt),
             new Date(acc.updatedAt),
-          ],
+          ]
         );
       }
 
@@ -224,7 +220,7 @@ async function seed() {
             pref.theme,
             pref.accentColor,
             pref.updatedAt ? new Date(pref.updatedAt) : new Date(),
-          ],
+          ]
         );
       }
 
@@ -254,15 +250,13 @@ async function seed() {
             sub.cancelAtPeriodEnd ?? false,
             sub.trialEnd ? new Date(sub.trialEnd) : null,
             new Date(sub.createdAt),
-          ],
+          ]
         );
       }
     }
 
     // 2. Seed Ingredients
-    const ingredients: IngredientInput[] = JSON.parse(
-      readFileSync(ingredientsPath, "utf-8"),
-    );
+    const ingredients: IngredientInput[] = JSON.parse(readFileSync(ingredientsPath, 'utf-8'));
     let ingredientCount = 0;
     for (const ing of ingredients) {
       await client.query(
@@ -285,26 +279,20 @@ async function seed() {
           ing.purchaseQuantity,
           ing.brand || null,
           ing.supplier || null,
-        ],
+        ]
       );
       ingredientCount++;
     }
     console.log(`Seeded ${ingredientCount} ingredients for owner ${ownerId}`);
 
-    const maxIngRes = await client.query(
-      `SELECT MAX(id) as max_id FROM ingredients`,
-    );
+    const maxIngRes = await client.query(`SELECT MAX(id) as max_id FROM ingredients`);
     const maxIngId = maxIngRes.rows[0]?.max_id;
     if (maxIngId) {
-      await client.query(`SELECT setval('ingredients_id_seq', $1, true)`, [
-        maxIngId,
-      ]);
+      await client.query(`SELECT setval('ingredients_id_seq', $1, true)`, [maxIngId]);
     }
 
     // 3. Seed Recipes
-    const recipes: RecipeInput[] = JSON.parse(
-      readFileSync(recipesPath, "utf-8"),
-    );
+    const recipes: RecipeInput[] = JSON.parse(readFileSync(recipesPath, 'utf-8'));
     let recipeCount = 0;
     for (const rec of recipes) {
       await client.query(
@@ -326,13 +314,10 @@ async function seed() {
           rec.instructions ?? null,
           rec.desiredMargin,
           rec.fixedCostsPercentage,
-        ],
+        ]
       );
 
-      await client.query(
-        `DELETE FROM recipe_ingredients WHERE recipe_id = $1`,
-        [rec.id],
-      );
+      await client.query(`DELETE FROM recipe_ingredients WHERE recipe_id = $1`, [rec.id]);
       const mergedIngredients = new Map<
         number,
         {
@@ -347,8 +332,7 @@ async function seed() {
         if (existing) {
           existing.quantity += ri.quantity;
           if (ri.comment && !existing.comment) existing.comment = ri.comment;
-          else if (ri.comment && existing.comment)
-            existing.comment += "; " + ri.comment;
+          else if (ri.comment && existing.comment) existing.comment += '; ' + ri.comment;
         } else {
           mergedIngredients.set(ri.ingredientId, {
             ingredientId: ri.ingredientId,
@@ -363,7 +347,7 @@ async function seed() {
         await client.query(
           `INSERT INTO recipe_ingredients (recipe_id, ingredient_id, quantity, unit, comment)
            VALUES ($1, $2, $3, $4, $5)`,
-          [rec.id, mi.ingredientId, mi.quantity, mi.unit, mi.comment],
+          [rec.id, mi.ingredientId, mi.quantity, mi.unit, mi.comment]
         );
       }
 
@@ -376,15 +360,12 @@ async function seed() {
              name = EXCLUDED.name,
              units_per_batch = EXCLUDED.units_per_batch,
              sale_price = EXCLUDED.sale_price`,
-          [p.id, rec.id, p.name, p.unitsPerBatch, p.salePrice ?? null],
+          [p.id, rec.id, p.name, p.unitsPerBatch, p.salePrice ?? null]
         );
       }
 
       if (rec.fixedCosts && rec.fixedCosts.length > 0) {
-        await client.query(
-          `DELETE FROM recipe_fixed_costs WHERE recipe_id = $1`,
-          [rec.id],
-        );
+        await client.query(`DELETE FROM recipe_fixed_costs WHERE recipe_id = $1`, [rec.id]);
         for (const fc of rec.fixedCosts) {
           if (fc.id) {
             await client.query(
@@ -397,21 +378,13 @@ async function seed() {
                  base = EXCLUDED.base,
                  value = EXCLUDED.value,
                  hours = EXCLUDED.hours`,
-              [
-                fc.id,
-                rec.id,
-                fc.name,
-                fc.type,
-                fc.base,
-                fc.value,
-                fc.hours ?? null,
-              ],
+              [fc.id, rec.id, fc.name, fc.type, fc.base, fc.value, fc.hours ?? null]
             );
           } else {
             await client.query(
               `INSERT INTO recipe_fixed_costs (recipe_id, name, type, base, value, hours)
                VALUES ($1, $2, $3, $4, $5, $6)`,
-              [rec.id, fc.name, fc.type, fc.base, fc.value, fc.hours ?? null],
+              [rec.id, fc.name, fc.type, fc.base, fc.value, fc.hours ?? null]
             );
           }
         }
@@ -423,43 +396,30 @@ async function seed() {
     console.log(`Seeded ${recipeCount} recipes for owner ${ownerId}`);
 
     // 4. Reset sequences
-    const maxRecRes = await client.query(
-      `SELECT MAX(id) as max_id FROM recipes`,
-    );
+    const maxRecRes = await client.query(`SELECT MAX(id) as max_id FROM recipes`);
     if (maxRecRes.rows[0]?.max_id) {
-      await client.query(`SELECT setval('recipes_id_seq', $1, true)`, [
-        maxRecRes.rows[0].max_id,
+      await client.query(`SELECT setval('recipes_id_seq', $1, true)`, [maxRecRes.rows[0].max_id]);
+    }
+
+    const maxRiRes = await client.query(`SELECT MAX(id) as max_id FROM recipe_ingredients`);
+    if (maxRiRes.rows[0]?.max_id) {
+      await client.query(`SELECT setval('recipe_ingredients_id_seq', $1, true)`, [
+        maxRiRes.rows[0].max_id,
       ]);
     }
 
-    const maxRiRes = await client.query(
-      `SELECT MAX(id) as max_id FROM recipe_ingredients`,
-    );
-    if (maxRiRes.rows[0]?.max_id) {
-      await client.query(
-        `SELECT setval('recipe_ingredients_id_seq', $1, true)`,
-        [maxRiRes.rows[0].max_id],
-      );
-    }
-
-    const maxPresRes = await client.query(
-      `SELECT MAX(id) as max_id FROM recipe_presentations`,
-    );
+    const maxPresRes = await client.query(`SELECT MAX(id) as max_id FROM recipe_presentations`);
     if (maxPresRes.rows[0]?.max_id) {
-      await client.query(
-        `SELECT setval('recipe_presentations_id_seq', $1, true)`,
-        [maxPresRes.rows[0].max_id],
-      );
+      await client.query(`SELECT setval('recipe_presentations_id_seq', $1, true)`, [
+        maxPresRes.rows[0].max_id,
+      ]);
     }
 
-    const maxRfcRes = await client.query(
-      `SELECT MAX(id) as max_id FROM recipe_fixed_costs`,
-    );
+    const maxRfcRes = await client.query(`SELECT MAX(id) as max_id FROM recipe_fixed_costs`);
     if (maxRfcRes.rows[0]?.max_id) {
-      await client.query(
-        `SELECT setval('recipe_fixed_costs_id_seq', $1, true)`,
-        [maxRfcRes.rows[0].max_id],
-      );
+      await client.query(`SELECT setval('recipe_fixed_costs_id_seq', $1, true)`, [
+        maxRfcRes.rows[0].max_id,
+      ]);
     }
   } finally {
     client.release();
@@ -468,6 +428,6 @@ async function seed() {
 }
 
 seed().catch((e) => {
-  console.error("Seed error:", e);
+  console.error('Seed error:', e);
   process.exit(1);
 });

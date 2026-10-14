@@ -1,8 +1,8 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from 'vitest';
 import {
   createRefreshScheduler,
   SESSION_REFRESH_TTL_MS,
-} from "../../app/utils/session-revalidation";
+} from '../../app/utils/session-revalidation';
 
 /**
  * Scheduler de revalidación: TTL para los disparos normales (`focus`,
@@ -20,8 +20,8 @@ function createClock(start = 0) {
   };
 }
 
-describe("createRefreshScheduler", () => {
-  it("revalida cuando vence el TTL, no antes", async () => {
+describe('createRefreshScheduler', () => {
+  it('revalida cuando vence el TTL, no antes', async () => {
     const clock = createClock();
     const refresh = vi.fn(async () => true);
     const scheduler = createRefreshScheduler({
@@ -42,7 +42,7 @@ describe("createRefreshScheduler", () => {
     expect(refresh).toHaveBeenCalledTimes(2);
   });
 
-  it("`force` ignora el TTL (restauración desde bfcache)", async () => {
+  it('`force` ignora el TTL (restauración desde bfcache)', async () => {
     const clock = createClock();
     const refresh = vi.fn(async () => true);
     const scheduler = createRefreshScheduler({
@@ -57,7 +57,7 @@ describe("createRefreshScheduler", () => {
     expect(refresh).toHaveBeenCalledTimes(2);
   });
 
-  it("no revalida sin sesión autenticada", async () => {
+  it('no revalida sin sesión autenticada', async () => {
     const clock = createClock();
     const refresh = vi.fn(async () => true);
     const scheduler = createRefreshScheduler({
@@ -72,14 +72,14 @@ describe("createRefreshScheduler", () => {
     expect(refresh).not.toHaveBeenCalled();
   });
 
-  it("descarta los disparos que llegan con una revalidación en vuelo", async () => {
+  it('descarta los disparos que llegan con una revalidación en vuelo', async () => {
     const clock = createClock();
     const resolvers: Array<(updated: boolean) => void> = [];
     const refresh = vi.fn(
       () =>
         new Promise<boolean>((resolve) => {
           resolvers.push(resolve);
-        }),
+        })
     );
     const scheduler = createRefreshScheduler({
       refresh,
@@ -105,7 +105,7 @@ describe("createRefreshScheduler", () => {
     await second;
   });
 
-  it("fija el throttle al iniciar: un fallo no amplifica los disparos", async () => {
+  it('fija el throttle al iniciar: un fallo no amplifica los disparos', async () => {
     const clock = createClock();
     const refresh = vi.fn(async () => false);
     const scheduler = createRefreshScheduler({
@@ -120,7 +120,7 @@ describe("createRefreshScheduler", () => {
     expect(refresh).toHaveBeenCalledTimes(1);
   });
 
-  it("notifica el resultado de cada revalidación efectiva", async () => {
+  it('notifica el resultado de cada revalidación efectiva', async () => {
     const clock = createClock();
     const onRevalidated = vi.fn();
     const refresh = vi.fn(async () => false);
@@ -136,7 +136,7 @@ describe("createRefreshScheduler", () => {
     expect(onRevalidated).toHaveBeenCalledWith(false);
   });
 
-  it("deja de revalidar tras dispose()", async () => {
+  it('deja de revalidar tras dispose()', async () => {
     const clock = createClock();
     const refresh = vi.fn(async () => true);
     const scheduler = createRefreshScheduler({

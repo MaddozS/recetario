@@ -5,7 +5,7 @@
  * diacríticos) vive en `shared/utils/search.ts` y es la misma que usan
  * ingredientes y el picker del detalle.
  */
-import { normalizeSearchText } from "#shared/utils/search";
+import { normalizeSearchText } from '#shared/utils/search';
 
 export { normalizeSearchText };
 
@@ -30,39 +30,33 @@ export type RecipeCategoryOption = {
   count: number;
 };
 
-export const UNCATEGORIZED_LABEL = "Sin categoría";
+export const UNCATEGORIZED_LABEL = 'Sin categoría';
 
-export function matchesRecipeSearch(
-  recipe: RecipeSearchSource,
-  query: string,
-): boolean {
+export function matchesRecipeSearch(recipe: RecipeSearchSource, query: string): boolean {
   const normalizedQuery = normalizeSearchText(query);
   if (!normalizedQuery) return true;
 
   return normalizeSearchText(recipe.name).includes(normalizedQuery);
 }
 
-export function matchesCategory(
-  recipe: RecipeCategorySource,
-  category: string | null,
-): boolean {
+export function matchesCategory(recipe: RecipeCategorySource, category: string | null): boolean {
   if (category === null) return true;
-  return (recipe.category ?? "") === category;
+  return (recipe.category ?? '') === category;
 }
 
-export function filterRecipes<
-  T extends RecipeSearchSource & RecipeCategorySource,
->(recipes: readonly T[], filter: RecipeFilter): T[] {
+export function filterRecipes<T extends RecipeSearchSource & RecipeCategorySource>(
+  recipes: readonly T[],
+  filter: RecipeFilter
+): T[] {
   return recipes.filter(
     (recipe) =>
-      matchesCategory(recipe, filter.category) &&
-      matchesRecipeSearch(recipe, filter.query),
+      matchesCategory(recipe, filter.category) && matchesRecipeSearch(recipe, filter.query)
   );
 }
 
 /** Categorías presentes, en orden de aparición, con su conteo. */
 export function recipeCategoryOptions<T extends RecipeCategorySource>(
-  recipes: readonly T[],
+  recipes: readonly T[]
 ): RecipeCategoryOption[] {
   const counts = new Map<string, number>();
 
@@ -79,16 +73,11 @@ export function recipeCategoryOptions<T extends RecipeCategorySource>(
   }));
 }
 
-export function uncategorizedCount<T extends RecipeCategorySource>(
-  recipes: readonly T[],
-): number {
+export function uncategorizedCount<T extends RecipeCategorySource>(recipes: readonly T[]): number {
   return recipes.filter((recipe) => !recipe.category).length;
 }
 
 /** Click sobre una pill: la activa se limpia, cualquier otra se selecciona. */
-export function toggleCategory(
-  current: string | null,
-  clicked: string,
-): string | null {
+export function toggleCategory(current: string | null, clicked: string): string | null {
   return current === clicked ? null : clicked;
 }

@@ -5,8 +5,8 @@ import {
   formatUnitCost,
   ingredientsCountLabel,
   smartQty,
-} from "./production-format";
-import type { ConsolidatedIngredient } from "./production-types";
+} from './production-format';
+import type { ConsolidatedIngredient } from './production-types';
 
 /**
  * Hoja de insumos consolidados. Mantiene las clases del contrato de impresión
@@ -15,14 +15,14 @@ import type { ConsolidatedIngredient } from "./production-types";
 defineProps<{ ingredients: ConsolidatedIngredient[] }>();
 
 const ROW_GRID_CLASSES =
-  "prod-row grid grid-cols-1 gap-1.5 px-5 py-4 sm:px-6 md:grid-cols-[minmax(0,2.2fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.4fr)] md:items-center md:gap-4";
+  'prod-row grid grid-cols-1 gap-1.5 px-5 py-4 sm:px-6 md:grid-cols-[minmax(0,2.2fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.4fr)] md:items-center md:gap-4';
 
 const CELL_LABEL_CLASSES =
-  "text-subtle-foreground block text-[10px] font-black tracking-wider uppercase md:hidden";
+  'text-subtle-foreground block text-[10px] font-black tracking-wider uppercase md:hidden';
 
 /** Marca · proveedor, omitiendo los que falten. */
 function brandLine(ingredient: ConsolidatedIngredient): string {
-  return [ingredient.brand, ingredient.supplier].filter(Boolean).join(" · ");
+  return [ingredient.brand, ingredient.supplier].filter(Boolean).join(' · ');
 }
 </script>
 
@@ -58,18 +58,13 @@ function brandLine(ingredient: ConsolidatedIngredient): string {
           <p class="text-foreground font-semibold break-words">
             {{ ingredient.name }}
           </p>
-          <p
-            v-if="brandLine(ingredient)"
-            class="text-subtle-foreground mt-0.5 text-xs"
-          >
+          <p v-if="brandLine(ingredient)" class="text-subtle-foreground mt-0.5 text-xs">
             {{ brandLine(ingredient) }}
           </p>
         </div>
         <div>
           <span :class="CELL_LABEL_CLASSES">Cantidad</span>
-          <p
-            class="text-secondary-foreground font-mono font-semibold tabular-nums"
-          >
+          <p class="text-secondary-foreground font-mono font-semibold tabular-nums">
             {{ smartQty(ingredient.totalQuantity, ingredient.unit) }}
           </p>
         </div>
@@ -95,8 +90,7 @@ function brandLine(ingredient: ConsolidatedIngredient): string {
             >
               <span class="max-w-[16ch] truncate">{{ source.recipeName }}</span>
               <span class="text-subtle-foreground shrink-0">
-                ({{ formatSourceQuantity(source.quantity) }}
-                {{ ingredient.unit }})
+                ({{ formatSourceQuantity(source.quantity) }} {{ ingredient.unit }})
               </span>
             </span>
           </div>

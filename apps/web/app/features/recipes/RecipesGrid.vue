@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { RecipeRecord } from "~/features/recipes/recipe-state";
-import RecipeGridCard from "~/features/recipes/RecipeGridCard.vue";
+import type { RecipeRecord } from '~/features/recipes/recipe-state';
+import RecipeGridCard from '~/features/recipes/RecipeGridCard.vue';
 
 /**
  * Grid del listado. Sustituye al parche del baseline que ocultaba/mostraba cards e
@@ -20,10 +20,7 @@ const emit = defineEmits<{
 
 <template>
   <div class="mt-4">
-    <div
-      v-if="recipes.length > 0"
-      class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"
-    >
+    <div v-if="recipes.length > 0" class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
       <RecipeGridCard
         v-for="(recipe, index) in recipes"
         :key="recipe.id"

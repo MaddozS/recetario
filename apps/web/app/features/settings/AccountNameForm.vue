@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import type { AccountNameFormValues } from "./account-form";
-import type { AccountOutcome } from "./useAccountSettings";
-import { NAME_UPDATED_MESSAGE } from "./settings-messages";
+import { ref } from 'vue';
+import type { AccountNameFormValues } from './account-form';
+import type { AccountOutcome } from './useAccountSettings';
+import { NAME_UPDATED_MESSAGE } from './settings-messages';
 
 /**
  * Formulario de nombre, con la mutación como **function prop** (patrón de los
@@ -16,26 +16,22 @@ const props = defineProps<{
 }>();
 
 const form = ref<AccountNameFormValues>({ ...props.initial });
-const feedback = ref<{ type: "success" | "error"; message: string } | null>(
-  null,
-);
+const feedback = ref<{ type: 'success' | 'error'; message: string } | null>(null);
 
 async function onSubmit(): Promise<void> {
   feedback.value = null;
   const outcome = await props.submit({ ...form.value });
 
   feedback.value = outcome.ok
-    ? { type: "success", message: NAME_UPDATED_MESSAGE }
-    : { type: "error", message: outcome.message };
+    ? { type: 'success', message: NAME_UPDATED_MESSAGE }
+    : { type: 'error', message: outcome.message };
 }
 </script>
 
 <template>
   <Card padding="lg">
     <h2 class="text-foreground text-lg font-bold">Nombre</h2>
-    <p class="text-muted-foreground mt-1 text-sm">
-      Actualiza tu nombre y apellido.
-    </p>
+    <p class="text-muted-foreground mt-1 text-sm">Actualiza tu nombre y apellido.</p>
 
     <div v-if="feedback" class="mt-4">
       <FeedbackAlert :type="feedback.type" :message="feedback.message" />

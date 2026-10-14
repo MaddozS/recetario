@@ -1,4 +1,4 @@
-import type { CreateRecipeInput } from "@recetario/types";
+import type { CreateRecipeInput } from '@recetario/types';
 
 /**
  * Formulario de receta en su forma de UI y su traducción al contrato del API.
@@ -14,7 +14,7 @@ export type RecipeFormValues = {
 };
 
 export function createEmptyRecipeForm(): RecipeFormValues {
-  return { name: "" };
+  return { name: '' };
 }
 
 /** Gate del botón de submit: nombre no vacío y dentro del máximo del API. */

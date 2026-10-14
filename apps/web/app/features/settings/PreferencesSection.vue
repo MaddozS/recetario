@@ -1,13 +1,9 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, ref } from "vue";
-import {
-  ACCENT_FAMILIES,
-  ACCENT_LABELS,
-  getAccentPreviewColor,
-} from "~/utils/accent-colors";
-import type { AccentFamily } from "~/utils/accent-colors";
-import type { AuthPreferences } from "#shared/types/auth";
-import { PREFERENCES_SAVED_MESSAGE } from "./settings-messages";
+import { computed, nextTick, onBeforeUnmount, ref } from 'vue';
+import { ACCENT_FAMILIES, ACCENT_LABELS, getAccentPreviewColor } from '~/utils/accent-colors';
+import type { AccentFamily } from '~/utils/accent-colors';
+import type { AuthPreferences } from '#shared/types/auth';
+import { PREFERENCES_SAVED_MESSAGE } from './settings-messages';
 
 /**
  * Pestaña Preferencias: preview local + guardado explícito.
@@ -23,9 +19,9 @@ import { PREFERENCES_SAVED_MESSAGE } from "./settings-messages";
  */
 
 const THEME_OPTIONS = [
-  { value: "system", label: "Automático", icon: "monitor" },
-  { value: "light", label: "Claro", icon: "sun" },
-  { value: "dark", label: "Oscuro", icon: "moon" },
+  { value: 'system', label: 'Automático', icon: 'monitor' },
+  { value: 'light', label: 'Claro', icon: 'sun' },
+  { value: 'dark', label: 'Oscuro', icon: 'moon' },
 ] as const;
 
 const { preferences } = useAuth();
@@ -33,19 +29,17 @@ const { setTheme, setAccent } = useTheme();
 const { saving, saveAppearance } = useAppearancePersistence();
 
 const draft = ref<AuthPreferences>({ ...preferences.value });
-const feedback = ref<{ type: "success" | "error"; message: string } | null>(
-  null,
-);
+const feedback = ref<{ type: 'success' | 'error'; message: string } | null>(null);
 const feedbackEl = ref<HTMLElement | null>(null);
 
 const dirty = computed(
   () =>
     draft.value.theme !== preferences.value.theme ||
-    draft.value.accentColor !== preferences.value.accentColor,
+    draft.value.accentColor !== preferences.value.accentColor
 );
 
 function selectTheme(value: string): void {
-  draft.value = { ...draft.value, theme: value as AuthPreferences["theme"] };
+  draft.value = { ...draft.value, theme: value as AuthPreferences['theme'] };
   setTheme(value);
   feedback.value = null;
 }
@@ -56,10 +50,7 @@ function selectAccent(value: AccentFamily): void {
   feedback.value = null;
 }
 
-async function showFeedback(next: {
-  type: "success" | "error";
-  message: string;
-}): Promise<void> {
+async function showFeedback(next: { type: 'success' | 'error'; message: string }): Promise<void> {
   feedback.value = next;
   await nextTick();
   feedbackEl.value?.focus();
@@ -68,17 +59,17 @@ async function showFeedback(next: {
 async function save(): Promise<void> {
   const outcome = await saveAppearance(
     { ...draft.value },
-    { rollbackTo: { ...preferences.value } },
+    { rollbackTo: { ...preferences.value } }
   );
 
   if (outcome.ok) {
-    await showFeedback({ type: "success", message: PREFERENCES_SAVED_MESSAGE });
+    await showFeedback({ type: 'success', message: PREFERENCES_SAVED_MESSAGE });
     return;
   }
 
   // El preview ya revirtió: el borrador vuelve a lo persistido.
   draft.value = { ...preferences.value };
-  await showFeedback({ type: "error", message: outcome.message });
+  await showFeedback({ type: 'error', message: outcome.message });
 }
 
 // Al desmontar sin guardar, el preview se descarta: ni la cookie ni la sesión
@@ -143,19 +134,11 @@ onBeforeUnmount(() => {
           >
             <span
               class="block h-5 w-5 flex-none rounded-full border"
-              :class="
-                draft.accentColor === family
-                  ? 'border-accent-400'
-                  : 'border-border'
-              "
+              :class="draft.accentColor === family ? 'border-accent-400' : 'border-border'"
               :style="{ backgroundColor: getAccentPreviewColor(family) }"
             />
             <span
-              :class="
-                draft.accentColor === family
-                  ? 'text-accent-800'
-                  : 'text-muted-foreground'
-              "
+              :class="draft.accentColor === family ? 'text-accent-800' : 'text-muted-foreground'"
             >
               {{ ACCENT_LABELS[family] }}
             </span>
@@ -164,13 +147,7 @@ onBeforeUnmount(() => {
       </Card>
 
       <div v-if="dirty" id="save-btn-wrapper">
-        <Button
-          variant="primary"
-          type="button"
-          icon="save"
-          :loading="saving"
-          @click="save"
-        >
+        <Button variant="primary" type="button" icon="save" :loading="saving" @click="save">
           Guardar cambios
         </Button>
       </div>

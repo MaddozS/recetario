@@ -1,15 +1,12 @@
 <script setup lang="ts">
-import {
-  bestPresentationId,
-  presentationMargin,
-} from "./production-calculator";
+import { bestPresentationId, presentationMargin } from './production-calculator';
 import {
   batchesCountLabel,
   formatCurrency,
   marginText,
   marginTone as toneFor,
-} from "./production-format";
-import type { ProductionRecipeResult } from "./production-types";
+} from './production-format';
+import type { ProductionRecipeResult } from './production-types';
 
 /**
  * Desglose por receta: costos, tabla de presentaciones con las etiquetas
@@ -19,10 +16,10 @@ import type { ProductionRecipeResult } from "./production-types";
 defineProps<{ recipes: ProductionRecipeResult[] }>();
 
 const PRES_ROW_GRID_CLASSES =
-  "prod-row grid grid-cols-1 gap-1.5 px-4 py-3 sm:px-5 md:grid-cols-[minmax(0,1.8fr)_repeat(5,minmax(0,0.9fr))] md:items-center md:gap-4";
+  'prod-row grid grid-cols-1 gap-1.5 px-4 py-3 sm:px-5 md:grid-cols-[minmax(0,1.8fr)_repeat(5,minmax(0,0.9fr))] md:items-center md:gap-4';
 
 const CELL_LABEL_CLASSES =
-  "text-subtle-foreground block text-[10px] font-black tracking-wider uppercase md:hidden";
+  'text-subtle-foreground block text-[10px] font-black tracking-wider uppercase md:hidden';
 
 /**
  * Esquinas rectas a la izquierda: con radio, el borde de 3px se curva y la
@@ -30,7 +27,7 @@ const CELL_LABEL_CLASSES =
  * costo no es un peligro y el acento está reservado para acciones y selección.
  */
 const COST_CARD_CLASSES =
-  "bg-muted/40 border-l-muted-foreground/30 rounded-r-xl border-l-[3px] p-3";
+  'bg-muted/40 border-l-muted-foreground/30 rounded-r-xl border-l-[3px] p-3';
 
 /** Filas de presentación con margen ya resuelto (sin `null` en el template). */
 function presentationRows(recipe: ProductionRecipeResult) {
@@ -42,8 +39,8 @@ function presentationRows(recipe: ProductionRecipeResult) {
       ...presentation,
       isSelected: presentation.id === recipe.selectedPresentationId,
       isBest: presentation.id === bestId && margin !== null,
-      marginLabel: margin === null ? "—" : marginText(margin),
-      marginTone: margin === null ? "text-muted-foreground" : toneFor(margin),
+      marginLabel: margin === null ? '—' : marginText(margin),
+      marginTone: margin === null ? 'text-muted-foreground' : toneFor(margin),
     };
   });
 }
@@ -80,41 +77,29 @@ function presentationRows(recipe: ProductionRecipeResult) {
               {{ formatCurrency(recipe.totalCost) }}
             </p>
           </div>
-          <Icon
-            name="lucide:chevron-down"
-            :size="18"
-            class="text-subtle-foreground shrink-0"
-          />
+          <Icon name="lucide:chevron-down" :size="18" class="text-subtle-foreground shrink-0" />
         </summary>
 
         <div class="space-y-5 px-5 pb-5 sm:px-6 sm:pb-6">
           <div>
-            <h4
-              class="text-muted-foreground mb-3 text-[10px] font-black tracking-wider uppercase"
-            >
+            <h4 class="text-muted-foreground mb-3 text-[10px] font-black tracking-wider uppercase">
               Costos
             </h4>
             <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
               <div data-cost-card="insumos" :class="COST_CARD_CLASSES">
-                <p class="text-muted-foreground text-[11px] font-semibold">
-                  Insumos
-                </p>
+                <p class="text-muted-foreground text-[11px] font-semibold">Insumos</p>
                 <p class="text-foreground mt-1 text-lg font-bold tabular-nums">
                   {{ formatCurrency(recipe.ingredientsCost) }}
                 </p>
               </div>
               <div data-cost-card="operativos" :class="COST_CARD_CLASSES">
-                <p class="text-muted-foreground text-[11px] font-semibold">
-                  Gastos operativos
-                </p>
+                <p class="text-muted-foreground text-[11px] font-semibold">Gastos operativos</p>
                 <p class="text-foreground mt-1 text-lg font-bold tabular-nums">
                   {{ formatCurrency(recipe.operationalCost) }}
                 </p>
               </div>
               <div data-cost-card="total" :class="COST_CARD_CLASSES">
-                <p class="text-muted-foreground text-[11px] font-semibold">
-                  Total
-                </p>
+                <p class="text-muted-foreground text-[11px] font-semibold">Total</p>
                 <p class="text-foreground mt-1 text-lg font-bold tabular-nums">
                   {{ formatCurrency(recipe.totalCost) }}
                 </p>
@@ -123,9 +108,7 @@ function presentationRows(recipe: ProductionRecipeResult) {
           </div>
 
           <div v-if="recipe.presentations.length > 0">
-            <h4
-              class="text-muted-foreground mb-3 text-[10px] font-black tracking-wider uppercase"
-            >
+            <h4 class="text-muted-foreground mb-3 text-[10px] font-black tracking-wider uppercase">
               Presentaciones
             </h4>
             <div
@@ -144,10 +127,7 @@ function presentationRows(recipe: ProductionRecipeResult) {
                   v-for="presentation in presentationRows(recipe)"
                   :key="presentation.id"
                   data-presentation-row
-                  :class="[
-                    PRES_ROW_GRID_CLASSES,
-                    presentation.isSelected ? 'bg-accent-50/40' : '',
-                  ]"
+                  :class="[PRES_ROW_GRID_CLASSES, presentation.isSelected ? 'bg-accent-50/40' : '']"
                 >
                   <div class="min-w-0">
                     <span :class="CELL_LABEL_CLASSES">Presentación</span>
@@ -155,12 +135,8 @@ function presentationRows(recipe: ProductionRecipeResult) {
                       {{ presentation.name }}
                     </p>
                     <div class="mt-1 flex flex-wrap gap-1">
-                      <Badge v-if="presentation.isSelected" color="accent">
-                        Seleccionada
-                      </Badge>
-                      <Badge v-if="presentation.isBest" color="success">
-                        Más rentable
-                      </Badge>
+                      <Badge v-if="presentation.isSelected" color="accent"> Seleccionada </Badge>
+                      <Badge v-if="presentation.isBest" color="success"> Más rentable </Badge>
                     </div>
                   </div>
                   <div>
@@ -178,10 +154,7 @@ function presentationRows(recipe: ProductionRecipeResult) {
                   <div>
                     <span :class="CELL_LABEL_CLASSES">Precio Venta</span>
                     <p class="font-mono tabular-nums">
-                      <span
-                        v-if="presentation.salePrice"
-                        class="text-secondary-foreground"
-                      >
+                      <span v-if="presentation.salePrice" class="text-secondary-foreground">
                         {{ formatCurrency(presentation.salePrice) }}
                       </span>
                       <span v-else class="text-warning">Sin precio</span>
@@ -189,9 +162,7 @@ function presentationRows(recipe: ProductionRecipeResult) {
                   </div>
                   <div>
                     <span :class="CELL_LABEL_CLASSES">Ingreso</span>
-                    <p
-                      class="text-foreground font-mono font-semibold tabular-nums"
-                    >
+                    <p class="text-foreground font-mono font-semibold tabular-nums">
                       <span v-if="presentation.revenue > 0">
                         {{ formatCurrency(presentation.revenue) }}
                       </span>
@@ -214,9 +185,7 @@ function presentationRows(recipe: ProductionRecipeResult) {
           </div>
 
           <div v-else class="bg-muted rounded-xl p-4 text-center">
-            <p class="text-muted-foreground text-sm">
-              Sin presentaciones configuradas
-            </p>
+            <p class="text-muted-foreground text-sm">Sin presentaciones configuradas</p>
           </div>
         </div>
       </details>

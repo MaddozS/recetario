@@ -1,4 +1,4 @@
-import type { Directive } from "vue";
+import type { Directive } from 'vue';
 
 /**
  * Directiva `v-reveal`: revela un bloque cuando entra en el viewport.
@@ -13,7 +13,7 @@ import type { Directive } from "vue";
  * Sustituye a los dos observers globales del `LandingLayout` del baseline.
  */
 
-const VARIANT_MODIFIERS = ["left", "right", "scale"] as const;
+const VARIANT_MODIFIERS = ['left', 'right', 'scale'] as const;
 
 let observer: IntersectionObserver | null = null;
 
@@ -21,15 +21,15 @@ function variantFrom(binding: {
   value?: unknown;
   modifiers?: Partial<Record<string, boolean>>;
 }): string {
-  if (typeof binding.value === "string") return binding.value;
-  return VARIANT_MODIFIERS.find((name) => binding.modifiers?.[name]) ?? "";
+  if (typeof binding.value === 'string') return binding.value;
+  return VARIANT_MODIFIERS.find((name) => binding.modifiers?.[name]) ?? '';
 }
 
 function prefersReducedMotion(): boolean {
   return (
-    typeof window !== "undefined" &&
-    typeof window.matchMedia === "function" &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    typeof window !== 'undefined' &&
+    typeof window.matchMedia === 'function' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches
   );
 }
 
@@ -38,11 +38,11 @@ function getObserver(): IntersectionObserver {
     (entries) => {
       for (const entry of entries) {
         if (!entry.isIntersecting) continue;
-        entry.target.classList.add("reveal-visible");
+        entry.target.classList.add('reveal-visible');
         observer?.unobserve(entry.target);
       }
     },
-    { threshold: 0.1, rootMargin: "0px 0px -40px 0px" },
+    { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
   );
 
   return observer;
@@ -50,13 +50,13 @@ function getObserver(): IntersectionObserver {
 
 const revealDirective: Directive<HTMLElement> = {
   getSSRProps(binding) {
-    return { "data-reveal": variantFrom(binding.modifiers) };
+    return { 'data-reveal': variantFrom(binding.modifiers) };
   },
   mounted(element, binding) {
-    element.setAttribute("data-reveal", variantFrom(binding.modifiers));
+    element.setAttribute('data-reveal', variantFrom(binding.modifiers));
 
     if (prefersReducedMotion()) {
-      element.classList.add("reveal-visible");
+      element.classList.add('reveal-visible');
       return;
     }
 
@@ -68,5 +68,5 @@ const revealDirective: Directive<HTMLElement> = {
 };
 
 export default defineNuxtPlugin((nuxtApp) => {
-  nuxtApp.vueApp.directive("reveal", revealDirective);
+  nuxtApp.vueApp.directive('reveal', revealDirective);
 });

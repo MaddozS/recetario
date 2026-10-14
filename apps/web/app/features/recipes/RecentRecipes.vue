@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { timeAgo } from "@recetario/stripe/formatters";
-import type { RecipeRecord } from "~/features/recipes/recipe-state";
+import { timeAgo } from '@recetario/stripe/formatters';
+import type { RecipeRecord } from '~/features/recipes/recipe-state';
 
 /**
  * Rail de recetas recientemente actualizadas. Paridad con `RecipeMiniCard` +
@@ -12,9 +12,7 @@ defineProps<{ recipes: RecipeRecord[] }>();
 
 <template>
   <div>
-    <h2
-      class="text-muted-foreground mb-3 text-sm font-bold tracking-[0.12em] uppercase"
-    >
+    <h2 class="text-muted-foreground mb-3 text-sm font-bold tracking-[0.12em] uppercase">
       Recientemente actualizadas
     </h2>
     <div class="flex gap-3 overflow-x-auto pb-3">
@@ -37,10 +35,7 @@ defineProps<{ recipes: RecipeRecord[] }>();
           >
             {{ recipe.category }}
           </span>
-          <span
-            v-if="recipe.updatedAt"
-            class="text-subtle-foreground text-[10px]"
-          >
+          <span v-if="recipe.updatedAt" class="text-subtle-foreground text-[10px]">
             {{ timeAgo(recipe.updatedAt) }}
           </span>
         </div>

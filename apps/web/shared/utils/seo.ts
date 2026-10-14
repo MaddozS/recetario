@@ -5,10 +5,10 @@
  */
 
 /** Origen de producción; se sobrescribe por entorno con `NUXT_PUBLIC_SITE_URL`. */
-export const SITE_URL_DEFAULT = "https://app.kitchcalc.com";
+export const SITE_URL_DEFAULT = 'https://app.kitchcalc.com';
 
-export const INDEX_ROBOTS = "index, follow";
-export const NOINDEX_ROBOTS = "noindex, nofollow";
+export const INDEX_ROBOTS = 'index, follow';
+export const NOINDEX_ROBOTS = 'noindex, nofollow';
 
 export interface PublicPageSeo {
   readonly path: string;
@@ -19,42 +19,41 @@ export interface PublicPageSeo {
 /** Las cinco rutas indexables aprobadas: metadata, sitemap y allow de robots. */
 export const PUBLIC_PAGES = [
   {
-    path: "/",
-    title: "KitchCalc | Calcula el costo real de tus recetas",
-    description:
-      "Gestiona costos, márgenes y precios de tus recetas de forma simple y rápida.",
+    path: '/',
+    title: 'KitchCalc | Calcula el costo real de tus recetas',
+    description: 'Gestiona costos, márgenes y precios de tus recetas de forma simple y rápida.',
   },
   {
-    path: "/funciones",
-    title: "Funciones | KitchCalc",
+    path: '/funciones',
+    title: 'Funciones | KitchCalc',
     description:
-      "Qué hace cada módulo de KitchCalc: costeo de recetas, ingredientes y precios de compra, planificador de producción, costos fijos y márgenes. Con capturas reales del producto.",
+      'Qué hace cada módulo de KitchCalc: costeo de recetas, ingredientes y precios de compra, planificador de producción, costos fijos y márgenes. Con capturas reales del producto.',
   },
   {
-    path: "/pricing",
-    title: "Planes y precios | KitchCalc",
+    path: '/pricing',
+    title: 'Planes y precios | KitchCalc',
     description:
-      "Compara los planes Free, Basic y Pro de KitchCalc: recetas, ingredientes y planificador de producción. Suscripción segura con Stripe.",
+      'Compara los planes Free, Basic y Pro de KitchCalc: recetas, ingredientes y planificador de producción. Suscripción segura con Stripe.',
   },
   {
-    path: "/privacy",
-    title: "Política de privacidad | KitchCalc",
+    path: '/privacy',
+    title: 'Política de privacidad | KitchCalc',
     description:
-      "Cómo KitchCalc recopila, usa y protege tus datos: autenticación, pagos con Stripe, cookies y seguridad.",
+      'Cómo KitchCalc recopila, usa y protege tus datos: autenticación, pagos con Stripe, cookies y seguridad.',
   },
   {
-    path: "/terms",
-    title: "Términos del servicio | KitchCalc",
+    path: '/terms',
+    title: 'Términos del servicio | KitchCalc',
     description:
-      "Condiciones de uso de KitchCalc: cuentas, planes y pagos, límites de uso, propiedad de los datos y cancelación.",
+      'Condiciones de uso de KitchCalc: cuentas, planes y pagos, límites de uso, propiedad de los datos y cancelación.',
   },
 ] as const satisfies readonly PublicPageSeo[];
 
-export type PublicPagePath = (typeof PUBLIC_PAGES)[number]["path"];
+export type PublicPagePath = (typeof PUBLIC_PAGES)[number]['path'];
 
 export const NOT_FOUND_SEO = {
-  title: "Página no encontrada | KitchCalc",
-  description: "La página que buscas no existe o fue movida.",
+  title: 'Página no encontrada | KitchCalc',
+  description: 'La página que buscas no existe o fue movida.',
 } as const;
 
 /**
@@ -63,14 +62,14 @@ export const NOT_FOUND_SEO = {
  * pueden entrar en metadata ni en el sitemap.
  */
 export const AUTH_PAGES = [
-  { path: "/sign-in", title: "Iniciar sesión | KitchCalc" },
-  { path: "/sign-up", title: "Crear cuenta | KitchCalc" },
-  { path: "/forgot-password", title: "Recuperar contraseña | KitchCalc" },
-  { path: "/reset-password", title: "Nueva contraseña | KitchCalc" },
-  { path: "/verify-email", title: "Verificar correo | KitchCalc" },
+  { path: '/sign-in', title: 'Iniciar sesión | KitchCalc' },
+  { path: '/sign-up', title: 'Crear cuenta | KitchCalc' },
+  { path: '/forgot-password', title: 'Recuperar contraseña | KitchCalc' },
+  { path: '/reset-password', title: 'Nueva contraseña | KitchCalc' },
+  { path: '/verify-email', title: 'Verificar correo | KitchCalc' },
 ] as const satisfies readonly { path: string; title: string }[];
 
-export type AuthPagePath = (typeof AUTH_PAGES)[number]["path"];
+export type AuthPagePath = (typeof AUTH_PAGES)[number]['path'];
 
 export function authPageTitleFor(path: AuthPagePath): string {
   const page = AUTH_PAGES.find((entry) => entry.path === path);
@@ -97,7 +96,7 @@ export function isCoralAccentPath(path: string): boolean {
   return isPublicMarketingPath(path) || isAuthPath(path);
 }
 
-export const OG_IMAGE_PATH = "/kitchcalc_logo.webp";
+export const OG_IMAGE_PATH = '/kitchcalc_logo.webp';
 
 export function pageSeoFor(path: PublicPagePath): PublicPageSeo {
   const page = PUBLIC_PAGES.find((entry) => entry.path === path);
@@ -109,8 +108,8 @@ export function pageSeoFor(path: PublicPagePath): PublicPageSeo {
 
 /** Canonical absoluto, sin query ni hash. La home conserva la barra final. */
 export function canonicalUrl(siteUrl: string, path: string): string {
-  const base = siteUrl.replace(/\/+$/, "");
-  return `${base}${path.startsWith("/") ? path : `/${path}`}`;
+  const base = siteUrl.replace(/\/+$/, '');
+  return `${base}${path.startsWith('/') ? path : `/${path}`}`;
 }
 
 export function robotsMetaContent(indexable: boolean): string {
@@ -119,17 +118,16 @@ export function robotsMetaContent(indexable: boolean): string {
 
 export function buildSitemapXml(siteUrl: string): string {
   const urls = PUBLIC_PAGES.map(
-    (page) =>
-      `  <url>\n    <loc>${canonicalUrl(siteUrl, page.path)}</loc>\n  </url>`,
-  ).join("\n");
+    (page) => `  <url>\n    <loc>${canonicalUrl(siteUrl, page.path)}</loc>\n  </url>`
+  ).join('\n');
 
   return [
     '<?xml version="1.0" encoding="UTF-8"?>',
     '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
     urls,
-    "</urlset>",
-    "",
-  ].join("\n");
+    '</urlset>',
+    '',
+  ].join('\n');
 }
 
 export interface RobotsTxtOptions {
@@ -141,24 +139,21 @@ export interface RobotsTxtOptions {
  * Sin indexación (staging, dev, e2e sin flag) se bloquea todo; con indexación
  * sólo se permiten las cinco rutas públicas y el resto queda fuera.
  */
-export function buildRobotsTxt({
-  siteUrl,
-  indexable,
-}: RobotsTxtOptions): string {
+export function buildRobotsTxt({ siteUrl, indexable }: RobotsTxtOptions): string {
   if (!indexable) {
-    return "User-agent: *\nDisallow: /\n";
+    return 'User-agent: *\nDisallow: /\n';
   }
 
   const allows = PUBLIC_PAGES.map((page) =>
-    page.path === "/" ? "Allow: /$" : `Allow: ${page.path}$`,
-  ).join("\n");
+    page.path === '/' ? 'Allow: /$' : `Allow: ${page.path}$`
+  ).join('\n');
 
   return [
-    "User-agent: *",
+    'User-agent: *',
     allows,
-    "Disallow: /",
-    "",
-    `Sitemap: ${canonicalUrl(siteUrl, "/sitemap.xml")}`,
-    "",
-  ].join("\n");
+    'Disallow: /',
+    '',
+    `Sitemap: ${canonicalUrl(siteUrl, '/sitemap.xml')}`,
+    '',
+  ].join('\n');
 }

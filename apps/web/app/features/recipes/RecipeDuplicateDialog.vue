@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from "vue";
-import type { RecipeMutationFailure } from "~/features/recipes/recipe-messages";
-import type { RecipeRecord } from "~/features/recipes/recipe-state";
-import type { MutationOutcome } from "~/features/recipes/useRecipes";
-import RecipeErrorAlert from "~/features/recipes/RecipeErrorAlert.vue";
+import { onMounted, ref, watch } from 'vue';
+import type { RecipeMutationFailure } from '~/features/recipes/recipe-messages';
+import type { RecipeRecord } from '~/features/recipes/recipe-state';
+import type { MutationOutcome } from '~/features/recipes/useRecipes';
+import RecipeErrorAlert from '~/features/recipes/RecipeErrorAlert.vue';
 
 /**
  * Confirmación de duplicado. El padre decide qué hacer con el id devuelto
@@ -15,7 +15,7 @@ const props = defineProps<{
   confirm: (recipeId: number) => Promise<MutationOutcome>;
 }>();
 
-const open = defineModel<boolean>("open", { required: true });
+const open = defineModel<boolean>('open', { required: true });
 
 const dialog = ref<{ open: () => void; close: () => void } | null>(null);
 const failure = ref<RecipeMutationFailure | null>(null);
@@ -56,12 +56,7 @@ async function onConfirm(): Promise<void> {
 </script>
 
 <template>
-  <Dialog
-    id="duplicate-recipe-modal"
-    ref="dialog"
-    :submitting="submitting"
-    @close="open = false"
-  >
+  <Dialog id="duplicate-recipe-modal" ref="dialog" :submitting="submitting" @close="open = false">
     <div class="flex items-start gap-3">
       <div
         class="bg-accent-50 text-accent-600 flex h-11 w-11 items-center justify-center rounded-2xl"
@@ -71,8 +66,7 @@ async function onConfirm(): Promise<void> {
       <div>
         <h2 class="text-foreground text-lg font-bold">Duplicar receta</h2>
         <p class="text-muted-foreground mt-2 text-sm">
-          Se creará una copia de esta receta con todos sus ingredientes y
-          presentaciones.
+          Se creará una copia de esta receta con todos sus ingredientes y presentaciones.
         </p>
       </div>
     </div>

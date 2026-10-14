@@ -1,15 +1,15 @@
-import type { ZodType } from "zod";
-import type { ResetTokenValidation } from "./auth-contracts";
+import type { ZodType } from 'zod';
+import type { ResetTokenValidation } from './auth-contracts';
 import {
   forgotPasswordResponseSchema,
   oauthStartSchema,
   resetPasswordResponseSchema,
   resetTokenValidationSchema,
   verifyEmailResponseSchema,
-} from "./auth-contracts";
-import { AuthApiError, toAuthApiError } from "./auth-error";
+} from './auth-contracts';
+import { AuthApiError, toAuthApiError } from './auth-error';
 
-type AuthMethod = "GET" | "POST";
+type AuthMethod = 'GET' | 'POST';
 
 interface AuthRequest<T> {
   method?: AuthMethod;
@@ -32,14 +32,12 @@ export function useAuthApi() {
 
   async function call<T>(
     path: string,
-    { method = "GET", body, schema }: AuthRequest<T> = {},
+    { method = 'GET', body, schema }: AuthRequest<T> = {}
   ): Promise<T> {
     try {
       const data = await requestFetch(path, {
         method,
-        ...(body === undefined
-          ? {}
-          : { headers: { "content-type": "application/json" }, body }),
+        ...(body === undefined ? {} : { headers: { 'content-type': 'application/json' }, body }),
       });
       return schema ? schema.parse(data) : (data as T);
     } catch (cause) {
@@ -47,12 +45,9 @@ export function useAuthApi() {
     }
   }
 
-  async function signInWithEmail(
-    email: string,
-    password: string,
-  ): Promise<void> {
-    await call("/api/auth/sign-in/email", {
-      method: "POST",
+  async function signInWithEmail(email: string, password: string): Promise<void> {
+    await call('/api/auth/sign-in/email', {
+      method: 'POST',
       body: { email, password },
     });
   }
@@ -62,18 +57,14 @@ export function useAuthApi() {
    * hacemos aquí (el `redirectPlugin` de better-auth no viaja al bundle).
    */
   async function startGoogleSignIn(callbackURL: string): Promise<void> {
-    const { url } = await call("/api/auth/sign-in/social", {
-      method: "POST",
-      body: { provider: "google", callbackURL },
+    const { url } = await call('/api/auth/sign-in/social', {
+      method: 'POST',
+      body: { provider: 'google', callbackURL },
       schema: oauthStartSchema,
     });
 
     if (!url) {
-      throw new AuthApiError(
-        "PROVIDER_NOT_FOUND",
-        "No se pudo iniciar sesión con Google.",
-        500,
-      );
+      throw new AuthApiError('PROVIDER_NOT_FOUND', 'No se pudo iniciar sesión con Google.', 500);
     }
 
     window.location.href = url;
@@ -86,8 +77,8 @@ export function useAuthApi() {
     firstName: string;
     lastName: string;
   }): Promise<void> {
-    await call("/api/auth/sign-up/email", {
-      method: "POST",
+    await call('/api/auth/sign-up/email', {
+      method: 'POST',
       body: {
         email: input.email,
         password: input.password,
@@ -99,8 +90,8 @@ export function useAuthApi() {
   }
 
   async function resendVerificationEmail(email: string): Promise<void> {
-    await call("/api/auth/send-verification-email", {
-      method: "POST",
+    await call('/api/auth/send-verification-email', {
+      method: 'POST',
       body: { email, callbackURL: `${window.location.origin}/sign-in` },
     });
   }
@@ -113,38 +104,29 @@ export function useAuthApi() {
 
   /** Devuelve el mensaje del API (idéntico exista o no el email). */
   async function requestPasswordReset(email: string): Promise<string> {
-    const { message } = await call("/api/auth/forgot-password", {
-      method: "POST",
+    const { message } = await call('/api/auth/forgot-password', {
+      method: 'POST',
       body: { email },
       schema: forgotPasswordResponseSchema,
     });
 
-    return (
-      message ??
-      "Si el email existe, recibirás un enlace para restablecer tu contraseña."
-    );
+    return message ?? 'Si el email existe, recibirás un enlace para restablecer tu contraseña.';
   }
 
-  async function validateResetToken(
-    token: string,
-  ): Promise<ResetTokenValidation> {
-    return await call(
-      `/api/auth/reset-password?token=${encodeURIComponent(token)}`,
-      { schema: resetTokenValidationSchema },
-    );
+  async function validateResetToken(token: string): Promise<ResetTokenValidation> {
+    return await call(`/api/auth/reset-password?token=${encodeURIComponent(token)}`, {
+      schema: resetTokenValidationSchema,
+    });
   }
 
-  async function submitPasswordReset(
-    token: string,
-    password: string,
-  ): Promise<string> {
-    const { message } = await call("/api/auth/reset-password", {
-      method: "POST",
+  async function submitPasswordReset(token: string, password: string): Promise<string> {
+    const { message } = await call('/api/auth/reset-password', {
+      method: 'POST',
       body: { token, password },
       schema: resetPasswordResponseSchema,
     });
 
-    return message ?? "Contraseña actualizada correctamente";
+    return message ?? 'Contraseña actualizada correctamente';
   }
 
   return {

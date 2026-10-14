@@ -8,10 +8,10 @@
 
 /** Primer valor no vacío de un query param de `useRoute()` (colapsa arrays). */
 export function queryString(value: unknown): string | null {
-  if (typeof value === "string") return value.length > 0 ? value : null;
+  if (typeof value === 'string') return value.length > 0 ? value : null;
   if (Array.isArray(value)) {
     const first = value.find(
-      (entry): entry is string => typeof entry === "string" && entry.length > 0,
+      (entry): entry is string => typeof entry === 'string' && entry.length > 0
     );
     return first ?? null;
   }
@@ -20,13 +20,13 @@ export function queryString(value: unknown): string | null {
 
 /** Sólo rutas locales: nada de `//host` (protocol-relative) ni de esquemas. */
 function isLocalPath(value: string): boolean {
-  return value.startsWith("/") && !value.includes("//") && !value.includes(":");
+  return value.startsWith('/') && !value.includes('//') && !value.includes(':');
 }
 
 /** Destino post-login: `?redirect=` válido o `/recipes`. */
 export function getSafeRedirect(raw: unknown): string {
   const value = queryString(raw);
-  return value && isLocalPath(value) ? value : "/recipes";
+  return value && isLocalPath(value) ? value : '/recipes';
 }
 
 /**
@@ -35,7 +35,7 @@ export function getSafeRedirect(raw: unknown): string {
  */
 export function safeCallbackPath(raw: unknown): string {
   const value = queryString(raw);
-  return value && value !== "/" && isLocalPath(value) ? value : "/sign-in";
+  return value && value !== '/' && isLocalPath(value) ? value : '/sign-in';
 }
 
 /**
@@ -44,5 +44,5 @@ export function safeCallbackPath(raw: unknown): string {
  */
 export function queryEmail(raw: unknown): string | null {
   const value = queryString(raw);
-  return value && value.includes("@") ? value : null;
+  return value && value.includes('@') ? value : null;
 }

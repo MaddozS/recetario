@@ -1,4 +1,4 @@
-import { createServer } from "node:http";
+import { createServer } from 'node:http';
 
 /**
  * Stub del worker `apps/api` para los e2e: sin BD, sin Stripe y sin red externa.
@@ -7,24 +7,24 @@ import { createServer } from "node:http";
  */
 
 const PORT = Number(process.env.STUB_API_PORT ?? 8788);
-const HOST = "127.0.0.1";
-const SESSION_TOKEN = "stub-session-token";
+const HOST = '127.0.0.1';
+const SESSION_TOKEN = 'stub-session-token';
 
 const SESSION_PAYLOAD = {
   user: {
-    id: "qa-user",
-    email: "qa@example.com",
-    name: "QA Prueba",
-    firstName: "QA",
-    lastName: "Prueba",
+    id: 'qa-user',
+    email: 'qa@example.com',
+    name: 'QA Prueba',
+    firstName: 'QA',
+    lastName: 'Prueba',
     image: null,
-    role: "USER",
+    role: 'USER',
   },
-  session: { id: "stub-session", expiresAt: "2099-01-01T00:00:00.000Z" },
-  preferences: { userId: "qa-user", theme: "dark", accentColor: "emerald" },
+  session: { id: 'stub-session', expiresAt: '2099-01-01T00:00:00.000Z' },
+  preferences: { userId: 'qa-user', theme: 'dark', accentColor: 'emerald' },
   subscription: {
-    tier: "pro",
-    status: "active",
+    tier: 'pro',
+    status: 'active',
     recipesLimit: null,
     ingredientsLimit: null,
     features: {
@@ -46,8 +46,8 @@ const SESSION_PAYLOAD = {
 function sendJson(res, status, payload, headers = {}) {
   const body = JSON.stringify(payload);
   res.writeHead(status, {
-    "content-type": "application/json",
-    "content-length": Buffer.byteLength(body),
+    'content-type': 'application/json',
+    'content-length': Buffer.byteLength(body),
     ...headers,
   });
   res.end(body);
@@ -56,16 +56,16 @@ function sendJson(res, status, payload, headers = {}) {
 function readBody(req) {
   return new Promise((resolve) => {
     const chunks = [];
-    req.on("data", (chunk) => chunks.push(chunk));
-    req.on("end", () => resolve(Buffer.concat(chunks).toString("utf8")));
+    req.on('data', (chunk) => chunks.push(chunk));
+    req.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
   });
 }
 
 function parseCookies(header) {
   const cookies = {};
-  for (const part of (header ?? "").split(";")) {
-    const [name, ...rest] = part.trim().split("=");
-    if (name) cookies[name] = rest.join("=");
+  for (const part of (header ?? '').split(';')) {
+    const [name, ...rest] = part.trim().split('=');
+    if (name) cookies[name] = rest.join('=');
   }
   return cookies;
 }
@@ -80,155 +80,155 @@ function parseCookies(header) {
  */
 const PLANS = [
   {
-    id: "free",
-    tier: "free",
-    name: "Free",
-    description: "Para empezar a costear",
+    id: 'free',
+    tier: 'free',
+    name: 'Free',
+    description: 'Para empezar a costear',
     badge: null,
-    currency: "MXN",
+    currency: 'MXN',
     monthlyPriceId: null,
     monthlyDisplay: null,
     yearlyPriceId: null,
     yearlyDisplay: null,
     yearlyPerMonthDisplay: null,
     features: [
-      { text: "Hasta 10 recetas", label: "Recetas", included: true },
-      { text: "Hasta 30 ingredientes", label: "Ingredientes", included: true },
-      { text: "Costeo básico con márgenes", included: true },
-      { text: "Categorías", included: true },
+      { text: 'Hasta 10 recetas', label: 'Recetas', included: true },
+      { text: 'Hasta 30 ingredientes', label: 'Ingredientes', included: true },
+      { text: 'Costeo básico con márgenes', included: true },
+      { text: 'Categorías', included: true },
       {
-        text: "Instrucciones de preparación",
+        text: 'Instrucciones de preparación',
         included: false,
-        status: "coming_soon",
+        status: 'coming_soon',
       },
-      { text: "Duplicar recetas", included: false },
+      { text: 'Duplicar recetas', included: false },
       {
-        text: "Fotos de recetas",
-        label: "Fotos de recetas",
+        text: 'Fotos de recetas',
+        label: 'Fotos de recetas',
         included: false,
-        status: "coming_soon",
+        status: 'coming_soon',
       },
-      { text: "Stock de ingredientes", included: false, status: "coming_soon" },
+      { text: 'Stock de ingredientes', included: false, status: 'coming_soon' },
       {
-        text: "Planificador de producción",
-        label: "Planificador de producción",
+        text: 'Planificador de producción',
+        label: 'Planificador de producción',
         included: false,
       },
-      { text: "Exportar a PDF", included: false, status: "coming_soon" },
-      { text: "Costos fijos avanzados", included: false, status: "coming_soon" },
-      { text: "Historial de cambios", included: false, status: "coming_soon" },
+      { text: 'Exportar a PDF', included: false, status: 'coming_soon' },
+      { text: 'Costos fijos avanzados', included: false, status: 'coming_soon' },
+      { text: 'Historial de cambios', included: false, status: 'coming_soon' },
       {
-        text: "Importar/Exportar datos",
+        text: 'Importar/Exportar datos',
         included: false,
-        status: "coming_soon",
+        status: 'coming_soon',
       },
       {
-        text: "Información nutricional",
+        text: 'Información nutricional',
         included: false,
-        status: "coming_soon",
+        status: 'coming_soon',
       },
     ],
   },
   {
-    id: "basic",
-    tier: "basic",
-    name: "Basic",
-    description: "Para negocios en crecimiento",
-    badge: { text: "Recomendado" },
-    currency: "MXN",
-    monthlyPriceId: "price_basic_monthly",
-    monthlyDisplay: "$9.99",
-    yearlyPriceId: "price_basic_yearly",
-    yearlyDisplay: "$95.90",
-    yearlyPerMonthDisplay: "$7.99",
+    id: 'basic',
+    tier: 'basic',
+    name: 'Basic',
+    description: 'Para negocios en crecimiento',
+    badge: { text: 'Recomendado' },
+    currency: 'MXN',
+    monthlyPriceId: 'price_basic_monthly',
+    monthlyDisplay: '$9.99',
+    yearlyPriceId: 'price_basic_yearly',
+    yearlyDisplay: '$95.90',
+    yearlyPerMonthDisplay: '$7.99',
     features: [
-      { text: "Hasta 75 recetas", label: "Recetas", included: true },
-      { text: "Ingredientes ilimitados", label: "Ingredientes", included: true },
-      { text: "Costeo básico con márgenes", included: true },
-      { text: "Categorías", included: true },
+      { text: 'Hasta 75 recetas', label: 'Recetas', included: true },
+      { text: 'Ingredientes ilimitados', label: 'Ingredientes', included: true },
+      { text: 'Costeo básico con márgenes', included: true },
+      { text: 'Categorías', included: true },
       {
-        text: "Instrucciones de preparación",
+        text: 'Instrucciones de preparación',
         included: true,
-        status: "coming_soon",
+        status: 'coming_soon',
       },
-      { text: "Duplicar recetas", included: true },
+      { text: 'Duplicar recetas', included: true },
       {
-        text: "Fotos de recetas (1 por receta)",
-        label: "Fotos de recetas",
+        text: 'Fotos de recetas (1 por receta)',
+        label: 'Fotos de recetas',
         included: true,
-        status: "coming_soon",
+        status: 'coming_soon',
       },
-      { text: "Stock de ingredientes", included: true, status: "coming_soon" },
+      { text: 'Stock de ingredientes', included: true, status: 'coming_soon' },
       {
-        text: "Planificador de producción (hasta 3 recetas)",
-        label: "Planificador de producción",
+        text: 'Planificador de producción (hasta 3 recetas)',
+        label: 'Planificador de producción',
         included: true,
       },
-      { text: "Exportar a PDF", included: false, status: "coming_soon" },
-      { text: "Costos fijos avanzados", included: false, status: "coming_soon" },
-      { text: "Historial de cambios", included: false, status: "coming_soon" },
+      { text: 'Exportar a PDF', included: false, status: 'coming_soon' },
+      { text: 'Costos fijos avanzados', included: false, status: 'coming_soon' },
+      { text: 'Historial de cambios', included: false, status: 'coming_soon' },
       {
-        text: "Importar/Exportar datos",
+        text: 'Importar/Exportar datos',
         included: false,
-        status: "coming_soon",
+        status: 'coming_soon',
       },
       {
-        text: "Información nutricional",
+        text: 'Información nutricional',
         included: false,
-        status: "coming_soon",
+        status: 'coming_soon',
       },
     ],
   },
   {
-    id: "pro",
-    tier: "pro",
-    name: "Pro",
-    description: "Para profesionales",
-    badge: { text: "Más popular" },
-    currency: "MXN",
-    monthlyPriceId: "price_pro_monthly",
-    monthlyDisplay: "$19.99",
-    yearlyPriceId: "price_pro_yearly",
-    yearlyDisplay: "$191.90",
-    yearlyPerMonthDisplay: "$15.99",
+    id: 'pro',
+    tier: 'pro',
+    name: 'Pro',
+    description: 'Para profesionales',
+    badge: { text: 'Más popular' },
+    currency: 'MXN',
+    monthlyPriceId: 'price_pro_monthly',
+    monthlyDisplay: '$19.99',
+    yearlyPriceId: 'price_pro_yearly',
+    yearlyDisplay: '$191.90',
+    yearlyPerMonthDisplay: '$15.99',
     features: [
-      { text: "Recetas ilimitadas", label: "Recetas", included: true },
-      { text: "Ingredientes ilimitados", label: "Ingredientes", included: true },
-      { text: "Costeo básico con márgenes", included: true },
-      { text: "Categorías", included: true },
+      { text: 'Recetas ilimitadas', label: 'Recetas', included: true },
+      { text: 'Ingredientes ilimitados', label: 'Ingredientes', included: true },
+      { text: 'Costeo básico con márgenes', included: true },
+      { text: 'Categorías', included: true },
       {
-        text: "Instrucciones de preparación",
+        text: 'Instrucciones de preparación',
         included: true,
-        status: "coming_soon",
+        status: 'coming_soon',
       },
-      { text: "Duplicar recetas", included: true },
+      { text: 'Duplicar recetas', included: true },
       {
-        text: "Fotos de recetas + galería",
-        label: "Fotos de recetas",
+        text: 'Fotos de recetas + galería',
+        label: 'Fotos de recetas',
         included: true,
-        status: "coming_soon",
+        status: 'coming_soon',
       },
-      { text: "Stock de ingredientes", included: true, status: "coming_soon" },
+      { text: 'Stock de ingredientes', included: true, status: 'coming_soon' },
       {
-        text: "Planificador de producción ilimitado",
-        label: "Planificador de producción",
+        text: 'Planificador de producción ilimitado',
+        label: 'Planificador de producción',
         included: true,
       },
-      { text: "Exportar a PDF", included: true, status: "coming_soon" },
-      { text: "Costos fijos avanzados", included: true, status: "coming_soon" },
-      { text: "Historial de cambios", included: true, status: "coming_soon" },
-      { text: "Importar/Exportar datos", included: true, status: "coming_soon" },
+      { text: 'Exportar a PDF', included: true, status: 'coming_soon' },
+      { text: 'Costos fijos avanzados', included: true, status: 'coming_soon' },
+      { text: 'Historial de cambios', included: true, status: 'coming_soon' },
+      { text: 'Importar/Exportar datos', included: true, status: 'coming_soon' },
       {
-        text: "Información nutricional",
+        text: 'Información nutricional',
         included: true,
-        status: "coming_soon",
+        status: 'coming_soon',
       },
     ],
   },
 ];
 
 function sessionPayload({ plan, cookies = {} }) {
-  const tier = plan === "free" ? "free" : plan === "basic" ? "basic" : "pro";
+  const tier = plan === 'free' ? 'free' : plan === 'basic' ? 'basic' : 'pro';
   const limits = {
     free: { recipes: 10, ingredients: 30 },
     basic: { recipes: 75, ingredients: null },
@@ -261,7 +261,7 @@ function sessionPayload({ plan, cookies = {} }) {
       name: `${settingsState.firstName} ${settingsState.lastName}`,
     },
     preferences: {
-      userId: "qa-user",
+      userId: 'qa-user',
       theme: settingsState.preferences.theme,
       accentColor: settingsState.preferences.accentColor,
     },
@@ -271,12 +271,12 @@ function sessionPayload({ plan, cookies = {} }) {
         tier,
         recipesLimit: limits.recipes,
         ingredientsLimit: limits.ingredients,
-        priceCents: tier === "free" ? null : tier === "basic" ? 999 : 1999,
-        currency: tier === "free" ? null : "MXN",
-        billingInterval: tier === "free" ? null : "monthly",
+        priceCents: tier === 'free' ? null : tier === 'basic' ? 999 : 1999,
+        currency: tier === 'free' ? null : 'MXN',
+        billingInterval: tier === 'free' ? null : 'monthly',
         features,
       },
-      cookies,
+      cookies
     ),
   };
 }
@@ -291,9 +291,9 @@ function sessionPayload({ plan, cookies = {} }) {
  */
 function createSettingsState() {
   return {
-    firstName: "QA",
-    lastName: "Prueba",
-    preferences: { theme: "dark", accentColor: "emerald" },
+    firstName: 'QA',
+    lastName: 'Prueba',
+    preferences: { theme: 'dark', accentColor: 'emerald' },
     nameAttempts: 0,
     passwordAttempts: 0,
     preferencesPutAttempts: 0,
@@ -313,28 +313,28 @@ function readSettingsState() {
 
 /** Escenarios de suscripción por cookie, compartidos por sesión y billing. */
 function subscriptionFor(base, cookies = {}) {
-  const scenario = cookies["qa-subscription"];
+  const scenario = cookies['qa-subscription'];
 
-  if (scenario === "trial") {
+  if (scenario === 'trial') {
     return {
       ...base,
-      status: "trialing",
+      status: 'trialing',
       isTrial: true,
-      trialEnd: "2026-10-01T12:00:00.000Z",
-      currentPeriodEnd: "2026-10-01T12:00:00.000Z",
+      trialEnd: '2026-10-01T12:00:00.000Z',
+      currentPeriodEnd: '2026-10-01T12:00:00.000Z',
     };
   }
 
-  if (scenario === "canceled") {
+  if (scenario === 'canceled') {
     return {
       ...base,
       cancelAtPeriodEnd: true,
-      currentPeriodEnd: "2026-10-15T12:00:00.000Z",
+      currentPeriodEnd: '2026-10-15T12:00:00.000Z',
     };
   }
 
-  if (scenario === "scheduled") {
-    return { ...base, currentPeriodEnd: "2026-10-15T12:00:00.000Z" };
+  if (scenario === 'scheduled') {
+    return { ...base, currentPeriodEnd: '2026-10-15T12:00:00.000Z' };
   }
 
   return base;
@@ -343,20 +343,17 @@ function subscriptionFor(base, cookies = {}) {
 function subscriptionResponse(plan, cookies) {
   const base = sessionPayload({ plan }).subscription;
   const scheduled =
-    cookies["qa-subscription"] === "scheduled"
+    cookies['qa-subscription'] === 'scheduled'
       ? {
-          targetTier: "basic",
-          targetPlanName: "KitchCalc Basic Mensual",
-          targetInterval: "monthly",
-          effectiveDate: "2026-10-15T12:00:00.000Z",
+          targetTier: 'basic',
+          targetPlanName: 'KitchCalc Basic Mensual',
+          targetInterval: 'monthly',
+          effectiveDate: '2026-10-15T12:00:00.000Z',
         }
       : null;
 
   return {
-    ...subscriptionFor(
-      { ...base, currentPeriodEnd: "2026-10-15T12:00:00.000Z" },
-      cookies,
-    ),
+    ...subscriptionFor({ ...base, currentPeriodEnd: '2026-10-15T12:00:00.000Z' }, cookies),
     scheduledChange: scheduled,
   };
 }
@@ -369,19 +366,19 @@ function subscriptionResponse(plan, cookies) {
  */
 function csrfAllowed(req, cookies) {
   if (!req.headers.origin) return true;
-  const token = req.headers["x-csrf-token"];
-  return Boolean(token) && token === cookies["csrf_token"];
+  const token = req.headers['x-csrf-token'];
+  return Boolean(token) && token === cookies['csrf_token'];
 }
 
 function unauthorized(res) {
   return sendJson(res, 401, {
-    error: { code: "UNAUTHENTICATED", message: "Authentication required" },
+    error: { code: 'UNAUTHENTICATED', message: 'Authentication required' },
   });
 }
 
 function forbiddenCsrf(res) {
   return sendJson(res, 403, {
-    error: { code: "FORBIDDEN", message: "CSRF validation failed" },
+    error: { code: 'FORBIDDEN', message: 'CSRF validation failed' },
   });
 }
 
@@ -397,24 +394,24 @@ function createCsrfState() {
 
 let csrfState = createCsrfState();
 
-const CSRF_STUB_TOKEN = "stub-csrf-token";
+const CSRF_STUB_TOKEN = 'stub-csrf-token';
 
 /** ── Ingredientes (Task 7): estado en memoria, sin BD ─────────────────────── */
 
 const SEED_INGREDIENTS = [
   {
     id: 1,
-    name: "Harina de trigo",
-    unit: "kg",
+    name: 'Harina de trigo',
+    unit: 'kg',
     price: 25,
     purchaseQuantity: 1,
-    brand: "Del Campo",
-    supplier: "Casa Santos",
+    brand: 'Del Campo',
+    supplier: 'Casa Santos',
   },
   {
     id: 2,
-    name: "Plátano",
-    unit: "kg",
+    name: 'Plátano',
+    unit: 'kg',
     price: 18,
     purchaseQuantity: 2,
     brand: null,
@@ -422,7 +419,7 @@ const SEED_INGREDIENTS = [
   },
 ];
 
-const SEED_USAGE = { 1: [{ id: 10, name: "Tarta de Chocolate" }] };
+const SEED_USAGE = { 1: [{ id: 10, name: 'Tarta de Chocolate' }] };
 
 /** Copia profunda por JSON: el stub sólo maneja datos serializables. */
 function clone(value) {
@@ -454,7 +451,7 @@ function ingredientUsageMap() {
     Object.entries(ingredientState.usage).map(([id, recipes]) => [
       id,
       recipes.map((recipe) => recipe.name),
-    ]),
+    ])
   );
 }
 
@@ -482,39 +479,39 @@ function toIngredientResponse(item) {
 const SEED_RECIPES = [
   {
     id: 1,
-    name: "Tarta de Chocolate",
-    category: "Postres",
+    name: 'Tarta de Chocolate',
+    category: 'Postres',
     desiredMargin: 30,
     fixedCostsPercentage: 10,
     recipeFixedCosts: [],
-    updatedAt: "2026-09-14T10:00:00.000Z",
+    updatedAt: '2026-09-14T10:00:00.000Z',
     ingredients: [
-      { ingredientId: 1, quantity: 0.5, unit: "kg", comment: "Para la masa" },
-      { ingredientId: 2, quantity: 2, unit: "kg" },
-      { ingredientId: 1, quantity: 100, unit: "g" },
+      { ingredientId: 1, quantity: 0.5, unit: 'kg', comment: 'Para la masa' },
+      { ingredientId: 2, quantity: 2, unit: 'kg' },
+      { ingredientId: 1, quantity: 100, unit: 'g' },
     ],
   },
   {
     id: 2,
-    name: "Pan de Masa Madre",
-    category: "Panes",
+    name: 'Pan de Masa Madre',
+    category: 'Panes',
     desiredMargin: 25,
     fixedCostsPercentage: 5,
     recipeFixedCosts: [],
-    updatedAt: "2026-09-13T10:00:00.000Z",
+    updatedAt: '2026-09-13T10:00:00.000Z',
     ingredients: [
-      { ingredientId: 1, quantity: 1, unit: "kg" },
-      { ingredientId: 2, quantity: 0.5, unit: "kg" },
+      { ingredientId: 1, quantity: 1, unit: 'kg' },
+      { ingredientId: 2, quantity: 0.5, unit: 'kg' },
     ],
   },
   {
     id: 3,
-    name: "Brownie Clásico",
+    name: 'Brownie Clásico',
     category: null,
     desiredMargin: 30,
     fixedCostsPercentage: 0,
     recipeFixedCosts: [],
-    updatedAt: "2026-09-15T09:00:00.000Z",
+    updatedAt: '2026-09-15T09:00:00.000Z',
     ingredients: [],
   },
 ];
@@ -572,8 +569,7 @@ function toRecipeSummaryResponse(recipe) {
     id: recipe.id,
     name: recipe.name,
     ...(recipe.category ? { category: recipe.category } : {}),
-    ingredientCount:
-      recipe.ingredientCount ?? (recipe.ingredients ?? []).length,
+    ingredientCount: recipe.ingredientCount ?? (recipe.ingredients ?? []).length,
     ...(recipe.updatedAt ? { updatedAt: recipe.updatedAt } : {}),
   };
 }
@@ -648,9 +644,7 @@ function toRecipeDetailResponse(recipe) {
     ...(recipe.updatedAt ? { updatedAt: recipe.updatedAt } : {}),
     ingredients: recipe.ingredients
       .map((row) => {
-        const ingredient = ingredientState.ingredients.find(
-          (item) => item.id === row.ingredientId,
-        );
+        const ingredient = ingredientState.ingredients.find((item) => item.id === row.ingredientId);
         if (!ingredient) return null;
 
         return {
@@ -664,7 +658,7 @@ function toRecipeDetailResponse(recipe) {
       .filter(Boolean),
     presentations: (recipe.presentations ?? []).map(toPresentationDetail),
     recipeFixedCosts: (recipe.recipeFixedCosts ?? []).map((fixedCost) =>
-      toFixedCostDetail(recipe.id, fixedCost),
+      toFixedCostDetail(recipe.id, fixedCost)
     ),
   };
 }
@@ -673,33 +667,28 @@ function toRecipeDetailResponse(recipe) {
 function duplicatedName(sourceName) {
   const maxNameLength = 120;
   const name = `Copia de ${sourceName}`;
-  return name.length > maxNameLength
-    ? `${name.slice(0, maxNameLength - 1)}\u2026`
-    : name;
+  return name.length > maxNameLength ? `${name.slice(0, maxNameLength - 1)}\u2026` : name;
 }
 
 const server = createServer(async (req, res) => {
-  const url = new URL(req.url ?? "/", `http://${HOST}:${PORT}`);
+  const url = new URL(req.url ?? '/', `http://${HOST}:${PORT}`);
   const cookies = parseCookies(req.headers.cookie);
   const body = await readBody(req);
   const pathname = url.pathname;
 
   // ── Autenticación (Better Auth) ────────────────────────────────────────────
-  if (pathname === "/api/auth/session" && req.method === "GET") {
-    const authenticated =
-      cookies["better-auth.session_token"] === SESSION_TOKEN;
+  if (pathname === '/api/auth/session' && req.method === 'GET') {
+    const authenticated = cookies['better-auth.session_token'] === SESSION_TOKEN;
     // `qa-plan=free` permite cubrir los dos estados de gating del shell.
     return sendJson(
       res,
       200,
-      authenticated
-        ? sessionPayload({ plan: cookies["qa-plan"], cookies })
-        : null,
+      authenticated ? sessionPayload({ plan: cookies['qa-plan'], cookies }) : null
     );
   }
 
-  if (pathname === "/api/csrf" && req.method === "GET") {
-    if (cookies["better-auth.session_token"] !== SESSION_TOKEN) {
+  if (pathname === '/api/csrf' && req.method === 'GET') {
+    if (cookies['better-auth.session_token'] !== SESSION_TOKEN) {
       return unauthorized(res);
     }
 
@@ -710,27 +699,27 @@ const server = createServer(async (req, res) => {
       { ok: true },
       {
         // Sin `HttpOnly` (el cliente lee el token) y conservando el valor previo.
-        "set-cookie": `csrf_token=${cookies["csrf_token"] ?? CSRF_STUB_TOKEN}; Path=/; Max-Age=604800; SameSite=Strict`,
-      },
+        'set-cookie': `csrf_token=${cookies['csrf_token'] ?? CSRF_STUB_TOKEN}; Path=/; Max-Age=604800; SameSite=Strict`,
+      }
     );
   }
 
-  if (pathname === "/api/auth/sign-in/email" && req.method === "POST") {
-    const payload = JSON.parse(body || "{}");
+  if (pathname === '/api/auth/sign-in/email' && req.method === 'POST') {
+    const payload = JSON.parse(body || '{}');
 
     // Mismo contrato que Better Auth: credenciales inválidas, email sin
     // verificar (con reenvío disponible) y sesión creada.
-    if (payload.email === "unverified@example.com") {
+    if (payload.email === 'unverified@example.com') {
       return sendJson(res, 403, {
-        message: "Email not verified",
-        code: "EMAIL_NOT_VERIFIED",
+        message: 'Email not verified',
+        code: 'EMAIL_NOT_VERIFIED',
       });
     }
 
-    if (payload.password !== "Temporal123!") {
+    if (payload.password !== 'Temporal123!') {
       return sendJson(res, 401, {
-        message: "Invalid email or password",
-        code: "INVALID_EMAIL_OR_PASSWORD",
+        message: 'Invalid email or password',
+        code: 'INVALID_EMAIL_OR_PASSWORD',
       });
     }
 
@@ -739,19 +728,19 @@ const server = createServer(async (req, res) => {
       200,
       { user: SESSION_PAYLOAD.user },
       {
-        "set-cookie": `better-auth.session_token=${SESSION_TOKEN}; Path=/; HttpOnly; SameSite=Lax`,
-      },
+        'set-cookie': `better-auth.session_token=${SESSION_TOKEN}; Path=/; HttpOnly; SameSite=Lax`,
+      }
     );
   }
 
-  if (pathname === "/api/auth/sign-up/email" && req.method === "POST") {
-    const payload = JSON.parse(body || "{}");
+  if (pathname === '/api/auth/sign-up/email' && req.method === 'POST') {
+    const payload = JSON.parse(body || '{}');
 
     // `requireEmailVerification` desactiva el auto-sign-in: 200 sin cookie.
     return sendJson(res, 200, {
       token: null,
       user: {
-        id: "stub-new-user",
+        id: 'stub-new-user',
         email: payload.email ?? null,
         name: payload.name ?? null,
         firstName: payload.firstName ?? null,
@@ -760,116 +749,108 @@ const server = createServer(async (req, res) => {
     });
   }
 
-  if (
-    pathname === "/api/auth/send-verification-email" &&
-    req.method === "POST"
-  ) {
+  if (pathname === '/api/auth/send-verification-email' && req.method === 'POST') {
     return sendJson(res, 200, { status: true });
   }
 
-  if (pathname === "/api/auth/sign-in/social" && req.method === "POST") {
-    const payload = JSON.parse(body || "{}");
+  if (pathname === '/api/auth/sign-in/social' && req.method === 'POST') {
+    const payload = JSON.parse(body || '{}');
     const origin = req.headers.origin ?? `http://${HOST}:3000`;
 
     // Sin tocar Google: el e2e comprueba el POST y la navegación al `url`.
     return sendJson(res, 200, {
-      url: `${origin}/sign-in?oauth=stub&provider=${payload.provider ?? "google"}`,
+      url: `${origin}/sign-in?oauth=stub&provider=${payload.provider ?? 'google'}`,
       redirect: true,
     });
   }
 
-  if (pathname === "/api/auth/forgot-password" && req.method === "POST") {
-    const payload = JSON.parse(body || "{}");
+  if (pathname === '/api/auth/forgot-password' && req.method === 'POST') {
+    const payload = JSON.parse(body || '{}');
     if (!payload.email) {
       return sendJson(res, 400, {
-        error: "Email requerido",
-        code: "INVALID_DATA",
+        error: 'Email requerido',
+        code: 'INVALID_DATA',
       });
     }
 
     // Anti-enumeración: misma respuesta exista o no el email.
     return sendJson(res, 200, {
       success: true,
-      message:
-        "Si el email existe, recibirás un enlace para restablecer tu contraseña.",
+      message: 'Si el email existe, recibirás un enlace para restablecer tu contraseña.',
     });
   }
 
-  if (pathname === "/api/auth/reset-password" && req.method === "GET") {
-    const token = url.searchParams.get("token");
+  if (pathname === '/api/auth/reset-password' && req.method === 'GET') {
+    const token = url.searchParams.get('token');
 
-    if (token === "reset-valid" || token === "reset-short") {
-      const remainingSeconds = token === "reset-valid" ? 540 : 2;
+    if (token === 'reset-valid' || token === 'reset-short') {
+      const remainingSeconds = token === 'reset-valid' ? 540 : 2;
       return sendJson(res, 200, {
         valid: true,
         expiresAt: new Date(Date.now() + remainingSeconds * 1000).toISOString(),
         remainingSeconds,
-        formattedTime: token === "reset-valid" ? "09:00" : "00:02",
+        formattedTime: token === 'reset-valid' ? '09:00' : '00:02',
       });
     }
 
-    if (token === "reset-expired") {
+    if (token === 'reset-expired') {
       return sendJson(res, 200, {
         valid: false,
-        error: "El enlace ha expirado",
-        code: "EXPIRED",
+        error: 'El enlace ha expirado',
+        code: 'EXPIRED',
       });
     }
 
     return sendJson(res, 200, {
       valid: false,
-      error: "Enlace inválido o inexistente",
-      code: "NOT_FOUND",
+      error: 'Enlace inválido o inexistente',
+      code: 'NOT_FOUND',
     });
   }
 
-  if (pathname === "/api/auth/reset-password" && req.method === "POST") {
-    const payload = JSON.parse(body || "{}");
+  if (pathname === '/api/auth/reset-password' && req.method === 'POST') {
+    const payload = JSON.parse(body || '{}');
 
-    if (payload.token === "reset-expired") {
+    if (payload.token === 'reset-expired') {
       return sendJson(res, 400, {
-        error: "El enlace ha expirado",
-        code: "EXPIRED",
+        error: 'El enlace ha expirado',
+        code: 'EXPIRED',
       });
     }
 
-    if (
-      !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/.test(
-        payload.password ?? "",
-      )
-    ) {
+    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/.test(payload.password ?? '')) {
       return sendJson(res, 400, {
-        error: "La contraseña no cumple los requisitos",
-        code: "INVALID_PASSWORD",
-        errors: ["Al menos 8 caracteres"],
+        error: 'La contraseña no cumple los requisitos',
+        code: 'INVALID_PASSWORD',
+        errors: ['Al menos 8 caracteres'],
       });
     }
 
     return sendJson(res, 200, {
       success: true,
-      message: "Contraseña actualizada correctamente",
+      message: 'Contraseña actualizada correctamente',
     });
   }
 
-  if (pathname === "/api/auth/verify-email" && req.method === "GET") {
-    if (url.searchParams.get("token") === "verify-valid") {
+  if (pathname === '/api/auth/verify-email' && req.method === 'GET') {
+    if (url.searchParams.get('token') === 'verify-valid') {
       return sendJson(res, 200, { status: true, user: null });
     }
 
     return sendJson(res, 401, {
-      message: "Invalid token",
-      code: "INVALID_TOKEN",
+      message: 'Invalid token',
+      code: 'INVALID_TOKEN',
     });
   }
 
-  if (pathname === "/api/auth/sign-out" && req.method === "POST") {
+  if (pathname === '/api/auth/sign-out' && req.method === 'POST') {
     // Como Better Auth: exige `content-type` JSON en la mutación (el cliente
     // manda `{}` aunque no tenga datos), así el e2e falla si el transporte
     // vuelve a mandar un POST sin body.
-    if (!(req.headers["content-type"] ?? "").startsWith("application/json")) {
+    if (!(req.headers['content-type'] ?? '').startsWith('application/json')) {
       return sendJson(res, 415, {
-        message: "Content-Type is required. Allowed types: application/json",
-        code: "UNSUPPORTED_MEDIA_TYPE",
+        message: 'Content-Type is required. Allowed types: application/json',
+        code: 'UNSUPPORTED_MEDIA_TYPE',
       });
     }
 
@@ -878,30 +859,29 @@ const server = createServer(async (req, res) => {
       200,
       { success: true },
       {
-        "set-cookie":
-          "better-auth.session_token=; Path=/; Max-Age=0; SameSite=Lax",
-      },
+        'set-cookie': 'better-auth.session_token=; Path=/; Max-Age=0; SameSite=Lax',
+      }
     );
   }
 
   // ── Planes públicos y checkout ────────────────────────────────────────────
-  if (pathname === "/api/billing/plans" && req.method === "GET") {
+  if (pathname === '/api/billing/plans' && req.method === 'GET') {
     return sendJson(res, 200, PLANS);
   }
 
-  if (pathname === "/api/stripe/checkout" && req.method === "POST") {
+  if (pathname === '/api/stripe/checkout' && req.method === 'POST') {
     // Hono exige auth + doble-submit CSRF: el stub rechaza una petición de
     // navegador sin `x-csrf-token` para que el e2e falle si el cliente lo omite.
     if (!csrfAllowed(req, cookies)) {
       return sendJson(res, 403, {
-        error: { code: "FORBIDDEN", message: "CSRF validation failed" },
+        error: { code: 'FORBIDDEN', message: 'CSRF validation failed' },
       });
     }
 
-    const payload = JSON.parse(body || "{}");
+    const payload = JSON.parse(body || '{}');
     if (!payload.priceId) {
       return sendJson(res, 400, {
-        error: { code: "VALIDATION_ERROR", message: "priceId required" },
+        error: { code: 'VALIDATION_ERROR', message: 'priceId required' },
       });
     }
 
@@ -910,41 +890,41 @@ const server = createServer(async (req, res) => {
 
     // Flujo real: Stripe redirige al `successUrl` que mandó el cliente.
     return sendJson(res, 200, {
-      url: payload.successUrl ?? "/pricing?success=1",
+      url: payload.successUrl ?? '/pricing?success=1',
     });
   }
 
   // ── Cuenta y preferencias (Task 11) ───────────────────────────────────────
   if (
-    pathname.startsWith("/api/account") ||
-    pathname === "/api/preferences" ||
-    pathname === "/api/billing/subscription" ||
-    pathname === "/api/stripe/portal" ||
-    pathname === "/api/stripe/sync-session"
+    pathname.startsWith('/api/account') ||
+    pathname === '/api/preferences' ||
+    pathname === '/api/billing/subscription' ||
+    pathname === '/api/stripe/portal' ||
+    pathname === '/api/stripe/sync-session'
   ) {
-    if (cookies["better-auth.session_token"] !== SESSION_TOKEN) {
+    if (cookies['better-auth.session_token'] !== SESSION_TOKEN) {
       return unauthorized(res);
     }
   }
 
-  if (pathname === "/api/account/update-name" && req.method === "POST") {
+  if (pathname === '/api/account/update-name' && req.method === 'POST') {
     if (!csrfAllowed(req, cookies)) return forbiddenCsrf(res);
 
     settingsState.nameAttempts += 1;
-    const payload = JSON.parse(body || "{}");
-    const firstName = String(payload.firstName ?? "").trim();
-    const lastName = String(payload.lastName ?? "").trim();
+    const payload = JSON.parse(body || '{}');
+    const firstName = String(payload.firstName ?? '').trim();
+    const lastName = String(payload.lastName ?? '').trim();
 
     if (!firstName || !lastName) {
       return sendJson(res, 400, {
-        error: { code: "VALIDATION_ERROR", message: "Invalid account payload" },
+        error: { code: 'VALIDATION_ERROR', message: 'Invalid account payload' },
       });
     }
 
     // Sentinela para cubrir el error genérico sin CTA de plan.
-    if (firstName === "Fallo") {
+    if (firstName === 'Fallo') {
       return sendJson(res, 500, {
-        error: { code: "INTERNAL", message: "Fallo simulado del servidor" },
+        error: { code: 'INTERNAL', message: 'Fallo simulado del servidor' },
       });
     }
 
@@ -953,31 +933,29 @@ const server = createServer(async (req, res) => {
     return sendJson(res, 200, { firstName, lastName });
   }
 
-  if (pathname === "/api/account/change-password" && req.method === "POST") {
+  if (pathname === '/api/account/change-password' && req.method === 'POST') {
     if (!csrfAllowed(req, cookies)) return forbiddenCsrf(res);
 
     settingsState.passwordAttempts += 1;
-    const payload = JSON.parse(body || "{}");
+    const payload = JSON.parse(body || '{}');
 
-    if (payload.currentPassword !== "Temporal123!") {
+    if (payload.currentPassword !== 'Temporal123!') {
       return sendJson(res, 400, {
         error: {
-          code: "VALIDATION_ERROR",
-          message: "La contraseña actual es incorrecta.",
+          code: 'VALIDATION_ERROR',
+          message: 'La contraseña actual es incorrecta.',
         },
       });
     }
 
     if (
-      !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/.test(
-        payload.newPassword ?? "",
-      )
+      !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/.test(payload.newPassword ?? '')
     ) {
       return sendJson(res, 400, {
         error: {
-          code: "VALIDATION_ERROR",
+          code: 'VALIDATION_ERROR',
           message:
-            "La contraseña debe tener al menos 8 caracteres, incluir mayúsculas, minúsculas, números y un carácter especial.",
+            'La contraseña debe tener al menos 8 caracteres, incluir mayúsculas, minúsculas, números y un carácter especial.',
         },
       });
     }
@@ -985,91 +963,86 @@ const server = createServer(async (req, res) => {
     return sendJson(res, 200, { ok: true });
   }
 
-  if (pathname === "/api/preferences" && req.method === "GET") {
+  if (pathname === '/api/preferences' && req.method === 'GET') {
     return sendJson(res, 200, {
-      userId: "qa-user",
+      userId: 'qa-user',
       ...settingsState.preferences,
     });
   }
 
-  if (pathname === "/api/preferences" && req.method === "PUT") {
+  if (pathname === '/api/preferences' && req.method === 'PUT') {
     if (!csrfAllowed(req, cookies)) return forbiddenCsrf(res);
 
     settingsState.preferencesPutAttempts += 1;
 
     // Sentinela `qa-prefs=error` para el rollback visual del formulario.
-    if (cookies["qa-prefs"] === "error") {
+    if (cookies['qa-prefs'] === 'error') {
       return sendJson(res, 500, {
-        error: { code: "INTERNAL", message: "Fallo simulado del servidor" },
+        error: { code: 'INTERNAL', message: 'Fallo simulado del servidor' },
       });
     }
 
-    const payload = JSON.parse(body || "{}");
+    const payload = JSON.parse(body || '{}');
     // Como Hono: un PUT parcial conserva lo persistido y devuelve la fila.
-    if (payload.theme !== undefined)
-      settingsState.preferences.theme = payload.theme;
+    if (payload.theme !== undefined) settingsState.preferences.theme = payload.theme;
     if (payload.accentColor !== undefined) {
       settingsState.preferences.accentColor = payload.accentColor;
     }
 
     return sendJson(res, 200, {
-      userId: "qa-user",
+      userId: 'qa-user',
       ...settingsState.preferences,
     });
   }
 
   // ── Facturación (Task 11) ─────────────────────────────────────────────────
-  if (pathname === "/api/billing/subscription" && req.method === "GET") {
+  if (pathname === '/api/billing/subscription' && req.method === 'GET') {
     // La sincronización del checkout simula el cambio a Basic (paridad con la
     // ingesta real) y el plan Free responde 404 como Hono.
     if (settingsState.synced) {
       return sendJson(
         res,
         200,
-        subscriptionResponse("basic", {
+        subscriptionResponse('basic', {
           ...cookies,
-          "qa-subscription": undefined,
-        }),
+          'qa-subscription': undefined,
+        })
       );
     }
 
-    if ((cookies["qa-plan"] ?? "pro") === "free") {
+    if ((cookies['qa-plan'] ?? 'pro') === 'free') {
       return sendJson(res, 404, {
-        error: { code: "NOT_FOUND", message: "No active subscription" },
+        error: { code: 'NOT_FOUND', message: 'No active subscription' },
       });
     }
 
-    return sendJson(
-      res,
-      200,
-      subscriptionResponse(cookies["qa-plan"] ?? "pro", cookies),
-    );
+    return sendJson(res, 200, subscriptionResponse(cookies['qa-plan'] ?? 'pro', cookies));
   }
 
-  if (pathname === "/api/stripe/portal" && req.method === "POST") {
+  if (pathname === '/api/stripe/portal' && req.method === 'POST') {
     if (!csrfAllowed(req, cookies)) return forbiddenCsrf(res);
 
     settingsState.portalAttempts += 1;
 
-    if (cookies["qa-portal"] === "error") {
+    if (cookies['qa-portal'] === 'error') {
       return sendJson(res, 500, {
-        error: { code: "INTERNAL", message: "No se pudo abrir el portal." },
+        error: { code: 'INTERNAL', message: 'No se pudo abrir el portal.' },
       });
     }
 
-    return sendJson(res, 200, { url: "/api/health?portal=1" });
+    return sendJson(res, 200, { url: '/api/health?portal=1' });
   }
 
-  if (pathname === "/api/stripe/sync-session" && req.method === "POST") {
+  if (pathname === '/api/stripe/sync-session' && req.method === 'POST') {
     if (!csrfAllowed(req, cookies)) return forbiddenCsrf(res);
 
     settingsState.syncAttempts += 1;
 
-    if (cookies["qa-sync"] === "error") {
+    if (cookies['qa-sync'] === 'error') {
       return sendJson(res, 500, {
         error: {
-          code: "INTERNAL",
-          message: "No se pudo sincronizar la suscripción.",
+          code: 'INTERNAL',
+          message: 'No se pudo sincronizar la suscripción.',
         },
       });
     }
@@ -1083,32 +1056,29 @@ const server = createServer(async (req, res) => {
   // aquí, antes de los handlers de ambos dominios, en lugar de repetirlo en
   // cada uno; las rutas de auth y las de cuenta/stripe ya lo validan arriba.
   const isDataMutation =
-    (pathname === "/api/recipes" ||
-      pathname.startsWith("/api/recipes/") ||
-      pathname === "/api/ingredients" ||
-      pathname.startsWith("/api/ingredients/")) &&
-    ["POST", "PUT", "PATCH", "DELETE"].includes(req.method);
+    (pathname === '/api/recipes' ||
+      pathname.startsWith('/api/recipes/') ||
+      pathname === '/api/ingredients' ||
+      pathname.startsWith('/api/ingredients/')) &&
+    ['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method);
 
   if (isDataMutation && !csrfAllowed(req, cookies)) {
     return forbiddenCsrf(res);
   }
 
   // ── Ingredientes (Task 7) ─────────────────────────────────────────────────
-  if (
-    pathname.startsWith("/api/ingredients") ||
-    pathname === "/api/usage-counts"
-  ) {
-    if (cookies["better-auth.session_token"] !== SESSION_TOKEN) {
+  if (pathname.startsWith('/api/ingredients') || pathname === '/api/usage-counts') {
+    if (cookies['better-auth.session_token'] !== SESSION_TOKEN) {
       return sendJson(res, 401, {
-        error: { code: "UNAUTHENTICATED", message: "Authentication required" },
+        error: { code: 'UNAUTHENTICATED', message: 'Authentication required' },
       });
     }
   }
 
-  if (pathname === "/api/usage-counts" && req.method === "GET") {
+  if (pathname === '/api/usage-counts' && req.method === 'GET') {
     // `qa-usage=low` deja el remanente en los umbrales de aviso (recetas 3,
     // ingredientes 5) para el plan Free.
-    if (cookies["qa-usage"] === "low") {
+    if (cookies['qa-usage'] === 'low') {
       return sendJson(res, 200, { recipes: 9, ingredients: 29 });
     }
 
@@ -1118,60 +1088,48 @@ const server = createServer(async (req, res) => {
     });
   }
 
-  if (pathname === "/api/ingredients/usage" && req.method === "GET") {
+  if (pathname === '/api/ingredients/usage' && req.method === 'GET') {
     return sendJson(res, 200, ingredientUsageMap());
   }
 
-  if (pathname === "/api/ingredients" && req.method === "GET") {
-    return sendJson(
-      res,
-      200,
-      ingredientState.ingredients.map(toIngredientResponse),
-    );
+  if (pathname === '/api/ingredients' && req.method === 'GET') {
+    return sendJson(res, 200, ingredientState.ingredients.map(toIngredientResponse));
   }
 
-  if (pathname === "/api/ingredients" && req.method === "POST") {
+  if (pathname === '/api/ingredients' && req.method === 'POST') {
     ingredientState.postAttempts += 1;
-    const payload = JSON.parse(body || "{}");
+    const payload = JSON.parse(body || '{}');
 
     // `qa-plan=free` reproduce el límite real de 30 ingredientes.
-    if (
-      cookies["qa-plan"] === "free" &&
-      ingredientState.ingredients.length >= 30
-    ) {
+    if (cookies['qa-plan'] === 'free' && ingredientState.ingredients.length >= 30) {
       return sendJson(res, 403, {
         error: {
-          code: "PLAN_LIMIT",
-          message: "Ingredient limit reached for your plan (30)",
+          code: 'PLAN_LIMIT',
+          message: 'Ingredient limit reached for your plan (30)',
         },
       });
     }
 
     // Sentinela para cubrir el camino de error genérico sin CTA de upgrade.
-    if (payload.name === "Fallo simulado") {
+    if (payload.name === 'Fallo simulado') {
       return sendJson(res, 500, {
-        error: { code: "INTERNAL", message: "Fallo simulado del servidor" },
+        error: { code: 'INTERNAL', message: 'Fallo simulado del servidor' },
       });
     }
 
-    if (
-      !payload.name ||
-      !Number.isFinite(payload.price) ||
-      !(payload.purchaseQuantity > 0)
-    ) {
+    if (!payload.name || !Number.isFinite(payload.price) || !(payload.purchaseQuantity > 0)) {
       return sendJson(res, 400, {
         error: {
-          code: "VALIDATION_ERROR",
-          message: "Invalid ingredient input",
+          code: 'VALIDATION_ERROR',
+          message: 'Invalid ingredient input',
         },
       });
     }
 
     const created = {
-      id:
-        Math.max(0, ...ingredientState.ingredients.map((item) => item.id)) + 1,
+      id: Math.max(0, ...ingredientState.ingredients.map((item) => item.id)) + 1,
       name: payload.name,
-      unit: payload.unit ?? "kg",
+      unit: payload.unit ?? 'kg',
       price: payload.price,
       purchaseQuantity: payload.purchaseQuantity,
       brand: payload.brand ?? null,
@@ -1183,14 +1141,14 @@ const server = createServer(async (req, res) => {
 
   const ingredientMatch = pathname.match(/^\/api\/ingredients\/(\d+)$/);
 
-  if (ingredientMatch && req.method === "PATCH") {
+  if (ingredientMatch && req.method === 'PATCH') {
     const id = Number(ingredientMatch[1]);
-    const payload = JSON.parse(body || "{}");
+    const payload = JSON.parse(body || '{}');
     const target = ingredientState.ingredients.find((item) => item.id === id);
 
     if (!target) {
       return sendJson(res, 404, {
-        error: { code: "NOT_FOUND", message: "Ingredient not found" },
+        error: { code: 'NOT_FOUND', message: 'Ingredient not found' },
       });
     }
 
@@ -1206,15 +1164,13 @@ const server = createServer(async (req, res) => {
     return sendJson(res, 200, toIngredientResponse(target));
   }
 
-  if (ingredientMatch && req.method === "DELETE") {
+  if (ingredientMatch && req.method === 'DELETE') {
     const id = Number(ingredientMatch[1]);
-    const index = ingredientState.ingredients.findIndex(
-      (item) => item.id === id,
-    );
+    const index = ingredientState.ingredients.findIndex((item) => item.id === id);
 
     if (index === -1) {
       return sendJson(res, 404, {
-        error: { code: "NOT_FOUND", message: "Ingredient not found" },
+        error: { code: 'NOT_FOUND', message: 'Ingredient not found' },
       });
     }
 
@@ -1223,9 +1179,9 @@ const server = createServer(async (req, res) => {
       // Como Hono: `recipes` viaja fuera del envelope de error.
       return sendJson(res, 409, {
         error: {
-          code: "DOMAIN_ERROR",
-          message: "Ingredient is in use by existing recipes",
-          reason: "ingredient_in_use",
+          code: 'DOMAIN_ERROR',
+          message: 'Ingredient is in use by existing recipes',
+          reason: 'ingredient_in_use',
         },
         recipes: recipes.map((recipe) => ({
           id: recipe.id,
@@ -1239,17 +1195,15 @@ const server = createServer(async (req, res) => {
     return res.end();
   }
 
-  const ingredientUsageMatch = pathname.match(
-    /^\/api\/ingredients\/(\d+)\/usage$/,
-  );
+  const ingredientUsageMatch = pathname.match(/^\/api\/ingredients\/(\d+)\/usage$/);
 
-  if (ingredientUsageMatch && req.method === "GET") {
+  if (ingredientUsageMatch && req.method === 'GET') {
     const id = Number(ingredientUsageMatch[1]);
     const target = ingredientState.ingredients.find((item) => item.id === id);
 
     if (!target) {
       return sendJson(res, 404, {
-        error: { code: "NOT_FOUND", message: "Ingredient not found" },
+        error: { code: 'NOT_FOUND', message: 'Ingredient not found' },
       });
     }
 
@@ -1259,35 +1213,33 @@ const server = createServer(async (req, res) => {
   }
 
   // ── Recetas (Tasks 8 y 9) ────────────────────────────────────────────────
-  const isRecipePath =
-    pathname === "/api/recipes" || pathname.startsWith("/api/recipes/");
+  const isRecipePath = pathname === '/api/recipes' || pathname.startsWith('/api/recipes/');
 
-  if (isRecipePath && cookies["better-auth.session_token"] !== SESSION_TOKEN) {
+  if (isRecipePath && cookies['better-auth.session_token'] !== SESSION_TOKEN) {
     return sendJson(res, 401, {
-      error: { code: "UNAUTHENTICATED", message: "Authentication required" },
+      error: { code: 'UNAUTHENTICATED', message: 'Authentication required' },
     });
   }
 
-  if (pathname === "/api/recipes" && req.method === "GET") {
+  if (pathname === '/api/recipes' && req.method === 'GET') {
     return sendJson(res, 200, recipeState.recipes.map(toRecipeSummaryResponse));
   }
 
   // Planificador de producción (Task 12): el detalle de la selección. Como Hono,
   // exige la feature del plan y el tope de 3 recetas fuera de Pro.
-  if (pathname === "/api/recipes/by-ids" && req.method === "GET") {
+  if (pathname === '/api/recipes/by-ids' && req.method === 'GET') {
     recipeState.byIdsAttempts += 1;
 
-    const ids = (url.searchParams.get("ids") ?? "")
-      .split(",")
+    const ids = (url.searchParams.get('ids') ?? '')
+      .split(',')
       .map((value) => Number(value.trim()))
       .filter((value) => Number.isInteger(value) && value > 0);
 
     if (ids.length === 0) {
       return sendJson(res, 400, {
         error: {
-          code: "VALIDATION_ERROR",
-          message:
-            "ids query parameter must contain at least one positive integer",
+          code: 'VALIDATION_ERROR',
+          message: 'ids query parameter must contain at least one positive integer',
         },
       });
     }
@@ -1295,26 +1247,26 @@ const server = createServer(async (req, res) => {
     if (ids.length > 100) {
       return sendJson(res, 400, {
         error: {
-          code: "VALIDATION_ERROR",
-          message: "ids query parameter cannot contain more than 100 ids",
+          code: 'VALIDATION_ERROR',
+          message: 'ids query parameter cannot contain more than 100 ids',
         },
       });
     }
 
-    if (cookies["qa-plan"] === "free") {
+    if (cookies['qa-plan'] === 'free') {
       return sendJson(res, 403, {
         error: {
-          code: "FEATURE_REQUIRED",
-          message: "Feature not available in your plan: production_planner",
+          code: 'FEATURE_REQUIRED',
+          message: 'Feature not available in your plan: production_planner',
         },
       });
     }
 
-    if (cookies["qa-plan"] === "basic" && ids.length > 3) {
+    if (cookies['qa-plan'] === 'basic' && ids.length > 3) {
       return sendJson(res, 403, {
         error: {
-          code: "PLAN_LIMIT",
-          message: "Production planner supports up to 3 recipes on your plan",
+          code: 'PLAN_LIMIT',
+          message: 'Production planner supports up to 3 recipes on your plan',
         },
       });
     }
@@ -1325,34 +1277,34 @@ const server = createServer(async (req, res) => {
       ids
         .map((id) => recipeState.recipes.find((recipe) => recipe.id === id))
         .filter(Boolean)
-        .map(toRecipeDetailResponse),
+        .map(toRecipeDetailResponse)
     );
   }
 
-  if (pathname === "/api/recipes" && req.method === "POST") {
+  if (pathname === '/api/recipes' && req.method === 'POST') {
     recipeState.postAttempts += 1;
-    const payload = JSON.parse(body || "{}");
+    const payload = JSON.parse(body || '{}');
 
     // `qa-plan=free` reproduce el límite real de 10 recetas.
-    if (cookies["qa-plan"] === "free" && recipeState.recipes.length >= 10) {
+    if (cookies['qa-plan'] === 'free' && recipeState.recipes.length >= 10) {
       return sendJson(res, 403, {
         error: {
-          code: "PLAN_LIMIT",
-          message: "Recipe limit reached for your plan (10)",
+          code: 'PLAN_LIMIT',
+          message: 'Recipe limit reached for your plan (10)',
         },
       });
     }
 
     // Sentinela para cubrir el camino de error genérico sin CTA de upgrade.
-    if (payload.name === "Fallo simulado") {
+    if (payload.name === 'Fallo simulado') {
       return sendJson(res, 500, {
-        error: { code: "INTERNAL", message: "Fallo simulado del servidor" },
+        error: { code: 'INTERNAL', message: 'Fallo simulado del servidor' },
       });
     }
 
-    if (!payload.name || typeof payload.name !== "string") {
+    if (!payload.name || typeof payload.name !== 'string') {
       return sendJson(res, 400, {
-        error: { code: "VALIDATION_ERROR", message: "Invalid recipe input" },
+        error: { code: 'VALIDATION_ERROR', message: 'Invalid recipe input' },
       });
     }
 
@@ -1375,16 +1327,14 @@ const server = createServer(async (req, res) => {
     return sendJson(res, 201, toRecipeDetailResponse(created));
   }
 
-  const recipeDuplicateMatch = pathname.match(
-    /^\/api\/recipes\/(\d+)\/duplicate$/,
-  );
+  const recipeDuplicateMatch = pathname.match(/^\/api\/recipes\/(\d+)\/duplicate$/);
 
-  if (recipeDuplicateMatch && req.method === "POST") {
-    if (cookies["qa-plan"] === "free") {
+  if (recipeDuplicateMatch && req.method === 'POST') {
+    if (cookies['qa-plan'] === 'free') {
       return sendJson(res, 403, {
         error: {
-          code: "FEATURE_REQUIRED",
-          message: "Feature not available in your plan: recipe_duplicate",
+          code: 'FEATURE_REQUIRED',
+          message: 'Feature not available in your plan: recipe_duplicate',
         },
       });
     }
@@ -1394,7 +1344,7 @@ const server = createServer(async (req, res) => {
 
     if (!source) {
       return sendJson(res, 404, {
-        error: { code: "NOT_FOUND", message: "Recipe not found" },
+        error: { code: 'NOT_FOUND', message: 'Recipe not found' },
       });
     }
 
@@ -1416,20 +1366,20 @@ const server = createServer(async (req, res) => {
 
   const recipeMatch = pathname.match(/^\/api\/recipes\/(\d+)$/);
 
-  if (recipeMatch && req.method === "GET") {
+  if (recipeMatch && req.method === 'GET') {
     const id = Number(recipeMatch[1]);
     const recipe = recipeState.recipes.find((item) => item.id === id);
 
     if (!recipe) {
       return sendJson(res, 404, {
-        error: { code: "NOT_FOUND", message: "Recipe not found" },
+        error: { code: 'NOT_FOUND', message: 'Recipe not found' },
       });
     }
 
     return sendJson(res, 200, toRecipeDetailResponse(recipe));
   }
 
-  if (recipeMatch && req.method === "PATCH") {
+  if (recipeMatch && req.method === 'PATCH') {
     recipeState.patchAttempts += 1;
 
     const id = Number(recipeMatch[1]);
@@ -1437,41 +1387,36 @@ const server = createServer(async (req, res) => {
 
     if (!recipe) {
       return sendJson(res, 404, {
-        error: { code: "NOT_FOUND", message: "Recipe not found" },
+        error: { code: 'NOT_FOUND', message: 'Recipe not found' },
       });
     }
 
-    const payload = JSON.parse(body || "{}");
+    const payload = JSON.parse(body || '{}');
 
     // Sentinela para cubrir el error genérico de guardado sin CTA de plan.
-    if (payload.name === "Fallo simulado") {
+    if (payload.name === 'Fallo simulado') {
       return sendJson(res, 500, {
-        error: { code: "INTERNAL", message: "Fallo simulado del servidor" },
+        error: { code: 'INTERNAL', message: 'Fallo simulado del servidor' },
       });
     }
 
-    if (
-      typeof payload.name !== "string" ||
-      !Array.isArray(payload.ingredients)
-    ) {
+    if (typeof payload.name !== 'string' || !Array.isArray(payload.ingredients)) {
       return sendJson(res, 400, {
-        error: { code: "VALIDATION_ERROR", message: "Invalid recipe input" },
+        error: { code: 'VALIDATION_ERROR', message: 'Invalid recipe input' },
       });
     }
 
     // Igual que Hono: el guardado reemplaza la lista de ingredientes completa.
     recipe.name = payload.name;
     recipe.category = payload.category ? String(payload.category) : null;
-    recipe.desiredMargin = Number(
-      payload.desiredMargin ?? recipe.desiredMargin,
-    );
+    recipe.desiredMargin = Number(payload.desiredMargin ?? recipe.desiredMargin);
     recipe.fixedCostsPercentage = Number(
-      payload.fixedCostsPercentage ?? recipe.fixedCostsPercentage,
+      payload.fixedCostsPercentage ?? recipe.fixedCostsPercentage
     );
     recipe.ingredients = payload.ingredients.map((row) => ({
       ingredientId: Number(row.ingredientId),
       quantity: Number(row.quantity),
-      unit: String(row.unit ?? "unidad"),
+      unit: String(row.unit ?? 'unidad'),
       ...(row.comment ? { comment: String(row.comment) } : {}),
     }));
     recipe.ingredientCount = recipe.ingredients.length;
@@ -1480,14 +1425,14 @@ const server = createServer(async (req, res) => {
     return sendJson(res, 200, toRecipeDetailResponse(recipe));
   }
 
-  if (recipeMatch && req.method === "DELETE") {
+  if (recipeMatch && req.method === 'DELETE') {
     recipeState.deleteAttempts += 1;
     const id = Number(recipeMatch[1]);
     const index = recipeState.recipes.findIndex((item) => item.id === id);
 
     if (index === -1) {
       return sendJson(res, 404, {
-        error: { code: "NOT_FOUND", message: "Recipe not found" },
+        error: { code: 'NOT_FOUND', message: 'Recipe not found' },
       });
     }
 
@@ -1497,32 +1442,30 @@ const server = createServer(async (req, res) => {
   }
 
   // ── Costos fijos de receta y presentaciones (Task 10) ────────────────────
-  const SENTINEL_NAME = "Fallo simulado";
+  const SENTINEL_NAME = 'Fallo simulado';
 
   function recipeById(id) {
     return recipeState.recipes.find((recipe) => recipe.id === id);
   }
 
-  const fixedCostCreateMatch = pathname.match(
-    /^\/api\/recipes\/(\d+)\/fixed-costs$/,
-  );
+  const fixedCostCreateMatch = pathname.match(/^\/api\/recipes\/(\d+)\/fixed-costs$/);
 
-  if (fixedCostCreateMatch && req.method === "POST") {
+  if (fixedCostCreateMatch && req.method === 'POST') {
     recipeState.fixedCostAttempts += 1;
     const recipeId = Number(fixedCostCreateMatch[1]);
     const recipe = recipeById(recipeId);
 
     if (!recipe) {
       return sendJson(res, 404, {
-        error: { code: "NOT_FOUND", message: "Recipe not found" },
+        error: { code: 'NOT_FOUND', message: 'Recipe not found' },
       });
     }
 
-    const payload = JSON.parse(body || "{}");
+    const payload = JSON.parse(body || '{}');
 
     if (payload.name === SENTINEL_NAME) {
       return sendJson(res, 500, {
-        error: { code: "INTERNAL", message: "Fallo simulado del servidor" },
+        error: { code: 'INTERNAL', message: 'Fallo simulado del servidor' },
       });
     }
 
@@ -1530,17 +1473,17 @@ const server = createServer(async (req, res) => {
     if (!Number.isFinite(value) || value <= 0) {
       return sendJson(res, 400, {
         error: {
-          code: "VALIDATION_ERROR",
-          message: "Invalid fixed cost input",
+          code: 'VALIDATION_ERROR',
+          message: 'Invalid fixed cost input',
         },
       });
     }
 
     const created = {
       id: Math.max(0, ...recipe.recipeFixedCosts.map((fc) => fc.id)) + 1,
-      name: payload.name ?? "Costo Fijo",
-      type: payload.type ?? "AMOUNT",
-      base: payload.base ?? "PER_BATCH",
+      name: payload.name ?? 'Costo Fijo',
+      type: payload.type ?? 'AMOUNT',
+      base: payload.base ?? 'PER_BATCH',
       value,
       hours: payload.hours ?? null,
     };
@@ -1549,30 +1492,26 @@ const server = createServer(async (req, res) => {
     return sendJson(res, 201, toFixedCostResponse(recipeId, created));
   }
 
-  const fixedCostItemMatch = pathname.match(
-    /^\/api\/recipes\/(\d+)\/fixed-costs\/(\d+)$/,
-  );
+  const fixedCostItemMatch = pathname.match(/^\/api\/recipes\/(\d+)\/fixed-costs\/(\d+)$/);
 
-  if (fixedCostItemMatch && req.method === "PATCH") {
+  if (fixedCostItemMatch && req.method === 'PATCH') {
     recipeState.fixedCostAttempts += 1;
     const recipeId = Number(fixedCostItemMatch[1]);
     const fixedCostId = Number(fixedCostItemMatch[2]);
     const recipe = recipeById(recipeId);
-    const target = recipe?.recipeFixedCosts.find(
-      (fixedCost) => fixedCost.id === fixedCostId,
-    );
+    const target = recipe?.recipeFixedCosts.find((fixedCost) => fixedCost.id === fixedCostId);
 
     if (!recipe || !target) {
       return sendJson(res, 404, {
-        error: { code: "NOT_FOUND", message: "Fixed cost not found" },
+        error: { code: 'NOT_FOUND', message: 'Fixed cost not found' },
       });
     }
 
-    const payload = JSON.parse(body || "{}");
+    const payload = JSON.parse(body || '{}');
 
     if (payload.name === SENTINEL_NAME) {
       return sendJson(res, 500, {
-        error: { code: "INTERNAL", message: "Fallo simulado del servidor" },
+        error: { code: 'INTERNAL', message: 'Fallo simulado del servidor' },
       });
     }
 
@@ -1580,8 +1519,8 @@ const server = createServer(async (req, res) => {
     if (!Number.isFinite(value) || value <= 0) {
       return sendJson(res, 400, {
         error: {
-          code: "VALIDATION_ERROR",
-          message: "Invalid fixed cost input",
+          code: 'VALIDATION_ERROR',
+          message: 'Invalid fixed cost input',
         },
       });
     }
@@ -1596,17 +1535,16 @@ const server = createServer(async (req, res) => {
     return sendJson(res, 200, toFixedCostResponse(recipeId, target));
   }
 
-  if (fixedCostItemMatch && req.method === "DELETE") {
+  if (fixedCostItemMatch && req.method === 'DELETE') {
     recipeState.fixedCostAttempts += 1;
     const recipeId = Number(fixedCostItemMatch[1]);
     const fixedCostId = Number(fixedCostItemMatch[2]);
     const recipe = recipeById(recipeId);
-    const index =
-      recipe?.recipeFixedCosts.findIndex((fc) => fc.id === fixedCostId) ?? -1;
+    const index = recipe?.recipeFixedCosts.findIndex((fc) => fc.id === fixedCostId) ?? -1;
 
     if (!recipe || index === -1) {
       return sendJson(res, 404, {
-        error: { code: "NOT_FOUND", message: "Fixed cost not found" },
+        error: { code: 'NOT_FOUND', message: 'Fixed cost not found' },
       });
     }
 
@@ -1615,39 +1553,33 @@ const server = createServer(async (req, res) => {
     return res.end();
   }
 
-  const presentationsMatch = pathname.match(
-    /^\/api\/recipes\/(\d+)\/presentations$/,
-  );
+  const presentationsMatch = pathname.match(/^\/api\/recipes\/(\d+)\/presentations$/);
 
-  if (presentationsMatch && req.method === "POST") {
+  if (presentationsMatch && req.method === 'POST') {
     recipeState.presentationAttempts += 1;
     const recipeId = Number(presentationsMatch[1]);
     const recipe = recipeById(recipeId);
 
     if (!recipe) {
       return sendJson(res, 404, {
-        error: { code: "NOT_FOUND", message: "Recipe not found" },
+        error: { code: 'NOT_FOUND', message: 'Recipe not found' },
       });
     }
 
-    const payload = JSON.parse(body || "{}");
+    const payload = JSON.parse(body || '{}');
 
     if (payload.name === SENTINEL_NAME) {
       return sendJson(res, 500, {
-        error: { code: "INTERNAL", message: "Fallo simulado del servidor" },
+        error: { code: 'INTERNAL', message: 'Fallo simulado del servidor' },
       });
     }
 
     const unitsPerBatch = Number(payload.unitsPerBatch);
-    if (
-      !payload.name ||
-      !Number.isFinite(unitsPerBatch) ||
-      unitsPerBatch <= 0
-    ) {
+    if (!payload.name || !Number.isFinite(unitsPerBatch) || unitsPerBatch <= 0) {
       return sendJson(res, 400, {
         error: {
-          code: "VALIDATION_ERROR",
-          message: "Invalid presentation input",
+          code: 'VALIDATION_ERROR',
+          message: 'Invalid presentation input',
         },
       });
     }
@@ -1667,44 +1599,36 @@ const server = createServer(async (req, res) => {
     return sendJson(res, 201, toPresentationResponse(recipeId, created));
   }
 
-  const presentationItemMatch = pathname.match(
-    /^\/api\/recipes\/(\d+)\/presentations\/(\d+)$/,
-  );
+  const presentationItemMatch = pathname.match(/^\/api\/recipes\/(\d+)\/presentations\/(\d+)$/);
 
-  if (presentationItemMatch && req.method === "PATCH") {
+  if (presentationItemMatch && req.method === 'PATCH') {
     recipeState.presentationAttempts += 1;
     const recipeId = Number(presentationItemMatch[1]);
     const presentationId = Number(presentationItemMatch[2]);
     const recipe = recipeById(recipeId);
-    const target = recipe?.presentations.find(
-      (presentation) => presentation.id === presentationId,
-    );
+    const target = recipe?.presentations.find((presentation) => presentation.id === presentationId);
 
     if (!recipe || !target) {
       return sendJson(res, 404, {
-        error: { code: "NOT_FOUND", message: "Presentation not found" },
+        error: { code: 'NOT_FOUND', message: 'Presentation not found' },
       });
     }
 
-    const payload = JSON.parse(body || "{}");
+    const payload = JSON.parse(body || '{}');
     recipeState.lastPresentationPatch = payload;
 
     if (payload.name === SENTINEL_NAME) {
       return sendJson(res, 500, {
-        error: { code: "INTERNAL", message: "Fallo simulado del servidor" },
+        error: { code: 'INTERNAL', message: 'Fallo simulado del servidor' },
       });
     }
 
     const unitsPerBatch = Number(payload.unitsPerBatch ?? target.unitsPerBatch);
-    if (
-      !payload.name ||
-      !Number.isFinite(unitsPerBatch) ||
-      unitsPerBatch <= 0
-    ) {
+    if (!payload.name || !Number.isFinite(unitsPerBatch) || unitsPerBatch <= 0) {
       return sendJson(res, 400, {
         error: {
-          code: "VALIDATION_ERROR",
-          message: "Invalid presentation input",
+          code: 'VALIDATION_ERROR',
+          message: 'Invalid presentation input',
         },
       });
     }
@@ -1713,25 +1637,22 @@ const server = createServer(async (req, res) => {
     target.unitsPerBatch = unitsPerBatch;
     // Igual que Hono: la clave ausente deja el precio como estaba.
     if (payload.salePrice !== undefined) {
-      target.salePrice =
-        payload.salePrice === null ? null : Number(payload.salePrice);
+      target.salePrice = payload.salePrice === null ? null : Number(payload.salePrice);
     }
 
     return sendJson(res, 200, toPresentationResponse(recipeId, target));
   }
 
-  if (presentationItemMatch && req.method === "DELETE") {
+  if (presentationItemMatch && req.method === 'DELETE') {
     recipeState.presentationAttempts += 1;
     const recipeId = Number(presentationItemMatch[1]);
     const presentationId = Number(presentationItemMatch[2]);
     const recipe = recipeById(recipeId);
-    const index =
-      recipe?.presentations.findIndex((item) => item.id === presentationId) ??
-      -1;
+    const index = recipe?.presentations.findIndex((item) => item.id === presentationId) ?? -1;
 
     if (!recipe || index === -1) {
       return sendJson(res, 404, {
-        error: { code: "NOT_FOUND", message: "Presentation not found" },
+        error: { code: 'NOT_FOUND', message: 'Presentation not found' },
       });
     }
 
@@ -1741,47 +1662,47 @@ const server = createServer(async (req, res) => {
   }
 
   // ── Fixtures QA de recetas (deterministas por test) ───────────────────────
-  if (pathname === "/api/__qa/recipes/reset" && req.method === "POST") {
-    recipeState = createRecipeState(JSON.parse(body || "{}"));
+  if (pathname === '/api/__qa/recipes/reset' && req.method === 'POST') {
+    recipeState = createRecipeState(JSON.parse(body || '{}'));
     return sendJson(res, 200, readRecipeState());
   }
 
-  if (pathname === "/api/__qa/recipes/state" && req.method === "GET") {
+  if (pathname === '/api/__qa/recipes/state' && req.method === 'GET') {
     return sendJson(res, 200, readRecipeState());
   }
 
   // ── Fixtures QA de ingredientes (deterministas por test) ──────────────────
-  if (pathname === "/api/__qa/ingredients/reset" && req.method === "POST") {
-    ingredientState = createIngredientState(JSON.parse(body || "{}"));
+  if (pathname === '/api/__qa/ingredients/reset' && req.method === 'POST') {
+    ingredientState = createIngredientState(JSON.parse(body || '{}'));
     return sendJson(res, 200, readIngredientState());
   }
 
-  if (pathname === "/api/__qa/ingredients/state" && req.method === "GET") {
+  if (pathname === '/api/__qa/ingredients/state' && req.method === 'GET') {
     return sendJson(res, 200, readIngredientState());
   }
 
   // ── Fixture QA de cuenta, preferencias y billing (Task 11) ────────────────
-  if (pathname === "/api/__qa/settings/reset" && req.method === "POST") {
+  if (pathname === '/api/__qa/settings/reset' && req.method === 'POST') {
     settingsState = createSettingsState();
     return sendJson(res, 200, readSettingsState());
   }
 
-  if (pathname === "/api/__qa/settings/state" && req.method === "GET") {
+  if (pathname === '/api/__qa/settings/state' && req.method === 'GET') {
     return sendJson(res, 200, readSettingsState());
   }
 
   // ── Fixture QA del token CSRF ─────────────────────────────────────────────
-  if (pathname === "/api/__qa/csrf/reset" && req.method === "POST") {
+  if (pathname === '/api/__qa/csrf/reset' && req.method === 'POST') {
     csrfState = createCsrfState();
     return sendJson(res, 200, { ...csrfState });
   }
 
-  if (pathname === "/api/__qa/csrf/state" && req.method === "GET") {
+  if (pathname === '/api/__qa/csrf/state' && req.method === 'GET') {
     return sendJson(res, 200, { ...csrfState });
   }
 
   // ── Casos del relay ───────────────────────────────────────────────────────
-  if (pathname === "/api/health") {
+  if (pathname === '/api/health') {
     return sendJson(res, 200, {
       ok: true,
       method: req.method,
@@ -1790,51 +1711,51 @@ const server = createServer(async (req, res) => {
       cookie: req.headers.cookie ?? null,
       origin: req.headers.origin ?? null,
       referer: req.headers.referer ?? null,
-      csrf: req.headers["x-csrf-token"] ?? null,
-      secFetchSite: req.headers["sec-fetch-site"] ?? null,
+      csrf: req.headers['x-csrf-token'] ?? null,
+      secFetchSite: req.headers['sec-fetch-site'] ?? null,
     });
   }
 
-  if (pathname === "/api/echo" && req.method === "POST") {
+  if (pathname === '/api/echo' && req.method === 'POST') {
     return sendJson(res, 200, { received: body });
   }
 
-  if (pathname === "/api/multi-cookie") {
+  if (pathname === '/api/multi-cookie') {
     return sendJson(
       res,
       200,
       { cookies: 2 },
       {
-        "set-cookie": [
-          "alpha=1; Path=/; HttpOnly; SameSite=Lax",
-          "beta=2; Path=/; HttpOnly; SameSite=Lax",
+        'set-cookie': [
+          'alpha=1; Path=/; HttpOnly; SameSite=Lax',
+          'beta=2; Path=/; HttpOnly; SameSite=Lax',
         ],
-      },
+      }
     );
   }
 
-  if (pathname === "/api/redirect") {
-    res.writeHead(302, { location: "/api/health" });
+  if (pathname === '/api/redirect') {
+    res.writeHead(302, { location: '/api/health' });
     return res.end();
   }
 
-  if (pathname === "/api/teapot") {
+  if (pathname === '/api/teapot') {
     return sendJson(res, 418, {
       error: {
-        code: "DOMAIN_ERROR",
-        message: "teapot",
-        reason: "ingredient_in_use",
+        code: 'DOMAIN_ERROR',
+        message: 'teapot',
+        reason: 'ingredient_in_use',
       },
     });
   }
 
-  if (pathname === "/api/boom") {
+  if (pathname === '/api/boom') {
     req.socket.destroy();
     return undefined;
   }
 
   return sendJson(res, 404, {
-    error: { code: "NOT_FOUND", message: `stub sin ruta: ${pathname}` },
+    error: { code: 'NOT_FOUND', message: `stub sin ruta: ${pathname}` },
   });
 });
 
@@ -1842,7 +1763,7 @@ server.listen(PORT, HOST, () => {
   console.log(`[stub-api] listening on http://${HOST}:${PORT}`);
 });
 
-for (const signal of ["SIGTERM", "SIGINT"]) {
+for (const signal of ['SIGTERM', 'SIGINT']) {
   process.on(signal, () => {
     // Las conexiones keep-alive del server de Nuxt mantendrían vivo el proceso
     // si sólo se cerrara el listener: se cortan y se fuerza la salida.

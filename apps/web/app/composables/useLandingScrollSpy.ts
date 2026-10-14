@@ -1,18 +1,16 @@
-import { onBeforeUnmount, onMounted, ref, type Ref } from "vue";
+import { onBeforeUnmount, onMounted, ref, type Ref } from 'vue';
 
 /**
  * Marca la sección visible del landing para resaltar el enlace del navbar.
  * Un observer por sección, con cleanup al desmontar; sustituye al scroll-spy
  * global que escribía `data-spy-active` sobre el DOM.
  */
-export function useLandingScrollSpy(
-  sectionIds: readonly string[],
-): Ref<string | null> {
+export function useLandingScrollSpy(sectionIds: readonly string[]): Ref<string | null> {
   const activeSection = ref<string | null>(null);
   let observer: IntersectionObserver | null = null;
 
   onMounted(() => {
-    if (typeof IntersectionObserver === "undefined") return;
+    if (typeof IntersectionObserver === 'undefined') return;
 
     const elements = sectionIds
       .map((id) => document.getElementById(id))
@@ -30,7 +28,7 @@ export function useLandingScrollSpy(
           }
         }
       },
-      { threshold: 0.5 },
+      { threshold: 0.5 }
     );
 
     for (const element of elements) {

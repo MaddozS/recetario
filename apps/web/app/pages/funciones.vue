@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref } from 'vue';
 
-definePageMeta({ layout: "public" });
+definePageMeta({ layout: 'public' });
 
-usePageSeo("/funciones");
+usePageSeo('/funciones');
 
 /**
  * La página de funciones: el detalle de cada módulo, con las mismas capturas
@@ -23,79 +23,79 @@ interface FeatureModule {
 
 const MODULES: readonly FeatureModule[] = [
   {
-    icon: "lucide:calculator",
-    title: "Recetas y costeo",
+    icon: 'lucide:calculator',
+    title: 'Recetas y costeo',
     summary:
-      "Una receta es una lista de ingredientes con cantidades. De ahí sale el costo: lo que compras, lo que usas y lo que te sobra.",
+      'Una receta es una lista de ingredientes con cantidades. De ahí sale el costo: lo que compras, lo que usas y lo que te sobra.',
     details: [
-      "Costo por lote y por porción, con el divisor que tú declaras",
-      "Presentaciones: la misma receta en varios tamaños, cada una con su precio",
-      "Costos fijos por monto (luz, mano de obra) o por porcentaje del costo directo",
-      "Margen deseado y precio de venta sugerido, recalculados al instante",
-      "Instrucciones y notas por paso, agrupables por categoría",
+      'Costo por lote y por porción, con el divisor que tú declaras',
+      'Presentaciones: la misma receta en varios tamaños, cada una con su precio',
+      'Costos fijos por monto (luz, mano de obra) o por porcentaje del costo directo',
+      'Margen deseado y precio de venta sugerido, recalculados al instante',
+      'Instrucciones y notas por paso, agrupables por categoría',
     ],
-    image: "/receta_light.webp",
+    image: '/receta_light.webp',
   },
   {
-    icon: "lucide:package-search",
-    title: "Ingredientes y precios de compra",
+    icon: 'lucide:package-search',
+    title: 'Ingredientes y precios de compra',
     summary:
-      "Guardas cómo compras, no cómo cocinas. El costo por unidad se calcula solo y la receta lo usa tal cual.",
+      'Guardas cómo compras, no cómo cocinas. El costo por unidad se calcula solo y la receta lo usa tal cual.',
     details: [
-      "Precio por unidad de compra: kilo, litro, caja o pieza",
-      "Conversión automática entre kg/lt y g/ml al usar el insumo",
-      "Stock disponible para saber qué te queda",
-      "Proveedor y marca de cada ingrediente",
-      "Búsqueda que ignora acentos: «platano» encuentra «Plátano»",
+      'Precio por unidad de compra: kilo, litro, caja o pieza',
+      'Conversión automática entre kg/lt y g/ml al usar el insumo',
+      'Stock disponible para saber qué te queda',
+      'Proveedor y marca de cada ingrediente',
+      'Búsqueda que ignora acentos: «platano» encuentra «Plátano»',
     ],
-    image: "/ingredientes_light.webp",
+    image: '/ingredientes_light.webp',
   },
   {
-    icon: "lucide:factory",
-    title: "Planificador de producción",
+    icon: 'lucide:factory',
+    title: 'Planificador de producción',
     summary:
-      "Eliges las recetas, defines cuántos lotes de cada una y ves el costo del conjunto antes de encender el horno.",
+      'Eliges las recetas, defines cuántos lotes de cada una y ves el costo del conjunto antes de encender el horno.',
     details: [
-      "Multiplicadores por lote, independientes por receta",
-      "Costo total de la producción y costo por unidad producida",
-      "Precio de venta del conjunto con el margen aplicado",
-      "Resumen imprimible para llevar a la cocina",
+      'Multiplicadores por lote, independientes por receta',
+      'Costo total de la producción y costo por unidad producida',
+      'Precio de venta del conjunto con el margen aplicado',
+      'Resumen imprimible para llevar a la cocina',
     ],
-    image: "/produccion_light.webp",
+    image: '/produccion_light.webp',
   },
 ];
 
 /** Lo que no llega a módulo propio, en una línea cada uno. */
 const EXTRAS = [
   {
-    icon: "lucide:percent",
-    title: "Márgenes y precios",
-    description: "El margen que elijas define el precio; el sistema hace la división.",
+    icon: 'lucide:percent',
+    title: 'Márgenes y precios',
+    description: 'El margen que elijas define el precio; el sistema hace la división.',
   },
   {
-    icon: "lucide:folders",
-    title: "Categorías",
-    description: "Ordena el recetario por tipo de preparación y fíltralo desde la URL.",
+    icon: 'lucide:folders',
+    title: 'Categorías',
+    description: 'Ordena el recetario por tipo de preparación y fíltralo desde la URL.',
   },
   {
-    icon: "lucide:copy",
-    title: "Duplicar recetas",
-    description: "Parte de una receta probada para crear una variante sin recapturar.",
+    icon: 'lucide:copy',
+    title: 'Duplicar recetas',
+    description: 'Parte de una receta probada para crear una variante sin recapturar.',
   },
   {
-    icon: "lucide:clock",
-    title: "Historial de cambios",
-    description: "Qué se editó y cuándo, para saber por qué un costo se movió.",
+    icon: 'lucide:clock',
+    title: 'Historial de cambios',
+    description: 'Qué se editó y cuándo, para saber por qué un costo se movió.',
   },
   {
-    icon: "lucide:users",
-    title: "Cuentas y planes",
-    description: "Sesión por correo o Google, con límites claros por plan.",
+    icon: 'lucide:users',
+    title: 'Cuentas y planes',
+    description: 'Sesión por correo o Google, con límites claros por plan.',
   },
   {
-    icon: "lucide:list-checks",
-    title: "Instrucciones y notas",
-    description: "El paso a paso de la preparación, junto a los costos que produce.",
+    icon: 'lucide:list-checks',
+    title: 'Instrucciones y notas',
+    description: 'El paso a paso de la preparación, junto a los costos que produce.',
   },
 ] as const;
 
@@ -134,9 +134,7 @@ function closeLightbox(): void {
           class="grid items-center gap-8 md:grid-cols-2 md:gap-14"
         >
           <div :class="index % 2 === 0 ? 'md:order-1' : 'md:order-2'">
-            <h2
-              class="text-foreground flex items-center gap-2.5 text-2xl font-bold"
-            >
+            <h2 class="text-foreground flex items-center gap-2.5 text-2xl font-bold">
               <Icon :name="module.icon" :size="22" class="text-accent-text" />
               {{ module.title }}
             </h2>
@@ -149,11 +147,7 @@ function closeLightbox(): void {
                 :key="detail"
                 class="text-secondary-foreground flex items-start gap-2.5 text-sm"
               >
-                <Icon
-                  name="lucide:check"
-                  :size="16"
-                  class="text-accent-text mt-0.5 shrink-0"
-                />
+                <Icon name="lucide:check" :size="16" class="text-accent-text mt-0.5 shrink-0" />
                 {{ detail }}
               </li>
             </ul>
@@ -185,9 +179,7 @@ function closeLightbox(): void {
                   <span data-zoom-hint-fine class="hidden pointer-fine:inline">
                     Click para ampliar
                   </span>
-                  <span data-zoom-hint-touch class="pointer-fine:hidden">
-                    Toca para ampliar
-                  </span>
+                  <span data-zoom-hint-touch class="pointer-fine:hidden"> Toca para ampliar </span>
                 </span>
               </button>
             </div>
@@ -204,11 +196,7 @@ function closeLightbox(): void {
       />
       <ul class="mt-12 grid gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
         <li v-for="extra in EXTRAS" :key="extra.title" class="flex gap-3.5">
-          <Icon
-            :name="extra.icon"
-            :size="20"
-            class="text-accent-text mt-0.5 shrink-0"
-          />
+          <Icon :name="extra.icon" :size="20" class="text-accent-text mt-0.5 shrink-0" />
           <div>
             <h3 class="text-foreground font-bold">{{ extra.title }}</h3>
             <p class="text-secondary-foreground mt-1 text-sm leading-relaxed">
@@ -220,10 +208,7 @@ function closeLightbox(): void {
 
       <p class="text-muted-foreground mt-12 text-sm">
         Qué incluye cada plan y hasta dónde llega el plan gratis:
-        <NuxtLink
-          to="/pricing"
-          class="text-accent-text focus-ring rounded font-bold"
-        >
+        <NuxtLink to="/pricing" class="text-accent-text focus-ring rounded font-bold">
           ver los planes
         </NuxtLink>
         .

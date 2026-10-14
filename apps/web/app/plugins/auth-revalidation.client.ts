@@ -1,4 +1,4 @@
-import { createRefreshScheduler } from "~/utils/session-revalidation";
+import { createRefreshScheduler } from '~/utils/session-revalidation';
 
 /**
  * Revalida la sesión cuando el snapshot del documento puede haber quedado
@@ -11,7 +11,7 @@ export default defineNuxtPlugin((nuxtApp) => {
   const { state, refresh } = useAuth();
   const scheduler = createRefreshScheduler({
     refresh,
-    isEligible: () => state.value.status === "authenticated",
+    isEligible: () => state.value.status === 'authenticated',
   });
 
   function onPageShow(event: PageTransitionEvent): void {
@@ -23,7 +23,7 @@ export default defineNuxtPlugin((nuxtApp) => {
   }
 
   function onVisibilityChange(): void {
-    if (document.visibilityState === "visible") {
+    if (document.visibilityState === 'visible') {
       void scheduler.request();
     }
   }
@@ -32,16 +32,16 @@ export default defineNuxtPlugin((nuxtApp) => {
     void scheduler.request();
   }
 
-  nuxtApp.hook("app:mounted", () => {
-    window.addEventListener("pageshow", onPageShow);
-    window.addEventListener("focus", onFocus);
-    document.addEventListener("visibilitychange", onVisibilityChange);
+  nuxtApp.hook('app:mounted', () => {
+    window.addEventListener('pageshow', onPageShow);
+    window.addEventListener('focus', onFocus);
+    document.addEventListener('visibilitychange', onVisibilityChange);
   });
 
   nuxtApp.vueApp.onUnmount(() => {
-    window.removeEventListener("pageshow", onPageShow);
-    window.removeEventListener("focus", onFocus);
-    document.removeEventListener("visibilitychange", onVisibilityChange);
+    window.removeEventListener('pageshow', onPageShow);
+    window.removeEventListener('focus', onFocus);
+    document.removeEventListener('visibilitychange', onVisibilityChange);
     scheduler.dispose();
   });
 });

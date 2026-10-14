@@ -12,7 +12,10 @@
     "./csrf": "./src/csrf.ts",
     "./csrf-client": "./src/csrf-client.ts"
   },
-  "files": ["dist", "src"],
+  "files": [
+    "dist",
+    "src"
+  ],
   "scripts": {
     "build": "tsc --noEmit -p tsconfig.build.json",
     "test": "vitest run"

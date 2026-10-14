@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { breadcrumbsWithTail } from "#shared/utils/navigation";
-import type { BreadcrumbItem } from "#shared/types/navigation";
+import { breadcrumbsWithTail } from '#shared/utils/navigation';
+import type { BreadcrumbItem } from '#shared/types/navigation';
 
 /**
  * Shell autenticado. Sustituye a `Layout` sin su maquinaria imperativa:
@@ -14,49 +14,45 @@ const { hasFeature } = useAuth();
 const currentPage = computed(() => pageKeyFromPath(route.path));
 const breadcrumbTail = useBreadcrumbTailState();
 const breadcrumbs = computed<BreadcrumbItem[]>(() =>
-  breadcrumbsWithTail(
-    route.meta.breadcrumbs ?? [],
-    breadcrumbTail.value,
-    route.path,
-  ),
+  breadcrumbsWithTail(route.meta.breadcrumbs ?? [], breadcrumbTail.value, route.path)
 );
 const showSidebar = computed(() => route.meta.sidebar !== false);
-const showProduction = computed(() => hasFeature("production_planner"));
+const showProduction = computed(() => hasFeature('production_planner'));
 
 const sidebarOpen = ref(false);
 const { collapsed, setCollapsed } = useSidebarCollapsed();
 
 function onKeydown(event: KeyboardEvent): void {
-  if (event.key === "Escape") {
+  if (event.key === 'Escape') {
     sidebarOpen.value = false;
   }
 }
 
 watch(sidebarOpen, (open) => {
   if (!import.meta.client) return;
-  document.body.style.overflow = open ? "hidden" : "";
+  document.body.style.overflow = open ? 'hidden' : '';
 });
 
 watch(
   () => route.fullPath,
   () => {
     sidebarOpen.value = false;
-  },
+  }
 );
 
-onMounted(() => window.addEventListener("keydown", onKeydown));
+onMounted(() => window.addEventListener('keydown', onKeydown));
 onBeforeUnmount(() => {
-  window.removeEventListener("keydown", onKeydown);
-  document.body.style.overflow = "";
+  window.removeEventListener('keydown', onKeydown);
+  document.body.style.overflow = '';
 });
 
 // Rutas privadas: fuera de índices y sin caché compartida (el header lo fija
 // `server/middleware/10.auth.ts`, junto con las cookies de sesión).
 useHead({
   bodyAttrs: {
-    class: "bg-background flex flex-col min-h-dvh md:h-dvh md:overflow-hidden",
+    class: 'bg-background flex flex-col min-h-dvh md:h-dvh md:overflow-hidden',
   },
-  meta: [{ name: "robots", content: "noindex, nofollow" }],
+  meta: [{ name: 'robots', content: 'noindex, nofollow' }],
 });
 </script>
 
@@ -92,9 +88,7 @@ useHead({
           :class="[
             // En escritorio la sidebar es fija: el `-translate-x-full` del
             // drawer móvil se neutraliza con `md:translate-x-0`.
-            sidebarOpen
-              ? 'translate-x-0'
-              : '-translate-x-full md:translate-x-0',
+            sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0',
             collapsed ? 'md:w-16' : 'md:w-[220px]',
           ]"
         >

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeUnmount, ref, watch } from "vue";
+import { onBeforeUnmount, ref, watch } from 'vue';
 
 /**
  * Lightbox del landing: `<dialog>` nativo controlado por estado Vue con dos
@@ -18,7 +18,7 @@ const emit = defineEmits<{ close: [] }>();
 
 const CLOSING_MS = 150;
 /** Ventana de ajuste: la captura entera cabe en el viewport. */
-const FIT_FRAME = "max-h-[85dvh] max-w-[90vw]";
+const FIT_FRAME = 'max-h-[85dvh] max-w-[90vw]';
 
 const dialog = ref<HTMLDialogElement | null>(null);
 const stage = ref<HTMLDivElement | null>(null);
@@ -39,9 +39,9 @@ let closingTimer: number | null = null;
 
 function prefersReducedMotion(): boolean {
   return (
-    typeof window !== "undefined" &&
-    typeof window.matchMedia === "function" &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    typeof window !== 'undefined' &&
+    typeof window.matchMedia === 'function' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches
   );
 }
 
@@ -51,12 +51,12 @@ function cancelClose(): void {
     window.clearTimeout(closingTimer);
     closingTimer = null;
   }
-  dialog.value?.classList.remove("closing");
+  dialog.value?.classList.remove('closing');
 }
 
 /** La página de detrás no se desplaza mientras el diálogo está abierto. */
 function setScrollLock(locked: boolean): void {
-  document.body.style.overflow = locked ? "hidden" : "";
+  document.body.style.overflow = locked ? 'hidden' : '';
 }
 
 function closeAnimated(): void {
@@ -69,10 +69,10 @@ function closeAnimated(): void {
     return;
   }
 
-  element.classList.add("closing");
+  element.classList.add('closing');
   closingTimer = window.setTimeout(() => {
     closingTimer = null;
-    element.classList.remove("closing");
+    element.classList.remove('closing');
     element.close();
     setScrollLock(false);
   }, CLOSING_MS);
@@ -81,12 +81,12 @@ function closeAnimated(): void {
 function handleCancel(event: Event): void {
   // El cierre lo gobierna el estado del padre (y lleva animación).
   event.preventDefault();
-  emit("close");
+  emit('close');
 }
 
 function handleClick(event: MouseEvent): void {
   if (event.target === dialog.value) {
-    emit("close");
+    emit('close');
   }
 }
 
@@ -105,7 +105,7 @@ watch(
     } else if (element.open) {
       closeAnimated();
     }
-  },
+  }
 );
 
 onBeforeUnmount(() => {
@@ -163,11 +163,8 @@ onBeforeUnmount(() => {
       class="focus-ring text-foreground bg-background/80 hover:bg-background absolute bottom-4 left-1/2 z-20 flex min-h-11 -translate-x-1/2 cursor-pointer items-center gap-2 rounded-full px-4 backdrop-blur-sm transition-colors"
       @click="toggleZoom"
     >
-      <Icon
-        :name="zoomed ? 'lucide:minimize-2' : 'lucide:maximize-2'"
-        :size="18"
-      />
-      {{ zoomed ? "Ajustar" : "Ver a tamaño real" }}
+      <Icon :name="zoomed ? 'lucide:minimize-2' : 'lucide:maximize-2'" :size="18" />
+      {{ zoomed ? 'Ajustar' : 'Ver a tamaño real' }}
     </button>
   </dialog>
 </template>

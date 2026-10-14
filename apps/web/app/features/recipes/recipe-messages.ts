@@ -6,7 +6,7 @@
  * de upgrade únicamente cuando la causa real es el plan; `FEATURE_REQUIRED`
  * (duplicar en plan Free) nunca lo ofrece, igual que en el baseline.
  */
-export type RecipeMutationAction = "create" | "duplicate" | "delete" | "update";
+export type RecipeMutationAction = 'create' | 'duplicate' | 'delete' | 'update';
 
 export type RecipeMutationFailure = {
   message: string;
@@ -24,22 +24,19 @@ type ErrorLike = {
   message?: string;
 };
 
-export const DUPLICATE_FEATURE_MESSAGE =
-  "Funcionalidad no disponible en tu plan.";
-export const RECIPE_NOT_FOUND_MESSAGE = "No se encontró la receta original.";
-export const DELETED_RECIPE_MESSAGE = "La receta ya no existe.";
+export const DUPLICATE_FEATURE_MESSAGE = 'Funcionalidad no disponible en tu plan.';
+export const RECIPE_NOT_FOUND_MESSAGE = 'No se encontró la receta original.';
+export const DELETED_RECIPE_MESSAGE = 'La receta ya no existe.';
 
 const FALLBACK_MESSAGES: Record<RecipeMutationAction, string> = {
-  create: "No se pudo crear la receta.",
-  duplicate: "Error al duplicar la receta.",
-  delete: "No se pudo eliminar la receta.",
-  update: "No se pudo actualizar la receta.",
+  create: 'No se pudo crear la receta.',
+  duplicate: 'Error al duplicar la receta.',
+  delete: 'No se pudo eliminar la receta.',
+  update: 'No se pudo actualizar la receta.',
 };
 
 function asErrorLike(error: unknown): ErrorLike | null {
-  return typeof error === "object" && error !== null
-    ? (error as ErrorLike)
-    : null;
+  return typeof error === 'object' && error !== null ? (error as ErrorLike) : null;
 }
 
 /**
@@ -49,7 +46,7 @@ function asErrorLike(error: unknown): ErrorLike | null {
  */
 export function recipeLimitMessage(limit: number | null): string {
   if (limit === null) {
-    return "Has alcanzado el límite de recetas de tu plan Free. Actualiza tu plan para crear más.";
+    return 'Has alcanzado el límite de recetas de tu plan Free. Actualiza tu plan para crear más.';
   }
 
   return `Has alcanzado el límite de ${limit} recetas de tu plan Free. Actualiza tu plan para crear más.`;
@@ -57,25 +54,25 @@ export function recipeLimitMessage(limit: number | null): string {
 
 export function resolveRecipeMutationError(
   error: unknown,
-  context: RecipeMutationErrorContext,
+  context: RecipeMutationErrorContext
 ): RecipeMutationFailure {
   const { action, limit } = context;
   const candidate = asErrorLike(error);
 
-  if (candidate?.code === "PLAN_LIMIT") {
+  if (candidate?.code === 'PLAN_LIMIT') {
     return { message: recipeLimitMessage(limit), planLimit: true };
   }
 
-  if (candidate?.code === "FEATURE_REQUIRED") {
+  if (candidate?.code === 'FEATURE_REQUIRED') {
     return { message: DUPLICATE_FEATURE_MESSAGE };
   }
 
   if (candidate?.status === 404) {
-    if (action === "duplicate") {
+    if (action === 'duplicate') {
       return { message: RECIPE_NOT_FOUND_MESSAGE };
     }
 
-    if (action === "delete" || action === "update") {
+    if (action === 'delete' || action === 'update') {
       return { message: DELETED_RECIPE_MESSAGE };
     }
 
@@ -83,8 +80,8 @@ export function resolveRecipeMutationError(
   }
 
   if (
-    typeof candidate?.status === "number" &&
-    typeof candidate.message === "string" &&
+    typeof candidate?.status === 'number' &&
+    typeof candidate.message === 'string' &&
     candidate.message.trim().length > 0
   ) {
     return { message: candidate.message };
@@ -95,27 +92,27 @@ export function resolveRecipeMutationError(
 
 /** Mutaciones de las subsecciones del detalle (costos fijos y presentaciones). */
 export type RecipeFinancialsAction =
-  | "create-fixed-cost"
-  | "update-fixed-cost"
-  | "delete-fixed-cost"
-  | "create-presentation"
-  | "update-presentation"
-  | "delete-presentation";
+  | 'create-fixed-cost'
+  | 'update-fixed-cost'
+  | 'delete-fixed-cost'
+  | 'create-presentation'
+  | 'update-presentation'
+  | 'delete-presentation';
 
 export type RecipeFinancialsErrorContext = {
   action: RecipeFinancialsAction;
 };
 
-export const FIXED_COST_NOT_FOUND_MESSAGE = "No se encontró el costo fijo.";
-export const PRESENTATION_NOT_FOUND_MESSAGE = "No se encontró la presentación.";
+export const FIXED_COST_NOT_FOUND_MESSAGE = 'No se encontró el costo fijo.';
+export const PRESENTATION_NOT_FOUND_MESSAGE = 'No se encontró la presentación.';
 
 const FINANCIALS_FALLBACK_MESSAGES: Record<RecipeFinancialsAction, string> = {
-  "create-fixed-cost": "No se pudo crear el costo fijo.",
-  "update-fixed-cost": "No se pudo guardar el costo fijo.",
-  "delete-fixed-cost": "No se pudo eliminar el costo fijo.",
-  "create-presentation": "No se pudo crear la presentación.",
-  "update-presentation": "No se pudo actualizar la presentación.",
-  "delete-presentation": "No se pudo eliminar la presentación.",
+  'create-fixed-cost': 'No se pudo crear el costo fijo.',
+  'update-fixed-cost': 'No se pudo guardar el costo fijo.',
+  'delete-fixed-cost': 'No se pudo eliminar el costo fijo.',
+  'create-presentation': 'No se pudo crear la presentación.',
+  'update-presentation': 'No se pudo actualizar la presentación.',
+  'delete-presentation': 'No se pudo eliminar la presentación.',
 };
 
 /**
@@ -124,21 +121,21 @@ const FINANCIALS_FALLBACK_MESSAGES: Record<RecipeFinancialsAction, string> = {
  */
 export function resolveRecipeFinancialsError(
   error: unknown,
-  context: RecipeFinancialsErrorContext,
+  context: RecipeFinancialsErrorContext
 ): RecipeMutationFailure {
   const candidate = asErrorLike(error);
 
   if (candidate?.status === 404) {
     return {
-      message: context.action.endsWith("fixed-cost")
+      message: context.action.endsWith('fixed-cost')
         ? FIXED_COST_NOT_FOUND_MESSAGE
         : PRESENTATION_NOT_FOUND_MESSAGE,
     };
   }
 
   if (
-    typeof candidate?.status === "number" &&
-    typeof candidate.message === "string" &&
+    typeof candidate?.status === 'number' &&
+    typeof candidate.message === 'string' &&
     candidate.message.trim().length > 0
   ) {
     return { message: candidate.message };

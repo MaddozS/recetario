@@ -1,4 +1,4 @@
-const globalKey = "__lazySingletons";
+const globalKey = '__lazySingletons';
 
 export function lazyInit<T extends object>(key: string, initFn: () => T): T {
   const singletons: Map<string, unknown> =
@@ -12,7 +12,7 @@ export function lazyInit<T extends object>(key: string, initFn: () => T): T {
       }
       const client = singletons.get(key) as Record<string | symbol, unknown>;
       const value = client[prop];
-      return typeof value === "function" ? (value as Function).bind(client) : value;
+      return typeof value === 'function' ? (value as Function).bind(client) : value;
     },
   });
 }

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import FixedCostCard from "./FixedCostCard.vue";
-import type { FixedCostDraft, FixedCostRecord } from "./recipe-fixed-costs";
-import type { MutationOutcome } from "./useRecipes";
+import { ref } from 'vue';
+import FixedCostCard from './FixedCostCard.vue';
+import type { FixedCostDraft, FixedCostRecord } from './recipe-fixed-costs';
+import type { MutationOutcome } from './useRecipes';
 
 /**
  * Costos fijos de la receta: cabecera con el alta y la lista de cards. El alta
@@ -15,10 +15,7 @@ import type { MutationOutcome } from "./useRecipes";
 defineProps<{
   recipeFixedCosts: ReadonlyArray<FixedCostRecord>;
   createFixedCost: (draft: FixedCostDraft) => Promise<MutationOutcome>;
-  updateFixedCost: (
-    fixedCostId: number,
-    draft: FixedCostDraft,
-  ) => Promise<MutationOutcome>;
+  updateFixedCost: (fixedCostId: number, draft: FixedCostDraft) => Promise<MutationOutcome>;
   deleteFixedCost: (fixedCostId: number) => Promise<MutationOutcome>;
 }>();
 
@@ -29,12 +26,7 @@ const creating = ref(false);
   <section class="space-y-4" data-recipe-fixed-costs>
     <div class="flex items-start justify-between gap-3">
       <SectionHeading title="Costos Fijos de la Receta" />
-      <Button
-        variant="primary"
-        icon="plus"
-        data-open-fixed-cost
-        @click="creating = true"
-      >
+      <Button variant="primary" icon="plus" data-open-fixed-cost @click="creating = true">
         Agregar Costo Fijo
       </Button>
     </div>
