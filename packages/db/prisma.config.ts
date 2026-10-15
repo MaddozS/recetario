@@ -1,7 +1,7 @@
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import dotenv from 'dotenv';
-import { defineConfig, env } from 'prisma/config';
+import { defineConfig } from 'prisma/config';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -17,8 +17,8 @@ export default defineConfig({
   },
   datasource: {
     url:
-      env('DATABASE_URL_UNPOOLED') ||
-      env('DATABASE_URL') ||
+      process.env.DATABASE_URL_UNPOOLED ||
+      process.env.DATABASE_URL ||
       'postgresql://postgres:postgres@localhost:5432/recetario',
   },
 });
