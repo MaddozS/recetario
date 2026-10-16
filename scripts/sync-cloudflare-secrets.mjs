@@ -66,14 +66,24 @@ function parseEnvCloudflare(envName) {
     if (!trimmed || trimmed.startsWith('#') || trimmed.startsWith(';')) continue;
     const eqIdx = trimmed.indexOf('=');
     if (eqIdx === -1) continue;
-    vars[trimmed.slice(0, eqIdx).trim()] = trimmed.slice(eqIdx + 1).trim();
+    let val = trimmed.slice(eqIdx + 1).trim();
+    if (
+      (val.startsWith('"') && val.endsWith('"')) ||
+      (val.startsWith("'") && val.endsWith("'"))
+    ) {
+      val = val.slice(1, -1);
+    }
+    vars[trimmed.slice(0, eqIdx).trim()] = val;
   }
   return vars;
 }
 
 function preCheck() {
   try {
-    execSync('pnpm exec wrangler whoami', { stdio: 'pipe' });
+    execSync('pnpm exec wrangler whoami', {
+      stdio: 'pipe',
+      cwd: resolve(root, 'apps/api'),
+    });
   } catch {
     console.error('wrangler is not authenticated.');
     console.error('Run: pnpm dlx wrangler login');
