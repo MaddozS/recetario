@@ -23,17 +23,11 @@ import { freezeAnimations, scrollPositions, scrollTo } from './support/page-swee
  *    documento con otro valor de cookie.
  *
  * `incomplete` no se vuelve bloqueante a ciegas ni se ignora: axe no puede
- * decidir el fondo del texto que cae sobre un `background-image`, así que todo
- * nodo `color-contrast` incompleto tiene que estar en `DOCUMENTED_INCOMPLETE`
- * (regla, selector, motivo y el ratio que mide la sonda de píxeles de
- * `contrast.spec.ts`). Un nodo incompleto sin documentar falla la suite con la
- * lista de los que faltan.
- *
- * La lista está **vacía a propósito**: el rediseño quitó los degradados
- * decorativos (fondo del hero, lavado de "cómo funciona" y banda CTA) y con
- * ellos los nodos que axe no podía juzgar. Es un gate fail-closed: si alguien
- * vuelve a poner texto sobre una imagen de fondo, el barrido falla y obliga a
- * documentarlo con el ratio medido.
+ * decidir el fondo del texto que cae sobre un `background-image` o una capa
+ * decorativa posicionada (`-z-10`), así que todo nodo `color-contrast`
+ * incompleto tiene que estar en `DOCUMENTED_INCOMPLETE` (regla, selector,
+ * motivo y el ratio que mide la sonda de píxeles de `contrast.spec.ts`). Un
+ * nodo incompleto sin documentar falla la suite con la lista de los que faltan.
  *
  * Las suites de auth, privadas y acentos siguen con un barrido de un solo estado
  * (`scanOnce`) y asertan sólo `violations`, como antes: su deuda no depende del
@@ -61,22 +55,65 @@ const PRIVATE_PAGES = ['/recipes', '/ingredients', '/settings', '/produccion'] a
 /**
  * Nodos que axe deja en `incomplete` y quién responde por ellos.
  *
- * `selector` es el ancla estable del nodo (se comprueba con `element.matches`
+ * `selector` es el ancla estable del nodo (se comprueba con `element.closest`
  * sobre el elemento que axe señala, así que no hay que copiar los selectores
  * generados por axe). `ratio` es lo que mide la sonda de píxeles de
  * `contrast.spec.ts` en el peor punto de esos nodos: si baja de AA, ese gate
  * falla antes de que este se quede corto.
  *
- * Hoy no hay ninguno en las públicas (el texto ya no cae sobre degradados). Cada
- * entrada futura es deuda nueva y existe sólo porque axe no puede decidir el
- * fondo, nunca porque el par esté exento.
+ * Cada entrada existe sólo porque axe no puede decidir el fondo sobre las capas
+ * decorativas (`.landing-decor`, `.landing-hero-glow`, `.landing-dots`), nunca
+ * porque el par esté exento de cumplir AA.
  */
 const DOCUMENTED_INCOMPLETE: {
   rule: string;
   selector: string;
   reason: string;
   ratio: string;
-}[] = [];
+}[] = [
+  {
+    rule: 'color-contrast',
+    selector: '[data-landing-hero]',
+    reason:
+      'El hero monta `.landing-hero-glow` + `.landing-dots` (`-z-10`) y la tarjeta de costo sobre la captura `hero_light.webp`: axe no compone el fondo.',
+    ratio: 'claro ≥5.48:1 (medido por contrast.spec.ts en 375px y 1280px)',
+  },
+  {
+    rule: 'color-contrast',
+    selector: '#problem',
+    reason:
+      'La sección pinta `.landing-decor[data-decor="glow-corner"]` (`-z-10`) sobre `bg-surface-warm`: axe marca el texto como solapado por la capa decorativa.',
+    ratio: 'claro ≥6.53:1 (medido por contrast.spec.ts en 375px y 1280px)',
+  },
+  {
+    rule: 'color-contrast',
+    selector: '#features',
+    reason:
+      'La sección pinta `.landing-decor[data-decor="grid"]` (`-z-10`) sobre `bg-card`: axe no resuelve el patrón lineal con máscara.',
+    ratio: 'claro ≥4.82:1 (medido por contrast.spec.ts en 375px y 1280px)',
+  },
+  {
+    rule: 'color-contrast',
+    selector: '#how-it-works',
+    reason:
+      'La sección pinta `.landing-decor[data-decor="dots"]` (`-z-10`) sobre `bg-muted`: axe no compone el patrón radial detrás de los pasos y del simulador.',
+    ratio: 'claro ≥4.82:1 (medido por contrast.spec.ts en 375px y 1280px)',
+  },
+  {
+    rule: 'color-contrast',
+    selector: '#confianza',
+    reason:
+      'La sección pinta `.landing-decor[data-decor="glow-corner"]` (`-z-10`) sobre `bg-surface-warm`: axe marca los titulares y garantías como solapados.',
+    ratio: 'claro ≥5.58:1 (medido por contrast.spec.ts en 375px y 1280px)',
+  },
+  {
+    rule: 'color-contrast',
+    selector: '#pricing',
+    reason:
+      'La sección pinta `.landing-decor[data-decor="glow"]` (`-z-10`) y el corte degradado (`bg-linear-to-r`) del scroller móvil.',
+    ratio: 'claro ≥4.59:1 (medido por contrast.spec.ts en 375px y 1280px)',
+  },
+];
 
 function flatten(result: AnalyzeResult, key: 'violations' | 'incomplete'): Finding[] {
   return result[key].flatMap((violation) =>

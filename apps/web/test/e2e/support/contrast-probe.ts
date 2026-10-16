@@ -223,7 +223,13 @@ async function collectSamples(
 
       const navbar = document.querySelector('nav');
       const safeTop = navbar ? Math.max(0, navbar.getBoundingClientRect().bottom) : 0;
-      const safeBottom = window.innerHeight;
+      const stickyCta = document.querySelector('[data-sticky-cta]');
+      const stickyCtaRect =
+        stickyCta && !stickyCta.hasAttribute('inert') ? stickyCta.getBoundingClientRect() : null;
+      const safeBottom =
+        stickyCtaRect && stickyCtaRect.height > 0 && stickyCtaRect.top < window.innerHeight
+          ? Math.max(0, stickyCtaRect.top)
+          : window.innerHeight;
 
       const samples: TextSample[] = [];
       const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
@@ -248,10 +254,12 @@ async function collectSamples(
             }
 
             if (visible && opacity > 0.05) {
-              // El navbar es fijo y opaco: tapa lo que pasa por debajo, así que
-              // las cajas de debajo se miden cuando el scroll las deja libres.
-              // Su propio texto, en cambio, va sobre su fondo: se mide siempre.
+              // El navbar y el sticky CTA móvil son fijos y opacos: tapan lo que
+              // pasa por debajo, así que las cajas de debajo se miden cuando el
+              // scroll las deja libres. Su propio texto, en cambio, va sobre su
+              // fondo: se mide siempre.
               const top = element.closest('nav') ? 0 : safeTop;
+              const bottom = element.closest('[data-sticky-cta]') ? window.innerHeight : safeBottom;
               const range = document.createRange();
               range.selectNodeContents(node);
               const points: SamplePoint[] = [];
@@ -260,7 +268,7 @@ async function collectSamples(
                   rect.height >= MIN_SIZE &&
                   rect.width >= MIN_SIZE &&
                   rect.top >= top &&
-                  rect.bottom <= safeBottom &&
+                  rect.bottom <= bottom &&
                   rect.right > 0 &&
                   rect.left < window.innerWidth;
                 return insideViewport;

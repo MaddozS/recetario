@@ -75,7 +75,7 @@ test('recorrido crítico: anónimo → cuenta → receta → producción → set
   // ── 1. Anónimo: landing indexable y ruta privada explicada ────────────────
   const landing = await goto('/', { waitUntil: 'hydration' });
   expect(landing?.status()).toBe(200);
-  await expect(page.locator('h1')).toHaveText('Calcula el costo real de tus recetas');
+  await expect(page.locator('h1')).toHaveText(/¿Sabes cuánto te deja\s+cada receta\?/);
 
   // La ruta privada responde 302 explicado. Se comprueba con `request` (como
   // `smoke.spec`): visitarla en el navegador dejaba la cadena de redirect en

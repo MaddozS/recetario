@@ -67,10 +67,7 @@ function parseEnvCloudflare(envName) {
     const eqIdx = trimmed.indexOf('=');
     if (eqIdx === -1) continue;
     let val = trimmed.slice(eqIdx + 1).trim();
-    if (
-      (val.startsWith('"') && val.endsWith('"')) ||
-      (val.startsWith("'") && val.endsWith("'"))
-    ) {
+    if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
       val = val.slice(1, -1);
     }
     vars[trimmed.slice(0, eqIdx).trim()] = val;

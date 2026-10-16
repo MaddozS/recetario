@@ -17,7 +17,7 @@ test('la landing responde 200, hidrata sin errores y muestra sus secciones', asy
   const response = await goto('/', { waitUntil: 'hydration' });
   expect(response?.status()).toBe(200);
 
-  await expect(page.locator('h1')).toHaveText('Calcula el costo real de tus recetas');
+  await expect(page.locator('h1')).toHaveText(/¿Sabes cuánto te deja\s+cada receta\?/);
 
   // Paridad móvil/desktop: la navegación cambia de forma, no de información.
   await page.setViewportSize(MOBILE);
@@ -35,11 +35,10 @@ test('la landing responde 200, hidrata sin errores y muestra sus secciones', asy
     'Planes y precios'
   );
 
-  // El CTA del navbar distingue sesión (anónimo → sign-in).
-  await expect(page.locator('nav').getByRole('link', { name: 'Comenzar gratis' })).toHaveAttribute(
-    'href',
-    '/sign-in'
-  );
+  // El CTA del navbar distingue sesión (anónimo → sign-up).
+  await expect(
+    page.locator('nav').getByRole('link', { name: 'Crear cuenta gratis' })
+  ).toHaveAttribute('href', '/sign-up');
 
   expect(consoleErrors).toEqual([]);
 });

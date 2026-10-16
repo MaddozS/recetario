@@ -86,7 +86,7 @@
 
 /* =============================================
    Fondos decorativos de las secciones públicas
-   (`LandingSection` → `decor`, hero y CTA final)
+   (`LandingSection` → `decor` y hero)
    Sólo tokens; las máscaras desvanecen el patrón
    para que nunca quede detrás del texto con fuerza.
    ============================================= */
@@ -166,30 +166,6 @@
       transparent 70%
     );
   }
-}
-
-/* CTA final: textura de puntos y luz sobre el relleno del acento. */
-.landing-cta-decor {
-  background-image:
-    radial-gradient(
-      circle at 1px 1px,
-      color-mix(in srgb, var(--color-on-accent-surface) 22%, transparent) 1px,
-      transparent 0
-    ),
-    radial-gradient(
-      60% 80% at 50% 0%,
-      color-mix(in srgb, var(--color-on-accent-surface) 9%, transparent),
-      transparent 70%
-    ),
-    radial-gradient(
-      50% 70% at 50% 120%,
-      color-mix(in srgb, var(--color-accent-950) 45%, transparent),
-      transparent 70%
-    );
-  background-size:
-    20px 20px,
-    100% 100%,
-    100% 100%;
 }
 
 dialog[data-animated] {

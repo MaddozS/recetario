@@ -17,8 +17,7 @@ const SECONDARY_CLASS =
 </script>
 
 <template>
-  <section id="cta" class="bg-accent-solid relative isolate scroll-mt-16 overflow-hidden">
-    <div aria-hidden="true" class="landing-cta-decor pointer-events-none absolute inset-0 -z-10" />
+  <section id="cta" class="bg-accent-solid scroll-mt-16">
     <div class="mx-auto max-w-3xl px-4 py-20 text-center sm:px-6 md:py-28">
       <h2
         class="landing-heading text-text-on-accent font-display text-3xl leading-[1.1] font-black md:text-4xl"
@@ -41,7 +40,7 @@ const SECONDARY_CLASS =
         </NuxtLink>
         <a v-else :href="secondaryHref" :class="SECONDARY_CLASS"> Ver planes </a>
       </div>
-      <p class="text-text-on-accent/80 mt-4 text-xs font-medium">
+      <p class="text-text-on-accent mt-4 text-xs font-medium">
         Sin tarjeta de crédito · 10 recetas gratis para siempre
       </p>
     </div>

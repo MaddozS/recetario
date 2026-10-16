@@ -70,12 +70,14 @@ onBeforeUnmount(() => {
 
 <template>
   <div
+    data-sticky-cta
     class="fixed inset-x-0 bottom-0 z-40 transition-transform duration-300 ease-out md:hidden"
     :class="isVisible ? 'translate-y-0' : 'pointer-events-none translate-y-full'"
-    aria-hidden="true"
+    :aria-hidden="isVisible ? undefined : 'true'"
+    :inert="!isVisible"
   >
     <div
-      class="border-border bg-card/95 border-t px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] shadow-xl backdrop-blur-md"
+      class="border-border bg-card border-t px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] shadow-xl"
     >
       <div class="flex items-center justify-between gap-3">
         <div class="min-w-0 flex-1">

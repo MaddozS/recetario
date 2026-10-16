@@ -117,7 +117,7 @@ function isActive(link: NavLink): boolean {
 
 <template>
   <nav
-    class="border-border bg-background/95 fixed inset-x-0 top-0 z-50 border-b shadow-xs backdrop-blur-md transition-all"
+    class="border-border bg-background fixed inset-x-0 top-0 z-50 border-b shadow-xs transition-all"
   >
     <div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
       <div class="flex items-center gap-2">
