@@ -31,7 +31,9 @@ pnpm-debug.log*
 apps/*/.dev.vars
 
 # local data and databases
-data/
+data/*
+!data/*.example.json
+docs/venta/
 
 # macOS-specific files
 .DS_Store

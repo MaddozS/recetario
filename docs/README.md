@@ -16,6 +16,5 @@ Guía de referencia y mapa de documentación viva y operativa del repositorio Ki
 | [`adr/0010-sin-accelerate-prisma-postgres-directo.md`](adr/0010-sin-accelerate-prisma-postgres-directo.md) | Salida de Accelerate: driver serverless directo de Prisma Postgres                             |
 | [`adr/0011-transporte-tcp-en-el-worker.md`](adr/0011-transporte-tcp-en-el-worker.md)                       | Conexión TCP en Worker con cliente Prisma por request                                          |
 | [`agents/*`](agents/domain.md)                                                                             | Convenciones de issue tracker, etiquetas y consumo de docs por agentes                         |
-| [`venta/*`](venta/GUIA-VENTA.md)                                                                           | Material comercial: guía práctica de ventas y dossier                                          |
 | [`../apps/api/README.md`](../apps/api/README.md)                                                           | Arquitectura y referencia del API Worker en Hono                                               |
 | `../packages/*/README.md`                                                                                  | Documentación técnica de cada paquete del monorepo (`auth`, `config`, `db`, `stripe`, `types`) |

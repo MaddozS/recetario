@@ -110,8 +110,12 @@ async function seed() {
   try {
     const dataDir = resolve(__dirname, '../../../data');
     const userDataPath = resolve(dataDir, 'axel_user_data.json');
-    const ingredientsPath = resolve(dataDir, 'ingredients.json');
-    const recipesPath = resolve(dataDir, 'recipes.json');
+    const ingredientsPath = existsSync(resolve(dataDir, 'ingredients.json'))
+      ? resolve(dataDir, 'ingredients.json')
+      : resolve(dataDir, 'ingredients.example.json');
+    const recipesPath = existsSync(resolve(dataDir, 'recipes.json'))
+      ? resolve(dataDir, 'recipes.json')
+      : resolve(dataDir, 'recipes.example.json');
 
     let ownerId = process.env.RECIPES_STATIC_OWNER_ID || 'YAcM7VNYBRQkSIGvBJSYwkwNRNXZpZGh';
 
@@ -256,45 +260,50 @@ async function seed() {
     }
 
     // 2. Seed Ingredients
-    const ingredients: IngredientInput[] = JSON.parse(readFileSync(ingredientsPath, 'utf-8'));
     let ingredientCount = 0;
-    for (const ing of ingredients) {
-      await client.query(
-        `INSERT INTO ingredients (id, owner_id, name, unit, price, purchase_quantity, brand, supplier)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-         ON CONFLICT (id) DO UPDATE SET
-           owner_id = EXCLUDED.owner_id,
-           name = EXCLUDED.name,
-           unit = EXCLUDED.unit,
-           price = EXCLUDED.price,
-           purchase_quantity = EXCLUDED.purchase_quantity,
-           brand = EXCLUDED.brand,
-           supplier = EXCLUDED.supplier`,
-        [
-          ing.id,
-          ownerId,
-          ing.name,
-          ing.unit,
-          ing.price,
-          ing.purchaseQuantity,
-          ing.brand || null,
-          ing.supplier || null,
-        ]
-      );
-      ingredientCount++;
-    }
-    console.log(`Seeded ${ingredientCount} ingredients for owner ${ownerId}`);
+    if (existsSync(ingredientsPath)) {
+      const ingredients: IngredientInput[] = JSON.parse(readFileSync(ingredientsPath, 'utf-8'));
+      for (const ing of ingredients) {
+        await client.query(
+          `INSERT INTO ingredients (id, owner_id, name, unit, price, purchase_quantity, brand, supplier)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+           ON CONFLICT (id) DO UPDATE SET
+             owner_id = EXCLUDED.owner_id,
+             name = EXCLUDED.name,
+             unit = EXCLUDED.unit,
+             price = EXCLUDED.price,
+             purchase_quantity = EXCLUDED.purchase_quantity,
+             brand = EXCLUDED.brand,
+             supplier = EXCLUDED.supplier`,
+          [
+            ing.id,
+            ownerId,
+            ing.name,
+            ing.unit,
+            ing.price,
+            ing.purchaseQuantity,
+            ing.brand || null,
+            ing.supplier || null,
+          ]
+        );
+        ingredientCount++;
+      }
+      console.log(`Seeded ${ingredientCount} ingredients for owner ${ownerId}`);
 
-    const maxIngRes = await client.query(`SELECT MAX(id) as max_id FROM ingredients`);
-    const maxIngId = maxIngRes.rows[0]?.max_id;
-    if (maxIngId) {
-      await client.query(`SELECT setval('ingredients_id_seq', $1, true)`, [maxIngId]);
+      const maxIngRes = await client.query(`SELECT MAX(id) as max_id FROM ingredients`);
+      const maxIngId = maxIngRes.rows[0]?.max_id;
+      if (maxIngId) {
+        await client.query(`SELECT setval('ingredients_id_seq', $1, true)`, [maxIngId]);
+      }
+    } else {
+      console.log('No ingredients file found; skipping ingredients seeding.');
     }
 
     // 3. Seed Recipes
-    const recipes: RecipeInput[] = JSON.parse(readFileSync(recipesPath, 'utf-8'));
     let recipeCount = 0;
-    for (const rec of recipes) {
+    if (existsSync(recipesPath)) {
+      const recipes: RecipeInput[] = JSON.parse(readFileSync(recipesPath, 'utf-8'));
+      for (const rec of recipes) {
       await client.query(
         `INSERT INTO recipes (id, owner_id, name, category, instructions, desired_margin, fixed_costs_percentage, updated_at)
          VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())
@@ -421,6 +430,9 @@ async function seed() {
         maxRfcRes.rows[0].max_id,
       ]);
     }
+  } else {
+    console.log('No recipes file found; skipping recipes seeding.');
+  }
   } finally {
     client.release();
     await pool.end();
