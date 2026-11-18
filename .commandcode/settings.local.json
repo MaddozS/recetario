@@ -1,5 +1,11 @@
 {
   "disabledSkills": [
-    "graphify"
+    "graphify",
+    "ponytail",
+    "ponytail-help",
+    "ponytail-review",
+    "supabase",
+    "supabase-postgres-best-practices",
+    "ui-ux-pro-max"
   ]
 }

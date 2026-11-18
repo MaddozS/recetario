@@ -1,30 +1,32 @@
-import type Stripe from "stripe";
-import type { SyncPlanInput } from "@recetario/types";
-import { stripe } from "./stripe-client";
+import type Stripe from 'stripe';
+import type { SyncPlanInput } from '@recetario/types';
+import { stripe } from './stripe-client';
 
 export { stripe };
-import { FEATURE_FLAGS } from "./plans-config";
+import { FEATURE_FLAGS } from './plans-config';
 
 export async function listPrices(): Promise<SyncPlanInput[]> {
-  const prices = await stripe.prices.list({ active: true, expand: ["data.product"], limit: 100 });
+  const prices = await stripe.prices.list({ active: true, expand: ['data.product'], limit: 100 });
   const result: SyncPlanInput[] = [];
 
   for (const price of prices.data) {
     const product = price.product as Stripe.Product;
     const tier = product.metadata?.tier;
     const interval = price.recurring?.interval;
-    if (!tier || !FEATURE_FLAGS[tier] || (interval !== "month" && interval !== "year")) continue;
+    if (!tier || !FEATURE_FLAGS[tier] || (interval !== 'month' && interval !== 'year')) continue;
 
     result.push({
       id: `${tier}_${interval}ly`,
       stripePriceId: price.id,
       name: product.name,
       tier,
-      billingInterval: interval === "month" ? "monthly" : "yearly",
+      billingInterval: interval === 'month' ? 'monthly' : 'yearly',
       priceCents: price.unit_amount ?? 0,
-      currency: price.currency ?? "usd",
+      currency: price.currency ?? 'usd',
       recipesLimit: product.metadata?.recipes_limit ? Number(product.metadata.recipes_limit) : null,
-      ingredientsLimit: product.metadata?.ingredients_limit ? Number(product.metadata.ingredients_limit) : null,
+      ingredientsLimit: product.metadata?.ingredients_limit
+        ? Number(product.metadata.ingredients_limit)
+        : null,
       featuresJson: JSON.stringify(FEATURE_FLAGS[tier]),
       active: true,
     });
@@ -33,7 +35,10 @@ export async function listPrices(): Promise<SyncPlanInput[]> {
   return result;
 }
 
-export async function createCustomer(input: { email?: string; userId: string }): Promise<Stripe.Customer> {
+export async function createCustomer(input: {
+  email?: string;
+  userId: string;
+}): Promise<Stripe.Customer> {
   return stripe.customers.create({ email: input.email, metadata: { userId: input.userId } });
 }
 
@@ -49,7 +54,7 @@ export async function createCheckoutSession(input: {
   return stripe.checkout.sessions.create({
     customer: input.customerId,
     line_items: [{ price: input.priceId, quantity: 1 }],
-    mode: "subscription",
+    mode: 'subscription',
     ...(input.trialPeriodDays != null && input.trialPeriodDays > 0
       ? { subscription_data: { trial_period_days: input.trialPeriodDays } }
       : {}),
@@ -68,19 +73,27 @@ export async function updateStripeSubscription(input: {
   const subscription = await stripe.subscriptions.retrieve(input.subscriptionId);
   const itemId = subscription.items.data[0]?.id;
   if (!itemId) {
-    throw new Error("Subscription item not found");
+    throw new Error('Subscription item not found');
   }
 
   if (input.isUpgrade) {
     const updateParams: Stripe.SubscriptionUpdateParams = {
       items: [{ id: itemId, price: input.priceId }],
-      proration_behavior: "always_invoice",
+      proration_behavior: 'always_invoice',
     };
     return stripe.subscriptions.update(input.subscriptionId, updateParams);
   } else {
     let schedule: Stripe.SubscriptionSchedule;
-    if (typeof subscription.schedule === "string" && subscription.schedule) {
+    if (typeof subscription.schedule === 'string' && subscription.schedule) {
       schedule = await stripe.subscriptionSchedules.retrieve(subscription.schedule);
+      // Stripe only allows updating schedules in `not_started` or `active`.
+      // A stale (canceled/released/completed) schedule no longer manages the
+      // subscription, so start a fresh schedule from it instead.
+      if (schedule.status !== 'not_started' && schedule.status !== 'active') {
+        schedule = await stripe.subscriptionSchedules.create({
+          from_subscription: input.subscriptionId,
+        });
+      }
     } else {
       schedule = await stripe.subscriptionSchedules.create({
         from_subscription: input.subscriptionId,
@@ -89,21 +102,20 @@ export async function updateStripeSubscription(input: {
 
     const currentPhase = schedule.phases[schedule.phases.length - 1];
     const currentPriceId =
-      (typeof currentPhase?.items[0]?.price === "string"
+      (typeof currentPhase?.items[0]?.price === 'string'
         ? currentPhase.items[0].price
-        : currentPhase?.items[0]?.price?.id) ||
-      subscription.items.data[0].price.id;
+        : currentPhase?.items[0]?.price?.id) || subscription.items.data[0].price.id;
 
     const currentPeriodEnd =
       (subscription as { current_period_end?: number }).current_period_end ||
       subscription.items.data[0]?.current_period_end;
 
     await stripe.subscriptionSchedules.update(schedule.id, {
-      end_behavior: "release",
+      end_behavior: 'release',
       phases: [
         {
           items: [{ price: currentPriceId, quantity: 1 }],
-          start_date: currentPhase ? currentPhase.start_date : "now",
+          start_date: currentPhase ? currentPhase.start_date : 'now',
           end_date: currentPhase ? currentPhase.end_date : currentPeriodEnd,
         },
         {
@@ -117,16 +129,21 @@ export async function updateStripeSubscription(input: {
   }
 }
 
-export async function createPortalSession(customerId: string, returnUrl: string): Promise<Stripe.BillingPortal.Session> {
+export async function createPortalSession(
+  customerId: string,
+  returnUrl: string
+): Promise<Stripe.BillingPortal.Session> {
   return stripe.billingPortal.sessions.create({ customer: customerId, return_url: returnUrl });
 }
 
-export async function verifyWebhookSignature(payload: string, signature: string, secret: string): Promise<Stripe.Event> {
-  try {
-    return await stripe.webhooks.constructEventAsync(payload, signature, secret);
-  } catch {
-    return stripe.webhooks.constructEvent(payload, signature, secret);
-  }
+// workerd solo expone crypto.subtle (asíncrono): `constructEvent` síncrono siempre
+// revienta con CryptoProviderOnlySupportsAsyncError y enmascara el fallo real.
+export async function verifyWebhookSignature(
+  payload: string,
+  signature: string,
+  secret: string
+): Promise<Stripe.Event> {
+  return stripe.webhooks.constructEventAsync(payload, signature, secret);
 }
 
 export async function retrieveSubscription(subscriptionId: string): Promise<Stripe.Subscription> {
@@ -136,4 +153,3 @@ export async function retrieveSubscription(subscriptionId: string): Promise<Stri
 export async function retrieveCheckoutSession(sessionId: string): Promise<Stripe.Checkout.Session> {
   return stripe.checkout.sessions.retrieve(sessionId);
 }
-

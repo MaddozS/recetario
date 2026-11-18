@@ -1,14 +1,12 @@
-import type { AuditAction } from "../prisma/generated/enums"
-import { prisma } from "./prisma";
+import type { AuditAction } from '../prisma/generated/enums';
+import { prisma } from './prisma';
 
-export async function logAuditEvent(
-  params: {
-    userId: string;
-    action: AuditAction;
-    ipAddress?: string | null;
-    userAgent?: string | null;
-  },
-): Promise<void> {
+export async function logAuditEvent(params: {
+  userId: string;
+  action: AuditAction;
+  ipAddress?: string | null;
+  userAgent?: string | null;
+}): Promise<void> {
   try {
     await prisma.auditLog.create({
       data: {

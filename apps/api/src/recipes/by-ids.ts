@@ -1,15 +1,16 @@
-import type { Handler } from "hono";
-import { getRecipesByIds } from "@recetario/db";
-import { auth } from "@recetario/auth/server";
-import { recipeWithIngredientsSchema } from "@recetario/types";
-import { ApiError } from "../errors";
+import type { Handler } from 'hono';
+import { getRecipesByIds } from '@recetario/db';
+import { auth } from '@recetario/auth/server';
+import { recipeWithIngredientsSchema } from '@recetario/types';
+import { ApiError } from '../errors';
+import { requireProductionAccess } from '../entitlements';
 
 const MAX_IDS = 100;
 
 function parseIds(raw: string | undefined): number[] {
   if (!raw) return [];
   return raw
-    .split(",")
+    .split(',')
     .map((s) => Number(s.trim()))
     .filter((n) => Number.isInteger(n) && n > 0);
 }
@@ -18,22 +19,26 @@ export function recipesByIdsHandler(): Handler {
   return async (c) => {
     const session = await auth.api.getSession({ headers: c.req.raw.headers });
     if (!session?.user) {
-      throw new ApiError("UNAUTHENTICATED", "Authentication required");
+      throw new ApiError('UNAUTHENTICATED', 'Authentication required');
     }
 
-    const ids = parseIds(c.req.query("ids"));
+    const ids = parseIds(c.req.query('ids'));
     if (ids.length === 0) {
       throw new ApiError(
-        "VALIDATION_ERROR",
-        "ids query parameter must contain at least one positive integer",
+        'VALIDATION_ERROR',
+        'ids query parameter must contain at least one positive integer'
       );
     }
     if (ids.length > MAX_IDS) {
       throw new ApiError(
-        "VALIDATION_ERROR",
-        `ids query parameter cannot contain more than ${MAX_IDS} ids`,
+        'VALIDATION_ERROR',
+        `ids query parameter cannot contain more than ${MAX_IDS} ids`
       );
     }
+
+    // El planificador es una feature de plan: la autoridad vive aquí, no sólo
+    // en la UI (una llamada directa no puede saltarse el tope de Basic).
+    await requireProductionAccess(session.user.id, ids.length);
 
     const recipes = await getRecipesByIds(ids, session.user.id);
     const shaped = recipes.map((r) => recipeWithIngredientsSchema.parse(shapeRecipeDetail(r)));

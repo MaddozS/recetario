@@ -17,13 +17,15 @@ prisma migrate reset [options]
 
 **Warning: All data will be lost.**
 
+When Prisma detects an AI agent, this command is blocked until the user gives explicit consent. Follow `agent-safety.md`; `--force` skips the ordinary prompt but does not constitute user consent for an agent.
+
 ## Options
 
-| Option | Description |
-|--------|-------------|
-| `--force` / `-f` | Skip confirmation prompt |
-| `--schema` | Path to schema file |
-| `--config` | Custom path to your Prisma config file |
+| Option           | Description                            |
+| ---------------- | -------------------------------------- |
+| `--force` / `-f` | Skip confirmation prompt               |
+| `--schema`       | Path to schema file                    |
+| `--config`       | Custom path to your Prisma config file |
 
 ## Examples
 
@@ -66,7 +68,7 @@ export default defineConfig({
   migrations: {
     seed: 'tsx prisma/seed.ts',
   },
-})
+});
 ```
 
 Typical workflow:

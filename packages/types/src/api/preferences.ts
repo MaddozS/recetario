@@ -1,14 +1,14 @@
-import { z } from "zod";
+import { z } from 'zod';
 
-export const PREFERENCE_THEMES = ["system", "light", "dark"] as const;
+export const PREFERENCE_THEMES = ['system', 'light', 'dark'] as const;
 export const PREFERENCE_ACCENT_COLORS = [
-  "indigo",
-  "violet",
-  "blue",
-  "emerald",
-  "rose",
-  "amber",
-  "coral",
+  'indigo',
+  'violet',
+  'blue',
+  'emerald',
+  'rose',
+  'amber',
+  'coral',
 ] as const;
 
 export const preferencesResponseSchema = z.object({

@@ -3,7 +3,7 @@ packages:
   - 'packages/*'
 
 allowBuilds:
-  "@prisma/engines": true
+  '@prisma/engines': true
   better-sqlite3: false
   esbuild: true
   prisma: true
@@ -16,4 +16,4 @@ minimumReleaseAgeExclude:
   - wrangler@4.108.0
 
 overrides:
-  "@cloudflare/vite-plugin": "1.46.0"
+  '@cloudflare/vite-plugin': '1.46.0'

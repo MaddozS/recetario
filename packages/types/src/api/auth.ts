@@ -1,6 +1,6 @@
-import { z } from "zod";
-import { preferencesResponseSchema } from "./preferences";
-import { userSubscriptionInfoSchema } from "./billing";
+import { z } from 'zod';
+import { preferencesResponseSchema } from './preferences';
+import { userSubscriptionInfoSchema } from './billing';
 
 export const credentialStatusResponseSchema = z.object({
   hasPasswordAuth: z.boolean(),

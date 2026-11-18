@@ -2,123 +2,125 @@
 name: KitchCalc
 description: Calculadora de costos de recetas para profesionales de la cocina
 colors:
-  blueprint-indigo: "#4f46e5"
-  apron-white: "#f8fafc"
-  recipe-card: "#ffffff"
-  flour-dust: "#f1f5f9"
-  cell-warmth: "#e2e8f0"
-  espresso: "#0f172a"
-  warm-slate: "#334155"
-  cool-ash: "#64748b"
-  vapor: "#94a3b8"
-  pan-edge: "#e2e8f0"
-  pan-edge-light: "#f1f5f9"
-  chili-red: "#be123c"
-  chili-bg: "#fff1f2"
-  chili-border: "#fecdd3"
-  chili-solid: "#e11d48"
-  herb-green: "#047857"
-  herb-bg: "#ecfdf5"
-  herb-border: "#a7f3d0"
-  herb-solid: "#10b981"
-  turmeric-amber: "#b45309"
-  turmeric-bg: "#fffbeb"
-  turmeric-border: "#fde68a"
-  turmeric-solid: "#f59e0b"
-  ring-indigo: "#4f46e5"
+  blueprint-indigo: '#4f46e5'
+  apron-white: '#f8fafc'
+  recipe-card: '#ffffff'
+  flour-dust: '#f1f5f9'
+  cell-warmth: '#e2e8f0'
+  espresso: '#0f172a'
+  warm-slate: '#334155'
+  cool-ash: '#64748b'
+  vapor: '#94a3b8'
+  pan-edge: '#e2e8f0'
+  pan-edge-light: '#f1f5f9'
+  chili-red: '#be123c'
+  chili-bg: '#fff1f2'
+  chili-border: '#fecdd3'
+  chili-solid: '#e11d48'
+  herb-green: '#047857'
+  herb-bg: '#ecfdf5'
+  herb-border: '#a7f3d0'
+  herb-solid: '#10b981'
+  turmeric-amber: '#b45309'
+  turmeric-bg: '#fffbeb'
+  turmeric-border: '#fde68a'
+  turmeric-solid: '#f59e0b'
+  ring-indigo: '#4f46e5'
 typography:
   display:
-    fontFamily: "Outfit, ui-sans-serif, system-ui, sans-serif"
-    fontSize: "1.875rem"
+    fontFamily: 'Outfit, ui-sans-serif, system-ui, sans-serif'
+    fontSize: '1.875rem'
     fontWeight: 800
     lineHeight: 1.2
-    letterSpacing: "normal"
+    letterSpacing: 'normal'
   headline:
-    fontFamily: "Outfit, ui-sans-serif, system-ui, sans-serif"
-    fontSize: "1.5rem"
+    fontFamily: 'Outfit, ui-sans-serif, system-ui, sans-serif'
+    fontSize: '1.5rem'
     fontWeight: 700
     lineHeight: 1.3
-    letterSpacing: "normal"
+    letterSpacing: 'normal'
   title:
-    fontFamily: "Outfit, ui-sans-serif, system-ui, sans-serif"
-    fontSize: "1.125rem"
+    fontFamily: 'Outfit, ui-sans-serif, system-ui, sans-serif'
+    fontSize: '1.125rem'
     fontWeight: 700
     lineHeight: 1.4
-    letterSpacing: "normal"
+    letterSpacing: 'normal'
   body:
-    fontFamily: "Outfit, ui-sans-serif, system-ui, sans-serif"
-    fontSize: "0.875rem"
+    fontFamily: 'Outfit, ui-sans-serif, system-ui, sans-serif'
+    fontSize: '0.875rem'
     fontWeight: 400
     lineHeight: 1.6
-    letterSpacing: "normal"
+    letterSpacing: 'normal'
   label:
-    fontFamily: "Outfit, ui-sans-serif, system-ui, sans-serif"
-    fontSize: "0.6875rem"
+    fontFamily: 'Outfit, ui-sans-serif, system-ui, sans-serif'
+    fontSize: '0.6875rem'
     fontWeight: 700
     lineHeight: 1.4
-    letterSpacing: "0.16em"
-    textTransform: "uppercase"
+    letterSpacing: '0.16em'
+    textTransform: 'uppercase'
   mono:
     fontFamily: "'JetBrains Mono', ui-monospace, 'SF Mono', 'Cascadia Code', 'Consolas', monospace"
-    fontSize: "inherit"
+    fontSize: 'inherit'
     fontWeight: 500
     lineHeight: 1.5
-    letterSpacing: "normal"
+    letterSpacing: 'normal'
     fontFeature: "'tnum'"
 rounded:
-  lg: "8px"
-  xl: "12px"
-  2xl: "16px"
-  3xl: "24px"
-  full: "9999px"
+  lg: '8px'
+  xl: '12px'
+  2xl: '16px'
+  3xl: '24px'
+  full: '9999px'
 spacing:
-  xs: "4px"
-  sm: "8px"
-  md: "12px"
-  lg: "16px"
-  xl: "20px"
-  2xl: "24px"
-  3xl: "32px"
+  xs: '4px'
+  sm: '8px'
+  md: '12px'
+  lg: '16px'
+  xl: '20px'
+  2xl: '24px'
+  3xl: '32px'
 components:
   button-primary:
-    backgroundColor: "{colors.blueprint-indigo}"
-    textColor: "#ffffff"
-    rounded: "{rounded.xl}"
-    padding: "12px 24px"
-    typography: "{typography.body}"
+    backgroundColor: '{colors.blueprint-indigo}'
+    textColor: '#ffffff'
+    rounded: '{rounded.xl}'
+    padding: '12px 24px'
+    typography: '{typography.body}'
   button-primary-hover:
-    backgroundColor: "#4338ca"
-    textColor: "#ffffff"
-    rounded: "{rounded.xl}"
-    padding: "12px 24px"
+    backgroundColor: '#4338ca'
+    textColor: '#ffffff'
+    rounded: '{rounded.xl}'
+    padding: '12px 24px'
   button-secondary:
-    textColor: "{colors.cool-ash}"
-    rounded: "{rounded.xl}"
-    padding: "12px 20px"
+    textColor: '{colors.cool-ash}'
+    rounded: '{rounded.xl}'
+    padding: '12px 20px'
   button-secondary-hover:
-    backgroundColor: "{colors.apron-white}"
-    textColor: "{colors.cool-ash}"
-    rounded: "{rounded.xl}"
-    padding: "12px 20px"
+    backgroundColor: '{colors.apron-white}'
+    textColor: '{colors.cool-ash}'
+    rounded: '{rounded.xl}'
+    padding: '12px 20px'
   button-danger:
-    backgroundColor: "{colors.chili-solid}"
-    textColor: "#ffffff"
-    rounded: "{rounded.xl}"
-    padding: "12px 20px"
+    backgroundColor: '{colors.chili-solid}'
+    textColor: '#ffffff'
+    rounded: '{rounded.xl}'
+    padding: '12px 20px'
   card-default:
-    backgroundColor: "{colors.recipe-card}"
-    rounded: "{rounded.2xl}"
+    backgroundColor: '{colors.recipe-card}'
+    rounded: '{rounded.2xl}'
   input-field:
-    backgroundColor: "{colors.apron-white}"
-    rounded: "{rounded.xl}"
-    padding: "12px 16px"
+    backgroundColor: '{colors.apron-white}'
+    rounded: '{rounded.xl}'
+    padding: '12px 16px'
   input-field-focus:
-    backgroundColor: "{colors.recipe-card}"
-    rounded: "{rounded.xl}"
-    padding: "12px 16px"
+    backgroundColor: '{colors.recipe-card}'
+    rounded: '{rounded.xl}'
+    padding: '12px 16px'
 ---
 
 # Design System: KitchCalc
+
+> **Nota.** Este documento describe el sistema de diseño (tokens, tipografía, elevación, motion y las APIs visuales de los componentes). La **implementación de referencia** vive en `apps/web/app/components/ui/**` y `apps/web/app/features/**` (Vue 3 + Nuxt 4).
 
 ## 1. Overview
 
@@ -177,7 +179,11 @@ The palette is restrained: a single accent family (user-selectable from 7 option
 
 **The One Voice Rule.** The accent color is used on primary actions, current selection, and focus indicators only. It never decorates. Its rarity on the page is what makes it signal.
 
+**The Action Fill Rule.** Fills that carry text or are the primary action (primary buttons, active nav items, the landing CTA band) use `accent-solid` with `text-on-accent`, both emitted per family and theme by `getAccentCssVars`. Light starts at the family's 700. Dark keeps that same tone (the accent is the constant; the neutrals are what change) and only steps up to the 600 when the 700 does not clear 3:1 against the dark background (indigo, violet, blue). The label is white in both themes, and every pair is measured in `test/unit/accent-colors.spec.ts`. Shade classes (`bg-accent-700`, `text-accent-600`) stay for text, tints, borders, and indicators, and follow `darkShadeMap` with no overrides.
+
 **The Token Bridge Rule.** Every color is a semantic token (`bg-card`, `text-foreground`) referencing a CSS variable (`--tw-card`, `--tw-fg`). Never hardcode a hex or oklch value in a component. This is how dark mode works without a single `.dark` override in component code.
+
+**The Marketing Is Light Rule.** Las superficies públicas indexables (`/`, `/funciones`, `/pricing`, la privacidad y los términos) fuerzan el tema claro: `app.vue` ignora la preferencia guardada cuando la ruta pasa `isPublicMarketingPath()`, y su navbar no monta el toggle. La app privada y el login conservan el toggle y los dos temas. Las capturas de esas superficies se sirven en una sola variante (`*_light`).
 
 ## 3. Typography
 
@@ -336,33 +342,23 @@ All animations use CSS custom properties for easing and duration, defined in `:r
 
 ## 8. UI Component Library
 
-All reusable UI primitives live in `src/components/ui/` with a barrel export at `src/components/ui/index.ts`.
+All reusable UI primitives live in `apps/web/app/components/ui/{atoms,molecules,organisms}/` and are **auto-registered without prefix** by Nuxt (`nuxt.config.ts` → `components`).
 
 ### Import convention
 
-```astro
----
-import {
-  Button,
-  Card,
-  Input,
-  Badge,
-  Dialog,
-  FinancialSummary,
-  SectionHeading,
-} from "@/components/ui";
----
+```vue
+<!-- El kit (~/components/ui) no necesita import: <Button>, <Card>, <Dialog>… -->
+<!-- Los componentes de una feature SÍ: -->
+<script setup lang="ts">
+import BillingSection from '~/features/billing/BillingSection.vue';
+</script>
 ```
 
 ### Button
 
-**File:** `src/components/ui/Button.astro`
+**File:** `apps/web/app/components/ui/atoms/Button.vue`
 
-```astro
----
-import { Button } from "@/components/ui";
----
-
+```vue
 <Button variant="primary" icon="plus">Nueva Receta</Button>
 <Button variant="secondary">Cancelar</Button>
 <Button variant="danger" icon="trash-2">Eliminar</Button>
@@ -384,9 +380,9 @@ import { Button } from "@/components/ui";
 
 ### Card
 
-**File:** `src/components/ui/Card.astro`
+**File:** `apps/web/app/components/ui/molecules/Card.vue`
 
-```astro
+```vue
 <Card padding="md" hover>
   <!-- content -->
 </Card>
@@ -404,17 +400,11 @@ import { Button } from "@/components/ui";
 
 ### Input
 
-**File:** `src/components/ui/Input.astro`
+**File:** `apps/web/app/components/ui/atoms/Input.vue`
 
-```astro
+```vue
 <Input label="Nombre" name="name" required />
-<Input
-  label="Precio"
-  name="price"
-  type="number"
-  monospace
-  error="Debe ser mayor a 0"
-/>
+<Input label="Precio" name="price" type="number" monospace error="Debe ser mayor a 0" />
 <Input name="search" type="search" placeholder="Buscar..." />
 ```
 
@@ -432,9 +422,9 @@ import { Button } from "@/components/ui";
 
 ### Badge
 
-**File:** `src/components/ui/Badge.astro`
+**File:** `apps/web/app/components/ui/atoms/Badge.vue`
 
-```astro
+```vue
 <Badge variant="category" color="accent">Postres</Badge>
 <Badge variant="status" color="success">Activo</Badge>
 <Badge variant="tier" color="accent">Pro</Badge>
@@ -450,14 +440,10 @@ import { Button } from "@/components/ui";
 
 ### Dialog
 
-**File:** `src/components/ui/Dialog.astro`
+**File:** `apps/web/app/components/ui/organisms/Dialog.vue`
 
-```astro
-<Dialog
-  id="my-dialog"
-  title="Confirmar"
-  description="Esta accion no se puede deshacer."
->
+```vue
+<Dialog id="my-dialog" title="Confirmar" description="Esta accion no se puede deshacer.">
   <div class="flex justify-end gap-3">
     <Button variant="secondary">Cancelar</Button>
     <Button variant="danger">Eliminar</Button>
@@ -476,36 +462,71 @@ Dialog uses native `<dialog>` with `data-animated` for enter/exit transitions. A
 
 ### FinancialSummary
 
-**File:** `src/components/ui/FinancialSummary.astro`
+**File:** `apps/web/app/components/ui/molecules/FinancialSummary.vue`
 
-A single-card layout for financial metrics — replaces the old 4-card icon-circle metric template. Renders as 4 inline rows in a 2x2 grid (inline on desktop, stacking on mobile). Like a restaurant POS receipt: label + mono value, no decorative chrome.
+A single-card layout for financial metrics — replaces the old 4-card icon-circle metric template. Like a restaurant POS receipt: a labeled header (title + scope chip) and label + mono value rows, no decorative chrome.
 
-```astro
+Every row declares its `group`; the card draws the section label (`.section-label`) when the group changes: `Costo de la mezcla` / `Precio de venta` in the recipe, `Costos` / `Resultado` in the planner. The section states its arithmetic with the row's `op` (`Insumos + Costos Fijos = Costo Total`), the row that closes it carries `emphasis: "total"` (one type step larger) and, when the plan has more than one batch, it translates itself to an average per batch.
+
+The section's lever carries `emphasis: "control"`: it renders in the section header, next to the label, as the editable field of the section (the margin). The rows with `emphasis: "answer"` render together inside the tinted accent band, each with the line that explains it: the base (what it costs to produce), the price (with which margin) and the profit (what is left) — the same resource as the system's metric pills and category badges. Cost rows stay in neutral ink: a red number reads as loss, and the accent is reserved for actions, selection, and focus (The One Voice Rule).
+
+```vue
 <FinancialSummary
+  title="Resumen financiero"
+  scope="1 mezcla"
   rows={[
     {
-      label: "Costo Insumos",
+      label: "Insumos",
       value: "$120.50",
       subtitle: "Costo base de materiales",
+      group: "Costo de la mezcla",
     },
     {
       label: "Gastos Operativos",
       value: "25%",
       subtitle: "Servicios, labor, etc.",
-      secondaryValue: "+$66.80",
+      secondaryValue: "$66.80",
+      group: "Costo de la mezcla",
+      op: "+",
     },
     {
-      label: "Costo Total Real",
+      label: "Costo Total",
       value: "$187.30",
       subtitle: "Insumos + Operativos",
+      secondaryValue: "≈ $93.65 por mezcla",
+      group: "Costo de la mezcla",
+      emphasis: "total",
+      op: "=",
     },
     {
-      label: "Margen Utilidad",
+      label: "Margen Deseado",
       value: "35%",
       subtitle: "Objetivo de ganancia",
+      group: "Precio de venta",
+      emphasis: "control",
+    },
+    {
+      label: "Costo Total",
+      value: "$187.30",
+      subtitle: "Lo que cuesta producir",
+      group: "Precio de venta",
+      emphasis: "answer",
+    },
+    {
+      label: "Precio Sugerido",
+      value: "$288.15",
+      subtitle: "Con 35% de margen",
+      group: "Precio de venta",
+      emphasis: "answer",
+    },
+    {
+      label: "Ganancia",
+      value: "$100.85",
+      subtitle: "Después de costos",
+      group: "Precio de venta",
+      emphasis: "answer",
     },
   ]}
-  highlightRow={2}
   isEditMode
   editFormId="recipe-edit-form"
   editFields={[
@@ -520,20 +541,21 @@ A single-card layout for financial metrics — replaces the old 4-card icon-circ
 />
 ```
 
-| Prop           | Type             | Default | Description                                                                  |
-| -------------- | ---------------- | ------- | ---------------------------------------------------------------------------- |
-| `rows`         | `FinancialRow[]` | —       | Array of `{ label, value, subtitle?, secondaryValue? }` — 4 rows recommended |
-| `highlightRow` | `number`         | —       | Index of row to accent-highlight (accent-500/600 text)                       |
-| `isEditMode`   | `boolean`        | `false` | Enable inline edit inputs on specified rows                                  |
-| `editFormId`   | `string`         | —       | Form id for edit inputs to attach to                                         |
-| `editFields`   | `EditField[]`    | `[]`    | `{ rowIndex, name, currentValue, suffix? }` — which rows to make editable    |
-| `class`        | `string`         | —       | Additional classes                                                           |
+| Prop         | Type             | Default | Description                                                                                                                                                                        |
+| ------------ | ---------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `rows`       | `FinancialRow[]` | —       | `{ label, value, subtitle?, secondaryValue?, group?, emphasis?, op? }` — `op` declara la aritmética, `total` cierra el tramo, `control` va en su encabezado y `answer` en la banda |
+| `title`      | `string`         | —       | Encabezado de la card (icono + texto); sin él no hay encabezado                                                                                                                    |
+| `scope`      | `string`         | —       | Alcance de las cifras («1 mezcla»), como chip a la derecha del encabezado                                                                                                          |
+| `isEditMode` | `boolean`        | `false` | Enable inline edit inputs on specified rows                                                                                                                                        |
+| `editFormId` | `string`         | —       | Form id for edit inputs to attach to                                                                                                                                               |
+| `editFields` | `EditField[]`    | `[]`    | `{ rowIndex, name, currentValue, suffix? }` — which rows to make editable                                                                                                          |
+| `class`      | `string`         | —       | Additional classes                                                                                                                                                                 |
 
 ### SectionHeading
 
-**File:** `src/components/ui/SectionHeading.astro`
+**File:** `apps/web/app/components/ui/atoms/SectionHeading.vue`
 
-```astro
+```vue
 <SectionHeading
   icon="factory"
   title="Planificador de Produccion"
@@ -552,7 +574,7 @@ A single-card layout for financial metrics — replaces the old 4-card icon-circ
 
 ## 9. CSS Utility Classes
 
-Reusable Tailwind component classes in `src/styles/global.css` `@layer components`:
+Reusable Tailwind component classes in `apps/web/app/assets/css/global.css` `@layer components`:
 
 | Class            | Purpose                                             |
 | ---------------- | --------------------------------------------------- |
@@ -566,61 +588,29 @@ Reusable Tailwind component classes in `src/styles/global.css` `@layer component
 ## 10. File Structure
 
 ```
-src/components/ui/
-  ├── Button.astro        # Button with 4 variants + loading state
-  ├── Card.astro          # Card container with hover/accent modes
-  ├── Input.astro         # Form input with label, error, monospace
-  ├── Badge.astro         # Badge with 4 variants x 5 colors
-  ├── Dialog.astro        # Modal dialog with animated backdrop
-  ├── FinancialSummary.astro # Financial metrics card (POS-receipt style)
-  ├── SectionHeading.astro # Icon + title + subtitle heading
-  └── index.ts            # Barrel export
+apps/web/app/components/ui/
+  ├── atoms/       # Button, Input, Badge, Icon, Skeleton, SectionHeading, UnitCostDisplay
+  ├── molecules/   # Card, FeedbackAlert, EmptyState, PasswordInput, AppBreadcrumbs, UpgradePrompt
+  └── organisms/   # Dialog, AppHeader, AppSidebar, AppBottomNav, NavProgressBar, AppLoadingOverlay
+apps/web/app/features/   # componentes de feature (no auto-registrados; import explícito)
 ```
 
 ### App-level components
 
 ```
-src/components/
-  ├── FeedbackAlert.astro     # Success/error feedback banner
-  ├── BillingSection.astro    # Subscription plan card, usage bars, feature list
-  └── ...
+apps/web/app/components/ui/molecules/  # FeedbackAlert, EmptyState, PasswordInput, UpgradePrompt
+apps/web/app/features/billing/         # BillingSection (plan, uso, features)
 ```
 
 ### BillingSection
 
-**File:** `src/components/BillingSection.astro`
+**File:** `apps/web/app/features/billing/BillingSection.vue` (feature `billing`, import explícito).
 
-Reusable billing/susbcription display used in both `settings.astro` billing tab and `settings/billing.astro` dedicated page. Consolidates plan card, usage progress bars, and feature list into one component.
-
-```astro
-<BillingSection
-  subscription={subscription}
-  recipeCount={recipeCount}
-  ingredientCount={ingredientCount}
-  remainingRecipes={remainingRecipes}
-  remainingIngredients={remainingIngredients}
-  showBackButton={true}
-  isSuccess={isSuccess}
-  isCanceled={isCanceled}
-/>
-```
-
-| Prop                   | Type                   | Default | Description                                                   |
-| ---------------------- | ---------------------- | ------- | ------------------------------------------------------------- |
-| `subscription`         | `UserSubscriptionInfo` | —       | Current user subscription data                                |
-| `recipeCount`          | `number`               | —       | Current recipe count                                          |
-| `ingredientCount`      | `number`               | —       | Current ingredient count                                      |
-| `remainingRecipes`     | `number \| null`       | —       | Remaining recipes before limit                                |
-| `remainingIngredients` | `number \| null`       | —       | Remaining ingredients before limit                            |
-| `showBackButton`       | `boolean`              | `false` | Show back-to-settings button (true on dedicated billing page) |
-| `isSuccess`            | `boolean`              | `false` | Show success banner (from Stripe return)                      |
-| `isCanceled`           | `boolean`              | `false` | Show canceled banner (from Stripe return)                     |
-
-Includes client-side JS for Stripe Customer Portal management via `#manage-subscription-btn`.
+Muestra el plan actual (trial, cancelación programada, cambio programado), el uso, las funciones incluidas, el portal de Stripe y el cambio de plan con confirmación. La suscripción entra como prop desde la página (`useSettingsOverview`); las mutaciones (`useCheckout`, `useBillingPortal`) viven dentro y nunca recargan la página.
 
 ## Semantic color tokens
 
-The following tokens are defined in `src/styles/global.css` via `@theme`:
+The following tokens are defined in `apps/web/app/assets/css/tokens.css` (importado desde `global.css`) via `@theme`:
 
 ### Danger
 
@@ -633,11 +623,11 @@ The following tokens are defined in `src/styles/global.css` via `@theme`:
 
 Use `backdrop:bg-backdrop/50` on dialog backdrops instead of hardcoded `backdrop:bg-slate-900/50`.
 
-All components are server-rendered Astro components with zero client JS (except the Button loading spinner and BillingSection portal button, which use CSS animation / fetch). They consume the semantic token system from `global.css` and are dark-mode-ready without any `.dark` selector overrides.
+Los componentes consumen el sistema de tokens semánticos de `global.css`/`tokens.css` y se adaptan a dark mode sin overrides `.dark` en CSS.
 
 ### Hardcoded color bans
 
 The following hardcoded values have been eliminated from all app pages:
 
-- `backdrop:bg-slate-900/50` — replaced with `backdrop:bg-backdrop/50` (10 instances across ingredients.astro, recipes/index.astro, recipes/[recipe].astro)
-- `dark:md:border-gray-950` — removed from recipes/[recipe].astro template (token system handles dark borders automatically)
+- `backdrop:bg-slate-900/50` — replaced with `backdrop:bg-backdrop/50`
+- `dark:md:border-gray-950` — removed from the recipe detail template (token system handles dark borders automatically)

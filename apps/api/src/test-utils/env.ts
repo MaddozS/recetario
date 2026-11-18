@@ -8,9 +8,9 @@ type TestEnv = {
 
 export function createTestEnv(overrides: Partial<TestEnv> = {}): TestEnv {
   return {
-    DATABASE_URL: "postgres://test:test@localhost:5432/test",
-    INTERNAL_API_HOST: "localhost:8787",
-    BETTER_AUTH_SECRET: "test-secret-do-not-use-in-prod",
+    DATABASE_URL: 'postgres://test:test@localhost:5432/test',
+    INTERNAL_API_HOST: 'localhost:8787',
+    BETTER_AUTH_SECRET: 'test-secret-do-not-use-in-prod',
     ...overrides,
   };
 }

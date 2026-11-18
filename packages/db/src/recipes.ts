@@ -1,15 +1,13 @@
-import { prisma } from "./prisma";
+import { prisma } from './prisma';
 import type {
   RecipeUncheckedCreateInput,
   RecipeUncheckedUpdateInput,
   RecipeIngredientUncheckedCreateInput,
   RecipeFixedCostUncheckedCreateInput,
   RecipePresentationUncheckedCreateInput,
-} from "../prisma/generated/models";
-
+} from '../prisma/generated/models';
 
 export async function getRecipeSummaries(ownerId: string) {
-
   const rows = await prisma.recipe.findMany({
     where: { ownerId },
     include: { recipeIngredients: true },
@@ -71,18 +69,17 @@ export async function getRecipesByIds(ids: number[], ownerId: string) {
 
 export async function createRecipe(
   ownerId: string,
-  recipe: Omit<RecipeUncheckedCreateInput, "ownerId">,
-  recipeIngredients?: Omit<RecipeIngredientUncheckedCreateInput, "recipeId">[],
-  recipeFixedCosts?: Omit<RecipeFixedCostUncheckedCreateInput, "recipeId">[],
-  presentations?: Omit<RecipePresentationUncheckedCreateInput, "recipeId">[],
+  recipe: Omit<RecipeUncheckedCreateInput, 'ownerId'>,
+  recipeIngredients?: Omit<RecipeIngredientUncheckedCreateInput, 'recipeId'>[],
+  recipeFixedCosts?: Omit<RecipeFixedCostUncheckedCreateInput, 'recipeId'>[],
+  presentations?: Omit<RecipePresentationUncheckedCreateInput, 'recipeId'>[]
 ) {
-
   const data = await prisma.$transaction(async (tx) => {
     const recipeCreate = await tx.recipe.create({
       data: {
         ownerId,
         category: recipe.category ?? null,
-        name: recipe.name ?? "Nueva Receta",
+        name: recipe.name ?? 'Nueva Receta',
         desiredMargin: recipe.desiredMargin,
         fixedCostsPercentage: recipe.fixedCostsPercentage ?? 0,
         updatedAt: new Date(),
@@ -158,16 +155,16 @@ export async function createRecipe(
 
 export async function deleteRecipe(recipeId: number, ownerId: string) {
   if (!Number.isFinite(recipeId)) {
-    return { status: "not-found" };
+    return { status: 'not-found' };
   }
 
   try {
     await prisma.recipe.delete({
       where: { id: recipeId, ownerId },
     });
-    return { status: "deleted" };
+    return { status: 'deleted' };
   } catch {
-    return { status: "not-found" };
+    return { status: 'not-found' };
   }
 }
 
@@ -175,11 +172,10 @@ export async function updateRecipe(
   recipeId: number,
   input: RecipeUncheckedUpdateInput,
   ownerId: string,
-  recipeIngredients: Omit<RecipeIngredientUncheckedCreateInput, "recipeId">[],
-  recipeFixedCosts?: Omit<RecipeFixedCostUncheckedCreateInput, "recipeId">[],
-  presentations?: Omit<RecipePresentationUncheckedCreateInput, "recipeId">[],
+  recipeIngredients: Omit<RecipeIngredientUncheckedCreateInput, 'recipeId'>[],
+  recipeFixedCosts?: Omit<RecipeFixedCostUncheckedCreateInput, 'recipeId'>[],
+  presentations?: Omit<RecipePresentationUncheckedCreateInput, 'recipeId'>[]
 ) {
-
   await prisma.$transaction(async (tx) => {
     await tx.recipe.update({
       where: { id: recipeId, ownerId },
@@ -194,7 +190,7 @@ export async function updateRecipe(
     });
 
     // Replace ingredients
-    await tx.recipeIngredient.deleteMany({where: { recipeId }});
+    await tx.recipeIngredient.deleteMany({ where: { recipeId } });
 
     for (const ing of recipeIngredients) {
       await tx.recipeIngredient.create({
@@ -218,7 +214,7 @@ export async function updateRecipe(
         await tx.recipeFixedCost.create({
           data: {
             recipeId,
-            name: fc.name?? "Costo Fijo",
+            name: fc.name ?? 'Costo Fijo',
             type: fc.type,
             base: fc.base,
             value: fc.value,
@@ -251,14 +247,14 @@ export async function updateRecipe(
 export async function duplicateRecipe(sourceRecipeId: number, ownerId: string) {
   const source = await getRecipe(sourceRecipeId, ownerId);
   if (!source) {
-    throw new Error("Recipe not found");
+    throw new Error('Recipe not found');
   }
 
   const maxNameLength = 120;
-  const prefix = "Copia de ";
+  const prefix = 'Copia de ';
   let newName = prefix + source.name;
   if (newName.length > maxNameLength) {
-    newName = newName.slice(0, maxNameLength - 1) + "\u2026";
+    newName = newName.slice(0, maxNameLength - 1) + '\u2026';
   }
 
   const newRecipe = await createRecipe(
@@ -286,9 +282,8 @@ export async function duplicateRecipe(sourceRecipeId: number, ownerId: string) {
       name: p.name,
       unitsPerBatch: p.unitsPerBatch,
       salePrice: p.salePrice,
-    })),
+    }))
   );
 
-
-  return newRecipe
+  return newRecipe;
 }

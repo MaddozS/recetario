@@ -8,7 +8,7 @@ description: Configure rate limiting, manage auth secrets, set up CSRF protectio
 ### Configuring the Secret
 
 ```ts
-import { betterAuth } from "better-auth";
+import { betterAuth } from 'better-auth';
 
 export const auth = betterAuth({
   secret: process.env.BETTER_AUTH_SECRET, // or via `BETTER_AUTH_SECRET` env
@@ -35,7 +35,7 @@ Enabled in production by default. Applies to all endpoints. Plugins can override
 ### Default Configuration
 
 ```ts
-import { betterAuth } from "better-auth";
+import { betterAuth } from 'better-auth';
 
 export const auth = betterAuth({
   rateLimit: {
@@ -96,7 +96,7 @@ Multi-layer protection: origin header validation, Fetch Metadata checks, and fir
 ### Configuration
 
 ```ts
-import { betterAuth } from "better-auth";
+import { betterAuth } from 'better-auth';
 
 export const auth = betterAuth({
   advanced: {
@@ -112,11 +112,11 @@ Only disable for testing or with an alternative CSRF mechanism.
 ### Configuring Trusted Origins
 
 ```ts
-import { betterAuth } from "better-auth";
+import { betterAuth } from 'better-auth';
 
 export const auth = betterAuth({
-  baseURL: "https://api.example.com",
-  trustedOrigins: ["https://app.example.com", "https://admin.example.com"],
+  baseURL: 'https://api.example.com',
+  trustedOrigins: ['https://app.example.com', 'https://admin.example.com'],
 });
 ```
 
@@ -126,9 +126,9 @@ The `baseURL` origin is automatically trusted. Also configurable via env: `BETTE
 
 ```ts
 trustedOrigins: [
-  "*.example.com", // Matches any subdomain
-  "https://*.example.com", // Protocol-specific wildcard
-  "exp://192.168.*.*:*/*", // Custom schemes (e.g., Expo)
+  '*.example.com', // Matches any subdomain
+  'https://*.example.com', // Protocol-specific wildcard
+  'exp://192.168.*.*:*/*', // Custom schemes (e.g., Expo)
 ];
 ```
 
@@ -151,7 +151,7 @@ Validates `callbackURL`, `redirectTo`, `errorCallbackURL`, `newUserCallbackURL`,
 ### Session Expiration
 
 ```ts
-import { betterAuth } from "better-auth";
+import { betterAuth } from 'better-auth';
 
 export const auth = betterAuth({
   session: {
@@ -184,15 +184,15 @@ Defaults: `secure: true` (HTTPS/production), `sameSite: "lax"`, `httpOnly: true`
 ### Custom Cookie Configuration
 
 ```ts
-import { betterAuth } from "better-auth";
+import { betterAuth } from 'better-auth';
 
 export const auth = betterAuth({
   advanced: {
     useSecureCookies: true, // Force secure cookies
-    cookiePrefix: "myapp", // Custom prefix (default: "better-auth")
+    cookiePrefix: 'myapp', // Custom prefix (default: "better-auth")
     defaultCookieAttributes: {
-      sameSite: "strict", // Stricter CSRF protection
-      path: "/auth", // Limit cookie scope
+      sameSite: 'strict', // Stricter CSRF protection
+      path: '/auth', // Limit cookie scope
     },
   },
 });
@@ -219,11 +219,11 @@ PKCE is automatic for all OAuth flows. State tokens are 32-char random strings e
 ### State Parameter Storage
 
 ```ts
-import { betterAuth } from "better-auth";
+import { betterAuth } from 'better-auth';
 
 export const auth = betterAuth({
   account: {
-    storeStateStrategy: "cookie", // Options: "cookie" (default), "database"
+    storeStateStrategy: 'cookie', // Options: "cookie" (default), "database"
   },
 });
 ```
@@ -243,12 +243,12 @@ Enable if storing OAuth tokens for API access on behalf of users. Use `skipState
 ### IP Address Configuration
 
 ```ts
-import { betterAuth } from "better-auth";
+import { betterAuth } from 'better-auth';
 
 export const auth = betterAuth({
   advanced: {
     ipAddress: {
-      ipAddressHeaders: ["x-forwarded-for", "x-real-ip"], // Headers to check
+      ipAddressHeaders: ['x-forwarded-for', 'x-real-ip'], // Headers to check
       disableIpTracking: false, // Keep enabled for rate limiting
     },
   },
@@ -260,23 +260,23 @@ Set `ipv6Subnet` (128, 64, 48, 32; default 64) to group IPv6 addresses. Enable `
 ## Database Hooks for Security Auditing
 
 ```ts
-import { betterAuth } from "better-auth";
+import { betterAuth } from 'better-auth';
 
 export const auth = betterAuth({
   databaseHooks: {
     session: {
       create: {
         after: async ({ data, ctx }) => {
-          await auditLog("session.created", {
+          await auditLog('session.created', {
             userId: data.userId,
-            ip: ctx?.request?.headers.get("x-forwarded-for"),
-            userAgent: ctx?.request?.headers.get("user-agent"),
+            ip: ctx?.request?.headers.get('x-forwarded-for'),
+            userAgent: ctx?.request?.headers.get('user-agent'),
           });
         },
       },
       delete: {
         before: async ({ data }) => {
-          await auditLog("session.revoked", { sessionId: data.id });
+          await auditLog('session.revoked', { sessionId: data.id });
         },
       },
     },
@@ -284,7 +284,7 @@ export const auth = betterAuth({
       update: {
         after: async ({ data, oldData }) => {
           if (oldData?.email !== data.email) {
-            await auditLog("user.email_changed", {
+            await auditLog('user.email_changed', {
               userId: data.id,
               oldEmail: oldData?.email,
               newEmail: data.email,
@@ -296,7 +296,7 @@ export const auth = betterAuth({
     account: {
       create: {
         after: async ({ data }) => {
-          await auditLog("account.linked", {
+          await auditLog('account.linked', {
             userId: data.userId,
             provider: data.providerId,
           });
@@ -312,7 +312,7 @@ Return `false` from a `before` hook to prevent an operation.
 ## Background Tasks
 
 ```ts
-import { betterAuth } from "better-auth";
+import { betterAuth } from 'better-auth';
 
 export const auth = betterAuth({
   advanced: {
@@ -337,20 +337,20 @@ Built-in: consistent response messages, dummy operations on invalid requests, ba
 ## Complete Security Configuration Example
 
 ```ts
-import { betterAuth } from "better-auth";
+import { betterAuth } from 'better-auth';
 
 export const auth = betterAuth({
   secret: process.env.BETTER_AUTH_SECRET,
-  baseURL: "https://api.example.com",
-  trustedOrigins: ["https://app.example.com", "https://*.preview.example.com"],
+  baseURL: 'https://api.example.com',
+  trustedOrigins: ['https://app.example.com', 'https://*.preview.example.com'],
 
   // Rate limiting
   rateLimit: {
     enabled: true,
-    storage: "secondary-storage",
+    storage: 'secondary-storage',
     customRules: {
-      "/api/auth/sign-in/email": { window: 60, max: 5 },
-      "/api/auth/sign-up/email": { window: 60, max: 3 },
+      '/api/auth/sign-in/email': { window: 60, max: 5 },
+      '/api/auth/sign-up/email': { window: 60, max: 3 },
     },
   },
 
@@ -362,25 +362,25 @@ export const auth = betterAuth({
     cookieCache: {
       enabled: true,
       maxAge: 300,
-      strategy: "jwe", // Encrypted session data
+      strategy: 'jwe', // Encrypted session data
     },
   },
 
   // OAuth security
   account: {
     encryptOAuthTokens: true,
-    storeStateStrategy: "cookie",
+    storeStateStrategy: 'cookie',
   },
 
   // Advanced settings
   advanced: {
     useSecureCookies: true,
-    cookiePrefix: "myapp",
+    cookiePrefix: 'myapp',
     defaultCookieAttributes: {
-      sameSite: "lax",
+      sameSite: 'lax',
     },
     ipAddress: {
-      ipAddressHeaders: ["x-forwarded-for"],
+      ipAddressHeaders: ['x-forwarded-for'],
       ipv6Subnet: 64,
     },
     backgroundTasks: {

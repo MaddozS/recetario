@@ -14,10 +14,10 @@ export function getAppOrigin(c: RequestContext): string {
     process.env.PUBLIC_APP_URL ||
     process.env.WEB_ORIGIN;
   if (envOrigin) {
-    return envOrigin.replace(/\/$/, "");
+    return envOrigin.replace(/\/$/, '');
   }
 
-  const originHeader = c.req.header("origin") || c.req.header("referer");
+  const originHeader = c.req.header('origin') || c.req.header('referer');
   if (originHeader) {
     try {
       return new URL(originHeader).origin;
@@ -32,11 +32,11 @@ export function getAppOrigin(c: RequestContext): string {
 export function safeRedirectUrl(
   input: string | undefined,
   fallback: string,
-  appOrigin: string,
+  appOrigin: string
 ): string {
   if (!input) return fallback;
 
-  if (input.startsWith("/") && !input.startsWith("//")) {
+  if (input.startsWith('/') && !input.startsWith('//')) {
     return `${appOrigin}${input}`;
   }
 

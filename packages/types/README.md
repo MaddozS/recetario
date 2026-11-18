@@ -12,8 +12,8 @@ Cross-package type definitions for the KitchCalc monorepo. Lives outside `@recet
 ## Usage
 
 ```ts
-import type { Ingredient, RecipeWithIngredients } from "@recetario/types";
-import { ApiErrorCodeSchema, parseApiError } from "@recetario/types";
+import type { Ingredient, RecipeWithIngredients } from '@recetario/types';
+import { ApiErrorCodeSchema, parseApiError } from '@recetario/types';
 ```
 
 ## Environment variables

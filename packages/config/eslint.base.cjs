@@ -12,10 +12,7 @@ module.exports = {
     ecmaFeatures: { jsx: true },
   },
   plugins: ['@typescript-eslint'],
-  extends: [
-    'eslint:recommended',
-    'plugin:@typescript-eslint/recommended',
-  ],
+  extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended'],
   rules: {
     '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
     'no-console': 'off',
@@ -23,7 +20,6 @@ module.exports = {
   ignorePatterns: [
     'node_modules/',
     'dist/',
-    '.astro/',
     'generated/',
     '*.config.js',
     '*.config.mjs',

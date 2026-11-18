@@ -1,10 +1,10 @@
-import { prisma } from "./prisma";
+import { prisma } from './prisma';
 import type {
   RecipeFixedCostUncheckedCreateInput,
   RecipeFixedCostUncheckedUpdateInput,
   PresentationFixedCostUncheckedCreateInput,
   PresentationFixedCostUncheckedUpdateInput,
-} from "../prisma/generated/models";
+} from '../prisma/generated/models';
 
 export async function getRecipeFixedCost(recipeId: number, fixedCostId: number, ownerId: string) {
   const row = await prisma.recipeFixedCost.findFirst({
@@ -16,7 +16,7 @@ export async function getRecipeFixedCost(recipeId: number, fixedCostId: number, 
 export async function createRecipeFixedCost(
   recipeId: number,
   ownerId: string,
-  input: Omit<RecipeFixedCostUncheckedCreateInput, "recipeId">,
+  input: Omit<RecipeFixedCostUncheckedCreateInput, 'recipeId'>
 ) {
   const recipe = await prisma.recipe.findFirst({
     where: { id: recipeId, ownerId },
@@ -38,7 +38,7 @@ export async function updateRecipeFixedCost(
   recipeId: number,
   fixedCostId: number,
   ownerId: string,
-  input: Omit<RecipeFixedCostUncheckedUpdateInput, "id" | "recipeId">,
+  input: Omit<RecipeFixedCostUncheckedUpdateInput, 'id' | 'recipeId'>
 ) {
   const existing = await prisma.recipeFixedCost.findFirst({
     where: { id: fixedCostId, recipeId, recipe: { ownerId } },
@@ -56,21 +56,29 @@ export async function updateRecipeFixedCost(
   return row;
 }
 
-export async function deleteRecipeFixedCost(recipeId: number, fixedCostId: number, ownerId: string) {
+export async function deleteRecipeFixedCost(
+  recipeId: number,
+  fixedCostId: number,
+  ownerId: string
+) {
   const existing = await prisma.recipeFixedCost.findFirst({
     where: { id: fixedCostId, recipeId, recipe: { ownerId } },
   });
-  if (!existing) return { status: "not-found" };
+  if (!existing) return { status: 'not-found' };
 
   await prisma.recipeFixedCost.delete({ where: { id: fixedCostId } });
   await prisma.recipe.update({
     where: { id: recipeId, ownerId },
     data: { updatedAt: new Date() },
   });
-  return { status: "deleted" };
+  return { status: 'deleted' };
 }
 
-export async function getPresentationFixedCost(presentationId: number, fixedCostId: number, ownerId: string) {
+export async function getPresentationFixedCost(
+  presentationId: number,
+  fixedCostId: number,
+  ownerId: string
+) {
   const row = await prisma.presentationFixedCost.findFirst({
     where: {
       id: fixedCostId,
@@ -84,7 +92,7 @@ export async function getPresentationFixedCost(presentationId: number, fixedCost
 export async function createPresentationFixedCost(
   presentationId: number,
   ownerId: string,
-  input: Omit<PresentationFixedCostUncheckedCreateInput, "presentationId">,
+  input: Omit<PresentationFixedCostUncheckedCreateInput, 'presentationId'>
 ) {
   const presentation = await prisma.recipePresentation.findFirst({
     where: { id: presentationId, recipe: { ownerId } },
@@ -106,7 +114,7 @@ export async function updatePresentationFixedCost(
   presentationId: number,
   fixedCostId: number,
   ownerId: string,
-  input: Omit<PresentationFixedCostUncheckedUpdateInput, "id" | "presentationId">,
+  input: Omit<PresentationFixedCostUncheckedUpdateInput, 'id' | 'presentationId'>
 ) {
   const existing = await prisma.presentationFixedCost.findFirst({
     where: {
@@ -124,7 +132,11 @@ export async function updatePresentationFixedCost(
   return row;
 }
 
-export async function deletePresentationFixedCost(presentationId: number, fixedCostId: number, ownerId: string) {
+export async function deletePresentationFixedCost(
+  presentationId: number,
+  fixedCostId: number,
+  ownerId: string
+) {
   const existing = await prisma.presentationFixedCost.findFirst({
     where: {
       id: fixedCostId,
@@ -132,8 +144,8 @@ export async function deletePresentationFixedCost(presentationId: number, fixedC
       presentation: { recipe: { ownerId } },
     },
   });
-  if (!existing) return { status: "not-found" };
+  if (!existing) return { status: 'not-found' };
 
   await prisma.presentationFixedCost.delete({ where: { id: fixedCostId } });
-  return { status: "deleted" };
+  return { status: 'deleted' };
 }

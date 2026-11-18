@@ -1,20 +1,14 @@
-import type { Handler } from "hono";
-import { auth } from "@recetario/auth/server";
-import {
-  getUserPreferences,
-  createUserPreferences,
-  getCredentialAccount,
-} from "@recetario/db";
-import { getDefaultSubscription } from "@recetario/stripe";
-import { getSubscriptionInfo } from "@recetario/stripe/server";
+import type { Handler } from 'hono';
+import { auth } from '@recetario/auth/server';
+import { getUserPreferences, createUserPreferences, getCredentialAccount } from '@recetario/db';
+import { getDefaultSubscription } from '@recetario/stripe';
+import { getSubscriptionInfo } from '@recetario/stripe/server';
 
-const DEFAULT_THEME = "system" as const;
-const DEFAULT_ACCENT = "coral" as const;
+const DEFAULT_THEME = 'system' as const;
+const DEFAULT_ACCENT = 'coral' as const;
 
 async function resolveUserSubscription(userId: string) {
-  return (
-    (await getSubscriptionInfo(userId)) ?? getDefaultSubscription()
-  );
+  return (await getSubscriptionInfo(userId)) ?? getDefaultSubscription();
 }
 
 export function authSessionHandler(): Handler {

@@ -1,14 +1,16 @@
-import { z } from "zod";
-import { DOMAIN_ERROR_REASONS } from "./reasons";
-import type { ApiErrorParsed } from "./errors";
+import { z } from 'zod';
+import { DOMAIN_ERROR_REASONS } from './reasons';
+import type { ApiErrorParsed } from './errors';
 
 export const ApiErrorCodeSchema = z.enum([
-  "UNAUTHENTICATED",
-  "FORBIDDEN",
-  "NOT_FOUND",
-  "VALIDATION_ERROR",
-  "INTERNAL",
-  "DOMAIN_ERROR",
+  'UNAUTHENTICATED',
+  'FORBIDDEN',
+  'NOT_FOUND',
+  'VALIDATION_ERROR',
+  'INTERNAL',
+  'DOMAIN_ERROR',
+  'PLAN_LIMIT',
+  'FEATURE_REQUIRED',
 ]);
 
 export const DomainErrorReasonSchema = z.enum(DOMAIN_ERROR_REASONS);

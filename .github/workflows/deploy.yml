@@ -1,0 +1,95 @@
+name: Deploy
+
+on:
+  push:
+    branches: [dev, master]
+
+# Un pipeline por rama, encadenado y sin cancelar: si entra otro push mientras
+# hay un deploy en curso, espera (nunca quedan dos deploys compitiendo).
+concurrency:
+  group: deploy-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  # Los mismos checks que el PR, sobre el mismo commit: si algo falla, no se
+  # despliega nada (antes los dos workflows de deploy corrían sin gate).
+  verify:
+    uses: ./.github/workflows/ci.yml
+
+  # El API primero: los contratos que consume la web ya están desplegados.
+  deploy-api:
+    needs: verify
+    environment:
+      name: ${{ github.ref_name == 'master' && 'production' || 'staging' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.1.2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: pnpm
+      - uses: actions/cache@v4
+        with:
+          path: .turbo/cache
+          key: turbo-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            turbo-${{ runner.os }}-
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Generate Prisma Client
+        run: pnpm --filter @recetario/db generate
+      - name: Run migrations
+        run: |
+          DATABASE_URL="${{ secrets.DATABASE_URL }}" \
+            pnpm --filter @recetario/db exec prisma migrate deploy
+      - name: Seed plans
+        run: pnpm --filter @recetario/db seed:plans
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+      - name: Build API
+        run: pnpm exec turbo build --filter=@recetario/api
+      - name: Deploy API
+        run: |
+          pnpm --filter @recetario/api exec wrangler deploy \
+            --env=${{ github.ref_name == 'master' && 'production' || 'staging' }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+  # Sin Prisma: la web no lo importa (solo subpaths puros de `@recetario/auth`)
+  # y el artefacto es el output de Nitro, que no lo arrastra.
+  deploy-web:
+    needs: deploy-api
+    environment:
+      name: ${{ github.ref_name == 'master' && 'production' || 'staging' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.1.2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: pnpm
+      - uses: actions/cache@v4
+        with:
+          path: .turbo/cache
+          key: turbo-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            turbo-${{ runner.os }}-
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build web
+        run: pnpm exec turbo build --filter=@recetario/web
+      - name: Deploy web
+        run: |
+          pnpm --filter @recetario/web exec wrangler deploy \
+            --env=${{ github.ref_name == 'master' && 'production' || 'staging' }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

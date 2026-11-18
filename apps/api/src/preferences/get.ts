@@ -1,10 +1,10 @@
-import type { Handler } from "hono";
-import { getUserPreferences, createUserPreferences } from "@recetario/db";
-import { preferencesResponseSchema } from "@recetario/types";
-import { getAuthUser } from "../middleware/auth";
+import type { Handler } from 'hono';
+import { getUserPreferences, createUserPreferences } from '@recetario/db';
+import { preferencesResponseSchema } from '@recetario/types';
+import { getAuthUser } from '../middleware/auth';
 
-const DEFAULT_THEME = "system" as const;
-const DEFAULT_ACCENT = "coral" as const;
+const DEFAULT_THEME = 'system' as const;
+const DEFAULT_ACCENT = 'coral' as const;
 
 export function preferencesGetHandler(): Handler {
   return async (c) => {

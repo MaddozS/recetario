@@ -1,18 +1,18 @@
-import { prisma, invalidateAccelerateCache, userCacheTag } from "./prisma";
+import { prisma } from './prisma';
 import type {
   CheckoutIntentUncheckedCreateInput,
   SubscriptionUncheckedCreateInput,
-} from "../prisma/generated/models";
-import type { StripeEventAttemptOutcome } from "../prisma/generated/enums";
+} from '../prisma/generated/models';
+import type { StripeEventAttemptOutcome } from '../prisma/generated/enums';
 
 export type SubscriptionMutation = Omit<
   SubscriptionUncheckedCreateInput,
-  "id" | "stripeSubscriptionId" | "createdAt"
+  'id' | 'stripeSubscriptionId' | 'createdAt'
 >;
 
 export type CheckoutIntentInput = Omit<
   CheckoutIntentUncheckedCreateInput,
-  "id" | "createdAt" | "consumedAt" | "state"
+  'id' | 'createdAt' | 'consumedAt' | 'state'
 > & {
   expiresAt: Date;
 };
@@ -26,7 +26,7 @@ export async function getCheckoutIntentBySession(checkoutSessionId: string) {
 
 export async function createCheckoutIntent(input: CheckoutIntentInput) {
   return prisma.checkoutIntent.create({
-    data: { ...input, state: "pending" },
+    data: { ...input, state: 'pending' },
   });
 }
 
@@ -41,13 +41,22 @@ export type EventAttemptInput = {
   failureMessage?: string | null;
 };
 
+/**
+ * Lo que necesita `applySubscriptionMutation` para registrar el intento: el
+ * número y el resultado los decide la propia transacción, bajo el advisory lock.
+ */
+export type SubscriptionMutationAttempt = Omit<
+  EventAttemptInput,
+  'attemptNumber' | 'outcome' | 'ignoredReason' | 'failureMessage'
+>;
+
 /** Latest attempt sequence for an event, regardless of outcome. */
 export async function getLatestEventAttempt(
-  stripeEventId: string,
+  stripeEventId: string
 ): Promise<{ attemptNumber: number } | null> {
   const row = await prisma.stripeEventAttempt.findFirst({
     where: { stripeEventId },
-    orderBy: { attemptNumber: "desc" },
+    orderBy: { attemptNumber: 'desc' },
     select: { attemptNumber: true },
   });
   return row ?? null;
@@ -59,9 +68,7 @@ export async function recordFailedEventAttempt(input: EventAttemptInput) {
 }
 
 /** Look up the persisted Subscription row owning a Stripe Subscription. */
-export async function getSubscriptionByStripeIdForIngestion(
-  stripeSubscriptionId: string,
-) {
+export async function getSubscriptionByStripeIdForIngestion(stripeSubscriptionId: string) {
   return prisma.subscription.findUnique({
     where: { stripeSubscriptionId },
     include: { plan: true },
@@ -108,41 +115,49 @@ const INGESTION_TRANSACTION_OPTIONS = {
 export async function applySubscriptionMutation(
   stripeSubscriptionId: string,
   mutation: SubscriptionMutation,
-  attempt: EventAttemptInput,
-  checkoutIntentId?: string | null,
+  attempt: SubscriptionMutationAttempt,
+  checkoutIntentId?: string | null
 ): Promise<ApplyResult> {
-  const result = await prisma.$transaction(
-    async (tx): Promise<ApplyResult> => {
+  const result = await prisma.$transaction(async (tx): Promise<ApplyResult> => {
     await tx.$executeRawUnsafe(
-      "SELECT pg_advisory_xact_lock($1)",
-      BigInt(hashString(stripeSubscriptionId)),
+      'SELECT pg_advisory_xact_lock($1)',
+      BigInt(hashString(stripeSubscriptionId))
     );
     await tx.$executeRawUnsafe(
-      "SELECT pg_advisory_xact_lock($1)",
-      BigInt(hashString(attempt.stripeEventId)),
+      'SELECT pg_advisory_xact_lock($1)',
+      BigInt(hashString(attempt.stripeEventId))
     );
+
+    // El número de intento se calcula aquí dentro (una query menos en el
+    // camino del evento) y bajo el lock, así que no compite con otro intento.
+    const newest = await tx.stripeEventAttempt.findFirst({
+      where: { stripeEventId: attempt.stripeEventId },
+      orderBy: { attemptNumber: 'desc' },
+      select: { attemptNumber: true },
+    });
+    const attemptNumber = (newest?.attemptNumber ?? 0) + 1;
 
     const terminal = await tx.stripeEventAttempt.findFirst({
       where: {
         stripeEventId: attempt.stripeEventId,
-        outcome: { in: ["applied", "ignored"] },
+        outcome: { in: ['applied', 'ignored'] },
       },
-      orderBy: { attemptNumber: "desc" },
+      orderBy: { attemptNumber: 'desc' },
       select: { attemptNumber: true },
     });
     if (terminal) {
       await tx.stripeEventAttempt.create({
-        data: { ...attempt, outcome: "ignored", ignoredReason: "duplicate" },
+        data: { ...attempt, attemptNumber, outcome: 'ignored', ignoredReason: 'duplicate' },
       });
-      return { applied: false, ignored: true, reason: "duplicate" };
+      return { applied: false, ignored: true, reason: 'duplicate' };
     }
 
     const latest = await tx.stripeEventAttempt.findFirst({
       where: {
         stripeSubscriptionId: attempt.stripeSubscriptionId,
-        outcome: { in: ["applied", "ignored"] },
+        outcome: { in: ['applied', 'ignored'] },
       },
-      orderBy: [{ stripeCreated: "desc" }, { stripeEventId: "desc" }],
+      orderBy: [{ stripeCreated: 'desc' }, { stripeEventId: 'desc' }],
       select: { stripeCreated: true, stripeEventId: true },
     });
     if (
@@ -152,9 +167,9 @@ export async function applySubscriptionMutation(
           attempt.stripeEventId <= latest.stripeEventId))
     ) {
       await tx.stripeEventAttempt.create({
-        data: { ...attempt, outcome: "ignored", ignoredReason: "stale" },
+        data: { ...attempt, attemptNumber, outcome: 'ignored', ignoredReason: 'stale' },
       });
-      return { applied: false, ignored: true, reason: "stale" };
+      return { applied: false, ignored: true, reason: 'stale' };
     }
 
     await tx.subscription.upsert({
@@ -167,14 +182,14 @@ export async function applySubscriptionMutation(
       },
     });
     await tx.stripeEventAttempt.create({
-      data: { ...attempt, outcome: "applied" },
+      data: { ...attempt, attemptNumber, outcome: 'applied' },
     });
 
     if (checkoutIntentId) {
       await tx.checkoutIntent.update({
         where: { id: checkoutIntentId },
         data: {
-          state: "consumed",
+          state: 'consumed',
           stripeSubscriptionId,
           consumedAt: new Date(),
         },
@@ -182,13 +197,8 @@ export async function applySubscriptionMutation(
     }
 
     return { applied: true };
-    },
-    INGESTION_TRANSACTION_OPTIONS,
-  );
+  }, INGESTION_TRANSACTION_OPTIONS);
 
-  if (result.applied) {
-    await invalidateAccelerateCache([userCacheTag(mutation.userId)]);
-  }
   return result;
 }
 
@@ -200,10 +210,9 @@ export async function applySubscriptionMutation(
 export async function upsertSubscriptionAndConsumeIntent(
   stripeSubscriptionId: string,
   mutation: SubscriptionMutation,
-  checkoutIntentId?: string | null,
+  checkoutIntentId?: string | null
 ) {
-  const row = await prisma.$transaction(
-    async (tx) => {
+  const row = await prisma.$transaction(async (tx) => {
     const row = await tx.subscription.upsert({
       where: { stripeSubscriptionId },
       update: mutation,
@@ -217,18 +226,15 @@ export async function upsertSubscriptionAndConsumeIntent(
       await tx.checkoutIntent.update({
         where: { id: checkoutIntentId },
         data: {
-          state: "consumed",
+          state: 'consumed',
           stripeSubscriptionId,
           consumedAt: new Date(),
         },
       });
     }
     return row;
-    },
-    INGESTION_TRANSACTION_OPTIONS,
-  );
+  }, INGESTION_TRANSACTION_OPTIONS);
 
-  await invalidateAccelerateCache([userCacheTag(mutation.userId)]);
   return row;
 }
 

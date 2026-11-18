@@ -26,7 +26,7 @@ For self-service subscription management (upgrades, downgrades, cancellation, pa
 
 ```ts
 const session = await stripe.checkout.sessions.create({
-  mode: "subscription",
+  mode: 'subscription',
   // Do NOT include payment_method_types here — let Stripe handle it dynamically
   line_items: [{ price: priceId, quantity: 1 }],
   subscription_data: { trial_period_days: 14 },

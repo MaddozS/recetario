@@ -18,20 +18,20 @@ prisma migrate dev [options]
 
 ## Options
 
-| Option | Description |
-|--------|-------------|
-| `--name` / `-n` | Name the migration |
-| `--create-only` | Create a new migration but do not apply it |
-| `--schema` | Custom path to your Prisma schema |
-| `--config` | Custom path to your Prisma config file |
-| `--url` | Override the datasource URL from the Prisma config file |
+| Option          | Description                                             |
+| --------------- | ------------------------------------------------------- |
+| `--name` / `-n` | Name the migration                                      |
+| `--create-only` | Create a new migration but do not apply it              |
+| `--schema`      | Custom path to your Prisma schema                       |
+| `--config`      | Custom path to your Prisma config file                  |
+| `--url`         | Override the datasource URL from the Prisma config file |
 
 ### Follow-up Commands
 
 - Run `prisma generate` explicitly when you need refreshed client output
 - Run `prisma db seed` explicitly when you need seed data
 
-Note: Prisma CLI help for `7.6.0` still says `migrate dev` "trigger[s] generators", but local verification in a temp Prisma 7.6.0 project did not emit generated client files. Treat `prisma generate` as an explicit follow-up step when you need generated artifacts on disk.
+Run `prisma generate` as an explicit follow-up when you need refreshed generated artifacts. Do not rely on historical CLI help that described generators as part of `migrate dev`.
 
 ## Examples
 
@@ -139,7 +139,7 @@ export default defineConfig({
     url: env('DATABASE_URL'),
     shadowDatabaseUrl: env('SHADOW_DATABASE_URL'),
   },
-})
+});
 ```
 
 For local Prisma Postgres (`prisma dev`), shadow database is handled automatically.

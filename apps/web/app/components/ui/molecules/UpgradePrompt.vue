@@ -1,0 +1,52 @@
+<script setup lang="ts">
+import { computed } from 'vue';
+
+const props = defineProps<{
+  feature: string;
+  description?: string;
+  tier: 'basic' | 'pro';
+}>();
+
+// El cierre del `<dialog>` contenedor ya no se hace por `onclick` inline.
+const emit = defineEmits<{ cancel: [] }>();
+
+const tierLabel = computed(() => (props.tier === 'pro' ? 'Pro' : 'Basic'));
+const price = computed(() => (props.tier === 'pro' ? '$10/mes' : '$5/mes'));
+</script>
+
+<template>
+  <div class="border-border bg-background rounded-2xl border p-8 text-center">
+    <div
+      class="bg-muted text-subtle-foreground mx-auto flex h-12 w-12 items-center justify-center rounded-2xl"
+    >
+      <Icon name="lucide:lock" :size="20" />
+    </div>
+
+    <h3 class="text-foreground mt-4 text-lg font-bold">Funcion no disponible</h3>
+
+    <p class="text-muted-foreground mt-2 text-sm">
+      {{ description || `"${feature}" requiere el plan ${tierLabel} o superior.` }}
+    </p>
+
+    <p class="text-muted-foreground mt-1 text-sm">
+      Desde {{ price }} puedes acceder a esta y muchas otras funciones.
+    </p>
+
+    <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-center">
+      <button
+        type="button"
+        class="border-border bg-card text-muted-foreground hover:bg-background inline-flex min-h-11 items-center justify-center rounded-xl border px-5 py-3 text-sm font-bold transition-colors"
+        @click="emit('cancel')"
+      >
+        No gracias
+      </button>
+      <NuxtLink
+        :to="`/pricing?plan=${tier}`"
+        class="bg-accent-solid text-text-on-accent hover:bg-accent-solid-hover inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-bold transition-colors"
+      >
+        <Icon name="lucide:arrow-up-circle" :size="16" />
+        Suscribirse a {{ tierLabel }}
+      </NuxtLink>
+    </div>
+  </div>
+</template>

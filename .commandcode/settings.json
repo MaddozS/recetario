@@ -27,10 +27,13 @@
       "Shell(mkdir:*)",
       "Shell(open:*)",
       "Shell(cat:*)",
-      "Shell(sed:*)"
+      "Shell(sed:*)",
+      "Shell(agent-browser:*)",
+      "Shell(export:*)",
+      "Shell(cd /Users/maddozs/personal-projects/recetario && pnpm --filter @recetario/db seed:test-users --email \"guia-qa-$(date +%s)@example.com\" --plan pro_monthly 2>&1 | grep -B2 -A6 \"error\\|Error\\|✖\" | head -30)"
     ],
     "deny": [],
     "defaultMode": "default"
   },
-  "tasteLearning": false
+  "tasteLearning": true
 }

@@ -1,7 +1,7 @@
-import { z } from "zod";
+import { z } from 'zod';
 
-export const fixedCostTypeSchema = z.enum(["PERCENTAGE", "AMOUNT"]);
-export const fixedCostBaseSchema = z.enum(["PER_BATCH", "PER_UNIT", "PER_HOUR"]);
+export const fixedCostTypeSchema = z.enum(['PERCENTAGE', 'AMOUNT']);
+export const fixedCostBaseSchema = z.enum(['PER_BATCH', 'PER_UNIT', 'PER_HOUR']);
 
 export const fixedCostInputSchema = z.object({
   name: z.string().min(1).max(120),
@@ -33,7 +33,7 @@ export const recipeFixedCostSchema = z.object({
   type: fixedCostTypeSchema,
   base: fixedCostBaseSchema,
   value: z.number(),
-  hours: z.number().optional(),
+  hours: z.number().nullable().optional(),
 });
 
 export const presentationFixedCostSchema = z.object({
@@ -113,7 +113,7 @@ export const fixedCostUpdateSchema = z
     hours: z.coerce.number().positive().nullable().optional(),
   })
   .refine((v) => Object.keys(v).length > 0, {
-    message: "At least one field must be provided",
+    message: 'At least one field must be provided',
   });
 
 export const presentationCreateSchema = z.object({
@@ -129,7 +129,7 @@ export const presentationUpdateSchema = z
     salePrice: z.coerce.number().nonnegative().nullable().optional(),
   })
   .refine((v) => Object.keys(v).length > 0, {
-    message: "At least one field must be provided",
+    message: 'At least one field must be provided',
   });
 
 export const presentationFixedCostCreateSchema = z.object({
@@ -147,7 +147,7 @@ export const presentationFixedCostUpdateSchema = z
     value: z.coerce.number().positive().optional(),
   })
   .refine((v) => Object.keys(v).length > 0, {
-    message: "At least one field must be provided",
+    message: 'At least one field must be provided',
   });
 
 export const recipeCreateResponseSchema = z.object({
@@ -158,7 +158,4 @@ export const recipeCreateResponseSchema = z.object({
   fixedCostsPercentage: z.number().optional(),
 });
 
-export const ingredientUsageMapSchema = z.record(
-  z.string(),
-  z.array(z.string()),
-);
+export const ingredientUsageMapSchema = z.record(z.string(), z.array(z.string()));

@@ -36,7 +36,7 @@ export type RecipeFixedCost = FixedCostLine & {
   recipeId: number;
 };
 
-export type PresentationFixedCost = Omit<FixedCostLine, "hours"> & {
+export type PresentationFixedCost = Omit<FixedCostLine, 'hours'> & {
   presentationId: number;
 };
 
@@ -103,32 +103,21 @@ export type CreatePresentationInput = {
 };
 
 export type DeleteIngredientResult =
-  | { status: "deleted" }
-  | { status: "not-found" }
+  | { status: 'deleted' }
+  | { status: 'not-found' }
   | {
-      status: "blocked";
+      status: 'blocked';
       recipes: Array<{ id: number; name: string }>;
     };
 
-export type DeletePresentationResult =
-  | { status: "deleted" }
-  | { status: "not-found" };
+export type DeletePresentationResult = { status: 'deleted' } | { status: 'not-found' };
 
-export type DeleteRecipeResult =
-  | { status: "deleted" }
-  | { status: "not-found" };
+export type DeleteRecipeResult = { status: 'deleted' } | { status: 'not-found' };
 
 export type UserPreferences = {
   userId: string;
-  theme: "system" | "light" | "dark";
-  accentColor:
-    | "indigo"
-    | "violet"
-    | "blue"
-    | "emerald"
-    | "rose"
-    | "amber"
-    | "coral";
+  theme: 'system' | 'light' | 'dark';
+  accentColor: 'indigo' | 'violet' | 'blue' | 'emerald' | 'rose' | 'amber' | 'coral';
 };
 
 export type CreateRecipeInput = {

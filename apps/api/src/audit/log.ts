@@ -1,25 +1,25 @@
-import type { Handler } from "hono";
-import { logAuditEvent } from "@recetario/db";
-import { auth } from "@recetario/auth/server";
-import { auditLogCreateSchema } from "@recetario/types";
-import { ApiError } from "../errors";
+import type { Handler } from 'hono';
+import { logAuditEvent } from '@recetario/db';
+import { auth } from '@recetario/auth/server';
+import { auditLogCreateSchema } from '@recetario/types';
+import { ApiError } from '../errors';
 
 export function auditLogHandler(): Handler {
   return async (c) => {
     const session = await auth.api.getSession({ headers: c.req.raw.headers });
     if (!session?.user) {
-      throw new ApiError("UNAUTHENTICATED", "Authentication required");
+      throw new ApiError('UNAUTHENTICATED', 'Authentication required');
     }
 
     let body: unknown;
     try {
       body = await c.req.json();
     } catch {
-      throw new ApiError("VALIDATION_ERROR", "Invalid JSON body");
+      throw new ApiError('VALIDATION_ERROR', 'Invalid JSON body');
     }
     const parsed = auditLogCreateSchema.safeParse(body);
     if (!parsed.success) {
-      throw new ApiError("VALIDATION_ERROR", "Invalid audit log payload");
+      throw new ApiError('VALIDATION_ERROR', 'Invalid audit log payload');
     }
 
     try {

@@ -21,7 +21,7 @@ npm install @prisma/compute-sdk @prisma/management-api-sdk
 Config helper:
 
 ```typescript
-import { defineComputeConfig } from "@prisma/compute-sdk/config";
+import { defineComputeConfig } from '@prisma/compute-sdk/config';
 ```
 
 Use this import in `prisma.compute.ts` for type checking. The helper is an identity function; the CLI loader aliases the import when it evaluates config files, so a user project does not need the SDK solely to load a Compute config.
@@ -29,11 +29,11 @@ Use this import in `prisma.compute.ts` for type checking. The helper is an ident
 Create an authenticated Management API client:
 
 ```typescript
-import { createManagementApiClient } from "@prisma/management-api-sdk"
+import { createManagementApiClient } from '@prisma/management-api-sdk';
 
 const apiClient = createManagementApiClient({
   token: process.env.PRISMA_API_TOKEN,
-})
+});
 ```
 
 Token naming differs by surface. `@prisma/cli app ...` uses `PRISMA_SERVICE_TOKEN` for non-interactive service-token auth. The SDK examples here use `PRISMA_API_TOKEN` as an application convention for passing a token into `createManagementApiClient`; the SDK itself only receives the `token` string.
@@ -41,28 +41,28 @@ Token naming differs by surface. `@prisma/cli app ...` uses `PRISMA_SERVICE_TOKE
 Deploy a prebuilt artifact:
 
 ```typescript
-import { ComputeClient, PreBuilt } from "@prisma/compute-sdk"
+import { ComputeClient, PreBuilt } from '@prisma/compute-sdk';
 
-const compute = new ComputeClient(apiClient)
-const databaseUrl = process.env.DATABASE_URL
-if (!databaseUrl) throw new Error("DATABASE_URL is required")
+const compute = new ComputeClient(apiClient);
+const databaseUrl = process.env.DATABASE_URL;
+if (!databaseUrl) throw new Error('DATABASE_URL is required');
 
 const result = await compute.deploy({
   strategy: new PreBuilt({
-    appPath: "./dist",
-    entrypoint: "index.js",
+    appPath: './dist',
+    entrypoint: 'index.js',
   }),
-  projectId: "proj_abc",
-  appName: "my-app",
-  region: "us-east-1",
+  projectId: 'proj_abc',
+  appName: 'my-app',
+  // region: "us-east-1", // optional: explicit placement for a new app
   envVars: { DATABASE_URL: databaseUrl },
   portMapping: { http: 3000 },
-})
+});
 
 if (result.isOk()) {
-  console.log(result.value.deploymentEndpointDomain)
+  console.log(result.value.deploymentEndpointDomain);
 } else {
-  console.error(result.error.message)
+  console.error(result.error.message);
 }
 ```
 
@@ -96,6 +96,30 @@ ap-southeast-1
 ```
 
 Use `--region` in `@prisma/cli app deploy` or `region` in SDK deploy input only when creating a new Compute app. Existing apps keep their current region.
+
+`region` is optional on `deploy` and `createApp`. Omit it to use the Project/platform default when creating an app; do not hard-code a region unless placement is an application requirement.
+
+## Repository-snapshot detection
+
+Tooling that already has an in-memory repository tree can detect a deployable app without checking files out:
+
+```typescript
+import { detectComputeApp } from '@prisma/compute-sdk/config';
+
+const detected = detectComputeApp({
+  root: 'apps/api',
+  manifest: {
+    main: 'src/index.ts',
+    scripts: { start: 'bun src/index.ts' },
+    dependencies: { hono: '^4' },
+  },
+  filePaths: ['apps/api/package.json', 'apps/api/src/index.ts'],
+});
+```
+
+The result contains `framework`, `frameworkName`, `buildType`, `httpPort`, `entrypoint`, and detection `evidence`, or `null` when nothing is deployable. Paths are repository-relative and unsafe absolute/parent-traversal entrypoints are rejected.
+
+The helper detects one app root. A monorepo consumer must enumerate workspaces and call it once per candidate. Detection reads `dependencies` and `devDependencies` (not peer dependencies), recognizes config files and framework packages, and can infer Bun-backed servers from valid `start`/`serve` script entrypoints.
 
 ## Management API Concepts
 

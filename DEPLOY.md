@@ -1,192 +1,129 @@
 # Deploy — Cloudflare
 
-KitchCalc runs on two Cloudflare Workers (web on Pages, api on Workers) backed by Prisma Postgres.
+KitchCalc corre en dos Cloudflare **Workers** (el web ya no usa Pages ni KV) con Prisma Postgres:
 
-| Worker | Type | URL |
-|---|---|---|
-| `recetario-web` | Astro SSR via `@astrojs/cloudflare` | `https://app.kitchcalc.com` |
-| `recetario-api` | Hono on Workers | `https://api.kitchcalc.com` |
-| Database | Prisma Postgres (free tier) | via `DATABASE_URL` |
+| Worker                               | Qué corre                                                                    | URL                                        |
+| ------------------------------------ | ---------------------------------------------------------------------------- | ------------------------------------------ |
+| `recetario-web-{staging,production}` | Nuxt 4 + Nitro (`cloudflare_module`), Workers Assets + service binding `API` | `https://app.kitchcalc.com`                |
+| `recetario-api-{staging,production}` | Hono (Better Auth, CSRF, límites)                                            | `https://api.kitchcalc.com`                |
+| Database                             | Prisma Postgres (free tier)                                                  | vía `DATABASE_URL` directa (no Accelerate) |
 
 ## Prerequisites
 
 - Node `>= 22.23.1`, pnpm `11.1.2` (locked via `packageManager` field)
-- `pnpm install` — auto-runs `prisma generate` via `apps/web` postinstall
-- `pnpm dlx wrangler@4 login` — OAuth token stored at `~/.wrangler/config/default.toml`
+- `pnpm install` — el `postinstall` genera el cliente Prisma
+- Wrangler autenticado: `CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID` (lo que usa CI) o `pnpm dlx wrangler@4 login` en local
 - Account ID: `5f065700ca8d436da492ff3b73d0cc05`
 - Stripe account (for billing), Google OAuth credentials, Resend API key (for password reset emails)
 
-## First-time setup
+## Deploy automático (`deploy.yml`)
 
-### 1. Create the Prisma Postgres database
+Un único workflow dispara en `push` a `dev` (→ staging) o `master` (→ production) con jobs encadenados:
 
-Use Prisma Console or the `prisma-postgres-setup` skill to provision a free-tier DB. Save the connection string — it will become `DATABASE_URL` for both workers.
+1. **`verify`** — reusa `ci.yml` vía `workflow_call`: lint, type-check, tests, build, e2e (3 navegadores) y `wrangler deploy --dry-run` + guard de bundle. Si algo falla, **no se despliega nada**.
+2. **`deploy-api`** — `prisma migrate deploy` → `seed:plans` → `turbo build --filter=@recetario/api` → `wrangler deploy --env=staging|production`.
+3. **`deploy-web`** — `turbo build --filter=@recetario/web` (sin Prisma) → `wrangler deploy --env=staging|production`.
 
-### 2. Set up environment variables
+El API se despliega **antes** que el web para que los contratos que consume ya estén arriba. Un push nuevo espera a que termine el deploy en curso (concurrency por rama, sin cancelar).
 
-Edit `.env` at the repo root with the production values:
+## Deploy manual
 
 ```bash
-DATABASE_URL="postgres://..."            # Prisma Postgres connection string
-BETTER_AUTH_SECRET="..."                 # openssl rand -base64 32
-GOOGLE_CLIENT_ID="..."                   # Google OAuth client
-GOOGLE_CLIENT_SECRET="..."               # Google OAuth secret
-RECIPES_STATIC_OWNER_ID="..."            # seed user id (any UUID)
-RECIPES_STATIC_OWNER_EMAIL="..."         # seed user email
-STRIPE_SECRET_KEY="sk_..."               # Stripe secret
-STRIPE_WEBHOOK_SECRET="whsec_..."        # Stripe webhook signing
-STRIPE_PRICE_ID_BASIC_MONTHLY="price_..."
-STRIPE_PRICE_ID_BASIC_YEARLY="price_..."
-STRIPE_PRICE_ID_PRO_MONTHLY="price_..."
-STRIPE_PRICE_ID_PRO_YEARLY="price_..."
+# Web (artefacto Nitro: .output/server + .output/public)
+pnpm --filter @recetario/web build
+pnpm --filter @recetario/web exec wrangler deploy --env staging    # o production
+
+# API
+DATABASE_URL="<prod>" pnpm --filter @recetario/db exec prisma migrate deploy
+pnpm --filter @recetario/db seed:plans
+pnpm exec turbo build --filter=@recetario/api
+pnpm --filter @recetario/api exec wrangler deploy --env staging    # o production
 ```
 
-`pnpm dev` reads these locally. Production secrets are uploaded to Cloudflare separately (below).
+`wrangler.jsonc` de `apps/web` es la **fuente de verdad** del worker: Nitro corre con `cloudflare.deployConfig: false`, así que no se genera `.wrangler/deploy/config.json` (ese archivo pisa la config del repo y descarta los `env` y los settings del dashboard).
 
-### 3. Run migrations
+## Entornos y variables
+
+`apps/web/wrangler.jsonc` define el nivel superior y los bloques `env.staging` / `env.production`; cada uno redeclara `main` (`.output/server/index.mjs`), `assets` (`.output/public`) y su service binding (`recetario-api-staging` / `recetario-api-production`).
+
+| Variable                | Dónde                              | Efecto                                                                                 |
+| ----------------------- | ---------------------------------- | -------------------------------------------------------------------------------------- |
+| `NODE_ENV`              | vars de cada env                   | `staging` / `production`                                                               |
+| `NUXT_PUBLIC_INDEXABLE` | **sólo** en las vars de producción | `true` habilita indexación; sin ella, `noindex` + `robots.txt` bloqueado (fail-closed) |
+| `NUXT_PUBLIC_SITE_URL`  | opcional                           | canonical absoluto (default `https://app.kitchcalc.com`)                               |
+| `INTERNAL_API_URL`      | `.dev.vars` en local               | fallback HTTP del relay cuando no hay service binding                                  |
+
+Secrets: se gestionan desde `.env.cloudflare` con `scripts/sync-cloudflare-secrets.mjs` (usa `wrangler secret put` sobre `apps/api`), nunca desde el dashboard:
 
 ```bash
+cd apps/api
+node ../../scripts/sync-cloudflare-secrets.mjs --env staging --dry-run   # ver qué haría
+node ../../scripts/sync-cloudflare-secrets.mjs --env staging
+```
+
+El worker web **no** necesita secrets: la sesión, Stripe y Better Auth viven en el API.
+
+## Migraciones y seeds
+
+```bash
+# Local: crear migración tras editar packages/db/prisma/schema.prisma
+pnpm --filter @recetario/db exec prisma migrate dev --name <descriptive>
+
+# Producción (lo hace deploy-api; a mano con DATABASE_URL en el entorno)
 pnpm --filter @recetario/db exec prisma migrate deploy
+pnpm --filter @recetario/db seed:plans
 ```
 
-7 migrations ship under `packages/db/prisma/migrations/`. After the first deploy the api worker can also run migrations via its own Prisma client.
+`@recetario/db` se consume como TypeScript crudo (`exports` → `src/index.ts`) y su `build` es `tsc --noEmit`: no hay `dist/` que reconstruir tras `prisma generate`.
 
-### 4. Provision the KV namespace (web session storage)
-
-`@astrojs/cloudflare` requires a KV binding named `SESSION`. Create it once:
-
-```bash
-cd apps/web
-pnpm exec wrangler kv namespace create SESSION
-```
-
-Wrangler prints `{ "id": "..." }`. Copy the `id` into `apps/web/wrangler.jsonc` under `kv_namespaces[].id` (the existing entry is `recetario-web-session` / `10323f891e024ef0ad89099b717c2c79`).
-
-### 5. Push secrets to Cloudflare
-
-The repo ships `scripts/setup-cloudflare-secrets.mjs` which reads `.env` and writes two JSON files for `wrangler secret bulk`:
-
-```bash
-# Set PRISMA_URL_OVERRIDE so the script doesn't pick up localhost DATABASE_URL
-PRISMA_URL_OVERRIDE='<prod database url>' pnpm exec node scripts/setup-cloudflare-secrets.mjs
-cd apps/web && pnpm exec wrangler secret bulk /tmp/web-secrets.json
-cd apps/api && pnpm exec wrangler secret bulk /tmp/api-secrets.json
-```
-
-Web needs 14 secrets, api needs 4 (`DATABASE_URL`, `BETTER_AUTH_SECRET`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`). The script validates all values present before writing.
-
-To rotate a single secret:
-
-```bash
-cd apps/web && pnpm exec wrangler secret put STRIPE_SECRET_KEY
-```
-
-## Daily deploy
-
-Both workers build from source via Wrangler. From the repo root:
-
-```bash
-# Build the @recetario/db package first (tsc emits dist/* from generated/prisma/*)
-pnpm --filter @recetario/db build
-
-# Deploy the api (no build step — wrangler bundles src/index.ts directly)
-pnpm --filter @recetario/api exec wrangler deploy
-
-# Deploy the web (builds via astro, then uploads server worker and client assets via wrangler)
-pnpm --filter @recetario/web exec wrangler deploy
-```
-
-Or via the root scripts:
-
-```bash
-pnpm deploy:api
-pnpm --filter @recetario/db build && pnpm deploy:web
-```
-
-The first deploy of `@recetario/web` may need a one-time `wrangler pages project create recetario-web` if Wrangler prompts for it.
-
-## Why the web bundle needs the wasm-base64 stub
-
-Switching `@recetario/db` to `runtime = "workerd"` (required for Cloudflare) bloats the bundle from ~2.4 MB to ~3.7 MB gzipped because the workerd Prisma build ships **two** query-compiler copies:
-
-- `dist/server/_astro/query_compiler_fast_bg.<hash>.wasm` — 1.2 MB gzipped, used at runtime in workerd
-- `dist/server/chunks/query_compiler_fast_bg.postgresql.wasm-base64_<hash>.mjs` — 1.7 MB gzipped, dead weight, used in Node.js only
-
-Vite/esbuild can't tree-shake the base64 file because it's behind the `@prisma/client` package's `"./*": "./*"` wildcard export, so it ends up reachable through some indirect dynamic import.
-
-The fix is a Vite `resolve.alias` that stubs the base64 module with an empty export. See `apps/web/astro.config.mjs` and `apps/web/src/lib/empty-wasm-base64.mjs`. Without the stub the bundle exceeds the 3 MB Workers free-plan limit and deploy fails.
-
-**Do not remove the alias** without verifying the bundle stays under 3 MB gzipped:
-
-```bash
-cd apps/web && pnpm exec astro build
-cd dist && find . -type f \( -name "*.mjs" -o -name "*.js" -o -name "*.wasm" \) -exec gzip -c {} \; | wc -c
-```
-
-If it spikes past 3 MB again, the only clean fix is upgrading to the Workers Paid plan ($5/mo, 10 MB limit). One-click in the dashboard; no code change.
+`DATABASE_URL` debe ser la cadena **directa** de Prisma Postgres (`postgres://…@db.prisma.io:5432/postgres?sslmode=require`), nunca una de Accelerate (`prisma+postgres://`): el cliente usa el driver serverless, que la toma como credencial y habla HTTP/WebSocket. Aplica a local, a Cloudflare y a los secrets de GitHub que usa `deploy.yml`. Ver `docs/adr/0010-sin-accelerate-prisma-postgres-directo.md`.
 
 ## Local development
 
 ```bash
-# Start both workers
-pnpm dev
-
-# Or individually
-pnpm dev:web   # http://localhost:4321
-pnpm dev:api   # http://localhost:8787
+pnpm dev          # web :4321 + api :8787 (Turbo)
+pnpm dev:web      # sólo http://localhost:4321
+pnpm dev:api      # sólo http://localhost:8787
+pnpm --filter @recetario/web build && pnpm exec wrangler dev   # smoke con el runtime real (workerd)
 ```
 
-`scripts/sync-cloudflare-dev-vars.mjs` syncs `.env` to each app's `.dev.vars` so Wrangler picks them up locally. Don't commit `.dev.vars`.
-
-For Prisma: edit `packages/db/prisma/schema.prisma`, then:
-
-```bash
-pnpm --filter @recetario/db exec prisma migrate dev --name <descriptive>
-pnpm --filter @recetario/db build
-```
+`scripts/sync-cloudflare-dev-vars.mjs` copia `.env` a `apps/web/.dev.vars` y `apps/api/.dev.vars` (con `INTERNAL_API_URL`/`INTERNAL_API_HOST` por defecto). No commitear `.dev.vars`.
 
 ## Observability
 
-Both workers have `observability.enabled: true` in their `wrangler.jsonc`. Live tail:
+Ambos workers tienen `observability.enabled: true`. Tail en vivo:
 
 ```bash
-cd apps/web && pnpm exec wrangler tail
-cd apps/api && pnpm exec wrangler tail
+cd apps/web && pnpm exec wrangler tail --env staging
+cd apps/api && pnpm exec wrangler tail --env staging
 ```
 
-Logs are also available in the Cloudflare dashboard under Workers → Logs.
+Logs también en el dashboard (Workers → Logs).
 
 ## Stripe webhooks
-
-Point the Stripe dashboard webhook to:
 
 ```
 https://api.kitchcalc.com/api/stripe/webhook
 ```
 
-Events handled (see `apps/api/src/index.ts`): `checkout.session.completed`, `invoice.paid`, `invoice.payment_failed`, `customer.subscription.deleted`, `customer.subscription.updated`. The webhook verifies the `Stripe-Signature` header against `STRIPE_WEBHOOK_SECRET`.
+Eventos: `checkout.session.completed`, `invoice.paid`, `invoice.payment_failed`, `customer.subscription.deleted`, `customer.subscription.updated` (ver `apps/api/src/billing/webhook.ts`). Verifica `Stripe-Signature` contra `STRIPE_WEBHOOK_SECRET`.
 
 ## Common operations
 
 ```bash
-# List versions of a worker
-cd apps/web && pnpm exec wrangler versions list
+# Versiones y rollback de un worker
+cd apps/web && pnpm exec wrangler versions list --env staging
+cd apps/web && pnpm exec wrangler rollback --env staging
 
-# Roll back to the previous version
-cd apps/web && pnpm exec wrangler rollback
-
-# Inspect KV
-pnpm exec wrangler kv namespace list
-pnpm exec wrangler kv key list --namespace-id <id>
-
-# Run the seed
+# Seed manual
 pnpm --filter @recetario/db exec tsx prisma/seed.ts
 ```
 
-## Known deploy-time pitfalls
+**Rollback del frontend:** `wrangler rollback` restaura la versión anterior del worker (historial de Cloudflare) o se redepliega el commit anterior con `wrangler deploy --env …`. No hay migración de DB ligada al corte del frontend.
 
-- **`SESSION bindings must have an "id" field`** — KV id is missing from `wrangler.jsonc`. Get it from `wrangler kv namespace list` and paste it under `kv_namespaces[].id`.
-- **`import.meta.url` is undefined in workerd** — the pre-workerd compiled `dist/` of `@recetario/db` crashes with `TypeError: The "path" argument must be of type string`. Always run `pnpm --filter @recetario/db build` after regenerating the Prisma client. The api worker sidesteps this with `define: { "import.meta.url": '"file:///worker/index.js"' }` in its `wrangler.jsonc`.
-- **Bundle > 3 MB gzipped** — see the wasm-base64 stub section above.
-- **`pnpm exec` strips env vars** — when running `prisma migrate deploy` against the prod DB, invoke the binary directly: `DATABASE_URL=... packages/db/node_modules/.bin/prisma migrate deploy`.
-- **Stale `dist/`** — generated Prisma client under `packages/db/generated/prisma/*.ts` is the source of truth; `dist/generated/prisma/*.js` is what `@recetario/web` actually imports. Rebuild `dist` after every `prisma generate`.
+## Notas y trampas
+
+- **El bundle web no puede contener Prisma/pg/WASM** y el bundle cliente no puede incluir `better-auth`: el job `dry-run` de CI lo verifica con un `grep` sobre `.output`. El build web no necesita `DATABASE_URL`.
+- **Límite de 3 MB gzipped (plan free)**: el dry-run del worker ronda los ~1.2 MB; si crece, revisar el `wrangler:dry-run` antes de desplegar. El plan Paid (10 MB) es el escape si hace falta.
+- **`vars` del worker vs. dashboard**: con `deployConfig: false`, lo que manda es `wrangler.jsonc`; no definir estas variables desde el dashboard (se pierden en el siguiente deploy).
+- **Host allowlist**: el API valida `Origin`/`Referer` contra `WEB_ORIGIN`; un worker web con host distinto al configurado será rechazado (CSRF/OAuth). Al desplegar staging, verificar que `WEB_ORIGIN` del API de staging apunta al host del web de staging.
