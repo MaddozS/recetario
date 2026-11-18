@@ -1,5 +1,5 @@
-import type { ingredientSchema } from "@recetario/types";
-import type { z } from "zod";
+import type { ingredientSchema } from '@recetario/types';
+import type { z } from 'zod';
 
 /**
  * Instantánea de la página de ingredientes y sus reducers.
@@ -30,7 +30,7 @@ export function emptyIngredientsSnapshot(): IngredientsSnapshot {
 
 export function withCreated(
   snapshot: IngredientsSnapshot,
-  created: IngredientRecord,
+  created: IngredientRecord
 ): IngredientsSnapshot {
   return {
     ...snapshot,
@@ -44,28 +44,26 @@ export function withCreated(
 
 export function withUpdated(
   snapshot: IngredientsSnapshot,
-  updated: IngredientRecord,
+  updated: IngredientRecord
 ): IngredientsSnapshot {
   return {
     ...snapshot,
     ingredients: snapshot.ingredients.map((ingredient) =>
-      ingredient.id === updated.id ? updated : ingredient,
+      ingredient.id === updated.id ? updated : ingredient
     ),
   };
 }
 
 export function withRemoved(
   snapshot: IngredientsSnapshot,
-  ingredientId: number,
+  ingredientId: number
 ): IngredientsSnapshot {
   const usage = { ...snapshot.usage };
   delete usage[String(ingredientId)];
 
   return {
     ...snapshot,
-    ingredients: snapshot.ingredients.filter(
-      (ingredient) => ingredient.id !== ingredientId,
-    ),
+    ingredients: snapshot.ingredients.filter((ingredient) => ingredient.id !== ingredientId),
     usage,
     counts: {
       ...snapshot.counts,

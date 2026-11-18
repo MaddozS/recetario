@@ -4,7 +4,7 @@ description: Monorepo best practices for KitchCalc (Recetario) — workspace wir
 license: MIT
 metadata:
   author: kitchcalc
-  version: "1.0.0"
+  version: '1.0.0'
 ---
 
 # Monorepo Practices (KitchCalc / Recetario)
@@ -15,14 +15,14 @@ Best practices for the pnpm + Turborepo monorepo. Load this skill before extract
 
 The Recetario monorepo uses **pnpm workspaces** (`pnpm-workspace.yaml`) with **Turborepo** for task orchestration. Six packages live under `packages/`:
 
-| Package       | Contents                          | Needs Build |
-|---------------|-----------------------------------|-------------|
-| `@recetario/db`     | Prisma client, DB helpers         | Yes (tsc + generated) |
-| `@recetario/auth`   | Better Auth setup, rate limiting  | Yes (tsc)  |
-| `@recetario/billing`| Stripe, subscription logic        | Yes (tsc)  |
-| `@recetario/ui`     | Astro components + client JS      | Partial (ts helpers only) |
-| `@recetario/types`  | Shared TypeScript types           | Yes (tsc)  |
-| `@recetario/config` | tsconfig, eslint, prettier config | No         |
+| Package              | Contents                          | Needs Build               |
+| -------------------- | --------------------------------- | ------------------------- |
+| `@recetario/db`      | Prisma client, DB helpers         | Yes (tsc + generated)     |
+| `@recetario/auth`    | Better Auth setup, rate limiting  | Yes (tsc)                 |
+| `@recetario/billing` | Stripe, subscription logic        | Yes (tsc)                 |
+| `@recetario/ui`      | Astro components + client JS      | Partial (ts helpers only) |
+| `@recetario/types`   | Shared TypeScript types           | Yes (tsc)                 |
+| `@recetario/config`  | tsconfig, eslint, prettier config | No                        |
 
 ## Shared Tooling at Root
 
@@ -49,17 +49,21 @@ Required root devDependencies:
 When extracting a new package:
 
 1. **Declare the dependency** in the consumer's `package.json`:
+
    ```json
    "dependencies": {
      "@recetario/db": "workspace:^"
    }
    ```
+
    Use `workspace:^` to let pnpm resolve the version from the workspace. Never use a hard version like `"0.0.0"` — this breaks symlink resolution in development.
 
 2. **Run install**:
+
    ```bash
    pnpm install
    ```
+
    This creates a symlink from `node_modules/@recetario/db` → `packages/db`.
 
 3. **TypeScript resolution** — The root `tsconfig.base.json` has path mappings:
@@ -75,12 +79,14 @@ When extracting a new package:
 **Problem**: When a package exports raw `.ts` files (e.g., `"main": "./src/index.ts"`), Astro/Vite's SSR pipeline must process them. If those `.ts` files import modules that use Node.js native APIs (crypto, webcrypto), Vite's SSR bundling crashes.
 
 **Symptoms**:
+
 ```
 [vite] Error: "webcrypto" is not exported by "__vite_ssr_import_0__"
 Error: Could not load .../generated/prisma/client.ts (imported by .../packages/db/src/prisma.ts)
 ```
 
 **Fix**: Pre-compile packages to JS. Update `package.json`:
+
 ```json
 {
   "main": "./dist/index.js",
@@ -95,6 +101,7 @@ Error: Could not load .../generated/prisma/client.ts (imported by .../packages/d
 ```
 
 Then add `dist/` to `.gitignore`:
+
 ```
 packages/*/dist/
 ```
@@ -114,6 +121,7 @@ If matches exist, update those imports to use the package's own exports or `@rec
 ## README Requirement
 
 Every package must have a `README.md` covering:
+
 - **What** the package does
 - **Usage** — how to import and use the main exports
 - **Environment variables** — required env vars (e.g., `DATABASE_URL`, `STRIPE_SECRET_KEY`)
@@ -129,6 +137,7 @@ Three approaches for compiling TS packages to JS:
 ### 1. tsc (TypeScript Compiler) — Current approach
 
 Best for: simple TS packages with no bundling needs.
+
 ```json
 "build": "tsc --build tsconfig.build.json"
 ```

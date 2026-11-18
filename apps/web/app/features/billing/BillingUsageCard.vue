@@ -1,9 +1,6 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import {
-  usagePercentage,
-  showsLowRemainingWarning,
-} from "./billing-plan-state";
+import { computed } from 'vue';
+import { usagePercentage, showsLowRemainingWarning } from './billing-plan-state';
 
 /**
  * Contador de uso con barra y aviso de límite cercano. El umbral y la unidad
@@ -19,21 +16,15 @@ const props = defineProps<{
 }>();
 
 const percentage = computed(() => usagePercentage(props.count, props.limit));
-const limitLabel = computed(() =>
-  props.remaining === null ? "∞" : String(props.limit ?? 0),
-);
-const showWarning = computed(() =>
-  showsLowRemainingWarning(props.remaining, props.threshold),
-);
+const limitLabel = computed(() => (props.remaining === null ? '∞' : String(props.limit ?? 0)));
+const showWarning = computed(() => showsLowRemainingWarning(props.remaining, props.threshold));
 </script>
 
 <template>
   <Card padding="lg">
     <div class="mb-4 flex items-center justify-between">
       <p class="text-secondary-foreground text-sm font-bold">{{ label }}</p>
-      <span class="text-subtle-foreground text-xs font-bold">
-        {{ count }} / {{ limitLabel }}
-      </span>
+      <span class="text-subtle-foreground text-xs font-bold"> {{ count }} / {{ limitLabel }} </span>
     </div>
     <div class="bg-muted h-2 overflow-hidden rounded-full">
       <div

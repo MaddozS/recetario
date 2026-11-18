@@ -1,4 +1,4 @@
-import { plansListResponseSchema, type PricingPlan } from "@recetario/types";
+import { plansListResponseSchema, type PricingPlan } from '@recetario/types';
 
 /**
  * Catálogo público de planes (`GET /api/billing/plans`, sin auth).
@@ -14,9 +14,9 @@ export function usePricingPlans() {
   const api = useApi();
 
   const { data, pending, error } = useAsyncData<PricingPlan[]>(
-    "billing-plans",
-    () => api("/api/billing/plans", { schema: plansListResponseSchema }),
-    { default: () => [] },
+    'billing-plans',
+    () => api('/api/billing/plans', { schema: plansListResponseSchema }),
+    { default: () => [] }
   );
 
   return { plans: data, pending, error };

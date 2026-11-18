@@ -1,4 +1,4 @@
-import type { Page } from "@playwright/test";
+import type { Page } from '@playwright/test';
 
 /**
  * Utilidades de recorrido compartidas por los dos gates de las superficies
@@ -43,18 +43,13 @@ export async function freezeAnimations(page: Page): Promise<void> {
       }
     `,
   });
-  await page.waitForFunction(
-    () => document.getAnimations().length === 0,
-    undefined,
-    { timeout: 5_000 },
-  );
+  await page.waitForFunction(() => document.getAnimations().length === 0, undefined, {
+    timeout: 5_000,
+  });
 }
 
 /** Posiciones de scroll a recorrer: tramos con solape y el final de la página. */
-export async function scrollPositions(
-  page: Page,
-  step = 0.75,
-): Promise<number[]> {
+export async function scrollPositions(page: Page, step = 0.75): Promise<number[]> {
   return await page.evaluate((fraction) => {
     const height = document.documentElement.scrollHeight;
     const jump = Math.max(1, Math.round(window.innerHeight * fraction));
@@ -71,9 +66,7 @@ export async function scrollPositions(
  */
 export async function scrollTo(page: Page, top: number): Promise<void> {
   await page.evaluate((y) => {
-    window.scrollTo({ top: y, behavior: "instant" });
+    window.scrollTo({ top: y, behavior: 'instant' });
   }, top);
-  await page.evaluate(
-    () => new Promise((resolve) => requestAnimationFrame(() => resolve(null))),
-  );
+  await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => resolve(null))));
 }

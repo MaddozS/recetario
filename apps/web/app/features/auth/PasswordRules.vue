@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { RuleResult } from "@recetario/auth/password";
+import type { RuleResult } from '@recetario/auth/password';
 
 /**
  * Requisitos de contraseña (sign-up y reset). Un solo render para ambos flujos,
@@ -18,7 +18,7 @@ defineProps<{ results: readonly RuleResult[] }>();
       :data-rule="rule.key"
       :data-passed="rule.passed ? '1' : '0'"
     >
-      <span aria-hidden="true">{{ rule.passed ? "✓" : "○" }}</span>
+      <span aria-hidden="true">{{ rule.passed ? '✓' : '○' }}</span>
       <span>{{ rule.label }}</span>
     </li>
   </ul>

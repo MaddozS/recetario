@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { SETTINGS_TABS, settingsTabHref } from "./settings-tabs";
-import type { SettingsTab } from "./settings-tabs";
+import { SETTINGS_TABS, settingsTabHref } from './settings-tabs';
+import type { SettingsTab } from './settings-tabs';
 
 /**
  * Navegación de settings: cada pestaña es un enlace con `?tab=` (el router
@@ -11,10 +11,7 @@ defineProps<{ active: SettingsTab }>();
 </script>
 
 <template>
-  <nav
-    class="border-border mb-8 flex gap-0 border-b"
-    aria-label="Configuración"
-  >
+  <nav class="border-border mb-8 flex gap-0 border-b" aria-label="Configuración">
     <NuxtLink
       v-for="tab in SETTINGS_TABS"
       :key="tab.id"

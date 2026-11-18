@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { timeAgo } from "@recetario/stripe/formatters";
-import { computed } from "vue";
+import { timeAgo } from '@recetario/stripe/formatters';
+import { computed } from 'vue';
 
 /**
  * Tarjetas de estado del recetario. Paridad con las "info-cards" del baseline: el
@@ -12,11 +12,10 @@ const props = defineProps<{
   lastUpdatedAt: string | null;
 }>();
 
-const LABEL_CLASSES =
-  "flex items-center gap-2 text-xs font-semibold text-muted-foreground";
+const LABEL_CLASSES = 'flex items-center gap-2 text-xs font-semibold text-muted-foreground';
 
 const lastUpdatedLabel = computed(() =>
-  props.lastUpdatedAt ? timeAgo(props.lastUpdatedAt) : "Sin actividad",
+  props.lastUpdatedAt ? timeAgo(props.lastUpdatedAt) : 'Sin actividad'
 );
 </script>
 
@@ -30,13 +29,11 @@ const lastUpdatedLabel = computed(() =>
       <div v-if="incompleteCount > 0" class="mt-2">
         <p class="text-foreground font-bold">
           {{ incompleteCount }}
-          {{ incompleteCount === 1 ? "receta" : "recetas" }}
+          {{ incompleteCount === 1 ? 'receta' : 'recetas' }}
         </p>
         <p class="text-muted-foreground text-sm">sin ingredientes asignados</p>
       </div>
-      <p v-else class="text-success mt-2 text-sm font-medium">
-        Todas tienen ingredientes
-      </p>
+      <p v-else class="text-success mt-2 text-sm font-medium">Todas tienen ingredientes</p>
     </Card>
 
     <Card padding="sm">
@@ -47,13 +44,11 @@ const lastUpdatedLabel = computed(() =>
       <div v-if="withoutCategoryCount > 0" class="mt-2">
         <p class="text-foreground font-bold">
           {{ withoutCategoryCount }}
-          {{ withoutCategoryCount === 1 ? "receta" : "recetas" }}
+          {{ withoutCategoryCount === 1 ? 'receta' : 'recetas' }}
         </p>
         <p class="text-muted-foreground text-sm">sin categoría asignada</p>
       </div>
-      <p v-else class="text-success mt-2 text-sm font-medium">
-        Todas están categorizadas
-      </p>
+      <p v-else class="text-success mt-2 text-sm font-medium">Todas están categorizadas</p>
     </Card>
 
     <Card padding="sm">

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import RecipeActionsMenu from "./RecipeActionsMenu.vue";
-import RecipeMultiplier from "./RecipeMultiplier.vue";
+import RecipeActionsMenu from './RecipeActionsMenu.vue';
+import RecipeMultiplier from './RecipeMultiplier.vue';
 
 /**
  * Cabecera del detalle: título y categoría (vista/edición), badge de categoría
@@ -23,8 +23,8 @@ defineProps<{
 }>();
 
 const emit = defineEmits<{
-  "update:name": [value: string];
-  "update:category": [value: string];
+  'update:name': [value: string];
+  'update:category': [value: string];
   save: [];
   cancel: [];
   edit: [];
@@ -53,9 +53,7 @@ const emit = defineEmits<{
             name="recipeName"
             class="text-foreground bg-background border-border focus:ring-accent-500/20 w-full rounded-xl border p-2 text-3xl leading-tight font-black focus:ring-2 sm:text-4xl"
             :value="name"
-            @input="
-              emit('update:name', ($event.target as HTMLInputElement).value)
-            "
+            @input="emit('update:name', ($event.target as HTMLInputElement).value)"
           />
           <div class="mt-2">
             <input
@@ -64,12 +62,7 @@ const emit = defineEmits<{
               class="bg-background border-border text-secondary-foreground focus:ring-accent-500/20 w-full max-w-xs rounded-xl border p-2 text-sm focus:ring-2"
               placeholder="Categoría (ej. Panes, Galletas, Pasteles)"
               :value="category"
-              @input="
-                emit(
-                  'update:category',
-                  ($event.target as HTMLInputElement).value,
-                )
-              "
+              @input="emit('update:category', ($event.target as HTMLInputElement).value)"
             />
           </div>
         </div>
@@ -77,10 +70,7 @@ const emit = defineEmits<{
 
       <div v-if="!editMode" class="flex items-center gap-2">
         <div class="hidden sm:block" data-multiplier="desktop">
-          <RecipeMultiplier
-            :multiplier="multiplier"
-            @change="emit('multiplier', $event)"
-          />
+          <RecipeMultiplier :multiplier="multiplier" @change="emit('multiplier', $event)" />
         </div>
         <RecipeActionsMenu
           variant="page"
@@ -95,24 +85,17 @@ const emit = defineEmits<{
     </div>
 
     <!-- Fila 2: badge + última modificación, y barra de guardado -->
-    <div
-      class="flex flex-col gap-2 pb-4 sm:flex-row sm:items-center sm:justify-between"
-    >
-      <div
-        class="text-muted-foreground flex items-center gap-3 text-sm font-medium"
-      >
+    <div class="flex flex-col gap-2 pb-4 sm:flex-row sm:items-center sm:justify-between">
+      <div class="text-muted-foreground flex items-center gap-3 text-sm font-medium">
         <Badge
           variant="category"
           color="accent"
           class="gap-1.5 px-3 py-1 font-black tracking-wider uppercase"
         >
           <Icon name="lucide:tag" :size="12" />
-          {{ savedCategory || "Sin categoría" }}
+          {{ savedCategory || 'Sin categoría' }}
         </Badge>
-        <span
-          v-if="updatedText"
-          class="text-subtle-foreground text-xs font-semibold"
-        >
+        <span v-if="updatedText" class="text-subtle-foreground text-xs font-semibold">
           Actualizado {{ updatedText }}
         </span>
       </div>
@@ -143,10 +126,7 @@ const emit = defineEmits<{
 
     <!-- Fila 1b: multiplicador en móvil -->
     <div v-if="!editMode" class="mb-4 sm:hidden" data-multiplier="mobile">
-      <RecipeMultiplier
-        :multiplier="multiplier"
-        @change="emit('multiplier', $event)"
-      />
+      <RecipeMultiplier :multiplier="multiplier" @change="emit('multiplier', $event)" />
     </div>
   </div>
 </template>

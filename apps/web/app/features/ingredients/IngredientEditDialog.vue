@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import type { IngredientRecord } from "~/features/ingredients/ingredient-state";
-import { computed, onMounted, reactive, ref, watch } from "vue";
+import type { IngredientRecord } from '~/features/ingredients/ingredient-state';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
 import {
   createEmptyIngredientForm,
   ingredientFormFrom,
   isIngredientFormValid,
-} from "~/features/ingredients/ingredient-form";
-import type { IngredientFormValues } from "~/features/ingredients/ingredient-form";
-import type { MutationOutcome } from "~/features/ingredients/useIngredients";
-import IngredientCostPreview from "~/features/ingredients/IngredientCostPreview.vue";
-import IngredientErrorAlert from "~/features/ingredients/IngredientErrorAlert.vue";
-import IngredientFormFields from "~/features/ingredients/IngredientFormFields.vue";
+} from '~/features/ingredients/ingredient-form';
+import type { IngredientFormValues } from '~/features/ingredients/ingredient-form';
+import type { MutationOutcome } from '~/features/ingredients/useIngredients';
+import IngredientCostPreview from '~/features/ingredients/IngredientCostPreview.vue';
+import IngredientErrorAlert from '~/features/ingredients/IngredientErrorAlert.vue';
+import IngredientFormFields from '~/features/ingredients/IngredientFormFields.vue';
 
 /**
  * Edición de un ingrediente. Al abrir precarga el formulario y nunca cierra
@@ -22,7 +22,7 @@ const props = defineProps<{
   submit: (values: IngredientFormValues) => Promise<MutationOutcome>;
 }>();
 
-const open = defineModel<boolean>("open", { required: true });
+const open = defineModel<boolean>('open', { required: true });
 
 const dialog = ref<{ open: () => void; close: () => void } | null>(null);
 const form = reactive(createEmptyIngredientForm());
@@ -78,8 +78,7 @@ async function onSubmit(): Promise<void> {
       <div>
         <h2 class="text-foreground text-xl font-black">Editar ingrediente</h2>
         <p class="text-muted-foreground mt-1 text-sm">
-          Ajusta todos los datos del ingrediente sin perder consistencia en el
-          costeo.
+          Ajusta todos los datos del ingrediente sin perder consistencia en el costeo.
         </p>
       </div>
 
@@ -132,7 +131,7 @@ async function onSubmit(): Promise<void> {
           :disabled="!valid"
           :loading="submitting"
         >
-          {{ submitting ? "Guardando…" : "Guardar cambios" }}
+          {{ submitting ? 'Guardando…' : 'Guardar cambios' }}
         </Button>
       </div>
     </form>

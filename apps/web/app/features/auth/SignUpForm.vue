@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
-import { getRuleResults, validatePassword } from "@recetario/auth/password";
-import GoogleSignInButton from "./GoogleSignInButton.vue";
-import PasswordRules from "./PasswordRules.vue";
-import { getSafeRedirect } from "./auth-redirect";
-import { useAuthApi } from "./useAuthApi";
+import { computed, onMounted, ref } from 'vue';
+import { getRuleResults, validatePassword } from '@recetario/auth/password';
+import GoogleSignInButton from './GoogleSignInButton.vue';
+import PasswordRules from './PasswordRules.vue';
+import { getSafeRedirect } from './auth-redirect';
+import { useAuthApi } from './useAuthApi';
 
 /**
  * Registro con email/contraseña o Google.
@@ -13,47 +13,47 @@ import { useAuthApi } from "./useAuthApi";
  * de "Verifica tu email" y se recuerda el email en `sessionStorage` para
  * sobrevivir recargas (mismo contrato que el original).
  */
-const SIGNUP_EMAIL_KEY = "kitchcalc:signup_email";
+const SIGNUP_EMAIL_KEY = 'kitchcalc:signup_email';
 
 const props = defineProps<{ redirect?: string | null }>();
 
 const { signUpWithEmail, resendVerificationEmail } = useAuthApi();
-const overlay = useState<string | null>("loading-overlay", () => null);
+const overlay = useState<string | null>('loading-overlay', () => null);
 
-const firstName = ref("");
-const lastName = ref("");
-const email = ref("");
-const password = ref("");
-const confirmation = ref("");
+const firstName = ref('');
+const lastName = ref('');
+const email = ref('');
+const password = ref('');
+const confirmation = ref('');
 
 const error = ref<string | null>(null);
 const pending = ref(false);
 const googleError = ref<string | null>(null);
 
 const verifying = ref(false);
-const verifiedEmail = ref("");
-const resendState = ref<"idle" | "sending" | "sent" | "error">("idle");
+const verifiedEmail = ref('');
+const resendState = ref<'idle' | 'sending' | 'sent' | 'error'>('idle');
 
 const ruleResults = computed(() => getRuleResults(password.value));
 const showRules = computed(() => password.value.length > 0);
 const oauthTarget = computed(() => getSafeRedirect(props.redirect));
 
-const matchState = computed<"match" | "mismatch" | null>(() => {
+const matchState = computed<'match' | 'mismatch' | null>(() => {
   if (confirmation.value.length === 0) return null;
-  return password.value === confirmation.value ? "match" : "mismatch";
+  return password.value === confirmation.value ? 'match' : 'mismatch';
 });
 
 const resendStatus = computed(() => {
   switch (resendState.value) {
-    case "sent":
+    case 'sent':
       return {
-        text: "Correo reenviado. Revisa tu bandeja.",
-        class: "text-success",
+        text: 'Correo reenviado. Revisa tu bandeja.',
+        class: 'text-success',
       };
-    case "error":
+    case 'error':
       return {
-        text: "Error al reenviar. Intenta de nuevo.",
-        class: "text-danger",
+        text: 'Error al reenviar. Intenta de nuevo.',
+        class: 'text-danger',
       };
     default:
       return null;
@@ -68,7 +68,7 @@ onMounted(() => {
 function showVerification(value: string): void {
   verifiedEmail.value = value;
   verifying.value = true;
-  resendState.value = "idle";
+  resendState.value = 'idle';
 }
 
 function focusField(id: string): void {
@@ -85,26 +85,26 @@ async function submit(): Promise<void> {
   const last = lastName.value.trim();
 
   if (!first) {
-    error.value = "El nombre no puede estar vacío.";
-    focusField("sign-up-first-name");
+    error.value = 'El nombre no puede estar vacío.';
+    focusField('sign-up-first-name');
     return;
   }
   if (!last) {
-    error.value = "El apellido no puede estar vacío.";
-    focusField("sign-up-last-name");
+    error.value = 'El apellido no puede estar vacío.';
+    focusField('sign-up-last-name');
     return;
   }
   if (!validatePassword(password.value).valid) {
-    error.value = "La contraseña no cumple los requisitos de seguridad.";
+    error.value = 'La contraseña no cumple los requisitos de seguridad.';
     return;
   }
   if (password.value !== confirmation.value) {
-    error.value = "Las contraseñas no coinciden.";
+    error.value = 'Las contraseñas no coinciden.';
     return;
   }
 
   pending.value = true;
-  overlay.value = "Creando cuenta…";
+  overlay.value = 'Creando cuenta…';
 
   try {
     const address = email.value.trim();
@@ -118,9 +118,7 @@ async function submit(): Promise<void> {
     showVerification(address);
   } catch (cause) {
     error.value =
-      cause instanceof Error && cause.message
-        ? cause.message
-        : "Error al crear la cuenta.";
+      cause instanceof Error && cause.message ? cause.message : 'Error al crear la cuenta.';
   } finally {
     overlay.value = null;
     pending.value = false;
@@ -128,14 +126,14 @@ async function submit(): Promise<void> {
 }
 
 async function resend(): Promise<void> {
-  if (resendState.value === "sending") return;
+  if (resendState.value === 'sending') return;
 
-  resendState.value = "sending";
+  resendState.value = 'sending';
   try {
     await resendVerificationEmail(verifiedEmail.value);
-    resendState.value = "sent";
+    resendState.value = 'sent';
   } catch {
-    resendState.value = "error";
+    resendState.value = 'error';
   }
 }
 </script>
@@ -150,9 +148,7 @@ async function resend(): Promise<void> {
           <Icon name="lucide:chef-hat" :size="28" class="text-accent-600" />
         </div>
         <h1 class="text-foreground text-2xl font-black">Crear cuenta</h1>
-        <p class="text-muted-foreground mt-1 text-sm">
-          Regístrate para empezar a costear
-        </p>
+        <p class="text-muted-foreground mt-1 text-sm">Regístrate para empezar a costear</p>
       </div>
 
       <FeedbackAlert v-if="error" type="error" :message="error" />
@@ -219,9 +215,9 @@ async function resend(): Promise<void> {
             :class="matchState === 'match' ? 'text-success' : 'text-danger'"
           >
             {{
-              matchState === "match"
-                ? "✓ Las contraseñas coinciden"
-                : "✗ Las contraseñas no coinciden"
+              matchState === 'match'
+                ? '✓ Las contraseñas coinciden'
+                : '✗ Las contraseñas no coinciden'
             }}
           </p>
         </div>
@@ -232,7 +228,7 @@ async function resend(): Promise<void> {
           class="w-full"
           :loading="pending"
         >
-          {{ pending ? "Creando cuenta..." : "Crear cuenta" }}
+          {{ pending ? 'Creando cuenta...' : 'Crear cuenta' }}
         </Button>
       </form>
 
@@ -255,32 +251,24 @@ async function resend(): Promise<void> {
 
       <p class="text-muted-foreground mt-6 text-center text-sm">
         ¿Ya tienes cuenta?
-        <Button variant="secondary" href="/sign-in" size="sm" class="ml-1">
-          Inicia sesión
-        </Button>
+        <Button variant="secondary" href="/sign-in" size="sm" class="ml-1"> Inicia sesión </Button>
       </p>
     </div>
 
-    <div
-      v-else
-      data-sign-up-verified
-      class="flex flex-col items-center text-center"
-    >
+    <div v-else data-sign-up-verified class="flex flex-col items-center text-center">
       <div
         class="bg-success-bg mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl"
       >
         <Icon name="lucide:mail-check" :size="28" class="text-success" />
       </div>
       <h1 class="text-foreground text-2xl font-black">Verifica tu email</h1>
-      <p class="text-muted-foreground mt-1 text-sm">
-        Te enviamos un enlace de verificación a
-      </p>
+      <p class="text-muted-foreground mt-1 text-sm">Te enviamos un enlace de verificación a</p>
       <p class="text-foreground mt-1 font-semibold" data-verified-email>
         {{ verifiedEmail }}
       </p>
       <p class="text-muted-foreground mt-3 text-xs">
-        Haz clic en el enlace del correo para activar tu cuenta. Si no lo ves,
-        revisa tu carpeta de spam.
+        Haz clic en el enlace del correo para activar tu cuenta. Si no lo ves, revisa tu carpeta de
+        spam.
       </p>
       <div class="mt-6 w-full space-y-3">
         <Button
@@ -292,21 +280,14 @@ async function resend(): Promise<void> {
           :disabled="resendState === 'sent'"
           @click="resend"
         >
-          {{ resendState === "sending" ? "Enviando..." : "Reenviar correo" }}
+          {{ resendState === 'sending' ? 'Enviando...' : 'Reenviar correo' }}
         </Button>
-        <span
-          v-if="resendStatus"
-          class="text-xs"
-          :class="resendStatus.class"
-          role="status"
-        >
+        <span v-if="resendStatus" class="text-xs" :class="resendStatus.class" role="status">
           {{ resendStatus.text }}
         </span>
       </div>
       <div class="mt-4">
-        <Button variant="secondary" href="/sign-in" size="sm">
-          Ir al inicio de sesión
-        </Button>
+        <Button variant="secondary" href="/sign-in" size="sm"> Ir al inicio de sesión </Button>
       </div>
     </div>
   </div>

@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import { authPageTitleFor } from "#shared/utils/seo";
-import AuthCard from "~/features/auth/AuthCard.vue";
-import VerifyEmailStatus from "~/features/auth/VerifyEmailStatus.vue";
-import { queryString, safeCallbackPath } from "~/features/auth/auth-redirect";
+import { computed } from 'vue';
+import { authPageTitleFor } from '#shared/utils/seo';
+import AuthCard from '~/features/auth/AuthCard.vue';
+import VerifyEmailStatus from '~/features/auth/VerifyEmailStatus.vue';
+import { queryString, safeCallbackPath } from '~/features/auth/auth-redirect';
 
-definePageMeta({ layout: "auth" });
+definePageMeta({ layout: 'auth' });
 
-useNoindexSeo(authPageTitleFor("/verify-email"));
+useNoindexSeo(authPageTitleFor('/verify-email'));
 
 const route = useRoute();
 const token = computed(() => queryString(route.query.token));

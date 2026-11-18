@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import type { PlanFeature } from "@recetario/types";
+import { computed } from 'vue';
+import type { PlanFeature } from '@recetario/types';
 import {
   PLAN_FEATURE_PRESENTATION,
   planFeatureMarker,
   planFeatureState,
   type PlanFeaturePresentation,
-} from "./plan-feature-state";
+} from './plan-feature-state';
 
 /**
  * Lista de features de un plan: `ul`/`li` con el estado dicho en texto (oculto)
@@ -23,7 +23,7 @@ import {
  * recorte dicho en texto ("y N funciones más") cuando los destacados no son
  * todos los que hay. La lista larga de `PlanChangeDialog` sigue en `full`.
  */
-type Variant = "full" | "compact";
+type Variant = 'full' | 'compact';
 
 const props = withDefaults(
   defineProps<{
@@ -32,7 +32,7 @@ const props = withDefaults(
     /** Destacados que no entran en el tope: alimenta el "y N funciones más". */
     remaining?: number;
   }>(),
-  { variant: "full", remaining: 0 },
+  { variant: 'full', remaining: 0 }
 );
 
 interface FeatureRow {
@@ -49,19 +49,17 @@ const rows = computed<FeatureRow[]>(() =>
       presentation: PLAN_FEATURE_PRESENTATION[state],
       marker: planFeatureMarker(state, feature.text),
     };
-  }),
+  })
 );
 
 const LIST_CLASSES: Record<Variant, string> = {
-  full: "space-y-3",
-  compact: "space-y-2.5",
+  full: 'space-y-3',
+  compact: 'space-y-2.5',
 };
 
 /** El recorte se dice en texto: la card nunca aparenta ser el catálogo entero. */
 const remainingLabel = computed(() =>
-  props.remaining === 1
-    ? "y 1 función más"
-    : `y ${props.remaining} funciones más`,
+  props.remaining === 1 ? 'y 1 función más' : `y ${props.remaining} funciones más`
 );
 </script>
 
@@ -73,22 +71,12 @@ const remainingLabel = computed(() =>
         :key="index"
         class="flex min-w-0 items-center gap-2.5 text-sm"
       >
-        <Icon
-          :name="row.presentation.icon"
-          :size="16"
-          :class="row.presentation.iconClass"
-        />
-        <span class="sr-only">
-          {{ row.presentation.label }}:
-        </span>
+        <Icon :name="row.presentation.icon" :size="16" :class="row.presentation.iconClass" />
+        <span class="sr-only"> {{ row.presentation.label }}: </span>
         <span :class="[row.presentation.textClass, 'break-words']">
           {{ row.text }}
         </span>
-        <span
-          v-if="row.marker"
-          aria-hidden="true"
-          class="text-muted-foreground shrink-0 text-xs"
-        >
+        <span v-if="row.marker" aria-hidden="true" class="text-muted-foreground shrink-0 text-xs">
           {{ row.marker }}
         </span>
       </li>

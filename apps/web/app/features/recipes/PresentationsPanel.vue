@@ -1,12 +1,9 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import PresentationCard from "./PresentationCard.vue";
-import PresentationCreateDialog from "./PresentationCreateDialog.vue";
-import type {
-  PresentationDraft,
-  PresentationRecord,
-} from "./recipe-presentations";
-import type { MutationOutcome } from "./useRecipes";
+import { ref } from 'vue';
+import PresentationCard from './PresentationCard.vue';
+import PresentationCreateDialog from './PresentationCreateDialog.vue';
+import type { PresentationDraft, PresentationRecord } from './recipe-presentations';
+import type { MutationOutcome } from './useRecipes';
 
 /**
  * Presentaciones de venta: cabecera con el alta, grid de cards y estado vacío.
@@ -21,7 +18,7 @@ defineProps<{
   createPresentation: (draft: PresentationDraft) => Promise<MutationOutcome>;
   updatePresentation: (
     presentationId: number,
-    draft: PresentationDraft,
+    draft: PresentationDraft
   ) => Promise<MutationOutcome>;
   deletePresentation: (presentationId: number) => Promise<MutationOutcome>;
 }>();
@@ -37,34 +34,20 @@ const createOpen = ref(false);
         title="Presentaciones de Venta"
         subtitle="Define cuántas piezas salen por mezcla"
       />
-      <Button
-        variant="primary"
-        icon="plus"
-        data-open-presentation
-        @click="createOpen = true"
-      >
+      <Button variant="primary" icon="plus" data-open-presentation @click="createOpen = true">
         <span class="sm:hidden">Nueva</span>
         <span class="hidden sm:inline">Nueva Presentación</span>
       </Button>
     </div>
 
-    <div
-      v-if="presentations.length === 0"
-      class="py-4"
-      data-presentations-empty
-    >
+    <div v-if="presentations.length === 0" class="py-4" data-presentations-empty>
       <EmptyState
         icon="lucide:tag"
         title="Aún no hay presentaciones de venta"
         description="Define cuántas piezas salen por mezcla para calcular el costo unitario, el precio sugerido y el margen."
       >
         <template #action>
-          <Button
-            variant="primary"
-            icon="plus"
-            class="mt-5"
-            @click="createOpen = true"
-          >
+          <Button variant="primary" icon="plus" class="mt-5" @click="createOpen = true">
             Crear presentación
           </Button>
         </template>
@@ -84,9 +67,6 @@ const createOpen = ref(false);
       />
     </div>
 
-    <PresentationCreateDialog
-      v-model:open="createOpen"
-      :submit="createPresentation"
-    />
+    <PresentationCreateDialog v-model:open="createOpen" :submit="createPresentation" />
   </div>
 </template>

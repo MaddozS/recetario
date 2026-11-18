@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { nextTick, onBeforeUnmount, onMounted, ref } from "vue";
+import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
 
 /**
  * Menú de acciones de una receta. Sustituye al listener delegado de
@@ -19,9 +19,9 @@ const props = withDefaults(
     recipeId: number;
     canDuplicate?: boolean;
     canDelete?: boolean;
-    variant?: "card" | "page";
+    variant?: 'card' | 'page';
   }>(),
-  { canDuplicate: false, canDelete: true, variant: "card" },
+  { canDuplicate: false, canDelete: true, variant: 'card' }
 );
 
 const emit = defineEmits<{ edit: []; duplicate: []; delete: [] }>();
@@ -31,7 +31,7 @@ const trigger = ref<HTMLButtonElement | null>(null);
 const panel = ref<HTMLElement | null>(null);
 const open = ref(false);
 
-const isPage = () => props.variant === "page";
+const isPage = () => props.variant === 'page';
 
 function menuItems(): HTMLElement[] {
   return panel.value
@@ -61,27 +61,27 @@ async function toggle(): Promise<void> {
 
 function onEdit(): void {
   close();
-  emit("edit");
+  emit('edit');
 }
 
 function onDuplicate(): void {
   close();
-  emit("duplicate");
+  emit('duplicate');
 }
 
 function onDelete(): void {
   close();
-  emit("delete");
+  emit('delete');
 }
 
 function onKeydown(event: KeyboardEvent): void {
-  if (event.key === "Escape") {
+  if (event.key === 'Escape') {
     event.preventDefault();
     close(true);
     return;
   }
 
-  if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
+  if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return;
 
   const items = menuItems();
   if (items.length === 0) return;
@@ -89,7 +89,7 @@ function onKeydown(event: KeyboardEvent): void {
   event.preventDefault();
   const current = items.indexOf(document.activeElement as HTMLElement);
   const next =
-    event.key === "ArrowDown"
+    event.key === 'ArrowDown'
       ? (current + 1) % items.length
       : (current - 1 + items.length) % items.length;
   items[next]?.focus();
@@ -109,19 +109,15 @@ function onDocumentClick(event: MouseEvent): void {
   close();
 }
 
-onMounted(() => document.addEventListener("click", onDocumentClick));
-onBeforeUnmount(() => document.removeEventListener("click", onDocumentClick));
+onMounted(() => document.addEventListener('click', onDocumentClick));
+onBeforeUnmount(() => document.removeEventListener('click', onDocumentClick));
 
 const MENU_ITEM_CLASSES =
-  "flex w-full cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors";
+  'flex w-full cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors';
 </script>
 
 <template>
-  <div
-    ref="root"
-    :class="isPage() ? 'relative' : 'contents'"
-    @keydown="onKeydown"
-  >
+  <div ref="root" :class="isPage() ? 'relative' : 'contents'" @keydown="onKeydown">
     <button
       ref="trigger"
       type="button"

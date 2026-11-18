@@ -1,4 +1,4 @@
-import { authClient } from "./auth-client";
+import { authClient } from './auth-client';
 
 export async function signOut() {
   const { error } = await authClient.signOut();

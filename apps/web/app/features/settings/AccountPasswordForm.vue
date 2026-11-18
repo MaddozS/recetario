@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
-import { getRuleResults } from "@recetario/auth/password";
-import PasswordRules from "~/features/auth/PasswordRules.vue";
-import { emptyAccountPasswordForm } from "./account-form";
-import type { AccountPasswordFormValues } from "./account-form";
-import type { AccountOutcome } from "./useAccountSettings";
-import { PASSWORD_UPDATED_MESSAGE } from "./settings-messages";
+import { computed, ref } from 'vue';
+import { getRuleResults } from '@recetario/auth/password';
+import PasswordRules from '~/features/auth/PasswordRules.vue';
+import { emptyAccountPasswordForm } from './account-form';
+import type { AccountPasswordFormValues } from './account-form';
+import type { AccountOutcome } from './useAccountSettings';
+import { PASSWORD_UPDATED_MESSAGE } from './settings-messages';
 
 /**
  * Formulario de contraseña. Muestra las 5 reglas en vivo (misma política que
@@ -18,9 +18,7 @@ const props = defineProps<{
 }>();
 
 const form = ref<AccountPasswordFormValues>(emptyAccountPasswordForm());
-const feedback = ref<{ type: "success" | "error"; message: string } | null>(
-  null,
-);
+const feedback = ref<{ type: 'success' | 'error'; message: string } | null>(null);
 
 const ruleResults = computed(() => getRuleResults(form.value.newPassword));
 
@@ -30,11 +28,11 @@ async function onSubmit(): Promise<void> {
 
   if (outcome.ok) {
     form.value = emptyAccountPasswordForm();
-    feedback.value = { type: "success", message: PASSWORD_UPDATED_MESSAGE };
+    feedback.value = { type: 'success', message: PASSWORD_UPDATED_MESSAGE };
     return;
   }
 
-  feedback.value = { type: "error", message: outcome.message };
+  feedback.value = { type: 'error', message: outcome.message };
 }
 </script>
 

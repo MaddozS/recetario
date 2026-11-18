@@ -1,5 +1,4 @@
-export const PASSWORD_REGEX =
-  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
+export const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
 
 export interface PasswordRule {
   key: string;
@@ -8,13 +7,13 @@ export interface PasswordRule {
 }
 
 export const PASSWORD_RULES: PasswordRule[] = [
-  { key: "min", label: "Al menos 8 caracteres", test: (pw) => pw.length >= 8 },
-  { key: "upper", label: "Una letra mayúscula", test: (pw) => /[A-Z]/.test(pw) },
-  { key: "lower", label: "Una letra minúscula", test: (pw) => /[a-z]/.test(pw) },
-  { key: "digit", label: "Un número", test: (pw) => /\d/.test(pw) },
+  { key: 'min', label: 'Al menos 8 caracteres', test: (pw) => pw.length >= 8 },
+  { key: 'upper', label: 'Una letra mayúscula', test: (pw) => /[A-Z]/.test(pw) },
+  { key: 'lower', label: 'Una letra minúscula', test: (pw) => /[a-z]/.test(pw) },
+  { key: 'digit', label: 'Un número', test: (pw) => /\d/.test(pw) },
   {
-    key: "special",
-    label: "Un carácter especial",
+    key: 'special',
+    label: 'Un carácter especial',
     test: (pw) => /[^A-Za-z0-9]/.test(pw),
   },
 ];
@@ -38,8 +37,6 @@ export function validatePassword(password: string): {
   errors: string[];
 } {
   const results = getRuleResults(password);
-  const errors = results
-    .filter((r) => !r.passed)
-    .map((r) => r.label);
+  const errors = results.filter((r) => !r.passed).map((r) => r.label);
   return { valid: errors.length === 0, errors };
 }

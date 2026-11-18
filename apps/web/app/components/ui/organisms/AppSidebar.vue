@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { AppPage } from "#shared/types/navigation";
+import type { AppPage } from '#shared/types/navigation';
 
 const props = defineProps<{
   currentPage: AppPage | null;
@@ -10,13 +10,13 @@ const emit = defineEmits<{ close: []; toggleCollapse: [] }>();
 
 const { subscription, isAuthenticated, hasFeature } = useAuth();
 
-const showProduction = computed(() => hasFeature("production_planner"));
+const showProduction = computed(() => hasFeature('production_planner'));
 const items = computed(() => visibleNavItems(showProduction.value));
 const planLabel = computed(() => {
   const tier = subscription.value?.tier;
-  if (tier === "basic") return "Basic";
-  if (tier === "pro") return "Pro";
-  return "Free";
+  if (tier === 'basic') return 'Basic';
+  if (tier === 'pro') return 'Pro';
+  return 'Free';
 });
 
 const isCollapsed = computed(() => props.collapsed === true);
@@ -31,9 +31,7 @@ const isPending = (href: string) => matchesPendingHref(pending.value, href);
 <template>
   <div class="bg-card relative flex h-full flex-col">
     <!-- Cabecera móvil: cerrar + plan (o marca si no hay sesión) -->
-    <div
-      class="border-border flex flex-none items-center gap-3 border-b p-4 md:hidden"
-    >
+    <div class="border-border flex flex-none items-center gap-3 border-b p-4 md:hidden">
       <button
         id="close-sidebar-btn"
         type="button"
@@ -47,14 +45,10 @@ const isPending = (href: string) => matchesPendingHref(pending.value, href);
         <Badge variant="tier" color="accent">{{ planLabel }}</Badge>
       </div>
       <template v-else>
-        <div
-          class="bg-accent-solid text-text-on-accent shadow-accent-100 rounded-xl p-2 shadow-md"
-        >
+        <div class="bg-accent-solid text-text-on-accent shadow-accent-100 rounded-xl p-2 shadow-md">
           <Icon name="lucide:chef-hat" :size="20" />
         </div>
-        <p class="text-foreground text-base leading-tight font-bold">
-          KitchCalc
-        </p>
+        <p class="text-foreground text-base leading-tight font-bold">KitchCalc</p>
       </template>
     </div>
 

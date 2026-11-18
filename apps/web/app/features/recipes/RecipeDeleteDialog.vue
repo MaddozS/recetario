@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from "vue";
-import type { RecipeMutationFailure } from "~/features/recipes/recipe-messages";
-import type { RecipeRecord } from "~/features/recipes/recipe-state";
-import type { MutationOutcome } from "~/features/recipes/useRecipes";
-import RecipeErrorAlert from "~/features/recipes/RecipeErrorAlert.vue";
+import { onMounted, ref, watch } from 'vue';
+import type { RecipeMutationFailure } from '~/features/recipes/recipe-messages';
+import type { RecipeRecord } from '~/features/recipes/recipe-state';
+import type { MutationOutcome } from '~/features/recipes/useRecipes';
+import RecipeErrorAlert from '~/features/recipes/RecipeErrorAlert.vue';
 
 /**
  * Confirmación de borrado desde el listado. Mejora registrada sobre el baseline (allí
@@ -16,7 +16,7 @@ const props = defineProps<{
   confirm: (recipeId: number) => Promise<MutationOutcome>;
 }>();
 
-const open = defineModel<boolean>("open", { required: true });
+const open = defineModel<boolean>('open', { required: true });
 
 const dialog = ref<{ open: () => void; close: () => void } | null>(null);
 const failure = ref<RecipeMutationFailure | null>(null);
@@ -54,16 +54,9 @@ async function onConfirm(): Promise<void> {
 </script>
 
 <template>
-  <Dialog
-    id="delete-recipe-modal"
-    ref="dialog"
-    :submitting="submitting"
-    @close="open = false"
-  >
+  <Dialog id="delete-recipe-modal" ref="dialog" :submitting="submitting" @close="open = false">
     <div class="flex items-start gap-3">
-      <div
-        class="bg-danger-bg text-danger flex h-11 w-11 items-center justify-center rounded-2xl"
-      >
+      <div class="bg-danger-bg text-danger flex h-11 w-11 items-center justify-center rounded-2xl">
         <Icon name="lucide:trash-2" :size="18" />
       </div>
       <div>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import { useAuthApi } from "./useAuthApi";
+import { ref } from 'vue';
+import { useAuthApi } from './useAuthApi';
 
 /**
  * Solicitud de enlace de restablecimiento.
@@ -16,7 +16,7 @@ const props = withDefaults(defineProps<{ email?: string | null }>(), {
 
 const { requestPasswordReset } = useAuthApi();
 
-const email = ref(props.email ?? "");
+const email = ref(props.email ?? '');
 const feedback = ref<string | null>(null);
 const pending = ref(false);
 
@@ -27,11 +27,10 @@ async function submit(): Promise<void> {
   try {
     feedback.value = await requestPasswordReset(email.value.trim());
   } catch {
-    feedback.value =
-      "Si el email existe, recibirás un enlace para restablecer tu contraseña.";
+    feedback.value = 'Si el email existe, recibirás un enlace para restablecer tu contraseña.';
   } finally {
     pending.value = false;
-    email.value = "";
+    email.value = '';
   }
 }
 </script>
@@ -51,21 +50,13 @@ async function submit(): Promise<void> {
         autocomplete="email"
         required
       />
-      <Button
-        id="forgot-submit"
-        variant="primary"
-        type="submit"
-        class="w-full"
-        :loading="pending"
-      >
-        {{ pending ? "Enviando..." : "Enviar enlace" }}
+      <Button id="forgot-submit" variant="primary" type="submit" class="w-full" :loading="pending">
+        {{ pending ? 'Enviando...' : 'Enviar enlace' }}
       </Button>
     </form>
 
     <p class="text-muted-foreground mt-6 text-center text-sm">
-      <Button variant="secondary" href="/sign-in" size="sm">
-        Volver al inicio de sesión
-      </Button>
+      <Button variant="secondary" href="/sign-in" size="sm"> Volver al inicio de sesión </Button>
     </p>
   </div>
 </template>

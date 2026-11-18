@@ -1,5 +1,5 @@
-import type { ZodIssue } from "zod";
-import type { ApiErrorCode } from "@recetario/types";
+import type { ZodIssue } from 'zod';
+import type { ApiErrorCode } from '@recetario/types';
 
 export type ApiErrorExtras = {
   issues?: ZodIssue[];
@@ -19,14 +19,9 @@ export class ApiError extends Error {
   readonly reason?: string;
   readonly traceId?: string;
 
-  constructor(
-    code: ApiErrorCode,
-    message: string,
-    extras: ApiErrorExtras = {},
-    status = 500,
-  ) {
+  constructor(code: ApiErrorCode, message: string, extras: ApiErrorExtras = {}, status = 500) {
     super(message);
-    this.name = "ApiError";
+    this.name = 'ApiError';
     this.code = code;
     this.status = status;
     this.issues = extras.issues;

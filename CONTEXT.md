@@ -10,7 +10,7 @@ A function in `packages/db` that performs a single persistence operation (get/cr
 _Avoid_: "db helper", "repository" (implies patterns this codebase does not use).
 
 **Data layer boundary**:
-The rule that `packages/db` is pure persistence (no validation, no shaping) and `apps/api` owns validation (Zod) plus response shaping. `apps/api` never imports `prisma`; `packages/auth` keeps the raw client for the Better Auth adapter. See [ADR-0005](./docs/adr/0005-data-layer-boundary.md).
+The rule that `packages/db` is pure persistence (no validation, no shaping) and `apps/api` owns validation (Zod) plus response shaping. `apps/api` never imports `prisma`; `packages/auth` keeps the raw client for the Better Auth adapter.
 
 _Avoid_: "ORM layer", "data access layer" (overloaded).
 
@@ -25,7 +25,19 @@ _Avoid_: "model", "record" (ambiguous with schema).
 Code in `packages/stripe` that talks to the Stripe API or owns subscription/plan domain rules: the `stripe` singleton, `listPrices()`, checkout/portal helpers, webhook signature verification, `TIER_CONFIG`, `buildPricingPlans`, feature-gating helpers (`hasFeature`, `isPro`, `isPaid`, `canCreateRecipe`, `canCreateIngredient`, `getRemaining*`), `getDefaultSubscription`, and `UserSubscriptionInfo`/`PricingPlan` shaping.
 
 **Subscription reconcile**:
-The read/reconcile/shape engine in `packages/stripe` (`subscription-reconcile.ts`): reads the user's `Subscription` row, reconciles it against live Stripe (status/period/cancel drift + scheduled downgrades), persists drift, and shapes `UserSubscriptionInfo` via `userSubscriptionInfoSchema`. Both the session and `/api/billing/subscription` handlers call it; `null` means "no subscription" (session falls back to `getDefaultSubscription()`, the endpoint 404s). Tested through `reconcileSubscriptionWith(deps)` factory fakes; `reconcileSubscription` is the pre-wired default. See [ADR-0007](./docs/adr/0007-subscription-reconcile-module.md).
+The read/reconcile/shape engine in `packages/stripe` (`subscription-reconcile.ts`): reads the user's `Subscription` row, reconciles it against live Stripe (status/period/cancel drift + scheduled downgrades), persists drift, and shapes `UserSubscriptionInfo` via `userSubscriptionInfoSchema`. Both the session and `/api/billing/subscription` handlers call it; `null` means "no subscription" (session falls back to `getDefaultSubscription()`, the endpoint 404s). Tested through `reconcileSubscriptionWith(deps)` factory fakes; `reconcileSubscription` is the pre-wired default.
+
+**Session subscription snapshot**:
+The fast, database-backed subscription state bundled into the auth session, lacking live Stripe schedule changes or immediate portal drifts.
+_Avoid_: "session subscription", "auth subscription".
+
+**Fresh reconciled subscription**:
+The live subscription state reconciled on-demand against the Stripe API via `GET /api/billing/subscription`.
+_Avoid_: "live subscription", "synced subscription".
+
+**Billing pending feedback**:
+The skeleton state displayed across the billing tab during initial load before the fresh reconciled subscription resolves, preventing layout shift and display of stale cancellation state.
+_Avoid_: "billing loader", "plan skeleton".
 
 **Stripe price sync**:
 The process of reconciling `SubscriptionPlan` rows with Stripe's active prices. `packages/stripe` fetches (`listPrices`) and maps to a minimal `SyncPlanInput`; `packages/db` persists (`syncPlans`) with pure upsert+deactivate. The db package never imports `stripe`; the tier whitelist and `featuresJson` are produced by stripe, not db.
@@ -67,7 +79,7 @@ The object returned by `initAuth()` in `packages/auth/src/auth.ts` — the Bette
 A module whose only job is to wire together pre-built pieces. In `packages/auth/src/auth.ts`, the composition layer imports `prisma`, `sendEmail`, callback factories, and middleware, and assembles them into the Better Auth config.
 
 **Token authority**:
-The system that owns the password-reset token table and validation flow. In KitchCalc, the authority is the project's own `passwordResetToken` Prisma model and `validatePasswordResetToken` in `password-reset.ts` — Better Auth's `token` parameter is discarded. See [ADR-0001](./docs/adr/0001-password-reset-token-authority.md).
+The system that owns the password-reset token table and validation flow. In KitchCalc, the authority is the project's own `passwordResetToken` Prisma model and `validatePasswordResetToken` in `password-reset.ts` — Better Auth's `token` parameter is discarded.
 
 ## Email
 
@@ -92,7 +104,7 @@ Un único `deploy.yml` con jobs encadenados `verify` → `deploy-api` → `deplo
 _Avoid_: "release pipeline" (overloaded), "deploy pipeline" (ambiguous).
 
 **GitHub Environment**:
-`staging` and `production` — GitHub-native environments that gate which branch can deploy where. `dev` → `staging`, `master` → `production`. Production can require manual approval. See [ADR-0003](./docs/adr/0003-github-actions-workflow-structure.md).
+`staging` and `production` — GitHub-native environments that gate which branch can deploy where. `dev` → `staging`, `master` → `production`. Production can require manual approval.
 
 _Avoid_: "target", "stage" (ambiguous).
 
@@ -111,8 +123,6 @@ _Contrast with_: Runtime secret (previous).
 
 **Secrets map**:
 `scripts/secrets-map.json` — committed declarative mapping of which runtime secrets go to which Cloudflare product (hoy sólo `workers`) and how our canonical environment names (`staging`, `production`) translate to Cloudflare Workers env names (`--env staging`/`production`).
-
-_See also_: [ADR-0004](./docs/adr/0004-secrets-propagation-strategy.md).
 
 ## Navigation
 

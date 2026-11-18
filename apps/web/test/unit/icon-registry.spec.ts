@@ -1,10 +1,10 @@
-import { readdirSync, readFileSync } from "node:fs";
-import { join } from "node:path";
-import { fileURLToPath } from "node:url";
-import { describe, expect, it } from "vitest";
-import { ICON_REGISTRY, getIcon } from "../../app/utils/icon-registry";
+import { readdirSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { describe, expect, it } from 'vitest';
+import { ICON_REGISTRY, getIcon } from '../../app/utils/icon-registry';
 
-const APP_DIR = fileURLToPath(new URL("../../app", import.meta.url));
+const APP_DIR = fileURLToPath(new URL('../../app', import.meta.url));
 
 const STATIC_LUCIDE = /lucide:([a-z0-9-]+)/g;
 // `icon="..."` sin prefijo: lo usan Button, SectionHeading y EmptyState.
@@ -21,7 +21,7 @@ function collectSourceFiles(dir: string): string[] {
 function findUsedIcons() {
   const used = new Map<string, string[]>();
   for (const file of collectSourceFiles(APP_DIR)) {
-    const source = readFileSync(file, "utf8");
+    const source = readFileSync(file, 'utf8');
     for (const pattern of [STATIC_LUCIDE, ICON_PROP]) {
       pattern.lastIndex = 0;
       for (const match of source.matchAll(pattern)) {
@@ -35,39 +35,39 @@ function findUsedIcons() {
   return used;
 }
 
-describe("icon-registry", () => {
-  it("resuelve con y sin el prefijo lucide:", () => {
-    const withPrefix = getIcon("lucide:plus");
+describe('icon-registry', () => {
+  it('resuelve con y sin el prefijo lucide:', () => {
+    const withPrefix = getIcon('lucide:plus');
     expect(withPrefix).not.toBeNull();
-    expect(getIcon("plus")).toBe(withPrefix);
-    expect(getIcon("lucide:plus")?.name).toBe("plus");
+    expect(getIcon('plus')).toBe(withPrefix);
+    expect(getIcon('lucide:plus')?.name).toBe('plus');
   });
 
-  it("devuelve null para un nombre desconocido", () => {
-    expect(getIcon("lucide:no-existe")).toBeNull();
-    expect(getIcon("lucide:")).toBeNull();
+  it('devuelve null para un nombre desconocido', () => {
+    expect(getIcon('lucide:no-existe')).toBeNull();
+    expect(getIcon('lucide:')).toBeNull();
   });
 
-  it("usa claves kebab-case y datos de ícono de lucide", () => {
+  it('usa claves kebab-case y datos de ícono de lucide', () => {
     for (const [name, data] of Object.entries(ICON_REGISTRY)) {
       expect(name, `clave "${name}"`).toMatch(/^[a-z0-9]+(-[a-z0-9]+)*$/);
-      expect(typeof data.name, `nombre de "${name}"`).toBe("string");
+      expect(typeof data.name, `nombre de "${name}"`).toBe('string');
       expect(Array.isArray(data.node), `nodos de "${name}"`).toBe(true);
       expect(data.node.length, `nodos de "${name}"`).toBeGreaterThan(0);
       for (const [tag, attrs] of data.node) {
-        expect(typeof tag, `tag de "${name}"`).toBe("string");
-        expect(typeof attrs, `atributos de "${name}"`).toBe("object");
+        expect(typeof tag, `tag de "${name}"`).toBe('string');
+        expect(typeof attrs, `atributos de "${name}"`).toBe('object');
       }
     }
   });
 
-  it("registra todo ícono usado en app/", () => {
+  it('registra todo ícono usado en app/', () => {
     const used = findUsedIcons();
     expect(used.size).toBeGreaterThan(0);
 
     const missing = [...used.entries()]
       .filter(([name]) => !getIcon(name))
-      .map(([name, files]) => `${name} (${files.join(", ")})`);
+      .map(([name, files]) => `${name} (${files.join(', ')})`);
 
     expect(missing).toEqual([]);
   });

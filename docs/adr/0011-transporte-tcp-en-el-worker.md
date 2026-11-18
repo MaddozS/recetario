@@ -8,12 +8,12 @@ ADR 0010 replaced Accelerate with the serverless driver to keep a module-scope s
 
 Measured on the same machine and database (a subscription update replaying a real event):
 
-| Path | Per query | Interactive transaction |
-| --- | --- | --- |
-| Node + TCP (`PrismaPg`) | ~170 ms | — |
-| Node + serverless driver (HTTP) | ~890–1060 ms | 1489 ms |
-| Worker (workerd) + serverless driver | ~0.3–2.7 s, spikes of 12 s | 2137 ms |
-| Worker (workerd) + TCP | **~165 ms** | **494 ms** |
+| Path                                 | Per query                  | Interactive transaction |
+| ------------------------------------ | -------------------------- | ----------------------- |
+| Node + TCP (`PrismaPg`)              | ~170 ms                    | —                       |
+| Node + serverless driver (HTTP)      | ~890–1060 ms               | 1489 ms                 |
+| Worker (workerd) + serverless driver | ~0.3–2.7 s, spikes of 12 s | 2137 ms                 |
+| Worker (workerd) + TCP               | **~165 ms**                | **494 ms**              |
 
 The webhook path (`customer.subscription.updated` against a persisted subscription) needs 4 HTTP queries, one Stripe call and a 4-6 statement transaction. With the serverless driver that totalled **18.7 s, 46 s and 60 s** across runs: over the Stripe CLI's 30 s forwarding timeout, and past `INGESTION_TRANSACTION_OPTIONS.timeout` (15 s), which throws — the 500s in the log. With TCP the same path lands at **3.6 s**.
 
@@ -39,7 +39,7 @@ Reusing a single module-scope client with `PrismaPg` was measured too, since it 
 
 ## Consequences
 
-- Every worker request pays one TCP connection setup (~1.0-1.7 s locally, much less from the edge). Light requests therefore got slightly *slower* locally (sign-in: 1.01 s → 1.19 s), while heavy ones got 5-16x faster. If the light path ever matters, the next lever is a connection pooler at the edge (Hyperdrive-style), not going back to HTTP.
+- Every worker request pays one TCP connection setup (~1.0-1.7 s locally, much less from the edge). Light requests therefore got slightly _slower_ locally (sign-in: 1.01 s → 1.19 s), while heavy ones got 5-16x faster. If the light path ever matters, the next lever is a connection pooler at the edge (Hyperdrive-style), not going back to HTTP.
 - `packages/db` no longer uses `@prisma/adapter-ppg`; `@prisma/adapter-pg` + `pg` cover both the worker and the Node scripts.
 - The lazy proxy must never look like a thenable (`then` resolves to `undefined`), or `await prisma.user` would hang under `AsyncLocalStorage`.
 - Rollback is code-only: revert the commit, `DATABASE_URL` stays valid.

@@ -1,6 +1,6 @@
-import type { UserSubscriptionInfo } from "@recetario/types";
-import type { BillingInterval } from "./billing-interval";
-import { formatBillingDate } from "./billing-format";
+import type { UserSubscriptionInfo } from '@recetario/types';
+import type { BillingInterval } from './billing-interval';
+import { formatBillingDate } from './billing-format';
 
 /**
  * Estado y copys del cambio de plan, portados del `PricingModal`.
@@ -12,9 +12,9 @@ import { formatBillingDate } from "./billing-format";
 const TIER_RANKS: Record<string, number> = { free: 0, basic: 1, pro: 2 };
 
 const TIER_LABELS: Record<string, string> = {
-  free: "Free",
-  basic: "Basic",
-  pro: "Pro",
+  free: 'Free',
+  basic: 'Basic',
+  pro: 'Pro',
 };
 
 export const RECIPES_WARNING_THRESHOLD = 3;
@@ -32,15 +32,14 @@ export function isPlanChangeUpgrade(
   currentTier: string,
   currentInterval: BillingInterval,
   targetTier: string,
-  targetInterval: BillingInterval,
+  targetInterval: BillingInterval
 ): boolean {
-  if (currentInterval === "monthly" && targetInterval === "yearly") return true;
-  if (currentInterval === "yearly" && targetInterval === "monthly")
-    return false;
+  if (currentInterval === 'monthly' && targetInterval === 'yearly') return true;
+  if (currentInterval === 'yearly' && targetInterval === 'monthly') return false;
   return tierRank(targetTier) > tierRank(currentTier);
 }
 
-export type PlanActionKind = "free" | "current" | "upgrade" | "downgrade";
+export type PlanActionKind = 'free' | 'current' | 'upgrade' | 'downgrade';
 
 export type PlanAction = {
   kind: PlanActionKind;
@@ -54,12 +53,12 @@ export function planAction(
   currentTier: string,
   currentInterval: BillingInterval,
   targetTier: string,
-  targetInterval: BillingInterval,
+  targetInterval: BillingInterval
 ): PlanAction {
-  if (targetTier === "free") {
+  if (targetTier === 'free') {
     return {
-      kind: "free",
-      label: "Plan actual",
+      kind: 'free',
+      label: 'Plan actual',
       disabled: true,
       isUpgrade: false,
     };
@@ -67,23 +66,18 @@ export function planAction(
 
   if (targetTier === currentTier && targetInterval === currentInterval) {
     return {
-      kind: "current",
-      label: "Plan actual",
+      kind: 'current',
+      label: 'Plan actual',
       disabled: true,
       isUpgrade: false,
     };
   }
 
-  const isUpgrade = isPlanChangeUpgrade(
-    currentTier,
-    currentInterval,
-    targetTier,
-    targetInterval,
-  );
+  const isUpgrade = isPlanChangeUpgrade(currentTier, currentInterval, targetTier, targetInterval);
 
   if (isUpgrade) {
     return {
-      kind: "upgrade",
+      kind: 'upgrade',
       label: `Actualizar a ${TIER_LABELS[targetTier] ?? targetTier}`,
       disabled: false,
       isUpgrade,
@@ -91,8 +85,8 @@ export function planAction(
   }
 
   return {
-    kind: "downgrade",
-    label: targetTier === "pro" ? "Cambiar a Pro Mensual" : "Cambiar a Basic",
+    kind: 'downgrade',
+    label: targetTier === 'pro' ? 'Cambiar a Pro Mensual' : 'Cambiar a Basic',
     disabled: false,
     isUpgrade,
   };
@@ -103,26 +97,20 @@ export function planDisplayName(tier: string): string {
 }
 
 /** `BASIC Mensual` — así se muestra el plan vigente en la confirmación. */
-export function currentPlanLabel(
-  tier: string,
-  interval: BillingInterval,
-): string {
-  return `${tier.toUpperCase()} ${interval === "yearly" ? "Anual" : "Mensual"}`;
+export function currentPlanLabel(tier: string, interval: BillingInterval): string {
+  return `${tier.toUpperCase()} ${interval === 'yearly' ? 'Anual' : 'Mensual'}`;
 }
 
 /** `KitchCalc Pro Anual` — el plan destino en la confirmación. */
-export function targetPlanLabel(
-  planName: string,
-  interval: BillingInterval,
-): string {
-  return `${planName} ${interval === "yearly" ? "Anual" : "Mensual"}`;
+export function targetPlanLabel(planName: string, interval: BillingInterval): string {
+  return `${planName} ${interval === 'yearly' ? 'Anual' : 'Mensual'}`;
 }
 
 export type PlanChangeCopy = {
   title: string;
   description: string;
   chargeDetails: string;
-  tone: "upgrade" | "downgrade";
+  tone: 'upgrade' | 'downgrade';
 };
 
 export function planChangeCopy(options: {
@@ -135,19 +123,19 @@ export function planChangeCopy(options: {
 
   if (isUpgrade) {
     return {
-      title: "Cambio inmediato (Upgrade)",
+      title: 'Cambio inmediato (Upgrade)',
       description: `Tu suscripción se actualizará de forma inmediata al plan ${targetPlanName}. Se aplicará el prorrateo ajustado de tus días restantes.`,
       chargeDetails:
-        "Se procesará el cobro inmediato correspondiente a la actualización en Stripe.",
-      tone: "upgrade",
+        'Se procesará el cobro inmediato correspondiente a la actualización en Stripe.',
+      tone: 'upgrade',
     };
   }
 
   return {
-    title: "Cambio programado (Downgrade)",
+    title: 'Cambio programado (Downgrade)',
     description: `Tu plan actual (${currentPlanName}) seguirá activo con todas sus funciones hasta ${effectiveDate}. El nuevo plan (${targetPlanName}) comenzará a partir de esa fecha.`,
     chargeDetails: `No se realizará ningún cobro el día de hoy. El cobro del nuevo plan se aplicará cuando inicie el próximo periodo de facturación (${effectiveDate}).`,
-    tone: "downgrade",
+    tone: 'downgrade',
   };
 }
 
@@ -155,10 +143,8 @@ export function planChangeCopy(options: {
  * Línea de estado del plan actual. El orden de prioridad es el del baseline:
  * cambio programado → cancelación → prueba → renovación.
  */
-export function subscriptionSummaryLine(
-  subscription: UserSubscriptionInfo,
-): string {
-  if (subscription.tier === "free") return "Gratis para siempre";
+export function subscriptionSummaryLine(subscription: UserSubscriptionInfo): string {
+  if (subscription.tier === 'free') return 'Gratis para siempre';
 
   const periodEnd = formatBillingDate(subscription.currentPeriodEnd);
   const trialEnd = formatBillingDate(subscription.trialEnd) ?? periodEnd;
@@ -179,7 +165,7 @@ export function subscriptionSummaryLine(
     return `Se renueva el ${periodEnd}`;
   }
 
-  return "Renovación recurrente";
+  return 'Renovación recurrente';
 }
 
 /** Ancho de la barra de uso; `0` cuando el plan es ilimitado. */
@@ -188,9 +174,6 @@ export function usagePercentage(count: number, limit: number | null): number {
   return Math.min(100, (count / limit) * 100);
 }
 
-export function showsLowRemainingWarning(
-  remaining: number | null,
-  threshold: number,
-): boolean {
+export function showsLowRemainingWarning(remaining: number | null, threshold: number): boolean {
   return remaining !== null && remaining <= threshold;
 }

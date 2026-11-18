@@ -3,7 +3,7 @@ import type {
   PREFERENCE_THEMES,
   SessionResponse,
   UserSubscriptionInfo,
-} from "@recetario/types";
+} from '@recetario/types';
 
 /** Preferencia de tema tal como la valida el API (`@recetario/types`). */
 export type ThemePreference = (typeof PREFERENCE_THEMES)[number];
@@ -34,14 +34,14 @@ export type AuthUser = {
  */
 export type AuthState =
   | {
-      status: "authenticated";
+      status: 'authenticated';
       session: { id: string };
       user: AuthUser;
       subscription: UserSubscriptionInfo;
       preferences: AuthPreferences;
     }
   | {
-      status: "anonymous";
+      status: 'anonymous';
       session: null;
       user: null;
       subscription: null;
@@ -49,14 +49,12 @@ export type AuthState =
     };
 
 /** Motivos con los que el shell manda a `/sign-in` (los renderiza Task 6). */
-export const AUTH_REASONS = ["auth_required", "session_expired"] as const;
+export const AUTH_REASONS = ['auth_required', 'session_expired'] as const;
 export type AuthReason = (typeof AUTH_REASONS)[number];
 
-export function buildAnonymousAuthState(
-  preferences: AuthPreferences,
-): AuthState {
+export function buildAnonymousAuthState(preferences: AuthPreferences): AuthState {
   return {
-    status: "anonymous",
+    status: 'anonymous',
     session: null,
     user: null,
     subscription: null,
@@ -73,22 +71,22 @@ export function buildAnonymousAuthState(
  */
 export function buildAuthenticatedAuthState(
   session: NonNullable<SessionResponse>,
-  preferences: AuthPreferences,
-): Extract<AuthState, { status: "authenticated" }> {
+  preferences: AuthPreferences
+): Extract<AuthState, { status: 'authenticated' }> {
   const { user, subscription, hasPasswordAuth } = session;
   const authUser: AuthUser = {
     id: user.id,
     email: user.email ?? null,
-    name: user.name || user.email?.split("@")[0] || "Usuario",
+    name: user.name || user.email?.split('@')[0] || 'Usuario',
     firstName: user.firstName ?? null,
     lastName: user.lastName ?? null,
     image: user.image ?? null,
-    role: user.role ?? "USER",
+    role: user.role ?? 'USER',
     hasPasswordAuth: hasPasswordAuth ?? false,
   };
 
   return {
-    status: "authenticated",
+    status: 'authenticated',
     session: { id: session.session.id },
     user: authUser,
     subscription,

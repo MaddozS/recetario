@@ -1,10 +1,7 @@
-import { z } from "zod";
-import type { PricingPlan } from "@recetario/types";
-import type { BillingInterval } from "./billing-interval";
-import {
-  PLAN_PRICE_MISSING_MESSAGE,
-  resolveCheckoutError,
-} from "./billing-messages";
+import { z } from 'zod';
+import type { PricingPlan } from '@recetario/types';
+import type { BillingInterval } from './billing-interval';
+import { PLAN_PRICE_MISSING_MESSAGE, resolveCheckoutError } from './billing-messages';
 
 const checkoutResponseSchema = z.object({ url: z.string() });
 
@@ -26,17 +23,14 @@ export function useCheckout() {
   const pending = ref(false);
   const error = ref<string | null>(null);
 
-  function priceIdFor(
-    plan: PricingPlan,
-    interval: BillingInterval,
-  ): string | null {
-    return interval === "monthly" ? plan.monthlyPriceId : plan.yearlyPriceId;
+  function priceIdFor(plan: PricingPlan, interval: BillingInterval): string | null {
+    return interval === 'monthly' ? plan.monthlyPriceId : plan.yearlyPriceId;
   }
 
   async function startCheckout(
     plan: PricingPlan,
     interval: BillingInterval,
-    urls: CheckoutUrls = {},
+    urls: CheckoutUrls = {}
   ): Promise<void> {
     const priceId = priceIdFor(plan, interval);
     if (!priceId) {
@@ -49,12 +43,11 @@ export function useCheckout() {
 
     try {
       const origin = window.location.origin;
-      const { url } = await api("/api/stripe/checkout", {
-        method: "POST",
+      const { url } = await api('/api/stripe/checkout', {
+        method: 'POST',
         body: {
           priceId,
-          successUrl:
-            urls.successUrl ?? `${origin}/settings?tab=billing&success=1`,
+          successUrl: urls.successUrl ?? `${origin}/settings?tab=billing&success=1`,
           cancelUrl: urls.cancelUrl ?? `${origin}/pricing?canceled=1`,
         },
         schema: checkoutResponseSchema,

@@ -12,7 +12,7 @@ Prisma ORM wrapper for Prisma Postgres. Provides the Prisma client singleton and
 ## Usage
 
 ```ts
-import { prisma } from "@recetario/db";
+import { prisma } from '@recetario/db';
 
 const recipes = await prisma.recipe.findMany({
   where: { ownerId: user.id },

@@ -9,7 +9,7 @@ const { isDark, accent } = useTheme();
 const { saveAppearance } = useAppearancePersistence();
 
 function toggleTheme(): void {
-  const next = isDark.value ? "light" : "dark";
+  const next = isDark.value ? 'light' : 'dark';
   void saveAppearance({ theme: next, accentColor: accent.value });
 }
 </script>

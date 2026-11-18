@@ -18,7 +18,7 @@ Two things forced the move:
 The worker builds its client with the Prisma Postgres serverless driver:
 
 ```ts
-new PrismaClient({ adapter: new PrismaPostgresAdapter({ connectionString }) })
+new PrismaClient({ adapter: new PrismaPostgresAdapter({ connectionString }) });
 ```
 
 `DATABASE_URL` keeps its name and becomes the **direct** connection string (`postgres://…@db.prisma.io:5432/postgres?sslmode=require`). The driver uses that value as a credential and communicates over HTTP and WebSockets, so no TCP connection is opened. Node scripts and seeds use `@prisma/adapter-pg` (or raw `pg`) with the same value.

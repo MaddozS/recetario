@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from "vue";
-import type { PricingPlan, UserSubscriptionInfo } from "@recetario/types";
-import BillingIntervalToggle from "./BillingIntervalToggle.vue";
-import PlanFeatureList from "./PlanFeatureList.vue";
-import PlanPrice from "./PlanPrice.vue";
-import type { BillingInterval } from "./billing-interval";
-import { planAction } from "./billing-plan-state";
+import { computed, onMounted, ref, watch } from 'vue';
+import type { PricingPlan, UserSubscriptionInfo } from '@recetario/types';
+import BillingIntervalToggle from './BillingIntervalToggle.vue';
+import PlanFeatureList from './PlanFeatureList.vue';
+import PlanPrice from './PlanPrice.vue';
+import type { BillingInterval } from './billing-interval';
+import { planAction } from './billing-plan-state';
 
 /**
  * Selector de planes del tab de facturación (puerto del `PricingModal`).
@@ -24,29 +24,24 @@ const emit = defineEmits<{
   choose: [{ plan: PricingPlan; interval: BillingInterval }];
 }>();
 
-const open = defineModel<boolean>("open", { required: true });
+const open = defineModel<boolean>('open', { required: true });
 
 const dialog = ref<{ open: () => void; close: () => void } | null>(null);
-const interval = ref<BillingInterval>("monthly");
+const interval = ref<BillingInterval>('monthly');
 
 const currentTier = computed(() => props.subscription.tier);
 const currentInterval = computed<BillingInterval>(
-  () => props.subscription.billingInterval ?? "monthly",
+  () => props.subscription.billingInterval ?? 'monthly'
 );
 
 function actionFor(plan: PricingPlan) {
-  return planAction(
-    currentTier.value,
-    currentInterval.value,
-    plan.id,
-    interval.value,
-  );
+  return planAction(currentTier.value, currentInterval.value, plan.id, interval.value);
 }
 
 function syncDialog(): void {
   if (open.value) {
     // El baseline reinicia el periodo a mensual cada vez que se abre.
-    interval.value = "monthly";
+    interval.value = 'monthly';
     dialog.value?.open();
   } else {
     dialog.value?.close();
@@ -115,9 +110,7 @@ function close(): void {
         :key="plan.id"
         padding="md"
         class="flex flex-col"
-        :class="
-          plan.id === 'pro' ? 'border-accent-300 ring-accent-200 ring-1' : ''
-        "
+        :class="plan.id === 'pro' ? 'border-accent-300 ring-accent-200 ring-1' : ''"
         :data-plan="plan.id"
       >
         <Badge

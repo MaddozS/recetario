@@ -15,9 +15,7 @@
     </Card>
 
     <Card class="space-y-4 overflow-hidden p-6">
-      <div
-        class="border-border flex items-center justify-between border-b pb-4"
-      >
+      <div class="border-border flex items-center justify-between border-b pb-4">
         <Skeleton class="h-6 w-40" />
         <Skeleton class="h-10 w-72" />
       </div>

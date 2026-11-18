@@ -1,9 +1,6 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import {
-  formatUnitCost,
-  parseIngredientNumber,
-} from "~/features/ingredients/ingredient-form";
+import { computed } from 'vue';
+import { formatUnitCost, parseIngredientNumber } from '~/features/ingredients/ingredient-form';
 
 /**
  * Preview vivo del costo unitario: `price / purchaseQuantity` con la unidad
@@ -17,10 +14,7 @@ const props = defineProps<{
 }>();
 
 const value = computed(() =>
-  formatUnitCost(
-    parseIngredientNumber(props.price),
-    parseIngredientNumber(props.purchaseQuantity),
-  ),
+  formatUnitCost(parseIngredientNumber(props.price), parseIngredientNumber(props.purchaseQuantity))
 );
 </script>
 

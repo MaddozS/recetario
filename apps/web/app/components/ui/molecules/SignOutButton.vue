@@ -7,23 +7,23 @@
  */
 const api = useApi();
 const { expire } = useAuth();
-const overlay = useState<string | null>("loading-overlay", () => null);
+const overlay = useState<string | null>('loading-overlay', () => null);
 const pending = ref(false);
 
 async function signOut(): Promise<void> {
   if (pending.value) return;
 
   pending.value = true;
-  overlay.value = "Cerrando sesión…";
+  overlay.value = 'Cerrando sesión…';
   try {
-    await api("/api/auth/sign-out", { method: "POST" });
+    await api('/api/auth/sign-out', { method: 'POST' });
     // La sesión ya no existe: descartar el estado evita que una navegación
     // posterior pase el middleware con datos obsoletos.
     expire();
-    await navigateTo("/sign-in", { replace: true });
+    await navigateTo('/sign-in', { replace: true });
   } catch (error) {
-    console.error("Sign-out failed:", error);
-    window.alert("No se pudo cerrar sesión. Inténtalo de nuevo.");
+    console.error('Sign-out failed:', error);
+    window.alert('No se pudo cerrar sesión. Inténtalo de nuevo.');
   } finally {
     overlay.value = null;
     pending.value = false;
@@ -41,7 +41,7 @@ async function signOut(): Promise<void> {
     @click="signOut"
   >
     <span class="hidden sm:inline">
-      {{ pending ? "Cerrando..." : "Cerrar sesión" }}
+      {{ pending ? 'Cerrando...' : 'Cerrar sesión' }}
     </span>
   </Button>
 </template>

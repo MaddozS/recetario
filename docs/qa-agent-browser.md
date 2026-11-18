@@ -58,13 +58,13 @@ pnpm --filter @recetario/db seed:test-users \
 Sin flags usa defaults: `qa-temp-<timestamp>@example.com` / `Temporal123!` /
 `QA Temporal`, **sin suscripción**. Flags:
 
-| Flag | Descripción |
-|------|-------------|
-| `--email <email>` | Email del usuario (default: `qa-temp-<ts>@example.com`) |
-| `--password <pass>` | Contraseña (default: `Temporal123!`) |
-| `--name <nombre>` | Nombre completo (default: `QA Temporal`) |
-| `--plan <id>` | Suscripción activa: `basic_monthly` \| `basic_yearly` \| `pro_monthly` \| `pro_yearly` |
-| `--verify-only` | Solo marca `emailVerified=true` de usuarios `qa-temp-*` existentes |
+| Flag                | Descripción                                                                            |
+| ------------------- | -------------------------------------------------------------------------------------- |
+| `--email <email>`   | Email del usuario (default: `qa-temp-<ts>@example.com`)                                |
+| `--password <pass>` | Contraseña (default: `Temporal123!`)                                                   |
+| `--name <nombre>`   | Nombre completo (default: `QA Temporal`)                                               |
+| `--plan <id>`       | Suscripción activa: `basic_monthly` \| `basic_yearly` \| `pro_monthly` \| `pro_yearly` |
+| `--verify-only`     | Solo marca `emailVerified=true` de usuarios `qa-temp-*` existentes                     |
 
 ### Opción B — Por la UI (más lento, prueba el flujo real)
 
@@ -88,36 +88,39 @@ El cliente Prisma de scripts es `packages/db/prisma/generated-node/client`
 
 ```ts
 // packages/db/prisma/<script>.ts (ejecutar con pnpm --filter @recetario/db exec tsx)
-import dotenv from "dotenv";
-import { resolve, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
+import dotenv from 'dotenv';
+import { resolve, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 dotenv.config();
-dotenv.config({ path: resolve(__dirname, "../../../.env") });
-import { PrismaClient } from "./generated-node/client";
-import { PrismaPg } from "@prisma/adapter-pg";
-const prisma = new PrismaClient({ adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL! }) });
+dotenv.config({ path: resolve(__dirname, '../../../.env') });
+import { PrismaClient } from './generated-node/client';
+import { PrismaPg } from '@prisma/adapter-pg';
+const prisma = new PrismaClient({
+  adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL! }),
+});
 
 // ── Suscripción activa ─────────────────────────────────────────────
 // planId debe existir en subscription_plans: basic_monthly | basic_yearly
 // | pro_monthly | pro_yearly (verificar con findMany)
-const u = await prisma.user.findFirst({ where: { email: "qa@example.com" } });
+const u = await prisma.user.findFirst({ where: { email: 'qa@example.com' } });
 await prisma.subscription.upsert({
   where: { id: `qa-sub-${u!.id}` },
-  update: { planId: "pro_monthly", status: "active" },
-  create: { id: `qa-sub-${u!.id}`, userId: u!.id, planId: "pro_monthly", status: "active" },
+  update: { planId: 'pro_monthly', status: 'active' },
+  create: { id: `qa-sub-${u!.id}`, userId: u!.id, planId: 'pro_monthly', status: 'active' },
 });
 
 // ── Marcar email verificado ────────────────────────────────────────
 await prisma.user.update({ where: { id: u!.id }, data: { emailVerified: true } });
 
 // ── Reasignar recetas de otro owner (para poblar QA) ───────────────
-await prisma.recipe.updateMany({ where: { ownerId: "<seed-owner>" }, data: { ownerId: u!.id } });
+await prisma.recipe.updateMany({ where: { ownerId: '<seed-owner>' }, data: { ownerId: u!.id } });
 await prisma.$disconnect();
 ```
 
 **Gating por plan** (relevante para probar):
+
 - `production_planner` → solo **basic/pro** (`/produccion` muestra UpgradePrompt en Free).
 - `production_save`, `production_advanced`, `cooking_mode` → solo **pro**.
 - Límites: Free = 10 recetas / 30 ingredientes; Basic = 75 recetas; Pro = ilimitado.
@@ -186,9 +189,16 @@ recipes: [...] }`).
 
 ```js
 // Desde agent-browser eval (autenticado):
-fetch("/api/recipes", { method: "POST", headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ name: "Panqué de Plátano", category: "PANQUES",
-    desiredMargin: 30, fixedCostsPercentage: 5 }) })
+fetch('/api/recipes', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    name: 'Panqué de Plátano',
+    category: 'PANQUES',
+    desiredMargin: 30,
+    fixedCostsPercentage: 5,
+  }),
+});
 ```
 
 Devuelve `201` con el detalle (incluye `id`). Los `recipeFixedCosts` opcionales
@@ -220,9 +230,11 @@ base: "PER_BATCH"|"PER_UNIT"|"PER_HOUR", value, hours? }`.
 
 ```js
 // POST /api/recipes/:id/presentations
-fetch("/api/recipes/1/presentations", { method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ name: "Panqué completo", unitsPerBatch: 12, salePrice: 180 }) })
+fetch('/api/recipes/1/presentations', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ name: 'Panqué completo', unitsPerBatch: 12, salePrice: 180 }),
+});
 // PATCH /api/recipes/:id/presentations/:pid  (campos opcionales)
 // DELETE /api/recipes/:id/presentations/:pid
 ```
@@ -236,9 +248,9 @@ value }`.
 1. `open http://localhost:4321/recipes` → botón "Nueva Receta" → nombre +
    categoría.
 2. En el detalle: pestaña **Ingredientes** (modo editar: picker de ingrediente
-   + cantidad + unidad + notas), pestaña **Costos Fijos** ("Agregar Costo
-   Fijo"), pestaña **Presentaciones** ("Nueva Presentación" → nombre, unidades
-   por lote, precio de venta).
+   - cantidad + unidad + notas), pestaña **Costos Fijos** ("Agregar Costo
+     Fijo"), pestaña **Presentaciones** ("Nueva Presentación" → nombre, unidades
+     por lote, precio de venta).
 3. El **FinancialSummary** (arriba, antes de los tabs) muestra costo de
    insumos, costos fijos, total y margen.
 
@@ -282,14 +294,14 @@ Solo visible con plan **basic** (hasta 3 recetas) o **pro** (ilimitado).
 
 ```js
 // Etapa actual
-document.getElementById("production-root").dataset.stage   // "select" | "results"
+document.getElementById('production-root').dataset.stage; // "select" | "results"
 // Scroll interno activo
-const g = document.getElementById("recipe-groups");
-g.scrollHeight > g.clientHeight
+const g = document.getElementById('recipe-groups');
+g.scrollHeight > g.clientHeight;
 // Contador del toolbar de resultados
-document.getElementById("results-selection-count").textContent
+document.getElementById('results-selection-count').textContent;
 // Resultado de "Seleccionar todas"
-document.getElementById("select-all-recipes").indeterminate
+document.getElementById('select-all-recipes').indeterminate;
 ```
 
 ---
@@ -299,6 +311,7 @@ document.getElementById("select-all-recipes").indeterminate
 Tres tabs (vía `?tab=`): `profile` (default), `preferences`, `billing`.
 
 ### Perfil
+
 - Card con avatar (inicial), nombre, email y tipo de cuenta ("Cuenta de email"
   vs "Sesion de Google").
 - **Cambiar nombre**: form → `POST /api/account/update-name` (**JSON**:
@@ -306,11 +319,12 @@ Tres tabs (vía `?tab=`): `profile` (default), `preferences`, `billing`.
 - **Cambiar email** (solo cuentas email): `POST /api/account/change-email`
   (JSON: `{ newEmail, currentPassword }`).
 - **Cambiar contraseña** (solo cuentas email): `POST
-  /api/account/change-password` (JSON: `{ currentPassword, newPassword }`).
+/api/account/change-password` (JSON: `{ currentPassword, newPassword }`).
   Política de sign-up: mínimo **8** caracteres con mayúscula, minúscula, número
   y carácter especial.
 
 ### Preferencias
+
 - **Tema**: system / light / dark (botones con `data-theme-option`). Preview en
   vivo vía `html.dataset.theme` + clase `.dark`.
 - **Color de acento**: 7 familias (`data-accent-option`: indigo, violet, blue,
@@ -323,6 +337,7 @@ Tres tabs (vía `?tab=`): `profile` (default), `preferences`, `billing`.
   sesión.
 
 ### Facturación (`?tab=billing`)
+
 - Muestra plan actual (Free/Basic/Pro), límites de recetas/ingredientes
   restantes y planes disponibles (`/api/billing/plans`).
 - Botón para **suscripción** → `POST /api/stripe/checkout` (Checkout Session,
@@ -369,46 +384,46 @@ agent-browser open "http://localhost:4321/settings?tab=billing"      # plan
 
 ## 8. Trampas conocidas
 
-| Trampa | Solución |
-|--------|----------|
-| Los refs `@eN` caducan tras cualquier cambio de página | Re-snapshot antes de cada interacción |
-| Páginas privadas con datos SSR | `wait --load networkidle` + re-snapshot |
-| Login con Google no automatizable | Usar email/contraseña |
-| Sign-up manda email (Resend rechaza `example.com`) | Crear usuario con `seed:test-users` o verificar en BD |
-| `PATCH /api/recipes/:id` reemplaza ingredientes | Enviar la lista completa |
-| Borrar ingrediente en uso → bloqueado | Usar `GET /api/ingredients/:id/usage` primero |
-| El cliente Prisma `generated/client` no corre en Node | Usar `generated-node/client` en scripts |
-| Dev server ya corriendo (`nuxt dev` o `pnpm dev`) | Reutilizar; los puertos 4321/8787 deben estar libres |
-| Email stub imprime token en stdout de wrangler | Leer la terminal donde corre `pnpm dev` (no accesible desde el agente) |
+| Trampa                                                 | Solución                                                               |
+| ------------------------------------------------------ | ---------------------------------------------------------------------- |
+| Los refs `@eN` caducan tras cualquier cambio de página | Re-snapshot antes de cada interacción                                  |
+| Páginas privadas con datos SSR                         | `wait --load networkidle` + re-snapshot                                |
+| Login con Google no automatizable                      | Usar email/contraseña                                                  |
+| Sign-up manda email (Resend rechaza `example.com`)     | Crear usuario con `seed:test-users` o verificar en BD                  |
+| `PATCH /api/recipes/:id` reemplaza ingredientes        | Enviar la lista completa                                               |
+| Borrar ingrediente en uso → bloqueado                  | Usar `GET /api/ingredients/:id/usage` primero                          |
+| El cliente Prisma `generated/client` no corre en Node  | Usar `generated-node/client` en scripts                                |
+| Dev server ya corriendo (`nuxt dev` o `pnpm dev`)      | Reutilizar; los puertos 4321/8787 deben estar libres                   |
+| Email stub imprime token en stdout de wrangler         | Leer la terminal donde corre `pnpm dev` (no accesible desde el agente) |
 
 ---
 
 ## 9. Endpoints API de referencia
 
-| Método | Ruta | Uso |
-|--------|------|-----|
-| GET | `/api/recipes` | Lista resúmenes (sin paginar) |
-| POST | `/api/recipes` | Crear receta |
-| GET | `/api/recipes/:id` | Detalle completo |
-| PATCH | `/api/recipes/:id` | Actualizar (reemplaza ingredientes) |
-| DELETE | `/api/recipes/:id` | Eliminar |
-| POST | `/api/recipes/:id/duplicate` | Duplicar |
-| POST/PATCH/DELETE | `/api/recipes/:id/fixed-costs[/:fid]` | Costos fijos de receta |
-| POST/PATCH/DELETE | `/api/recipes/:id/presentations[/:pid]` | Presentaciones |
-| POST/PATCH/DELETE | `/api/presentations/:pid/fixed-costs[/:fcid]` | Costos fijos de presentación |
-| GET/POST | `/api/ingredients` | Listar / crear ingredientes |
-| PATCH/DELETE | `/api/ingredients/:id` | Actualizar / eliminar (bloqueado si en uso) |
-| GET | `/api/ingredients/:id/usage` | Recetas que usan el ingrediente |
-| GET | `/api/auth/session` | Sesión + suscripción (features) |
-| GET/PUT | `/api/preferences` | Preferencias de usuario |
-| GET | `/api/billing/subscription` | Suscripción actual |
-| GET | `/api/billing/plans` | Planes con features |
-| POST | `/api/account/update-name` | Cambiar nombre (JSON) |
-| POST | `/api/account/change-email` | Cambiar email (JSON) |
-| POST | `/api/account/change-password` | Cambiar contraseña (JSON) |
-| POST | `/api/stripe/checkout` | Checkout Session |
-| POST | `/api/stripe/portal` | Customer Portal |
-| POST | `/api/stripe/sync-session` | Sync tras checkout |
+| Método            | Ruta                                          | Uso                                         |
+| ----------------- | --------------------------------------------- | ------------------------------------------- |
+| GET               | `/api/recipes`                                | Lista resúmenes (sin paginar)               |
+| POST              | `/api/recipes`                                | Crear receta                                |
+| GET               | `/api/recipes/:id`                            | Detalle completo                            |
+| PATCH             | `/api/recipes/:id`                            | Actualizar (reemplaza ingredientes)         |
+| DELETE            | `/api/recipes/:id`                            | Eliminar                                    |
+| POST              | `/api/recipes/:id/duplicate`                  | Duplicar                                    |
+| POST/PATCH/DELETE | `/api/recipes/:id/fixed-costs[/:fid]`         | Costos fijos de receta                      |
+| POST/PATCH/DELETE | `/api/recipes/:id/presentations[/:pid]`       | Presentaciones                              |
+| POST/PATCH/DELETE | `/api/presentations/:pid/fixed-costs[/:fcid]` | Costos fijos de presentación                |
+| GET/POST          | `/api/ingredients`                            | Listar / crear ingredientes                 |
+| PATCH/DELETE      | `/api/ingredients/:id`                        | Actualizar / eliminar (bloqueado si en uso) |
+| GET               | `/api/ingredients/:id/usage`                  | Recetas que usan el ingrediente             |
+| GET               | `/api/auth/session`                           | Sesión + suscripción (features)             |
+| GET/PUT           | `/api/preferences`                            | Preferencias de usuario                     |
+| GET               | `/api/billing/subscription`                   | Suscripción actual                          |
+| GET               | `/api/billing/plans`                          | Planes con features                         |
+| POST              | `/api/account/update-name`                    | Cambiar nombre (JSON)                       |
+| POST              | `/api/account/change-email`                   | Cambiar email (JSON)                        |
+| POST              | `/api/account/change-password`                | Cambiar contraseña (JSON)                   |
+| POST              | `/api/stripe/checkout`                        | Checkout Session                            |
+| POST              | `/api/stripe/portal`                          | Customer Portal                             |
+| POST              | `/api/stripe/sync-session`                    | Sync tras checkout                          |
 
 **Schemas**: todos los payloads de creación/actualización viven en
 `packages/types/src/api/` (`recipes.ts`, `ingredients.ts`) — validados con Zod.

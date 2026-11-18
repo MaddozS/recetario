@@ -1,5 +1,5 @@
-import { normalizeSearchText } from "#shared/utils/search";
-import type { ProductionCatalogRecipe } from "./production-types";
+import { normalizeSearchText } from '#shared/utils/search';
+import type { ProductionCatalogRecipe } from './production-types';
 
 /**
  * Agrupado y filtrado del selector de recetas.
@@ -24,14 +24,14 @@ export function groupRecipes(recipes: ReadonlyArray<ProductionCatalogRecipe>): {
 
   const byCategory = new Map<string, ProductionCatalogRecipe[]>();
   for (const recipe of recipes) {
-    const key = recipe.category || "Sin categoría";
+    const key = recipe.category || 'Sin categoría';
     const group = byCategory.get(key);
     if (group) group.push(recipe);
     else byCategory.set(key, [recipe]);
   }
 
   for (const group of byCategory.values()) {
-    group.sort((a, b) => a.name.localeCompare(b.name, "es"));
+    group.sort((a, b) => a.name.localeCompare(b.name, 'es'));
   }
 
   const groups = [...byCategory.entries()].map(([key, group]) => ({
@@ -45,7 +45,7 @@ export function groupRecipes(recipes: ReadonlyArray<ProductionCatalogRecipe>): {
 export function filterRecipeGroups(
   groups: ReadonlyArray<ProductionRecipeGroup>,
   query: string,
-  selectedIds: ReadonlySet<number>,
+  selectedIds: ReadonlySet<number>
 ): { groups: ProductionRecipeGroup[]; visibleCount: number } {
   const normalized = normalizeSearchText(query);
   let visibleCount = 0;
@@ -59,8 +59,7 @@ export function filterRecipeGroups(
         }
 
         const matches =
-          normalizeSearchText(recipe.name).includes(normalized) ||
-          selectedIds.has(recipe.id);
+          normalizeSearchText(recipe.name).includes(normalized) || selectedIds.has(recipe.id);
         if (matches) visibleCount++;
         return matches;
       });

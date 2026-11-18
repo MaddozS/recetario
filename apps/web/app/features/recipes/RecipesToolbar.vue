@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { toggleCategory } from "~/features/recipes/recipe-filters";
-import type { RecipeCategoryOption } from "~/features/recipes/recipe-filters";
+import { toggleCategory } from '~/features/recipes/recipe-filters';
+import type { RecipeCategoryOption } from '~/features/recipes/recipe-filters';
 
 /**
  * Cabecera del listado: título, búsqueda, botón de crear y pills de categoría.
@@ -18,57 +18,50 @@ const emit = defineEmits<{
   selectCategory: [value: string | null];
 }>();
 
-const search = defineModel<string>("search", { required: true });
+const search = defineModel<string>('search', { required: true });
 
 const BASE_PILL =
-  "inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-semibold transition-colors";
+  'inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-semibold transition-colors';
 
 const SEARCH_INPUT_CLASSES =
-  "bg-background border-border focus:ring-accent-500/20 focus:border-accent-500 placeholder:text-subtle-foreground w-full rounded-xl border py-2.5 pr-4 pl-10 text-sm transition-colors focus:outline-none focus:ring-2";
+  'bg-background border-border focus:ring-accent-500/20 focus:border-accent-500 placeholder:text-subtle-foreground w-full rounded-xl border py-2.5 pr-4 pl-10 text-sm transition-colors focus:outline-none focus:ring-2';
 
 function isActive(value: string): boolean {
   return props.category === value;
 }
 
 function pillClasses(value: string): string[] {
-  if (isActive(value))
-    return [BASE_PILL, "bg-accent-solid text-text-on-accent"];
+  if (isActive(value)) return [BASE_PILL, 'bg-accent-solid text-text-on-accent'];
 
   return [
     BASE_PILL,
-    value === ""
-      ? "bg-muted text-muted-foreground hover:bg-border border border-border"
-      : "bg-accent-50 text-accent-800 hover:bg-accent-100 border border-accent-200",
+    value === ''
+      ? 'bg-muted text-muted-foreground hover:bg-border border border-border'
+      : 'bg-accent-50 text-accent-800 hover:bg-accent-100 border border-accent-200',
   ];
 }
 
 function countClasses(value: string): string[] {
   const base =
-    "inline-flex min-w-5 items-center justify-center rounded-full px-1 text-[11px] font-bold";
+    'inline-flex min-w-5 items-center justify-center rounded-full px-1 text-[11px] font-bold';
 
-  if (isActive(value)) return [base, "bg-current/20"];
+  if (isActive(value)) return [base, 'bg-current/20'];
 
   return [
     base,
-    value === ""
-      ? "bg-border text-subtle-foreground"
-      : "bg-accent-200/50 text-accent-700",
+    value === '' ? 'bg-border text-subtle-foreground' : 'bg-accent-200/50 text-accent-700',
   ];
 }
 
 function select(value: string): void {
-  emit("selectCategory", toggleCategory(props.category, value));
+  emit('selectCategory', toggleCategory(props.category, value));
 }
 </script>
 
 <template>
   <div>
     <div class="mb-3 flex items-end justify-between gap-3">
-      <h2
-        class="text-muted-foreground text-sm font-bold tracking-[0.12em] uppercase"
-      >
-        Recetas
-      </h2>
+      <h2 class="text-muted-foreground text-sm font-bold tracking-[0.12em] uppercase">Recetas</h2>
     </div>
 
     <div class="mb-3 flex items-center gap-2">

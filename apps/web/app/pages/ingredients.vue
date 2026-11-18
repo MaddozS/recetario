@@ -1,22 +1,22 @@
 <script setup lang="ts">
-import type { IngredientRecord } from "~/features/ingredients/ingredient-state";
-import type { IngredientFormValues } from "~/features/ingredients/ingredient-form";
-import IngredientCreateCard from "~/features/ingredients/IngredientCreateCard.vue";
-import IngredientCreateDialog from "~/features/ingredients/IngredientCreateDialog.vue";
-import IngredientDeleteDialog from "~/features/ingredients/IngredientDeleteDialog.vue";
-import IngredientEditDialog from "~/features/ingredients/IngredientEditDialog.vue";
-import IngredientsListCard from "~/features/ingredients/IngredientsListCard.vue";
-import IngredientsSkeleton from "~/features/ingredients/IngredientsSkeleton.vue";
-import type { MutationOutcome } from "~/features/ingredients/useIngredients";
-import { useIngredients } from "~/features/ingredients/useIngredients";
+import type { IngredientRecord } from '~/features/ingredients/ingredient-state';
+import type { IngredientFormValues } from '~/features/ingredients/ingredient-form';
+import IngredientCreateCard from '~/features/ingredients/IngredientCreateCard.vue';
+import IngredientCreateDialog from '~/features/ingredients/IngredientCreateDialog.vue';
+import IngredientDeleteDialog from '~/features/ingredients/IngredientDeleteDialog.vue';
+import IngredientEditDialog from '~/features/ingredients/IngredientEditDialog.vue';
+import IngredientsListCard from '~/features/ingredients/IngredientsListCard.vue';
+import IngredientsSkeleton from '~/features/ingredients/IngredientsSkeleton.vue';
+import type { MutationOutcome } from '~/features/ingredients/useIngredients';
+import { useIngredients } from '~/features/ingredients/useIngredients';
 
 definePageMeta({
-  layout: "private",
-  middleware: "auth",
-  breadcrumbs: [{ label: "Ingredientes" }],
+  layout: 'private',
+  middleware: 'auth',
+  breadcrumbs: [{ label: 'Ingredientes' }],
 });
 
-useHead({ title: "Ingredientes | KitchCalc" });
+useHead({ title: 'Ingredientes | KitchCalc' });
 
 const {
   ingredients,
@@ -49,29 +49,25 @@ function openDelete(ingredient: IngredientRecord): void {
   deleteOpen.value = true;
 }
 
-async function submitCreate(
-  values: IngredientFormValues,
-): Promise<MutationOutcome> {
+async function submitCreate(values: IngredientFormValues): Promise<MutationOutcome> {
   const outcome = await createIngredient(values);
-  if (outcome.ok) feedback.value = "Ingrediente agregado correctamente.";
+  if (outcome.ok) feedback.value = 'Ingrediente agregado correctamente.';
   return outcome;
 }
 
-async function submitUpdate(
-  values: IngredientFormValues,
-): Promise<MutationOutcome> {
+async function submitUpdate(values: IngredientFormValues): Promise<MutationOutcome> {
   if (!editing.value) {
-    return { ok: false, message: "No se pudo identificar el ingrediente." };
+    return { ok: false, message: 'No se pudo identificar el ingrediente.' };
   }
 
   const outcome = await updateIngredient(editing.value.id, values);
-  if (outcome.ok) feedback.value = "Ingrediente actualizado correctamente.";
+  if (outcome.ok) feedback.value = 'Ingrediente actualizado correctamente.';
   return outcome;
 }
 
 async function submitDelete(ingredientId: number): Promise<MutationOutcome> {
   const outcome = await removeIngredient(ingredientId);
-  if (outcome.ok) feedback.value = "Ingrediente eliminado correctamente.";
+  if (outcome.ok) feedback.value = 'Ingrediente eliminado correctamente.';
   return outcome;
 }
 </script>
@@ -85,20 +81,12 @@ async function submitDelete(ingredientId: number): Promise<MutationOutcome> {
     <IngredientsSkeleton v-if="loading" />
 
     <Card v-else-if="loadFailed" padding="lg">
-      <FeedbackAlert
-        type="error"
-        message="No se pudieron cargar los ingredientes."
-      />
-      <Button variant="secondary" icon="refresh-cw" @click="refresh()">
-        Reintentar
-      </Button>
+      <FeedbackAlert type="error" message="No se pudieron cargar los ingredientes." />
+      <Button variant="secondary" icon="refresh-cw" @click="refresh()"> Reintentar </Button>
     </Card>
 
     <template v-else>
-      <IngredientCreateCard
-        :submit="submitCreate"
-        :submitting="mutation === 'create'"
-      />
+      <IngredientCreateCard :submit="submitCreate" :submitting="mutation === 'create'" />
 
       <IngredientsListCard
         v-model:search="searchQuery"

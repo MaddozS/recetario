@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { RecipeRecord } from "~/features/recipes/recipe-state";
-import RecipeActionsMenu from "~/features/recipes/RecipeActionsMenu.vue";
+import type { RecipeRecord } from '~/features/recipes/recipe-state';
+import RecipeActionsMenu from '~/features/recipes/RecipeActionsMenu.vue';
 
 /**
  * Card del grid de recetas. Paridad con `RecipeGridCard`: enlace al
@@ -45,9 +45,7 @@ const emit = defineEmits<{
             </Badge>
             <span class="text-muted-foreground text-xs">
               {{ recipe.ingredientCount }}
-              {{
-                recipe.ingredientCount === 1 ? "ingrediente" : "ingredientes"
-              }}
+              {{ recipe.ingredientCount === 1 ? 'ingrediente' : 'ingredientes' }}
             </span>
           </div>
         </div>

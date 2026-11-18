@@ -16,6 +16,7 @@ Cliente ideal: cocina y vende, hace de todo solo, y fija precios "a ojo".
 - Pequeños productores (mermeladas, salsas, pan de especialidad)
 
 **Dónde encontrarlos:**
+
 - Instagram y TikTok: busca hashtags de repostería/postres + tu ciudad
 - Grupos de Facebook de emprendedores de alimentos y repostería
 - Escuelas de repostería y cursos (profesores y alumnos avanzados)
@@ -53,6 +54,7 @@ Regla del primer contacto: **una pregunta, un beneficio, una invitación.** Nada
 > [Nombre que refirió] me pasó tu contacto. Ayudo a reposteros a saber si sus precios dejan ganancia de verdad o solo recuperan gastos. La herramienta es gratis para empezar. ¿Te parece si te muestro cómo funciona con una receta tuya?
 
 **Errores a evitar:**
+
 - Mandar el link sin contexto ni invitación a una demo guiada
 - Mencionar planes de pago en el primer mensaje
 - Insistir más de 2 veces sin respuesta (suelta y deja que el contenido te posicione)
@@ -75,6 +77,7 @@ Regla del primer contacto: **una pregunta, un beneficio, una invitación.** Nada
 6. Haz la pregunta y calla: **"¿Esperabas ese margen?"**
 
 **Tips:**
+
 - Usa siempre sus datos. Los datos de ejemplo no generan nada.
 - No recorras toda la app: receta → costo → margen. El resto lo descubrirá solo.
 - Si no puede en ese momento, agenda 15 min concretos ("mañana 6pm?"). "Luego lo veo" = nunca.
@@ -84,12 +87,12 @@ Regla del primer contacto: **una pregunta, un beneficio, una invitación.** Nada
 
 ## 5. Acompañar la prueba (primeros 7 días)
 
-| Día | Acción |
-|---|---|
-| 0 (día de la demo) | Gracias + link + recordatorio: "tienes 10 recetas y 30 ingredientes gratis, sin tarjeta" |
-| 2 | "¿Pudiste cargar [la receta]? ¿Cómo te fue con el margen?" |
-| 5 | Comparte un tip de costeo útil (contenido, no venta): ej. cómo incluir tu tiempo/hora de trabajo |
-| 7–8 | Si cargó 5+ recetas → conversación de plan (sección 6). Si no cargó nada → "¿Qué te faltó o qué trabó?" |
+| Día                | Acción                                                                                                  |
+| ------------------ | ------------------------------------------------------------------------------------------------------- |
+| 0 (día de la demo) | Gracias + link + recordatorio: "tienes 10 recetas y 30 ingredientes gratis, sin tarjeta"                |
+| 2                  | "¿Pudiste cargar [la receta]? ¿Cómo te fue con el margen?"                                              |
+| 5                  | Comparte un tip de costeo útil (contenido, no venta): ej. cómo incluir tu tiempo/hora de trabajo        |
+| 7–8                | Si cargó 5+ recetas → conversación de plan (sección 6). Si no cargó nada → "¿Qué te faltó o qué trabó?" |
 
 **Regla de oro:** la prueba solo vale si carga datos reales. Un registro sin recetas es un lead muerto; recupéralo ofreciendo cargar la primera receta juntos.
 
@@ -113,13 +116,13 @@ Nunca vendas "más funciones": vende el error de precio que evita. Y deja que el
 
 ## 7. Objeciones frecuentes
 
-| Objeción | Respuesta |
-|---|---|
-| "Ya uso Excel" | "Perfecto, Excel sirve. ¿Cuánto te toma actualizar un precio de harina en todas tus recetas? Aquí actualizas el ingrediente una vez y todas las recetas se recalculan." |
-| "No tengo tiempo" | "Por eso son 15 minutos conmigo: cargamos una receta juntos hoy y tú decides si sigue. Después de eso, mantenerlo te toma minutos." |
-| "Es caro" | "¿Cuánto perdiste la última vez que cobraste de menos sin saber tu costo real? Un solo precio corregido paga meses de la herramienta." |
-| "Lo probaré después" | "Va. ¿Te parece si te escribo el jueves para ver cómo te fue?" — siempre fecha concreta, nunca "después" abierto. |
-| "No le entiendo a la tecnología" | "Para eso estoy: lo hacemos juntos por llamada, pantalla compartida, y te queda cargada tu primera receta." |
+| Objeción                         | Respuesta                                                                                                                                                               |
+| -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| "Ya uso Excel"                   | "Perfecto, Excel sirve. ¿Cuánto te toma actualizar un precio de harina en todas tus recetas? Aquí actualizas el ingrediente una vez y todas las recetas se recalculan." |
+| "No tengo tiempo"                | "Por eso son 15 minutos conmigo: cargamos una receta juntos hoy y tú decides si sigue. Después de eso, mantenerlo te toma minutos."                                     |
+| "Es caro"                        | "¿Cuánto perdiste la última vez que cobraste de menos sin saber tu costo real? Un solo precio corregido paga meses de la herramienta."                                  |
+| "Lo probaré después"             | "Va. ¿Te parece si te escribo el jueves para ver cómo te fue?" — siempre fecha concreta, nunca "después" abierto.                                                       |
+| "No le entiendo a la tecnología" | "Para eso estoy: lo hacemos juntos por llamada, pantalla compartida, y te queda cargada tu primera receta."                                                             |
 
 ---
 
@@ -142,4 +145,4 @@ Mejora siempre el eslabón más débil, no todo a la vez: si nadie se registra, 
 
 ---
 
-*Los scripts están escritos para copiar/pegar y adaptar al tono de cada canal. La personalización mínima obligatoria: el nombre y un detalle real de su producto (sabor, presentación, foto).*
+_Los scripts están escritos para copiar/pegar y adaptar al tono de cada canal. La personalización mínima obligatoria: el nombre y un detalle real de su producto (sabor, presentación, foto)._

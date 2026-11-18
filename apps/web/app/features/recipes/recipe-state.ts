@@ -1,5 +1,5 @@
-import type { recipeSummarySchema } from "@recetario/types";
-import type { z } from "zod";
+import type { recipeSummarySchema } from '@recetario/types';
+import type { z } from 'zod';
 
 /**
  * Instantánea del listado de recetas y sus reducers.
@@ -23,17 +23,11 @@ export function emptyRecipesSnapshot(): RecipesSnapshot {
   return { recipes: [], usedIngredientCount: 0 };
 }
 
-export function withCreated(
-  snapshot: RecipesSnapshot,
-  created: RecipeRecord,
-): RecipesSnapshot {
+export function withCreated(snapshot: RecipesSnapshot, created: RecipeRecord): RecipesSnapshot {
   return { ...snapshot, recipes: [...snapshot.recipes, created] };
 }
 
-export function withRemoved(
-  snapshot: RecipesSnapshot,
-  recipeId: number,
-): RecipesSnapshot {
+export function withRemoved(snapshot: RecipesSnapshot, recipeId: number): RecipesSnapshot {
   return {
     ...snapshot,
     recipes: snapshot.recipes.filter((recipe) => recipe.id !== recipeId),

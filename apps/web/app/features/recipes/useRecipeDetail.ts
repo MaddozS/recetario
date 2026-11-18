@@ -1,4 +1,4 @@
-import { recipeWithIngredientsSchema } from "@recetario/types";
+import { recipeWithIngredientsSchema } from '@recetario/types';
 import {
   buildFinancialEditFields,
   addIngredientRow,
@@ -11,12 +11,8 @@ import {
   validateRecipeForm,
   buildUnitOptions,
   INVALID_ROWS_MESSAGE,
-} from "./recipe-detail-form";
-import type {
-  IngredientRow,
-  RecipeDetailForm,
-  RecipeDetailRecord,
-} from "./recipe-detail-form";
+} from './recipe-detail-form';
+import type { IngredientRow, RecipeDetailForm, RecipeDetailRecord } from './recipe-detail-form';
 import {
   clampPercentage,
   formatLastUpdated,
@@ -24,12 +20,12 @@ import {
   normalizeMultiplier,
   parseMultiplierParam,
   showAdjustedQuantity,
-} from "./recipe-detail-format";
-import { buildFinancialRows, calcularCostoDirecto } from "./recipe-financials";
-import { resolveRecipeMutationError } from "./recipe-messages";
-import type { MutationOutcome } from "./useRecipes";
-import { fetchRecipeDetailPage, recipeDetailKey } from "./recipe-detail-data";
-import type { RecipeDetailPageData } from "./recipe-detail-data";
+} from './recipe-detail-format';
+import { buildFinancialRows, calcularCostoDirecto } from './recipe-financials';
+import { resolveRecipeMutationError } from './recipe-messages';
+import type { MutationOutcome } from './useRecipes';
+import { fetchRecipeDetailPage, recipeDetailKey } from './recipe-detail-data';
+import type { RecipeDetailPageData } from './recipe-detail-data';
 
 /**
  * Datos, edición y mutaciones del detalle de receta.
@@ -41,26 +37,26 @@ import type { RecipeDetailPageData } from "./recipe-detail-data";
  * que el GET) como estado nuevo; el listado se refresca solo al remontar.
  */
 export const RECIPE_TABS = [
-  { id: "ingredientes", label: "Ingredientes" },
-  { id: "costos-fijos", label: "Costos Fijos" },
-  { id: "presentaciones", label: "Presentaciones" },
+  { id: 'ingredientes', label: 'Ingredientes' },
+  { id: 'costos-fijos', label: 'Costos Fijos' },
+  { id: 'presentaciones', label: 'Presentaciones' },
 ] as const;
 
-export const COMMENTS_STORAGE_KEY = "recetario.showComments";
-export const SAVED_FEEDBACK = "Receta guardada correctamente.";
+export const COMMENTS_STORAGE_KEY = 'recetario.showComments';
+export const SAVED_FEEDBACK = 'Receta guardada correctamente.';
 
 const BUSY_OUTCOME: MutationOutcome = {
   ok: false,
-  message: "Ya hay una operación en curso. Espera a que termine.",
+  message: 'Ya hay una operación en curso. Espera a que termine.',
 };
 
 export function useRecipeDetail() {
   const api = useApi();
   const route = useRoute();
   const { subscription, hasFeature } = useAuth();
-  const overlay = useState<string | null>("loading-overlay", () => null);
+  const overlay = useState<string | null>('loading-overlay', () => null);
 
-  const recipeId = computed(() => String(route.params.recipe ?? ""));
+  const recipeId = computed(() => String(route.params.recipe ?? ''));
 
   // ── Notas de ingredientes ───────────────────────────────────────────────
   const showComments = ref(false);
@@ -68,7 +64,7 @@ export function useRecipeDetail() {
   function setCommentsVisible(visible: boolean): void {
     showComments.value = visible;
     try {
-      localStorage.setItem(COMMENTS_STORAGE_KEY, visible ? "1" : "0");
+      localStorage.setItem(COMMENTS_STORAGE_KEY, visible ? '1' : '0');
     } catch {
       /* localStorage puede no estar disponible */
     }
@@ -76,7 +72,7 @@ export function useRecipeDetail() {
 
   onMounted(() => {
     try {
-      showComments.value = localStorage.getItem(COMMENTS_STORAGE_KEY) === "1";
+      showComments.value = localStorage.getItem(COMMENTS_STORAGE_KEY) === '1';
     } catch {
       showComments.value = false;
     }
@@ -89,18 +85,16 @@ export function useRecipeDetail() {
   const { data, refresh } = useAsyncData<RecipeDetailPageData>(
     recipeDetailKey(recipeId.value),
     () => fetchRecipeDetailPage(api, recipeId.value),
-    { default: () => ({ status: "idle" as const }), lazy: true },
+    { default: () => ({ status: 'idle' as const }), lazy: true }
   );
 
-  const recipe = computed(() =>
-    data.value.status === "ready" ? data.value.recipe : null,
-  );
+  const recipe = computed(() => (data.value.status === 'ready' ? data.value.recipe : null));
   const ingredientCatalog = computed(() =>
-    data.value.status === "ready" ? data.value.ingredients : [],
+    data.value.status === 'ready' ? data.value.ingredients : []
   );
-  const loading = computed(() => data.value.status === "idle");
-  const loadFailed = computed(() => data.value.status === "failed");
-  const notFound = computed(() => data.value.status === "notFound");
+  const loading = computed(() => data.value.status === 'idle');
+  const loadFailed = computed(() => data.value.status === 'failed');
+  const notFound = computed(() => data.value.status === 'notFound');
 
   /**
    * Único escritor del detalle: lo usan el guardado de la receta y las
@@ -109,7 +103,7 @@ export function useRecipeDetail() {
    */
   function applyRecipe(next: RecipeDetailRecord): void {
     data.value = {
-      status: "ready",
+      status: 'ready',
       recipe: next,
       ingredients: ingredientCatalog.value,
     };
@@ -120,10 +114,10 @@ export function useRecipeDetail() {
   const nextRowKey = () => `row-${++rowSequence}`;
 
   const form = reactive<RecipeDetailForm>({
-    name: "",
-    category: "",
-    desiredMargin: "0",
-    fixedCostsPercentage: "0",
+    name: '',
+    category: '',
+    desiredMargin: '0',
+    fixedCostsPercentage: '0',
     rows: [],
   });
 
@@ -144,22 +138,22 @@ export function useRecipeDetail() {
     (id) => {
       if (id !== null) resetForm();
     },
-    { immediate: true, flush: "sync" },
+    { immediate: true, flush: 'sync' }
   );
 
   // ── Modo de edición (?edit=true) ─────────────────────────────────────────
-  const isEditMode = computed(() => route.query.edit === "true");
+  const isEditMode = computed(() => route.query.edit === 'true');
 
   async function enterEdit(): Promise<void> {
     if (isEditMode.value) return;
     resetForm();
-    await navigateTo({ query: { ...route.query, edit: "true" } });
+    await navigateTo({ query: { ...route.query, edit: 'true' } });
   }
 
   async function exitEdit(options: { replace?: boolean } = {}): Promise<void> {
     await navigateTo(
       { query: { ...route.query, edit: undefined } },
-      options.replace ? { replace: true } : undefined,
+      options.replace ? { replace: true } : undefined
     );
   }
 
@@ -169,9 +163,7 @@ export function useRecipeDetail() {
   }
 
   // ── Multiplicador (?multiplier=) ────────────────────────────────────────
-  const multiplier = computed(() =>
-    parseMultiplierParam(route.query.multiplier),
-  );
+  const multiplier = computed(() => parseMultiplierParam(route.query.multiplier));
   const adjusted = computed(() => showAdjustedQuantity(multiplier.value));
   const multiplierStep = computed(() => multiplierStepFor(multiplier.value));
 
@@ -189,8 +181,8 @@ export function useRecipeDetail() {
 
   // ── Tabs (#hash) ────────────────────────────────────────────────────────
   const activeTab = computed(() => {
-    const hash = route.hash.replace("#", "");
-    return RECIPE_TABS.some((tab) => tab.id === hash) ? hash : "ingredientes";
+    const hash = route.hash.replace('#', '');
+    return RECIPE_TABS.some((tab) => tab.id === hash) ? hash : 'ingredientes';
   });
 
   async function selectTab(id: string): Promise<void> {
@@ -200,32 +192,28 @@ export function useRecipeDetail() {
 
   // ── Derivados de la vista ───────────────────────────────────────────────
   const unitOptions = computed(() =>
-    buildUnitOptions(ingredientCatalog.value, recipe.value?.ingredients ?? []),
+    buildUnitOptions(ingredientCatalog.value, recipe.value?.ingredients ?? [])
   );
 
-  const hasAdvancedCosts = computed(() => hasFeature("advanced_costs"));
-  const financialEditFields = computed(() =>
-    buildFinancialEditFields(hasAdvancedCosts.value),
-  );
+  const hasAdvancedCosts = computed(() => hasFeature('advanced_costs'));
+  const financialEditFields = computed(() => buildFinancialEditFields(hasAdvancedCosts.value));
 
   const desiredMarginValue = computed(() =>
     clampPercentage(
-      isEditMode.value
-        ? parseDecimal(form.desiredMargin)
-        : (recipe.value?.desiredMargin ?? 0),
-      99.99,
-    ),
+      isEditMode.value ? parseDecimal(form.desiredMargin) : (recipe.value?.desiredMargin ?? 0),
+      99.99
+    )
   );
   const fixedCostsPercentageValue = computed(() =>
     clampPercentage(
       isEditMode.value
         ? parseDecimal(form.fixedCostsPercentage)
-        : (recipe.value?.fixedCostsPercentage ?? 0),
-    ),
+        : (recipe.value?.fixedCostsPercentage ?? 0)
+    )
   );
 
   const costoDirectoTotal = computed(() =>
-    calcularCostoDirecto(recipe.value?.ingredients ?? [], multiplier.value),
+    calcularCostoDirecto(recipe.value?.ingredients ?? [], multiplier.value)
   );
 
   const financialRows = computed(() =>
@@ -236,12 +224,10 @@ export function useRecipeDetail() {
       multiplier: multiplier.value,
       fixedCostsPercentageValue: fixedCostsPercentageValue.value,
       desiredMarginValue: desiredMarginValue.value,
-    }),
+    })
   );
 
-  const updatedText = computed(() =>
-    formatLastUpdated(recipe.value?.updatedAt),
-  );
+  const updatedText = computed(() => formatLastUpdated(recipe.value?.updatedAt));
 
   // ── Filas del editor ────────────────────────────────────────────────────
   /** Filas señaladas tras un intento de guardado inválido. */
@@ -257,17 +243,14 @@ export function useRecipeDetail() {
     invalidRowKeys.value = [];
   }
 
-  function patchRow(
-    index: number,
-    patch: Partial<Omit<IngredientRow, "key">>,
-  ): void {
+  function patchRow(index: number, patch: Partial<Omit<IngredientRow, 'key'>>): void {
     form.rows = updateIngredientRow(form.rows, index, patch);
     invalidRowKeys.value = [];
   }
 
   // ── Mutaciones ──────────────────────────────────────────────────────────
   const saving = ref(false);
-  const busy = ref<"delete" | "duplicate" | null>(null);
+  const busy = ref<'delete' | 'duplicate' | null>(null);
   const formError = ref<string | null>(null);
   const feedback = ref<string | null>(null);
 
@@ -290,17 +273,14 @@ export function useRecipeDetail() {
     saving.value = true;
     formError.value = null;
     invalidRowKeys.value = [];
-    overlay.value = "Guardando receta…";
+    overlay.value = 'Guardando receta…';
 
     try {
-      const updated = await api<RecipeDetailRecord>(
-        `/api/recipes/${current.id}`,
-        {
-          method: "PATCH",
-          body: toRecipeUpdatePayload(form, current),
-          schema: recipeWithIngredientsSchema,
-        },
-      );
+      const updated = await api<RecipeDetailRecord>(`/api/recipes/${current.id}`, {
+        method: 'PATCH',
+        body: toRecipeUpdatePayload(form, current),
+        schema: recipeWithIngredientsSchema,
+      });
 
       applyRecipe(updated);
 
@@ -310,7 +290,7 @@ export function useRecipeDetail() {
       feedback.value = SAVED_FEEDBACK;
     } catch (cause) {
       formError.value = resolveRecipeMutationError(cause, {
-        action: "update",
+        action: 'update',
         limit: planLimit.value,
       }).message;
     } finally {
@@ -319,23 +299,21 @@ export function useRecipeDetail() {
     }
   }
 
-  async function removeRecipe(
-    recipeIdToRemove: number,
-  ): Promise<MutationOutcome> {
+  async function removeRecipe(recipeIdToRemove: number): Promise<MutationOutcome> {
     if (busy.value !== null) return BUSY_OUTCOME;
 
-    busy.value = "delete";
-    overlay.value = "Eliminando receta…";
+    busy.value = 'delete';
+    overlay.value = 'Eliminando receta…';
 
     try {
-      await api(`/api/recipes/${recipeIdToRemove}`, { method: "DELETE" });
-      await navigateTo("/recipes");
+      await api(`/api/recipes/${recipeIdToRemove}`, { method: 'DELETE' });
+      await navigateTo('/recipes');
       return { ok: true, id: recipeIdToRemove };
     } catch (cause) {
       return {
         ok: false,
         ...resolveRecipeMutationError(cause, {
-          action: "delete",
+          action: 'delete',
           limit: planLimit.value,
         }),
       };
@@ -345,18 +323,16 @@ export function useRecipeDetail() {
     }
   }
 
-  async function duplicateRecipe(
-    recipeIdToDuplicate: number,
-  ): Promise<MutationOutcome> {
+  async function duplicateRecipe(recipeIdToDuplicate: number): Promise<MutationOutcome> {
     if (busy.value !== null) return BUSY_OUTCOME;
 
-    busy.value = "duplicate";
-    overlay.value = "Duplicando receta…";
+    busy.value = 'duplicate';
+    overlay.value = 'Duplicando receta…';
 
     try {
       const duplicated = await api<RecipeDetailRecord>(
         `/api/recipes/${recipeIdToDuplicate}/duplicate`,
-        { method: "POST", schema: recipeWithIngredientsSchema },
+        { method: 'POST', schema: recipeWithIngredientsSchema }
       );
 
       await navigateTo(`/recipes/${duplicated.id}?edit=true`);
@@ -365,7 +341,7 @@ export function useRecipeDetail() {
       return {
         ok: false,
         ...resolveRecipeMutationError(cause, {
-          action: "duplicate",
+          action: 'duplicate',
           limit: planLimit.value,
         }),
       };

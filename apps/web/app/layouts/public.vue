@@ -19,9 +19,12 @@
 
 <style>
 /* Estilos del shell público (antes en el `<style is:global>` del
-   `LandingLayout` del baseline): scroll suave, reveals, hovers de tarjetas y el pulso
-   del plan Pro. Los `reveal-item` se revelan cuando su contenedor `[data-reveal]`
-   recibe `reveal-visible` (directiva `v-reveal`). */
+   `LandingLayout` del baseline): scroll suave, reveals, hovers de las cards de
+   plan y el pulso del plan Pro. Los `reveal-item` se revelan cuando su
+   contenedor `[data-reveal]` recibe `reveal-visible` (directiva `v-reveal`).
+   El fondo del hero y su patrón de líneas se retiraron con el rediseño: el hero
+   es plano, así que las clases, su variable y el hover `card-hover` (sin ningún
+   consumidor) ya no se declaran. */
 html {
   scroll-behavior: smooth;
 }
@@ -37,18 +40,16 @@ html {
     opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
     transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
-[data-reveal]:not([data-reveal="left"]):not([data-reveal="right"]):not(
-    [data-reveal="scale"]
-  ) {
+[data-reveal]:not([data-reveal='left']):not([data-reveal='right']):not([data-reveal='scale']) {
   transform: translateY(28px);
 }
-[data-reveal="left"] {
+[data-reveal='left'] {
   transform: translateX(-30px);
 }
-[data-reveal="right"] {
+[data-reveal='right'] {
   transform: translateX(30px);
 }
-[data-reveal="scale"] {
+[data-reveal='scale'] {
   transform: scale(0.94);
 }
 [data-reveal].reveal-visible {
@@ -79,46 +80,18 @@ html {
 }
 
 :root {
-  --card-hover-shadow:
-    0 12px 40px -8px rgb(0 0 0 / 0.12), 0 0 0 1px var(--aw-accent-200);
-  --pricing-hover-shadow:
-    0 16px 48px -12px rgb(0 0 0 / 0.12), 0 4px 12px -4px rgb(0 0 0 / 0.06);
+  --pricing-hover-shadow: 0 16px 48px -12px rgb(0 0 0 / 0.12), 0 4px 12px -4px rgb(0 0 0 / 0.06);
   --pricing-pro-hover-shadow:
     0 20px 56px -12px color-mix(in srgb, var(--aw-accent-500) 25%, transparent),
     0 4px 16px -4px color-mix(in srgb, var(--aw-accent-500) 12%, transparent);
-  --hero-pattern-color: color-mix(
-    in srgb,
-    var(--aw-accent-500) 10%,
-    transparent
-  );
 }
 .dark {
-  --card-hover-shadow:
-    0 12px 40px -8px rgb(0 0 0 / 0.4), 0 0 0 1px var(--aw-accent-300);
   --pricing-hover-shadow:
     0 16px 48px -12px rgb(0 0 0 / 0.4),
     0 4px 12px -4px color-mix(in srgb, var(--aw-accent-500) 15%, transparent);
   --pricing-pro-hover-shadow:
-    0 20px 56px -12px
-      color-mix(in srgb, var(--aw-accent-500) 35%, transparent),
+    0 20px 56px -12px color-mix(in srgb, var(--aw-accent-500) 35%, transparent),
     0 4px 16px -4px color-mix(in srgb, var(--aw-accent-500) 15%, transparent);
-  --hero-pattern-color: color-mix(
-    in srgb,
-    var(--aw-accent-400) 12%,
-    transparent
-  );
-}
-
-.card-hover {
-  transition:
-    transform 0.25s cubic-bezier(0.23, 1, 0.32, 1),
-    box-shadow 0.25s cubic-bezier(0.23, 1, 0.32, 1),
-    border-color 0.25s cubic-bezier(0.23, 1, 0.32, 1);
-}
-.card-hover:hover {
-  transform: translateY(-6px);
-  border-color: var(--aw-accent-200, #c7d2fe);
-  box-shadow: var(--card-hover-shadow);
 }
 
 .pricing-card-hover {
@@ -142,33 +115,6 @@ html {
     transform: scale(1.05) translateY(-4px);
     box-shadow: var(--pricing-pro-hover-shadow);
   }
-}
-
-.hero-bg {
-  isolation: isolate;
-  background:
-    radial-gradient(
-      ellipse 80% 60% at 30% 40%,
-      color-mix(in oklab, var(--aw-accent-200) 55%, transparent) 0%,
-      transparent 70%
-    ),
-    radial-gradient(
-      ellipse 60% 50% at 70% 60%,
-      color-mix(in oklab, var(--aw-accent-300) 40%, transparent) 0%,
-      transparent 60%
-    ),
-    var(--tw-bg);
-}
-
-.hero-pattern {
-  background-image: repeating-linear-gradient(
-    45deg,
-    transparent,
-    transparent 48px,
-    var(--hero-pattern-color) 48px,
-    var(--hero-pattern-color) 49px
-  );
-  background-size: 69px 69px;
 }
 
 .plan-pro {

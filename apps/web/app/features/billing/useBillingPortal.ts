@@ -1,5 +1,5 @@
-import { z } from "zod";
-import { resolvePortalError } from "./billing-messages";
+import { z } from 'zod';
+import { resolvePortalError } from './billing-messages';
 
 const portalResponseSchema = z.object({ url: z.string() });
 
@@ -21,8 +21,8 @@ export function useBillingPortal() {
     error.value = null;
 
     try {
-      const { url } = await api("/api/stripe/portal", {
-        method: "POST",
+      const { url } = await api('/api/stripe/portal', {
+        method: 'POST',
         schema: portalResponseSchema,
       });
       window.location.href = url;

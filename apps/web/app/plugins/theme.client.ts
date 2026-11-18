@@ -4,12 +4,12 @@
  * DOM (el script anti-FOUC ya resolvió la clase antes del primer paint).
  */
 export default defineNuxtPlugin(() => {
-  if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
     return;
   }
 
   const { setPrefersDark } = useTheme();
-  const media = window.matchMedia("(prefers-color-scheme: dark)");
+  const media = window.matchMedia('(prefers-color-scheme: dark)');
   setPrefersDark(media.matches);
-  media.addEventListener("change", (event) => setPrefersDark(event.matches));
+  media.addEventListener('change', (event) => setPrefersDark(event.matches));
 });

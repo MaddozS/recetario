@@ -14,7 +14,7 @@ The private surface accumulated imperative DOM machinery — MutationObservers, 
 
 ### Framework
 
-`apps/web` becomes Nuxt 4 + Vue, transforming the existing app in place rather than building a parallel one. The selection is a deliberate override of the research's recommendation (see *Deviation* below), justified by Vue's fit for rewriting imperative DOM code as declarative state and by the legibility goal driving the rework.
+`apps/web` becomes Nuxt 4 + Vue, transforming the existing app in place rather than building a parallel one. The selection is a deliberate override of the research's recommendation (see _Deviation_ below), justified by Vue's fit for rewriting imperative DOM code as declarative state and by the legibility goal driving the rework.
 
 Architecture inside `apps/web`:
 
@@ -46,19 +46,19 @@ Mutations run against Hono; Nuxt only anticipates the error (`pending`, contextu
 
 The full evaluation, with primary sources, is in `docs/research/frontend-framework-comparison.md`. Summary of the four candidates:
 
-- **React Router 8 (Framework Mode)** — *the research's recommendation.* Best combined risk profile: loaders/actions/`<Form>`/fetchers map cleanly onto a Hono backend behind a service binding, Cloudflare maintains a first-party integration, and React maximizes ecosystem and hiring optionality.
+- **React Router 8 (Framework Mode)** — _the research's recommendation._ Best combined risk profile: loaders/actions/`<Form>`/fetchers map cleanly onto a Hono backend behind a service binding, Cloudflare maintains a first-party integration, and React maximizes ecosystem and hiring optionality.
 - **SvelteKit 2** — the cleanest technical fit for rewriting imperative DOM code, with an official Cloudflare adapter exposing `platform.env`; ranked second on ecosystem/hiring depth and on API churn (remote functions).
-- **Nuxt 4** — technically sound and productive, with a strong head/SEO system, `useAsyncData`/`useFetch`, server-side access to Cloudflare bindings through Nitro, and a documented Better Auth integration. Ranked third because adopting Vue from scratch was judged to add no decisive advantage *on technical merits alone*.
+- **Nuxt 4** — technically sound and productive, with a strong head/SEO system, `useAsyncData`/`useFetch`, server-side access to Cloudflare bindings through Nitro, and a documented Better Auth integration. Ranked third because adopting Vue from scratch was judged to add no decisive advantage _on technical merits alone_.
 - **Next.js 16** — the most complete metadata ecosystem and the strongest hiring pool, rejected because its full model presumes broad platform capabilities and would need an adapter (OpenNext) over Cloudflare Workers plus an extra caching/image/middleware translation layer, against a backend that stays Hono.
 
-**Deviation.** This ADR knowingly rejects the research's recommendation. The research ranked frameworks on aggregate technical and organizational risk; it did not weight *legibility of the resulting code* as the primary objective. The rework's stated goal is readability of a data-heavy, frequently-mutating UI — Nuxt/Vue was chosen on that basis, with React's larger ecosystem explicitly not treated as a sufficient reason to adopt a model the team prefers less. SEO was handled as a cross-cutting requirement rather than a selection criterion.
+**Deviation.** This ADR knowingly rejects the research's recommendation. The research ranked frameworks on aggregate technical and organizational risk; it did not weight _legibility of the resulting code_ as the primary objective. The rework's stated goal is readability of a data-heavy, frequently-mutating UI — Nuxt/Vue was chosen on that basis, with React's larger ecosystem explicitly not treated as a sufficient reason to adopt a model the team prefers less. SEO was handled as a cross-cutting requirement rather than a selection criterion.
 
 ## Consequences
 
 - The Astro implementation survives in-repo as reference only until the cutover; it is never a second production runtime.
 - `AGENTS.md`, `README`, `DEPLOY` and current QA/docs are updated during the cutover; historical Astro documentation is identified as such rather than silently rewritten.
 - The web bundle must stay free of server-only code (Prisma, `pg`, WASM) and of `@recetario/db`.
-- The `apps/api` Hono worker carries CSRF, creation limits and the `recipe_duplicate` feature gate as *authoritative* checks. The UI only anticipates them — a UI-only gate would be bypassable by calling the API directly.
+- The `apps/api` Hono worker carries CSRF, creation limits and the `recipe_duplicate` feature gate as _authoritative_ checks. The UI only anticipates them — a UI-only gate would be bypassable by calling the API directly.
 - Private routes default to `Cache-Control: private, no-store` with no shared CDN cache; entitlements stay uncached.
 - Rollback is a redeploy of the last Astro commit/artifact. There is no destructive database migration tied to the frontend cutover.
 - Introducing Pinia or a separate UI package remains an explicit non-goal until a real need is demonstrated.

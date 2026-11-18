@@ -22,7 +22,7 @@ export type RecipeStats = {
 
 export function recipeStats<T extends RecipeStatsSource>(
   recipes: readonly T[],
-  usedIngredientCount: number,
+  usedIngredientCount: number
 ): RecipeStats {
   const categories = new Set<string>();
 
@@ -34,17 +34,14 @@ export function recipeStats<T extends RecipeStatsSource>(
     recipeCount: recipes.length,
     categoryCount: categories.size,
     ingredientCount: usedIngredientCount,
-    incompleteCount: recipes.filter((recipe) => recipe.ingredientCount === 0)
-      .length,
+    incompleteCount: recipes.filter((recipe) => recipe.ingredientCount === 0).length,
     withoutCategoryCount: recipes.filter((recipe) => !recipe.category).length,
     lastUpdatedAt: lastUpdatedAt(recipes),
   };
 }
 
 /** ISO más reciente de la lista (comparación lexicográfica, como el baseline). */
-export function lastUpdatedAt(
-  recipes: readonly RecipeStatsSource[],
-): string | null {
+export function lastUpdatedAt(recipes: readonly RecipeStatsSource[]): string | null {
   return recipes.reduce<string | null>((latest, recipe) => {
     const value = recipe.updatedAt;
     if (!value) return latest;
@@ -53,18 +50,12 @@ export function lastUpdatedAt(
 }
 
 /** Las últimas `limit` recetas actualizadas; las que no tienen fecha no entran. */
-export function recentRecipes<T extends RecipeStatsSource>(
-  recipes: readonly T[],
-  limit = 5,
-): T[] {
+export function recentRecipes<T extends RecipeStatsSource>(recipes: readonly T[], limit = 5): T[] {
   return recipes
     .filter(
       (recipe): recipe is T & { updatedAt: string } =>
-        typeof recipe.updatedAt === "string" && recipe.updatedAt.length > 0,
+        typeof recipe.updatedAt === 'string' && recipe.updatedAt.length > 0
     )
-    .sort(
-      (a, b) =>
-        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
-    )
+    .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
     .slice(0, limit);
 }

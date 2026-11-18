@@ -29,9 +29,9 @@ Extend in individual package `tsconfig.json`:
 One-liner for lazy, singleton-guarded, HMR-safe client initialization.
 
 ```ts
-import { lazyInit } from "@recetario/config/lazy";
+import { lazyInit } from '@recetario/config/lazy';
 
-export const prisma = lazyInit("prisma", () => new PrismaClient());
+export const prisma = lazyInit('prisma', () => new PrismaClient());
 ```
 
 - First property access calls `initFn` and caches the result.

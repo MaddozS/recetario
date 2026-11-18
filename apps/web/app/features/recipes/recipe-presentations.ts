@@ -1,7 +1,7 @@
-import type { presentationSchema } from "@recetario/types";
-import type { z } from "zod";
-import { parseDecimal } from "./recipe-detail-form";
-import type { RecipeFormValidation } from "./recipe-detail-form";
+import type { presentationSchema } from '@recetario/types';
+import type { z } from 'zod';
+import { parseDecimal } from './recipe-detail-form';
+import type { RecipeFormValidation } from './recipe-detail-form';
 
 /**
  * Presentaciones de venta: modelo del formulario, validación, payloads,
@@ -16,9 +16,7 @@ import type { RecipeFormValidation } from "./recipe-detail-form";
  * detalle del API ya los devuelve.
  */
 export type PresentationRecord = z.infer<typeof presentationSchema>;
-export type PresentationFixedCost = NonNullable<
-  PresentationRecord["fixedCosts"]
->[number];
+export type PresentationFixedCost = NonNullable<PresentationRecord['fixedCosts']>[number];
 
 export type PresentationDraft = {
   name: string;
@@ -30,14 +28,11 @@ export type PresentationDraft = {
   priceDirty: boolean;
 };
 
-export const PRESENTATION_NAME_ERROR =
-  "El nombre de la presentación es obligatorio.";
-export const PRESENTATION_UNITS_ERROR =
-  "Las piezas por mezcla deben ser mayores a 0.";
-export const PRESENTATION_PRICE_ERROR =
-  "El precio de venta debe ser 0 o mayor.";
+export const PRESENTATION_NAME_ERROR = 'El nombre de la presentación es obligatorio.';
+export const PRESENTATION_UNITS_ERROR = 'Las piezas por mezcla deben ser mayores a 0.';
+export const PRESENTATION_PRICE_ERROR = 'El precio de venta debe ser 0 o mayor.';
 
-export type MarginTone = "success" | "warning" | "danger";
+export type MarginTone = 'success' | 'warning' | 'danger';
 
 export function formatPrice(value: number): string {
   return value.toFixed(2);
@@ -85,11 +80,11 @@ export function computePresentationFixedCostsTotal(
   fixedCosts: ReadonlyArray<{ type: string; base: string; value: number }>,
   unitsPerBatch: number,
   multiplier: number,
-  recipeBatchCost: number,
+  recipeBatchCost: number
 ): number {
   return fixedCosts.reduce((sum, fc) => {
-    if (fc.type === "AMOUNT") {
-      if (fc.base === "PER_UNIT") {
+    if (fc.type === 'AMOUNT') {
+      if (fc.base === 'PER_UNIT') {
         return sum + fc.value * unitsPerBatch * multiplier;
       }
       return sum + fc.value * multiplier;
@@ -102,18 +97,12 @@ export function computePresentationFixedCostsTotal(
  * Importes por pieza de una presentación. Los umbrales de la etiqueta de margen
  * son los del baseline: `>= 35` saludable, `>= 20` medio, si no bajo.
  */
-export function computePresentationMetrics(
-  input: PresentationMetricsInput,
-): PresentationMetrics {
-  const recipeBatchCost = Number.isFinite(input.recipeBatchCost)
-    ? input.recipeBatchCost
-    : 0;
+export function computePresentationMetrics(input: PresentationMetricsInput): PresentationMetrics {
+  const recipeBatchCost = Number.isFinite(input.recipeBatchCost) ? input.recipeBatchCost : 0;
   const suggestedBatchPrice = Number.isFinite(input.suggestedBatchPrice)
     ? input.suggestedBatchPrice
     : 0;
-  const unitsPerBatch = Number.isFinite(input.unitsPerBatch)
-    ? input.unitsPerBatch
-    : 0;
+  const unitsPerBatch = Number.isFinite(input.unitsPerBatch) ? input.unitsPerBatch : 0;
   const multiplier = Number.isFinite(input.multiplier) ? input.multiplier : 0;
 
   const totalUnits = unitsPerBatch * multiplier;
@@ -123,37 +112,34 @@ export function computePresentationMetrics(
     input.presentationFixedCosts ?? [],
     unitsPerBatch,
     multiplier,
-    recipeBatchCost,
+    recipeBatchCost
   );
   const effectiveBatchCost = recipeBatchCost + fixedCostsTotal;
   const effectiveRecommendedBatch = suggestedBatchPrice + fixedCostsTotal;
 
   const unitCost = hasUnits ? effectiveBatchCost / totalUnits : 0;
-  const unitPriceRecommended = hasUnits
-    ? effectiveRecommendedBatch / totalUnits
-    : 0;
+  const unitPriceRecommended = hasUnits ? effectiveRecommendedBatch / totalUnits : 0;
 
   const rawSalePrice = input.salePrice.trim();
   const parsedSalePrice = parseDecimal(rawSalePrice);
   const effectiveSalePrice =
-    rawSalePrice === ""
+    rawSalePrice === ''
       ? unitPriceRecommended
       : Number.isFinite(parsedSalePrice)
         ? parsedSalePrice
         : 0;
 
   const unitProfit = effectiveSalePrice - unitCost;
-  const marginPercent =
-    effectiveSalePrice > 0 ? (unitProfit / effectiveSalePrice) * 100 : 0;
+  const marginPercent = effectiveSalePrice > 0 ? (unitProfit / effectiveSalePrice) * 100 : 0;
 
-  let marginLabel = "Bajo";
-  let marginTone: MarginTone = "danger";
+  let marginLabel = 'Bajo';
+  let marginTone: MarginTone = 'danger';
   if (marginPercent >= 35) {
-    marginLabel = "Saludable";
-    marginTone = "success";
+    marginLabel = 'Saludable';
+    marginTone = 'success';
   } else if (marginPercent >= 20) {
-    marginLabel = "Medio";
-    marginTone = "warning";
+    marginLabel = 'Medio';
+    marginTone = 'warning';
   }
 
   return {
@@ -175,22 +161,18 @@ export function computePresentationMetrics(
  * un importe calculado.
  */
 export function presentationDraftFromRecord(
-  record: Pick<PresentationRecord, "name" | "unitsPerBatch" | "salePrice">,
-  suggestedUnitPrice: number,
+  record: Pick<PresentationRecord, 'name' | 'unitsPerBatch' | 'salePrice'>,
+  suggestedUnitPrice: number
 ): PresentationDraft {
   return {
     name: record.name,
     unitsPerBatch: String(record.unitsPerBatch),
-    salePrice: formatPrice(
-      record.salePrice != null ? record.salePrice : suggestedUnitPrice,
-    ),
+    salePrice: formatPrice(record.salePrice != null ? record.salePrice : suggestedUnitPrice),
     priceDirty: false,
   };
 }
 
-export function validatePresentationDraft(
-  draft: PresentationDraft,
-): RecipeFormValidation {
+export function validatePresentationDraft(draft: PresentationDraft): RecipeFormValidation {
   const name = draft.name.trim();
   if (name.length === 0 || name.length > 120) {
     return { valid: false, message: PRESENTATION_NAME_ERROR };
@@ -202,7 +184,7 @@ export function validatePresentationDraft(
   }
 
   const rawSalePrice = draft.salePrice.trim();
-  if (rawSalePrice !== "") {
+  if (rawSalePrice !== '') {
     const salePrice = parseDecimal(rawSalePrice);
     if (!Number.isFinite(salePrice) || salePrice < 0) {
       return { valid: false, message: PRESENTATION_PRICE_ERROR };
@@ -226,15 +208,13 @@ export type PresentationUpdatePayload = {
 };
 
 /** Precio vacío en el alta = sin precio declarado (el API guarda `null`). */
-export function toPresentationCreatePayload(
-  draft: PresentationDraft,
-): PresentationCreatePayload {
+export function toPresentationCreatePayload(draft: PresentationDraft): PresentationCreatePayload {
   const rawSalePrice = draft.salePrice.trim();
 
   return {
     name: draft.name.trim(),
     unitsPerBatch: parseDecimal(draft.unitsPerBatch),
-    ...(rawSalePrice === "" ? {} : { salePrice: parseDecimal(rawSalePrice) }),
+    ...(rawSalePrice === '' ? {} : { salePrice: parseDecimal(rawSalePrice) }),
   };
 }
 
@@ -242,16 +222,14 @@ export function toPresentationCreatePayload(
  * El `PATCH` sólo manda `salePrice` si el usuario tocó el campo: así el precio
  * sugerido que se muestra de arranque no se persiste por accidente.
  */
-export function toPresentationUpdatePayload(
-  draft: PresentationDraft,
-): PresentationUpdatePayload {
+export function toPresentationUpdatePayload(draft: PresentationDraft): PresentationUpdatePayload {
   const rawSalePrice = draft.salePrice.trim();
 
   return {
     name: draft.name.trim(),
     unitsPerBatch: parseDecimal(draft.unitsPerBatch),
     ...(draft.priceDirty
-      ? { salePrice: rawSalePrice === "" ? null : parseDecimal(rawSalePrice) }
+      ? { salePrice: rawSalePrice === '' ? null : parseDecimal(rawSalePrice) }
       : {}),
   };
 }
@@ -262,7 +240,7 @@ export function toPresentationUpdatePayload(
  */
 export function mergePresentationResponse(
   previous: PresentationRecord | undefined,
-  response: PresentationRecord,
+  response: PresentationRecord
 ): PresentationRecord {
   const fixedCosts = response.fixedCosts ?? previous?.fixedCosts;
 
@@ -274,27 +252,23 @@ export function mergePresentationResponse(
 
 export function withPresentationCreated(
   presentations: ReadonlyArray<PresentationRecord>,
-  created: PresentationRecord,
+  created: PresentationRecord
 ): PresentationRecord[] {
   return [...presentations, mergePresentationResponse(undefined, created)];
 }
 
 export function withPresentationUpdated(
   presentations: ReadonlyArray<PresentationRecord>,
-  updated: PresentationRecord,
+  updated: PresentationRecord
 ): PresentationRecord[] {
   return presentations.map((presentation) =>
-    presentation.id === updated.id
-      ? mergePresentationResponse(presentation, updated)
-      : presentation,
+    presentation.id === updated.id ? mergePresentationResponse(presentation, updated) : presentation
   );
 }
 
 export function withPresentationRemoved(
   presentations: ReadonlyArray<PresentationRecord>,
-  presentationId: number,
+  presentationId: number
 ): PresentationRecord[] {
-  return presentations.filter(
-    (presentation) => presentation.id !== presentationId,
-  );
+  return presentations.filter((presentation) => presentation.id !== presentationId);
 }

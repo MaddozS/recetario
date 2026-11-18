@@ -1,11 +1,8 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from "vue";
-import type { ProductionRecipeGroup } from "./production-catalog";
-import ProductionRecipeRow from "./ProductionRecipeRow.vue";
-import type {
-  ProductionCatalogRecipe,
-  ProductionSelection,
-} from "./production-types";
+import { computed, onMounted, ref, watch } from 'vue';
+import type { ProductionRecipeGroup } from './production-catalog';
+import ProductionRecipeRow from './ProductionRecipeRow.vue';
+import type { ProductionCatalogRecipe, ProductionSelection } from './production-types';
 
 /**
  * Selector de recetas: contador, «Seleccionar todas» con indeterminado,
@@ -28,28 +25,22 @@ const props = defineProps<{
 const emit = defineEmits<{
   toggle: [recipeId: number];
   toggleAll: [checked: boolean];
-  "update:batches": [recipeId: number, value: string];
+  'update:batches': [recipeId: number, value: string];
   stepBatches: [recipeId: number, direction: 1 | -1];
-  "update:presentation": [recipeId: number, presentationId: number];
+  'update:presentation': [recipeId: number, presentationId: number];
   calculate: [];
 }>();
 
-const search = defineModel<string>("search", { required: true });
+const search = defineModel<string>('search', { required: true });
 
 const SEARCH_INPUT_CLASSES =
-  "bg-background border-border focus:ring-accent-500/20 focus:border-accent-500 placeholder:text-subtle-foreground w-full rounded-xl border py-2.5 pr-4 pl-10 text-sm transition-colors focus:outline-none focus:ring-2";
+  'bg-background border-border focus:ring-accent-500/20 focus:border-accent-500 placeholder:text-subtle-foreground w-full rounded-xl border py-2.5 pr-4 pl-10 text-sm transition-colors focus:outline-none focus:ring-2';
 
-const allSelected = computed(
-  () => props.total > 0 && props.selectedCount === props.total,
-);
-const someSelected = computed(
-  () => props.selectedCount > 0 && props.selectedCount < props.total,
-);
+const allSelected = computed(() => props.total > 0 && props.selectedCount === props.total);
+const someSelected = computed(() => props.selectedCount > 0 && props.selectedCount < props.total);
 
 /** El baseline deshabilita «Seleccionar todas» si Basic no alcanza para el total. */
-const selectAllDisabled = computed(
-  () => !props.isPro && props.total > props.maxRecipes,
-);
+const selectAllDisabled = computed(() => !props.isPro && props.total > props.maxRecipes);
 
 const selectAllEl = ref<HTMLInputElement | null>(null);
 
@@ -59,7 +50,7 @@ function syncIndeterminate(): void {
   }
 }
 
-watch([allSelected, someSelected], syncIndeterminate, { flush: "post" });
+watch([allSelected, someSelected], syncIndeterminate, { flush: 'post' });
 onMounted(syncIndeterminate);
 
 function presentationsFor(recipe: ProductionCatalogRecipe) {
@@ -140,11 +131,7 @@ function isRecipeDisabled(recipe: ProductionCatalogRecipe): boolean {
       action-href="/recipes"
     />
 
-    <form
-      v-else
-      class="flex flex-col gap-4 md:min-h-0 md:flex-1"
-      @submit.prevent
-    >
+    <form v-else class="flex flex-col gap-4 md:min-h-0 md:flex-1" @submit.prevent>
       <div
         id="recipe-groups"
         class="max-h-105 space-y-4 overflow-y-auto overscroll-contain px-1 pb-2 md:max-h-none md:min-h-0 md:flex-1"
@@ -178,15 +165,10 @@ function isRecipeDisabled(recipe: ProductionCatalogRecipe): boolean {
               :presentations="presentationsFor(recipe)"
               :disabled="isRecipeDisabled(recipe)"
               @toggle="emit('toggle', recipe.id)"
-              @step-batches="
-                (direction) => emit('stepBatches', recipe.id, direction)
-              "
-              @update:batches="
-                (value) => emit('update:batches', recipe.id, value)
-              "
+              @step-batches="(direction) => emit('stepBatches', recipe.id, direction)"
+              @update:batches="(value) => emit('update:batches', recipe.id, value)"
               @update:presentation="
-                (presentationId) =>
-                  emit('update:presentation', recipe.id, presentationId)
+                (presentationId) => emit('update:presentation', recipe.id, presentationId)
               "
             />
           </div>

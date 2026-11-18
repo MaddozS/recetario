@@ -1,10 +1,6 @@
-import type { Handler } from "hono";
-import { getCookie, setCookie } from "hono/cookie";
-import {
-  csrfCookieOptions,
-  getCsrfCookie,
-  resolveCsrfToken,
-} from "@recetario/auth/csrf";
+import type { Handler } from 'hono';
+import { getCookie, setCookie } from 'hono/cookie';
+import { csrfCookieOptions, getCsrfCookie, resolveCsrfToken } from '@recetario/auth/csrf';
 
 /**
  * Reemite la cookie del doble-submit conservando el valor existente.
@@ -20,14 +16,9 @@ export function csrfTokenHandler(): Handler {
     // El service binding conserva la URL pública del request; el fallback HTTP
     // de dev llega como `http://localhost:8787`, donde `Secure` rompería la
     // cookie en el navegador.
-    const secure = new URL(c.req.url).protocol === "https:";
+    const secure = new URL(c.req.url).protocol === 'https:';
 
-    setCookie(
-      c,
-      name,
-      resolveCsrfToken(getCookie(c, name)),
-      csrfCookieOptions(secure),
-    );
+    setCookie(c, name, resolveCsrfToken(getCookie(c, name)), csrfCookieOptions(secure));
 
     return c.json({ ok: true });
   };

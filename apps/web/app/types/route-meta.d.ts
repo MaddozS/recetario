@@ -1,6 +1,6 @@
-import type { BreadcrumbItem } from "#shared/types/navigation";
+import type { BreadcrumbItem } from '#shared/types/navigation';
 
-declare module "#app" {
+declare module '#app' {
   interface PageMeta {
     /** Miga de pan que pinta el shell privado (serializable en el payload). */
     breadcrumbs?: BreadcrumbItem[];

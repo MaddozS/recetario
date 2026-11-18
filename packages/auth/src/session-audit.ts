@@ -1,5 +1,5 @@
-import { logAuditEvent } from "@recetario/db";
-import { clientIp } from "@recetario/config/request";
+import { logAuditEvent } from '@recetario/db';
+import { clientIp } from '@recetario/config/request';
 
 type SessionLike = { userId: string };
 type SessionContextLike = { request?: Request } | null;
@@ -12,14 +12,14 @@ type SessionContextLike = { request?: Request } | null;
  */
 export async function recordSignInAudit(
   session: SessionLike,
-  context: SessionContextLike,
+  context: SessionContextLike
 ): Promise<void> {
   const request = context?.request;
 
   await logAuditEvent({
     userId: session.userId,
-    action: "sign_in",
+    action: 'sign_in',
     ipAddress: request ? clientIp(request) : null,
-    userAgent: request?.headers.get("user-agent") ?? null,
+    userAgent: request?.headers.get('user-agent') ?? null,
   });
 }

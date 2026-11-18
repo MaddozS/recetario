@@ -1,8 +1,5 @@
-import type {
-  recipeSummarySchema,
-  recipeWithIngredientsSchema,
-} from "@recetario/types";
-import type { z } from "zod";
+import type { recipeSummarySchema, recipeWithIngredientsSchema } from '@recetario/types';
+import type { z } from 'zod';
 
 /**
  * Tipos del planificador de producción.
@@ -12,9 +9,7 @@ import type { z } from "zod";
  * contrato.
  */
 export type ProductionCatalogRecipe = z.infer<typeof recipeSummarySchema>;
-export type ProductionRecipeRecord = z.infer<
-  typeof recipeWithIngredientsSchema
->;
+export type ProductionRecipeRecord = z.infer<typeof recipeWithIngredientsSchema>;
 
 /** Elección de una receta dentro del plan: mezclas y presentación opcional. */
 export type ProductionSelection = {

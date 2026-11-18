@@ -1,21 +1,18 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
-import type { PricingPlan } from "@recetario/types";
-import BillingIntervalToggle from "~/features/billing/BillingIntervalToggle.vue";
-import PlanCard from "~/features/billing/PlanCard.vue";
-import PlanComparison from "~/features/billing/PlanComparison.vue";
-import PlanPrice from "~/features/billing/PlanPrice.vue";
-import { useCheckout } from "~/features/billing/useCheckout";
-import { usePricingPlans } from "~/features/billing/usePricingPlans";
-import {
-  RECOMMENDED_PLAN_ID,
-  displayPlanOrder,
-} from "~/features/billing/plan-order";
-import type { BillingInterval } from "~/features/billing/billing-interval";
+import { computed, onMounted, ref } from 'vue';
+import type { PricingPlan } from '@recetario/types';
+import BillingIntervalToggle from '~/features/billing/BillingIntervalToggle.vue';
+import PlanCard from '~/features/billing/PlanCard.vue';
+import PlanComparison from '~/features/billing/PlanComparison.vue';
+import PlanPrice from '~/features/billing/PlanPrice.vue';
+import { useCheckout } from '~/features/billing/useCheckout';
+import { usePricingPlans } from '~/features/billing/usePricingPlans';
+import { RECOMMENDED_PLAN_ID, displayPlanOrder } from '~/features/billing/plan-order';
+import type { BillingInterval } from '~/features/billing/billing-interval';
 
-definePageMeta({ layout: "public" });
+definePageMeta({ layout: 'public' });
 
-usePageSeo("/pricing");
+usePageSeo('/pricing');
 
 /**
  * `/pricing` es pública: el anónimo ve el catálogo y su CTA pasa por sign-in
@@ -35,29 +32,25 @@ usePageSeo("/pricing");
 const route = useRoute();
 const { plans, pending: plansPending, error: plansError } = usePricingPlans();
 const { isAuthenticated, subscription } = useAuth();
-const {
-  pending: checkoutPending,
-  error: checkoutError,
-  startCheckout,
-} = useCheckout();
+const { pending: checkoutPending, error: checkoutError, startCheckout } = useCheckout();
 
-const interval = ref<BillingInterval>("monthly");
+const interval = ref<BillingInterval>('monthly');
 const checkoutPlanId = ref<string | null>(null);
 const orderedPlans = computed(() => displayPlanOrder(plans.value));
 
-const currentTier = computed(() => subscription.value?.tier ?? "free");
+const currentTier = computed(() => subscription.value?.tier ?? 'free');
 
 // El anónimo no tiene plan: `currentTier` cae a "free" y marcaría la columna
 // equivocada, así que la marca de la matriz sólo existe con sesión.
 const comparisonCurrentPlan = computed(() =>
-  isAuthenticated.value ? currentTier.value : undefined,
+  isAuthenticated.value ? currentTier.value : undefined
 );
-const showSuccessBanner = computed(() => route.query.success === "1");
-const showCanceledBanner = computed(() => route.query.canceled === "1");
+const showSuccessBanner = computed(() => route.query.success === '1');
+const showCanceledBanner = computed(() => route.query.canceled === '1');
 
 const highlightedPlan = computed<string | null>(() => {
   const raw = route.query.plan;
-  if (raw !== "basic" && raw !== "pro") return null;
+  if (raw !== 'basic' && raw !== 'pro') return null;
   return plans.value.some((plan) => plan.id === raw) ? raw : null;
 });
 
@@ -66,17 +59,15 @@ onMounted(() => {
   if (!target) return;
 
   const element = document.querySelector(`[data-plan="${target}"]`);
-  const reducedMotion = window.matchMedia(
-    "(prefers-reduced-motion: reduce)",
-  ).matches;
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   element?.scrollIntoView({
-    block: "center",
-    behavior: reducedMotion ? "auto" : "smooth",
+    block: 'center',
+    behavior: reducedMotion ? 'auto' : 'smooth',
   });
 });
 
 function isFree(plan: PricingPlan): boolean {
-  return plan.id === "free";
+  return plan.id === 'free';
 }
 
 function isCurrent(plan: PricingPlan): boolean {
@@ -84,15 +75,14 @@ function isCurrent(plan: PricingPlan): boolean {
 }
 
 function buttonLabel(plan: PricingPlan): string {
-  if (isCurrent(plan)) return "Plan actual";
-  if (plan.id === RECOMMENDED_PLAN_ID && currentTier.value === "basic")
-    return "Actualizar a Pro";
-  if (!isFree(plan)) return "Suscribirse";
-  return "Plan actual";
+  if (isCurrent(plan)) return 'Plan actual';
+  if (plan.id === RECOMMENDED_PLAN_ID && currentTier.value === 'basic') return 'Actualizar a Pro';
+  if (!isFree(plan)) return 'Suscribirse';
+  return 'Plan actual';
 }
 
 function anonymousLabel(plan: PricingPlan): string {
-  return isFree(plan) ? "Comenzar gratis" : "Suscribirse";
+  return isFree(plan) ? 'Comenzar gratis' : 'Suscribirse';
 }
 
 /**
@@ -102,7 +92,7 @@ function anonymousLabel(plan: PricingPlan): string {
  */
 function buttonClass(plan: PricingPlan): string {
   const base =
-    "focus-ring inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-bold transition-colors";
+    'focus-ring inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-bold transition-colors';
 
   // Sólo el autenticado ve estados bloqueados; para el anónimo todos los CTA
   // son un enlace accionable a sign-in.
@@ -116,9 +106,7 @@ function buttonClass(plan: PricingPlan): string {
 }
 
 function signInHref(plan: PricingPlan): string {
-  return isFree(plan)
-    ? "/sign-in?redirect=/recipes"
-    : "/sign-in?redirect=/pricing";
+  return isFree(plan) ? '/sign-in?redirect=/recipes' : '/sign-in?redirect=/pricing';
 }
 
 async function subscribe(plan: PricingPlan): Promise<void> {
@@ -129,7 +117,7 @@ async function subscribe(plan: PricingPlan): Promise<void> {
 </script>
 
 <template>
-  <section class="mx-auto max-w-6xl px-4 pt-24 pb-16 sm:px-6">
+  <LandingSection>
     <div
       v-if="showSuccessBanner"
       class="border-success-border bg-success-bg mb-6 rounded-2xl border p-4"
@@ -154,8 +142,7 @@ async function subscribe(plan: PricingPlan): Promise<void> {
         <div>
           <p class="text-warning font-semibold">Suscripción cancelada</p>
           <p class="text-warning text-sm">
-            No se realizó ningún cargo. Puedes intentarlo de nuevo cuando
-            quieras.
+            No se realizó ningún cargo. Puedes intentarlo de nuevo cuando quieras.
           </p>
         </div>
       </div>
@@ -167,21 +154,18 @@ async function subscribe(plan: PricingPlan): Promise<void> {
       icon="arrow-left"
       href="/settings?tab=billing"
       size="sm"
-      class="mb-6"
+      class="mb-8"
     >
       Volver a Facturación
     </Button>
 
-    <div class="mb-8 text-center">
-      <h1 class="landing-heading text-foreground font-display text-3xl font-black">
-        Planes y precios
-      </h1>
-      <p class="text-muted-foreground mt-2">
-        Elige el plan que mejor se adapte a tu negocio.
-      </p>
-    </div>
+    <LandingSectionHeading
+      level="h1"
+      title="Planes y precios"
+      description="Elige el plan que mejor se adapte a tu negocio."
+    />
 
-    <div class="mb-8 flex justify-center">
+    <div class="mt-10 mb-8 flex justify-center">
       <BillingIntervalToggle v-model="interval" />
     </div>
 
@@ -212,14 +196,18 @@ async function subscribe(plan: PricingPlan): Promise<void> {
         :featured="plan.id === RECOMMENDED_PLAN_ID"
         :highlighted="plan.id === highlightedPlan"
       >
-        <Badge
-          v-if="plan.badge"
-          variant="tier"
-          :color="plan.id === RECOMMENDED_PLAN_ID ? 'accent' : 'success'"
-          class="mb-4 self-start"
-        >
-          {{ plan.badge.text }}
-        </Badge>
+        <!-- El slot del badge se reserva en las tres cards: sin él, el plan sin
+             badge adelantaba su titular y las columnas dejaban de compararse en
+             la misma línea. -->
+        <div class="mb-4 flex h-6 items-center">
+          <Badge
+            v-if="plan.badge"
+            variant="tier"
+            :color="plan.id === RECOMMENDED_PLAN_ID ? 'accent' : 'success'"
+          >
+            {{ plan.badge.text }}
+          </Badge>
+        </div>
 
         <h2 class="text-foreground text-xl font-black">{{ plan.name }}</h2>
         <p class="text-muted-foreground mt-1 text-sm">
@@ -231,11 +219,7 @@ async function subscribe(plan: PricingPlan): Promise<void> {
         </div>
 
         <div class="mt-auto pt-6">
-          <NuxtLink
-            v-if="!isAuthenticated"
-            :to="signInHref(plan)"
-            :class="buttonClass(plan)"
-          >
+          <NuxtLink v-if="!isAuthenticated" :to="signInHref(plan)" :class="buttonClass(plan)">
             {{ anonymousLabel(plan) }}
           </NuxtLink>
           <button
@@ -243,15 +227,11 @@ async function subscribe(plan: PricingPlan): Promise<void> {
             type="button"
             :class="buttonClass(plan)"
             :disabled="isCurrent(plan) || isFree(plan) || checkoutPending"
-            :aria-busy="
-              checkoutPending && checkoutPlanId === plan.id ? 'true' : undefined
-            "
+            :aria-busy="checkoutPending && checkoutPlanId === plan.id ? 'true' : undefined"
             @click="subscribe(plan)"
           >
             {{
-              checkoutPending && checkoutPlanId === plan.id
-                ? "Redirigiendo…"
-                : buttonLabel(plan)
+              checkoutPending && checkoutPlanId === plan.id ? 'Redirigiendo…' : buttonLabel(plan)
             }}
           </button>
         </div>
@@ -259,5 +239,5 @@ async function subscribe(plan: PricingPlan): Promise<void> {
     </div>
 
     <PlanComparison :plans="plans" :current-plan-id="comparisonCurrentPlan" />
-  </section>
+  </LandingSection>
 </template>

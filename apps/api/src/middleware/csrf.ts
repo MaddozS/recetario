@@ -1,20 +1,16 @@
-import type { MiddlewareHandler } from "hono";
-import {
-  getTrustedOrigins,
-  resolveRequestOrigin,
-  validateCsrf,
-} from "@recetario/auth/server";
-import { ApiError } from "../errors";
+import type { MiddlewareHandler } from 'hono';
+import { getTrustedOrigins, resolveRequestOrigin, validateCsrf } from '@recetario/auth/server';
+import { ApiError } from '../errors';
 
-const MUTATING_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);
+const MUTATING_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 
 // Signature-authenticated Stripe callback: no cookies, no browser origin.
-const EXEMPT_PATHS = new Set(["/api/stripe/webhook"]);
+const EXEMPT_PATHS = new Set(['/api/stripe/webhook']);
 
-const AUTH_PREFIX = "/api/auth/";
+const AUTH_PREFIX = '/api/auth/';
 
 function isTrustedOrigin(origin: string, trustedOrigins: string[]): boolean {
-  if (origin === "null") return false;
+  if (origin === 'null') return false;
 
   let normalized: string;
   try {
@@ -33,13 +29,13 @@ function isTrustedOrigin(origin: string, trustedOrigins: string[]): boolean {
 }
 
 function isAuthPath(path: string): boolean {
-  return path === "/api/auth" || path.startsWith(AUTH_PREFIX);
+  return path === '/api/auth' || path.startsWith(AUTH_PREFIX);
 }
 
 function isFormContentType(contentType: string): boolean {
   return (
-    contentType.includes("application/x-www-form-urlencoded") ||
-    contentType.includes("multipart/form-data")
+    contentType.includes('application/x-www-form-urlencoded') ||
+    contentType.includes('multipart/form-data')
   );
 }
 
@@ -70,17 +66,17 @@ export function csrfProtection(): MiddlewareHandler {
       return;
     }
 
-    if (c.req.header("sec-fetch-site") === "cross-site") {
-      throw new ApiError("FORBIDDEN", "Cross-site request rejected");
+    if (c.req.header('sec-fetch-site') === 'cross-site') {
+      throw new ApiError('FORBIDDEN', 'Cross-site request rejected');
     }
 
     const origin = resolveRequestOrigin(c.req.raw);
     if (origin !== null && !isTrustedOrigin(origin, getTrustedOrigins())) {
-      throw new ApiError("FORBIDDEN", "Untrusted origin");
+      throw new ApiError('FORBIDDEN', 'Untrusted origin');
     }
 
-    if (origin !== null && !isAuthPath(path) && c.req.header("cookie")) {
-      const contentType = c.req.header("content-type") ?? "";
+    if (origin !== null && !isAuthPath(path) && c.req.header('cookie')) {
+      const contentType = c.req.header('content-type') ?? '';
       let formData: FormData | undefined;
       if (isFormContentType(contentType)) {
         try {
@@ -91,7 +87,7 @@ export function csrfProtection(): MiddlewareHandler {
       }
 
       if (!validateCsrf(c.req.raw, formData)) {
-        throw new ApiError("FORBIDDEN", "CSRF validation failed");
+        throw new ApiError('FORBIDDEN', 'CSRF validation failed');
       }
     }
 

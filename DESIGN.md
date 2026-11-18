@@ -2,125 +2,125 @@
 name: KitchCalc
 description: Calculadora de costos de recetas para profesionales de la cocina
 colors:
-  blueprint-indigo: "#4f46e5"
-  apron-white: "#f8fafc"
-  recipe-card: "#ffffff"
-  flour-dust: "#f1f5f9"
-  cell-warmth: "#e2e8f0"
-  espresso: "#0f172a"
-  warm-slate: "#334155"
-  cool-ash: "#64748b"
-  vapor: "#94a3b8"
-  pan-edge: "#e2e8f0"
-  pan-edge-light: "#f1f5f9"
-  chili-red: "#be123c"
-  chili-bg: "#fff1f2"
-  chili-border: "#fecdd3"
-  chili-solid: "#e11d48"
-  herb-green: "#047857"
-  herb-bg: "#ecfdf5"
-  herb-border: "#a7f3d0"
-  herb-solid: "#10b981"
-  turmeric-amber: "#b45309"
-  turmeric-bg: "#fffbeb"
-  turmeric-border: "#fde68a"
-  turmeric-solid: "#f59e0b"
-  ring-indigo: "#4f46e5"
+  blueprint-indigo: '#4f46e5'
+  apron-white: '#f8fafc'
+  recipe-card: '#ffffff'
+  flour-dust: '#f1f5f9'
+  cell-warmth: '#e2e8f0'
+  espresso: '#0f172a'
+  warm-slate: '#334155'
+  cool-ash: '#64748b'
+  vapor: '#94a3b8'
+  pan-edge: '#e2e8f0'
+  pan-edge-light: '#f1f5f9'
+  chili-red: '#be123c'
+  chili-bg: '#fff1f2'
+  chili-border: '#fecdd3'
+  chili-solid: '#e11d48'
+  herb-green: '#047857'
+  herb-bg: '#ecfdf5'
+  herb-border: '#a7f3d0'
+  herb-solid: '#10b981'
+  turmeric-amber: '#b45309'
+  turmeric-bg: '#fffbeb'
+  turmeric-border: '#fde68a'
+  turmeric-solid: '#f59e0b'
+  ring-indigo: '#4f46e5'
 typography:
   display:
-    fontFamily: "Outfit, ui-sans-serif, system-ui, sans-serif"
-    fontSize: "1.875rem"
+    fontFamily: 'Outfit, ui-sans-serif, system-ui, sans-serif'
+    fontSize: '1.875rem'
     fontWeight: 800
     lineHeight: 1.2
-    letterSpacing: "normal"
+    letterSpacing: 'normal'
   headline:
-    fontFamily: "Outfit, ui-sans-serif, system-ui, sans-serif"
-    fontSize: "1.5rem"
+    fontFamily: 'Outfit, ui-sans-serif, system-ui, sans-serif'
+    fontSize: '1.5rem'
     fontWeight: 700
     lineHeight: 1.3
-    letterSpacing: "normal"
+    letterSpacing: 'normal'
   title:
-    fontFamily: "Outfit, ui-sans-serif, system-ui, sans-serif"
-    fontSize: "1.125rem"
+    fontFamily: 'Outfit, ui-sans-serif, system-ui, sans-serif'
+    fontSize: '1.125rem'
     fontWeight: 700
     lineHeight: 1.4
-    letterSpacing: "normal"
+    letterSpacing: 'normal'
   body:
-    fontFamily: "Outfit, ui-sans-serif, system-ui, sans-serif"
-    fontSize: "0.875rem"
+    fontFamily: 'Outfit, ui-sans-serif, system-ui, sans-serif'
+    fontSize: '0.875rem'
     fontWeight: 400
     lineHeight: 1.6
-    letterSpacing: "normal"
+    letterSpacing: 'normal'
   label:
-    fontFamily: "Outfit, ui-sans-serif, system-ui, sans-serif"
-    fontSize: "0.6875rem"
+    fontFamily: 'Outfit, ui-sans-serif, system-ui, sans-serif'
+    fontSize: '0.6875rem'
     fontWeight: 700
     lineHeight: 1.4
-    letterSpacing: "0.16em"
-    textTransform: "uppercase"
+    letterSpacing: '0.16em'
+    textTransform: 'uppercase'
   mono:
     fontFamily: "'JetBrains Mono', ui-monospace, 'SF Mono', 'Cascadia Code', 'Consolas', monospace"
-    fontSize: "inherit"
+    fontSize: 'inherit'
     fontWeight: 500
     lineHeight: 1.5
-    letterSpacing: "normal"
+    letterSpacing: 'normal'
     fontFeature: "'tnum'"
 rounded:
-  lg: "8px"
-  xl: "12px"
-  2xl: "16px"
-  3xl: "24px"
-  full: "9999px"
+  lg: '8px'
+  xl: '12px'
+  2xl: '16px'
+  3xl: '24px'
+  full: '9999px'
 spacing:
-  xs: "4px"
-  sm: "8px"
-  md: "12px"
-  lg: "16px"
-  xl: "20px"
-  2xl: "24px"
-  3xl: "32px"
+  xs: '4px'
+  sm: '8px'
+  md: '12px'
+  lg: '16px'
+  xl: '20px'
+  2xl: '24px'
+  3xl: '32px'
 components:
   button-primary:
-    backgroundColor: "{colors.blueprint-indigo}"
-    textColor: "#ffffff"
-    rounded: "{rounded.xl}"
-    padding: "12px 24px"
-    typography: "{typography.body}"
+    backgroundColor: '{colors.blueprint-indigo}'
+    textColor: '#ffffff'
+    rounded: '{rounded.xl}'
+    padding: '12px 24px'
+    typography: '{typography.body}'
   button-primary-hover:
-    backgroundColor: "#4338ca"
-    textColor: "#ffffff"
-    rounded: "{rounded.xl}"
-    padding: "12px 24px"
+    backgroundColor: '#4338ca'
+    textColor: '#ffffff'
+    rounded: '{rounded.xl}'
+    padding: '12px 24px'
   button-secondary:
-    textColor: "{colors.cool-ash}"
-    rounded: "{rounded.xl}"
-    padding: "12px 20px"
+    textColor: '{colors.cool-ash}'
+    rounded: '{rounded.xl}'
+    padding: '12px 20px'
   button-secondary-hover:
-    backgroundColor: "{colors.apron-white}"
-    textColor: "{colors.cool-ash}"
-    rounded: "{rounded.xl}"
-    padding: "12px 20px"
+    backgroundColor: '{colors.apron-white}'
+    textColor: '{colors.cool-ash}'
+    rounded: '{rounded.xl}'
+    padding: '12px 20px'
   button-danger:
-    backgroundColor: "{colors.chili-solid}"
-    textColor: "#ffffff"
-    rounded: "{rounded.xl}"
-    padding: "12px 20px"
+    backgroundColor: '{colors.chili-solid}'
+    textColor: '#ffffff'
+    rounded: '{rounded.xl}'
+    padding: '12px 20px'
   card-default:
-    backgroundColor: "{colors.recipe-card}"
-    rounded: "{rounded.2xl}"
+    backgroundColor: '{colors.recipe-card}'
+    rounded: '{rounded.2xl}'
   input-field:
-    backgroundColor: "{colors.apron-white}"
-    rounded: "{rounded.xl}"
-    padding: "12px 16px"
+    backgroundColor: '{colors.apron-white}'
+    rounded: '{rounded.xl}'
+    padding: '12px 16px'
   input-field-focus:
-    backgroundColor: "{colors.recipe-card}"
-    rounded: "{rounded.xl}"
-    padding: "12px 16px"
+    backgroundColor: '{colors.recipe-card}'
+    rounded: '{rounded.xl}'
+    padding: '12px 16px'
 ---
 
 # Design System: KitchCalc
 
-> **Nota (Task 13b).** Este documento describe el sistema de diseño (tokens, tipografía, elevación, motion y las APIs visuales de los componentes); sigue vigente. La **implementación de referencia** vive ahora en `apps/web/app/components/ui/**` y `apps/web/app/features/**` (Vue 3 + Nuxt), no en los archivos `.astro` que aparecen en §8–§10: esas rutas y ejemplos se conservan como referencia de la etapa previa a la migración.
+> **Nota.** Este documento describe el sistema de diseño (tokens, tipografía, elevación, motion y las APIs visuales de los componentes). La **implementación de referencia** vive en `apps/web/app/components/ui/**` y `apps/web/app/features/**` (Vue 3 + Nuxt 4).
 
 ## 1. Overview
 
@@ -182,6 +182,8 @@ The palette is restrained: a single accent family (user-selectable from 7 option
 **The Action Fill Rule.** Fills that carry text or are the primary action (primary buttons, active nav items, the landing CTA band) use `accent-solid` with `text-on-accent`, both emitted per family and theme by `getAccentCssVars`. Light starts at the family's 700. Dark keeps that same tone (the accent is the constant; the neutrals are what change) and only steps up to the 600 when the 700 does not clear 3:1 against the dark background (indigo, violet, blue). The label is white in both themes, and every pair is measured in `test/unit/accent-colors.spec.ts`. Shade classes (`bg-accent-700`, `text-accent-600`) stay for text, tints, borders, and indicators, and follow `darkShadeMap` with no overrides.
 
 **The Token Bridge Rule.** Every color is a semantic token (`bg-card`, `text-foreground`) referencing a CSS variable (`--tw-card`, `--tw-fg`). Never hardcode a hex or oklch value in a component. This is how dark mode works without a single `.dark` override in component code.
+
+**The Marketing Is Light Rule.** Las superficies públicas indexables (`/`, `/funciones`, `/pricing`, la privacidad y los términos) fuerzan el tema claro: `app.vue` ignora la preferencia guardada cuando la ruta pasa `isPublicMarketingPath()`, y su navbar no monta el toggle. La app privada y el login conservan el toggle y los dos temas. Las capturas de esas superficies se sirven en una sola variante (`*_light`).
 
 ## 3. Typography
 
@@ -348,19 +350,15 @@ All reusable UI primitives live in `apps/web/app/components/ui/{atoms,molecules,
 <!-- El kit (~/components/ui) no necesita import: <Button>, <Card>, <Dialog>… -->
 <!-- Los componentes de una feature SÍ: -->
 <script setup lang="ts">
-import BillingSection from "~/features/billing/BillingSection.vue";
+import BillingSection from '~/features/billing/BillingSection.vue';
 </script>
 ```
 
 ### Button
 
-**File:** `src/components/ui/Button.astro`
+**File:** `apps/web/app/components/ui/atoms/Button.vue`
 
-```astro
----
-import { Button } from "@/components/ui";
----
-
+```vue
 <Button variant="primary" icon="plus">Nueva Receta</Button>
 <Button variant="secondary">Cancelar</Button>
 <Button variant="danger" icon="trash-2">Eliminar</Button>
@@ -382,9 +380,9 @@ import { Button } from "@/components/ui";
 
 ### Card
 
-**File:** `src/components/ui/Card.astro`
+**File:** `apps/web/app/components/ui/molecules/Card.vue`
 
-```astro
+```vue
 <Card padding="md" hover>
   <!-- content -->
 </Card>
@@ -402,17 +400,11 @@ import { Button } from "@/components/ui";
 
 ### Input
 
-**File:** `src/components/ui/Input.astro`
+**File:** `apps/web/app/components/ui/atoms/Input.vue`
 
-```astro
+```vue
 <Input label="Nombre" name="name" required />
-<Input
-  label="Precio"
-  name="price"
-  type="number"
-  monospace
-  error="Debe ser mayor a 0"
-/>
+<Input label="Precio" name="price" type="number" monospace error="Debe ser mayor a 0" />
 <Input name="search" type="search" placeholder="Buscar..." />
 ```
 
@@ -430,9 +422,9 @@ import { Button } from "@/components/ui";
 
 ### Badge
 
-**File:** `src/components/ui/Badge.astro`
+**File:** `apps/web/app/components/ui/atoms/Badge.vue`
 
-```astro
+```vue
 <Badge variant="category" color="accent">Postres</Badge>
 <Badge variant="status" color="success">Activo</Badge>
 <Badge variant="tier" color="accent">Pro</Badge>
@@ -448,14 +440,10 @@ import { Button } from "@/components/ui";
 
 ### Dialog
 
-**File:** `src/components/ui/Dialog.astro`
+**File:** `apps/web/app/components/ui/organisms/Dialog.vue`
 
-```astro
-<Dialog
-  id="my-dialog"
-  title="Confirmar"
-  description="Esta accion no se puede deshacer."
->
+```vue
+<Dialog id="my-dialog" title="Confirmar" description="Esta accion no se puede deshacer.">
   <div class="flex justify-end gap-3">
     <Button variant="secondary">Cancelar</Button>
     <Button variant="danger">Eliminar</Button>
@@ -474,7 +462,7 @@ Dialog uses native `<dialog>` with `data-animated` for enter/exit transitions. A
 
 ### FinancialSummary
 
-**File:** `src/components/ui/FinancialSummary.astro`
+**File:** `apps/web/app/components/ui/molecules/FinancialSummary.vue`
 
 A single-card layout for financial metrics — replaces the old 4-card icon-circle metric template. Like a restaurant POS receipt: a labeled header (title + scope chip) and label + mono value rows, no decorative chrome.
 
@@ -482,7 +470,7 @@ Every row declares its `group`; the card draws the section label (`.section-labe
 
 The section's lever carries `emphasis: "control"`: it renders in the section header, next to the label, as the editable field of the section (the margin). The rows with `emphasis: "answer"` render together inside the tinted accent band, each with the line that explains it: the base (what it costs to produce), the price (with which margin) and the profit (what is left) — the same resource as the system's metric pills and category badges. Cost rows stay in neutral ink: a red number reads as loss, and the accent is reserved for actions, selection, and focus (The One Voice Rule).
 
-```astro
+```vue
 <FinancialSummary
   title="Resumen financiero"
   scope="1 mezcla"
@@ -565,9 +553,9 @@ The section's lever carries `emphasis: "control"`: it renders in the section hea
 
 ### SectionHeading
 
-**File:** `src/components/ui/SectionHeading.astro`
+**File:** `apps/web/app/components/ui/atoms/SectionHeading.vue`
 
-```astro
+```vue
 <SectionHeading
   icon="factory"
   title="Planificador de Produccion"

@@ -1,8 +1,8 @@
-import type { SendEmailFn } from "./email";
-import { prisma } from "@recetario/db";
+import type { SendEmailFn } from './email';
+import { prisma } from '@recetario/db';
 
-const WEB_ORIGIN = process.env.WEB_ORIGIN ?? "http://localhost:4321";
-const API_URL = process.env.BETTER_AUTH_URL ?? "http://localhost:8787";
+const WEB_ORIGIN = process.env.WEB_ORIGIN ?? 'http://localhost:4321';
+const API_URL = process.env.BETTER_AUTH_URL ?? 'http://localhost:8787';
 
 export interface VerificationEmailTemplateData {
   verificationLink: string;
@@ -10,7 +10,7 @@ export interface VerificationEmailTemplateData {
 }
 
 export function getVerificationEmailHtml(data: VerificationEmailTemplateData): string {
-  const userName = data.userName || "usuario";
+  const userName = data.userName || 'usuario';
   const verificationLink = data.verificationLink;
 
   return `<!DOCTYPE html>
@@ -94,7 +94,9 @@ export function createVerificationEmailCallback(sendEmail: SendEmailFn) {
     // Better Auth generates URLs pointing to the API server
     // (e.g. http://localhost:8787/api/auth/verify-email), but the user
     // needs to land on the web app's /verify-email page (localhost:4321).
-    const webUrl = url.replace(API_URL, WEB_ORIGIN).replace("/api/auth/verify-email", "/verify-email");
+    const webUrl = url
+      .replace(API_URL, WEB_ORIGIN)
+      .replace('/api/auth/verify-email', '/verify-email');
 
     let userName = user.firstName || user.name;
     if (!userName && user.id) {
@@ -108,20 +110,19 @@ export function createVerificationEmailCallback(sendEmail: SendEmailFn) {
         // DB fallback if query fails
       }
     }
-    userName = userName || "usuario";
+    userName = userName || 'usuario';
 
     try {
       await sendEmail({
         to: user.email,
-        subject: "Verifica tu cuenta - KitchCalc",
+        subject: 'Verifica tu cuenta - KitchCalc',
         html: getVerificationEmailHtml({
           verificationLink: webUrl,
           userName,
         }),
       });
     } catch (e) {
-      console.error("[AUTH] sendVerificationEmail failed:", e);
+      console.error('[AUTH] sendVerificationEmail failed:', e);
     }
   };
 }
-

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { BreadcrumbItem } from "#shared/types/navigation";
+import type { BreadcrumbItem } from '#shared/types/navigation';
 
 const props = defineProps<{
   breadcrumbs?: BreadcrumbItem[];
@@ -42,11 +42,7 @@ const hasBreadcrumbs = computed(() => (props.breadcrumbs?.length ?? 0) > 0);
         KitchCalc
       </h1>
 
-      <div
-        v-if="hasBreadcrumbs"
-        class="bg-border hidden h-6 w-px md:block"
-        aria-hidden="true"
-      />
+      <div v-if="hasBreadcrumbs" class="bg-border hidden h-6 w-px md:block" aria-hidden="true" />
 
       <AppBreadcrumbs :items="breadcrumbs ?? []" />
     </div>

@@ -1,24 +1,14 @@
 <template>
   <div class="animate-pulse space-y-8">
     <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
-      <Card
-        v-for="index in 3"
-        :key="`stat-${index}`"
-        padding="sm"
-        class="bg-card/60 h-20"
-      >
+      <Card v-for="index in 3" :key="`stat-${index}`" padding="sm" class="bg-card/60 h-20">
         <div class="bg-muted h-4 w-28 rounded"></div>
         <div class="bg-muted mt-3 h-6 w-16 rounded"></div>
       </Card>
     </div>
 
     <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
-      <Card
-        v-for="index in 3"
-        :key="`info-${index}`"
-        padding="sm"
-        class="bg-card/60 h-20"
-      >
+      <Card v-for="index in 3" :key="`info-${index}`" padding="sm" class="bg-card/60 h-20">
         <div class="bg-muted h-3 w-32 rounded"></div>
         <div class="bg-muted mt-3 h-5 w-24 rounded"></div>
       </Card>

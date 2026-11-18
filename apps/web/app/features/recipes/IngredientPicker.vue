@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
-import { normalizeSearchText } from "#shared/utils/search";
-import { formatIngredientLabel } from "./recipe-detail-form";
-import type { IngredientRecord } from "./recipe-detail-form";
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { normalizeSearchText } from '#shared/utils/search';
+import { formatIngredientLabel } from './recipe-detail-form';
+import type { IngredientRecord } from './recipe-detail-form';
 
 /**
  * Selector de ingrediente de una fila del editor.
@@ -34,14 +34,14 @@ watch(
   () => props.label,
   (label) => {
     query.value = label;
-  },
+  }
 );
 
 const matches = computed(() => {
   const needle = normalizeSearchText(query.value);
   if (!needle) return props.ingredients;
   return props.ingredients.filter((ingredient) =>
-    normalizeSearchText(formatIngredientLabel(ingredient)).includes(needle),
+    normalizeSearchText(formatIngredientLabel(ingredient)).includes(needle)
   );
 });
 
@@ -56,14 +56,14 @@ function closeDropdown(): void {
 }
 
 function onPick(ingredient: IngredientRecord): void {
-  emit("pick", ingredient);
+  emit('pick', ingredient);
   query.value = formatIngredientLabel(ingredient);
   closeDropdown();
 }
 
 function onClear(): void {
-  emit("clear");
-  query.value = "";
+  emit('clear');
+  query.value = '';
   open.value = false;
   input.value?.focus();
 }
@@ -78,13 +78,13 @@ function onDocumentClick(event: MouseEvent): void {
 }
 
 function onKeydown(event: KeyboardEvent): void {
-  if (event.key === "Escape") {
+  if (event.key === 'Escape') {
     closeDropdown();
   }
 }
 
-onMounted(() => document.addEventListener("click", onDocumentClick));
-onBeforeUnmount(() => document.removeEventListener("click", onDocumentClick));
+onMounted(() => document.addEventListener('click', onDocumentClick));
+onBeforeUnmount(() => document.removeEventListener('click', onDocumentClick));
 </script>
 
 <template>

@@ -5,7 +5,7 @@
  * con el código `PLAN_LIMIT` del envelope de Hono, para que la UI muestre el CTA
  * de upgrade únicamente cuando la causa real es el plan.
  */
-export type IngredientMutationAction = "create" | "update" | "delete";
+export type IngredientMutationAction = 'create' | 'update' | 'delete';
 
 export type IngredientMutationFailure = {
   message: string;
@@ -26,29 +26,24 @@ type ErrorLike = {
   message?: string;
 };
 
-export const INGREDIENT_IN_USE_REASON = "ingredient_in_use";
-export const INGREDIENT_IN_USE_MESSAGE =
-  "No se puede eliminar porque el ingrediente está en uso.";
-export const DELETED_INGREDIENT_MESSAGE = "El ingrediente ya no existe.";
+export const INGREDIENT_IN_USE_REASON = 'ingredient_in_use';
+export const INGREDIENT_IN_USE_MESSAGE = 'No se puede eliminar porque el ingrediente está en uso.';
+export const DELETED_INGREDIENT_MESSAGE = 'El ingrediente ya no existe.';
 
 const FALLBACK_MESSAGES: Record<IngredientMutationAction, string> = {
-  create: "No se pudo crear el ingrediente.",
-  update: "No se pudo actualizar el ingrediente.",
-  delete: "No se pudo eliminar el ingrediente.",
+  create: 'No se pudo crear el ingrediente.',
+  update: 'No se pudo actualizar el ingrediente.',
+  delete: 'No se pudo eliminar el ingrediente.',
 };
 
 function asErrorLike(error: unknown): ErrorLike | null {
-  return typeof error === "object" && error !== null
-    ? (error as ErrorLike)
-    : null;
+  return typeof error === 'object' && error !== null ? (error as ErrorLike) : null;
 }
 
 /** 409 `DOMAIN_ERROR` + `reason:"ingredient_in_use"` del borrado bloqueado. */
 export function isIngredientInUse(error: unknown): boolean {
   const candidate = asErrorLike(error);
-  return (
-    candidate?.status === 409 && candidate.reason === INGREDIENT_IN_USE_REASON
-  );
+  return candidate?.status === 409 && candidate.reason === INGREDIENT_IN_USE_REASON;
 }
 
 /**
@@ -58,7 +53,7 @@ export function isIngredientInUse(error: unknown): boolean {
  */
 export function ingredientLimitMessage(limit: number | null): string {
   if (limit === null) {
-    return "Has alcanzado el límite de ingredientes de tu plan Free. Actualiza tu plan para crear más.";
+    return 'Has alcanzado el límite de ingredientes de tu plan Free. Actualiza tu plan para crear más.';
   }
 
   return `Has alcanzado el límite de ${limit} ingredientes de tu plan Free. Actualiza tu plan para crear más.`;
@@ -66,7 +61,7 @@ export function ingredientLimitMessage(limit: number | null): string {
 
 export function resolveIngredientMutationError(
   error: unknown,
-  context: IngredientMutationErrorContext,
+  context: IngredientMutationErrorContext
 ): IngredientMutationFailure {
   const { action, limit, usedRecipes = [] } = context;
 
@@ -82,13 +77,13 @@ export function resolveIngredientMutationError(
     return { message: DELETED_INGREDIENT_MESSAGE };
   }
 
-  if (candidate?.code === "PLAN_LIMIT") {
+  if (candidate?.code === 'PLAN_LIMIT') {
     return { message: ingredientLimitMessage(limit), planLimit: true };
   }
 
   if (
-    typeof candidate?.status === "number" &&
-    typeof candidate.message === "string" &&
+    typeof candidate?.status === 'number' &&
+    typeof candidate.message === 'string' &&
     candidate.message.trim().length > 0
   ) {
     return { message: candidate.message };

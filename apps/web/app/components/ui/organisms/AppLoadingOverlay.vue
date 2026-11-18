@@ -4,7 +4,7 @@
  * que bloquean la pantalla, como cerrar sesión. Se controla con el estado
  * compartido `loading-overlay`.
  */
-const message = useState<string | null>("loading-overlay", () => null);
+const message = useState<string | null>('loading-overlay', () => null);
 </script>
 
 <template>
@@ -17,9 +17,7 @@ const message = useState<string | null>("loading-overlay", () => null);
       role="status"
       aria-live="polite"
     >
-      <div
-        class="bg-card flex flex-col items-center gap-3 rounded-2xl px-10 py-8 shadow-2xl"
-      >
+      <div class="bg-card flex flex-col items-center gap-3 rounded-2xl px-10 py-8 shadow-2xl">
         <svg
           class="text-accent-600 h-7 w-7 animate-[sp_0.7s_linear_infinite]"
           xmlns="http://www.w3.org/2000/svg"

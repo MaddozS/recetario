@@ -11,25 +11,25 @@ defineProps<{
 }>();
 
 const STAT_CLASSES =
-  "recipe-stat border-accent-200 bg-accent-50 text-accent-800 inline-flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-sm font-semibold";
+  'recipe-stat border-accent-200 bg-accent-50 text-accent-800 inline-flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-sm font-semibold';
 </script>
 
 <template>
   <div class="flex flex-wrap items-center gap-3">
     <div :class="STAT_CLASSES">
       <Icon name="lucide:book-open" :size="14" />
-      {{ recipeCount }} {{ recipeCount === 1 ? "Receta" : "Recetas" }}
+      {{ recipeCount }} {{ recipeCount === 1 ? 'Receta' : 'Recetas' }}
     </div>
 
     <div v-if="categoryCount > 0" :class="STAT_CLASSES">
       <Icon name="lucide:folders" :size="14" />
-      {{ categoryCount }} {{ categoryCount === 1 ? "Categoría" : "Categorías" }}
+      {{ categoryCount }} {{ categoryCount === 1 ? 'Categoría' : 'Categorías' }}
     </div>
 
     <div v-if="ingredientCount > 0" :class="STAT_CLASSES">
       <Icon name="lucide:package" :size="14" />
       {{ ingredientCount }}
-      {{ ingredientCount === 1 ? "Ingrediente" : "Ingredientes" }}
+      {{ ingredientCount === 1 ? 'Ingrediente' : 'Ingredientes' }}
     </div>
   </div>
 </template>

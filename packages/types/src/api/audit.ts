@@ -1,13 +1,13 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 export const auditActionValues = [
-  "sign_in",
-  "sign_up",
-  "password_change",
-  "password_reset",
-  "email_change",
-  "account_delete",
-  "session_revoke",
+  'sign_in',
+  'sign_up',
+  'password_change',
+  'password_reset',
+  'email_change',
+  'account_delete',
+  'session_revoke',
 ] as const;
 
 export const auditLogCreateSchema = z.object({

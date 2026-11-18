@@ -8,7 +8,7 @@
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
     "esModuleInterop": true,
-    "skipLibCheck": true,
+    "skipLibCheck": true
   },
-  "include": ["src", "generated/prisma"]
+  "include": ["src"]
 }

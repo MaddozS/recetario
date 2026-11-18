@@ -1,1 +1,1 @@
-export { hashPassword } from "better-auth/crypto";
+export { hashPassword } from 'better-auth/crypto';

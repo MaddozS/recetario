@@ -1,29 +1,17 @@
-import { canCreateRecipe } from "@recetario/stripe/subscription";
+import { canCreateRecipe } from '@recetario/stripe/subscription';
 import {
   ingredientUsageMapSchema,
   recipeSummarySchema,
   recipeWithIngredientsSchema,
-} from "@recetario/types";
-import { z } from "zod";
-import {
-  filterRecipes,
-  recipeCategoryOptions,
-  uncategorizedCount,
-} from "./recipe-filters";
-import { isRecipeFormValid, toRecipeInput } from "./recipe-form";
-import type { RecipeFormValues } from "./recipe-form";
-import {
-  recipeLimitMessage,
-  resolveRecipeMutationError,
-} from "./recipe-messages";
-import { recentRecipes, recipeStats } from "./recipe-stats";
-import {
-  emptyRecipesSnapshot,
-  toRecipeSummary,
-  withCreated,
-  withRemoved,
-} from "./recipe-state";
-import type { RecipeRecord, RecipesSnapshot } from "./recipe-state";
+} from '@recetario/types';
+import { z } from 'zod';
+import { filterRecipes, recipeCategoryOptions, uncategorizedCount } from './recipe-filters';
+import { isRecipeFormValid, toRecipeInput } from './recipe-form';
+import type { RecipeFormValues } from './recipe-form';
+import { recipeLimitMessage, resolveRecipeMutationError } from './recipe-messages';
+import { recentRecipes, recipeStats } from './recipe-stats';
+import { emptyRecipesSnapshot, toRecipeSummary, withCreated, withRemoved } from './recipe-state';
+import type { RecipeRecord, RecipesSnapshot } from './recipe-state';
 
 /**
  * Datos y mutaciones del listado de recetas.
@@ -43,7 +31,7 @@ export type MutationOutcome =
   | { ok: true; id: number }
   | { ok: false; message: string; planLimit?: boolean };
 
-export type RecipeMutation = "create" | "duplicate" | "delete";
+export type RecipeMutation = 'create' | 'duplicate' | 'delete';
 
 type RecipeDetailRecord = z.infer<typeof recipeWithIngredientsSchema>;
 
@@ -54,34 +42,34 @@ type RecipesPageData = {
 
 const BUSY_OUTCOME: MutationOutcome = {
   ok: false,
-  message: "Ya hay una operación en curso. Espera a que termine.",
+  message: 'Ya hay una operación en curso. Espera a que termine.',
 };
 
 const OVERLAY_MESSAGES: Record<RecipeMutation, string> = {
-  create: "Creando receta…",
-  duplicate: "Duplicando receta…",
-  delete: "Eliminando receta…",
+  create: 'Creando receta…',
+  duplicate: 'Duplicando receta…',
+  delete: 'Eliminando receta…',
 };
 
 export function useRecipes() {
   const api = useApi();
   const { subscription } = useAuth();
   const route = useRoute();
-  const overlay = useState<string | null>("loading-overlay", () => null);
+  const overlay = useState<string | null>('loading-overlay', () => null);
 
   const {
     data,
     pending: loading,
     refresh,
   } = useAsyncData<RecipesPageData>(
-    "recipes",
+    'recipes',
     async () => {
       try {
         const [recipes, usage] = await Promise.all([
-          api<RecipeRecord[]>("/api/recipes", {
+          api<RecipeRecord[]>('/api/recipes', {
             schema: z.array(recipeSummarySchema),
           }),
-          api("/api/ingredients/usage", { schema: ingredientUsageMapSchema }),
+          api('/api/ingredients/usage', { schema: ingredientUsageMapSchema }),
         ]);
 
         return {
@@ -92,7 +80,7 @@ export function useRecipes() {
           failed: false,
         };
       } catch (cause) {
-        console.error("[recipes] no se pudo cargar la página", cause);
+        console.error('[recipes] no se pudo cargar la página', cause);
         return { snapshot: emptyRecipesSnapshot(), failed: true };
       }
     },
@@ -101,37 +89,35 @@ export function useRecipes() {
         snapshot: emptyRecipesSnapshot(),
         failed: false,
       }),
-    },
+    }
   );
 
   const snapshot = computed(() => data.value.snapshot);
   const recipes = computed(() => snapshot.value.recipes);
   const loadFailed = computed(() => data.value.failed);
 
-  const searchQuery = ref("");
+  const searchQuery = ref('');
 
   /** `null` = todas, `""` = sin categoría (paridad con `?category=` del baseline). */
   const category = computed<string | null>(() => {
     const value = route.query.category;
-    return typeof value === "string" ? value : null;
+    return typeof value === 'string' ? value : null;
   });
 
   const filteredRecipes = computed(() =>
     filterRecipes(recipes.value, {
       query: searchQuery.value,
       category: category.value,
-    }),
+    })
   );
   const categoryOptions = computed(() => recipeCategoryOptions(recipes.value));
   const uncategorizedTotal = computed(() => uncategorizedCount(recipes.value));
-  const stats = computed(() =>
-    recipeStats(recipes.value, snapshot.value.usedIngredientCount),
-  );
+  const stats = computed(() => recipeStats(recipes.value, snapshot.value.usedIngredientCount));
   const recent = computed(() => recentRecipes(recipes.value));
 
   function selectCategory(next: string | null): void {
     void navigateTo({
-      path: "/recipes",
+      path: '/recipes',
       query: next === null ? {} : { category: next },
     });
   }
@@ -154,9 +140,7 @@ export function useRecipes() {
     };
   }
 
-  async function createRecipe(
-    values: RecipeFormValues,
-  ): Promise<MutationOutcome> {
+  async function createRecipe(values: RecipeFormValues): Promise<MutationOutcome> {
     const plan = subscription.value;
     if (plan && !canCreateRecipe(plan, recipes.value.length)) {
       return {
@@ -169,16 +153,16 @@ export function useRecipes() {
     if (!isRecipeFormValid(values)) {
       return {
         ok: false,
-        message: "Escribe un nombre de hasta 120 caracteres.",
+        message: 'Escribe un nombre de hasta 120 caracteres.',
       };
     }
 
-    const finish = beginMutation("create");
+    const finish = beginMutation('create');
     if (!finish) return BUSY_OUTCOME;
 
     try {
-      const created = await api<RecipeDetailRecord>("/api/recipes", {
-        method: "POST",
+      const created = await api<RecipeDetailRecord>('/api/recipes', {
+        method: 'POST',
         body: toRecipeInput(values),
         schema: recipeWithIngredientsSchema,
       });
@@ -188,7 +172,7 @@ export function useRecipes() {
       return {
         ok: false,
         ...resolveRecipeMutationError(cause, {
-          action: "create",
+          action: 'create',
           limit: plan?.recipesLimit ?? null,
         }),
       };
@@ -198,21 +182,21 @@ export function useRecipes() {
   }
 
   async function duplicateRecipe(recipeId: number): Promise<MutationOutcome> {
-    const finish = beginMutation("duplicate");
+    const finish = beginMutation('duplicate');
     if (!finish) return BUSY_OUTCOME;
 
     try {
-      const duplicated = await api<RecipeDetailRecord>(
-        `/api/recipes/${recipeId}/duplicate`,
-        { method: "POST", schema: recipeWithIngredientsSchema },
-      );
+      const duplicated = await api<RecipeDetailRecord>(`/api/recipes/${recipeId}/duplicate`, {
+        method: 'POST',
+        schema: recipeWithIngredientsSchema,
+      });
       applySnapshot(withCreated(snapshot.value, toRecipeSummary(duplicated)));
       return { ok: true, id: duplicated.id };
     } catch (cause) {
       return {
         ok: false,
         ...resolveRecipeMutationError(cause, {
-          action: "duplicate",
+          action: 'duplicate',
           limit: subscription.value?.recipesLimit ?? null,
         }),
       };
@@ -222,18 +206,18 @@ export function useRecipes() {
   }
 
   async function removeRecipe(recipeId: number): Promise<MutationOutcome> {
-    const finish = beginMutation("delete");
+    const finish = beginMutation('delete');
     if (!finish) return BUSY_OUTCOME;
 
     try {
-      await api(`/api/recipes/${recipeId}`, { method: "DELETE" });
+      await api(`/api/recipes/${recipeId}`, { method: 'DELETE' });
       applySnapshot(withRemoved(snapshot.value, recipeId));
       return { ok: true, id: recipeId };
     } catch (cause) {
       return {
         ok: false,
         ...resolveRecipeMutationError(cause, {
-          action: "delete",
+          action: 'delete',
           limit: subscription.value?.recipesLimit ?? null,
         }),
       };

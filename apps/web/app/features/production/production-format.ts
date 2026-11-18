@@ -1,4 +1,4 @@
-import { formatCurrency } from "@recetario/stripe/formatters";
+import { formatCurrency } from '@recetario/stripe/formatters';
 
 /**
  * Formato de presentación del planificador.
@@ -19,8 +19,8 @@ export function formatQty(value: number): string {
 /** g/ml ≥ 1000 se muestran como kg/lt. */
 export function smartQty(value: number, unit: string): string {
   const normalized = unit.toLowerCase();
-  if ((normalized === "g" || normalized === "ml") && value >= 1000) {
-    return `${formatQty(value / 1000)} ${normalized === "g" ? "kg" : "lt"}`;
+  if ((normalized === 'g' || normalized === 'ml') && value >= 1000) {
+    return `${formatQty(value / 1000)} ${normalized === 'g' ? 'kg' : 'lt'}`;
   }
   return `${formatQty(value)} ${unit}`;
 }
@@ -37,22 +37,19 @@ export function formatSourceQuantity(value: number): string {
 }
 
 export function recipeCountLabel(count: number): string {
-  return `${count} receta${count !== 1 ? "s" : ""}`;
+  return `${count} receta${count !== 1 ? 's' : ''}`;
 }
 
 export function batchesCountLabel(count: number): string {
-  return `${count} mezcla${count !== 1 ? "s" : ""}`;
+  return `${count} mezcla${count !== 1 ? 's' : ''}`;
 }
 
 export function ingredientsCountLabel(count: number): string {
-  return `${count} insumo${count !== 1 ? "s" : ""} en total`;
+  return `${count} insumo${count !== 1 ? 's' : ''} en total`;
 }
 
 /** Contador de la toolbar de resultados: «2 recetas · 3 mezclas». */
-export function selectionCountLabel(
-  recipeCount: number,
-  batches: number,
-): string {
+export function selectionCountLabel(recipeCount: number, batches: number): string {
   return `${recipeCountLabel(recipeCount)} · ${batchesCountLabel(batches)}`;
 }
 
@@ -62,7 +59,7 @@ export function marginText(margin: number): string {
 
 /** Tono del margen, con los mismos cortes que el baseline (30 / 15). */
 export function marginTone(margin: number): string {
-  if (margin > 30) return "text-success";
-  if (margin > 15) return "text-warning";
-  return "text-danger";
+  if (margin > 30) return 'text-success';
+  if (margin > 15) return 'text-warning';
+  return 'text-danger';
 }

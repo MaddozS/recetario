@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { computed, reactive, ref } from "vue";
+import { computed, reactive, ref } from 'vue';
 import {
   createEmptyIngredientForm,
   isIngredientFormValid,
-} from "~/features/ingredients/ingredient-form";
-import type { IngredientFormValues } from "~/features/ingredients/ingredient-form";
-import type { MutationOutcome } from "~/features/ingredients/useIngredients";
-import IngredientCostPreview from "~/features/ingredients/IngredientCostPreview.vue";
-import IngredientErrorAlert from "~/features/ingredients/IngredientErrorAlert.vue";
-import IngredientFormFields from "~/features/ingredients/IngredientFormFields.vue";
+} from '~/features/ingredients/ingredient-form';
+import type { IngredientFormValues } from '~/features/ingredients/ingredient-form';
+import type { MutationOutcome } from '~/features/ingredients/useIngredients';
+import IngredientCostPreview from '~/features/ingredients/IngredientCostPreview.vue';
+import IngredientErrorAlert from '~/features/ingredients/IngredientErrorAlert.vue';
+import IngredientFormFields from '~/features/ingredients/IngredientFormFields.vue';
 
 /**
  * Formulario de creación de escritorio (`hidden lg:block`). En móvil el mismo
@@ -40,9 +40,7 @@ async function onSubmit(): Promise<void> {
 
 <template>
   <Card padding="lg" class="mb-6 hidden lg:block">
-    <div
-      class="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between"
-    >
+    <div class="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
       <div>
         <h2 class="text-foreground text-2xl font-black">Agregar Insumo</h2>
         <p class="text-muted-foreground mt-1 text-sm">
@@ -96,7 +94,7 @@ async function onSubmit(): Promise<void> {
           :loading="submitting"
           class="shadow-accent-200 min-w-52 shadow-sm"
         >
-          {{ submitting ? "Agregando…" : "Agregar Insumo" }}
+          {{ submitting ? 'Agregando…' : 'Agregar Insumo' }}
         </Button>
       </div>
     </form>

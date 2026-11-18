@@ -1,6 +1,6 @@
-import { expect, test } from "@nuxt/test-utils/playwright";
-import { url } from "@nuxt/test-utils/e2e";
-import type { APIRequestContext, Page } from "@playwright/test";
+import { expect, test } from '@nuxt/test-utils/playwright';
+import { url } from '@nuxt/test-utils/e2e';
+import type { APIRequestContext, Page } from '@playwright/test';
 
 /**
  * Slice del detalle y la edición base de receta contra el stub del API: SSR del
@@ -13,20 +13,20 @@ import type { APIRequestContext, Page } from "@playwright/test";
  * ($33.00 de costo directo con los precios sembrados).
  */
 
-const SESSION_COOKIE = "better-auth.session_token=stub-session-token";
+const SESSION_COOKIE = 'better-auth.session_token=stub-session-token';
 const MOBILE = { width: 375, height: 800 };
 const DESKTOP = { width: 1280, height: 800 };
 
 async function resetRecipes(
   request: APIRequestContext,
-  seed: Record<string, unknown> = {},
+  seed: Record<string, unknown> = {}
 ): Promise<void> {
-  const recipes = await request.post(url("/api/__qa/recipes/reset"), {
+  const recipes = await request.post(url('/api/__qa/recipes/reset'), {
     data: seed,
   });
   expect(recipes.ok()).toBe(true);
 
-  const ingredients = await request.post(url("/api/__qa/ingredients/reset"), {
+  const ingredients = await request.post(url('/api/__qa/ingredients/reset'), {
     data: {},
   });
   expect(ingredients.ok()).toBe(true);
@@ -38,211 +38,179 @@ async function readRecipesState(request: APIRequestContext): Promise<{
   patchAttempts: number;
   deleteAttempts: number;
 }> {
-  const response = await request.get(url("/api/__qa/recipes/state"));
+  const response = await request.get(url('/api/__qa/recipes/state'));
   return await response.json();
 }
 
 async function resetCsrf(request: APIRequestContext): Promise<void> {
-  const response = await request.post(url("/api/__qa/csrf/reset"));
+  const response = await request.post(url('/api/__qa/csrf/reset'));
   expect(response.ok()).toBe(true);
 }
 
-async function readCsrfState(
-  request: APIRequestContext,
-): Promise<{ mintAttempts: number }> {
-  const response = await request.get(url("/api/__qa/csrf/state"));
+async function readCsrfState(request: APIRequestContext): Promise<{ mintAttempts: number }> {
+  const response = await request.get(url('/api/__qa/csrf/state'));
   return await response.json();
 }
 
-async function signIn(
-  page: Page,
-  plan?: "free" | "basic" | "pro",
-): Promise<void> {
+async function signIn(page: Page, plan?: 'free' | 'basic' | 'pro'): Promise<void> {
   const cookies = [
     {
-      name: "better-auth.session_token",
-      value: "stub-session-token",
-      url: url("/"),
+      name: 'better-auth.session_token',
+      value: 'stub-session-token',
+      url: url('/'),
     },
   ];
-  if (plan) cookies.push({ name: "qa-plan", value: plan, url: url("/") });
+  if (plan) cookies.push({ name: 'qa-plan', value: plan, url: url('/') });
   await page.context().addCookies(cookies);
 }
 
 function trackConsoleErrors(page: Page): string[] {
   const errors: string[] = [];
-  page.on("console", (message) => {
-    if (message.type() === "error") errors.push(message.text());
+  page.on('console', (message) => {
+    if (message.type() === 'error') errors.push(message.text());
   });
-  page.on("pageerror", (error) => errors.push(error.message));
+  page.on('pageerror', (error) => errors.push(error.message));
   return errors;
 }
 
 function pageMenu(page: Page) {
   return {
-    trigger: page.getByRole("button", { name: "Opciones de receta" }),
-    item: (name: string) => page.getByRole("menuitem", { name, exact: true }),
+    trigger: page.getByRole('button', { name: 'Opciones de receta' }),
+    item: (name: string) => page.getByRole('menuitem', { name, exact: true }),
   };
 }
 
 async function openRecipeMenu(page: Page): Promise<void> {
-  await page.getByRole("button", { name: "Opciones de receta" }).click();
+  await page.getByRole('button', { name: 'Opciones de receta' }).click();
 }
 
 /** Tabla de escritorio: las cards móviles cuentan igual aunque estén ocultas. */
 function desktopTable(page: Page) {
-  return page.locator("table");
+  return page.locator('table');
 }
 
 /** Multiplicador visible según el breakpoint (hay dos instancias). */
-function multiplierInput(page: Page, position: "desktop" | "mobile") {
-  return page.locator(
-    `[data-multiplier='${position}'] input[aria-label='Multiplicador']`,
-  );
+function multiplierInput(page: Page, position: 'desktop' | 'mobile') {
+  return page.locator(`[data-multiplier='${position}'] input[aria-label='Multiplicador']`);
 }
 
-test("SSR: detalle, ingredientes repetidos, notas ocultas y cabeceras privadas", async ({
+test('SSR: detalle, ingredientes repetidos, notas ocultas y cabeceras privadas', async ({
   request,
 }) => {
   await resetRecipes(request);
 
-  const response = await request.get(url("/recipes/1"), {
+  const response = await request.get(url('/recipes/1'), {
     headers: { cookie: SESSION_COOKIE },
   });
 
   expect(response.status()).toBe(200);
-  expect(response.headers()["cache-control"]).toBe("private, no-store");
-  expect(response.headers()["x-robots-tag"]).toBe("noindex, nofollow");
+  expect(response.headers()['cache-control']).toBe('private, no-store');
+  expect(response.headers()['x-robots-tag']).toBe('noindex, nofollow');
 
-  const html = (await response.text()).replace(/<!--[\s\S]*?-->/g, "");
-  expect(html).toContain("Tarta de Chocolate");
-  expect(html).toContain("Postres");
-  expect(html).toContain("Actualizado");
-  expect(html).toContain("Lista de Ingredientes");
-  expect(html).toContain("Ver notas");
-  expect(html).toContain("Ingrediente");
-  expect(html).toContain("Cantidad");
-  expect(html).toContain("Subtotal");
+  const html = (await response.text()).replace(/<!--[\s\S]*?-->/g, '');
+  expect(html).toContain('Tarta de Chocolate');
+  expect(html).toContain('Postres');
+  expect(html).toContain('Actualizado');
+  expect(html).toContain('Lista de Ingredientes');
+  expect(html).toContain('Ver notas');
+  expect(html).toContain('Ingrediente');
+  expect(html).toContain('Cantidad');
+  expect(html).toContain('Subtotal');
   // Ingrediente repetido: dos filas de harina, una en kg y otra en g.
   expect(html.match(/Harina de trigo/g)?.length).toBeGreaterThanOrEqual(4);
-  expect(html).toContain("(Del Campo)");
-  expect(html).toContain("Plátano");
+  expect(html).toContain('(Del Campo)');
+  expect(html).toContain('Plátano');
   // Notas ocultas por defecto (paridad con el checkbox heredado). Vue emite la
   // clase dinámica antes que la estática, así que se acota al párrafo.
   expect(html).toMatch(/<p class="[^"]*hidden[^"]*">Para la masa<\/p>/);
   // Default del stub: plan Pro → filas con costos fijos explícitos.
-  expect(html).toContain("Insumos");
-  expect(html).toContain("$33.00");
-  expect(html).toContain("Costos Fijos");
-  expect(html).toContain("Suma de los costos fijos");
-  expect(html).toContain("Margen Deseado");
-  expect(html).toContain("Precio Sugerido");
-  expect(html).toContain("Ganancia");
-  expect(html).toContain("Ingredientes");
-  expect(html).toContain("Costos Fijos");
-  expect(html).toContain("Presentaciones");
+  expect(html).toContain('Insumos');
+  expect(html).toContain('$33.00');
+  expect(html).toContain('Costos Fijos');
+  expect(html).toContain('Suma de los costos fijos');
+  expect(html).toContain('Margen Deseado');
+  expect(html).toContain('Precio Sugerido');
+  expect(html).toContain('Ganancia');
+  expect(html).toContain('Ingredientes');
+  expect(html).toContain('Costos Fijos');
+  expect(html).toContain('Presentaciones');
 
   // Migas: el nombre real sustituye al placeholder «Receta» (Task 13a).
   const desktopBreadcrumb =
-    html.match(/<nav[^>]*data-variant="desktop"[^>]*>([\s\S]*?)<\/nav>/)?.[1] ??
-    "";
-  expect(desktopBreadcrumb).toContain("Recetas");
-  expect(desktopBreadcrumb).toContain("Tarta de Chocolate");
+    html.match(/<nav[^>]*data-variant="desktop"[^>]*>([\s\S]*?)<\/nav>/)?.[1] ?? '';
+  expect(desktopBreadcrumb).toContain('Recetas');
+  expect(desktopBreadcrumb).toContain('Tarta de Chocolate');
   expect(desktopBreadcrumb).not.toMatch(/>Receta</);
 });
 
-test("Free: filas operativas y % editable", async ({ request }) => {
+test('Free: filas operativas y % editable', async ({ request }) => {
   await resetRecipes(request);
 
-  const response = await request.get(url("/recipes/1"), {
+  const response = await request.get(url('/recipes/1'), {
     headers: {
       cookie: `${SESSION_COOKIE}; qa-plan=free`,
     },
   });
 
-  const html = (await response.text()).replace(/<!--[\s\S]*?-->/g, "");
-  expect(html).toContain("Gastos Operativos");
-  expect(html).toContain("10%");
-  expect(html).toContain("$3.30");
-  expect(html).toContain("Costo Total");
+  const html = (await response.text()).replace(/<!--[\s\S]*?-->/g, '');
+  expect(html).toContain('Gastos Operativos');
+  expect(html).toContain('10%');
+  expect(html).toContain('$3.30');
+  expect(html).toContain('Costo Total');
   // El tramo de costos fijos es del plan con la feature; la tab homónima queda.
-  expect(html).not.toContain("Suma de los costos fijos");
+  expect(html).not.toContain('Suma de los costos fijos');
 });
 
-test("tabs: click con hash, deep link y teclado", async ({
-  page,
-  goto,
-  request,
-}) => {
+test('tabs: click con hash, deep link y teclado', async ({ page, goto, request }) => {
   const consoleErrors = trackConsoleErrors(page);
   await resetRecipes(request);
   await signIn(page);
   await page.setViewportSize(DESKTOP);
 
   // Deep link: el SSR ya renderiza el panel activo.
-  await goto("/recipes/1#costos-fijos");
-  await expect(page.locator("#tab-costos-fijos")).toHaveAttribute(
-    "aria-selected",
-    "true",
-  );
-  await expect(page.locator("#panel-costos-fijos")).toBeVisible();
-  await expect(page.locator("#panel-ingredientes")).toBeHidden();
-  await expect(page.locator("#panel-costos-fijos")).toContainText(
-    "Costos Fijos de la Receta",
-  );
+  await goto('/recipes/1#costos-fijos');
+  await expect(page.locator('#tab-costos-fijos')).toHaveAttribute('aria-selected', 'true');
+  await expect(page.locator('#panel-costos-fijos')).toBeVisible();
+  await expect(page.locator('#panel-ingredientes')).toBeHidden();
+  await expect(page.locator('#panel-costos-fijos')).toContainText('Costos Fijos de la Receta');
 
-  await page.locator("#tab-presentaciones").click();
+  await page.locator('#tab-presentaciones').click();
   await expect(page).toHaveURL(/#presentaciones$/);
-  await expect(page.locator("#panel-presentaciones")).toContainText(
-    "Presentaciones de Venta",
-  );
+  await expect(page.locator('#panel-presentaciones')).toContainText('Presentaciones de Venta');
 
   // Navegación por teclado: flecha izquierda vuelve a costos fijos.
-  await page.locator("#tab-presentaciones").press("ArrowLeft");
-  await expect(page.locator("#tab-costos-fijos")).toHaveAttribute(
-    "aria-selected",
-    "true",
-  );
+  await page.locator('#tab-presentaciones').press('ArrowLeft');
+  await expect(page.locator('#tab-costos-fijos')).toHaveAttribute('aria-selected', 'true');
 
-  await page.locator("#tab-ingredientes").click();
-  await expect(page.locator("#panel-ingredientes")).toBeVisible();
+  await page.locator('#tab-ingredientes').click();
+  await expect(page.locator('#panel-ingredientes')).toBeVisible();
   expect(consoleErrors).toEqual([]);
 });
 
-test("notas: el toggle muestra los comentarios y persiste", async ({
-  page,
-  goto,
-  request,
-}) => {
+test('notas: el toggle muestra los comentarios y persiste', async ({ page, goto, request }) => {
   const consoleErrors = trackConsoleErrors(page);
   await resetRecipes(request);
   await signIn(page);
   await page.setViewportSize(DESKTOP);
-  await goto("/recipes/1");
+  await goto('/recipes/1');
 
-  const comments = page.locator(".ingredient-comment");
+  const comments = page.locator('.ingredient-comment');
   await expect(comments.first()).toBeHidden();
 
-  await page.locator("#toggle-comments").check();
-  await expect(desktopTable(page).locator(".ingredient-comment")).toBeVisible();
-  await expect(desktopTable(page).locator(".ingredient-comment")).toContainText(
-    "Para la masa",
-  );
+  await page.locator('#toggle-comments').check();
+  await expect(desktopTable(page).locator('.ingredient-comment')).toBeVisible();
+  await expect(desktopTable(page).locator('.ingredient-comment')).toContainText('Para la masa');
 
   // Persistencia: la preferencia sobrevive a una recarga.
-  await goto("/recipes/1");
-  await expect(desktopTable(page).locator(".ingredient-comment")).toBeVisible();
+  await goto('/recipes/1');
+  await expect(desktopTable(page).locator('.ingredient-comment')).toBeVisible();
 
-  await page.locator("#toggle-comments").uncheck();
-  await expect(desktopTable(page).locator(".ingredient-comment")).toBeHidden();
+  await page.locator('#toggle-comments').uncheck();
+  await expect(desktopTable(page).locator('.ingredient-comment')).toBeHidden();
   expect(consoleErrors).toEqual([]);
 });
 
-test("multiplicador: deep link, botones e input sin recargar", async ({
-  page,
-  goto,
-  request,
-}) => {
+test('multiplicador: deep link, botones e input sin recargar', async ({ page, goto, request }) => {
   const consoleErrors = trackConsoleErrors(page);
   await resetRecipes(request);
   await signIn(page);
@@ -250,80 +218,64 @@ test("multiplicador: deep link, botones e input sin recargar", async ({
 
   // Deep link: el SSR ya aplica el multiplicador (cantidades en la tabla y
   // costo directo en el resumen financiero).
-  await goto("/recipes/1?multiplier=2");
-  await expect(desktopTable(page).getByText("Con x2").first()).toBeVisible();
-  await expect(page.locator("[data-financial-row='Insumos']")).toContainText(
-    "$66.00",
-  );
+  await goto('/recipes/1?multiplier=2');
+  await expect(desktopTable(page).getByText('Con x2').first()).toBeVisible();
+  await expect(page.locator("[data-financial-row='Insumos']")).toContainText('$66.00');
 
   await page.evaluate(() => {
     (window as unknown as { __qaMarker?: boolean }).__qaMarker = true;
   });
 
   // Con multiplicador >= 2 el paso es 1.
-  await page.getByRole("button", { name: "Aumentar mezclas" }).first().click();
+  await page.getByRole('button', { name: 'Aumentar mezclas' }).first().click();
   await expect(page).toHaveURL(/multiplier=3/);
-  await expect(desktopTable(page).getByText("Con x3").first()).toBeVisible();
-  await expect(page.locator("[data-financial-row='Insumos']")).toContainText(
-    "$99.00",
-  );
+  await expect(desktopTable(page).getByText('Con x3').first()).toBeVisible();
+  await expect(page.locator("[data-financial-row='Insumos']")).toContainText('$99.00');
 
-  await page.getByRole("button", { name: "Disminuir mezclas" }).first().click();
+  await page.getByRole('button', { name: 'Disminuir mezclas' }).first().click();
   await expect(page).toHaveURL(/multiplier=2/);
 
   // El input también actualiza la query.
-  const input = multiplierInput(page, "desktop");
-  await input.fill("1.5");
+  const input = multiplierInput(page, 'desktop');
+  await input.fill('1.5');
   await input.blur();
   await expect(page).toHaveURL(/multiplier=1\.5/);
-  await expect(desktopTable(page).getByText("Con x1.5").first()).toBeVisible();
+  await expect(desktopTable(page).getByText('Con x1.5').first()).toBeVisible();
 
   expect(
-    await page.evaluate(
-      () => (window as unknown as { __qaMarker?: boolean }).__qaMarker === true,
-    ),
+    await page.evaluate(() => (window as unknown as { __qaMarker?: boolean }).__qaMarker === true)
   ).toBe(true);
   expect(consoleErrors).toEqual([]);
 });
 
-test("edición: deep link ?edit=true, snapshot y cancelar", async ({
-  page,
-  goto,
-  request,
-}) => {
+test('edición: deep link ?edit=true, snapshot y cancelar', async ({ page, goto, request }) => {
   const consoleErrors = trackConsoleErrors(page);
   await resetRecipes(request);
   await signIn(page);
   await page.setViewportSize(DESKTOP);
-  await goto("/recipes/1?edit=true");
+  await goto('/recipes/1?edit=true');
 
   // SSR ya renderiza el editor con las filas del detalle.
-  await expect(page.locator("#recipe-name-input")).toHaveValue(
-    "Tarta de Chocolate",
-  );
-  await expect(page.locator(".edit-ingredient-row")).toHaveCount(3);
-  await expect(page.locator(".quantity-input").first()).toHaveValue("0.5");
-  await expect(page.locator("#recipe-title-view")).toBeHidden();
+  await expect(page.locator('#recipe-name-input')).toHaveValue('Tarta de Chocolate');
+  await expect(page.locator('.edit-ingredient-row')).toHaveCount(3);
+  await expect(page.locator('.quantity-input').first()).toHaveValue('0.5');
+  await expect(page.locator('#recipe-title-view')).toBeHidden();
 
-  await page.locator("#recipe-name-input").fill("Tarta a medio camino");
-  await page.locator("button#recipe-cancel-edit").click();
+  await page.locator('#recipe-name-input').fill('Tarta a medio camino');
+  await page.locator('button#recipe-cancel-edit').click();
 
   await expect(page).toHaveURL(/\/recipes\/1$/);
-  await expect(page.locator("#recipe-title-view")).toHaveText(
-    "Tarta de Chocolate",
-  );
+  await expect(page.locator('#recipe-title-view')).toHaveText('Tarta de Chocolate');
 
   // Cancelar no llamó al API y el editor olvidó los cambios.
   const state = await readRecipesState(request);
   expect(state.patchAttempts).toBe(0);
-  await goto("/recipes/1?edit=true");
-  await expect(page.locator("#recipe-name-input")).toHaveValue(
-    "Tarta de Chocolate",
-  );
+  await goto('/recipes/1?edit=true');
+  await expect(page.locator('#recipe-name-input')).toHaveValue('Tarta de Chocolate');
   expect(consoleErrors).toEqual([]);
 });
 
-test("guardar sin recarga: alerta, PATCH y listado al día al volver", async ({
+test('guardar sin recarga: alerta, PATCH y listado al día al volver', async ({
   page,
   goto,
   request,
@@ -332,52 +284,44 @@ test("guardar sin recarga: alerta, PATCH y listado al día al volver", async ({
   await resetRecipes(request);
   await signIn(page);
   await page.setViewportSize(DESKTOP);
-  await goto("/recipes");
+  await goto('/recipes');
 
   // Entrar a editar desde el menú de la card (deja el listado en el historial).
-  const card = page
-    .locator("a.recipe-grid-card[href='/recipes/1']")
-    .locator("xpath=..");
-  await card.getByRole("button", { name: "Acciones" }).click();
-  await page.getByRole("menuitem", { name: "Editar", exact: true }).click();
+  const card = page.locator("a.recipe-grid-card[href='/recipes/1']").locator('xpath=..');
+  await card.getByRole('button', { name: 'Acciones' }).click();
+  await page.getByRole('menuitem', { name: 'Editar', exact: true }).click();
   await expect(page).toHaveURL(/\/recipes\/1\?edit=true$/);
 
   await page.evaluate(() => {
     (window as unknown as { __qaMarker?: boolean }).__qaMarker = true;
   });
 
-  await page.locator("#recipe-name-input").fill("Tarta v2");
-  await page.locator("#fs-edit-desiredMargin").fill("40");
-  await page.locator(".quantity-input").first().fill("0.75");
-  await page.getByRole("button", { name: "Guardar Receta" }).click();
+  await page.locator('#recipe-name-input').fill('Tarta v2');
+  await page.locator('#fs-edit-desiredMargin').fill('40');
+  await page.locator('.quantity-input').first().fill('0.75');
+  await page.getByRole('button', { name: 'Guardar Receta' }).click();
 
   // Guardado en sitio: mismo documento, sin `?edit` y con éxito visible.
   await expect(page).toHaveURL(/\/recipes\/1$/);
-  await expect(page.getByText("Receta guardada correctamente.")).toBeVisible();
-  await expect(page.locator("#recipe-title-view")).toHaveText("Tarta v2");
+  await expect(page.getByText('Receta guardada correctamente.')).toBeVisible();
+  await expect(page.locator('#recipe-title-view')).toHaveText('Tarta v2');
   // La miga sigue el nombre sin recargar.
-  await expect(page.locator('nav[data-variant="desktop"]')).toContainText(
-    "Tarta v2",
-  );
-  await expect(page.getByText("40%").first()).toBeVisible();
+  await expect(page.locator('nav[data-variant="desktop"]')).toContainText('Tarta v2');
+  await expect(page.getByText('40%').first()).toBeVisible();
 
   const state = await readRecipesState(request);
   expect(state.patchAttempts).toBe(1);
-  expect(state.recipes.find((recipe) => recipe.id === 1)?.name).toBe(
-    "Tarta v2",
-  );
+  expect(state.recipes.find((recipe) => recipe.id === 1)?.name).toBe('Tarta v2');
 
   // Al volver con el historial (navegación cliente) el listado se remonta y
   // refetchea: el nombre nuevo está ahí.
   await page.goBack();
   await expect(page).toHaveURL(/\/recipes$/);
-  await expect(
-    page.locator("a.recipe-grid-card[href='/recipes/1']"),
-  ).toContainText("Tarta v2");
+  await expect(page.locator("a.recipe-grid-card[href='/recipes/1']")).toContainText('Tarta v2');
   expect(consoleErrors).toEqual([]);
 });
 
-test("cookie CSRF perdida: guarda renovando el token, sin recargar", async ({
+test('cookie CSRF perdida: guarda renovando el token, sin recargar', async ({
   page,
   goto,
   request,
@@ -387,56 +331,48 @@ test("cookie CSRF perdida: guarda renovando el token, sin recargar", async ({
   await resetCsrf(request);
   await signIn(page);
   await page.setViewportSize(DESKTOP);
-  await goto("/recipes/1?edit=true");
+  await goto('/recipes/1?edit=true');
 
   // La cookie se emite con el documento: un documento que vive más que ella
   // (edición larga, pestaña restaurada del bfcache) equivale a borrarla. Es
   // legible por JS, así que la página puede eliminarla.
   await page.evaluate(() => {
-    document.cookie = "csrf_token=; path=/; Max-Age=0";
+    document.cookie = 'csrf_token=; path=/; Max-Age=0';
   });
-  expect(await page.evaluate(() => document.cookie)).not.toContain(
-    "csrf_token=",
-  );
+  expect(await page.evaluate(() => document.cookie)).not.toContain('csrf_token=');
 
-  await page.locator("#recipe-name-input").fill("Tarta sin token");
-  await page.getByRole("button", { name: "Guardar Receta" }).click();
+  await page.locator('#recipe-name-input').fill('Tarta sin token');
+  await page.getByRole('button', { name: 'Guardar Receta' }).click();
 
   // El pre-flight pide token antes de la mutación: sin 403 y sin recargar.
-  await expect(page.getByText("Receta guardada correctamente.")).toBeVisible();
-  await expect(page.getByText("CSRF validation failed")).toHaveCount(0);
+  await expect(page.getByText('Receta guardada correctamente.')).toBeVisible();
+  await expect(page.getByText('CSRF validation failed')).toHaveCount(0);
 
   const state = await readRecipesState(request);
   expect(state.patchAttempts).toBe(1);
-  expect(state.recipes.find((recipe) => recipe.id === 1)?.name).toBe(
-    "Tarta sin token",
-  );
+  expect(state.recipes.find((recipe) => recipe.id === 1)?.name).toBe('Tarta sin token');
 
   const csrf = await readCsrfState(request);
   expect(csrf.mintAttempts).toBe(1);
-  expect(await page.evaluate(() => document.cookie)).toContain("csrf_token=");
+  expect(await page.evaluate(() => document.cookie)).toContain('csrf_token=');
   expect(consoleErrors).toEqual([]);
 });
 
-test("con el token presente no se pide uno nuevo", async ({
-  page,
-  goto,
-  request,
-}) => {
+test('con el token presente no se pide uno nuevo', async ({ page, goto, request }) => {
   await resetRecipes(request);
   await resetCsrf(request);
   await signIn(page);
   await page.setViewportSize(DESKTOP);
-  await goto("/recipes/1?edit=true");
+  await goto('/recipes/1?edit=true');
 
-  await page.locator("#recipe-name-input").fill("Tarta con token");
-  await page.getByRole("button", { name: "Guardar Receta" }).click();
-  await expect(page.getByText("Receta guardada correctamente.")).toBeVisible();
+  await page.locator('#recipe-name-input').fill('Tarta con token');
+  await page.getByRole('button', { name: 'Guardar Receta' }).click();
+  await expect(page.getByText('Receta guardada correctamente.')).toBeVisible();
 
   expect((await readCsrfState(request)).mintAttempts).toBe(0);
 });
 
-test("validación local: sin filas o con filas incompletas no llama al API", async ({
+test('validación local: sin filas o con filas incompletas no llama al API', async ({
   page,
   goto,
   request,
@@ -445,17 +381,15 @@ test("validación local: sin filas o con filas incompletas no llama al API", asy
   await resetRecipes(request);
   await signIn(page);
   await page.setViewportSize(DESKTOP);
-  await goto("/recipes/1?edit=true");
+  await goto('/recipes/1?edit=true');
 
   // Una fila nueva sin ingrediente bloquea el guardado y queda señalada.
-  await page.locator("#add-ingredient-btn").click();
-  await expect(page.locator(".edit-ingredient-row")).toHaveCount(4);
-  await page.getByRole("button", { name: "Guardar Receta" }).click();
+  await page.locator('#add-ingredient-btn').click();
+  await expect(page.locator('.edit-ingredient-row')).toHaveCount(4);
+  await page.getByRole('button', { name: 'Guardar Receta' }).click();
 
   await expect(
-    page.getByText(
-      "Completa o elimina las filas sin ingrediente o con cantidad mayor a 0.",
-    ),
+    page.getByText('Completa o elimina las filas sin ingrediente o con cantidad mayor a 0.')
   ).toBeVisible();
   await expect(page.locator("[data-invalid='true']")).toHaveCount(1);
 
@@ -464,18 +398,16 @@ test("validación local: sin filas o con filas incompletas no llama al API", asy
   for (let index = 0; index < 4; index += 1) {
     await removes.first().click();
   }
-  await expect(page.locator(".edit-ingredient-row")).toHaveCount(0);
-  await page.getByRole("button", { name: "Guardar Receta" }).click();
-  await expect(
-    page.getByText("Agrega al menos un ingrediente antes de guardar."),
-  ).toBeVisible();
+  await expect(page.locator('.edit-ingredient-row')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Guardar Receta' }).click();
+  await expect(page.getByText('Agrega al menos un ingrediente antes de guardar.')).toBeVisible();
 
   const state = await readRecipesState(request);
   expect(state.patchAttempts).toBe(0);
   expect(consoleErrors).toEqual([]);
 });
 
-test("error al guardar: permanece en edición con los cambios y la alerta", async ({
+test('error al guardar: permanece en edición con los cambios y la alerta', async ({
   page,
   goto,
   request,
@@ -484,19 +416,15 @@ test("error al guardar: permanece en edición con los cambios y la alerta", asyn
   await resetRecipes(request);
   await signIn(page);
   await page.setViewportSize(DESKTOP);
-  await goto("/recipes/1?edit=true");
+  await goto('/recipes/1?edit=true');
 
-  await page.locator("#recipe-name-input").fill("Fallo simulado");
-  await page.getByRole("button", { name: "Guardar Receta" }).click();
+  await page.locator('#recipe-name-input').fill('Fallo simulado');
+  await page.getByRole('button', { name: 'Guardar Receta' }).click();
 
-  await expect(page.getByText("Fallo simulado del servidor")).toBeVisible();
+  await expect(page.getByText('Fallo simulado del servidor')).toBeVisible();
   await expect(page).toHaveURL(/edit=true/);
-  await expect(page.locator("#recipe-name-input")).toHaveValue(
-    "Fallo simulado",
-  );
-  await expect(page.getByRole("link", { name: "Actualizar plan" })).toHaveCount(
-    0,
-  );
+  await expect(page.locator('#recipe-name-input')).toHaveValue('Fallo simulado');
+  await expect(page.getByRole('link', { name: 'Actualizar plan' })).toHaveCount(0);
 
   const state = await readRecipesState(request);
   expect(state.patchAttempts).toBe(1);
@@ -504,32 +432,26 @@ test("error al guardar: permanece en edición con los cambios y la alerta", asyn
   expect(consoleErrors.length).toBeLessThanOrEqual(1);
 });
 
-test("responsive: cards en móvil y tabla en escritorio", async ({
-  page,
-  goto,
-  request,
-}) => {
+test('responsive: cards en móvil y tabla en escritorio', async ({ page, goto, request }) => {
   await resetRecipes(request);
   await signIn(page);
 
   await page.setViewportSize(MOBILE);
-  await goto("/recipes/1");
-  await expect(page.locator("article").first()).toBeVisible();
-  await expect(
-    page.getByText("Cantidad usada en esta mezcla").first(),
-  ).toBeVisible();
-  await expect(page.locator("table")).toBeHidden();
-  await expect(multiplierInput(page, "mobile")).toBeVisible();
-  await expect(multiplierInput(page, "desktop")).toBeHidden();
+  await goto('/recipes/1');
+  await expect(page.locator('article').first()).toBeVisible();
+  await expect(page.getByText('Cantidad usada en esta mezcla').first()).toBeVisible();
+  await expect(page.locator('table')).toBeHidden();
+  await expect(multiplierInput(page, 'mobile')).toBeVisible();
+  await expect(multiplierInput(page, 'desktop')).toBeHidden();
 
   await page.setViewportSize(DESKTOP);
-  await expect(page.locator("table")).toBeVisible();
-  await expect(page.locator("article").first()).toBeHidden();
-  await expect(multiplierInput(page, "desktop")).toBeVisible();
-  await expect(multiplierInput(page, "mobile")).toBeHidden();
+  await expect(page.locator('table')).toBeVisible();
+  await expect(page.locator('article').first()).toBeHidden();
+  await expect(multiplierInput(page, 'desktop')).toBeVisible();
+  await expect(multiplierInput(page, 'mobile')).toBeHidden();
 });
 
-test("eliminar desde el detalle vuelve al listado sin la receta", async ({
+test('eliminar desde el detalle vuelve al listado sin la receta', async ({
   page,
   goto,
   request,
@@ -538,80 +460,72 @@ test("eliminar desde el detalle vuelve al listado sin la receta", async ({
   await resetRecipes(request);
   await signIn(page);
   await page.setViewportSize(DESKTOP);
-  await goto("/recipes/1");
+  await goto('/recipes/1');
 
   await openRecipeMenu(page);
-  await pageMenu(page).item("Eliminar").click();
+  await pageMenu(page).item('Eliminar').click();
 
-  const dialog = page.locator("#delete-recipe-modal");
+  const dialog = page.locator('#delete-recipe-modal');
   await expect(dialog).toBeVisible();
-  await dialog.getByRole("button", { name: "Eliminar" }).click();
+  await dialog.getByRole('button', { name: 'Eliminar' }).click();
 
   await expect(page).toHaveURL(/\/recipes$/);
-  await expect(page.locator("a.recipe-grid-card")).toHaveCount(2);
-  await expect(page.getByText("Tarta de Chocolate")).toHaveCount(0);
+  await expect(page.locator('a.recipe-grid-card')).toHaveCount(2);
+  await expect(page.getByText('Tarta de Chocolate')).toHaveCount(0);
 
   const state = await readRecipesState(request);
   expect(state.deleteAttempts).toBe(1);
   expect(consoleErrors).toEqual([]);
 });
 
-test("duplicar: Pro navega a la copia en edición y Free no lo ofrece", async ({
+test('duplicar: Pro navega a la copia en edición y Free no lo ofrece', async ({
   page,
   goto,
   request,
 }) => {
   const consoleErrors = trackConsoleErrors(page);
   await resetRecipes(request);
-  await signIn(page, "pro");
+  await signIn(page, 'pro');
   await page.setViewportSize(DESKTOP);
-  await goto("/recipes/1");
+  await goto('/recipes/1');
 
   await openRecipeMenu(page);
-  await pageMenu(page).item("Duplicar").click();
+  await pageMenu(page).item('Duplicar').click();
 
-  const dialog = page.locator("#duplicate-recipe-modal");
-  await dialog.getByRole("button", { name: "Duplicar" }).click();
+  const dialog = page.locator('#duplicate-recipe-modal');
+  await dialog.getByRole('button', { name: 'Duplicar' }).click();
 
   await expect(page).toHaveURL(/\/recipes\/4\?edit=true$/);
-  await expect(page.locator("#recipe-name-input")).toHaveValue(
-    "Copia de Tarta de Chocolate",
-  );
+  await expect(page.locator('#recipe-name-input')).toHaveValue('Copia de Tarta de Chocolate');
   // La copia trae las filas del original.
-  await expect(page.locator(".edit-ingredient-row")).toHaveCount(3);
+  await expect(page.locator('.edit-ingredient-row')).toHaveCount(3);
 
   const state = await readRecipesState(request);
-  expect(state.recipes.map((recipe) => recipe.name)).toContain(
-    "Copia de Tarta de Chocolate",
-  );
+  expect(state.recipes.map((recipe) => recipe.name)).toContain('Copia de Tarta de Chocolate');
   expect(consoleErrors).toEqual([]);
 });
 
-test("Free: el menú del detalle no ofrece Duplicar", async ({
-  page,
-  goto,
-  request,
-}) => {
+test('Free: el menú del detalle no ofrece Duplicar', async ({ page, goto, request }) => {
   await resetRecipes(request);
-  await signIn(page, "free");
+  await signIn(page, 'free');
   await page.setViewportSize(DESKTOP);
-  await goto("/recipes/1");
+  await goto('/recipes/1');
 
   await openRecipeMenu(page);
-  await expect(page.getByRole("menuitem", { name: "Editar" })).toBeVisible();
-  await expect(page.getByRole("menuitem", { name: "Duplicar" })).toHaveCount(0);
-  await expect(page.getByRole("menuitem", { name: "Eliminar" })).toBeVisible();
+  await expect(page.getByRole('menuitem', { name: 'Editar' })).toBeVisible();
+  await expect(page.getByRole('menuitem', { name: 'Duplicar' })).toHaveCount(0);
+  await expect(page.getByRole('menuitem', { name: 'Eliminar' })).toBeVisible();
 });
 
-test("404: una receta inexistente redirige al listado", async ({ request }) => {
+test('404: una receta inexistente redirige al listado', async ({ request }) => {
   await resetRecipes(request);
 
-  const response = await request.get(url("/recipes/999"), {
+  const response = await request.get(url('/recipes/999'), {
     headers: { cookie: SESSION_COOKIE },
     maxRedirects: 0,
   });
 
   // El SSR responde con un redirect al listado (paridad con el baseline).
   expect([302, 303, 307]).toContain(response.status());
-  expect(response.headers()["location"] ?? "").toContain("/recipes");
+  expect(response.headers()['location'] ?? '').toContain('/recipes');
 });

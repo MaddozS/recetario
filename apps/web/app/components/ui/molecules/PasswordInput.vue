@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref } from 'vue';
 
 withDefaults(
   defineProps<{
@@ -13,12 +13,12 @@ withDefaults(
     disabled?: boolean;
   }>(),
   {
-    placeholder: "",
-    autocomplete: "off",
+    placeholder: '',
+    autocomplete: 'off',
     required: false,
     showRequired: true,
     disabled: false,
-  },
+  }
 );
 
 const model = defineModel<string>();
@@ -33,8 +33,7 @@ const visible = ref(false);
       :for="id"
       class="text-muted-foreground mb-1.5 block text-xs font-bold tracking-wider uppercase"
     >
-      {{ label
-      }}<span v-if="required && showRequired" class="text-danger"> *</span>
+      {{ label }}<span v-if="required && showRequired" class="text-danger"> *</span>
     </label>
     <div class="relative">
       <input

@@ -1,7 +1,7 @@
-import type { Handler } from "hono";
-import { getIngredients } from "@recetario/db";
-import { ingredientSchema } from "@recetario/types";
-import { getAuthUser } from "../middleware/auth";
+import type { Handler } from 'hono';
+import { getIngredients } from '@recetario/db';
+import { ingredientSchema } from '@recetario/types';
+import { getAuthUser } from '../middleware/auth';
 
 export function ingredientsListHandler(): Handler {
   return async (c) => {
@@ -18,8 +18,8 @@ export function ingredientsListHandler(): Handler {
           purchaseQuantity: Number(i.purchaseQuantity),
           brand: i.brand ?? undefined,
           supplier: i.supplier ?? undefined,
-        }),
-      ),
+        })
+      )
     );
   };
 }

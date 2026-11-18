@@ -1,4 +1,4 @@
-import { nextTick, ref, type Ref } from "vue";
+import { nextTick, ref, type Ref } from 'vue';
 
 /**
  * Encuadre del lightbox: alterna entre ajuste y tamaño real y desplaza la
@@ -38,12 +38,8 @@ export function useLightboxFraming(stage: Ref<HTMLElement | null>) {
     const element = stage.value;
     if (!element) return;
 
-    element.scrollLeft = next
-      ? (element.scrollWidth - element.clientWidth) / 2
-      : 0;
-    element.scrollTop = next
-      ? (element.scrollHeight - element.clientHeight) / 2
-      : 0;
+    element.scrollLeft = next ? (element.scrollWidth - element.clientWidth) / 2 : 0;
+    element.scrollTop = next ? (element.scrollHeight - element.clientHeight) / 2 : 0;
   }
 
   function toggleZoom(): void {
@@ -65,7 +61,7 @@ export function useLightboxFraming(stage: Ref<HTMLElement | null>) {
    * puntero activa los eventos de ratón se re-dirigen al elemento que captura.
    */
   function handleTap(event: MouseEvent): void {
-    if (!("pointerType" in event) || event.pointerType !== "touch") return;
+    if (!('pointerType' in event) || event.pointerType !== 'touch') return;
 
     const now = Date.now();
     if (now - lastTap > DOUBLE_TAP_MS) {
@@ -80,12 +76,7 @@ export function useLightboxFraming(stage: Ref<HTMLElement | null>) {
   function handlePointerDown(event: PointerEvent): void {
     const element = stage.value;
     // El arrastre es para ratón: en táctil el pan lo hace el scroll nativo.
-    if (
-      !zoomed.value ||
-      !element ||
-      event.pointerType !== "mouse" ||
-      event.button !== 0
-    ) {
+    if (!zoomed.value || !element || event.pointerType !== 'mouse' || event.button !== 0) {
       return;
     }
 
@@ -105,11 +96,7 @@ export function useLightboxFraming(stage: Ref<HTMLElement | null>) {
 
     const deltaX = event.clientX - drag.x;
     const deltaY = event.clientY - drag.y;
-    if (
-      !drag.moved &&
-      Math.abs(deltaX) < DRAG_THRESHOLD &&
-      Math.abs(deltaY) < DRAG_THRESHOLD
-    ) {
+    if (!drag.moved && Math.abs(deltaX) < DRAG_THRESHOLD && Math.abs(deltaY) < DRAG_THRESHOLD) {
       return;
     }
 

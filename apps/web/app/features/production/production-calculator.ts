@@ -4,7 +4,7 @@ import type {
   ProductionRecipeResult,
   ProductionSelection,
   ProductionSummary,
-} from "./production-types";
+} from './production-types';
 
 /**
  * Cálculo del planificador de producción: consolida los insumos de todas las
@@ -21,12 +21,9 @@ function roundHalfUp(value: number): number {
 }
 
 /** g/ml se redondean a entero; el resto conserva decimales. */
-function aplicarRedondeoUnidadPequena(
-  cantidad: number,
-  unidad: string,
-): number {
+function aplicarRedondeoUnidadPequena(cantidad: number, unidad: string): number {
   const u = unidad.toLowerCase();
-  if (u === "g" || u === "ml") {
+  if (u === 'g' || u === 'ml') {
     return roundHalfUp(cantidad);
   }
   return cantidad;
@@ -41,7 +38,7 @@ function calcularCantidadAjustada(
   quantity: number,
   recipeUnit: string,
   ingredientUnit: string,
-  batches: number,
+  batches: number
 ): number {
   let cantidad = aplicarRedondeoUnidadPequena(quantity * batches, recipeUnit);
   const unidadInsumo = ingredientUnit.toLowerCase();
@@ -49,8 +46,8 @@ function calcularCantidadAjustada(
 
   // Conversión: si el insumo se compra en kg/lt y la receta usa g/ml.
   if (
-    (unidadInsumo === "kg" || unidadInsumo === "lt") &&
-    (unidadReceta === "g" || unidadReceta === "ml")
+    (unidadInsumo === 'kg' || unidadInsumo === 'lt') &&
+    (unidadReceta === 'g' || unidadReceta === 'ml')
   ) {
     cantidad = cantidad / 1000;
   }
@@ -59,10 +56,7 @@ function calcularCantidadAjustada(
 }
 
 /** Margen de una presentación (`null` sin ingresos o sin costo). */
-export function presentationMargin(
-  revenue: number,
-  totalCost: number,
-): number | null {
+export function presentationMargin(revenue: number, totalCost: number): number | null {
   if (!(revenue > 0) || !(totalCost > 0)) return null;
   return ((revenue - totalCost) / revenue) * 100;
 }
@@ -71,9 +65,7 @@ export function presentationMargin(
  * Presentación más rentable de una receta: la de mayor margen con ingresos.
  * Devuelve `null` cuando ninguna presentación genera ingresos.
  */
-export function bestPresentationId(
-  recipe: ProductionRecipeResult,
-): number | null {
+export function bestPresentationId(recipe: ProductionRecipeResult): number | null {
   let bestId: number | null = null;
   let bestMargin = Number.NEGATIVE_INFINITY;
 
@@ -91,7 +83,7 @@ export function bestPresentationId(
 
 export function calculateProduction(
   selections: ReadonlyArray<ProductionSelection>,
-  recipes: ReadonlyArray<ProductionRecipeRecord>,
+  recipes: ReadonlyArray<ProductionRecipeRecord>
 ): {
   consolidatedIngredients: ConsolidatedIngredient[];
   summary: ProductionSummary;
@@ -118,26 +110,23 @@ export function calculateProduction(
     for (const row of recipe.ingredients) {
       if (!row.quantity || row.quantity <= 0) continue;
 
-      const unitCost = ingredientUnitCost(
-        row.ingredient.price,
-        row.ingredient.purchaseQuantity,
-      );
+      const unitCost = ingredientUnitCost(row.ingredient.price, row.ingredient.purchaseQuantity);
 
       const adjustedQuantity = calcularCantidadAjustada(
         row.quantity,
         row.unit,
         row.ingredient.unit,
-        batches,
+        batches
       );
       const cost = unitCost * adjustedQuantity;
       recipeIngredientCost += cost;
 
       const unit = row.unit.toLowerCase();
       const rawQuantity = row.quantity * batches;
-      if (unit === "g") recipeWeightGrams += rawQuantity;
-      else if (unit === "kg") recipeWeightGrams += rawQuantity * 1000;
-      else if (unit === "ml") recipeVolumeMl += rawQuantity;
-      else if (unit === "lt") recipeVolumeMl += rawQuantity * 1000;
+      if (unit === 'g') recipeWeightGrams += rawQuantity;
+      else if (unit === 'kg') recipeWeightGrams += rawQuantity * 1000;
+      else if (unit === 'ml') recipeVolumeMl += rawQuantity;
+      else if (unit === 'lt') recipeVolumeMl += rawQuantity * 1000;
 
       const existing = ingredientMap.get(row.ingredientId);
       if (existing) {
@@ -169,8 +158,7 @@ export function calculateProduction(
       }
     }
 
-    const recipeOperationalCost =
-      recipeIngredientCost * (recipe.fixedCostsPercentage / 100);
+    const recipeOperationalCost = recipeIngredientCost * (recipe.fixedCostsPercentage / 100);
     const recipeTotalCost = recipeIngredientCost + recipeOperationalCost;
 
     if (recipe.presentations.length > 0) {
@@ -180,36 +168,30 @@ export function calculateProduction(
         recipeTotalCost > 0 && recipe.desiredMargin > 0
           ? recipeTotalCost / (1 - recipe.desiredMargin / 100)
           : 0;
-      const candidatePresentations = recipe.presentations.map(
-        (presentation) => {
-          const totalUnits = presentation.unitsPerBatch * batches;
-          const unitCost =
-            recipeTotalCost > 0
-              ? recipeTotalCost / (presentation.unitsPerBatch * batches)
-              : 0;
-          const salePrice =
-            presentation.salePrice ??
-            (suggestedBatchPrice > 0
-              ? suggestedBatchPrice / (presentation.unitsPerBatch * batches)
-              : undefined);
-          const revenue = salePrice ? salePrice * totalUnits : 0;
-          return {
-            id: presentation.id,
-            name: presentation.name,
-            totalUnits,
-            unitCost,
-            salePrice,
-            revenue,
-          };
-        },
-      );
+      const candidatePresentations = recipe.presentations.map((presentation) => {
+        const totalUnits = presentation.unitsPerBatch * batches;
+        const unitCost =
+          recipeTotalCost > 0 ? recipeTotalCost / (presentation.unitsPerBatch * batches) : 0;
+        const salePrice =
+          presentation.salePrice ??
+          (suggestedBatchPrice > 0
+            ? suggestedBatchPrice / (presentation.unitsPerBatch * batches)
+            : undefined);
+        const revenue = salePrice ? salePrice * totalUnits : 0;
+        return {
+          id: presentation.id,
+          name: presentation.name,
+          totalUnits,
+          unitCost,
+          salePrice,
+          revenue,
+        };
+      });
 
       // Sin elección explícita se proyecta la presentación más rentable, igual
       // que el baseline.
       const chosen = selection.presentationId
-        ? candidatePresentations.find(
-            (candidate) => candidate.id === selection.presentationId,
-          )
+        ? candidatePresentations.find((candidate) => candidate.id === selection.presentationId)
         : undefined;
 
       if (chosen) {
@@ -217,7 +199,7 @@ export function calculateProduction(
         recipeRevenue = chosen.revenue;
       } else {
         const best = candidatePresentations.reduce((best, candidate) =>
-          candidate.revenue > best.revenue ? candidate : best,
+          candidate.revenue > best.revenue ? candidate : best
         );
         selectedPresentationId = best.id;
         recipeRevenue = best.revenue;
@@ -261,8 +243,7 @@ export function calculateProduction(
 
   const totalProductionCost = totalIngredientsCost + totalOperationalCost;
   const estimatedProfit = totalRevenue - totalProductionCost;
-  const effectiveMargin =
-    totalRevenue > 0 ? (estimatedProfit / totalRevenue) * 100 : 0;
+  const effectiveMargin = totalRevenue > 0 ? (estimatedProfit / totalRevenue) * 100 : 0;
 
   return {
     consolidatedIngredients: Array.from(ingredientMap.values()),

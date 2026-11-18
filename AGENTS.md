@@ -48,10 +48,11 @@ Better Auth vive en **Hono** (`packages/auth`); la web no importa sus clientes. 
 ### Pages & routing
 
 - **Protected** (`definePageMeta({ middleware: "auth" })`): `/recipes`, `/recipes/[id]`, `/ingredients`, `/settings`, `/produccion` (`/settings/billing` es un 301 de Nitro que preserva la query).
-- **Public**: `/`, `/pricing`, `/privacy`, `/terms` (indexables; `/pricing` es pública, el checkout sigue exigiendo sesión en Hono).
+- **Public**: `/`, `/funciones`, `/pricing`, `/privacy`, `/terms` (indexables; `/pricing` es pública, el checkout sigue exigiendo sesión en Hono).
 - **Auth**: `/sign-in`, `/sign-up`, `/forgot-password`, `/reset-password`, `/verify-email` (`noindex,nofollow`, sin canonical ni OG).
 - `/produccion` exige además la feature `production_planner` (`FEATURE_REQUIRED` en Hono); la UI dirige a `/settings?tab=billing`.
 - Layouts: `public.vue` (marketing), `private.vue` (shell + sidebar), `auth.vue`. El acento coral es de las rutas públicas y de auth (`isCoralAccentPath()` en `app.vue`).
+- El marketing es **claro y punto**: `app.vue` ignora la preferencia de tema en `isPublicMarketingPath()` (fuerza `data-theme="light"` y no añade `.dark`), así que el navbar público no monta toggle; el toggle vive sólo en el layout de auth. Las secciones públicas comparten `LandingSection` + `LandingSectionHeading` (tono de fondo, ancho y ritmo), que es lo que mantiene el estilo igual entre landing, `/funciones`, planes y legales.
 
 ### Data layer
 

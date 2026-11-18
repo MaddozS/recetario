@@ -14,7 +14,12 @@
     "./prisma/generated/browser": "./prisma/generated/browser.ts",
     "./prisma/generated-node/client": "./prisma/generated-node/client.ts"
   },
-  "files": ["dist", "prisma", "generated", "generated-node"],
+  "files": [
+    "dist",
+    "prisma",
+    "generated",
+    "generated-node"
+  ],
   "scripts": {
     "build": "tsc --noEmit",
     "generate": "prisma generate",
@@ -23,24 +28,26 @@
     "studio": "prisma studio",
     "seed": "tsx prisma/seed.ts",
     "seed:plans": "tsx prisma/seed-plans.ts",
-    "seed:fixed-costs": "tsx prisma/seed-fixed-costs.ts",
     "seed:test-users": "tsx prisma/seed-test-users.ts",
+    "crud:demo": "tsx src/crud-demo.ts",
     "test": "vitest run"
   },
   "dependencies": {
+    "@prisma/adapter-neon": "7.8.0",
     "@prisma/adapter-pg": "7.8.0",
     "@prisma/client": "7.8.0",
-    "typescript": "6.0.2",
     "@recetario/config": "workspace:^",
     "@recetario/types": "workspace:^",
     "dotenv": "17.4.2",
-    "pg": "8.20.0"
+    "pg": "8.20.0",
+    "typescript": "6.0.2"
   },
   "devDependencies": {
-    "prisma": "7.8.0",
     "@types/node": "26.1.2",
     "@types/pg": "8.20.0",
+    "prisma": "7.8.0",
     "tsx": "4.22.0",
     "vitest": "^3.1.0"
-  }
+  },
+  "license": "AGPL-3.0-only"
 }

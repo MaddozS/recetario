@@ -1,13 +1,11 @@
 <script setup lang="ts">
-import type { BreadcrumbItem } from "#shared/types/navigation";
+import type { BreadcrumbItem } from '#shared/types/navigation';
 
 const props = defineProps<{ items: BreadcrumbItem[] }>();
 
-const currentLabel = computed(
-  () => props.items[props.items.length - 1]?.label ?? "",
-);
+const currentLabel = computed(() => props.items[props.items.length - 1]?.label ?? '');
 const parentItem = computed(() =>
-  props.items.length >= 2 ? props.items[props.items.length - 2] : null,
+  props.items.length >= 2 ? props.items[props.items.length - 2] : null
 );
 </script>
 
@@ -26,10 +24,7 @@ const parentItem = computed(() =>
       >
         <span class="truncate">{{ parentItem.label }}</span>
       </NuxtLink>
-      <span
-        v-else
-        class="text-muted-foreground flex min-h-11 items-center text-sm font-medium"
-      >
+      <span v-else class="text-muted-foreground flex min-h-11 items-center text-sm font-medium">
         <span class="truncate">{{ parentItem.label }}</span>
       </span>
       <Icon

@@ -21,7 +21,7 @@ export default defineNuxtPlugin((nuxtApp) => {
   // La navegación inicial no la dispara el usuario: marcarla como pendiente
   // atenuaría una sección del shell al cargar.
   let mounted = false;
-  nuxtApp.hook("app:mounted", () => {
+  nuxtApp.hook('app:mounted', () => {
     mounted = true;
   });
 
@@ -46,7 +46,7 @@ export default defineNuxtPlugin((nuxtApp) => {
         hideTimer = null;
         pending.value = null;
       },
-      Math.max(0, MIN_VISIBLE_MS - (Date.now() - startedAt)),
+      Math.max(0, MIN_VISIBLE_MS - (Date.now() - startedAt))
     );
   }
 
@@ -58,5 +58,5 @@ export default defineNuxtPlugin((nuxtApp) => {
   });
   router.afterEach(finish);
   router.onError(finish);
-  nuxtApp.hook("page:loading:end", finish);
+  nuxtApp.hook('page:loading:end', finish);
 });

@@ -1,6 +1,6 @@
-import type { UserSubscriptionInfo } from "@recetario/types";
+import type { UserSubscriptionInfo } from '@recetario/types';
 
-export type { SubscriptionTier, UserSubscriptionInfo } from "@recetario/types";
+export type { SubscriptionTier, UserSubscriptionInfo } from '@recetario/types';
 
 const FREE_FEATURES: Record<string, boolean> = {
   recipe_duplicate: false,
@@ -19,7 +19,7 @@ const FREE_FEATURES: Record<string, boolean> = {
 
 export function getDefaultSubscription(): UserSubscriptionInfo {
   return {
-    tier: "free",
+    tier: 'free',
     status: null,
     recipesLimit: 10,
     ingredientsLimit: 30,
@@ -42,48 +42,61 @@ export function canCreateRecipe(subscription: UserSubscriptionInfo, currentCount
   return subscription.recipesLimit === null || currentCount < subscription.recipesLimit;
 }
 
-export function canCreateIngredient(subscription: UserSubscriptionInfo, currentCount: number): boolean {
+export function canCreateIngredient(
+  subscription: UserSubscriptionInfo,
+  currentCount: number
+): boolean {
   return subscription.ingredientsLimit === null || currentCount < subscription.ingredientsLimit;
 }
 
-export function getRemainingRecipes(subscription: UserSubscriptionInfo, currentCount: number): number | null {
-  return subscription.recipesLimit === null ? null : Math.max(0, subscription.recipesLimit - currentCount);
+export function getRemainingRecipes(
+  subscription: UserSubscriptionInfo,
+  currentCount: number
+): number | null {
+  return subscription.recipesLimit === null
+    ? null
+    : Math.max(0, subscription.recipesLimit - currentCount);
 }
 
-export function getRemainingIngredients(subscription: UserSubscriptionInfo, currentCount: number): number | null {
-  return subscription.ingredientsLimit === null ? null : Math.max(0, subscription.ingredientsLimit - currentCount);
+export function getRemainingIngredients(
+  subscription: UserSubscriptionInfo,
+  currentCount: number
+): number | null {
+  return subscription.ingredientsLimit === null
+    ? null
+    : Math.max(0, subscription.ingredientsLimit - currentCount);
 }
 
 export function isPaid(subscription: UserSubscriptionInfo): boolean {
-  return subscription.tier === "basic" || subscription.tier === "pro";
+  return subscription.tier === 'basic' || subscription.tier === 'pro';
 }
 
 export function isPro(subscription: UserSubscriptionInfo): boolean {
-  return subscription.tier === "pro";
+  return subscription.tier === 'pro';
 }
 
 export function getPlanRank(tier?: string | null, interval?: string | null): number {
-  const tierWeight = tier === "pro" ? 20 : tier === "basic" ? 10 : 0;
-  const intervalWeight = interval === "yearly" ? 2 : 1;
+  const tierWeight = tier === 'pro' ? 20 : tier === 'basic' ? 10 : 0;
+  const intervalWeight = interval === 'yearly' ? 2 : 1;
   return tierWeight + intervalWeight;
 }
 
 export function isUpgrade(
   currentPlan: { tier?: string | null; billingInterval?: string | null },
-  newPlan: { tier?: string | null; billingInterval?: string | null },
+  newPlan: { tier?: string | null; billingInterval?: string | null }
 ): boolean {
-  const currentTier = currentPlan.tier ?? "free";
-  const newTier = newPlan.tier ?? "free";
-  const currentInterval = currentPlan.billingInterval ?? "monthly";
-  const newInterval = newPlan.billingInterval ?? "monthly";
+  const currentTier = currentPlan.tier ?? 'free';
+  const newTier = newPlan.tier ?? 'free';
+  const currentInterval = currentPlan.billingInterval ?? 'monthly';
+  const newInterval = newPlan.billingInterval ?? 'monthly';
 
   // 1. Any transition from a Monthly cycle to an Annual cycle is an UPGRADE (upfront commitment)
-  if (currentInterval === "monthly" && newInterval === "yearly") {
+  if (currentInterval === 'monthly' && newInterval === 'yearly') {
     return true;
   }
 
   // 2. Any transition from an Annual cycle to a Monthly cycle is a DOWNGRADE (scheduled at period end)
-  if (currentInterval === "yearly" && newInterval === "monthly") {
+  if (currentInterval === 'yearly' && newInterval === 'monthly') {
     return false;
   }
 
@@ -94,4 +107,3 @@ export function isUpgrade(
 
   return newTierRank > currentTierRank;
 }
-

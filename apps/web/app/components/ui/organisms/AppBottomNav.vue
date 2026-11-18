@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { AppPage } from "#shared/types/navigation";
+import type { AppPage } from '#shared/types/navigation';
 
 const props = defineProps<{
   currentPage: AppPage | null;
