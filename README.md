@@ -1,5 +1,9 @@
 # KitchCalc (Recetario)
 
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](./LICENSE)
+[![Node: >=22.23.1](https://img.shields.io/badge/node->=22.23.1-brightgreen.svg)](package.json)
+[![pnpm: 11.1.2](https://img.shields.io/badge/pnpm-11.1.2-orange.svg)](package.json)
+
 Costeo de recetas, inventario de ingredientes y planificador de producción para negocios gastronómicos.
 
 Monorepo **pnpm** con dos apps sobre **Cloudflare Workers**:
@@ -11,20 +15,48 @@ Monorepo **pnpm** con dos apps sobre **Cloudflare Workers**:
 
 El web es un cliente delgado del API: no importa Prisma ni `@recetario/db`. El detalle de la arquitectura y las convenciones vive en [`AGENTS.md`](./AGENTS.md); el despliegue, en [`DEPLOY.md`](./DEPLOY.md).
 
+---
+
 ## Requisitos
 
 - Node **>= 22.23.1**
 - pnpm **11.1.2** (`corepack enable` o `packageManager` del `package.json`)
-- Un archivo `.env` en la raíz (sin `.env.local`). `pnpm dev` copia su contenido a `apps/web/.dev.vars` y `apps/api/.dev.vars`.
+- PostgreSQL (local o servicio gestionado como Neon)
 
-## Desarrollo
+---
 
-```sh
-pnpm install
-pnpm dev          # web en http://localhost:4321 + API en http://localhost:8787 (Turbo)
-```
+## Configuración y Desarrollo
 
-En dev el relay `/api/**` del web cae a HTTP contra `INTERNAL_API_URL` (`http://localhost:8787`): el service binding `API` sólo existe en el Worker desplegado. La base de datos es Prisma Postgres; `pnpm exec prisma migrate dev` aplica el esquema y `pnpm exec tsx prisma/seed.ts` carga el dataset semilla.
+1. **Instalar dependencias:**
+
+   ```sh
+   pnpm install
+   ```
+
+2. **Variables de entorno:**
+   Copia el archivo de ejemplo a `.env` en la raíz (sin `.env.local`):
+
+   ```sh
+   cp .env.example .env
+   ```
+
+   Configura tu cadena de conexión `DATABASE_URL` y secretos básicos. Al correr `pnpm dev`, este archivo se sincroniza automáticamente con `apps/web/.dev.vars` y `apps/api/.dev.vars`.
+
+3. **Base de datos y datos semilla:**
+
+   ```sh
+   pnpm exec prisma migrate dev
+   pnpm exec tsx packages/db/prisma/seed.ts
+   ```
+
+4. **Iniciar servidores de desarrollo:**
+   ```sh
+   pnpm dev          # web en http://localhost:4321 + API en http://localhost:8787 (Turbo)
+   ```
+
+En desarrollo, el relay `/api/**` del web cae a HTTP contra `INTERNAL_API_URL` (`http://localhost:8787`): el service binding `API` solo existe en el Worker desplegado.
+
+---
 
 ## Comandos
 
@@ -37,6 +69,8 @@ En dev el relay `/api/**` del web cae a HTTP contra `INTERNAL_API_URL` (`http://
 | `pnpm --filter @recetario/web test:e2e`         | Playwright (chromium + smoke de firefox/webkit) |
 | `pnpm --filter @recetario/web wrangler:dry-run` | Dry-run del Worker con el `wrangler.jsonc` real |
 | `pnpm format`                                   | Prettier de todo el proyecto                    |
+
+---
 
 ## Estructura
 
@@ -53,18 +87,30 @@ packages/
 ├─ auth/  ├─ config/  ├─ db/  ├─ stripe/  └─ types/
 ```
 
+---
+
 ## Datos por usuario
 
-Ingredientes y recetas se consultan y guardan por usuario autenticado. Para que una cuenta local siga viendo el dataset semilla, define una de estas variables de entorno con esa cuenta:
+Ingredientes y recetas se consultan y guardan por usuario autenticado. Para que una cuenta local vea el dataset semilla, define una de estas variables de entorno con esa cuenta:
 
 - `RECIPES_STATIC_OWNER_EMAIL`
 - `RECIPES_STATIC_OWNER_ID`
 
-Ese usuario lee y edita el dataset semilla; el resto empieza con datos aislados.
+---
 
-## Documentación
+## Documentación y Contribución
 
-- [`AGENTS.md`](./AGENTS.md) — arquitectura, convenciones y gotchas (fuente de verdad para agentes).
-- [`DEPLOY.md`](./DEPLOY.md) — Cloudflare, migraciones, secrets y rollback.
-- [`CONTEXT.md`](./CONTEXT.md) — glosario de dominio.
-- [`docs/README.md`](./docs/README.md) — qué documentación está viva y qué es histórica.
+- [`CONTRIBUTING.md`](./CONTRIBUTING.md) — guía de contribución, ramas y estándares de código.
+- [`AGENTS.md`](./AGENTS.md) — arquitectura, convenciones y gotchas.
+- [`DEPLOY.md`](./DEPLOY.md) — Cloudflare Workers, migraciones, secrets y rollback.
+- [`CONTEXT.md`](./CONTEXT.md) — glosario del dominio culinario y de costeo.
+- [`DESIGN.md`](./DESIGN.md) — tokens semánticos, diseño y accesibilidad.
+- [`docs/README.md`](./docs/README.md) — mapa de documentación.
+
+---
+
+## Licencia y Marca
+
+Este proyecto es software libre distribuido bajo la licencia **GNU Affero General Public License v3.0 (AGPL-3.0)**. Consulta el archivo [`LICENSE`](./LICENSE) para más detalles.
+
+> **Aviso de Marca:** El nombre **KitchCalc**, su logotipo, imagen de marca y nombres de dominio asociados son propiedad exclusiva del autor y no forman parte de los derechos otorgados por la licencia de software.
