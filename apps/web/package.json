@@ -47,5 +47,5 @@
     "vue-tsc": "^3.3.11",
     "wrangler": "4.118.0"
   },
-  "license": "AGPL-3.0-only"
+  "license": "MIT"
 }

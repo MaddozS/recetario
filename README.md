@@ -1,6 +1,6 @@
 # KitchCalc (Recetario)
 
-[![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](./LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 [![Node: >=22.23.1](https://img.shields.io/badge/node->=22.23.1-brightgreen.svg)](package.json)
 [![pnpm: 11.1.2](https://img.shields.io/badge/pnpm-11.1.2-orange.svg)](package.json)
 
@@ -111,6 +111,6 @@ Ingredientes y recetas se consultan y guardan por usuario autenticado. Para que 
 
 ## Licencia y Marca
 
-Este proyecto es software libre distribuido bajo la licencia **GNU Affero General Public License v3.0 (AGPL-3.0)**. Consulta el archivo [`LICENSE`](./LICENSE) para más detalles.
+Este proyecto es software libre distribuido bajo la licencia **MIT**. Consulta el archivo [`LICENSE`](./LICENSE) para más detalles.
 
 > **Aviso de Marca:** El nombre **KitchCalc**, su logotipo, imagen de marca y nombres de dominio asociados son propiedad exclusiva del autor y no forman parte de los derechos otorgados por la licencia de software.
