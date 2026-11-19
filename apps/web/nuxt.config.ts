@@ -45,6 +45,9 @@ export default defineNuxtConfig({
   // el contrato es idéntico en dev, e2e y producción) y el layout privado
   // declara además su propio `robots`.
   vite: {
+    server: {
+      allowedHosts: ['oxford-shortage-drone.ngrok-free.dev'],
+    },
     // `@tailwindcss/vite@4.3.0` se tipa contra Vite 7 y Nuxt 4.5 usa Vite 8
     // (rolldown-vite): la identidad del tipo Plugin difiere, el runtime no.
     plugins: [tailwindcss() as never],

@@ -19,5 +19,5 @@
     "typescript": "6.0.2",
     "@recetario/config": "workspace:^"
   },
-  "license": "AGPL-3.0-only"
+  "license": "MIT"
 }

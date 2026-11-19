@@ -1,6 +1,6 @@
 # Guía de Contribución a KitchCalc
 
-¡Gracias por tu interés en contribuir a KitchCalc! Este proyecto es de código abierto bajo la licencia **GNU Affero General Public License v3.0 (AGPL-3.0)**.
+¡Gracias por tu interés en contribuir a KitchCalc! Este proyecto es de código abierto bajo la licencia **MIT**.
 
 ---
 
